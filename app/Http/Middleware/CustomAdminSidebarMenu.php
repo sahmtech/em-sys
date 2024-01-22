@@ -30,7 +30,7 @@ class CustomAdminSidebarMenu
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
-        if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles','get-all-users'])) {
+        if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles', 'get-all-users'])) {
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['work_cards'])) {
             $this->workCardsMenu();
@@ -97,10 +97,9 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
-        }  elseif (Str::startsWith($currentPath, 'ceomanagment')) {
+        } elseif (Str::startsWith($currentPath, 'ceomanagment')) {
             $this->ceoMenu();
-        } 
-        elseif (Str::startsWith($currentPath, 'toDo')) {
+        } elseif (Str::startsWith($currentPath, 'toDo')) {
             $this->toDoMenu();
         } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
             $this->helpdeskMenu();
@@ -239,7 +238,7 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
-           
+
             $menu->url(
                 action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard']),
                 __('assetmanagement::lang.asset_management'),
@@ -278,21 +277,38 @@ class CustomAdminSidebarMenu
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
 
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(
                 action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index']),
                 '<i class="fas fa-users-cog"></i> ' . __('ceomanagment::lang.CEO_Managment'),
                 [
-                    'active' => request()->segment(1) == 'ceomanagment',
-                  
+                    'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'dashboard',
+
                 ],
             );
-            if (auth()->user()->can('ceomanagment.view_requests')) {
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests')) {
                 $menu->url(
                     action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
                     __('ceomanagment::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
+                );
+            }
+            if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
+                $menu->url(
+
+                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                    __('essentials::lang.organizational_structure'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'departments'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('ceomanagment.crud_all_procedures')) {
+                $menu->url(
+
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index']),
+                    __('essentials::lang.procedures'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'procedures'],
                 );
             }
         });
@@ -634,10 +650,10 @@ class CustomAdminSidebarMenu
                     route('get_companies_insurance_contracts'),
                     __('essentials::lang.companies_insurance_contracts'),
                     ['icon' => 'fa fas fa-hospital', 'active' => request()->segment(1) == 'medicalInsurance'
-                     && request()->segment(2) == 'insurance_contracts'],
+                        && request()->segment(2) == 'insurance_contracts'],
                 );
             }
-            
+
 
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_classes')) {
                 $menu->dropdown(
@@ -901,7 +917,7 @@ class CustomAdminSidebarMenu
                 }
                 if ($is_admin  || auth()->user()->can('essentials.employee_affairs_view_department_employees')) {
                     $menu->url(
-    
+
                         route('employee_affairs_department_employees'),
                         __('essentials::lang.department_employees'),
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
@@ -940,14 +956,7 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($is_admin  || auth()->user()->can('essentials.crud_all_procedures')) {
-                $menu->url(
 
-                    action([\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index']),
-                    __('essentials::lang.procedures'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
-                );
-            }
             if ($is_admin  || auth()->user()->can('essentials.view_HR_requests')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
@@ -1105,14 +1114,7 @@ class CustomAdminSidebarMenu
             //     );
             // }
 
-            if ($is_admin  || auth()->user()->can('essentials.curd_organizational_structure')) {
-                $menu->url(
 
-                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
-                    __('essentials::lang.organizational_structure'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'departments'],
-                );
-            }
             if ($is_admin  || auth()->user()->can('essentials.hr_view_department_employees')) {
                 $menu->url(
 

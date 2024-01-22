@@ -8,6 +8,43 @@ use Illuminate\Routing\Controller;
 
 class DataController extends Controller
 {
+    public function user_permissions()
+    {
+        return [
+
+            [
+                'group_name' => __('ceomanagment::lang.CEO_Managment'),
+                'group_permissions' => [
+                    [
+                        'value' => 'ceomanagment.CEOmanagement_dashboard',
+                        'label' => __('ceomanagment::lang.CEOmanagement_dashboard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.view_requests',
+                        'label' => __('ceomanagment::lang.requests'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'ceomanagment.curd_organizational_structure',
+                        'label' => __('essentials::lang.organizational_structure'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.crud_all_procedures',
+                        'label' => __('essentials::lang.crud_all_procedures'),
+                        'default' => false,
+                    ],
+                ]
+            ]
+        ];
+    }
+
+
+
+
+
     /**
      * Display a listing of the resource.
      * @return Renderable

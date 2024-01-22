@@ -592,11 +592,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_pay_component'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'essentials.crud_all_procedures',
-                        'label' => __('essentials::lang.crud_all_procedures'),
-                        'default' => false,
-                    ],
+                    // [
+                    //     'value' => 'essentials.crud_all_procedures',
+                    //     'label' => __('essentials::lang.crud_all_procedures'),
+                    //     'default' => false,
+                    // ],
                     [
                         'value' => 'essentials.view_all_essentials_workers',
                         'label' => __('essentials::lang.view_all_essentials_workers'),
@@ -835,11 +835,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_academic_specializations'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'essentials.curd_organizational_structure',
-                        'label' => __('essentials::lang.organizational_structure'),
-                        'default' => false,
-                    ],
+                    // [
+                    //     'value' => 'essentials.curd_organizational_structure',
+                    //     'label' => __('essentials::lang.organizational_structure'),
+                    //     'default' => false,
+                    // ],
 
 
                     [
