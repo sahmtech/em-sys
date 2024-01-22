@@ -1651,8 +1651,12 @@ return [
   'general_specialization'=>'التخصص العام',
   'select_specialization'=>'اختر تخصص',
   'manager_deputy'=>'نائب المدير',
-  'add_deputy'=>'إضافة نائب'
-
+  'add_deputy'=>'إضافة نائب',
+  'insurance_class_not_found'=>'رقم الفئة غير تابع لشركة التأمين التابع لها الموظف',
+  'f_insurance_class_not_found'=>'رقم الفئة غير تابع لشركة التأمين التابع لها المرافق',
+  'insurance_company_not_found'=>'شركة التامين غير تابعة للمنشاة التابع لها الموظف' ,
+  'comp_insurance_class_not_found'=>'الشركة المدخلة غير تابعة للمنشاة التابع لها الموظف',
+  'f_comp_insurance_class_not_found'=>'الشركة المدخلة غير تابعة للمنشاة التابع لها المرافق',
 
 
 
