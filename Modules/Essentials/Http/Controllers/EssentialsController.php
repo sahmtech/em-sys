@@ -104,7 +104,11 @@ class EssentialsController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%بشرية%')
+                    ->orWhere('name', 'LIKE', '%حكومية%')
+                    ->orWhere('name', 'LIKE', '%موظف%');
+            })
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
@@ -177,7 +181,11 @@ class EssentialsController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%حكومية%')
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%بشرية%')
+                    ->orWhere('name', 'LIKE', '%حكومية%')
+                    ->orWhere('name', 'LIKE', '%موظف%');
+            })
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
@@ -250,7 +258,11 @@ class EssentialsController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%موظف%')
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%بشرية%')
+                    ->orWhere('name', 'LIKE', '%حكومية%')
+                    ->orWhere('name', 'LIKE', '%موظف%');
+            })
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
