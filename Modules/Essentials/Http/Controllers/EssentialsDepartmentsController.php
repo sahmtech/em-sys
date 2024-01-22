@@ -348,12 +348,12 @@ class EssentialsDepartmentsController extends Controller
             $input2['start_from'] = $input['start_date'];
             $input2['profession_id'] = $input['profession'];
             $input2['type'] = 'appoint';
-
-            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input2['employee'])
+   error_log($input['employee']);
+            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input['employee'])
                 ->latest('created_at')->first();
+         
 
-
-            if ($previous_appointement) {
+            if ($previous_appointement && $previous_appointement->is_active == 1) {
                 $previous_appointement->is_active = 0;
                 $previous_appointement->end_at = $input2['start_date'];
                 $previous_appointement->save();
@@ -429,7 +429,7 @@ class EssentialsDepartmentsController extends Controller
             $input2['department_id'] = $id;
 
             $input2['profession_id'] = $input['profession'];
-            $input2['specialization_id'] = $input['specialization'];
+           
             $input2['start_from'] = $input['start_date'];
             $input2['end_at'] = $input['end_date'];
             $input2['type'] = 'delegating';
@@ -532,7 +532,7 @@ class EssentialsDepartmentsController extends Controller
 
                     $managerAppointment->update([
                         'profession_id' => $request->filled('profession') ? $request->input('profession') : $managerAppointment->profession_id,
-                        'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : $managerAppointment->specialization_id,
+                        // 'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : $managerAppointment->specialization_id,
                         'start_from' => $request->filled('start_date') ? $request->input('start_date') : $managerAppointment->start_from,
                     ]);
                 } else {
@@ -543,7 +543,7 @@ class EssentialsDepartmentsController extends Controller
                         'department_id' => $id,
                         'type' => 'appoint',
                         'profession_id' => $request->filled('profession') ? $request->input('profession') : null,
-                        'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : null,
+                        // 'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : null,
                         'start_from' => $request->filled('start_date') ? $request->input('start_date') : null,
                     ]);
                 }
