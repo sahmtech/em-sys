@@ -238,6 +238,8 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+           
             $menu->url(
                 action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard']),
                 __('assetmanagement::lang.asset_management'),
@@ -246,9 +248,6 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) === 'asset'
                 ]
             );
-            //$menu->header("");
-            //$menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
     }
 
