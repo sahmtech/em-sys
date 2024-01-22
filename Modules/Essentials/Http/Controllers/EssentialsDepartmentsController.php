@@ -165,7 +165,7 @@ class EssentialsDepartmentsController extends Controller
                     if ($is_admin || $can_add_manager) {
                         $manager = DB::table('essentials_employee_appointmets')
                             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                            ->where('essentials_employee_appointmets.department_id', $row->id)
+                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active',1)
                             ->where('essentials_employee_appointmets.type', 'appoint')
                             ->where('users.user_type', 'manager')
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
@@ -180,7 +180,7 @@ class EssentialsDepartmentsController extends Controller
                     if ($is_admin || $can_add_manager) {
                         $manager = DB::table('essentials_employee_appointmets')
                             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                            ->where('essentials_employee_appointmets.department_id', $row->id)
+                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active',1)
                             ->where('essentials_employee_appointmets.type', 'deputy')
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
                             ->first();
@@ -193,7 +193,7 @@ class EssentialsDepartmentsController extends Controller
                     if ($is_admin || $can_delegatingManager_name) {
                         $delegatingManager = DB::table('essentials_employee_appointmets')
                             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                            ->where('essentials_employee_appointmets.department_id', $row->id)
+                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active',1)
                             ->where('essentials_employee_appointmets.type', 'delegating')
                             ->where('users.user_type', 'manager')
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
@@ -348,14 +348,15 @@ class EssentialsDepartmentsController extends Controller
             $input2['start_from'] = $input['start_date'];
             $input2['profession_id'] = $input['profession'];
             $input2['type'] = 'appoint';
-   error_log($input['employee']);
+   
             $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input['employee'])
                 ->latest('created_at')->first();
-         
+   
 
             if ($previous_appointement && $previous_appointement->is_active == 1) {
+              
                 $previous_appointement->is_active = 0;
-                $previous_appointement->end_at = $input2['start_date'];
+                $previous_appointement->end_at = $input['start_date'];
                 $previous_appointement->save();
             }
             EssentialsEmployeeAppointmet::create($input2);
