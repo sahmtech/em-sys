@@ -21,7 +21,21 @@ class DataController extends Controller
                         'label' => __('legalaffairs::lang.legalAffairs_dashboard'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'legalaffairs.contracts_management',
+                        'label' => __('legalaffairs::lang.contracts_management'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'legalaffairs.crud_employee_contracts',
+                        'label' => __('legalaffairs::lang.employee_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'legalaffairs.view_sales_contracts',
+                        'label' => __('legalaffairs::lang.sales_contracts'),
+                        'default' => false,
+                    ],
                 ],
             ],
         ];

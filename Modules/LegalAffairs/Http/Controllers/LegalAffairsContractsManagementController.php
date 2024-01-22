@@ -5,6 +5,7 @@ namespace Modules\LegalAffairs\Http\Controllers;
 use App\Contact;
 use App\Transaction;
 use App\User;
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -17,10 +18,24 @@ use Modules\Sales\Entities\salesContractItem;
 
 class LegalAffairsContractsManagementController extends Controller
 {
+
+    protected $moduleUtil;
+
+    public function __construct(
+
+        ModuleUtil $moduleUtil,
+
+    ) {
+
+        $this->moduleUtil = $moduleUtil;
+    }
+
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
+
     public function index()
     {
         return view('legalaffairs::index');

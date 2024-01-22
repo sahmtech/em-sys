@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', __('sales::lang.contracts'))
+@section('title', __('legalaffairs::lang.sales_contracts'))
 
 @section('content')
 
     <section class="content-header">
-        <h1>@lang('sales::lang.contracts')</h1>
+        <h1>@lang('legalaffairs::lang.sales_contracts')</h1>
     </section>
     <section class="content">
         <div class="row">

@@ -574,14 +574,14 @@ class CustomAdminSidebarMenu
                     function ($sub) use ($is_admin,) {
 
 
-                        if ($is_admin  || auth()->user()->can('essentials.crud_employee_contracts')) {
+                        if ($is_admin  || auth()->user()->can('legalaffairs.crud_employee_contracts')) {
                             $sub->url(
                                 route('legalAffairs.employeeContracts'),
                                 __('legalaffairs::lang.employee_contracts'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'employees_contracts'],
                             );
                         }
-                        if ($is_admin || auth()->user()->can('sales.view_sales_contracts')) {
+                        if ($is_admin || auth()->user()->can('legalaffairs.view_sales_contracts')) {
                             $sub->url(
                                 route('legalAffairs.salesContracts'),
 
