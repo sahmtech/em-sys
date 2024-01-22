@@ -16,7 +16,7 @@ use Modules\InternationalRelations\Entities\IrVisaCard;
 class DashboardController extends Controller
 {
     protected $moduleUtil;
-   
+
 
 
     public function __construct(ModuleUtil $moduleUtil)
@@ -33,19 +33,18 @@ class DashboardController extends Controller
         }
         $business_id = request()->session()->get('user.business_id');
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%دولي%')
-        ->pluck('id')->toArray();
-        $requestsProcess_count = FollowupWorkerRequest::
-        leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-        ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-        ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('department_id', $departmentIds)
-        ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests_process.sub_status', null)->count();
-        
+            ->where('name', 'LIKE', '%دولي%')
+            ->pluck('id')->toArray();
+        $requestsProcess_count = FollowupWorkerRequest::where('followup_worker_requests_process.status', 'pending')->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+            ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('department_id', $departmentIds)
+            ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests_process.sub_status', null)->count();
+
         $operations_count = DB::table('sales_orders_operations')
-        ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
-        ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-        ->where('sales_orders_operations.operation_order_type', '=', 'External')->count();
-       
+            ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
+            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+            ->where('sales_orders_operations.operation_order_type', '=', 'External')->count();
+
         $proposed_workers_count = IrProposedLabor::with('transactionSellLine.service', 'agency')->where('interviewStatus', null)->count();
         $accepted_workers_count = IrProposedLabor::with('transactionSellLine.service', 'agency')->where('interviewStatus', 'acceptable')->where('arrival_status', '!=', 1)->count();
         $visaCards_count = IrVisaCard::with(
@@ -53,7 +52,7 @@ class DashboardController extends Controller
             'operationOrder.salesContract.transaction.sell_lines.agencies',
             'operationOrder.salesContract.transaction.sell_lines.service'
         )->count();
-        return view('internationalrelations::dashboard.IR_dashboard',compact('requestsProcess_count','operations_count','proposed_workers_count','accepted_workers_count','visaCards_count'));
+        return view('internationalrelations::dashboard.IR_dashboard', compact('requestsProcess_count', 'operations_count', 'proposed_workers_count', 'accepted_workers_count', 'visaCards_count'));
     }
 
     /**

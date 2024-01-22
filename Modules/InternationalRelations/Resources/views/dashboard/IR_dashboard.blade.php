@@ -88,7 +88,7 @@
                                     <div class="w-title">
                                         <div>
                                             <p class="w-value"></p>
-                                            <h5 style="color:#fff">الطلبات</h5>
+                                            <h5 style="color:#fff">الطلبات قيد الاجراء</h5>
                                         </div>
                                         <div>
                                             <p class="w-value">{{ $requestsProcess_count }}</p>
