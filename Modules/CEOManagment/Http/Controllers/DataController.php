@@ -36,6 +36,37 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_all_procedures'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.delegatingManager_name',
+                        'label' => __('essentials::lang.delegatingManager_name'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_manager',
+                        'label' => __('essentials::lang.add_manager'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_depatments',
+                        'label' => __('essentials::lang.show_depatments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_depatments',
+                        'label' => __('essentials::lang.edit_depatments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_depatments',
+                        'label' => __('essentials::lang.delete_depatments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_departments',
+                        'label' => __('essentials::lang.add_departments'),
+                        'default' => false,
+                    ],
+
                 ]
             ]
         ];

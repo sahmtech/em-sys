@@ -43,7 +43,7 @@ class EssentialsDepartmentsController extends Controller
         $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
 
         if (!$can_crud_organizational_structure) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
@@ -133,18 +133,17 @@ class EssentialsDepartmentsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_crud_depatments = auth()->user()->can('essentials.crud_departments');
         $can_add_depatments = auth()->user()->can('essentials.add_departments');
         $can_delete_depatments = auth()->user()->can('essentials.delete_depatments');
         $can_edit_depatments = auth()->user()->can('essentials.edit_depatments');
         $can_show_depatments = auth()->user()->can('essentials.show_depatments');
-        $can_add_manager = auth()->user()->can('essentials.add_manager ');
-        $can_delegatingManager_name = auth()->user()->can('essentials.delegatingManager_name ');
-       
+        $can_add_manager = auth()->user()->can('essentials.add_manager');
+        $can_delegatingManager_name = auth()->user()->can('essentials.delegatingManager_name');
+
         if (!$can_crud_depatments) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
-      
+
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $parent_departments = EssentialsDepartment::where('is_main', '1')->pluck('name', 'id');
         if (request()->ajax()) {
@@ -161,70 +160,65 @@ class EssentialsDepartmentsController extends Controller
                     return $item;
                 })
 
-                ->addColumn('manager_name', function ($row) use($can_add_manager ,$is_admin) {
+                ->addColumn('manager_name', function ($row) use ($can_add_manager, $is_admin) {
 
-                    if($is_admin || $can_add_manager){
+                    if ($is_admin || $can_add_manager) {
                         $manager = DB::table('essentials_employee_appointmets')
-                        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                        ->where('essentials_employee_appointmets.department_id', $row->id)
-                        ->where('essentials_employee_appointmets.type', 'appoint')
-                        ->where('users.user_type', 'manager')
-                        ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
-                        ->first();
+                            ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                            ->where('essentials_employee_appointmets.department_id', $row->id)
+                            ->where('essentials_employee_appointmets.type', 'appoint')
+                            ->where('users.user_type', 'manager')
+                            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
+                            ->first();
 
-                    return $manager ? $manager->user : '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#addAppointmentModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.add_manager') . '</button>';
+                        return $manager ? $manager->user : '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#addAppointmentModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.add_manager') . '</button>';
                     }
-                    
                 })
 
-                ->addColumn('manager_deputy', function ($row) use($can_add_manager ,$is_admin) {
+                ->addColumn('manager_deputy', function ($row) use ($can_add_manager, $is_admin) {
 
-                    if($is_admin || $can_add_manager){
+                    if ($is_admin || $can_add_manager) {
                         $manager = DB::table('essentials_employee_appointmets')
-                        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                        ->where('essentials_employee_appointmets.department_id', $row->id)
-                        ->where('essentials_employee_appointmets.type', 'deputy')
-                        ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
-                        ->first();
+                            ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                            ->where('essentials_employee_appointmets.department_id', $row->id)
+                            ->where('essentials_employee_appointmets.type', 'deputy')
+                            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
+                            ->first();
 
-                    return $manager ? $manager->user : '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#addDeputyModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.add_deputy') . '</button>';
+                        return $manager ? $manager->user : '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#addDeputyModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.add_deputy') . '</button>';
                     }
-                    
                 })
-                ->addColumn('delegatingManager_name', function ($row) use($can_delegatingManager_name ,$is_admin) {
+                ->addColumn('delegatingManager_name', function ($row) use ($can_delegatingManager_name, $is_admin) {
 
-                    if($is_admin || $can_delegatingManager_name){
+                    if ($is_admin || $can_delegatingManager_name) {
                         $delegatingManager = DB::table('essentials_employee_appointmets')
-                        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                        ->where('essentials_employee_appointmets.department_id', $row->id)
-                        ->where('essentials_employee_appointmets.type', 'delegating')
-                        ->where('users.user_type', 'manager')
-                        ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
-                        ->first();
+                            ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                            ->where('essentials_employee_appointmets.department_id', $row->id)
+                            ->where('essentials_employee_appointmets.type', 'delegating')
+                            ->where('users.user_type', 'manager')
+                            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
+                            ->first();
 
-                    return $delegatingManager ? $delegatingManager->user : '<button type="button" class="btn btn-xs btn-success open-modal" data-toggle="modal" data-target="#addDelegatingModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.manager_delegating') . '</button>';
+                        return $delegatingManager ? $delegatingManager->user : '<button type="button" class="btn btn-xs btn-success open-modal" data-toggle="modal" data-target="#addDelegatingModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.manager_delegating') . '</button>';
                     }
-
-                   
                 })
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin ,$can_show_depatments, $can_delete_depatments , $can_edit_depatments) {
+                    function ($row) use ($is_admin, $can_show_depatments, $can_delete_depatments, $can_edit_depatments) {
                         $html = '';
                         if ($is_admin || $can_edit_depatments) {
-                           
+
                             //   $html .='<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                             $html .= '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '" data-info-route="' . route('getDepartmentInfo', $row->id) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
 
                             '&nbsp;';
-                           
                         }
-                        if($is_admin || $can_delete_depatments){
+                        if ($is_admin || $can_delete_depatments) {
                             $html .= '<button class="btn btn-xs btn-danger delete_department_button" data-href="' . route('department.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
-                         
-                        if($is_admin || $can_show_depatments){
+
+                        if ($is_admin || $can_show_depatments) {
                             $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('dep.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         }
 
@@ -235,7 +229,7 @@ class EssentialsDepartmentsController extends Controller
                     $query->where('name', 'like', "%{$keyword}%");
                 })
 
-                ->rawColumns(['action', 'manager_name', 'delegatingManager_name','manager_deputy'])
+                ->rawColumns(['action', 'manager_name', 'delegatingManager_name', 'manager_deputy'])
                 ->make(true);
         }
         $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'manager');
@@ -247,7 +241,7 @@ class EssentialsDepartmentsController extends Controller
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $business_locations = BusinessLocation::all()->where('business_id', $business_id)->pluck('name', 'id');
 
-        $professions = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         return view('essentials::settings.partials.departments.index')->with(compact('parent_departments', 'users', 'departments', 'business_locations', 'professions'));
     }
 
@@ -355,16 +349,14 @@ class EssentialsDepartmentsController extends Controller
             $input2['profession_id'] = $input['profession'];
             $input2['type'] = 'appoint';
 
-            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id',$input2['employee'])
-            ->latest('created_at')->first();
-           
+            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input2['employee'])
+                ->latest('created_at')->first();
 
-            if( $previous_appointement )
-            {
-                $previous_appointement->is_active= 0;
-                $previous_appointement->end_at= $input2['start_date'];
+
+            if ($previous_appointement) {
+                $previous_appointement->is_active = 0;
+                $previous_appointement->end_at = $input2['start_date'];
                 $previous_appointement->save();
-              
             }
             EssentialsEmployeeAppointmet::create($input2);
 
@@ -385,7 +377,7 @@ class EssentialsDepartmentsController extends Controller
     }
     public function storeDeputy($id, Request $request)
     {
-       
+
 
         try {
             $input = $request->only(['employee', 'start_date', 'profession']);
@@ -396,16 +388,14 @@ class EssentialsDepartmentsController extends Controller
             $input2['profession_id'] = $input['profession'];
             $input2['type'] = 'deputy';
 
-            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id',$input['employee'])
-            ->latest('created_at')->first();
-           
+            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input['employee'])
+                ->latest('created_at')->first();
 
-            if( $previous_appointement->is_active == 1 )
-            {
-                $previous_appointement->is_active= 0;
-                $previous_appointement->end_at= $input2['start_date'];
+
+            if ($previous_appointement->is_active == 1) {
+                $previous_appointement->is_active = 0;
+                $previous_appointement->end_at = $input2['start_date'];
                 $previous_appointement->save();
-              
             }
             EssentialsEmployeeAppointmet::create($input2);
 
