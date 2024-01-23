@@ -253,7 +253,7 @@ class CustomAdminSidebarMenu
     public function generalmanagementMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
-
+             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(
@@ -264,7 +264,7 @@ class CustomAdminSidebarMenu
                     // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ],
             );
-            if (auth()->user()->can('generalmanagement.view_president_requests')) {
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') ||auth()->user()->can('generalmanagement.view_GM_escalate_requests') ) {
                 $menu->url(
                     action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']),
                     __('generalmanagement::lang.requests'),
@@ -288,13 +288,7 @@ class CustomAdminSidebarMenu
 
                 ],
             );
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests')) {
-                $menu->url(
-                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
-                    __('ceomanagment::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
-                );
-            }
+         
             if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
                 $menu->url(
 
@@ -309,6 +303,13 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index']),
                     __('essentials::lang.procedures'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'procedures'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') ||auth()->user()->can('ceomanagment.view_CEO_escalate_requests') ) {
+                $menu->url(
+                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
+                    __('ceomanagment::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
         });
@@ -608,11 +609,20 @@ class CustomAdminSidebarMenu
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home', 'active' => request()->segment(1) == 'home']);
 
+            if ($is_admin  || auth()->user()->can('essentials.medicalInsurance_dashboard')) {
+                $menu->url(
+                    route('insurance-dashbord'),
+                    __('essentials::lang.medicalInsurance_dashboard'),
+                    ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance-dashbord'],
+                );
+            }
+
             $menu->url(
                 route('employee_insurance'),
                 __('essentials::lang.health_insurance'),
                 ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'employee_insurance'],
             );
+
 
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
                 $menu->url(

@@ -17,15 +17,11 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Carbon\Carbon;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use App\ContactLocation;
-use Exception;
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
 use Modules\Sales\Entities\SalesProject;
 
 class RequestController extends Controller
@@ -109,6 +105,12 @@ class RequestController extends Controller
             'essentials_wk_procedures.can_return',
             'users.assigned_to'
         ])
+   
+        // ->leftJoin(DB::raw('(SELECT followup_worker_requests_process.id as pro_id, followup_worker_requests.id as id, MAX(created_at) as max_created_at FROM followup_worker_requests_process GROUP BY id) as latest_table1'), 'latest_table1.id', '=', 'followup_worker_requests.id')
+        // ->leftJoin('followup_worker_requests_process', function($join) {
+        //     $join->on('followup_worker_requests_process.id', '=', 'latest_table1.id')
+        //          ->on('followup_worker_requests_process.created_at', '=', 'latest_table1.max_created_at');
+        // })
             ->leftJoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
             ->leftJoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
@@ -138,8 +140,7 @@ class RequestController extends Controller
 
                         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
                             ->where(function ($query) {
-                                $query->where('name', 'like', '%تنفيذ%')
-                                    ->orWhere('name', 'like', '%مجلس%')
+                                $query->Where('name', 'like', '%مجلس%')
                                     ->orWhere('name', 'like', '%عليا%');
                             })
                             ->pluck('id')->toArray();
@@ -182,9 +183,8 @@ class RequestController extends Controller
 
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
-                $query->where('name', 'like', '%تنفيذ%')
-                    ->orWhere('name', 'like', '%مجلس%')
-                    ->orWhere('name', 'like', '%عليا%');
+                $query->Where('name', 'like', '%مجلس%')
+                ->orWhere('name', 'like', '%عليا%');
             })
             ->pluck('id')->toArray();
 

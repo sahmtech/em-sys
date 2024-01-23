@@ -13,13 +13,16 @@
 
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
-  
-    Route::prefix('ceomanagment')->group(function() {
-        Route::get('/', 'CEOManagmentController@index'); 
+
+    Route::prefix('ceomanagment')->group(function () {
+        Route::get('/', 'CEOManagmentController@index');
         Route::get('/dashboard', [Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])->name('ceomanagment.dashboard');
- 
-        Route::get('/requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index'])->name('requests');
- 
+
+        Route::get('/requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index'])->name('view_CEO_requests');
+        Route::get('/escalate_requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'escalateRequests'])->name('ceomanagment.escalate_requests');
+        Route::post('/change-status', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'changeStatus'])->name('ceomanagment.changeStatus');
+        Route::get('/viewCEORequest/{requestId}', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewCEORequest');
+
         Route::get('/departments', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index'])->name('departments');
         Route::get('/createDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'create'])->name('createDepartment');
         Route::post('/storeDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'store'])->name('storeDepartment');
@@ -38,12 +41,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/getParentDepartments/{businessId}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'getParentDepartments'])
             ->name('getParentDepartments');
 
-            Route::get('/procedures', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index'])->name('procedures');
-            Route::post('/storeProcedure', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'store'])->name('storeProcedure');
-            Route::delete('/procedure/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'destroy'])->name('procedure.destroy');
- 
+        Route::get('/procedures', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index'])->name('procedures');
+        Route::post('/storeProcedure', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'store'])->name('storeProcedure');
+        Route::delete('/procedure/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'destroy'])->name('procedure.destroy');
     });
-  
-  
- 
 });
