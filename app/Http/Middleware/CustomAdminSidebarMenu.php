@@ -609,11 +609,20 @@ class CustomAdminSidebarMenu
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home', 'active' => request()->segment(1) == 'home']);
 
+            if ($is_admin  || auth()->user()->can('essentials.medicalInsurance_dashboard')) {
+                $menu->url(
+                    route('insurance-dashbord'),
+                    __('essentials::lang.medicalInsurance_dashboard'),
+                    ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance-dashbord'],
+                );
+            }
+
             $menu->url(
                 route('employee_insurance'),
                 __('essentials::lang.health_insurance'),
                 ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'employee_insurance'],
             );
+
 
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
                 $menu->url(
