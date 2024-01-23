@@ -322,22 +322,25 @@
             <div>
                 <div class="form-group col-md-3">
                     {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
-                    {{-- <input type="checkbox" id="can_add_category" name="can_add_category" value="1"> --}}
-                    <select id="can_add_category" name="can_add_category" class ="form-control" style="height:40px">
-                        <option value="#">@lang('essentials::lang.select_for_travel')</option>
-                        <option value="1">@lang('essentials::lang.includes')</option>
-                        <option value="0">@lang('essentials::lang.does_not_include')</option>
-                    </select>
-
+                    {!! Form::select(
+                        'can_add_category',
+                        [
+                            '#' => __('essentials::lang.select_for_travel'),
+                            '1' => __('essentials::lang.includes'),
+                            '0' => __('essentials::lang.does_not_include'),
+                        ],
+                        !empty($user->employee_travle_categorie) ? ($user->employee_travle_categorie ? '1' : '0') : '0',
+                        ['class' => 'form-control', 'style' => 'height:40px'],
+                    ) !!}
                 </div>
-                <div class="form-group col-md-3" id="category_input" style="display: none;">
+                {{-- <div class="form-group col-md-3" id="category_input" style="display: none;">
                     {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
                     {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, [
                         'class' => 'form-control',
                         'style' => 'height:40px',
                         'placeholder' => __('essentials::lang.travel_ticket_categorie'),
                     ]) !!}
-                </div>
+                </div> --}}
             </div>
 
             <div class="form-group col-md-3">
@@ -345,7 +348,7 @@
                 {!! Form::select(
                     'health_insurance',
                     ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
-                    null,
+                    !empty($user->has_insurance) ? $user->has_insurance : null,
                     ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
                 ) !!}
             </div>
