@@ -14,6 +14,7 @@ use DateTime;
 use App\Contact;
 use App\ContactLocation;
 use App\BusinessLocation;
+use App\Company;
 use Modules\Essentials\Entities\essentialsAllowanceType;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
@@ -107,7 +108,7 @@ class EssentialsEmployeeImportController extends Controller
 							 'location',
 							 'essentials_department',
 							 'addmission_date',
-                              'specialization_id',
+                            //   'specialization_id',
 							  'profession_id',
 							  'border_no',
 							  'nationality_id',
@@ -328,31 +329,31 @@ class EssentialsEmployeeImportController extends Controller
 
 
                                         //---------------------------------------------------
-                                        $emp_array['business_id'] = $value[25];
+                                         $emp_array['business_id'] = $business_id;
 
-                                        if ($emp_array['business_id'] !== null) {
+                                        // if ($emp_array['business_id'] !== null) {
                                         
-                                            $business = Business::find($emp_array['business_id']);
+                                        //     $business = Business::find($emp_array['business_id']);
                                           
-                                            if (!$business) {
+                                        //     if (!$business) {
                                             
-                                                $is_valid = false;
-                                                $error_msg = __('essentials::lang.business_not_found').$row_no;
-                                                break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            $is_valid = false;
-                                            $error_msg =__('essentials::lang.business_required' ) .$row_no;
-                                            break;
-                                        } 
+                                        //         $is_valid = false;
+                                        //         $error_msg = __('essentials::lang.business_not_found').$row_no;
+                                        //         break;
+                                        //     }
+                                        // }
+                                        // else
+                                        // {
+                                        //     $is_valid = false;
+                                        //     $error_msg =__('essentials::lang.business_required' ) .$row_no;
+                                        //     break;
+                                        // } 
 
                                         $emp_array['company_id'] = $value[26];
 
                                         if ($emp_array['company_id'] !== null) {
                                         
-                                            $business = Business::find($emp_array['company_id']);
+                                            $business = Company::find($emp_array['company_id']);
                                           
                                             if (!$business) {
                                             
@@ -431,22 +432,21 @@ class EssentialsEmployeeImportController extends Controller
 
 
 
-                                        $emp_array['specialization_id']=$value[30];
-                                      
-                                        if ($emp_array['specialization_id'] !== null) {
+                                        // $emp_array['specialization_id']=$value[30];
+                                        // if ($emp_array['specialization_id'] !== null) {
                                         
-                                            $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
+                                        //     $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
                                           
-                                            if (!$specialization) {
+                                        //     if (!$specialization) {
                                             
-                                                $is_valid = false;
-                                                $error_msg = __('essentials::lang.special_not_found') .$row_no;
-                                                break;
-                                            }
-                                        } else {
+                                        //         $is_valid = false;
+                                        //         $error_msg = __('essentials::lang.special_not_found') .$row_no;
+                                        //         break;
+                                        //     }
+                                        // } else {
                                         
-                                            $emp_array['specialization_id'] = null;
-                                        }
+                                        //     $emp_array['specialization_id'] = null;
+                                        // }
 
 
 
@@ -577,7 +577,7 @@ class EssentialsEmployeeImportController extends Controller
                                
                                 if ($value[43] !== null) {
                                         
-                                    $trans_allowance_id = EssentialsAllowanceAndDeduction::find($value[42]);
+                                    $trans_allowance_id = EssentialsAllowanceAndDeduction::find($value[43]);
                                   
                                     if (!$trans_allowance_id) {
                                     
@@ -588,7 +588,7 @@ class EssentialsEmployeeImportController extends Controller
                                 } 
                                 if ($value[45] !== null) {
                                         
-                                    $other_allowance_id = EssentialsAllowanceAndDeduction::find($value[44]);
+                                    $other_allowance_id = EssentialsAllowanceAndDeduction::find($value[45]);
                                   
                                     if (!$other_allowance_id) {
                                     
@@ -641,7 +641,7 @@ class EssentialsEmployeeImportController extends Controller
                     foreach ($formated_data as $emp_data) {
                      
                     
-                        $emp_data['business_id'] = $emp_data['business_id'];
+                        $emp_data['business_id'] = $business_id;
                         $emp_data['created_by'] = $user_id;
                         
                          
@@ -671,7 +671,7 @@ class EssentialsEmployeeImportController extends Controller
                             } 
                             else {
                             
-                                $emp_data['emp_number'] = $emp_data['business_id'] . '000';
+                                $emp_data['emp_number'] = $emp_data['company_id'] . '000';
                             }
                         } 
 
@@ -682,7 +682,7 @@ class EssentialsEmployeeImportController extends Controller
 
 
                     
-                        $emp_data['business_id'] = $emp_data['business_id'];
+                        $emp_data['business_id'] = $business_id;
                         $emp_data['employee_id'] = $emp->id;
                         $emp_data['created_by'] = $user_id;
                         $emp_data['contract_type_id'] = null;
@@ -753,7 +753,7 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->business_location_id= $emp_data['location_id'];
                         $essentials_employee_appointmets->is_active = 1;
                         $essentials_employee_appointmets->profession_id=$emp_data['profession_id'];
-                        $essentials_employee_appointmets->specialization_id =$emp_data["specialization_id"];
+                        // $essentials_employee_appointmets->specialization_id =$emp_data["specialization_id"];
                         $essentials_employee_appointmets->save();
 
 
