@@ -264,7 +264,7 @@ class CustomAdminSidebarMenu
                     // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ],
             );
-            if (auth()->user()->can('generalmanagement.view_president_requests')) {
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') ||auth()->user()->can('generalmanagement.view_GM_escalate_requests') ) {
                 $menu->url(
                     action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']),
                     __('generalmanagement::lang.requests'),
@@ -288,13 +288,7 @@ class CustomAdminSidebarMenu
 
                 ],
             );
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests')) {
-                $menu->url(
-                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
-                    __('ceomanagment::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
-                );
-            }
+         
             if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
                 $menu->url(
 
@@ -309,6 +303,13 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index']),
                     __('essentials::lang.procedures'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'procedures'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') ||auth()->user()->can('ceomanagment.view_CEO_escalate_requests') ) {
+                $menu->url(
+                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
+                    __('ceomanagment::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
         });

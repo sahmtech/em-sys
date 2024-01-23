@@ -20,50 +20,71 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.CEOmanagement_dashboard'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'ceomanagment.view_requests',
-                        'label' => __('ceomanagment::lang.requests'),
-                        'default' => false,
-                    ],
 
                     [
                         'value' => 'ceomanagment.curd_organizational_structure',
-                        'label' => __('essentials::lang.organizational_structure'),
+                        'label' => __('ceomanagment::lang.organizational_structure'),
                         'default' => false,
                     ],
                     [
                         'value' => 'ceomanagment.crud_all_procedures',
-                        'label' => __('essentials::lang.crud_all_procedures'),
+                        'label' => __('ceomanagment::lang.crud_all_procedures'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.delegatingManager_name',
-                        'label' => __('essentials::lang.delegatingManager_name'),
+                        'value' => 'ceomanagment.delegatingManager_name',
+                        'label' => __('ceomanagment::lang.delegatingManager_name'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.add_manager',
-                        'label' => __('essentials::lang.add_manager'),
+                        'value' => 'ceomanagment.add_manager',
+                        'label' => __('ceomanagment::lang.add_manager'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.show_depatments',
-                        'label' => __('essentials::lang.show_depatments'),
+                        'value' => 'ceomanagment.add_deputy',
+                        'label' => __('ceomanagment::lang.add_deputy'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.edit_depatments',
-                        'label' => __('essentials::lang.edit_depatments'),
+                        'value' => 'ceomanagment.show_depatments',
+                        'label' => __('ceomanagment::lang.show_depatments'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.delete_depatments',
-                        'label' => __('essentials::lang.delete_depatments'),
+                        'value' => 'ceomanagment.edit_depatments',
+                        'label' => __('ceomanagment::lang.edit_depatments'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.add_departments',
-                        'label' => __('essentials::lang.add_departments'),
+                        'value' => 'ceomanagment.delete_depatments',
+                        'label' => __('ceomanagment::lang.delete_depatments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.add_departments',
+                        'label' => __('ceomanagment::lang.add_departments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.view_CEO_requests',
+                        'label' => __('ceomanagment::lang.view_CEO_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.view_CEO_escalate_requests',
+                        'label' => __('ceomanagment::lang.view_CEO_escalate_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.change_request_status',
+                        'label' => __('ceomanagment::lang.change_request_status'),
+                        'default' => false,
+                    ],
+                 
+                    [
+                        'value' => 'ceomanagment.return_request',
+                        'label' => __('ceomanagment::lang.return_request'),
                         'default' => false,
                     ],
 
