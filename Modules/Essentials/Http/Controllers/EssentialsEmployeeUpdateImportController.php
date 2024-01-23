@@ -351,7 +351,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                      }
                     else{ $emp_array['contract_start_date'] = null;}
 
-                    if (!empty($value[36])) {
+                    if (!empty($value[36]))
+                    {
                         if (is_numeric($value[36])) {
                         
                             $excelDateValue = (float)$value[36];
@@ -372,24 +373,32 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         else{ $emp_array['contract_end_date'] = null;}
 
                               
-                        if (!empty($value[37])) {
+                        if (!empty($value[37]))
+                        {
                             $emp_array['contract_duration'] = $value[37];
                         } 
                         else{$emp_array['contract_duration'] = null;}
 
-                        if (!empty($value[38])) {
+
+
+                        if (!empty($value[38]))
+                        {
                             $emp_array['probation_period'] = $value[38];
                         } 
                         else{  $emp_array['probation_period'] = null;}
                             
                         
-                        if (!empty($value[39])) {
+
+
+                        if (!empty($value[39]))
+                        {
                             $emp_array['is_renewable'] = $value[39];
                         } 
                         else{   $emp_array['is_renewable'] = null;}
                             
                         $emp_array['essentials_salary'] = $value[40];
 
+                        
                         
                         if ($value[41] !== null)
                         {
@@ -429,12 +438,12 @@ class EssentialsEmployeeUpdateImportController extends Controller
                       
 
                        
-                       $emp_array['allowance_data'] = [
+                       $emp_array['allowance_data'] =
+                        [
                            'housing_allowance' => json_encode(['salaryType' => $value[41], 'amount' => $value[42]]),
                            'transportation_allowance' => json_encode(['salaryType' => $value[43], 'amount' => $value[44]]),
                            'other' => json_encode(['salaryType' => $value[45], 'amount' => $value[46]]),
-                         
-                       ];
+                        ];
                                
                        
                        $emp_array['total_salary'] = $value[47]; 
