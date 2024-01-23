@@ -87,7 +87,11 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.return_request'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'ceomanagment.view_request',
+                        'label' => __('ceomanagment::lang.view_request'),
+                        'default' => false,
+                    ],
                 ]
             ]
         ];
