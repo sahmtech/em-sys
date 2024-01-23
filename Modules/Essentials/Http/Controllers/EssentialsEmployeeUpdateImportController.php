@@ -476,10 +476,11 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $emp_data['contract_type_id'] = null;
                 
                   
-                        $existingEmployee = User::where('id_proof_number',$emp_data['id_proof_number'])->first();
+                        $existingEmployee = User::where('id_proof_number',$emp_data['id_proof_number'])
+                        ->first();
                    
                         if ($existingEmployee)
-                         {
+                        {
                           
                             $fieldsToUpdate = [
                                   'first_name',
@@ -498,8 +499,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                   'current_address',					   
                                   'permanent_address',
                                   'id_proof_name',
-                                   'assigned_to',
-                                   'account_holder_name',
+                                  'assigned_to',
+                                  'account_holder_name',
                                    'account_number',
                                    'bank_name',
                                    'IBN_code',
@@ -510,9 +511,11 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             foreach ($fieldsToUpdate as $field)
                              {
                               
-                                if (array_key_exists($field, $emp_data) && $emp_data[$field] !== null) {
+                                if (array_key_exists($field, $emp_data) && $emp_data[$field] !== null)
+                                {
                                     $existingEmployee->$field = $emp_data[$field];
                                 }
+
                               }
                         
                             $existingEmployee->save();
@@ -522,23 +525,26 @@ class EssentialsEmployeeUpdateImportController extends Controller
 {
                                 $allowanceData = json_decode($allowanceJson, true);
 
-                                try {
-                                    if ($allowanceData['salaryType'] !== null && $allowanceData['amount'] !== null && isset($allowanceData['amount'])) {
+                                try
+                                {
+                                    if ($allowanceData['salaryType'] !== null && $allowanceData['amount'] !== null && isset($allowanceData['amount']))
+                                    {
                                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
                                         $userAllowancesAndDeduction->user_id = $existingEmployee->id;
                                         $userAllowancesAndDeduction->allowance_deduction_id = (int)$allowanceData['salaryType'] ?? null;
                                         $userAllowancesAndDeduction->amount = $allowanceData['amount']?? null;
-
                                         $userAllowancesAndDeduction->save();
                                     }
-                                } catch (\Exception $e) {
+                                }
+                                 catch (\Exception $e) {
                                     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                                     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                                 }
                             }
 
 
-                            $residencePermitData = [
+                            $residencePermitData =
+                            [
                                 'status' => 'valid',
                                 'number' => $emp_data['id_proof_number'],
                                 'expiration_date' => $emp_data['proof_end_date'],
@@ -549,7 +555,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 return $value !== null;
                             });
 
-                            if (!empty($filteredResidencePermitData)) {
+                            if (!empty($filteredResidencePermitData))
+                            {
                                 
                                 EssentialsOfficialDocument::updateOrCreate(
                                     ['employee_id' => $existingEmployee->id, 'type' => 'residence_permit'],
@@ -558,7 +565,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             }
 
 
-                            $passportData = [
+                            $passportData = 
+                            [
                                 'status' => 'valid',
                                 'number' => $emp_data['passport_numbrer'],
                                 'expiration_date' => $emp_data['passport_end_date'],
@@ -569,7 +577,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 return $value !== null;
                             });
 
-                            if (!empty($filteredPassportData)) {
+                            if (!empty($filteredPassportData))
+                            {
                                 
                                 EssentialsOfficialDocument::updateOrCreate(
                                     ['employee_id' => $existingEmployee->id, 'type' => 'passport'],
@@ -578,7 +587,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             }
 
 
-                            $contractData = [
+                            $contractData =
+                            [
                                 'contract_number' => $emp_data['contract_number'],
                                 'contract_start_date' => $emp_data['contract_start_date'],
                                 'contract_end_date' => $emp_data['contract_end_date'],
@@ -594,7 +604,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 return $value !== null;
                             });
 
-                            if (!empty($filteredContractData)) {
+                            if (!empty($filteredContractData)) 
+                            {
                                 
                                 EssentialsEmployeesContract::updateOrCreate(
                                     ['employee_id' => $existingEmployee->id],
@@ -603,7 +614,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             }
 
 
-                            $appointmentData = [
+                            $appointmentData =
+                            [
                                 'department_id' => $emp_data['essentials_department_id'],
                                 'business_location_id' => $emp_data['location_id'],
                                 'profession_id' => $emp_data['profession_id'],
@@ -615,7 +627,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 return $value !== null;
                             });
 
-                            if (!empty($filteredAppointmentData)) {
+                            if (!empty($filteredAppointmentData)) 
+                            {
                                 
                                 EssentialsEmployeeAppointmet::updateOrCreate(
                                     ['employee_id' => $existingEmployee->id],
@@ -624,7 +637,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             }
 
 
-                            $admissionData = [
+                            $admissionData =
+                            [
                                 'admissions_date' => $emp_data['addmission_date'],
                                 'admissions_type' => 'first_time',
                                 'admissions_status' => 'on_date',
@@ -635,7 +649,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 return $value !== null;
                             });
 
-                            if (!empty($filteredAdmissionData)) {
+                            if (!empty($filteredAdmissionData)) 
+                            {
                                 
                                 EssentialsAdmissionToWork::updateOrCreate(
                                     ['employee_id' => $existingEmployee->id],
@@ -651,7 +666,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             $is_valid = false;
                             $error_msg = __('essentials::lang.user_not_found') .$row_no+1;
                               
-                            
                         }
                         
 
@@ -662,26 +676,26 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 }
 
                
-                $output = ['success' => 1,
-                    'msg' => __('product.file_imported_successfully'),
-                ];
+                $output = ['success' => 1,'msg' => __('product.file_imported_successfully'),];
 
                 DB::commit();
             }
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) 
+        {
 
             DB::rollBack();
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
-            $output = ['success' => 0,
-                'msg' => $e->getMessage(),
-            ];
+            $output = ['success' => 0,'msg' => $e->getMessage(), ];
 
-            return redirect()->route('import-employees')->with('notification', $output);
+            return redirect()->route('import-employees')
+            ->with('notification', $output);
         }
        
 
-        return redirect()->action([\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])->with('notification', 'success insert');
+        return redirect()->action([\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])
+        ->with('notification', 'success insert');
     }
 
   
