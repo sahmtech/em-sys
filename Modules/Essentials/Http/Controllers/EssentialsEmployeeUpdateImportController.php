@@ -285,23 +285,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                      }
 
                      
-                    //  $emp_array['specialization_id']=$value[30];            
-                    //  if ($emp_array['specialization_id'] !== null)
-                    //  {
-                     
-                    //      $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
-                       
-                    //      if (!$specialization) {
-                         
-                    //          $is_valid = false;
-                    //          $error_msg = __('essentials::lang.special_not_found') .$row_no;
-                    //          break;
-                    //      }
-                    //  } else {
-                     
-                    //      $emp_array['specialization_id'] = null;
-                    //  }
-
+                  
                      
                      $emp_array['profession_id']=$value[31];
                      if ($emp_array['profession_id'] !== null)
@@ -612,7 +596,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 'department_id' => $emp_data['essentials_department_id'],
                                 'business_location_id' => $emp_data['location_id'],
                                 'profession_id' => $emp_data['profession_id'],
-                                //'specialization_id' => $emp_data['specialization_id'],
+                               
                             ];
 
 
