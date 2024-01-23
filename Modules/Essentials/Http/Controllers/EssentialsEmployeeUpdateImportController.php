@@ -85,7 +85,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
              
               
                 DB::beginTransaction();
-                 foreach ($imported_data as $key => $value)
+                foreach ($imported_data as $key => $value)
                 {
                     $row_no = $key + 1;
                     $emp_array = [];  
