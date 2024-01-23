@@ -253,7 +253,7 @@ class CustomAdminSidebarMenu
     public function generalmanagementMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
-
+             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(

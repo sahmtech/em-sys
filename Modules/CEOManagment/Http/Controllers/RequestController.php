@@ -110,7 +110,7 @@ class RequestController extends Controller
             ->leftJoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             ->whereNull('followup_worker_requests_process.sub_status')
-            ->whereIn('users.id', $userIds);
+            ->whereIn('users.id', $userIds)->groupBy('id');
             
 
 
