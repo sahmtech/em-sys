@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.employee_contracts'))
+@section('title', __('legalaffairs::lang.employee_contracts'))
 
 @section('content')
 <section class="content-header">
-    <h1>@lang('essentials::lang.employee_contracts')</h1>
+    <h1>@lang('legalaffairs::lang.employee_contracts')</h1>
 </section>
 <section class="content">
     <div class="row">

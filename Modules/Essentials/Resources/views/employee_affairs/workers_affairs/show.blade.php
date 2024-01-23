@@ -73,7 +73,11 @@
                                 @endif
                             </li>
                         </ul>
-
+                        <a href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'], [$user->id]) }}"
+                            class="btn btn-primary btn-block">
+                            <i class="glyphicon glyphicon-edit"></i>
+                            @lang('messages.edit')
+                        </a>
 
                     </div>
                     <!-- /.box-body -->
@@ -115,22 +119,21 @@
 
                         @if (!empty($documents))
                             <div class="checkbox-group">
-                                @foreach($documents as $document)
-                                
-                                @if(isset($document->file_path) ||isset( $document->attachment))
-                                    <div class="checkbox">
-                                        <label>
-                                            @if ($document->file_path || $document->attachment)
-                                                <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
-                                                    data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                @foreach ($documents as $document)
+                                    @if (isset($document->file_path) || isset($document->attachment))
+                                        <div class="checkbox">
+                                            <label>
+                                                @if ($document->file_path || $document->attachment)
+                                                    <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
+                                                        data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                    </a>
+                                                @else
                                                     {{ trans('followup::lang.' . $document->type) }}
-                                                </a>
-                                            @else
-                                                {{ trans('followup::lang.' . $document->type) }}
-                                            @endif
-                                        </label>
-                                    </div>
-                                @endif
+                                                @endif
+                                            </label>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
                         @else
@@ -206,8 +209,150 @@
 
                                 </div>
                             </div>
-                           
-                            @include('user.show_details')
+
+                            @php
+                                $custom_labels = json_decode(session('business.custom_labels'), true);
+                            @endphp
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-12">
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.admission_date'):</strong>
+                                            @if (!empty($admissions_to_work->admissions_date))
+                                                {{ @format_date($admissions_to_work->admissions_date) }}
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.dob'):</strong>
+                                            @if (!empty($user->dob))
+                                                {{ @format_date($user->dob) }}
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.nationality'):</strong>
+                                            {{ !empty($nationality) ? json_decode($nationality, true)['nationality'] : '' }}
+                                        </p>
+
+
+                                        <p><strong>@lang('lang_v1.gender'):</strong>
+                                            @if (!empty($user->gender))
+                                                @lang('lang_v1.' . $user->gender)
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.marital_status'):</strong>
+                                            @if (!empty($user->marital_status))
+                                                @lang('lang_v1.' . $user->marital_status)
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.mobile_number'):</strong> {{ $user->contact_number ?? '' }}</p>
+                                    </div>
+                                   
+
+
+                                    <div class="clearfix"></div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.id_proof_name'):</strong>
+                                            @if ($user->id_proof_name === null)
+                                                {{ '' }}
+                                            @elseif ($user->id_proof_name === 'eqama')
+                                                @lang('essentials::lang.' . $user->id_proof_name)
+                                            @elseif ($user->id_proof_name === 'national_id' || $user->id_proof_name === 'هوية وطنية')
+                                                @lang('essentials::lang.' . $user->id_proof_name)
+                                            @elseif ($user->id_proof_name === 'هوية وطنية')
+                                                @lang($user->id_proof_name)
+                                            @endif
+                                        </p>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.id_proof_number'):</strong>
+                                            {{ $user->id_proof_number ?? '' }}</p>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <hr>
+
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.company'):</strong>
+                                            {{ $user->company?->name ?? '' }}</p>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('followup::lang.project'):</strong>
+                                            {{ $user->assignedTo?->name ?? '' }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        @if ($user->assignedTo === null)
+                                            <p><strong>@lang('essentials::lang.city'):</strong>
+                                                {{ '' }}</p>
+                                        @else
+                                            <p><strong>@lang('essentials::lang.city'):</strong>
+                                                {{ json_decode($user->assignedTo?->project_city?->name)->ar ?? '' }}</p>
+                                        @endif
+
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('followup::lang.customer_name'):</strong>
+                                            {{ $user->assignedTo?->contact?->supplier_business_name ?? '' }}</p>
+                                    </div>
+                                    @if ($user->booking)
+                                        <div class="clearfix"></div>
+                                        <hr>
+                                        <div class="col-md-12">
+                                            <h4>@lang('followup::lang.booking_details'):</h4>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('followup::lang.project'):</strong>
+                                                {{ $user->booking->saleProject?->name ?? '' }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('housingmovements::lang.booking_start_Date'):</strong>
+                                                {{ $user->booking->booking_start_Date ?? '' }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('housingmovements::lang.booking_end_Date'):</strong>
+                                                {{ $user->booking->booking_end_Date ?? '' }}</p>
+                                        </div>
+                                    @endif
+
+                                    <div class="clearfix"></div>
+                                    <hr>
+                                    
+
+                                   
+
+                                    <div class="col-md-12">
+                                        <h4>@lang('lang_v1.bank_details'):</h4>
+                                    </div>
+                                    @php
+                                        $bank_details = !empty($user->bank_details) ? json_decode($user->bank_details, true) : [];
+                                    @endphp
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.account_holder_name'):</strong>
+                                            {{ $bank_details['account_holder_name'] ?? '' }}</p>
+                                        <p><strong>@lang('lang_v1.account_number'):</strong> {{ $bank_details['account_number'] ?? '' }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.bank_name'):</strong> {{ $bank_name ?? '' }}</p>
+                                        <p><strong>@lang('lang_v1.bank_code'):</strong> {{ $bank_details['bank_code'] ?? '' }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+
+                                        <p><strong>@lang('lang_v1.branch'):</strong> {{ $bank_details['branch'] ?? '' }}</p>
+                                       
+                                    </div>
+
+                                    @if (!empty($view_partials))
+                                        @foreach ($view_partials as $partial)
+                                            {!! $partial !!}
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </div>
+
 
 
                         </div>
@@ -219,8 +364,8 @@
 
                                     {!! Form::open(['route' => 'storeOfficialDoc', 'enctype' => 'multipart/form-data']) !!}
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                                aria-hidden="true">&times;</span></button>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                         <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
                                     </div>
 

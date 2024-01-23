@@ -133,8 +133,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/show_workers_affairs/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'show'])->name('show_workers_affairs');
         Route::get('/add_workers_affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'create'])->name('add_workers_affairs');
         Route::post('/store-worker-affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'store'])->name('store-worker-affairs');
-
-
+        Route::get('/editWorker/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'])->name('editWorker');
+        Route::put('/updateWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'])->name('updateWorker');
 
         Route::get('/import-employees', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index'])->name('import-employees');
         Route::post('/send-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee'])->name('send-employee-file');
@@ -346,17 +346,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/organizations/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'destroy'])->name('organization.destroy');
         Route::put('/updateOrganization/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'update'])->name('updateOrganization');
 
-        Route::get('/departments', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index'])->name('departments');
-        Route::get('/createDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'create'])->name('createDepartment');
-        Route::post('/storeDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'store'])->name('storeDepartment');
-        Route::get('/departments/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'edit'])->name('department.edit');
-        Route::delete('/departments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'destroy'])->name('department.destroy');
-        Route::put('/updateDepartments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'update'])->name('updateDepartment');
-        Route::post('/store-manager/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'storeManager'])->name('storeManager');
-        Route::post('/manager_delegating/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'manager_delegating'])->name('manager_delegating');
-        Route::get('/getDepartmentInfo/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'getDepartmentInfo'])->name('getDepartmentInfo');
-        Route::get('/departments.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'show'])->name('dep.view');
-        Route::post('/storeDeputy/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'storeDeputy'])->name('storeDeputy');
+
+
 
 
         Route::get('/job_titles', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'index'])->name('job_titles');
@@ -453,20 +444,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
 
-        Route::post('/treeview/update/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'update']);
-        Route::post('treeview/delete/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'deletenode'])->name('hrm.treeview.delete');
-        Route::post('treeview/add/', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'store'])->name('hrm.treeview.add');
-
-        Route::get('/getParentDepartments/{businessId}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'getParentDepartments'])
-            ->name('getParentDepartments');
+       
 
 
 
 
 
-        Route::get('/procedures', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index'])->name('procedures');
-        Route::post('/storeProcedure', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'store'])->name('storeProcedure');
-        Route::delete('/procedure/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'destroy'])->name('procedure.destroy');
+
 
 
         Route::get('/my_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'my_requests'])->name('my_requests');

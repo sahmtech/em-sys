@@ -207,10 +207,11 @@
                         data: 'admissions_type',
                         render: function(data, type, row) {
                             if (data === 'first_time') {
-                                console.log(data);
                                 return '@lang('essentials::lang.first_time')';
-                            } else {
+                            } else if (data === 'after_vac') {
                                 return '@lang('essentials::lang.after_vac')';
+                            } else {
+                                return '@lang('essentials::lang.no_addmission_yet')';
                             }
                         }
                     },
@@ -219,8 +220,10 @@
                         render: function(data, type, row) {
                             if (data === 'on_date') {
                                 return '@lang('essentials::lang.on_date')';
-                            } else {
+                            } else if (data === 'delay') {
                                 return '@lang('essentials::lang.delay')';
+                            } else {
+                                return '';
                             }
                         }
                     },
@@ -273,7 +276,17 @@
                     },
 
                     {
-                        data: 'gender'
+                        data: 'gender',
+                        render: function(data, type, row) {
+                            if (data === 'male') {
+                                return '@lang('lang_v1.male')';
+                            } else if (data === 'female') {
+                                return '@lang('lang_v1.female')';
+
+                            } else {
+                                return '@lang('lang_v1.others')';
+                            }
+                        }
                     },
                     {
                         data: 'marital_status'
