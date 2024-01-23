@@ -30,8 +30,8 @@
                 ) !!}
             </div>
         </div>
-    </div>--}}
-  
+    </div> --}}
+
 
     <div class="col-md-3">
         <div class="form-group">
@@ -63,7 +63,7 @@
             ) !!}
         </div>
     </div> --}}
-   
+
 </div>
 
 
@@ -193,7 +193,7 @@
                             </div>
 
 
-                           
+
                         </td>
                     </tr>
                 </tbody>
@@ -233,6 +233,11 @@
                                 'placeholder' => __('essentials::lang.amount'),
                             ]) !!}
 
+                        </td>
+                        <td>
+                            <button type="button" id="remove-row" style="display: none;"
+                                class="btn btn-danger remove-row">{{ __('messages.delete') }}
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -494,18 +499,16 @@
             }
         });
 
-        function addRow() {
+        $('#salary-table-body').on('click', '.remove-row', function() {
+            $(this).closest('tr').remove();
+        });
 
+        $('#add-row').click(function() {
             var newRow = $('#salary-table-body tr:first').clone();
             newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
             newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
-
+            newRow.find('.remove-row').show();
             $('#salary-table-body').append(newRow);
-        }
-
-        $('#add-row').click(function() {
-
-            addRow();
         });
 
         $(document).on('change', 'select[name="salary_type[]"]', function() {
@@ -562,5 +565,3 @@
         });
     });
 </script>
-
-
