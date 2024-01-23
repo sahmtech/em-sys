@@ -305,9 +305,11 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                      
                      $emp_array['border_no']=$value[32];
-                     $emp_array['nationality_id']=$value[33];
 
-                     if ($emp_array['nationality_id'] !== null) {
+
+                     $emp_array['nationality_id']=$value[33];
+                     if ($emp_array['nationality_id'] !== null)
+                    {
                      
                          $nationality_id = EssentialsCountry::find($emp_array['nationality_id']);
                          if (!$nationality_id) {
@@ -399,7 +401,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $emp_array['essentials_salary'] = $value[40];
 
                         
-                        
+
                         if ($value[41] !== null)
                         {
                                
