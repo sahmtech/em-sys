@@ -133,13 +133,12 @@
                             <td class="table-td-width-100px">@lang('business.email')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.department')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.specialization')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
 
@@ -226,8 +225,10 @@
 
                             if (data === 'first_time') {
                                 return '@lang('essentials::lang.first_time')';
-                            } else {
+                            } else if (data === 'after_vac') {
                                 return '@lang('essentials::lang.after_vac')';
+                            } else {
+                                return '@lang('essentials::lang.no_addmission_yet')';
                             }
                         }
                     },
@@ -236,8 +237,10 @@
                         render: function(data, type, row) {
                             if (data === 'on_date') {
                                 return '@lang('essentials::lang.on_date')';
-                            } else {
+                            } else if (data === 'delay') {
                                 return '@lang('essentials::lang.delay')';
+                            } else {
+                                return '';
                             }
                         }
                     },
@@ -245,19 +248,19 @@
                         data: 'contract_end_date'
                     },
                     {
-                        "data": "contact_number"
-                    }, {
-                        "data": "email"
-                    }, {
-                        "data": "essentials_department_id"
-                    }, {
-                        "data": "profession",
-                        name: 'profession'
+                        data: "contact_number"
                     },
                     {
-                        "data": "specialization",
-                        name: 'specialization'
+                        data: "email"
                     },
+                    {
+                        data: "department"
+                    },
+                    {
+                        data: "profession",
+                        name: 'profession'
+                    },
+
                     {
                         data: 'status',
                         render: function(data, type, row) {
@@ -290,14 +293,22 @@
                     },
 
                     {
-                        data: 'gender'
+                        data: 'gender',
+                        render: function(data, type, row) {
+                            if (data === 'male') {
+                                return '@lang('lang_v1.male')';
+                            } else if (data === 'female') {
+                                return '@lang('lang_v1.female')';
+
+                            } else {
+                                return '@lang('lang_v1.others')';
+                            }
+                        }
                     },
                     {
                         data: 'marital_status'
                     },
-                    {
-                        data: 'blood_group'
-                    },
+
                     {
                         data: 'bank_code',
 

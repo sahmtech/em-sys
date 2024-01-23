@@ -166,9 +166,12 @@
                         data: 'gender',
                         render: function(data, type, row) {
                             if (data === 'male') {
-                                return '@lang('essentials::lang.male')';
+                                return '@lang('lang_v1.male')';
+                            } else if (data === 'female') {
+                                return '@lang('lang_v1.female')';
+
                             } else {
-                                return '@lang('essentials::lang.female')';
+                                return '@lang('lang_v1.others')';
                             }
                         }
                     },

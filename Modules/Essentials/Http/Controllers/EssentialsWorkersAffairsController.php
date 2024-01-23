@@ -34,8 +34,8 @@ use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
-
-
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 class EssentialsWorkersAffairsController extends Controller
 {
@@ -125,6 +125,9 @@ class EssentialsWorkersAffairsController extends Controller
         if (request()->ajax()) {
 
             return DataTables::of($users)
+                ->addColumn('department', function ($user) use ($departments) {
+                    return $user->essentials_department_id ? $departments[$user->essentials_department_id] : '';
+                })
 
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
@@ -532,7 +535,96 @@ class EssentialsWorkersAffairsController extends Controller
      */
     public function edit($id)
     {
-        return view('essentials::edit');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $business_id = request()->session()->get('user.business_id');
+        $user = User::with(['contactAccess', 'assignedTo'])
+            ->findOrFail($id);
+
+        $contacts = SalesProject::pluck('name', 'id');
+        $countries = EssentialsCountry::forDropdown();
+        $projects = SalesProject::pluck('name', 'id');
+        $appointments = EssentialsEmployeeAppointmet::select([
+
+            'profession_id',
+
+        ])->where('employee_id', $id)->first();
+        if ($appointments !== null) {
+            $user->profession_id = $appointments['profession_id'];
+        } else {
+            $user->profession_id = null;
+        }
+        $allowance_deduction_ids = [];
+        if (!empty($user)) {
+            $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::with('essentialsAllowanceAndDeduction')
+                ->where('user_id', $user->id)
+                ->get();
+        }
+
+        if (!empty($user)) {
+            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+        } else {
+            $contract = null;
+        }
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $idProofName = $user->id_proof_name;
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $companies = Company::all()->pluck('name', 'id');
+
+        $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
+        $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+
+
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
+        if ($user->status == 'active') {
+            $is_checked_checkbox = true;
+        } else {
+            $is_checked_checkbox = false;
+        }
+
+        $locations = BusinessLocation::where('business_id', $business_id)
+            ->get();
+
+        $permitted_locations = $user->permitted_locations();
+
+        $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
+
+        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
+
+        $qualification = EssentialsEmployeesQualification::where('employee_id', $id)->first();
+        $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
+        $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
+        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
+            ->first();
+        return view('essentials::employee_affairs.workers_affairs.edit')
+            ->with(compact(
+                'projects',
+                'contacts',
+                'spacializations',
+                'qualification',
+                'resident_doc',
+                'countries',
+                'banks',
+                'idProofName',
+                'user',
+                'contact_access',
+                'is_checked_checkbox',
+                'allowance_deduction_ids',
+                'contract',
+                'locations',
+                'permitted_locations',
+                'form_partials',
+                'appointments',
+                'travel_ticket_categorie',
+                'contract_types',
+                'nationalities',
+                'professions',
+                'companies',
+                'job_titles',
+                'allowance_types',
+            ));
     }
 
     /**
