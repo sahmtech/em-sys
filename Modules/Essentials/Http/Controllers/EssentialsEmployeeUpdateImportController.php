@@ -668,8 +668,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             $error_msg = __('essentials::lang.user_not_found') .$row_no+1;
                               
                         }
-                        
-
 
                    }
                   
