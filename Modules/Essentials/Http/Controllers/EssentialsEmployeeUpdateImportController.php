@@ -521,23 +521,23 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         
                             $existingEmployee->save();
                            
-
-                            foreach ($emp_data['allowance_data'] as $allowanceType => $allowanceJson) 
-{
+                            foreach ($emp_data['allowance_data'] as $allowanceType => $allowanceJson) {
                                 $allowanceData = json_decode($allowanceJson, true);
-
-                                try
-                                {
-                                    if ($allowanceData['salaryType'] !== null && $allowanceData['amount'] !== null && isset($allowanceData['amount']))
-                                    {
-                                        $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
-                                        $userAllowancesAndDeduction->user_id = $existingEmployee->id;
-                                        $userAllowancesAndDeduction->allowance_deduction_id = (int)$allowanceData['salaryType'] ?? null;
-                                        $userAllowancesAndDeduction->amount = $allowanceData['amount']?? null;
-                                        $userAllowancesAndDeduction->save();
+                            
+                                try {
+                                    if ($allowanceData['salaryType'] !== null && $allowanceData['amount'] !== null && isset($allowanceData['amount'])) {
+                            
+                                        $userAllowancesAndDeduction = EssentialsUserAllowancesAndDeduction::updateOrCreate(
+                                            [
+                                                'user_id' => $existingEmployee->id,
+                                                'allowance_deduction_id' => (int)$allowanceData['salaryType'] ?? null,
+                                            ],
+                                            [
+                                                'amount' => $allowanceData['amount'] ?? null,
+                                            ]
+                                        );
                                     }
-                                }
-                                 catch (\Exception $e) {
+                                } catch (\Exception $e) {
                                     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                                     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                                 }
