@@ -482,7 +482,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         if ($existingEmployee)
                         {
                           
-                            $fieldsToUpdate = [
+                            $fieldsToUpdate = 
+                            [
                                   'first_name',
                                   'mid_name',
                                   'last_name',
@@ -506,7 +507,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                    'IBN_code',
                                    'business_id',
                                    'nationality_id',
-                               ];
+                            ];
                         
                             foreach ($fieldsToUpdate as $field)
                              {
