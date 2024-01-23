@@ -90,10 +90,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $row_no = $key + 1;
                     $emp_array = [];  
                                             
-                    if (!empty($value[0])) 
-                    {
-                        $emp_array['employee_id'] = $value[0];
-                    } 
+                   
 
                     $emp_array['first_name'] = $value[1];                      
                     $emp_array['mid_name'] = $value[2];
@@ -461,9 +458,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         'contract_start_date' => null,
                         'contract_end_date' => null,
                                                
-                ]; 
+                ];
+            
+                if (!$is_valid) 
+                {
+                    throw new \Exception($error_msg);
+                } 
          
-              $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data); 
+            $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data); 
            
             if (! empty($formated_data)) 
                 {
@@ -478,6 +480,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                   
                         $existingEmployee = User::where('id_proof_number',$emp_data['id_proof_number'])
                         ->first();
+
+                        //dd( $existingEmployee);
                    
                         if ($existingEmployee)
                         {
@@ -507,7 +511,10 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                    'IBN_code',
                                    'business_id',
                                    'nationality_id',
+                                   'bank_details',
                             ];
+
+                         
                         
                             foreach ($fieldsToUpdate as $field)
                              {
@@ -671,8 +678,13 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                    }
                   
-                       
+                  
+                   if (!$is_valid) 
+                   {
+                       throw new \Exception($error_msg);
+                   }     
                 }
+
 
                
                 $output = ['success' => 1,'msg' => __('product.file_imported_successfully'),];
