@@ -9,6 +9,7 @@ return [
 
 
     'view_president_requests'=>'عرض طلبات رئاسة مجلس الإدارة',
+    'view_GM_escalate_requests'=>'عرض الطلبات المصعدة للإدارة العليا',
     'change_request_status'=>'تغيير حالة الطلب',
     'view_request'=>'عرض معلومات الطلب ',
     'return_request'=>'إرجاع الطلب',

@@ -27,6 +27,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'generalmanagement.view_GM_escalate_requests',
+                        'label' => __('generalmanagement::lang.view_GM_escalate_requests'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'generalmanagement.change_request_status',
                         'label' => __('generalmanagement::lang.change_request_status'),
                         'default' => false,

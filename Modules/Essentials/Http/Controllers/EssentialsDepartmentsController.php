@@ -39,12 +39,12 @@ class EssentialsDepartmentsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
-        $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
+        // $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
+        // $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
 
-        if (!$can_crud_organizational_structure) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+        // if (!$can_crud_organizational_structure) {
+        //     //temp  abort(403, 'Unauthorized action.');
+        // }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
@@ -133,12 +133,13 @@ class EssentialsDepartmentsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_add_depatments = auth()->user()->can('essentials.add_departments');
-        $can_delete_depatments = auth()->user()->can('essentials.delete_depatments');
-        $can_edit_depatments = auth()->user()->can('essentials.edit_depatments');
-        $can_show_depatments = auth()->user()->can('essentials.show_depatments');
-        $can_add_manager = auth()->user()->can('essentials.add_manager');
-        $can_delegatingManager_name = auth()->user()->can('essentials.delegatingManager_name');
+        $can_add_depatments = auth()->user()->can('ceomanagment.add_departments');
+        $can_delete_depatments = auth()->user()->can('ceomanagment.delete_depatments');
+        $can_edit_depatments = auth()->user()->can('ceomanagment.edit_depatments');
+        $can_show_depatments = auth()->user()->can('ceomanagment.show_depatments');
+        $can_add_manager = auth()->user()->can('ceomanagment.add_manager');
+        $can_add_deputy = auth()->user()->can('ceomanagment.add_deputy');
+        $can_delegatingManager_name = auth()->user()->can('ceomanagment.delegatingManager_name');
 
         // if (!$can_crud_depatments) {
         //     //temp  abort(403, 'Unauthorized action.');
@@ -175,9 +176,9 @@ class EssentialsDepartmentsController extends Controller
                     }
                 })
 
-                ->addColumn('manager_deputy', function ($row) use ($can_add_manager, $is_admin) {
+                ->addColumn('manager_deputy', function ($row) use ($can_add_deputy, $is_admin) {
 
-                    if ($is_admin || $can_add_manager) {
+                    if ($is_admin || $can_add_deputy) {
                         $manager = DB::table('essentials_employee_appointmets')
                             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
                             ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active',1)
@@ -393,9 +394,9 @@ class EssentialsDepartmentsController extends Controller
                 ->latest('created_at')->first();
 
 
-            if ($previous_appointement->is_active == 1) {
+            if ($previous_appointement && $previous_appointement->is_active == 1){
                 $previous_appointement->is_active = 0;
-                $previous_appointement->end_at = $input2['start_date'];
+                $previous_appointement->end_at = $input['start_date'];
                 $previous_appointement->save();
             }
             EssentialsEmployeeAppointmet::create($input2);
@@ -437,7 +438,16 @@ class EssentialsDepartmentsController extends Controller
 
 
 
-            EssentialsEmployeeAppointmet::create($input2);
+            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input['employee'])
+            ->latest('created_at')->first();
+
+
+        if ($previous_appointement && $previous_appointement->is_active == 1){
+            $previous_appointement->is_active = 0;
+            $previous_appointement->end_at = $input['start_date'];
+            $previous_appointement->save();
+        }
+        EssentialsEmployeeAppointmet::create($input2);
 
 
             $output = [
