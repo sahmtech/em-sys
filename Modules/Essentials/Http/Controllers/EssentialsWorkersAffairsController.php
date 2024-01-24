@@ -4,6 +4,7 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\Category;
 use App\AccessRole;
+use App\AccessRoleCompany;
 use App\AccessRoleProject;
 use App\Contact;
 use App\ContactLocation;
@@ -78,10 +79,22 @@ class EssentialsWorkersAffairsController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
         }
 
         $users = User::whereIn('users.id', $userIds)
@@ -98,6 +111,10 @@ class EssentialsWorkersAffairsController extends Controller
             ->orderBy('users.id', 'desc')
             ->groupBy('users.id');
 
+        if (!empty(request()->input('company')) && request()->input('company') !== 'all') {
+
+            $users =  $users->where('users.company_id', request()->input('company'));
+        }
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
             $users = $users->where('users.assigned_to', request()->input('project_name'));
@@ -121,7 +138,7 @@ class EssentialsWorkersAffairsController extends Controller
 
             $users = $users->where('users.nationality_id', request()->nationality);
         }
-
+        // return $users->where('users.id_proof_number',2222222222)->first()->essentials_admission_to_works;
         if (request()->ajax()) {
 
             return DataTables::of($users)
@@ -216,8 +233,9 @@ class EssentialsWorkersAffairsController extends Controller
                 ->make(true);
         }
 
+        $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
         return view('essentials::employee_affairs.workers_affairs.index')
-            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+            ->with(compact('companies','contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
     private function getDocumentnumber($user, $documentType)
@@ -434,7 +452,7 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
 
-        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker','employee_travle_categorie'])
+        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker', 'employee_travle_categorie'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))
             ->find($id);
