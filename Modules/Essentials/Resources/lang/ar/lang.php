@@ -584,8 +584,10 @@ return [
   'view_doc' => 'عرض الوثيقة',
   'close' => 'إغلاق',
   'crud_travel_categories' => 'إضافة / تعديل / عرض / حذف فئات تذاكر السفر  ',
-  'import_employees' => 'استيراد الموظفين',
-  'crud_import_employee' => 'إضافة / تعديل / عرض / حذف فئات استيراد الموظفين ',
+  'import_employees' => 'عرض استيراد الموظفين',
+  'crud_import_employee' => 'عرض استيراد وتحديث الموظفين',
+  'import_create_employees'=>'استيراد (إضافة) الموظفين ',
+  'import_update_employees'=>'استيراد (تحديث) الموظفين',
   'employee_name' => 'اسم الموظف',
   'employee_name_example' => 'مثال : محمد ',
   'surname' => 'اللقب',
@@ -716,7 +718,7 @@ return [
   'specialization' => 'اسم الاختصاص',
   'add_specialization' => 'إضافة اختصاص',
   'crud_official_documents' => 'إضافة/تعديل/حذف الوثائق الرسمية للموظفين',
-  'crud_import_employee' => ' استيراد الموظفين',
+ 
   'crud_insurance_companies' => 'إضافة/تعديل/حذف شركات التأمين ',
 
   'crud_insurance_contracts' => 'إضافة/تعديل/حذف عقود التأمين ',
@@ -764,7 +766,7 @@ return [
   'close' => 'إغلاق',
 
   'import_employees' => 'استيراد الموظفين',
-  'crud_import_employee' => 'إضافة / تعديل / عرض / حذف فئات استيراد الموظفين ',
+
   'employee_name' => 'اسم الموظف',
   'employee_name_example' => 'مثال : محمد ',
   'surname' => 'اللقب',
@@ -881,7 +883,7 @@ return [
   'specialization' => 'اسم الاختصاص',
   'add_specialization' => 'إضافة اختصاص',
   'crud_official_documents' => 'إضافة/تعديل/حذف الوثائق الرسمية للموظفين',
-  'crud_import_employee' => ' استيراد الموظفين',
+ 
   'crud_insurance_companies' => 'إضافة/تعديل/حذف شركات التأمين ',
 
   'crud_insurance_contracts' => 'إضافة/تعديل/حذف عقود التأمين ',
@@ -1470,7 +1472,7 @@ return [
   'end_admission_activate' => 'انهاء المباشرة',
   'admission_status' => 'حالة المباشرة ',
   'not_found' => 'غير موجود',
-  'user_not_found' => 'الموظف غير موجود',
+  'user_not_found' => 'الموظف غير موجود في السطر رقم  ',
   'company' => 'الشركة',
   'curd_employees' => 'إضافة \تعديل الموظفين',
   'curd_essentials_workers' => 'إضافة \عرض العمال',
@@ -1660,5 +1662,8 @@ return [
   'f_comp_insurance_class_not_found' => 'الشركة المدخلة غير تابعة للمنشاة التابع لها المرافق',
 
   'edit_worker' => 'تعديل عامل',
+  'user_type_is_valid'=>'نمط الموظف غير مسموح أدخل أحد الأنماط التالية : worker , manager ,employee ,user  في السطر رقم  ',
+  'contract_duration_should_be_is_numeric'=>'مدة العقد يجب أن تكون رقم  في السطر',
+  'probation_period_should_be_is_numeric'=>'الفترة التجريبية يجب أن تكون رقم في السطر ',
 
 ];

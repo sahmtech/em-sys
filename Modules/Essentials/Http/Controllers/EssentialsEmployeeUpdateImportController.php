@@ -14,6 +14,7 @@ use App\Contact;
 use App\ContactLocation;
 use App\BusinessLocation;
 use App\Utils\TransactionUtil;
+use Illuminate\Support\Carbon;
 use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\essentialsAllowanceType;
@@ -56,10 +57,10 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
     public function postImportupdateEmployee(Request $request)
     {
-        $can_crud_import_employee = auth()->user()->can('essentials.crud_import_employee');
+        $can_import_update_employees = auth()->user()->can('essentials.import_update_employees');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        if (!($is_admin || $can_crud_import_employee)) {
+        if (!($is_admin || $can_import_update_employees)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
@@ -89,8 +90,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 {
                     $row_no = $key + 1;
                     $emp_array = [];  
-                                            
-                   
 
                     $emp_array['first_name'] = $value[1];                      
                     $emp_array['mid_name'] = $value[2];
@@ -99,7 +98,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                     if(!empty($value[4]))
                     {
-                    $emp_array['user_type'] = $value[4];
+                        $emp_array['user_type'] = $value[4];
+                        $allowedUserTypes = ['worker', 'manager', 'user', 'employee'];
+                
+                        if (!in_array($emp_array['user_type'], $allowedUserTypes)) {
+                            $is_valid = false;
+                            $error_msg = __('essentials::lang.user_type_is_valid' ).$row_no;
+                            break;
+                        }
                     }
                                             
                                         
@@ -168,7 +174,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                    }
                    else{ $emp_array['proof_end_date'] = null;}
                    
-                   $emp_array['passport_numbrer'] = $value[18];
+                   $emp_array['passport_number'] = $value[18];
                   
                    if (!empty($value[19]))
                    {
@@ -258,28 +264,29 @@ class EssentialsEmployeeUpdateImportController extends Controller
                       $emp_array['essentials_department_id'] = null;
                   }
 
-                  
-                  $emp_array['addmission_date']=$value[29];
+                  $emp_array['admission_date']=$value[29];
                   if (!empty($value[29]))
                    {
-                      if (is_numeric($value[29]))
-                      {
-                      
-                          $excelDateValue = (float)$value[29];
-                          $unixTimestamp = ($excelDateValue - 25569) * 86400; 
-                          $date = date('Y-m-d', $unixTimestamp);
-                          $emp_array['addmission_date'] = $date;
-                      
-                      } else
-                       {
-                      
-                          $date = DateTime::createFromFormat('d/m/Y', $value[29]);
-                          if ($date) {
-                              $dob = $date->format('Y-m-d');
-                              $emp_array['addmission_date'] = $dob;
-                          }
-                       }
-                     }
+                        if (is_numeric($value[29])) 
+                        {
+                        
+                            $excelDateValue = (float)$value[29];
+                            $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                            $date = date('Y-m-d', $unixTimestamp);
+                            $emp_array['admission_date'] = $date;
+                        
+                        } else
+                            {
+                        
+                            $date = DateTime::createFromFormat('d/m/Y', $value[29]);
+                            if ($date)
+                                {
+                                $dob = $date->format('Y-m-d');
+                                $emp_array['admission_date'] = $dob;
+                                }
+                            }
+
+                    }
 
                      
                   
@@ -320,11 +327,11 @@ class EssentialsEmployeeUpdateImportController extends Controller
                          $emp_array['nationality_id'] = null;
                      }
 
-                    if (!empty($value[34])) 
-                    {
-                        $emp_array['contract_number'] = $value[34];
-                    } 
-                    else{$emp_array['contract_number'] = null;}
+                    // if (!empty($value[34])) 
+                    // {
+                    //     $emp_array['contract_number'] = $value[34];
+                    // } 
+                    // else{$emp_array['contract_number'] = null;}
 
                     if (!empty($value[35]))
                     {
@@ -375,18 +382,30 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         if (!empty($value[37]))
                         {
                             $emp_array['contract_duration'] = $value[37];
+                            if(!is_numeric( $emp_array['contract_duration']))
+                            {
+                                $is_valid = false;
+                                $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no;
+                                break;
+                            }
                         } 
                         else{$emp_array['contract_duration'] = null;}
+            
 
 
-
-                        if (!empty($value[38]))
+                        if (!empty($value[38])) 
                         {
                             $emp_array['probation_period'] = $value[38];
+                            if(!is_numeric( $emp_array['probation_period']))
+                            {
+                                $is_valid = false;
+                                $error_msg =  __('essentials::lang.probation_period_should_be_is_numeric') .$row_no;
+                                break;
+                            }
                         } 
                         else{  $emp_array['probation_period'] = null;}
-                            
-                        
+                          
+            
 
 
                         if (!empty($value[39]))
@@ -476,12 +495,13 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $emp_data['business_id'] = $emp_data['business_id'];
                         $emp_data['created_by'] = $user_id;
                         $emp_data['contract_type_id'] = null;
+                        $emp_data['essentials_pay_period'] = 'month';
                 
                   
                         $existingEmployee = User::where('id_proof_number',$emp_data['id_proof_number'])
                         ->first();
 
-                        //dd( $existingEmployee);
+                        
                    
                         if ($existingEmployee)
                         {
@@ -524,7 +544,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                     $existingEmployee->$field = $emp_data[$field];
                                 }
 
-                              }
+                            }
                         
                             $existingEmployee->save();
                            
@@ -576,7 +596,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             $passportData = 
                             [
                                 'status' => 'valid',
-                                'number' => $emp_data['passport_numbrer'],
+                                'number' => $emp_data['passport_number'],
                                 'expiration_date' => $emp_data['passport_end_date'],
                             ];
 
@@ -594,12 +614,24 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 );
                             }
 
-
+                            $contract_end_date=null;
+                            if($emp_data['contract_end_date'] !=null)
+                            {
+                                $contract_end_date= $emp_data['contract_end_date'];
+                            }
+                            else if( $emp_data['contract_end_date'] == null && $emp_data['contract_start_date'] !=null)
+                            {
+                                $contract_start_date =$emp_data['contract_start_date']; 
+                                $date = Carbon::parse($contract_start_date);
+                                $date->addYear(); 
+                                $contract_end_date = $date;
+    
+                            }
                             $contractData =
                             [
                                 'contract_number' => $emp_data['contract_number'],
                                 'contract_start_date' => $emp_data['contract_start_date'],
-                                'contract_end_date' => $emp_data['contract_end_date'],
+                                'contract_end_date' => $contract_end_date,
                                 'is_renewable' => $emp_data['is_renewable'],
                                 'contract_duration' => $emp_data['contract_duration'],
                                 'probation_period' => $emp_data['probation_period'],
@@ -621,16 +653,64 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 );
                             }
 
+                            $appointmentData=[];
 
-                            $appointmentData =
-                            [
-                                'department_id' => $emp_data['essentials_department_id'],
-                                'business_location_id' => $emp_data['location_id'],
-                                'profession_id' => $emp_data['profession_id'],
-                               
-                            ];
-
-
+                             if( $emp_data['user_type'] == null)
+                             {
+                                if( $existingEmployee->user_type == 'worker')
+                                {
+                                    $appointmentData =
+                                    [
+                                        'department_id' => null,
+                                        'business_location_id' => $emp_data['location_id'],
+                                        'profession_id' => $emp_data['profession_id'],
+                                        'is_active' => 1,
+                                       
+                                    ];
+                                }
+                                
+                           
+                             else
+                                {
+                                    $appointmentData =
+                                    [
+                                        'department_id' => $emp_data['essentials_department_id'],
+                                        'business_location_id' => $emp_data['location_id'],
+                                        'profession_id' => $emp_data['profession_id'],
+                                        'is_active' => 1,
+                                    
+                                    ];
+                                }
+                             }
+                             else
+                             {
+                                if( $emp_data['user_type']  == 'worker')
+                                {
+                                    $appointmentData =
+                                    [
+                                        'department_id' => null,
+                                        'business_location_id' => $emp_data['location_id'],
+                                        'profession_id' => $emp_data['profession_id'],
+                                        'is_active' => 1,
+                                       
+                                    ];
+                                }
+                                
+                           
+                             else
+                                {
+                                    $appointmentData =
+                                    [
+                                        'department_id' => $emp_data['essentials_department_id'],
+                                        'business_location_id' => $emp_data['location_id'],
+                                        'profession_id' => $emp_data['profession_id'],
+                                        'is_active' => 1,
+                                    
+                                    ];
+                                }
+                             }
+                            
+                           
                             $filteredAppointmentData = array_filter($appointmentData, function ($value) {
                                 return $value !== null;
                             });
@@ -647,9 +727,10 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                             $admissionData =
                             [
-                                'admissions_date' => $emp_data['addmission_date'],
+                                'admissions_date' => $emp_data['admission_date'],
                                 'admissions_type' => 'first_time',
                                 'admissions_status' => 'on_date',
+                                'is_active' => 1,
                             ];
 
 
@@ -701,12 +782,12 @@ class EssentialsEmployeeUpdateImportController extends Controller
             $output = ['success' => 0,'msg' => $e->getMessage(), ];
 
             return redirect()->route('import-employees')
-            ->with('notification', $output);
+            ->with( $output);
         }
        
 
         return redirect()->action([\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])
-        ->with('notification', 'success insert');
+        ->with( $output);
     }
 
   

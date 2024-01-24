@@ -1241,14 +1241,27 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_missing_employees_info'),
                         'default' => false,
                     ],
-
+                    //import employees permissions------------------
                     [
                         'value' => 'essentials.crud_import_employee',
                         'label' => __('essentials::lang.crud_import_employee'),
                         'default' => false,
                     ],
 
+                    [
+                        'value' => 'essentials.import_create_employees',
+                        'label' => __('essentials::lang.import_create_employees'),
+                        'default' => false,
+                    ],
 
+
+                    [
+                        'value' => 'essentials.import_update_employees',
+                        'label' => __('essentials::lang.import_update_employees'),
+                        'default' => false,
+                    ],
+
+                    //----------------------------------
                     [
                         'value' => 'essentials.crud_employee_appointments',
                         'label' => __('essentials::lang.crud_employee_appointments'),
