@@ -21,6 +21,9 @@ return [
     'delete_depatments' => 'حذف ادارات واقسام',
     'edit_depatments' => 'تعديل ادارات واقسام',
     'show_depatments' => 'عرض ادارات واقسام',
-    'add_deputy'=>'إضافة نائب'
+    'add_deputy'=>'إضافة نائب',
+    'delete_procedure' => 'حذف إجراءات سير العمل',
+    'edit_procedure' => 'تعديل إجراءات سير العمل',
+
 
 ];

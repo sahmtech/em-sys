@@ -72,7 +72,7 @@
 
                     <div class="modal-body">
                         <div>
-                            <div id="procedureSteps" class="row">
+                            <div class="row stepsClass">
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('type', __('essentials::lang.procedure_type') . ':*') !!}
@@ -90,6 +90,137 @@
                                     ) !!}
                                 </div>
                                 <div class="clearfix"></div>
+
+
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('add_modal_department_id_start', __('essentials::lang.managment') . ':*') !!}
+                                    {!! Form::select('add_modal_department_id_start[]', $departments, null, [
+                                        'class' => 'form-control select2',
+                                        'id' => 'add_modal_department_id_start',
+                                        'required',
+                                        'placeholder' => __('essentials::lang.selectDepartment'),
+                                        'multiple' => 'multiple',
+                                        'style' => 'height:40px',
+                                    ]) !!}
+                                </div>
+                                <div id="workflow-step_add_modal">
+
+                                    <div class="form-group col-md-12 entire_step" id="step_0" style="display:none">
+                                        <div class="form-group col-md-6">
+                                            {!! Form::label('add_modal_department_id_steps', __('essentials::lang.managment') . ':*') !!}
+                                            {!! Form::select('add_modal_department_id_steps[]', $departments, null, [
+                                                'class' => 'form-control departments pull-right',
+                                                'required',
+                                                'placeholder' => __('essentials::lang.selectDepartment'),
+                                                'style' => 'height:40px',
+                                            ]) !!}
+                                        </div>
+
+                                        <div class="clearfix"></div>
+                                        <div class="form-group col-md-4">
+                                            <div class="checkbox">
+                                                <label>
+
+                                                    {!! Form::checkbox('add_modal_can_reject_steps[]', 1, null, []) !!}{{ __('essentials::lang.can_reject') }}
+
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <div class="checkbox">
+                                                <label>
+
+                                                    {!! Form::checkbox('add_modal_can_return_steps[]', 1, null, []) !!}{{ __('essentials::lang.can_return') }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <button type="button"id="add_modal_remove_step_btn_0"
+                                                class="btn btn-danger btn-sm add_modal_remove_step_btn">
+                                                @lang('essentials::lang.remove_department')
+                                            </button>
+                                        </div>
+
+                                        <div class="clearfix"></div>
+
+                                        <div class="form-group col-md-2">
+                                            <button type="button"
+                                                class="btn btn-sm btn-success add_modal_add_escalation_steps_btn">
+                                                @lang('essentials::lang.add_escalation')
+                                            </button>
+                                        </div>
+
+                                        <div class="escalations-container col-md-12">
+                                            <div class="escalation-field-template col-md-12">
+                                                <div class="form-group col-md-4">
+                                                    {!! Form::label('add_modal_escalates_to_steps', __('essentials::lang.escalates_to') . ':') !!}
+                                                    {!! Form::select('add_modal_escalates_to_steps[]', $escalates_departments, null, [
+                                                        'class' => 'form-control push',
+                                                        'placeholder' => __('essentials::lang.escalates_to'),
+                                                        'style' => 'height:40px',
+                                                    ]) !!}
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    {!! Form::label(
+                                                        'add_modal_escalates_after_steps',
+                                                        __('essentials::lang.escalates_after') . ' (' . __('essentials::lang.in_hours') . ')' . ':',
+                                                    ) !!}
+
+                                                    <div class="input-group">
+                                                        {!! Form::number('add_modal_escalates_after_steps[]', null, [
+                                                            'class' => 'form-control',
+                                                        
+                                                            'placeholder' => __('essentials::lang.escalates_after'),
+                                                            'style' => 'height:40px',
+                                                        ]) !!}
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-danger add_modal_remove_escalation_steps_btn">
+                                                        @lang('essentials::lang.remove_escalation')
+                                                    </button>
+                                                </div>
+                                                {{-- <div class="additional-escalations col-md-12"></div> --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <div>
+                                <button type="button"class="btn btn-sm btn-warning my-button addStep"
+                                    id="add_modal_add_step">
+                                    @lang('essentials::lang.add_managment')
+                                </button>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                                <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">@lang('messages.close')</button>
+                            </div>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editProceduresModal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog custom-modal-dialog style ">
+                <div class="modal-content">
+                    {!! Form::open(['route' => 'storeProcedure']) !!}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.edit_procedure')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div>
+                            <div class="row stepsClass">
                                 <div class="workflow-step">
 
                                     <div class="form-group col-md-6">
@@ -162,13 +293,12 @@
                                                 </div>
 
                                                 <div class="form-group col-md-4 ">
-                                                   
-                                                        <button type="button"
-                                                            class="btn btn-sm btn-success add-escalation">
-                                                            @lang('essentials::lang.add_escalation')
-                                                        </button>
-                                              
-                                                    
+
+                                                    <button type="button" class="btn btn-sm btn-success add-escalation">
+                                                        @lang('essentials::lang.add_escalation')
+                                                    </button>
+
+
                                                 </div>
 
 
@@ -182,12 +312,12 @@
 
 
                                 </div>
-                               <br>
-                              
+                                <br>
+
                             </div>
                             <div>
-                                <button type="button" class="btn btn-sm btn-warning my-button"
-                                    id="addStep">@lang('essentials::lang.add_managment')</button>
+                                <button type="button"
+                                    class="btn btn-sm btn-warning my-button addStep">@lang('essentials::lang.add_managment')</button>
                             </div>
 
                             <div class="modal-footer">
@@ -201,6 +331,7 @@
                 </div>
             </div>
         </div>
+
     </section>
     <!-- /.content -->
 
@@ -211,6 +342,7 @@
     <script>
         $(document).ready(function() {
             $('#addProceduresModal').on('shown.bs.modal', function(e) {
+
                 $('#type_select').select2({
                     dropdownParent: $(
                         '#addProceduresModal'),
@@ -292,7 +424,7 @@
             $(document).on('click', 'button.delete_procedure_button', function() {
                 swal({
                     title: LANG.sure,
-                    text: LANG.confirm_delete_city,
+                    text: LANG.confirm_delete_procedure,
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
@@ -315,13 +447,242 @@
                     }
                 });
             });
+            /////////////////////////////start////////////////////////////////////////////////////////////////////////
+            let add_modal_steps_count = 0;
+
+            $(document).on("click", ".add_modal_remove_step_btn", function() {
+                // Find the closest entire_step div and remove it
+                var stepDiv = $(this).closest('.entire_step');
+
+                // Check if there's more than one step before removing
+                stepDiv.remove();
+                // Optional: Alert the user or handle the case where the last step cannot be removed
+            });
+            $(document).on("click", ".add_modal_add_escalation_steps_btn", function() {
+                var clone = $(this).closest('.entire_step').find('.escalation-field-template').first()
+                    .clone();
+
+                clone.find('input').val('');
+                clone.find('select').val('');
+
+                $(this).closest('.entire_step').find('.escalations-container').append(clone);
+            });
+
+            $(document).on("click", ".add_modal_remove_escalation_steps_btn", function() {
+                var entireStep = $(this).closest('.entire_step');
+
+                var numberOfTemplates = entireStep.find('.escalation-field-template').length;
+
+                if (numberOfTemplates > 1) {
+                    $(this).closest('.escalation-field-template').remove();
+                }
+            });
+
+            $(document).on("click", "#add_modal_add_step", function() {
+
+                var stepZero = $("#step_0");
+                stepZero.find('.escalation-field-template').not(':first').remove();
+                var newStep = stepZero.clone();
+                add_modal_steps_count++;
+
+                newStep.attr('id', 'step_' + add_modal_steps_count);
+
+                newStep.css('display', 'block');
+
+                $("#workflow-step_add_modal").append(newStep);
+                newStep.find('.departments').select2({
+                    dropdownParent: $(
+                        '#addProceduresModal'),
+                    width: '100%',
+                });
+                // Reinitialize components if needed (e.g., select2)
 
 
-            $("#addStep").on("click", function() {
+            });
+            ///////////////////////////////end/////////////////////////////////////////////////////////////
 
-                let newStepIndex = $("#procedureSteps .workflow-step").length;
 
 
+            $(".addSasdsatep").on("click", function() {
+                let newStepIndex = $(" #workflow-step_add_modal").length;
+                let newStep = $("#workflow-step_add_modal:last").clone(false);
+                newStep.find('.hidden-step-details').removeClass('hidden-step-details');
+                newStep.find('input, select').each(function() {
+
+                    if ($(this).is(':text')) {
+                        $(this).val('');
+                    }
+
+                    if ($(this).is(':radio')) {
+                        $(this).prop('checked', false);
+                    }
+                    if ($(this).is('input[type="number"]')) {
+                        $(this).val('');
+                    }
+                    if ($(this).is('select')) {
+
+                        if ($(this).data('select2')) {
+                            $(this).select2('destroy');
+                        }
+
+                        $(this).next('.select2-container').remove();
+
+                        $(this).val('');
+
+                        $(this).removeAttr('multiple');
+                    }
+
+                    let name = $(this).attr("name");
+
+                    if (name) {
+                        let newName = name.replace(/\[\d+\]/, `[${newStepIndex}]`);
+                        $(this).attr("name", newName).attr('id', newName);
+                    }
+                    let newAdditionalEscalationsContainer = newStep.find('.additional-escalations');
+                    newAdditionalEscalationsContainer.empty();
+                });
+
+                newStep.find('.add-escalation').show();
+                newStep.find('.remove-step').remove();
+                newStep.append(
+                    '<div class="col-md-12"><button type="button" class="btn btn-danger btn-sm remove-step">@lang('essentials::lang.remove_department')</button></div>'
+                );
+
+                $(".stepsClass").append(newStep);
+
+                newStep.find('.remove-step').on("click", function() {
+
+                    $(this).closest('.workflow-step').remove();
+                });
+                newStep.find('.select2').select2({
+                    width: '100%'
+                });
+
+                if (newStepIndex === 0) {
+                    $('.stepsClass .workflow-step:first .select2').select2({
+                        multiple: true,
+                        width: '100%'
+                    });
+                }
+
+
+            });
+
+
+            $(document).on('click', '.add-escalation', function() {
+
+                let escalationRow = $(this).closest('.escalations-container').find(
+                    '.escalation-field-template').first().clone();
+                escalationRow.find('input, select').val('');
+                escalationRow.append(
+                    '<div class="col-md-12"><button type="button" class="btn btn-sm btn-danger remove-escalation">@lang('essentials::lang.remove_escalation')</button></div>'
+                );
+                $(this).closest('.escalations-container').find('.additional-escalations').append(
+                    escalationRow);
+                escalationRow.find('.add-escalation').remove();
+                $(this).closest('.add-escalation').hide();
+            });
+
+
+            $(document).on('click', '.remove-escalation', function() {
+                var $container = $(this).closest('.escalations-container');
+                $(this).closest('.escalation-field-template').remove();
+
+
+                if ($container.find('.additional-escalations').children().length === 0) {
+
+                    $container.find('.add-escalation').show();
+                }
+            });
+
+            $('.stepsClass').on('click', '.remove-step', function() {
+                $(this).closest('.workflow-step').remove();
+            });
+
+            $(document).on('click', '.edit-procedure', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var procedure_id = $(this).data('id');
+
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        var procedures = typeof response.procedures === 'string' ? JSON.parse(
+                            response.procedures) : response.procedures;
+                        var startingDepartments = procedures.filter(function(procedure) {
+                            return procedure.start === 1;
+                        }).map(function(procedure) {
+                            return procedure.department_id;
+                        });
+                        if (procedures.length > 0) {
+
+                            $('select[name^="steps["]').val([]).trigger('change');
+                            $('input[name^="steps["]').prop('checked', false);
+
+
+                            var startingDepartments = procedures.filter(function(procedure) {
+                                return procedure.start === 1;
+                            }).map(function(procedure) {
+                                return procedure.department_id;
+                            });
+
+                            $('select[name="steps[0][department_id][]"]').attr('multiple',
+                                'multiple').val(startingDepartments).trigger('change');
+
+                            procedures.forEach(function(procedure, index) {
+                                if (procedure.start !== 1) {
+                                    var newStep = addNewStep();
+                                    var stepIndex = index;
+                                    console.log(procedure);
+
+                                    newStep.find('select[name^="steps["]').val(procedure
+                                        .department_id).trigger('change');
+                                    console.log(procedure.can_reject);
+                                    var canReject = procedure.can_reject;
+
+                                    if (canReject == 1) {
+                                        console.log(canReject);
+                                        $('input[name="steps[' + index +
+                                                '][can_reject]"]').prop('checked', true)
+                                            .trigger('change');
+                                    } else {
+                                        $('input[name="steps[' + index +
+                                            '][can_reject]"]').prop('checked',
+                                            false).trigger('change');
+                                    }
+
+                                    var canReturn = procedure.can_return;
+                                    if (canReturn == 1) {
+                                        console.log(canReturn);
+                                        $('input[name="steps[' + index +
+                                                '][can_return]"]').prop('checked', true)
+                                            .trigger('change');
+                                    } else {
+                                        $('input[name="steps[' + index +
+                                            '][can_return]"]').prop('checked',
+                                            false).trigger('change');
+                                    }
+
+
+                                }
+                            });
+
+                            $('#editProceduresModal').modal('show');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error in AJAX request:", error);
+                    }
+                });
+
+            });
+
+            function addNewStep() {
+
+
+                let newStepIndex = $(".stepsClass .workflow-step").length;
                 let newStep = $(".workflow-step:last").clone(false);
                 newStep.find('.hidden-step-details').removeClass('hidden-step-details');
                 newStep.find('input, select').each(function() {
@@ -358,15 +719,15 @@
                     let newAdditionalEscalationsContainer = newStep.find('.additional-escalations');
                     newAdditionalEscalationsContainer.empty();
                 });
-               
+
                 newStep.find('.add-escalation').show();
                 newStep.find('.remove-step').remove();
                 newStep.append(
                     '<div class="col-md-12"><button type="button" class="btn btn-danger btn-sm remove-step">@lang('essentials::lang.remove_department')</button></div>'
                 );
-               
-                $("#procedureSteps").append(newStep);
-               
+
+                $(".stepsClass").append(newStep);
+
                 newStep.find('.remove-step').on("click", function() {
 
                     $(this).closest('.workflow-step').remove();
@@ -376,45 +737,15 @@
                 });
 
                 if (newStepIndex === 0) {
-                    $('#procedureSteps .workflow-step:first .select2').select2({
+                    $('.stepsClass .workflow-step:first .select2').select2({
                         multiple: true,
                         width: '100%'
                     });
                 }
+                return newStep;
+            }
 
 
-            });
-
-
-            $(document).on('click', '.add-escalation', function() {
-
-                let escalationRow = $(this).closest('.escalations-container').find(
-                    '.escalation-field-template').first().clone();
-                escalationRow.find('input, select').val('');
-                escalationRow.append(
-                    '<div class="col-md-12"><button type="button" class="btn btn-sm btn-danger remove-escalation">@lang('essentials::lang.remove_escalation')</button></div>'
-                );
-                $(this).closest('.escalations-container').find('.additional-escalations').append(
-                    escalationRow);
-                escalationRow.find('.add-escalation').remove();
-                $(this).closest('.add-escalation').hide();
-            });
-
-
-            $(document).on('click', '.remove-escalation', function() {
-                var $container = $(this).closest('.escalations-container');
-                $(this).closest('.escalation-field-template').remove();
-
-
-                if ($container.find('.additional-escalations').children().length === 0) {
-
-                    $container.find('.add-escalation').show();
-                }
-            });
-
-            $('#procedureSteps').on('click', '.remove-step', function() {
-                $(this).closest('.workflow-step').remove();
-            });
 
         });
     </script>
