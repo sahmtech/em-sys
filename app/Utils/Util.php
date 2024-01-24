@@ -1602,7 +1602,7 @@ class Util
      */
     public function createUser($request)
     {
-
+    
         $user_details = $request->only([
             'surname', 'first_name', 'last_name', 'email', 'mid_name',
             'profile_picture', 'profession', 'specialization',
@@ -1611,7 +1611,7 @@ class Util
             'cmmsn_percent', 'max_sales_discount_percent', 'dob',
             'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
-            'custom_field_2', 'custom_field_3', 'eqama_end_date',
+            'custom_field_2', 'custom_field_3', 'eqama_end_date','company_id',
             'custom_field_4', 'guardian_name', 'assigned_to',
             'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no', 'expiration_date',
             'current_address', 'bank_details', 'selected_contacts', 'emp_number', 'total_salary'
@@ -1647,6 +1647,10 @@ class Util
         $business_id = Auth::user()->business_id;
         $user_details['business_id'] = $business_id;
         $user_details['nationality_id'] = $request->input('nationality');
+        $user_details['company_id'] = $request->input('company_id');
+   
+
+
 
 
         //Check if subscribed or not, then check for users quota
@@ -1682,7 +1686,7 @@ class Util
         $user_details['bank_details'] = !empty($user_details['bank_details']) ? json_encode($user_details['bank_details']) : null;
 
         $user_details['password'] = $user_details['allow_login'] ? Hash::make($user_details['password']) : null;
-
+        $user_details['essentials_pay_period'] = $request->essentials_pay_period ?? 'month';
         if ($user_details['allow_login']) {
             if (empty($user_details['username'])) {
                 $ref_count = $this->setAndGetReferenceCount('username', $business_id);
@@ -1739,24 +1743,7 @@ class Util
             $role = Role::where('name', 'User#' . $business_id)->first();
         }
 
-        // //Remove Location permissions from role
-        // $this->revokeLocationPermissionsFromRole($role);
-
-        // {"_token":"E9u4vfdXl3uLr42OhSZidjpMt3Wdkdt6RUBO7SS7","surname":"rrr",
-        //     "first_name":"rrr","last_name":"rrr","email":"rr@gmail.com","password":"1234",
-        //     "confirm_password":"1234","is_active":"active","username":"rr",
-        //     "allow_login":"1","role":"1","access_all_locations":"access_all_locations"}
-
-
-        // //Grant Location permissions
-        // $this->giveLocationPermissions($user, $request);
-
-        // //Assign selected contacts
-        // if ($user_details['selected_contacts'] == 1) {
-        //     $contact_ids = $request->get('selected_contact_ids');
-        //     $user->contactAccess()->sync($contact_ids);
-        // }
-
+  
         $moduleUtil = new \App\Utils\ModuleUtil;
         $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user, 'request' => $user_details]);
         $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);

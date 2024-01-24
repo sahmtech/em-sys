@@ -27,6 +27,7 @@ use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -42,9 +43,7 @@ use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
-
-
-
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -231,6 +230,7 @@ class EssentialsManageEmployeeController extends Controller
                     $professionId = $appointments[$row->id] ?? '';
 
                     $professionName = $job_titles[$professionId] ?? '';
+                 
 
                     return $professionName;
                 })
@@ -934,6 +934,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -949,18 +950,19 @@ class EssentialsManageEmployeeController extends Controller
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
 
-            $com_id = request()->input('essentials_department_id');
-            $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
-                ->first();
+            $com_id = request()->input('company_id');
+            error_log($com_id);
+            // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
+            //     ->first();
 
-            if ($latestRecord) {
-                $latestRefNo = $latestRecord->emp_number;
-                $latestRefNo++;
-                $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-            } else {
+            // if ($latestRecord) {
+            //     $latestRefNo = $latestRecord->emp_number;
+            //     $latestRefNo++;
+            //     $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+            // } else {
 
-                $request['emp_number'] =  $business_id . '000';
-            }
+            //     $request['emp_number'] =  $com_id . '001';
+            // }
 
 
 
@@ -973,8 +975,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $user = $this->moduleUtil->createUser($request);
 
-            event(new UserCreatedOrModified($user, 'added'));
-
+            $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
             $output = [
                 'success' => 1,
                 'msg' => __('user.user_added'),
@@ -1217,6 +1218,13 @@ class EssentialsManageEmployeeController extends Controller
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->select('*')->get();
 
+        $allowance_deduction_ids = [];
+        if (!empty($user)) {
+            $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::with('essentialsAllowanceAndDeduction')
+                ->where('user_id', $user->id)
+                ->get();
+        }
+   
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
@@ -1261,7 +1269,7 @@ class EssentialsManageEmployeeController extends Controller
                 'username_ext',
                 'contract_types',
                 'nationalities',
-
+                'allowance_deduction_ids',
                 'professions'
             ));
     }
@@ -1274,6 +1282,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
+    
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1331,7 +1340,7 @@ class EssentialsManageEmployeeController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-
+           
             DB::beginTransaction();
             if ($user_data['allow_login'] && $request->has('username')) {
                 $user_data['username'] = $request->input('username');

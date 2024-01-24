@@ -10,8 +10,8 @@
                 <h3>@lang('essentials::lang.view_employee')</h3>
             </div>
             <!-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
-                    {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
-                </div> -->
+                                {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
+                            </div> -->
         </div>
 
         <div class="row">
@@ -27,8 +27,8 @@
                             }
                         @endphp
 
-                        <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
-                            alt="User profile picture">
+                        <img class="profile-user-img img-responsive img-circle" src="{{ $img_src}}"
+                            alt="@lang('essentials::lang.profile_picture')">
 
                         <h3 class="profile-username text-center">
                             {{ $user->full_name }}
@@ -39,14 +39,7 @@
                         </p>
 
                         <ul class="list-group list-group-unbordered">
-                            {{-- <li class="list-group-item">
-                                <b>@lang( 'business.username' )</b>
-                                <a class="pull-right">{{$user->username}}</a>
-                            </li>
-                            <li class="list-group-item">
-                                <b>@lang( 'business.email' )</b>
-                                <a class="pull-right">{{$user->email}}</a>
-                            </li> --}}
+                         
                             <li class="list-group-item">
                                 <b>{{ __('lang_v1.status_for_user') }}</b>
                                 @if ($user->status == 'active')
@@ -78,10 +71,10 @@
 
                 <!-- Profile Image -->
                 <div class="box box-primary">
-                    <div class="box-body box-profile" style=" pointer-events: none; opacity: 0.5;">
+                    <div class="box-body box-profile">
                         <h3>@lang('essentials::lang.is_profile_complete')</h3>
 
-                        <div>
+                        <div style=" pointer-events: none; opacity: 0.5;">
 
                             <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
@@ -167,7 +160,171 @@
 
                                 </div>
                             </div>
-                            @include('user.show_details')
+                            @php
+                                $custom_labels = json_decode(session('business.custom_labels'), true);
+                            @endphp
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-12">
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.admission_date'):</strong>
+                                            @if (!empty($admissions_to_work->admissions_date))
+                                                {{ @format_date($admissions_to_work->admissions_date) }}
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.dob'):</strong>
+                                            @if (!empty($user->dob))
+                                                {{ @format_date($user->dob) }}
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.nationality'):</strong>
+                                            {{ !empty($nationality) ? json_decode($nationality, true)['nationality'] : '' }}
+                                        </p>
+
+
+                                        <p><strong>@lang('lang_v1.gender'):</strong>
+                                            @if (!empty($user->gender))
+                                                @lang('lang_v1.' . $user->gender)
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.marital_status'):</strong>
+                                            @if (!empty($user->marital_status))
+                                                @lang('lang_v1.' . $user->marital_status)
+                                            @endif
+                                        </p>
+                                        <p><strong>@lang('lang_v1.blood_group'):</strong> {{ $user->blood_group ?? '' }}</p>
+                                        <p><strong>@lang('lang_v1.mobile_number'):</strong> {{ $user->contact_number ?? '' }}</p>
+
+                                    </div>
+                                    {{-- <div class="col-md-4">
+			<p><strong>@lang( 'lang_v1.fb_link' ):</strong> {{$user->fb_link ?? ''}}</p>
+			<p><strong>@lang( 'lang_v1.twitter_link' ):</strong> {{$user->twitter_link ?? ''}}</p>
+			<p><strong>@lang( 'lang_v1.social_media', ['number' => 1] ):</strong> {{$user->social_media_1 ?? ''}}</p>
+			<p><strong>@lang( 'lang_v1.social_media', ['number' => 2] ):</strong> {{$user->social_media_2 ?? ''}}</p>
+		</div> --}}
+                                    {{-- <div class="col-md-4">
+			<p><strong>{{ $custom_labels['user']['custom_field_1'] ?? __('lang_v1.user_custom_field1' )}}:</strong> {{$user->custom_field_1 ?? ''}}</p>
+			<p><strong>{{ $custom_labels['user']['custom_field_2'] ?? __('lang_v1.user_custom_field2' )}}:</strong> {{$user->custom_field_2 ?? ''}}</p>
+			<p><strong>{{ $custom_labels['user']['custom_field_3'] ?? __('lang_v1.user_custom_field3' )}}:</strong> {{$user->custom_field_3 ?? ''}}</p>
+			<p><strong>{{ $custom_labels['user']['custom_field_4'] ?? __('lang_v1.user_custom_field4' )}}:</strong> {{$user->custom_field_4 ?? ''}}</p>
+		</div> --}}
+
+
+                                    <div class="clearfix"></div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.id_proof_name'):</strong>
+                                            @if ($user->id_proof_name === null)
+                                                {{ '' }}
+                                            @elseif ($user->id_proof_name === 'eqama')
+                                                @lang('essentials::lang.' . $user->id_proof_name)
+                                            @elseif ($user->id_proof_name === 'national_id' || $user->id_proof_name === 'هوية وطنية')
+                                                @lang('essentials::lang.' . $user->id_proof_name)
+                                            @elseif ($user->id_proof_name === 'هوية وطنية')
+                                                @lang($user->id_proof_name)
+                                            @endif
+                                        </p>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.id_proof_number'):</strong>
+                                            {{ $user->id_proof_number ?? '' }}</p>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <hr>
+
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.company'):</strong>
+                                            {{ $user->company?->name ?? '' }}</p>
+                                    </div>
+
+                                    {{-- <div class="col-md-4">
+                                        <p><strong>@lang('followup::lang.project'):</strong>
+                                            {{ $user->assignedTo?->name ?? '' }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        @if ($user->assignedTo === null)
+                                            <p><strong>@lang('essentials::lang.city'):</strong>
+                                                {{ '' }}</p>
+                                        @else
+                                            <p><strong>@lang('essentials::lang.city'):</strong>
+                                                {{ json_decode($user->assignedTo?->project_city?->name)->ar ?? '' }}</p>
+                                        @endif
+
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('followup::lang.customer_name'):</strong>
+                                            {{ $user->assignedTo?->contact?->supplier_business_name ?? '' }}</p>
+                                    </div> --}}
+                                    @if ($user->booking)
+                                        <div class="clearfix"></div>
+                                        <hr>
+                                        <div class="col-md-12">
+                                            <h4>@lang('followup::lang.booking_details'):</h4>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('followup::lang.project'):</strong>
+                                                {{ $user->booking->saleProject?->name ?? '' }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('housingmovements::lang.booking_start_Date'):</strong>
+                                                {{ $user->booking->booking_start_Date ?? '' }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('housingmovements::lang.booking_end_Date'):</strong>
+                                                {{ $user->booking->booking_end_Date ?? '' }}</p>
+                                        </div>
+                                    @endif
+
+                                    <div class="clearfix"></div>
+                                    <hr>
+                                    <div class="col-md-6">
+                                        <p> <strong>@lang('lang_v1.permanent_address'):</strong>
+                                            {{ $user->permanent_address ?? '' }}</p>
+                                    </div>
+                                    {{-- <div class="col-md-6">
+                                        <strong>@lang('lang_v1.current_address'):</strong><br>
+                                        <p>{{ $user->current_address ?? '' }}</p>
+                                    </div> --}}
+
+                                    <div class="clearfix"></div>
+                                    <hr>
+
+                                    <div class="col-md-12">
+                                        <h4>@lang('lang_v1.bank_details'):</h4>
+                                    </div>
+                                    @php
+                                        $bank_details = !empty($user->bank_details) ? json_decode($user->bank_details, true) : [];
+                                    @endphp
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.account_holder_name'):</strong>
+                                            {{ $bank_details['account_holder_name'] ?? '' }}</p>
+                                        <p><strong>@lang('lang_v1.account_number'):</strong> {{ $bank_details['account_number'] ?? '' }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('lang_v1.bank_name'):</strong> {{ $bank_name ?? '' }}</p>
+                                        <p><strong>@lang('lang_v1.bank_code'):</strong> {{ $bank_details['bank_code'] ?? '' }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+
+                                        <p><strong>@lang('lang_v1.branch'):</strong> {{ $bank_details['branch'] ?? '' }}</p>
+                                        <p><strong>@lang('lang_v1.tax_payer_id'):</strong> {{ $bank_details['tax_payer_id'] ?? '' }}
+                                        </p>
+                                    </div>
+
+                                    @if (!empty($view_partials))
+                                        @foreach ($view_partials as $partial)
+                                            {!! $partial !!}
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </div>
+
 
 
                         </div>

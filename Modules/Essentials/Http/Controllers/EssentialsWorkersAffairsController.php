@@ -368,21 +368,7 @@ class EssentialsWorkersAffairsController extends Controller
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-
-
-            $com_id = request()->input('essentials_department_id');
-            $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
-                ->first();
-
-            if ($latestRecord) {
-                $latestRefNo = $latestRecord->emp_number;
-                $latestRefNo++;
-                $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-            } else {
-
-                $request['emp_number'] =  $business_id . '000';
-            }
-
+            $request['user_type'] ='worker';
 
 
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
@@ -393,8 +379,8 @@ class EssentialsWorkersAffairsController extends Controller
             }
 
             $user = $this->moduleUtil->createUser($request);
+            $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
 
-            event(new UserCreatedOrModified($user, 'added'));
 
             $output = [
                 'success' => 1,
