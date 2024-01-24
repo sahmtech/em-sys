@@ -188,8 +188,6 @@ class EssentialsWorkersAffairsController extends Controller
 
                     return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
                 })
-
-
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
