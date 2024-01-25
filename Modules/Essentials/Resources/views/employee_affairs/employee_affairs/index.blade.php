@@ -538,7 +538,7 @@
         $(document).ready(function() {
             var users_table = $('#employees').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ route('employees') }}",
                     data: function(d) {
