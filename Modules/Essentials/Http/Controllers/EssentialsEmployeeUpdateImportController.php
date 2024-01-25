@@ -452,8 +452,9 @@ class EssentialsEmployeeUpdateImportController extends Controller
                        $emp_array['total_salary'] = $value[47]; 
                        $formated_data[] = $emp_array;
 
-                                         
+                                        
                     }
+                   //dd( $formated_data);
                       
                                    
 
@@ -468,12 +469,13 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 {
                     throw new \Exception($error_msg);
                 } 
+
          
             $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data); 
-           
+        
             if (! empty($formated_data)) 
                 {
-                 
+                   // dd($formated_data);
                     foreach ($formated_data as $emp_data) 
                     {
                       
@@ -555,7 +557,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             }
 
 
-
+                      
 
                         if( $emp_data['proof_end_date'] != null)
                             {
@@ -577,26 +579,29 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 [
                                     'status' => 'valid',
                                     'is_active'=>1,
+                                    'type' => 'residence_permit',
+                                    'employee_id' => $existingEmployee->id,
                                     'number' => $emp_data['id_proof_number'],
                                     'expiration_date' => $emp_data['proof_end_date'],
                                 ];
                                 $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
                                     return $value !== null;
                                 });
+                             
     
                                 if (!empty($filteredResidencePermitData))
                                 {
                                     
-                                    EssentialsOfficialDocument::Create(
-                                        ['employee_id' => $existingEmployee->id, 'type' => 'residence_permit'],
-                                        $filteredResidencePermitData
-                                    );
+                                    $d=EssentialsOfficialDocument::Create(  $filteredResidencePermitData  );
+                                     
+                                      
+                                  
                                 }
                             }
                             
 
 
-                           
+                         
 
                           if($emp_data['passport_end_date'] != null)
                           {
@@ -618,6 +623,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             [
                                 'status' => 'valid',
                                 'is_active'=>1,
+                                'employee_id' => $existingEmployee->id,
+                                'type' => 'passport',
                                 'number' => $emp_data['passport_number'],
                                 'expiration_date' => $emp_data['passport_end_date'],
                             ];
@@ -630,17 +637,18 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             if (!empty($filteredPassportData))
                             {
                                 
-                                EssentialsOfficialDocument::Create(
-                                    ['employee_id' => $existingEmployee->id, 'type' => 'passport'],
+                                $d=EssentialsOfficialDocument::Create(
+                                 
                                     $filteredPassportData
                                 );
+                                
                             }
                           }
 
 
 
                            
-
+                      
                             $final_contract_start_date=null;
                             if($emp_data['contract_start_date'] != null &&  $emp_data['contract_start_date'] != null )
                             {
