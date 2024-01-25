@@ -689,14 +689,13 @@ class EssentialsCardsController extends Controller
         }
 
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
-        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
+       
         $categories = Category::all()->pluck('name', 'id');
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $EssentialsProfession = EssentialsProfession::all()->pluck('name', 'id');
-        $EssentialsSpecialization = EssentialsSpecialization::all()->pluck('name', 'id');
+      
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+    
         $professions = EssentialsProfession::all()->pluck('name', 'id');
 
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
@@ -746,18 +745,9 @@ class EssentialsCardsController extends Controller
                 'users.status',
                 'users.essentials_salary',
                 'users.total_salary',
-                'essentials_employee_appointmets.profession_id as profession_id',
-
-                'essentials_employee_appointmets.specialization_id as specialization_id'
+                'essentials_employee_appointmets.profession_id as profession_id'
             ])->orderby('id', 'desc');
 
-
-
-
-        if (!empty($request->input('specialization'))) {
-
-            $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
-        }
 
 
         if (!empty($request->input('status-select'))) {
@@ -803,14 +793,6 @@ class EssentialsCardsController extends Controller
                 })
 
 
-
-                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
-                    $specializationId = $appointments2[$row->id] ?? '';
-                    $specializationName = $specializations[$specializationId] ?? '';
-
-                    return $specializationName;
-                })
-
                 ->addColumn('view', function ($row) use($is_admin ,$can_show_employee_profile){
                     $html ='';
                     if($is_admin || $can_show_employee_profile){
@@ -844,7 +826,7 @@ class EssentialsCardsController extends Controller
                     });
                 })
                 //->removecolumn('id')
-                ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view', 'checkbox'])
+                ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'view', 'checkbox'])
                 ->make(true);
         }
         $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
@@ -871,8 +853,7 @@ class EssentialsCardsController extends Controller
         return view('essentials::cards.operations')
             ->with(compact(
                 'contract_types',
-                'nationalities',
-                'specializations',
+                'nationalities',        
                 'professions',           
                 'countries',
                 'spacializations',
