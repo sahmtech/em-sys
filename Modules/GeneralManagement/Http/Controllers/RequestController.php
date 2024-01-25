@@ -71,7 +71,7 @@ class RequestController extends Controller
 
         $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -89,34 +89,32 @@ class RequestController extends Controller
         }
 
         $requestsProcess = null;
-  
+        $latestProcessesSubQuery = FollowupWorkerRequestProcess::selectRaw('worker_request_id, MAX(id) as max_id')
+            ->groupBy('worker_request_id');
+
         $requestsProcess = FollowupWorkerRequest::select([
             'followup_worker_requests.request_no',
-            'followup_worker_requests_process.id as process_id',
+            'process.id as process_id',
             'followup_worker_requests.id',
-            'followup_worker_requests.type as type',
+            'followup_worker_requests.type',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
             'followup_worker_requests.created_at',
-            'followup_worker_requests_process.status',
-            'followup_worker_requests_process.status_note as note',
+            'process.status',
+            'process.status_note as note',
             'followup_worker_requests.reason',
-            'essentials_wk_procedures.department_id as department_id',
+            'essentials_wk_procedures.department_id',
             'users.id_proof_number',
             'essentials_wk_procedures.can_return',
             'users.assigned_to'
-        ])
-   
-        // ->leftJoin(DB::raw('(SELECT followup_worker_requests_process.id as pro_id, followup_worker_requests.id as id, MAX(created_at) as max_created_at FROM followup_worker_requests_process GROUP BY id) as latest_table1'), 'latest_table1.id', '=', 'followup_worker_requests.id')
-        // ->leftJoin('followup_worker_requests_process', function($join) {
-        //     $join->on('followup_worker_requests_process.id', '=', 'latest_table1.id')
-        //          ->on('followup_worker_requests_process.created_at', '=', 'latest_table1.max_created_at');
-        // })
-            ->leftJoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-            ->leftJoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+            ])
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('followup_worker_requests.id', '=', 'latest_process.worker_request_id');
+            })
+            ->leftJoin('followup_worker_requests_process as process', 'process.id', '=', 'latest_process.max_id')
+            ->leftJoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->whereNull('followup_worker_requests_process.sub_status')
-            ->whereIn('users.id', $userIds)->groupBy('id');
-            
+            ->whereIn('users.id', $userIds)
+            ->whereNull('process.sub_status');
 
 
 
@@ -131,12 +129,12 @@ class RequestController extends Controller
                     return Carbon::parse($row->created_at);
                 })
 
-                ->editColumn('status', function ($row) use ($business_id,$is_admin,$can_change_status) {
+                ->editColumn('status', function ($row) use ($business_id, $is_admin, $can_change_status) {
                     try {
                         $statusClass = $this->statuses[$row->status]['class'];
                         $statusName = $this->statuses[$row->status]['name'];
                         $status = $row->status;
-                       
+
 
                         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
                             ->where(function ($query) {
@@ -146,16 +144,15 @@ class RequestController extends Controller
                             ->pluck('id')->toArray();
 
                         if ($departmentIds) {
-                        
+
 
                             if (in_array($row->status, ['approved', 'rejected'])) {
                                 $status = trans('followup::lang.' . $row->status);
                             } elseif ($row->status == 'pending' && in_array($row->department_id, $departmentIds)) {
                                 if ($is_admin || $can_change_status) {
-                                $status = '<span class="label ' . $statusClass . '">' . $statusName . '</span>';
-                                $status = '<a href="#" class="change_status" data-request-id="' . $row->process_id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statusName . '"> ' . $status . '</a>';
-                                }
-                                else{
+                                    $status = '<span class="label ' . $statusClass . '">' . $statusName . '</span>';
+                                    $status = '<a href="#" class="change_status" data-request-id="' . $row->process_id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statusName . '"> ' . $status . '</a>';
+                                } else {
                                     $status = trans('followup::lang.' . $row->status);
                                 }
                             } elseif ($row->status == 'pending' && !in_array($row->department_id, $departmentIds)) {
@@ -184,7 +181,7 @@ class RequestController extends Controller
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
-                ->orWhere('name', 'like', '%عليا%');
+                    ->orWhere('name', 'like', '%عليا%');
             })
             ->pluck('id')->toArray();
 
@@ -251,7 +248,7 @@ class RequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -398,7 +395,7 @@ class RequestController extends Controller
 
     public function viewRequest($id)
     {
-        
+
         $request = FollowupWorkerRequest::with([
             'user', 'createdUser', 'followupWorkerRequestProcess.procedure.department', 'attachments'
         ])->where('id', $id)->first();
@@ -418,8 +415,8 @@ class RequestController extends Controller
         ];
         $workflow = [];
         $currentStep = EssentialsWkProcedure::where('id', $request->followupWorkerRequestProcess[0]->procedure_id)->first();
-   
-        while ($currentStep && !$currentStep->end ) {
+
+        while ($currentStep && !$currentStep->end) {
 
             $workflow[] = [
                 'id' => $currentStep->id,
@@ -528,7 +525,7 @@ class RequestController extends Controller
         }
 
         return null;
-    } 
+    }
     private function getProcessIdForStep($request, $step)
     {
         return optional($request->followupWorkerRequestProcess->where('procedure_id', $step->id)->first())->id;

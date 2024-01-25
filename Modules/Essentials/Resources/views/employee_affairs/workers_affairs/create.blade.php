@@ -55,28 +55,9 @@
                         </div>
 
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('user_type', __('user.user_type') . ':*') !!}
-                            {!! Form::select(
-                                'user_type',
-                                [
-                                    'worker' => __('user.worker'),
-                                   
-                                   
-                                ],
-                                null,
-                                [
-                                    'class' => 'form-control',
-                                    'style' => 'height:40px',
-                                    'required',
-                                  
-                                ],
-                            ) !!}
-                        </div>
-                    </div>
+                 
 
-                    <div id="workerInput"  class="col-md-5">
+                    <div id="workerInput"  class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':') !!}
                             {!! Form::select('assigned_to', $contacts, null, [

@@ -239,7 +239,7 @@ class ManageUserController extends Controller
                //temp  abort(403, 'Unauthorized action.');
             }
 
-             $business_id = request()->session()->get('user.business_id');
+            $business_id = request()->session()->get('user.business_id');
 
             //$business_id = User::where('id', $id)->first()->business_id;
             $user = User::with(['contactAccess'])

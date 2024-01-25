@@ -6,8 +6,9 @@
 </div>
 
 <div class="col-md-6">
+    @if($user->user_type != 'worker')
     <p><strong>@lang('essentials::lang.department'):</strong> {{ $user_department->name ?? '' }}</p>
-
+@endif
 
     <p><strong>@lang('essentials::lang.profession'):</strong> {{ $user->profession ?? '' }}</p>
   
