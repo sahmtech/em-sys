@@ -43,9 +43,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/procedures', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index'])->name('procedures');
         Route::post('/storeProcedure', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'store'])->name('storeProcedure');
+        Route::put('/updateProcedure/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'update'])->name('updateProcedure');
         Route::delete('/procedure/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'destroy'])->name('procedure.destroy');
         Route::get('/getProcedure/{procedure_id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'getProcedure'])->name('getProcedure');
-        
-    
     });
 });
