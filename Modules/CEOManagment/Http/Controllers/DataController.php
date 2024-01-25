@@ -92,6 +92,16 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.view_request'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'ceomanagment.delete_procedure',
+                        'label' => __('ceomanagment::lang.delete_procedure'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.edit_procedure',
+                        'label' => __('ceomanagment::lang.edit_procedure'),
+                        'default' => false,
+                    ],
                 ]
             ]
         ];

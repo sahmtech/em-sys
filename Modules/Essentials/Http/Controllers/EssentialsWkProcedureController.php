@@ -14,6 +14,7 @@ use Modules\Essentials\Entities\EssentialsProceduresEscalation;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
+
 class EssentialsWkProcedureController extends Controller
 {
     /**
@@ -25,13 +26,13 @@ class EssentialsWkProcedureController extends Controller
     {
         $this->moduleUtil = $moduleUtil;
     }
-  
+
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_delete_procedures = auth()->user()->can('essentials.delete_procedures');
-    
+        $can_delete_procedures = auth()->user()->can('ceomanagment.delete_procedure');
+        $can_edit_procedures = auth()->user()->can('ceomanagment.edit_procedure');
         $requestsType = [
             'exitRequest',
             'returnRequest',
@@ -65,50 +66,54 @@ class EssentialsWkProcedureController extends Controller
 
         $actualTypes = EssentialsWkProcedure::distinct()->pluck('type')->toArray();
         $missingTypes = array_diff($requestsType, $actualTypes);
+        $procedures = EssentialsWkProcedure::where('business_id', $business_id)
+            ->groupBy('type')
+            ->with('department');
         if (request()->ajax()) {
 
-            $procedures = EssentialsWkProcedure::where('business_id', $business_id)
-                ->groupBy('type')
-                ->with('department')
-                ->get();
+
 
             return DataTables::of($procedures)
-            ->addColumn('steps', function ($procedure) {
-                try {
-                    $stepsData = EssentialsWkProcedure::where('type', $procedure->type)
-                        ->with(['department', 'nextDepartment'])->where('start', 1)
-                        ->orderBy('start', 'desc')
-                        ->get();
-            
-                    $stepsFormatted = [];
-            
-                    foreach ($stepsData as $step) {
-                        $sequence = [];
-                        $end = false;
-                        $loopStep = $step;
-                        while (!$end) {
-                            $departmentName = $loopStep->department->name;
-                            $sequence[] = $departmentName;
-                            $end = $loopStep->end;
-            
-                            if (!$end) {
-                                $loopStep = EssentialsWkProcedure::where('department_id', $loopStep->next_department_id)
-                                    ->where('type', $loopStep->type)
-                                    ->with(['department', 'nextDepartment'])
-                                    ->first();
+                ->addColumn('steps', function ($procedure) {
+                    try {
+                        $stepsData = EssentialsWkProcedure::where('type', $procedure->type)
+                            ->with(['department', 'nextDepartment'])->where('start', 1)
+                            ->orderBy('start', 'desc')
+                            ->get();
+
+                        $stepsFormatted = [];
+
+                        foreach ($stepsData as $step) {
+                            $sequence = [];
+                            $end = false;
+                            $loopStep = $step;
+                            while (!$end) {
+                                $departmentName = $loopStep->department->name;
+                                $sequence[] = $departmentName;
+                                $end = $loopStep->end;
+
+                                if (!$end) {
+                                    $loopStep = EssentialsWkProcedure::where('department_id', $loopStep->next_department_id)
+                                        ->where('type', $loopStep->type)
+                                        ->with(['department', 'nextDepartment'])
+                                        ->first();
+                                }
                             }
+
+                            $sequenceString = implode(' -> ', $sequence);
+                            $stepsFormatted[] = "<li>{$sequenceString}</li>";
                         }
-                       
-                        $sequenceString = implode(' -> ', $sequence);
-                        $stepsFormatted[] = "<li>{$sequenceString}</li>";
+                        return '<ul>' . implode('', $stepsFormatted) . '</ul>';
+                    } catch (\Exception $e) {
+
+                        return '';
                     }
-                    return '<ul>' . implode('', $stepsFormatted) . '</ul>';
-                } catch (\Exception $e) {
-   
-                    return '';
-                }
-            }) ->addColumn('action', function ($row) use ($is_admin, $can_delete_procedures) {
+                })->addColumn('action', function ($row) use ($is_admin, $can_delete_procedures, $can_edit_procedures) {
                     $html = '';
+                    if ($is_admin || $can_edit_procedures) {
+
+                        $html .= '<a href="#" class="btn btn-xs btn-primary edit-procedure" data-id="' . $row->id . '" data-url="' . route('getProcedure', ['procedure_id' => $row->id]) . '">' . __('messages.edit') . '</a>&nbsp;';
+                    }
                     if ($is_admin || $can_delete_procedures) {
                         $html .= '<button class="btn btn-xs btn-danger delete_procedure_button" data-href="' . route('procedure.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                     }
@@ -124,11 +129,24 @@ class EssentialsWkProcedureController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+
+    public function getProcedure($procedure_id)
     {
-       
-        return view('essentials::create');
+
+        $procedureType = EssentialsWkProcedure::where('id', $procedure_id)->first()->type;
+
+        $procedures = EssentialsWkProcedure::with('department')->where('type', $procedureType)->get();
+
+
+        foreach ($procedures as $procedure) {
+            $escalations = EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->get();
+            $procedure->escalations = $escalations;
+        }
+
+
+        return response()->json(['procedures' => $procedures]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -138,69 +156,82 @@ class EssentialsWkProcedureController extends Controller
 
     public function store(Request $request)
     {
+
         $type = $request->input('type');
-        $steps = $request->input('steps');
+        $steps = $request->input('step');
+
 
         \DB::beginTransaction();
         try {
+
+            $add_modal_department_id_start = $request->add_modal_department_id_start;
+
+            $check_repeated = [];
+            foreach ($add_modal_department_id_start as $start_dep) {
+                $check_repeated[] = $start_dep;
+            }
+            foreach ($steps  as $index => $step) {
+                $check_repeated[] = $step['add_modal_department_id_steps'][0];
+            }
+            if (count($check_repeated) !== count(array_unique($check_repeated))) {
+                throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+            }
+
             $previousStepIds = [];
-            foreach ($steps as $index => $step) {
-                if ($index === 0 && is_array($step['department_id'])) {
-                    foreach ($step['department_id'] as $departmentId) {
-                        if ($departmentId) {
-                            $business_id = EssentialsDepartment::where('id', $departmentId)->first()->business_id;
-                            $workflowStep = EssentialsWkProcedure::create([
-                                'type' => $type,
-                                'department_id' => $departmentId,
-                                'business_id' => $business_id,
-                                'next_department_id' => null,
-                                'start' => 1,
-                                'end' => 0,
-                                'can_reject' => $step['can_reject'] ?? null,
-                                'can_return' => $step['can_return'] ?? null,
-                            ]);
-                            $previousStepIds[] = $workflowStep->id;
-                        }
-                    }
-                } else {
-                    $singleDepartmentId = is_array($step['department_id']) ? $step['department_id'][0] : $step['department_id'];
-                    $business_id = EssentialsDepartment::where('id', $singleDepartmentId)->first()->business_id;
+            foreach ($add_modal_department_id_start as $start_dep) {
+                if ($start_dep) {
+                    $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = EssentialsWkProcedure::create([
                         'type' => $type,
-                        'department_id' => $singleDepartmentId,
+                        'department_id' => $start_dep,
                         'business_id' => $business_id,
                         'next_department_id' => null,
-                        'start' => 0,
-                        'end' => $index === count($steps) - 1 ? 1 : 0,
-                        'can_reject' => $step['can_reject'] ?? 0,
-                        'can_return' => $step['can_return'] ?? 0,
+                        'start' => 1,
+                        'end' => 0,
+                        'can_reject' => null,
+                        'can_return' =>  null,
                     ]);
-
-
-                    foreach ($previousStepIds as $id) {
-                        EssentialsWkProcedure::where('id', $id)->update(['next_department_id' => $singleDepartmentId]);
-                    }
-                    $previousStepIds = [];
-
                     $previousStepIds[] = $workflowStep->id;
-                    if (!empty($step['escalates_to'])) {
-                        foreach ($step['escalates_to'] as $key => $escalationDept) {
-                            EssentialsProceduresEscalation::create([
-                                'procedure_id' => $workflowStep->id,
-                                'escalates_to' => $escalationDept,
-                                'escalates_after' => $step['escalates_after'][$key] ?? null,
-                            ]);
-                        }
+                }
+            }
+
+            foreach ($steps  as $index => $step) {
+                $start_dep = $step['add_modal_department_id_steps'][0];
+                $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+                $workflowStep = EssentialsWkProcedure::create([
+                    'type' => $type,
+                    'department_id' => $start_dep,
+                    'business_id' => $business_id,
+                    'next_department_id' => null,
+                    'start' => 0,
+                    'end' => $index === count($steps) - 1 ? 1 : 0,
+                    'can_reject' => $step['add_modal_can_reject_steps'][0] ?? 0,
+                    'can_return' => $step['add_modal_can_return_steps'][0] ?? 0,
+                ]);
+                foreach ($previousStepIds as $id) {
+                    EssentialsWkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
+                }
+                $previousStepIds = [];
+                $previousStepIds[] = $workflowStep->id;
+                if (!(empty($step['add_modal_escalates_to_steps']) || empty($step['add_modal_escalates_after_steps']))) {
+                    foreach ($step['add_modal_escalates_to_steps'] as $key => $escalationDept) {
+                        EssentialsProceduresEscalation::create([
+                            'procedure_id' => $workflowStep->id,
+                            'escalates_to' => $escalationDept,
+                            'escalates_after' => $step['add_modal_escalates_after_steps'][$key] ?? null,
+                        ]);
                     }
                 }
             }
+
 
             \DB::commit();
 
             $output = ['success' => true, 'msg' => __('lang_v1.added_success')];
         } catch (\Exception $e) {
             \DB::rollBack();
-            $output = ['success' => false, 'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()];
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' =>  $e->getMessage()];
         }
 
         return redirect()->route('procedures')->with(['status' => $output]);
@@ -234,7 +265,86 @@ class EssentialsWkProcedureController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        try {
+            $procedureType = EssentialsWkProcedure::where('id', $id)->first()->type;
+            $procedures = EssentialsWkProcedure::where('type', $procedureType)->get();
+            foreach ($procedures as $procedure) {
+                EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
+                $procedure->delete();
+            }
+            $type = $procedureType;
+            $steps = $request->input('step');
+            $edit_modal_department_id_start = $request->edit_modal_department_id_start;
+
+            $check_repeated = [];
+            foreach ($edit_modal_department_id_start as $start_dep) {
+                $check_repeated[] = $start_dep;
+            }
+            foreach ($steps  as $index => $step) {
+                $check_repeated[] = $step['edit_modal_department_id_steps'][0];
+            }
+            if (count($check_repeated) !== count(array_unique($check_repeated))) {
+                throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+            }
+
+            $previousStepIds = [];
+            foreach ($edit_modal_department_id_start as $start_dep) {
+                if ($start_dep) {
+                    $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+                    $workflowStep = EssentialsWkProcedure::create([
+                        'type' => $type,
+                        'department_id' => $start_dep,
+                        'business_id' => $business_id,
+                        'next_department_id' => null,
+                        'start' => 1,
+                        'end' => 0,
+                        'can_reject' => null,
+                        'can_return' =>  null,
+                    ]);
+                    $previousStepIds[] = $workflowStep->id;
+                }
+            }
+
+            foreach ($steps  as $index => $step) {
+                $start_dep = $step['edit_modal_department_id_steps'][0];
+                $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+                $workflowStep = EssentialsWkProcedure::create([
+                    'type' => $type,
+                    'department_id' => $start_dep,
+                    'business_id' => $business_id,
+                    'next_department_id' => null,
+                    'start' => 0,
+                    'end' => $index === count($steps) - 1 ? 1 : 0,
+                    'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
+                    'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
+                ]);
+                foreach ($previousStepIds as $id) {
+                    EssentialsWkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
+                }
+                $previousStepIds = [];
+                $previousStepIds[] = $workflowStep->id;
+                if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+                    foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+                        EssentialsProceduresEscalation::create([
+                            'procedure_id' => $workflowStep->id,
+                            'escalates_to' => $escalationDept,
+                            'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+
+
+
+            $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
+        } catch (\Exception $e) {
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' =>  $e->getMessage()];
+        }
+
+        return redirect()->route('procedures')->with(['status' => $output]);
     }
 
     /**
@@ -250,7 +360,7 @@ class EssentialsWkProcedureController extends Controller
 
         try {
             $type = EssentialsWkProcedure::where('id', $id)->first()->type;
-            $requests=FollowupWorkerRequest::where('type',$type)->get();
+            $requests = FollowupWorkerRequest::where('type', $type)->get();
             if ($requests->count() != 0) {
                 $output = [
                     'success' => false,
