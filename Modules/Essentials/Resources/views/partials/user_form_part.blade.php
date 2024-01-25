@@ -269,16 +269,7 @@
     <h4>@lang('essentials::lang.features'):</h4>
 
     <div>
-        {{-- <div class="form-group col-md-3">
-            {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
-            <select id="can_add_category" name="can_add_category" class ="form-control" style="height:40px">
-                <option value="#">@lang('essentials::lang.select_for_travel')</option>
-                <option value="1">@lang('essentials::lang.includes')</option>
-                <option value="0">@lang('essentials::lang.does_not_include')</option>
-            </select>
-
-        </div>
-         --}}
+       
         <div class="form-group col-md-3">
             {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
             <select id="can_add_category" name="can_add_category" class="form-control" style="height:40px">

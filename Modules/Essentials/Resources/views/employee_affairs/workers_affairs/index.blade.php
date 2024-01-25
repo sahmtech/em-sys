@@ -144,7 +144,7 @@
                             <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
                             <td class="table-td-width-100px">@lang('business.email')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.department')</td>
+                         
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
@@ -269,9 +269,7 @@
                     {
                         data: "email"
                     },
-                    {
-                        data: "department"
-                    },
+                
                     {
                         data: "profession",
                         name: 'profession'

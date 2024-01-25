@@ -1660,6 +1660,7 @@ return [
   'f_comp_insurance_class_not_found' => 'الشركة المدخلة غير تابعة للمنشاة التابع لها المرافق',
 
   'edit_worker' => 'تعديل عامل',
-  'profile_picture'=>'الصورة الشخصية'
+  'profile_picture'=>'الصورة الشخصية',
+
 
 ];

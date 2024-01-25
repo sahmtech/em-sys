@@ -1745,7 +1745,7 @@ class Util
 
   
         $moduleUtil = new \App\Utils\ModuleUtil;
-        $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user, 'request' => $user_details]);
+        // $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user, 'request' => $user_details]);
         $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
 
 

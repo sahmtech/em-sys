@@ -1225,7 +1225,7 @@ class EssentialsManageEmployeeController extends Controller
                 ->get();
         }
    
-
+      
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
         if ($user->status == 'active') {

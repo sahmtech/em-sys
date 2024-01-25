@@ -2324,7 +2324,8 @@ class DataController extends Controller
                 $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
                 $travel_ticket_categorie->save();
             }
-            if (request()->input('essentials_department_id')) {
+
+            if (request()->input('profession')) {
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id = $user->id;
                 $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
@@ -2333,13 +2334,6 @@ class DataController extends Controller
                 $essentials_employee_appointmets->profession_id =request()->input('profession');
                 $essentials_employee_appointmets->save();
             }
-
-
-            // $essentials_employee_admission = new EssentialsEmployeeAppointmet();
-            // $essentials_employee_admission->employee_id  = $user->id;
-            // $essentials_employee_admission->admissions_type = 'first_time';
-            // $essentials_employee_admission->admissions_status = 'on_date';
-            // $essentials_employee_admission->save();
 
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);
