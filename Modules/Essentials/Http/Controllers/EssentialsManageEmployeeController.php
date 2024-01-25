@@ -1310,17 +1310,8 @@ class EssentialsManageEmployeeController extends Controller
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
             }
-            if (empty($request->input('allow_login'))) {
-                $user_data['username'] = null;
-                $user_data['password'] = null;
-                $user_data['allow_login'] = 0;
-            } else {
-                $user_data['allow_login'] = 1;
-            }
-
-            if (!empty($request->input('password'))) {
-                $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
-            }
+           
+         
 
             $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
 
@@ -1342,18 +1333,7 @@ class EssentialsManageEmployeeController extends Controller
             }
            
             DB::beginTransaction();
-            if ($user_data['allow_login'] && $request->has('username')) {
-                $user_data['username'] = $request->input('username');
-                $ref_count = $this->moduleUtil->setAndGetReferenceCount('username');
-                if (blank($user_data['username'])) {
-                    $user_data['username'] = $this->moduleUtil->generateReferenceNumber('username', $ref_count);
-                }
-
-                $username_ext = $this->moduleUtil->getUsernameExtension();
-                if (!empty($username_ext)) {
-                    $user_data['username'] .= $username_ext;
-                }
-            }
+          
 
             $user = User::findOrFail($id);
 
