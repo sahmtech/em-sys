@@ -957,7 +957,9 @@ return [
   'employee_insurance' => 'التأمين الطبي',
   'insurance_class' => 'فئة التأمين',
   'add_Insurance' => 'إضافة تأمين',
-  'crud_employees_insurances' => 'إضافة/حذف/تعديل تأمين موظف',
+  'crud_employees_insurances' => 'عرض تأمين الموظفين',
+  'view_families_insurances'=>'عرض تأمين المرافقين',
+  'families_insurance'=>'التامين الطبي للمرافقين',
   'select_for_travel' => 'هل تشمله التذاكر',
   'includes' => 'تشمل',
   'does_not_include' => 'لا تشمل',
@@ -1362,7 +1364,7 @@ return [
   'crud_employees_insurances' => 'حذف \ إضافة \ تعديل التأمين الطبي للموظفين',
   'add_employees_insurances' => 'إضافة تأمين طبي',
   'edit_employees_insurances' => 'تعديل التأمين الطبي',
-  'delete_employees_insurances' => 'حذف تأمين طبي',
+  'delete_employees_insurances' => 'الغاء التامين الطبي',
 
   'add_insurance_contracts' => 'إضافة عقود التأمين',
   'edit_insurance_contracts' => 'تعديل عقود التأمين',
@@ -1510,7 +1512,7 @@ return [
   'end_admission_activate' => 'انهاء المباشرة',
   'admission_status' => 'حالة المباشرة ',
   'not_found' => 'غير موجود',
-  'user_not_found' => 'الموظف غير موجود',
+
   'company' => 'الشركة',
   'curd_employees' => 'إضافة \تعديل الموظفين',
   'curd_essentials_workers' => 'إضافة \عرض العمال',
@@ -1665,5 +1667,14 @@ return [
   'user_type_is_valid'=>'نمط الموظف غير مسموح أدخل أحد الأنماط التالية : worker , manager ,employee ,user  في السطر رقم  ',
   'contract_duration_should_be_is_numeric'=>'مدة العقد يجب أن تكون رقم  في السطر',
   'probation_period_should_be_is_numeric'=>'الفترة التجريبية يجب أن تكون رقم في السطر ',
-
+  'employees_insurance'=>'التامين الطبي للموظفين',
+  'add_families_insurances'=>'إضافة تامين طبي للمرافقين',
+  'employee_assignto_family'=>'الموظف التابع للمرافق',
+  'cancel_insurance'=>'الغاء التامين',
+  'canceled_successfully'=>'تم الغاء التامين',
+  'import_employees_insurances'=>'استيراد (إضافة ) التامين الطبي للموظفين',
+  'import_update_employees_insurances'=>'استيراد (تحديث ) التامين الطبي للموظفين',
+  'eqama_number_required'=>'رقم الاقامة مطلوب',
+  'insurance_class_id_required'=>'رقم الفئة مطلوب',
+  'insurance_company_id_required'=>'رقم الشركة مطلوب'
 ];

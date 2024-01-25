@@ -285,7 +285,7 @@ class EssentialsEmployeeImportController extends Controller
                    $emp_array['assigned_to']=null;
                }
 
-               $emp_array['business_id'] = 1;
+               $emp_array['business_id'] =  $business_id;
 
                $emp_array['company_id'] = $value[26];
                if ($emp_array['company_id'] !== null) 
@@ -308,24 +308,7 @@ class EssentialsEmployeeImportController extends Controller
                    break;
                } 
 
-               $emp_array['location_id'] = $value[27];
-               if ($emp_array['location_id'] !== null) 
-               {
-               
-                   $location = BusinessLocation::find($emp_array['location_id']);
-                   
-                   if (!$location) 
-                   {
-                   
-                       $is_valid = false;
-                       $error_msg = __('essentials::lang.location_not_found') .$row_no;
-                       break;
-                   }
-               } else 
-               {
-               
-                   $emp_array['location_id'] = null;
-               }
+          
 
                $emp_array['essentials_department_id'] = $value[28];
                if ($emp_array['essentials_department_id'] !== null) 
@@ -407,7 +390,13 @@ class EssentialsEmployeeImportController extends Controller
                    $emp_array['nationality_id'] = null;
                }
 
-            
+            if(!empty($value[34]))
+            {
+                $emp_array['contract_number']= $value[34];
+            }
+            else{ $emp_array['contract_number']=null;}
+
+
             if (!empty($value[35])) 
             {
                 if (is_numeric($value[35]))
@@ -455,17 +444,17 @@ class EssentialsEmployeeImportController extends Controller
             }
             else{ $emp_array['contract_end_date'] = null;}
 
-            if (!empty($value[37]))
-            {
-                $emp_array['contract_duration'] = $value[37];
-                if(!is_numeric( $emp_array['contract_duration']))
-                {
-                    $is_valid = false;
-                    $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no;
-                    break;
-                }
-            } 
-            else{$emp_array['contract_duration'] = null;}
+            // if (!empty($value[37]))
+            // {
+            //     $emp_array['contract_duration'] = $value[37];
+            //     if(!is_numeric( $emp_array['contract_duration']))
+            //     {
+            //         $is_valid = false;
+            //         $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no;
+            //         break;
+            //     }
+            // } 
+            // else{$emp_array['contract_duration'] = null;}
 
             if (!empty($value[38])) 
             {
@@ -535,13 +524,17 @@ class EssentialsEmployeeImportController extends Controller
             ];
               
             $emp_array['total_salary'] = $value[47]; 
-            $emp_array['emp_number'] = $value[48];
-            $formated_data[] = $emp_array; 
-             
-                               
-  
-                                         
+            if($value[48] != null)
+            {
+                $emp_array['emp_number'] = $value[48];
             }
+            else{ $emp_array['emp_number']=null;}
+           
+
+            $formated_data[] = $emp_array; 
+                                     
+            }
+          
             if (!$is_valid) 
             {
                throw new \Exception($error_msg);
@@ -559,7 +552,7 @@ class EssentialsEmployeeImportController extends Controller
                  
                 foreach ($formated_data as $emp_data) 
                 {
-                    $emp_data['business_id'] = 1;
+                    
                     $emp_data['created_by'] = $user_id;
                     $emp_data['essentials_pay_period'] = 'month';
                     
@@ -570,33 +563,17 @@ class EssentialsEmployeeImportController extends Controller
                     }
                     $processedIdProofNumbers[] = $emp_data['id_proof_number'];             
                     
-                    if($emp_data['company_id'] != 2)
-                    {
-                            $latestRecord = User::where('company_id', $emp_data['company_id'] )
-                            ->orderBy('emp_number', 'desc')
-                            ->first();
                     
-                        if ($latestRecord)
-                         {
-                            
-                            $latestRefNo = $latestRecord->emp_number;
-                            $latestRefNo++;
-                            $emp_data['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-                        
-                        } 
-                        else 
-                        {
-                        
-                            $emp_data['emp_number'] = $emp_data['company_id'] . '000';
-                        }
-                    } 
+                    if($emp_data['emp_number'] == null)
+                    {
+                       //add code here
+                    }
                     
                     $emp = User::create($emp_data);
-
-                    $emp_data['employee_id'] = $emp->id;
                    
+                   
+                    $emp_data['employee_id'] = $emp->id;
                     $emp_data['contract_type_id'] = null;
-                     
                     foreach ($emp_data['allowance_data'] as $allowanceType => $allowanceJson)
                     {
                             $allowanceData = json_decode($allowanceJson, true);
@@ -617,95 +594,192 @@ class EssentialsEmployeeImportController extends Controller
                                 \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                                 error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                                  }
-                    }
+                            }
+
+                            
+                            $previous_proof_date = EssentialsOfficialDocument::where('employee_id',  $emp->id)
+                            ->where('type' , 'residence_permit')
+                            ->where('is_active',1)
+                            ->latest('created_at')
+                            ->first();
                         
+                            if( $previous_proof_date )
+                            {
+                                $previous_proof_date->is_active= 0;
+                                $previous_proof_date->expiration_date= $emp_data['proof_end_date'];
+                                $previous_proof_date->save();
+                            
+                            }
 
                           $doc =new EssentialsOfficialDocument();
                           $doc->type ='residence_permit';
                           $doc->status ='valid';
                           $doc->employee_id = $emp->id;
+                          $doc->is_active= 1;
                           $doc->number = $emp_data['id_proof_number'];
                           $doc->expiration_date = $emp_data['proof_end_date'];
                           $doc->save();
 
 
+
+                          $previous_passport_date = EssentialsOfficialDocument::where('employee_id',  $emp->id)
+                            ->where('type' , 'passport')
+                            ->where('is_active',1)
+                            ->latest('created_at')
+                            ->first();
+                           
+                            if( $previous_passport_date )
+                            {
+                                $previous_passport_date->is_active= 0;
+                                $previous_passport_date->expiration_date= $emp_data['passport_end_date'];
+                                $previous_passport_date->save();
+                              
+                            }
+
                           $passport =new EssentialsOfficialDocument();
                           $passport->type ='passport';
                           $passport->status ='valid';
                           $passport->employee_id = $emp->id;
+                          $passport->is_active= 1;
                           $passport->number = $emp_data['passport_number'];
                           $passport->expiration_date = $emp_data['passport_end_date'];
                           $passport->save();
                         
-
-                        $contract =new EssentialsEmployeesContract();
-                        $contract->employee_id  = $emp->id;
-    
-                        $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
-                        if ($latestRecord) 
-                        {
-                            $latestRefNo = $latestRecord->contract_number;
-                            $numericPart = (int)substr($latestRefNo, 3);
-                            $numericPart++;
-                            $emp_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-                        } else 
-                        {
-            
-                            $emp_data['contract_number'] = 'EC0001';
-                        }
-                        $contract->contract_number= $emp_data['contract_number'];
-                       
                         
-                        if($emp_data['contract_start_date'] == null)
-                        { 
-                            $contract->contract_start_date=null;
-                        }
-                        else
-                        {
-                            $contract->contract_start_date= $emp_data['contract_start_date'];
-                        }
-                       
-                       
-                        if($emp_data['contract_end_date'] !=null)
-                        {
-                            $contract->contract_end_date= $emp_data['contract_end_date'];
-                        }
-                        else if( $emp_data['contract_end_date'] == null && $emp_data['contract_start_date'] !=null)
-                        {
-                            $contract_start_date =$emp_data['contract_start_date']; 
-                            $date = Carbon::parse($contract_start_date);
-                            $date->addYear(); 
-                            $contract->contract_end_date = $date;
 
+
+                        $final_contract_start_date=null;
+                        if($emp_data['contract_start_date'] != null &&  $emp_data['contract_start_date'] != null )
+                        {
+
+                            $previous_contract = EssentialsEmployeesContract::where('employee_id',  $emp->id)
+                            ->where('is_active',1)
+                            ->latest('created_at')
+                            ->first();
+                           
+                            if( $previous_contract )
+                            {
+                                $previous_contract->is_active= 0;
+                                $previous_contract->contract_end_date= $emp_data['contract_start_date'];
+                                $previous_contract->save();
+                              
+                            }
+
+                            $contract =new EssentialsEmployeesContract();
+                            $contract->employee_id  = $emp->id;
+                            if( $emp_data['contract_number'] == null)
+                            {
+                                $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+                                if ($latestRecord) 
+                                {
+                                    $latestRefNo = $latestRecord->contract_number;
+                                    $numericPart = (int)substr($latestRefNo, 3);
+                                    $numericPart++;
+                                    $emp_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                                } else 
+                                {
+                                    $emp_data['contract_number'] = 'EC0001';
+                                }
+                                $contract->contract_number= $emp_data['contract_number'];
+                            }
+                            else 
+                            {$contract->contract_number = $emp_data['contract_number'] ;}
+                           
+                          
+                            //start date is exist , end date is not exist
+                            if($emp_data['contract_start_date'] != null && $emp_data['contract_end_date'] == null )
+                            {
+    
+                                $contract_start_date =$emp_data['contract_start_date']; 
+                                $final_contract_start_date=   $contract_start_date;
+                                $date = Carbon::parse($contract_start_date);
+                                $date->addYear(); 
+                                $contract->contract_end_date = $date;
+                                $contract->contract_start_date=$emp_data['contract_start_date']; 
+                                $contract->contract_duration=1;
+    
+                            } //end date is exist , start date is not exist
+                            else if($emp_data['contract_start_date'] == null && $emp_data['contract_end_date'] != null )
+                            {
+                                $contract_end_date =$emp_data['contract_end_date']; 
+                                $date = Carbon::parse($contract_end_date);
+                                $date->subYear(); 
+                                $contract->contract_start_date = $date;
+                                $final_contract_start_date= $date;
+                                $contract->contract_end_date=$emp_data['contract_end_date']; 
+                                $contract->contract_duration=1;
+     
+                            }//end date is exist , start date is  exist
+                            else{
+                                $contract_end_date =$emp_data['contract_end_date']; 
+                                $contract_start_date =$emp_data['contract_start_date']; 
+                                $final_contract_start_date= $contract_start_date ;
+                                
+                                $start = Carbon::parse($contract_start_date);
+                                $end = Carbon::parse($contract_end_date);
+                            
+                                $contract_duration = $start->diffInYears($end);
+                                $contract->contract_start_date=$emp_data['contract_start_date']; 
+                                $contract->contract_end_date=$emp_data['contract_end_date']; 
+                                $contract->contract_duration = $contract_duration;
+    
+                            }
+    
+                            $contract->is_renewable= $emp_data['is_renewable'];
+                            $contract->probation_period =$emp_data["probation_period"];
+                            $contract->contract_type_id  = $emp_data["contract_type_id"];
+                            $contract->status = "valid";
+                            $contract->is_active  = 1;
+                            $contract->save();
+    
                         }
 
-                        $contract->is_renewable= $emp_data['is_renewable'];
-                        $contract->contract_duration=$emp_data['contract_duration'];
-                        $contract->probation_period =$emp_data["probation_period"];
-                        $contract->contract_type_id  =$emp_data["contract_type_id"];
-                        $contract->status = "valid";
-                        $contract->save();
-                      
+                                             
                           
                        
                         if( $emp_data['user_type'] == 'worker')
                         {
+                            $previous_appointment = EssentialsEmployeeAppointmet::where('employee_id', $emp->id)
+                            ->where('is_active',1)
+                            ->latest('created_at')
+                            ->first();
+                           
+                            if( $previous_appointment )
+                            {
+                                $previous_appointment->is_active= 0;
+                                $previous_appointment->end_at=  $final_contract_start_date;
+                                $previous_appointment->save();
+                              
+                            }
+                            
                             $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                             $essentials_employee_appointmets->employee_id = $emp->id;
+                            $essentials_employee_appointmets->start_from= $final_contract_start_date;
                             $essentials_employee_appointmets->department_id= null;
-                            $essentials_employee_appointmets->business_location_id= $emp_data['location_id'];
                             $essentials_employee_appointmets->is_active = 1;
                             $essentials_employee_appointmets->profession_id=$emp_data['profession_id'];
                             $essentials_employee_appointmets->save();
     
                         }
-                           else
+                        else
                         {
-                            
+                            $previous_appointment = EssentialsEmployeeAppointmet::where('employee_id', $emp->id)
+                            ->where('is_active',1)
+                            ->latest('created_at')
+                            ->first();
+                           
+                            if( $previous_appointment )
+                            {
+                                $previous_appointment->is_active= 0;
+                                $previous_appointment->end_at= $emp_data['contract_start_date'];
+                                $previous_appointment->save();
+                              
+                            }
+                            //contract start date --> appointement start date
                             $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                             $essentials_employee_appointmets->employee_id = $emp->id;
+                            $essentials_employee_appointmets->start_from= $final_contract_start_date;
                             $essentials_employee_appointmets->department_id=  $emp_data['essentials_department_id'];
-                            $essentials_employee_appointmets->business_location_id= $emp_data['location_id'];
                             $essentials_employee_appointmets->is_active = 1;
                             $essentials_employee_appointmets->profession_id=$emp_data['profession_id'];
                             $essentials_employee_appointmets->save();
@@ -714,15 +788,42 @@ class EssentialsEmployeeImportController extends Controller
                           
                         
                         
-                       
+                        if($emp_data['admission_date'] != null)
+                        {
+                            $previous_admission = EssentialsAdmissionToWork::where('employee_id',$emp->id)
+                            ->where('is_active',1)
+                            ->latest('created_at')
+                            ->first();
 
-                        $essentials_admission_to_works = new EssentialsAdmissionToWork();
-                        $essentials_admission_to_works->admissions_date=$emp_data['admission_date'];
-                        $essentials_admission_to_works->employee_id = $emp->id;
-                        $essentials_admission_to_works->admissions_type="first_time";
-                        $essentials_admission_to_works->admissions_status="on_date";
-                        $essentials_admission_to_works->is_active = 1;
-                        $essentials_admission_to_works->save();
+                           if( $previous_admission )
+                           {
+                                $previous_admission->is_active= 0;
+                                $previous_admission->save();
+
+                               //contract start date compare 
+                                $essentials_admission_to_works = new EssentialsAdmissionToWork();
+                                $essentials_admission_to_works->admissions_date=$emp_data['admission_date'];
+                                $essentials_admission_to_works->employee_id = $emp->id;
+                                $essentials_admission_to_works->admissions_type="after_vac";
+                                $essentials_admission_to_works->admissions_status="on_date";
+                                $essentials_admission_to_works->is_active = 1;
+                                $essentials_admission_to_works->save();
+                               
+                           }
+                           else
+                           {
+                                //also contract  start date
+                                $essentials_admission_to_works = new EssentialsAdmissionToWork();
+                                $essentials_admission_to_works->admissions_date=$emp_data['admission_date'];
+                                $essentials_admission_to_works->employee_id = $emp->id;
+                                $essentials_admission_to_works->admissions_type="first_time";
+                                $essentials_admission_to_works->admissions_status="on_date";
+                                $essentials_admission_to_works->is_active = 1;
+                                $essentials_admission_to_works->save();
+                           }
+                          
+                        }
+                        
 
                       
                     }
