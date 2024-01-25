@@ -497,29 +497,29 @@
     </script>
 
     <script>
-        $(document).ready(function() {
+        // $(document).ready(function() {
 
-            $('#userTypeSelect').change(function() {
+        //     $('#userTypeSelect').change(function() {
 
-                var userType = $(this).val();
-
-
-                var idProofDropdown = $('#id_proof_name');
+        //         var userType = $(this).val();
 
 
-                idProofDropdown.val('');
+        //         var idProofDropdown = $('#id_proof_name');
 
 
-                if (userType === 'worker') {
+        //         idProofDropdown.val('');
 
-                    idProofDropdown.find('option[value="eqama"]').show();
-                    idProofDropdown.find('option[value="national_id"]').hide();
-                } else {
 
-                    idProofDropdown.find('option').show();
-                }
-            });
-        });
+        //         if (userType === 'worker') {
+
+        //             idProofDropdown.find('option[value="eqama"]').show();
+        //             idProofDropdown.find('option[value="national_id"]').hide();
+        //         } else {
+
+        //             idProofDropdown.find('option').show();
+        //         }
+        //     });
+        // });
     </script>
     <script>
         function validateBorderNumber() {
