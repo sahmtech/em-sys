@@ -2145,16 +2145,21 @@ class DataController extends Controller
             $user = !empty($data['user']) ? $data['user'] : null;
 
             $allowance_deduction_ids = [];
-            if (!empty($user)) {
-                $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-                    ->pluck('allowance_deduction_id')
-                    ->toArray();
-            }
+                if (!empty($user)) {
+                    $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::with('essentialsAllowanceAndDeduction')
+                        ->where('user_id', $user->id)
+                        ->get();
+                }
 
             if (!empty($user)) {
                 $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
             } else {
                 $contract = null;
+            }
+            if (!empty($user)) 
+            $user_travel=EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->where('categorie_id', '!=',null)->first();
+            else {
+                $user_travel = null;
             }
 
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
@@ -2179,7 +2184,7 @@ class DataController extends Controller
                     'professions',
                     'departments',
                     'designations',
-                    'user',
+                    'user','user_travel',
                     'pay_comoponenets',
                     'allowance_deduction_ids'
                 )
@@ -2214,17 +2219,16 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
-
+     
         if ($data['event'] == 'user_saved') {
-
 
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
-            $user->essentials_pay_period = request()->input('essentials_pay_period');
+            $user->essentials_pay_period = request()->input('essentials_pay_period')??'month';
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
-            $user->company_id = request()->input('location_id');
+          
             if (request()->input('health_insurance') != null) {
                 $user->has_insurance = request()->input('health_insurance');
             }
@@ -2288,6 +2292,8 @@ class DataController extends Controller
                 $qualification2->employee_id = $user->id;
                 $qualification2->graduation_country = request()->input('graduation_country');
                 $qualification2->degree =  request()->input('degree');
+                $qualification2->marksName =  request()->input('marksName');
+                $qualification2->great_degree =  request()->input('great_degree');
 
                 $qualification2->save();
             }
@@ -2318,24 +2324,16 @@ class DataController extends Controller
                 $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
                 $travel_ticket_categorie->save();
             }
-            if (request()->input('essentials_department_id')) {
+
+            if (request()->input('profession')) {
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id = $user->id;
                 $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
-                $essentials_employee_appointmets->business_location_id = request()->input('location_id');
                 $essentials_employee_appointmets->is_active = 1;
                 $essentials_employee_appointmets->type = 'appoint';
-                $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
-                // $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+                $essentials_employee_appointmets->profession_id =request()->input('profession');
                 $essentials_employee_appointmets->save();
             }
-
-
-            // $essentials_employee_admission = new EssentialsEmployeeAppointmet();
-            // $essentials_employee_admission->employee_id  = $user->id;
-            // $essentials_employee_admission->admissions_type = 'first_time';
-            // $essentials_employee_admission->admissions_status = 'on_date';
-            // $essentials_employee_admission->save();
 
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);
@@ -2378,10 +2376,10 @@ class DataController extends Controller
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
-            $user->essentials_pay_period = request()->input('essentials_pay_period');
+            $user->essentials_pay_period = request()->input('essentials_pay_period') ?? 'month';
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->user_type = request()->input('user_type');
-            $user->company_id = request()->input('location_id');
+            $user->company_id = request()->input('company_id');
 
             if (request()->input('health_insurance') != null) {
                 $user->has_insurance = request()->input('health_insurance');
@@ -2396,7 +2394,9 @@ class DataController extends Controller
                 $user->contact_number = null;
             }
 
-
+            if ( request()->input('can_add_category') == 0){
+                EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->delete();
+            }
 
 
             $user->save();
@@ -2429,24 +2429,29 @@ class DataController extends Controller
                 $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
                 if ($qualification2) {
                     $qualification2->qualification_type = request()->input('qualification_type');
-                    $qualification2->major = request()->input('major');
+                    $qualification2->specialization = request()->input('general_specialization');
+                    $qualification2->sub_specialization  = request()->input('sub_specialization');
                     $qualification2->graduation_year =  request()->input('graduation_year');
                     $qualification2->graduation_institution =  request()->input('graduation_institution');
                     $qualification2->employee_id = $user->id;
                     $qualification2->graduation_country = request()->input('graduation_country');
                     $qualification2->degree =  request()->input('degree');
-
+                    $qualification2->marksName =  request()->input('marksName');
+                    $qualification2->great_degree =  request()->input('great_degree');
                     $qualification2->save();
                 } else {
                     $qualification2 = new EssentialsEmployeesQualification();
 
                     $qualification2->qualification_type = request()->input('qualification_type');
-                    $qualification2->major = request()->input('major');
+                    $qualification2->specialization = request()->input('general_specialization');
+                    $qualification2->sub_specialization  = request()->input('sub_specialization');
                     $qualification2->graduation_year =  request()->input('graduation_year');
                     $qualification2->graduation_institution =  request()->input('graduation_institution');
                     $qualification2->employee_id = $user->id;
                     $qualification2->graduation_country = request()->input('graduation_country');
                     $qualification2->degree =  request()->input('degree');
+                    $qualification2->marksName =  request()->input('marksName');
+                    $qualification2->great_degree =  request()->input('great_degree');
                     $qualification2->save();
                 }
             }
@@ -2544,6 +2549,12 @@ class DataController extends Controller
                     $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
                     $travel_ticket_categorie->save();
                 }
+                else{
+                    $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
+                    $travel_ticket_categorie->employee_id = $user->id;
+                    $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
+                    $travel_ticket_categorie->save();
+                }
             }
 
             if (request()->input('essentials_department_id')) {
@@ -2560,29 +2571,30 @@ class DataController extends Controller
                 }
             }
 
+
             if (request()->selectedData) {
+                EssentialsUserAllowancesAndDeduction::where('user_id',$user->id)->delete();
                 $jsonData = json_decode(request()->selectedData, true);
-
                 foreach ($jsonData as $item) {
+
+
                     try {
-                        $userAllowancesAndDeduction = EssentialsUserAllowancesAndDeduction::where('user_id', $id)
-                            ->where('allowance_deduction_id', (int)$item['salaryType'])
-                            ->first();
+                        $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+                        $userAllowancesAndDeduction->user_id = $user->id;
+                        $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
 
-                        if ($userAllowancesAndDeduction) {
-                            if ($item['amount'] !== null) {
-                                $userAllowancesAndDeduction->amount = $item['amount'];
-                            } else {
-                                $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
-                                    ->where('id', $item['salaryType'])
-                                    ->first();
+                        if ($item['amount'] != Null) {
+                            $userAllowancesAndDeduction->amount = $item['amount'];
+                        } else {
+                            $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+                                ->where('id', $item['salaryType'])
+                                ->first();
 
-                                if ($allowanceDeduction) {
-                                    $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
-                                }
+                            if ($allowanceDeduction) {
+                                $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
                             }
-                            $userAllowancesAndDeduction->save();
                         }
+                        $userAllowancesAndDeduction->save();
                     } catch (\Exception $e) {
                         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 

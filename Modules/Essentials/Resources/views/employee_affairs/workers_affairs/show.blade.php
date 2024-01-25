@@ -256,6 +256,8 @@
                                                 {{ '' }}
                                             @elseif ($user->id_proof_name === 'eqama')
                                                 @lang('essentials::lang.' . $user->id_proof_name)
+                                            @elseif ($user->id_proof_name === 'border')
+                                                @lang('essentials::lang.border_number')
                                             @elseif ($user->id_proof_name === 'national_id' || $user->id_proof_name === 'هوية وطنية')
                                                 @lang('essentials::lang.' . $user->id_proof_name)
                                             @elseif ($user->id_proof_name === 'هوية وطنية')
@@ -267,7 +269,8 @@
 
                                     <div class="col-md-4">
                                         <p><strong>@lang('lang_v1.id_proof_number'):</strong>
-                                            {{ $user->id_proof_number ?? '' }}</p>
+                                            {{ $user->id_proof_number ?? $user->border_no ?? '' }}</p>
+                                 
                                     </div>
 
                                     <div class="clearfix"></div>

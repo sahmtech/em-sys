@@ -23,7 +23,11 @@
             <div class="col-md-4">
                 <div class="form-group">
                     {!! Form::label('email', __('business.email') . ':*') !!}
-                    {!! Form::text('email', null, ['class' => 'form-control', 'required', 'placeholder' => __('business.email')]) !!}
+                    {!! Form::text('email', !empty($user->email) ? $user->email : null, [
+                        'class' => 'form-control',
+                        'required',
+                        'placeholder' => __('business.email'),
+                    ]) !!}
                 </div>
             </div>
             <div class="col-md-4">
@@ -34,7 +38,7 @@
                         'placeholder' => __('business.password'),
                         'required' => empty($user->allow_login) ? true : false,
                     ]) !!}
-                    <p class="help-block">@lang('user.leave_password_blank')</p>
+                    {{-- <p class="help-block">@lang('user.leave_password_blank')</p> --}}
                 </div>
             </div>
             <div class="col-md-4">
@@ -86,7 +90,7 @@
                         @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
                     </div>
                 </div>
-                
+
             </div>
             <div class="col-md-4">
                 <div class="form-group">
@@ -100,7 +104,7 @@
                     </div>
                 </div>
             </div>
-            
+
 
             <div class="clearfix"></div>
             <div style="display:none">

@@ -19,15 +19,7 @@
         <div class="row">
             <div class="col-md-12 box box-primary">
 
-                <div class="col-md-4">
-                    <div class="form-group">
-                        {!! Form::label('surname', __('business.prefix') . ':') !!}
-                        {!! Form::text('surname', $user->surname, [
-                            'class' => 'form-control',
-                            'placeholder' => __('business.prefix_placeholder'),
-                        ]) !!}
-                    </div>
-                </div>
+               
                 <div class="col-md-4">
                     <div class="form-group">
                         {!! Form::label('first_name', __('business.first_name') . ':*') !!}

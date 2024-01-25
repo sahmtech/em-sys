@@ -21,7 +21,7 @@
             {!! Form::label('user_hijri_dob', __('lang_v1.hijri_dob') . ':') !!}
             {!! Form::text('hijrii_date', !empty($user->hijrii_date) ? $user->hijrii_date : null, [
                 'class' => 'form-control hijri-date-picker',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('lang_v1.hijri_dob'),
                 'readonly',
                 'id' => 'user_hijri_dob',
@@ -32,7 +32,7 @@
             {!! Form::label('user_dob', __('lang_v1.dob') . ':') !!}
             {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('lang_v1.dob'),
                 'readonly',
                 'id' => 'user_dob',
@@ -47,7 +47,7 @@
                 !empty($user->gender) ? $user->gender : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'id' => 'gender',
                     'placeholder' => __('messages.please_select'),
                 ],
@@ -60,18 +60,15 @@
                 'marital_status',
                 ['married' => __('lang_v1.married'), 'unmarried' => __('lang_v1.unmarried'), 'divorced' => __('lang_v1.divorced')],
                 !empty($user->marital_status) ? $user->marital_status : null,
-                ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('lang_v1.marital_status')],
+                ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.marital_status')],
             ) !!}
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('blood_group', __('lang_v1.blood_group') . ':') !!}
-            <!-- {!! Form::text('blood_group', !empty($user->blood_group) ? $user->blood_group : null, [
+
+            {!! Form::select('blood_group', $blood_types, !empty($user->blood_group) ? $user->blood_group : null, [
                 'class' => 'form-control',
-                'placeholder' => __('lang_v1.blood_group'),
-            ]) !!} -->
-            {!! Form::select('blood_group', $blood_types, null, [
-                'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('essentials::lang.blood_group'),
             ]) !!}
         </div>
@@ -82,7 +79,7 @@
             {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
                 'class' => 'form-control',
                 'require',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('lang_v1.mobile_number'),
                 'oninput' => 'validateContactNumber(this)',
                 'maxlength' => '10',
@@ -101,7 +98,7 @@
         {!! Form::label('family_number', __('lang_v1.family_contact_number') . ':') !!}
         {!! Form::text('family_number', !empty($user->family_number) ? $user->family_number : null, [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'placeholder' => __('lang_v1.family_contact_number'),
         ]) !!}
     </div> --}}
@@ -111,7 +108,7 @@
             {!! Form::label('permanent_address', __('lang_v1.address') . ':') !!}
             {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('lang_v1.address'),
                 'rows' => 3,
             ]) !!}
@@ -120,7 +117,7 @@
         {!! Form::label('current_address', __('lang_v1.current_address') . ':') !!}
         {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'placeholder' => __('lang_v1.current_address'),
             'rows' => 3,
         ]) !!}
@@ -130,7 +127,7 @@
 
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-            <select id="id_proof_name" style="height:36px" required name="id_proof_name" class="form-control"
+            <select id="id_proof_name" style="height:40px" required name="id_proof_name" class="form-control"
                 onchange="updateNationalityOptions(this)">
                 <option value="">@lang('user.select_proof_name')</option>
                 <option value="national_id"
@@ -147,22 +144,24 @@
             {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
             {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '', [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('lang_v1.eqama_end_date'),
                 'id' => 'eqama_end_date',
             ]) !!}
         </div>
 
-        <div class="form-group col-md-3" id="proof_no_container" style="display:none">
-            {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
-            {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
-                'class' => 'form-control',
-                'style' => 'height:36px',
-                'placeholder' => __('lang_v1.id_proof_number'),
-                'oninput' => 'validateIdProofNumber(this)',
-            ]) !!}
-            <span id="idProofNumberError" class="text-danger"></span>
-        </div>
+        <div class="form-group col-md-3" id="proof_no_container" 
+        style="<?php echo !empty($user->id_proof_name) ? 'display:block' : 'display:none'; ?>">
+       {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':*') !!}
+       {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
+           'class' => 'form-control',
+           'style' => 'height:40px',
+           'required',
+           'placeholder' => __('lang_v1.id_proof_number'),
+           'oninput' => 'validateIdProofNumber(this)',
+       ]) !!}
+       <span id="idProofNumberError" class="text-danger"></span>
+   </div>
 
         {{-- 
             <div class="form-group col-md-6" id="border_no_container"
@@ -170,7 +169,7 @@
             {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
             {!! Form::text('border_no', optional($user)->border_no ?? '3', [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('essentials::lang.border_number'),
                 'id' => 'border_no',
                 'maxlength' => '10',
@@ -186,12 +185,12 @@
             {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, [
                 'class' => 'form-control select2',
                 'id' => 'nationalities_select',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'required',
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
         </div>
-        
+
         <div class="clearfix"></div>
 
         <div class="col-md-3">
@@ -210,7 +209,7 @@
                     null,
                     [
                         'class' => 'form-control ',
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                         'placeholder' => __('essentials::lang.select_type'),
                     ],
                 ) !!}
@@ -222,7 +221,7 @@
                 {!! Form::file('document_file', [
                     'class' => 'form-control',
                     'placeholder' => __('essentials::lang.file'),
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                 ]) !!}
             </div>
         </div>
@@ -251,29 +250,41 @@
                         'diploma' => __('essentials::lang.diploma'),
                     ],
                     !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
-                    ['class' => 'form-control', 'style' => 'width:100%;height:36px', 'placeholder' => __('lang_v1.all')],
+                    ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
                 ) !!}
             </div>
         </div>
         <div class=" col-md-4">
             <div class="form-group ">
                 {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
-                {!! Form::select('general_specialization', $professions,  !empty($qualification->specialization ) ? $qualification->specialization  : null, [
-                    'class' => 'form-control',
-                    'style' => 'height:36px',   'id' => 'professionSelect',
-                    'placeholder' => __('essentials::lang.select_specialization'),
-                ]) !!}
+                {!! Form::select(
+                    'general_specialization',
+                    $professions,
+                    !empty($qualification->specialization) ? $qualification->specialization : null,
+                    [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                        'id' => 'professionSelect',
+                        'placeholder' => __('essentials::lang.select_specialization'),
+                    ],
+                ) !!}
             </div>
 
         </div>
         <div class=" col-md-4">
             <div class="form-group ">
                 {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
-                {!! Form::select('sub_specialization', $spacializations, !empty($qualification->sub_specialization  ) ? $qualification->sub_specialization   : null, [
-                    'class' => 'form-control',
-                    'style' => 'height:36px','id' => 'specializationSelect',
-                    // 'placeholder' => __('essentials::lang.sub_specialization'),
-                ]) !!}
+                {!! Form::select(
+                    'sub_specialization',
+                    $spacializations,
+                    !empty($qualification->sub_specialization) ? $qualification->sub_specialization : null,
+                    [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                        'id' => 'specializationSelect',
+                        // 'placeholder' => __('essentials::lang.sub_specialization'),
+                    ],
+                ) !!}
             </div>
 
         </div>
@@ -288,7 +299,7 @@
             </div>
         </div>
 
-   
+
         <div class=" col-md-4">
             <div class="form-group">
                 {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
@@ -304,7 +315,7 @@
                 {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
                 {!! Form::select('graduation_country', $countries, null, [
                     'class' => 'form-control',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'placeholder' => __('essentials::lang.select_country'),
                 ]) !!}
             </div>
@@ -360,7 +371,7 @@
                 !empty($bank_details['account_holder_name']) ? $bank_details['account_holder_name'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'id' => 'account_holder_name',
                     'placeholder' => __('lang_v1.account_holder_name'),
                 ],
@@ -373,7 +384,7 @@
                 !empty($bank_details['account_number']) ? $bank_details['account_number'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'id' => 'account_number',
                     'placeholder' => __('lang_v1.account_number'),
                 ],
@@ -388,7 +399,7 @@
                 !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'id' => 'bank_name',
                     'placeholder' => __('lang_v1.bank_name'),
                 ],
@@ -402,7 +413,7 @@
                 !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
                 [
                     'class' => 'form-control',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'id' => 'bank_code',
                     'placeholder' => __('lang_v1.bank_code'),
                     'oninput' => 'validateBankCode(this)',
@@ -415,7 +426,7 @@
             {!! Form::label('branch', __('lang_v1.branch') . ':') !!}
             {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'id' => 'branch',
                 'placeholder' => __('lang_v1.branch'),
             ]) !!}
@@ -427,7 +438,7 @@
                 'class' => 'form-control',
                 'placeholder' => __('essentials::lang.Iban_file'),
             
-                'style' => 'height:36px',
+                'style' => 'height:40px',
             ]) !!}
         </div>
 
@@ -582,149 +593,149 @@
             }
         }
 
-$(document).ready(function() {
+        $(document).ready(function() {
 
 
-                var nationalities = @json($nationalities);
-                var selectedNationalityId = {{ $user->nationality_id ?? 'null' }};
+            var nationalities = @json($nationalities);
+            var selectedNationalityId = {{ $user->nationality_id ?? 'null' }};
 
 
-                var nationalitySelect = $('#nationalities_select');
+            var nationalitySelect = $('#nationalities_select');
 
-                $.each(nationalities, function(id, name) {
-
-                
-                        nationalitySelect.append(new Option(name, id));
-                
-                });
+            $.each(nationalities, function(id, name) {
 
 
+                nationalitySelect.append(new Option(name, id));
 
-                nationalitySelect.val(selectedNationalityId);
-
-
-                nationalitySelect.trigger('change');
+            });
 
 
 
-                $('#id_proof_name').change(function() {
-                    var selectedOption = $(this).val();
+            nationalitySelect.val(selectedNationalityId);
+
+
+            nationalitySelect.trigger('change');
+
+
+
+            $('#id_proof_name').change(function() {
+                var selectedOption = $(this).val();
                 console.log(selectedOption);
-                    const idProofNumberInput = document.getElementById('id_proof_number');
-                    const border_no_containerInput = document.getElementById('border_no');
-                    idProofNumberInput.minLength = validationLength;
+                
+                const idProofNumberInput = document.getElementById('id_proof_number');
+                const border_no_containerInput = document.getElementById('border_no');
+                idProofNumberInput.minLength = validationLength;
 
-                    const nationalitySelect = document.querySelector('#nationalities_select');
-                    const input = document.getElementById('id_proof_number');
-                    const prefix = selectedOption === 'eqama' ? '2' : '1';
-                    input.setAttribute('data-prefix', prefix);
-                    input.value = prefix;
-
-
-                    nationalitySelect.innerHTML = '';
+                const nationalitySelect = document.querySelector('#nationalities_select');
+                const input = document.getElementById('id_proof_number');
+                const prefix = selectedOption === 'eqama' ? '2' : '1';
+                input.setAttribute('data-prefix', prefix);
+                input.value = prefix;
 
 
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.text = '{{ __('sales::lang.nationality') }}';
-                    nationalitySelect.appendChild(defaultOption);
-
-                    if (selectedOption === 'eqama') {
-                        validationLength = 10;
-                        idProofNumberInput.value = '2';
-                    
-                        $('#border_no_container').hide();
-                        $('#proof_no_container').show();
+                nationalitySelect.innerHTML = '';
 
 
-                        for (const [id, name] of Object.entries(nationalities)) {
-                    
-                            if (id !== '5') {
-                                const option = document.createElement('option');
-                                option.value = id;
-                                option.text = name;
-                                nationalitySelect.appendChild(option);
-                            }
-                        }
-                    } 
-                    else if (selectedOption === 'national_id') {
-                    // validationLength = 13;
-                    console.log(selectedOption);
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = '{{ __('sales::lang.nationality') }}';
+                nationalitySelect.appendChild(defaultOption);
 
-                    
-                    
-                        validationLength = 10;
-                        idProofNumberInput.value = '1';
+                if (selectedOption === 'eqama') {
+                    validationLength = 10;
+                    idProofNumberInput.value = '2';
 
-                        $('#border_no_container').show();
-                        $('#proof_no_container').show();
-
-                    const option = document.createElement('option');
-                    option.value = '5'; 
-                    option.text = nationalities['5']; 
-                    nationalitySelect.appendChild(option);
-                    
-                        // for (const [id, name] of Object.entries(nationalities)) {
-                        //     const option = document.createElement('option');
-                        //     option.value = id;
-                        //     option.text = name;
-                        //     nationalitySelect.appendChild(option);
-                        // }
-                    } 
-                    else {
-                        validationLength = 10;
-                        idProofNumberInput.value = '';
+                    $('#border_no_container').hide();
+                    $('#proof_no_container').show();
 
 
-                        for (const [id, name] of Object.entries(nationalities)) {
+                    for (const [id, name] of Object.entries(nationalities)) {
+
+                        if (id !== '5') {
                             const option = document.createElement('option');
                             option.value = id;
                             option.text = name;
                             nationalitySelect.appendChild(option);
                         }
-                        $('#border_no_container').hide();
-                        $('#proof_no_container').hide();
                     }
-                });
+                } else if (selectedOption === 'national_id') {
+                    // validationLength = 13;
+                    console.log(selectedOption);
 
 
-});
+
+                    validationLength = 10;
+                    idProofNumberInput.value = '1';
+
+                    $('#border_no_container').show();
+                    $('#proof_no_container').show();
+
+                    const option = document.createElement('option');
+                    option.value = '5';
+                    option.text = nationalities['5'];
+                    nationalitySelect.appendChild(option);
+
+                    // for (const [id, name] of Object.entries(nationalities)) {
+                    //     const option = document.createElement('option');
+                    //     option.value = id;
+                    //     option.text = name;
+                    //     nationalitySelect.appendChild(option);
+                    // }
+                } else {
+                    validationLength = 10;
+                    idProofNumberInput.value = '';
+
+
+                    for (const [id, name] of Object.entries(nationalities)) {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.text = name;
+                        nationalitySelect.appendChild(option);
+                    }
+                    $('#border_no_container').hide();
+                    $('#proof_no_container').hide();
+                }
+                
+            });
+
+
+        });
     </script>
 
 
-<script type="text/javascript">
-    $(document).ready(function() {
+    <script type="text/javascript">
+        $(document).ready(function() {
 
 
-        var professionSelect = $('#professionSelect');
-        var specializationSelect = $('#specializationSelect');
+            var professionSelect = $('#professionSelect');
+            var specializationSelect = $('#specializationSelect');
 
-       
-        professionSelect.on('change', function() {
-            var selectedProfession = $(this).val();
-            console.log(selectedProfession);
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            $.ajax({
-                url: '{{ route('specializations') }}',
-                type: 'POST',
-                data: {
-                    _token: csrfToken,
-                    profession_id: selectedProfession
-                },
-                success: function(data) {
-                    specializationSelect.empty();
-                    $.each(data, function(id, name) {
-                        specializationSelect.append($('<option>', {
-                            value: id,
-                            text: name
-                        }));
-                    });
-                }
+
+            professionSelect.on('change', function() {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function(data) {
+                        specializationSelect.empty();
+                        $.each(data, function(id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
             });
-        });
 
-    });
-</script>
+        });
+    </script>
 
     <script>
         function getGPA() {
@@ -835,6 +846,12 @@ $(document).ready(function() {
                 input.value = idProofNumber;
                 return;
             }
+            if (idProofName === 'eqama') {
+                idProofNumberInput.setAttribute('type', 'text');
+            } else if (idProofName === 'national_id') {
+                idProofNumberInput.setAttribute('type', 'number');
+            }
+
             if (idProofNumber.startsWith(prefix)) {
                 if (idProofName === 'eqama' && idProofNumber.length !== 10) {
                     idProofNumberError.innerText = 'يجب أن تكون مكونة من 10 أرقام';

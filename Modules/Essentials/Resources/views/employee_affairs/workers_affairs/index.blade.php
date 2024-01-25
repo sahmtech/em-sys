@@ -17,6 +17,19 @@
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     <div class="col-md-3">
                         <div class="form-group">
+                            <label for="business_filter">@lang('essentials::lang.business_single'):</label>
+                            {!! Form::select('select_company_id', $companies, null, [
+                                'class' => 'form-control select2',
+                                'id' => 'select_company_id',
+                                'style' => 'height:36px; width:100%',
+                                'placeholder' => __('lang_v1.all'),
+                                'required',
+                                'autofocus',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
                             {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
                             {!! Form::select('project_name_filter', $contacts_fillter, null, [
                                 'class' => 'form-control select2',
@@ -131,7 +144,7 @@
                             <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
                             <td class="table-td-width-100px">@lang('business.email')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.department')</td>
+                         
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
@@ -181,6 +194,9 @@
                         }
                         if ($('#status_fillter').val()) {
                             d.status_fillter = $('#status_fillter').val();
+                        }
+                        if ($('#select_company_id').val()) {
+                            d.company = $('#select_company_id').val();
                         }
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate
@@ -253,9 +269,7 @@
                     {
                         data: "email"
                     },
-                    {
-                        data: "department"
-                    },
+                
                     {
                         data: "profession",
                         name: 'profession'
@@ -332,7 +346,7 @@
                 $('#doc_filter_date_range').val('');
                 reloadDataTable();
             });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter').on('change',
+            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter,#select_company_id').on('change',
                 function() {
                     workers_table.ajax.reload();
                 });

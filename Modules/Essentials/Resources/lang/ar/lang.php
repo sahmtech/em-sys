@@ -1660,7 +1660,12 @@ return [
   'f_comp_insurance_class_not_found' => 'الشركة المدخلة غير تابعة للمنشاة التابع لها المرافق',
 
   'edit_worker' => 'تعديل عامل',
+
+  'profile_picture'=>'الصورة الشخصية',
+
+
   'edit_procedure' => 'تعديل إجراء',
   'repeated_managements_please_re_check' => 'يوجد إدارات مكررة، يرجى إعادة إدخال الإجراء',
+
 
 ];
