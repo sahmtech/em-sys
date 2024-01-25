@@ -311,6 +311,12 @@ class EssentialsEmployeeUpdateImportController extends Controller
                      
                          $emp_array['nationality_id'] = null;
                      }
+                     if(!empty($value[34]))
+                     {
+                         $emp_array['contract_number']= $value[34];
+                     }
+                     else{ $emp_array['contract_number']=null;}
+         
 
                     if (!empty($value[35]))
                     {
