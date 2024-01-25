@@ -179,7 +179,7 @@
 
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
 
                 ajax: {
 
