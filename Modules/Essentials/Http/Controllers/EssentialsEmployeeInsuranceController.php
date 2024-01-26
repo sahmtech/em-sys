@@ -1051,12 +1051,37 @@ class EssentialsEmployeeInsuranceController extends Controller
 
             if($family == null)
             {
-                $emp=EssentialsEmployeesInsurance::where('employee_id', $input['employee'])
+                $previous_emp_insurance=EssentialsEmployeesInsurance::where('employee_id', $input['employee'])
                 ->where('is_deleted',0)
                 ->latest('created_at')
                 ->first();
-                if(!$emp)
+                
+
+                if($previous_emp_insurance)
                 {
+                    $previous_emp_insurance->is_deleted= 1 ;
+
+
+                    $insurance_data['is_deleted']= 0;
+                    $insurance_data['insurance_classes_id'] = $input['insurance_class'];
+                    $insurance_data['employee_id'] = $input['employee'];
+                   
+                    $insurance_class_company=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
+                    ->select('insurance_company_id')->first();
+                    
+                    $insurance_data['insurance_company_id']=  $insurance_class_company->insurance_company_id;
+                   
+                    EssentialsEmployeesInsurance::create($insurance_data);
+                    
+                    $output = [
+                        'success' => true,
+                        'msg' => __('lang_v1.added_success'),
+                    ];
+                }
+               
+                else
+                {
+                    $insurance_data['is_deleted']= 0;
                     $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                     $insurance_data['employee_id'] = $input['employee'];
                    
@@ -1070,24 +1095,21 @@ class EssentialsEmployeeInsuranceController extends Controller
                         'msg' => __('lang_v1.added_success'),
                     ];
                 }
-               
-                else
-                {
-                    $output = [
-                        'success' => false,
-                        'msg' => __('essentials::lang.employee_has_insurance'),
-                    ];
-                }
             }
             else
             {
                
-                $emp=EssentialsEmployeesInsurance::where('family_id', $input['employee'])
+                $previous_family_insurance=EssentialsEmployeesInsurance::where('family_id', $input['employee'])
                 ->where('is_deleted',0)
                 ->latest('created_at')
                 ->first();
-                if(!$emp)
+
+                if( $previous_family_insurance)
                 {
+                    $previous_family_insurance->is_deleted = 1;
+
+
+                    $insurance_data['is_deleted']= 0;
                     $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                     $insurance_data['family_id'] = $input['employee'];
                    
@@ -1103,9 +1125,20 @@ class EssentialsEmployeeInsuranceController extends Controller
                 }
                 else
                 {
+                   
+                    $insurance_data['is_deleted']= 0;
+                    $insurance_data['insurance_classes_id'] = $input['insurance_class'];
+                    $insurance_data['family_id'] = $input['employee'];
+                   
+                    $insurance_class_company=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
+                    ->select('insurance_company_id')->first();
+                    
+                    $insurance_data['insurance_company_id']=  $insurance_class_company->insurance_company_id;
+                   
+                    EssentialsEmployeesInsurance::create($insurance_data);
                     $output = [
-                        'success' => false,
-                        'msg' => __('essentials::lang.employee_has_insurance'),
+                        'success' => true,
+                        'msg' => __('lang_v1.added_success'),
                     ];
                 }
             }
@@ -1122,7 +1155,8 @@ class EssentialsEmployeeInsuranceController extends Controller
             ];
         }
 
-        return redirect()->route('employee_insurance')->with('status', $output);
+        return redirect()->route('employee_insurance')
+        ->with('status', $output);
     }
 
 
@@ -1160,8 +1194,6 @@ class EssentialsEmployeeInsuranceController extends Controller
         }
         else
         {
-
-           
                 $emp_id=$family->user->id;
                
                 if($emp_id)
@@ -1292,7 +1324,7 @@ class EssentialsEmployeeInsuranceController extends Controller
 
             if($family == null)
             {
-                $emp=EssentialsEmployeesInsurance::where('employee_id', $input['employee'])->first();
+                    $emp=EssentialsEmployeesInsurance::where('employee_id', $input['employee'])->first();
               
                     $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                     $insurance_data['employee_id'] = $input['employee'];
@@ -1302,8 +1334,6 @@ class EssentialsEmployeeInsuranceController extends Controller
                     $insurance_data['insurance_company_id']=  $insurance_class_company->insurance_company_id;
                    
                     EssentialsEmployeesInsurance::where('id', $id)->update($insurance_data);
-                   
-              
                
               
             }
@@ -1326,10 +1356,6 @@ class EssentialsEmployeeInsuranceController extends Controller
                 
             }
     
-               
-              
-               
-               
                 $output = [
                     'success' => true,
                     'msg' => __('lang_v1.updated_success'),
@@ -1360,8 +1386,6 @@ class EssentialsEmployeeInsuranceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
             $insurance = EssentialsEmployeesInsurance::find($id);
