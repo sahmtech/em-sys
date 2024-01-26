@@ -106,58 +106,58 @@ class EssentialsEmployeeInsuranceController extends Controller
                     
                   
 
-                      if( $proof_number !=null && $border_no==null &&  $family_proof_number ==null )
-                      {
-                        $emp = User::where('id_proof_number', $emp_array['eqama_emp_no'])->first();
-                        if($emp)
-                        {
-                            $emp_insurance=EssentialsEmployeesInsurance::where('employee_id' ,$emp->id)->first();
-                            if($emp_insurance)
-                            {
-                                $is_valid = false;
-                                $error_msg = __('essentials::lang.proof_number_has_insurance').$row_no;
-                                break;
-                            }
-                        }
+                    //   if( $proof_number !=null && $border_no==null &&  $family_proof_number ==null )
+                    //   {
+                    //     $emp = User::where('id_proof_number', $emp_array['eqama_emp_no'])->first();
+                    //     if($emp)
+                    //     {
+                    //         $emp_insurance=EssentialsEmployeesInsurance::where('employee_id' ,$emp->id)->first();
+                    //         if($emp_insurance)
+                    //         {
+                    //             $is_valid = false;
+                    //             $error_msg = __('essentials::lang.proof_number_has_insurance').$row_no;
+                    //             break;
+                    //         }
+                    //     }
                        
 
-                      }
+                    //   }
 
-                    else if( $proof_number ==null && $border_no !=null &&  $family_proof_number ==null )
-                      {
-                        $emp_border = User::where('border_no', $emp_array['eqama_emp_no'])->first();
-                        if(  $emp_border )
-                        {
-                            $emp_insurance=EssentialsEmployeesInsurance::where('employee_id' ,$emp_border->id)->first();
-                            if($emp_insurance)
-                            {
-                                $is_valid = false;
-                                $error_msg = __('essentials::lang.border_no_has_insurance').$row_no;
-                                break;
-                            }
-                        }
+                    // else if( $proof_number ==null && $border_no !=null &&  $family_proof_number ==null )
+                    //   {
+                    //     $emp_border = User::where('border_no', $emp_array['eqama_emp_no'])->first();
+                    //     if(  $emp_border )
+                    //     {
+                    //         $emp_insurance=EssentialsEmployeesInsurance::where('employee_id' ,$emp_border->id)->first();
+                    //         if($emp_insurance)
+                    //         {
+                    //             $is_valid = false;
+                    //             $error_msg = __('essentials::lang.border_no_has_insurance').$row_no;
+                    //             break;
+                    //         }
+                    //     }
                        
 
-                      }
+                    //   }
 
-                     else if( $proof_number ==null && $border_no ==null &&  $family_proof_number !=null )
-                      {
+                    //  else if( $proof_number ==null && $border_no ==null &&  $family_proof_number !=null )
+                    //   {
                        
-                        $family = EssentialsEmployeesFamily::where('eqama_number',$emp_array['eqama_emp_no'])->first();
+                    //     $family = EssentialsEmployeesFamily::where('eqama_number',$emp_array['eqama_emp_no'])->first();
 
 
-                        if(  $family){
-                            $emp_insurance=EssentialsEmployeesInsurance::where('family_id' ,$family->id)->first();
-                            if($emp_insurance)
-                            {
-                                $is_valid = false;
-                                $error_msg = __('essentials::lang.family_has_insurance').$row_no;
-                                break;
-                            }
-                        }
+                    //     if(  $family){
+                    //         $emp_insurance=EssentialsEmployeesInsurance::where('family_id' ,$family->id)->first();
+                    //         if($emp_insurance)
+                    //         {
+                    //             $is_valid = false;
+                    //             $error_msg = __('essentials::lang.family_has_insurance').$row_no;
+                    //             break;
+                    //         }
+                    //     }
                        
 
-                      }
+                    //   }
                      
                       if ($proof_number == null && $border_no==null &&  $family_proof_number ==null ) {
                       
