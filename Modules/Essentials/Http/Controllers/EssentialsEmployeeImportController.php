@@ -596,7 +596,7 @@ class EssentialsEmployeeImportController extends Controller
                                  }
                             }
 
-                            
+
                             $previous_proof_date = EssentialsOfficialDocument::where('employee_id',  $emp->id)
                             ->where('type' , 'residence_permit')
                             ->where('is_active',1)
@@ -611,14 +611,14 @@ class EssentialsEmployeeImportController extends Controller
                             
                             }
 
-                          $doc =new EssentialsOfficialDocument();
-                          $doc->type ='residence_permit';
-                          $doc->status ='valid';
-                          $doc->employee_id = $emp->id;
-                          $doc->is_active= 1;
-                          $doc->number = $emp_data['id_proof_number'];
-                          $doc->expiration_date = $emp_data['proof_end_date'];
-                          $doc->save();
+                            $doc =new EssentialsOfficialDocument();
+                            $doc->type ='residence_permit';
+                            $doc->status ='valid';
+                            $doc->employee_id = $emp->id;
+                            $doc->is_active= 1;
+                            $doc->number = $emp_data['id_proof_number'];
+                            $doc->expiration_date = $emp_data['proof_end_date'];
+                            $doc->save();
 
 
 
@@ -636,20 +636,20 @@ class EssentialsEmployeeImportController extends Controller
                               
                             }
 
-                          $passport =new EssentialsOfficialDocument();
-                          $passport->type ='passport';
-                          $passport->status ='valid';
-                          $passport->employee_id = $emp->id;
-                          $passport->is_active= 1;
-                          $passport->number = $emp_data['passport_number'];
-                          $passport->expiration_date = $emp_data['passport_end_date'];
-                          $passport->save();
-                        
+                            $passport =new EssentialsOfficialDocument();
+                            $passport->type ='passport';
+                            $passport->status ='valid';
+                            $passport->employee_id = $emp->id;
+                            $passport->is_active= 1;
+                            $passport->number = $emp_data['passport_number'];
+                            $passport->expiration_date = $emp_data['passport_end_date'];
+                            $passport->save();
+                            
                         
 
 
                         $final_contract_start_date=null;
-                        if($emp_data['contract_start_date'] != null &&  $emp_data['contract_start_date'] != null )
+                        if($emp_data['contract_start_date'] != null ||  $emp_data['contract_start_date'] != null )
                         {
 
                             $previous_contract = EssentialsEmployeesContract::where('employee_id',  $emp->id)
