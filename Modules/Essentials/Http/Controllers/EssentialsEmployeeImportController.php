@@ -606,6 +606,7 @@ class EssentialsEmployeeImportController extends Controller
                         
                             if( $previous_proof_date )
                             {
+                                //review the expire date of previous 
                                 $previous_proof_date->is_active= 0;
                                 $previous_proof_date->save();
                             
@@ -630,6 +631,7 @@ class EssentialsEmployeeImportController extends Controller
                            
                             if( $previous_passport_date )
                             {
+                                  //review the expire date of previous 
                                 $previous_passport_date->is_active= 0;
                                 $previous_passport_date->save();
                               
@@ -658,6 +660,7 @@ class EssentialsEmployeeImportController extends Controller
                            
                             if( $previous_contract )
                             {
+                                 //review the expire date of previous 
                                 $previous_contract->is_active= 0;
                                // $previous_contract->contract_end_date= $emp_data['contract_start_date'];
                                 $previous_contract->save();
