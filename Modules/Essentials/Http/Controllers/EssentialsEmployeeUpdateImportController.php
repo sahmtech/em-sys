@@ -484,6 +484,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $emp_data['contract_type_id'] = null;
                         $emp_data['essentials_pay_period'] = 'month';
                         $existingEmployee = User::where('id_proof_number',$emp_data['id_proof_number'])
+                        ->where('status','active')
                         ->first();
 
                         
@@ -570,7 +571,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 if( $previous_proof_date )
                                 {
                                     $previous_proof_date->is_active= 0;
-                                    $previous_proof_date->expiration_date= $emp_data['proof_end_date'];
+                            
                                     $previous_proof_date->save();
                                   
                                 }
@@ -591,11 +592,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
     
                                 if (!empty($filteredResidencePermitData))
                                 {
-                                    
-                                    $d=EssentialsOfficialDocument::Create(  $filteredResidencePermitData  );
-                                     
-                                      
-                                  
+                                    EssentialsOfficialDocument::Create(  $filteredResidencePermitData  );
+
                                 }
                             }
                             
@@ -614,7 +612,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             if( $previous_passport_date )
                             {
                                 $previous_passport_date->is_active= 0;
-                                $previous_passport_date->expiration_date= $emp_data['passport_end_date'];
+                              
                                 $previous_passport_date->save();
                               
                             }

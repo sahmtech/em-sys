@@ -472,7 +472,7 @@ class EssentialsEmployeeImportController extends Controller
             {
                 $emp_array['is_renewable'] = $value[39];
             } 
-            else{   $emp_array['is_renewable'] = null;}
+            else{ $emp_array['is_renewable'] = null;}
 
             $emp_array['essentials_salary'] = $value[40];
 
@@ -524,6 +524,7 @@ class EssentialsEmployeeImportController extends Controller
             ];
               
             $emp_array['total_salary'] = $value[47]; 
+            
             if($value[48] != null)
             {
                 $emp_array['emp_number'] = $value[48];
@@ -606,7 +607,7 @@ class EssentialsEmployeeImportController extends Controller
                             if( $previous_proof_date )
                             {
                                 $previous_proof_date->is_active= 0;
-                                $previous_proof_date->expiration_date= $emp_data['proof_end_date'];
+                          
                                 $previous_proof_date->save();
                             
                             }
@@ -631,7 +632,7 @@ class EssentialsEmployeeImportController extends Controller
                             if( $previous_passport_date )
                             {
                                 $previous_passport_date->is_active= 0;
-                                $previous_passport_date->expiration_date= $emp_data['passport_end_date'];
+                             
                                 $previous_passport_date->save();
                               
                             }
