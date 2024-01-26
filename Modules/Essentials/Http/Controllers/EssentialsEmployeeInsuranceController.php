@@ -839,7 +839,6 @@ class EssentialsEmployeeInsuranceController extends Controller
         $can_cancel_employees_insurances = auth()->user()->can('essentials.delete_employees_insurances');
         $can_add_employees_insurances = auth()->user()->can('essentials.add_employees_insurances');
         $can_edit_employees_insurances = auth()->user()->can('essentials.edit_employees_insurances');
-    
         $can_insurance = auth()->user()->can('essentials.crud_employees_insurances');
 
         if (!($is_admin || $can_insurance)) {
@@ -849,8 +848,6 @@ class EssentialsEmployeeInsuranceController extends Controller
             ]);
         }
         
-
-
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -884,7 +881,6 @@ class EssentialsEmployeeInsuranceController extends Controller
         'essentials_employees_insurances.id as id' ,
         'essentials_employees_insurances.insurance_company_id',
         'essentials_employees_insurances.insurance_classes_id')
-
         ->orderByRaw('IF(essentials_employees_insurances.employee_id = family_employee_id  , 0 , 1 )')
         ->orderBy('essentials_employees_insurances.employee_id');
        
@@ -915,6 +911,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                     }
                     return $item;
                 })
+
                 ->editColumn('fixnumber', function ($row) {
                     $item='';
                     if($row->employee_id != null)
@@ -965,7 +962,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                         }
                         
                         if ($is_admin || $can_edit_employees_insurances)
-                         {
+                        {
                             $html .= 
                             '  <a href="' . route('employee_insurance.edit', ['id' => $row->id])  . '"
                              data-href="' . route('employee_insurance.edit', ['id' => $row->id])  . ' "
@@ -973,10 +970,8 @@ class EssentialsEmployeeInsuranceController extends Controller
                              class="btn btn-xs btn-modal btn-info"  
                              data-container="#editemployeeInsurance">
                              <i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit')  . '</a>&nbsp;';
-                            
-                            
-                        }
 
+                        }
 
                         return $html;
                     }
@@ -989,6 +984,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                         ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
                      
                     })
+
                 ->filterColumn('proof_number', function ($query, $keyword) {
                         $query->whereRaw("CASE
                                             WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
@@ -997,8 +993,8 @@ class EssentialsEmployeeInsuranceController extends Controller
                                         END LIKE ?", ["%$keyword%"]);
                     })
 
-                ->removeColumn('id')
-                ->removeColumn('status')
+               
+                
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -1009,11 +1005,13 @@ class EssentialsEmployeeInsuranceController extends Controller
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name")
         );
         
-        $familyQuery =EssentialsEmployeesFamily::where(function($query) use($userIds) {
+        $familyQuery =EssentialsEmployeesFamily::where(function($query) use($userIds) 
+        {
                     $query->whereHas('user' ,function($query1) use( $userIds){
                         $query1->whereIn('users.id', $userIds);
                     });
-             })->select('id as id', 'full_name');
+        })
+        ->select('id as id', 'full_name');
         
         $combinedQuery = $userQuery->unionAll($familyQuery);
         $users = $combinedQuery->pluck('full_name', 'id');
@@ -1185,28 +1183,27 @@ class EssentialsEmployeeInsuranceController extends Controller
         }
         else
         {
-                $emp_id=$family->user->id;
-               
-                if($emp_id)
+            $emp_id=$family->user->id;
+            if($emp_id)
+            {
+                $company_id = User::find($emp_id)->company_id;
+                $insurance_company_id = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)
+                ->first();
+        
+                if( $insurance_company_id)
                 {
-                    $company_id = User::find($emp_id)->company_id;
-                    $insurance_company_id = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)
-                    ->first();
-            
-                    if( $insurance_company_id)
-                    {
-                        $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company_id->insur_id)
-                        ->pluck('name', 'id');
-                    
-                    }
-                    else
-                    {
-                        return response()->json(['message' =>  __('essentials::lang.no_company_added')]);
-                    }
-            
-    
+                    $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company_id->insur_id)
+                    ->pluck('name', 'id');
+                
+                }
+                else
+                {
+                    return response()->json(['message' =>  __('essentials::lang.no_company_added')]);
+                }
+
             }
-           
+               
+                
 
         }
 
