@@ -453,6 +453,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                             ->where('is_deleted',0)
                             ->latest('created_at')
                             ->first();
+                            
                             if( $previous_family_insurance)
                             {$previous_family_insurance->is_deleted=1;}
                            
