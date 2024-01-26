@@ -1439,7 +1439,9 @@ class EssentialsEmployeeInsuranceController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         try {
-            $insurance = EssentialsEmployeesInsurance::find($id);
+            $insurance = EssentialsEmployeesInsurance::where('is_deleted',0)
+             ->latest('created_at')
+             ->find($id);
 
             if (!$insurance) 
             {
