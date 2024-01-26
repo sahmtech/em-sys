@@ -497,7 +497,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                   'first_name',
                                   'mid_name',
                                   'last_name',
-                                  'employee_type',
+                                
                                   'email',
                                   'dob',
                                   'gender',
@@ -571,7 +571,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 if( $previous_proof_date )
                                 {
                                     $previous_proof_date->is_active= 0;
-                            
                                     $previous_proof_date->save();
                                   
                                 }
@@ -612,7 +611,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             if( $previous_passport_date )
                             {
                                 $previous_passport_date->is_active= 0;
-                              
                                 $previous_passport_date->save();
                               
                             }
