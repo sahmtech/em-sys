@@ -68,7 +68,6 @@ class EssentialsEmployeeInsuranceController extends Controller
     //store excel insurance 
      public function insurancepostImportEmployee(Request $request)
      {
-        
      
          try {
             
@@ -800,6 +799,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                         if($emp != null && $emp_border_no ==null &&  $family==null)
                         {
                             $insurance = EssentialsEmployeesInsurance::where('employee_id', $emp->id)
+                            ->where('is_deleted',0)
                             ->where('family_id', null)
                             ->first();
             
@@ -818,6 +818,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                         {
                             $insurance = EssentialsEmployeesInsurance::where('employee_id', $emp_border_no->id)
                             ->where('family_id', null)
+                            ->where('is_deleted',0)
                             ->first();
             
                             if ($insurance) {
@@ -833,6 +834,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                         { 
                             $insurance = EssentialsEmployeesInsurance::where('family_id', $family->id)
                             ->where('employee_id', null)
+                            ->where('is_deleted',0)
                             ->first();
             
                             if ($insurance) {
