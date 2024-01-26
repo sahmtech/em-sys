@@ -166,8 +166,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                           break;
                       }
 
-                   
-
+                
                     
                   }
                    else
