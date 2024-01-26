@@ -409,7 +409,10 @@ class EssentialsEmployeeInsuranceController extends Controller
                             ->first();
 
                             if( $previous_emp_insurance)
-                            {$previous_emp_insurance->is_deleted=1;}
+                            {
+                                $previous_emp_insurance->is_deleted=1;
+                                $previous_emp_insurance->save();
+                            }
 
 
                             $insurance =new EssentialsEmployeesInsurance();
@@ -432,7 +435,10 @@ class EssentialsEmployeeInsuranceController extends Controller
                             ->first();
                            
                             if( $previous_emp_insurance)
-                            {$previous_emp_insurance->is_deleted=1;}
+                            {
+                                $previous_emp_insurance->is_deleted=1;
+                                $previous_emp_insurance->save();
+                            }
                             
 
                             $insurance =new EssentialsEmployeesInsurance();
@@ -455,7 +461,10 @@ class EssentialsEmployeeInsuranceController extends Controller
                             ->first();
                             
                             if( $previous_family_insurance)
-                            {$previous_family_insurance->is_deleted=1;}
+                            {
+                                $previous_family_insurance->is_deleted=1;
+                                $previous_family_insurance->save();
+                            }
                            
                             
 
@@ -1096,6 +1105,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                 if($previous_emp_insurance)
                 {
                     $previous_emp_insurance->is_deleted= 1 ;
+                    $previous_emp_insurance->save();
 
 
                     $insurance_data['is_deleted']= 0;
@@ -1139,11 +1149,12 @@ class EssentialsEmployeeInsuranceController extends Controller
                 ->where('is_deleted',0)
                 ->latest('created_at')
                 ->first();
+             
 
                 if( $previous_family_insurance)
                 {
                     $previous_family_insurance->is_deleted = 1;
-
+                    $previous_family_insurance->save();
 
                     $insurance_data['is_deleted']= 0;
                     $insurance_data['insurance_classes_id'] = $input['insurance_class'];
