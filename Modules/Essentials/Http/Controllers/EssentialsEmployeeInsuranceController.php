@@ -35,16 +35,6 @@ class EssentialsEmployeeInsuranceController extends Controller
      public function import_employee_insurance_index()
      {
         
-         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-         $can_view_import_employees_insurance = auth()->user()->can('essentials.view_import_employees_insurance');
-         
-        //  if ($is_admin || !$can_view_import_employees_insurance  ) {
-            
-        //     return redirect()->route('home')->with('status', [
-        //         'success' => false,
-        //         'msg' => __('message.unauthorized'),
-        //     ]);
-        //  }
          $zip_loaded = extension_loaded('zip') ? true : false;
          
          if ($zip_loaded === false) 
