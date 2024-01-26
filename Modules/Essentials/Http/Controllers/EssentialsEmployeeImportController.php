@@ -667,6 +667,7 @@ class EssentialsEmployeeImportController extends Controller
 
                             $contract =new EssentialsEmployeesContract();
                             $contract->employee_id  = $emp->id;
+
                             if( $emp_data['contract_number'] == null)
                             {
                                 $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
@@ -692,8 +693,10 @@ class EssentialsEmployeeImportController extends Controller
     
                                 $contract_start_date =$emp_data['contract_start_date']; 
                                 $final_contract_start_date=   $contract_start_date;
+                                
                                 $date = Carbon::parse($contract_start_date);
                                 $date->addYear(); 
+                                
                                 $contract->contract_end_date = $date;
                                 $contract->contract_start_date=$emp_data['contract_start_date']; 
                                 $contract->contract_duration=1;
@@ -705,7 +708,9 @@ class EssentialsEmployeeImportController extends Controller
                                 $date = Carbon::parse($contract_end_date);
                                 $date->subYear(); 
                                 $contract->contract_start_date = $date;
+                                
                                 $final_contract_start_date= $date;
+                                
                                 $contract->contract_end_date=$emp_data['contract_end_date']; 
                                 $contract->contract_duration=1;
      
@@ -713,6 +718,7 @@ class EssentialsEmployeeImportController extends Controller
                             else{
                                 $contract_end_date =$emp_data['contract_end_date']; 
                                 $contract_start_date =$emp_data['contract_start_date']; 
+                                
                                 $final_contract_start_date= $contract_start_date ;
                                 
                                 $start = Carbon::parse($contract_start_date);
