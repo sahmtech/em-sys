@@ -65,6 +65,7 @@ class EssentialsEmployeeInsuranceController extends Controller
         
      }
  
+    //store excel insurance 
      public function insurancepostImportEmployee(Request $request)
      {
         
@@ -402,10 +403,20 @@ class EssentialsEmployeeInsuranceController extends Controller
 
                         if($emp != null && $emp_border_no ==null &&  $family==null)
                         {
+                            $previous_emp_insurance=EssentialsEmployeesInsurance::where('employee_id', $emp->id)
+                            ->where('is_deleted',0)
+                            ->latest('created_at')
+                            ->first();
+
+                            if( $previous_emp_insurance)
+                            {$previous_emp_insurance->is_deleted=1;}
+
+
                             $insurance =new EssentialsEmployeesInsurance();
                             $insurance->insurance_classes_id=$emp_data['insurance_class_id'];
                             $insurance->insurance_company_id=$emp_data['insurance_company_id'];
                             $insurance->employee_id=$emp->id;
+                            $insurance->is_deleted =0;
                             $insurance->family_id =null;
                             $insurance->save();
 
@@ -415,11 +426,21 @@ class EssentialsEmployeeInsuranceController extends Controller
                         }
                         else if( $emp_border_no != null && $emp ==null &&  $family ==null)
                         {
+                            $previous_emp_insurance=EssentialsEmployeesInsurance::where('employee_id', $emp_border_no->id)
+                            ->where('is_deleted',0)
+                            ->latest('created_at')
+                            ->first();
+                           
+                            if( $previous_emp_insurance)
+                            {$previous_emp_insurance->is_deleted=1;}
+                            
+
                             $insurance =new EssentialsEmployeesInsurance();
                             $insurance->insurance_classes_id=$emp_data['insurance_class_id'];
                             $insurance->insurance_company_id=$emp_data['insurance_company_id'];
                             $insurance->employee_id=$emp_border_no->id;
                             $insurance->family_id =null;
+                            $insurance->is_deleted =0;
                             $insurance->save();
 
                             $processedEqamaEmpNos[] = $eqama_emp_no;
@@ -427,10 +448,21 @@ class EssentialsEmployeeInsuranceController extends Controller
                         }
                         else if( $family != null&&  $emp ==null && $emp_border_no==null)
                         {
+                            
+                            $previous_family_insurance=EssentialsEmployeesInsurance::where('family_id', $family->id)
+                            ->where('is_deleted',0)
+                            ->latest('created_at')
+                            ->first();
+                            if( $previous_family_insurance)
+                            {$previous_family_insurance->is_deleted=1;}
+                           
+                            
+
                             $insurance =new EssentialsEmployeesInsurance();
                             $insurance->insurance_classes_id=$emp_data['insurance_class_id'];
                             $insurance->insurance_company_id=$emp_data['insurance_company_id'];
                             $insurance->employee_id=null;
+                            $insurance->is_deleted =0;
                             $insurance->family_id =$family->id;
                             $insurance->save();
 
@@ -445,7 +477,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                          throw new \Exception($error_msg);
                      }      
  
-                     }
+                    }
                
                   
                 
@@ -464,14 +496,17 @@ class EssentialsEmployeeInsuranceController extends Controller
                  'msg' => $e->getMessage(),
              ];
  
-             return redirect()->route('import_employees_insurance')->with('notification', $output);
+             return redirect()->route('import_employees_insurance')
+             ->with('notification', $output);
          }
       
  
-         return redirect()->route('employee_insurance')->with('notification', 'success insert');
+         return redirect()->route('employee_insurance')
+         ->with('notification', 'success insert');
      }
 
 
+    //update excel insurance 
     public function insurancepostUpdateImportEmployee(Request $request)
     {
         try {
