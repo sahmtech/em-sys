@@ -650,7 +650,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                            
                       
                             $final_contract_start_date=null;
-                            if($emp_data['contract_start_date'] != null &&  $emp_data['contract_start_date'] != null )
+                            if($emp_data['contract_start_date'] != null  ||  $emp_data['contract_start_date'] != null )
                             {
                                 $previous_contract = EssentialsEmployeesContract::where('employee_id',  $existingEmployee->id)
                                 ->where('is_active',1)
