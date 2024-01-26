@@ -3,20 +3,20 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\Contact;
-
 use App\User;
+use Excel;
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsInsuranceCompany;
 use Modules\Essentials\Entities\EssentialsEmployeesFamily;
 use Modules\Essentials\Entities\EssentialsCompaniesInsurancesContract;
-use Excel;
+
 
 
 class EssentialsEmployeeInsuranceController extends Controller
@@ -88,13 +88,17 @@ class EssentialsEmployeeInsuranceController extends Controller
                   if (!empty($value[0])) 
                   {
                   
-                     
-                      $proof_number = User::where('id_proof_number',$emp_array['eqama_emp_no'])->first();
-                      $border_no = User::where('border_no',$emp_array['eqama_emp_no'])->first();
-                      
-                      $family_proof_number = EssentialsEmployeesFamily::where('eqama_number', $emp_array['eqama_emp_no'])->first();
                     
-                  
+                    $proof_number = User::where('id_proof_number',$emp_array['eqama_emp_no'])->first();
+                    $border_no = User::where('border_no',$emp_array['eqama_emp_no'])->first();
+                    $family_proof_number = EssentialsEmployeesFamily::where('eqama_number', $emp_array['eqama_emp_no'])->first();
+                   
+                    if ($proof_number == null && $border_no==null &&  $family_proof_number ==null ) {
+                      
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.number_not_found').$row_no;
+                        break;
+                    }
 
                     //   if( $proof_number !=null && $border_no==null &&  $family_proof_number ==null )
                     //   {
@@ -149,15 +153,8 @@ class EssentialsEmployeeInsuranceController extends Controller
 
                     //   }
                      
-                      if ($proof_number == null && $border_no==null &&  $family_proof_number ==null ) {
-                      
-                          $is_valid = false;
-                          $error_msg = __('essentials::lang.number_not_found').$row_no;
-                          break;
-                      }
+                     
 
-                
-                    
                   }
                    else
                    {
@@ -184,11 +181,9 @@ class EssentialsEmployeeInsuranceController extends Controller
 
                      else if($proof_number_emp != null &&   $family_proof_number ==null )
                      {
-                        
-                        
+
                              $company_id=$proof_number_emp->company_id;
                              $insurance_company = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)->first();
-                           
                              if($insurance_company)
                              {
                                  $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company->insur_id)
@@ -218,10 +213,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                      {
                         $emp=User::where('id',$family_proof_number->employee_id)->first();
                         $company_id=$emp->company_id;
-                    
-                        
                         $insurance_company = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)->first();
-                    
                         if($insurance_company)
                         {
                             $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company->insur_id)
@@ -244,8 +236,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                             break;
                         }
                                  
-                        
-                                 
+          
                      }   
                    }
                    else
@@ -259,12 +250,8 @@ class EssentialsEmployeeInsuranceController extends Controller
                    $emp_array['insurance_company_id'] = $value[2];
                    if (!empty($value[2])) 
                    {
-                      
-                      
-                     
                        $company = Contact::where('id',$emp_array['insurance_company_id'])->where('type','insurance')
                        ->first();
-                      
                        if (!$company) {
                        
                            $is_valid = false;
@@ -275,12 +262,8 @@ class EssentialsEmployeeInsuranceController extends Controller
 
                        else if($proof_number_emp != null &&   $family_proof_number ==null )
                        {
-                          
-                          
                                $company_id=$proof_number_emp->company_id;
-                               
                                $insurance_company = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)->first();
-                             
                                if($insurance_company)
                                {
                                    $cop = contact::where('type','insurance')
@@ -304,41 +287,39 @@ class EssentialsEmployeeInsuranceController extends Controller
                                    break;
                                }
                           
-   
+
                        }
   
                        else if($family_proof_number != null && $proof_number_emp == null)
                        {
+                        $emp=User::where('id',$family_proof_number->employee_id)->first();
+                        $company_id=$emp->company_id;
+                        $insurance_company = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)->first();
+                    
+                             if($insurance_company)
+                             {
+                                 $cop = contact::where('type','insurance')
+                                 ->where('id', $insurance_company->insur_id)
+                                 ->get();
+                                 
+                                 
+                                 if (!in_array($emp_array['insurance_company_id'], $cop->pluck('id')->toArray()))
+                                     {
+                                     $is_valid = false;
+                                     $error_msg = __('essentials::lang.f_comp_insurance_class_not_found') . $row_no;
+                                     break;
+                                     }
+                             
+                             }
+                             else
+                             {
+                                 
+                                 $is_valid = false;
+                                 $error_msg = __('essentials::lang.no_company_added').$row_no;
+                                 break;
+                             }
                                    
-                                       $emp=User::where('id',$family_proof_number->employee_id)->first();
-                                   
-                                       $company_id=$emp->company_id;
-                                   
-                                       
-                                       $insurance_company = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)->first();
-                                   
-                                            if($insurance_company)
-                                            {
-                                                $cop = contact::where('type','insurance')
-                                                ->where('id', $insurance_company->insur_id)
-                                                ->get();
-                                                
-                                                
-                                                if (!in_array($emp_array['insurance_company_id'], $cop->pluck('id')->toArray()))
-                                                    {
-                                                    $is_valid = false;
-                                                    $error_msg = __('essentials::lang.f_comp_insurance_class_not_found') . $row_no;
-                                                    break;
-                                                    }
-                                            
-                                            }
-                                            else
-                                            {
-                                                
-                                                $is_valid = false;
-                                                $error_msg = __('essentials::lang.no_company_added').$row_no;
-                                                break;
-                                            }
+                                      
                                    
                        } 
 
