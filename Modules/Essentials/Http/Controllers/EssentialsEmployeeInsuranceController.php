@@ -318,17 +318,9 @@ class EssentialsEmployeeInsuranceController extends Controller
                                  $error_msg = __('essentials::lang.no_company_added').$row_no;
                                  break;
                              }
-                                   
-                                      
-                                   
+          
                        } 
-
-
-                   
                     }    
-
-
-                      
                
                    else
                    {
