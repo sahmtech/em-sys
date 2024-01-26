@@ -658,7 +658,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 if( $previous_contract )
                                 {
                                     $previous_contract->is_active= 0;
-                                    $previous_contract->contract_end_date= $emp_data['contract_start_date'];
+                                   // $previous_contract->contract_end_date= $emp_data['contract_start_date'];
                                     $previous_contract->save();
                                   
                                 }
@@ -743,8 +743,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                         $appointmentData =
                                         [
                                             'employee_id'=> $existingEmployee->id,
+                                            'start_from'=>  $final_contract_start_date,
                                             'department_id' => null,
-                                        
                                             'profession_id' => $emp_data['profession_id'],
                                             'is_active' => 1,
                                            
@@ -757,6 +757,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                         $appointmentData =
                                         [
                                             'employee_id'=> $existingEmployee->id,
+                                            'start_from'=>  $final_contract_start_date,
                                             'department_id' => $emp_data['essentials_department_id'],
                                             'profession_id' => $emp_data['profession_id'],
                                             'is_active' => 1,
