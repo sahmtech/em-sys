@@ -607,7 +607,6 @@ class EssentialsEmployeeImportController extends Controller
                             if( $previous_proof_date )
                             {
                                 $previous_proof_date->is_active= 0;
-                          
                                 $previous_proof_date->save();
                             
                             }
@@ -632,7 +631,6 @@ class EssentialsEmployeeImportController extends Controller
                             if( $previous_passport_date )
                             {
                                 $previous_passport_date->is_active= 0;
-                             
                                 $previous_passport_date->save();
                               
                             }
