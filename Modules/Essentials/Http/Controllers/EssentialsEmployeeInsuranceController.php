@@ -1371,7 +1371,9 @@ class EssentialsEmployeeInsuranceController extends Controller
 
             if($family == null)
             {
-                    $emp=EssentialsEmployeesInsurance::where('employee_id', $input['employee'])->first();
+                    $emp=EssentialsEmployeesInsurance::where('employee_id', $input['employee'])
+                    ->where('is_deleted',0)
+                    ->first();
               
                     $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                     $insurance_data['employee_id'] = $input['employee'];
@@ -1387,7 +1389,9 @@ class EssentialsEmployeeInsuranceController extends Controller
             else
             {
                
-                $emp=EssentialsEmployeesInsurance::where('family_id', $input['employee'])->first();
+                $emp=EssentialsEmployeesInsurance::where('family_id', $input['employee'])
+                ->where('is_deleted',0)
+                ->first();
              
               
                     $insurance_data['insurance_classes_id'] = $input['insurance_class'];
