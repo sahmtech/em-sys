@@ -264,6 +264,14 @@ class RequestController extends Controller
                 }
             }
         }
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+        ->where(function ($query) {
+            $query->Where('name', 'like', '%مجلس%')
+                ->orWhere('name', 'like', '%عليا%');
+        })
+        ->pluck('id')->toArray();
+
+
         $escalatedRequests = FollowupWorkerRequest::where('sub_status', 'escalateRequest')->select([
             'followup_worker_requests.request_no',
             'followup_worker_requests_process.id as process_id',
@@ -277,14 +285,17 @@ class RequestController extends Controller
             'essentials_wk_procedures.department_id as department_id',
             'users.id_proof_number',
             'essentials_wk_procedures.can_return',
-            'users.assigned_to'
+            'users.assigned_to',
+            'essentials_procedure_escalations.escalates_to'
 
         ])
             ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
             ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+            ->join('essentials_procedure_escalations', 'essentials_procedure_escalations.procedure_id', '=', 'essentials_wk_procedures.id')
+            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('essentials_procedure_escalations.escalates_to',$departmentIds)
             ->where('followup_worker_requests_process.status', 'pending')->whereIn('users.id', $userIds);
 
+            return $escalatedRequests->get() ;
         if (request()->ajax()) {
 
 
