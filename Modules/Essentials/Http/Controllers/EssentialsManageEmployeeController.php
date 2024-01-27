@@ -179,9 +179,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
             ])
-
-            ->orderBy('id', 'desc')
-            ->groupBy('id');
+            ->orderBy('id', 'desc');
 
         if (!empty($request->input('specialization'))) {
 
@@ -934,7 +932,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        
+   
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -948,7 +946,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-
+            $request['DocumentTypes'] =$request->input('DocumentTypes');
 
             $com_id = request()->input('company_id');
             error_log($com_id);

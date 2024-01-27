@@ -2138,7 +2138,7 @@ class DataController extends Controller
             $business_id = session()->get('business.id');
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
-            // $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
+          
             $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
@@ -2220,6 +2220,7 @@ class DataController extends Controller
     public function afterModelSaved($data)
     {
      
+
         if ($data['event'] == 'user_saved') {
 
             $user = $data['model_instance'];
@@ -2281,7 +2282,8 @@ class DataController extends Controller
 
 
 
-            if (request()->input('qualification_type')) {
+            if (request()->input('qualification_type') || request()->input('graduation_year') || request()->hasFile('qualification_file')
+            || request()->input('graduation_institution') || request()->input('specialization') || request()->input('great_degree')) {
                 $qualification2 = new EssentialsEmployeesQualification();
 
                 $qualification2->qualification_type = request()->input('qualification_type');
@@ -2294,27 +2296,15 @@ class DataController extends Controller
                 $qualification2->degree =  request()->input('degree');
                 $qualification2->marksName =  request()->input('marksName');
                 $qualification2->great_degree =  request()->input('great_degree');
-
+                if (request()->hasFile('qualification_file')) {
+                    $file = request()->file('qualification_file');
+                    $filePath = $file->store('/employee_qualifications');
+                    $qualification2->file_path = $filePath;
+                }
+                
                 $qualification2->save();
             }
 
-
-
-
-            if (request()->input('document_type')) {
-                $document2 = new EssentialsOfficialDocument();
-                $document2->type = request()->input('document_type');
-                $document2->employee_id =   $user->id;
-                $document2->status = 'valid';
-
-                if (request()->hasFile('document_file')) {
-                    $file = request()->file('document_file');
-                    $filePath = $file->store('/officialDocuments');
-                    $document2->file_path = $filePath;
-                }
-
-                $document2->save();
-            }
 
 
 
@@ -2424,10 +2414,14 @@ class DataController extends Controller
             }
 
             $id = $data['model_instance']['id'];
-            if (request()->input('qualification_type') != null) {
+            if (request()->input('qualification_type') || request()->input('graduation_year') ||
+                request()->input('graduation_institution') || request()->input('specialization') || request()->input('great_degree')) {
 
                 $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
-                if ($qualification2) {
+                if (! $qualification2) {
+                   $qualification2 = new EssentialsEmployeesQualification();
+                } 
+                  
                     $qualification2->qualification_type = request()->input('qualification_type');
                     $qualification2->specialization = request()->input('general_specialization');
                     $qualification2->sub_specialization  = request()->input('sub_specialization');
@@ -2438,24 +2432,15 @@ class DataController extends Controller
                     $qualification2->degree =  request()->input('degree');
                     $qualification2->marksName =  request()->input('marksName');
                     $qualification2->great_degree =  request()->input('great_degree');
+                    if (request()->hasFile('qualification_file')) {
+                        $file = request()->file('qualification_file');
+                        $filePath = $file->store('/employee_qualifications');
+                        $qualification2->file_path = $filePath;
+                    }
                     $qualification2->save();
-                } else {
-                    $qualification2 = new EssentialsEmployeesQualification();
-
-                    $qualification2->qualification_type = request()->input('qualification_type');
-                    $qualification2->specialization = request()->input('general_specialization');
-                    $qualification2->sub_specialization  = request()->input('sub_specialization');
-                    $qualification2->graduation_year =  request()->input('graduation_year');
-                    $qualification2->graduation_institution =  request()->input('graduation_institution');
-                    $qualification2->employee_id = $user->id;
-                    $qualification2->graduation_country = request()->input('graduation_country');
-                    $qualification2->degree =  request()->input('degree');
-                    $qualification2->marksName =  request()->input('marksName');
-                    $qualification2->great_degree =  request()->input('great_degree');
-                    $qualification2->save();
-                }
+                
+            
             }
-
 
             if (request()->input('document_type')) {
                 $document2 = EssentialsOfficialDocument::where('employee_id', $id)->first();

@@ -150,7 +150,11 @@ class EssentialsEmployeeQualificationController extends Controller
             $input2['degree'] = $input['degree'];
             $input2['marksName'] = $input['marksName'];
             $input2['great_degree'] = $input['great_degree'];
-
+            if (request()->hasFile('qualification_file')) {
+                $file = request()->file('qualification_file');
+                $filePath = $file->store('/employee_qualifications');
+                $input2['file_path'] = $filePath;
+            }
 
             EssentialsEmployeesQualification::create($input2);
 

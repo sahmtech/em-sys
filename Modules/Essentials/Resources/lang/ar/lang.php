@@ -1666,6 +1666,6 @@ return [
 
   'edit_procedure' => 'تعديل إجراء',
   'repeated_managements_please_re_check' => 'يوجد إدارات مكررة، يرجى إعادة إدخال الإجراء',
-
-
+'add_file'=>'إضافة وثيقة',
+'qualification_file'=>'شهادة التأهيل العلمي',
 ];
