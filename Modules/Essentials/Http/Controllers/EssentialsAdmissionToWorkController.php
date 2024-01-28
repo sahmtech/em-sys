@@ -188,7 +188,6 @@ class EssentialsAdmissionToWorkController extends Controller
             $input = $request->only(['employee', 'admissions_type', 'admissions_status', 'admissions_date']);
 
             $input2['employee_id'] = $input['employee'];
-
             $input2['admissions_type'] = $input['admissions_type'];
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];

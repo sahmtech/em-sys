@@ -204,8 +204,6 @@ class EssentialsEmployeeContractController extends Controller
             $input2['is_renewable'] = $input['is_renewable'];
 
             $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
-
-
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->contract_number;
                 $numericPart = (int)substr($latestRefNo, 3);

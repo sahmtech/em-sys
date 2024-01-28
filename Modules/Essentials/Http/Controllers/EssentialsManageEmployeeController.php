@@ -1118,7 +1118,8 @@ class EssentialsManageEmployeeController extends Controller
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
 
 
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)
+        ->value('profession_id');
 
         if ($professionId !== null) {
             $profession = EssentialsProfession::find($professionId)->name;
