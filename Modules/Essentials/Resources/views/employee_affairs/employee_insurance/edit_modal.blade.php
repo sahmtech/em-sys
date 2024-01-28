@@ -12,10 +12,26 @@
 
                         <div class="modal-body">
 
+                            @php
+                                $selectedEmployeeId = $insurance->employee_id;
+                                $selectedFamilyId = $insurance->family_id; 
+                                $selectedId =null;
+                                
+                                if ($selectedEmployeeId === null && $selectedFamilyId !== null) {
+                                    $selectedId = $insurance->family_id; 
+                                }
+                                else if($selectedEmployeeId !== null && $selectedFamilyId === null) {
+                                    $selectedId = $insurance->employee_id; 
+                                }
+                                
+
+                               
+                            @endphp
+
                             <div class="row">
                                 <div class="form-group col-md-6" style="">
                                     {!! Form::label('employee', __('essentials::lang.employee') . ':') !!}
-                                    {!! Form::select('employee', $users, $insurance->employee_id, [
+                                    {!! Form::select('employee', $users,  $selectedId  , [
                                         'class' => 'form-control',
                                         'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.select_employee'),
@@ -43,7 +59,7 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                         </div>
                         {!! Form::close() !!}

@@ -1080,6 +1080,18 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'essentials.import_employees_insurances',
+                        'label' => __('essentials::lang.import_employees_insurances'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.import_update_employees_insurances',
+                        'label' => __('essentials::lang.import_update_employees_insurances'),
+                        'default' => false,
+                    ],
+                    
+                    
+                    [
                         'value' => 'essentials.insurances_requests_change_status',
                         'label' => __('essentials::lang.insurances_requests_change_status'),
                         'default' => false,
@@ -1241,14 +1253,27 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_missing_employees_info'),
                         'default' => false,
                     ],
-
+                    //import employees permissions------------------
                     [
                         'value' => 'essentials.crud_import_employee',
                         'label' => __('essentials::lang.crud_import_employee'),
                         'default' => false,
                     ],
 
+                    [
+                        'value' => 'essentials.import_create_employees',
+                        'label' => __('essentials::lang.import_create_employees'),
+                        'default' => false,
+                    ],
 
+
+                    [
+                        'value' => 'essentials.import_update_employees',
+                        'label' => __('essentials::lang.import_update_employees'),
+                        'default' => false,
+                    ],
+
+                    //----------------------------------
                     [
                         'value' => 'essentials.crud_employee_appointments',
                         'label' => __('essentials::lang.crud_employee_appointments'),
@@ -1502,6 +1527,17 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_import_employees_familiy'),
                         'default' => false,
                     ],
+                    
+                    // [
+                    //     'value' => 'essentials.view_families_insurances',
+                    //     'label' => __('essentials::lang.view_families_insurances'),
+                    //     'default' => false,
+                    // ],
+                    // [
+                    //     'value' => 'essentials.add_families_insurances',
+                    //     'label' => __('essentials::lang.add_families_insurances'),
+                    //     'default' => false,
+                    // ],
                     [
                         'value' => 'essentials.view_employees',
                         'label' => __('essentials::lang.view_employees'),
