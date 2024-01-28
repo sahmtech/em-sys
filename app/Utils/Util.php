@@ -1602,16 +1602,17 @@ class Util
      */
     public function createUser($request)
     {
-    
+
+
         $user_details = $request->only([
             'surname', 'first_name', 'last_name', 'email', 'mid_name',
             'profile_picture', 'profession', 'specialization',
             'user_type', 'crm_contact_id', 'allow_login',
-            'username', 'password',
+            'username', 'password', 'DocumentTypes',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob',
             'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
-            'custom_field_2', 'custom_field_3', 'eqama_end_date','company_id',
+            'custom_field_2', 'custom_field_3', 'eqama_end_date', 'company_id',
             'custom_field_4', 'guardian_name', 'assigned_to',
             'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no', 'expiration_date',
             'current_address', 'bank_details', 'selected_contacts', 'emp_number', 'total_salary'
@@ -1640,6 +1641,7 @@ class Util
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
 
 
+
         // $user_details['assigned_to'] = !empty($user_details['assigned_to']) ? $user_details['assigned_to'] : 'assigned_to';
         if (!empty($user_details['assigned_to'])) {
             $user_details['assigned_to'] = $request->input('assigned_to');
@@ -1648,7 +1650,7 @@ class Util
         $user_details['business_id'] = $business_id;
         $user_details['nationality_id'] = $request->input('nationality');
         $user_details['company_id'] = $request->input('company_id');
-   
+
 
 
 
@@ -1703,15 +1705,46 @@ class Util
 
 
         $user = User::create($user_details);
+        if ($request->has('DocumentTypes')) {
 
-        if (!empty($user_details['expiration_date'])) {
-            $input2['type'] = 'residence_permit';
-            $input2['status'] = 'valid';
-            $input2['employee_id'] = $user->id;
-            $input2['number'] = $user_details['id_proof_number'];
-            $input2['expiration_date'] = $user_details['expiration_date'];
-            EssentialsOfficialDocument::create($input2);
+            $documents = json_decode($request->input('DocumentTypes'), true);
+        
+            foreach ($documents as $index => $document) {
+                $document2 = new EssentialsOfficialDocument();
+                $document2->type = $document['document_type'];
+                $document2->employee_id = $user->id;
+                
+
+                if ($document['document_type'] == 'national_id' && $request->input('id_proof_name') == 'national_id') {
+                    $document2->number = $request->input('id_proof_number');
+                }
+                
+                if ($document['document_type'] == 'residence_permit' && $request->input('expiration_date') && $request->input('id_proof_name') == 'eqama') {
+                    $document2->expiration_date = $request->input('expiration_date');
+                    $document2->number = $request->input('id_proof_number');
+                }
+                
+                if ($request->input('expiration_date')) {
+                    $document2->expiration_date = $request->input('expiration_date');
+                }
+        
+                $document2->status = 'valid';
+        
+  
+                if (isset($document['document_file'])) {
+       
+                    $file = $request->file('document_file')[$index];
+                    
+                    if ($file) {
+                        $filePath = $file->store('/officialDocuments');
+                        $document2->file_path = $filePath;
+                    }
+                }
+        
+                $document2->save();
+            }
         }
+
 
         $bankDetails = json_decode($user_details['bank_details'], true);
 
@@ -1734,16 +1767,7 @@ class Util
         }
 
 
-        $role = null;
-        if ($request->input('role')) {
 
-            $role = Role::findOrFail($request->input('role'));
-            $user->assignRole($role->name);
-        } else {
-            $role = Role::where('name', 'User#' . $business_id)->first();
-        }
-
-  
         $moduleUtil = new \App\Utils\ModuleUtil;
         // $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user, 'request' => $user_details]);
         $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);

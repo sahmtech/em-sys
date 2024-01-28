@@ -1534,11 +1534,20 @@ return [
   'delete_companies_insurance_contracts' => ' حذف  عقد شركة تأمين',
   'does_not_add_insurance_company' => 'لا يمكن الحذف  لم تضيف شركة تأمين للمنشاة ',
   'no_company_added' => 'لم تتم إضافة شركة تأمين للمنشاة التابع لها الموظف',
+  'end_work_date' => 'آخر يوم عمل',
 
-
-
-
-
+  'view_contract_cancel_requests' => 'عرض طلبات إنهاء العلاقات التعاقدية',
+  'cancel_contract' => 'إنهاء العلاقة التعاقدية',
+  'finish_procedure' => 'إنهاء الإجراء',
+  'contract_cancel_requests' => 'طلبات إنهاء العلاقة التعاقدية',
+  'cancleContractRequest' => 'طلب إنهاء العلاقة التعاقدية',
+  'main_reason' => 'السبب الرئيسي',
+  'sub_reason' => 'السبب الثانوي',
+  'select_reason' => 'اختار سبب',
+  'no_wishes_found' => 'لا توجد رغبات مضافة',
+  'no_contract_found' => ' لا يوجد عقد مضاف  ',
+  'contract_expired' => 'لا يمكن إضافة الطلب لأن الوقت المتبقي لنهاية العقد أكثر من شهر',
+  'my_requests' => 'طلباتي',
   'add_escalation' => 'إضافة تصعيد',
   'selectDepartment' => 'اختر إدارة',
   'escalations' => 'التصعيد',
@@ -1665,6 +1674,7 @@ return [
 
   'edit_worker' => 'تعديل عامل',
 
+
   'user_type_is_valid'=>'نمط الموظف غير مسموح أدخل أحد الأنماط التالية : worker , manager ,employee ,user  في السطر رقم  ',
   'contract_duration_should_be_is_numeric'=>'مدة العقد يجب أن تكون رقم  في السطر',
   'probation_period_should_be_is_numeric'=>'الفترة التجريبية يجب أن تكون رقم في السطر ',
@@ -1683,9 +1693,12 @@ return [
   'profile_picture'=>'الصورة الشخصية',
 
 
+
   'edit_procedure' => 'تعديل إجراء',
   'repeated_managements_please_re_check' => 'يوجد إدارات مكررة، يرجى إعادة إدخال الإجراء',
 
-
+  'add_file' => 'إضافة وثيقة',
+  'qualification_file' => 'شهادة التأهيل العلمي',
+  'created_department_name'=>'الإدارة التي أنشأت الطلب'
 
 ];

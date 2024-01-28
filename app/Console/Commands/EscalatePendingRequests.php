@@ -20,8 +20,10 @@ class EscalatePendingRequests extends Command
     public function handle()
     {
         $requests = FollowupWorkerRequestProcess::join('essentials_wk_procedures', 'followup_worker_requests_process.procedure_id', '=', 'essentials_wk_procedures.id')
+        ->join('essentials_procedure_escalations', 'essentials_procedure_escalations.procedure_id', '=', 'essentials_wk_procedures.id')
             ->select('followup_worker_requests_process.id as request_id', 'essentials_wk_procedures.id as procedure_id','essentials_wk_procedures.department_id as department')
-            ->whereRaw('TIMESTAMPDIFF(HOUR, followup_worker_requests_process.created_at, NOW()) >= essentials_wk_procedures.escalates_after')
+            ->whereNull('followup_worker_requests_process.sub_status')
+            ->whereRaw('TIMESTAMPDIFF(HOUR, followup_worker_requests_process.created_at, NOW()) >= essentials_procedure_escalations.escalates_after')
             ->get();
 
         foreach ($requests as $request) {

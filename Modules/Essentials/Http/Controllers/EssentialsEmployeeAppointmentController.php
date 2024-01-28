@@ -87,6 +87,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
         $employeeAppointments = EssentialsEmployeeAppointmet::join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')
         ->whereIn('u.id', $userIds)
+        //->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employee_appointmets.id',
                  DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -173,7 +174,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 ->make(true);
         }
         $query = User::whereIn('id', $userIds);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        $all_users = $query->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $statuses = $this->statuses;

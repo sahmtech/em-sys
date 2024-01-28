@@ -8,6 +8,7 @@ use App\Category;
 use App\Charts\CommonChart;
 use App\Contact;
 use App\Currency;
+use Modules\FollowUp\Entities\FollowupRequestsAttachment;
 use App\Media;
 use App\Transaction;
 use App\User;
@@ -664,7 +665,12 @@ class AgentController extends Controller
                 $workerRequest->visa_number = $request->visa_number;
                 $workerRequest->atmCardType = $request->atmType;
                 $workerRequest->save();
-
+                if(isset($request->attachment) && !empty($request->attachment)){
+                    FollowupRequestsAttachment::create([
+                        'request_id' => $workerRequest->id,
+                        'file_path' => $attachmentPath,
+            
+                    ]);}
 
 
                 if ($workerRequest) {

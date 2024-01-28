@@ -25,6 +25,8 @@ use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\FollowUp\Entities\FollowupRequestsAttachment;
+
 
 class FollowUpRequestController extends Controller
 {
@@ -102,7 +104,7 @@ class FollowUpRequestController extends Controller
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
-        $workers = User::whereIn('id', $userIds)->where('user_type','worker')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+        $workers = User::whereIn('id', $userIds)->where('status', '!=', 'inactive')->where('user_type','worker')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         $statuses = $this->statuses;
 
         $requestsProcess = null;
@@ -117,7 +119,7 @@ class FollowUpRequestController extends Controller
         ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
         ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
         ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('department_id', $departmentIds)
-        ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests_process.sub_status', null);
+        ->whereIn('followup_worker_requests.worker_id', $userIds)->where('users.status', '!=', 'inactive')->where('followup_worker_requests_process.sub_status', null);
 
 
 
@@ -251,7 +253,12 @@ class FollowUpRequestController extends Controller
                 $workerRequest->visa_number = $request->visa_number;
                 $workerRequest->atmCardType = $request->atmType;
                 $workerRequest->save();
-
+                if(isset($request->attachment) && !empty($request->attachment)){
+                    FollowupRequestsAttachment::create([
+                        'request_id' => $workerRequest->id,
+                        'file_path' => $attachmentPath,
+            
+                    ]);}
                 if ($workerRequest) {
                     $procedure =EssentialsWkProcedure::where('business_id', $business_id)
                     ->where('type', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
@@ -347,8 +354,10 @@ class FollowUpRequestController extends Controller
 
                 if ($procedure && $procedure->end == 1) {
                     $requestProcess->followupWorkerRequest->status = 'approved';
-                    $first_step->status = 'approved';
+          
                     $requestProcess->followupWorkerRequest->save();
+                    $first_step->status = 'approved';
+                    $first_step->save();
                 } else {
                     $nextDepartmentId = $procedure->next_department_id;
                     $nextProcedure = EssentialsWkProcedure::where('department_id', $nextDepartmentId)
@@ -367,6 +376,7 @@ class FollowUpRequestController extends Controller
             if ($input['status'] == 'rejected') {
                 $requestProcess->followupWorkerRequest->status = 'rejected';
                 $first_step->status = 'rejected';
+                $first_step->save();
                 $requestProcess->followupWorkerRequest->save();
             }
 
