@@ -868,7 +868,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             else {
                                 $is_valid = false;
                                 $error_msg = __('essentials::lang.user_not_found') .$row_no;
-                               break;
+                                break;
+                             
                             }
 
                          
@@ -882,12 +883,13 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             return redirect()->route('import-employees')
                             ->with('notification', $output);
                         }
-                      
-                       
+                   
                       
                        
 
                    }
+                      
+               
                  
                    
                 }
