@@ -788,13 +788,38 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                             $previous_appointment->save();
                                           
                                         }
-                                        EssentialsEmployeeAppointmet::Create($filteredAppointmentData);
+                                        $new_appointement=EssentialsEmployeeAppointmet::Create($filteredAppointmentData);
+                                        $existingEmployee->essentials_department_id =$filteredAppointmentData['essentials_department_id'];
+                                        $existingEmployee->save();
                                         
                                     }
                                 }
-                                else if($emp_data['profession_id'] != null &&  $emp_data['essentials_department_id'] == null){
-    
+                                elseif($emp_data['profession_id'] != null && $emp_data['essentials_department_id'] == null) {
+                                   
+                                    $previous_appointment = EssentialsEmployeeAppointmet::where('employee_id', $existingEmployee->id)
+                                        ->where('is_active', 1)
+                                        ->latest('created_at')
+                                        ->first();
+                                
+                                    if ($previous_appointment) {
+                                        $appointmentData = [
+                                            'employee_id' => $existingEmployee->id,
+                                            'start_from' => $final_contract_start_date,
+                                            'department_id' => $previous_appointment->department_id,
+                                            'profession_id' => $emp_data['profession_id'],
+                                            'is_active' => 1,
+                                        ];
+                                
+                                        $filteredAppointmentData = array_filter($appointmentData, function ($value) {
+                                            return $value !== null;
+                                        });
+                                
+                                        
+                                        $previous_appointment->update($filteredAppointmentData);
+                                        
+                                    }
                                 }
+                                
     
                               
     
