@@ -15,7 +15,7 @@
                 <div class="row">
                 <input type="hidden" id="docIdInput" name="docId">
                     <div class="form-group col-md-6">
-                        {!! Form::label('employee', __( 'essentials::lang.employee' ) . ':') !!}
+                        {!! Form::label('employee', __( 'essentials::lang.employee' ) . ':*') !!}
                         {!! Form::select('employee', $users,null, ['class' => 'form-control select2','style'=>'height:36px; width:100%',
                              'placeholder' => __('essentials::lang.select_employee')]) !!}
                     </div>
@@ -34,17 +34,17 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
+                        {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':') !!}
                         {!! Form::number('doc_number',null, ['class' => 'form-control',
                              'placeholder' => __('essentials::lang.doc_number')]) !!}
                     </div>
 
                     <div class="form-group col-md-6">
-                        {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
+                        {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':') !!}
                         {!! Form::date('issue_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_date')]) !!}
                     </div>
                     <div class="form-group col-md-6">
-                        {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
+                        {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':') !!}
                         {!! Form::text('issue_place', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_place')]) !!}
                     </div>
                     <div class="form-group col-md-6">
@@ -62,7 +62,7 @@
                 
                                 <!-- Add a file input here -->
                     <div class="form-group col-md-6">
-                        {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
+                        {!! Form::label('file', __('essentials::lang.file') . ':') !!}
                         {!! Form::file('docfile', ['class' => 'form-control', 'placeholder' => __('essentials::lang.file')]) !!}
                     </div>
                     <!-- Existing file container -->
