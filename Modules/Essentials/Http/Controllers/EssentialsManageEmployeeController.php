@@ -27,6 +27,7 @@ use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -42,9 +43,7 @@ use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
-
-
-
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -120,14 +119,14 @@ class EssentialsManageEmployeeController extends Controller
         $EssentialsSpecialization = EssentialsSpecialization::all()->pluck('name', 'id');
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        $job_titles = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
-        $specializations=EssentialsProfession::where('type','academic')->pluck('name', 'id');
-     
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $specializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
+
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
         $companies = Company::all()->pluck('name', 'id');
 
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -146,47 +145,47 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $users = User::whereIn('users.id', $userIds)
-        ->with([
-            'userAllowancesAndDeductions',
-            'appointment' => function ($query) {
-                $query->where('is_active', 1); 
-            }
-        ])
-        ->where('users.is_cmmsn_agnt', 0)
-        ->where('user_type','!=','worker')
-       
-        ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-        ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
-        ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
-        ->select([
-            'users.id as id',
-            'users.emp_number',
-            'users.profile_image',
-            'users.username',
-            'users.company_id',
-            'users.user_type',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
-            'users.id_proof_number',
-            DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
-            'essentials_admission_to_works.admissions_date as admissions_date',
-            'essentials_employees_contracts.contract_end_date as contract_end_date',
-            'users.email',
-            'users.allow_login',
-            'users.contact_number',
-            'users.essentials_department_id',
-            'users.status',
-            'users.essentials_salary',
-            'users.total_salary',
-       
+            ->with([
+                'userAllowancesAndDeductions',
+                'appointment' => function ($query) {
+                    $query->where('is_active', 1);
+                }
+            ])
+            ->where('users.is_cmmsn_agnt', 0)
+            ->where('user_type', '!=', 'worker')
 
-        ])
-    
-        ->orderBy('id', 'desc')
-        ->groupBy('id');
-     
+            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+            ->select([
+                'users.id as id',
+                'users.emp_number',
+                'users.profile_image',
+                'users.username',
+                'users.company_id',
+                'users.user_type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+                'users.id_proof_number',
+                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+                'essentials_admission_to_works.admissions_date as admissions_date',
+                'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'users.email',
+                'users.allow_login',
+                'users.contact_number',
+                'users.essentials_department_id',
+                'users.status',
+                'users.essentials_salary',
+                'users.total_salary',
+
+
+            ])
+
+            ->orderBy('id', 'desc')
+            ->groupBy('id');
+
         if (!empty($request->input('specialization'))) {
 
-            $users ->whereHas('appointment', function ($query) use ($request) {
+            $users->whereHas('appointment', function ($query) use ($request) {
                 if (!empty($request->input('specialization'))) {
                     $query->where('profession_id', $request->input('specialization'));
                 }
@@ -212,10 +211,9 @@ class EssentialsManageEmployeeController extends Controller
 
 
             return Datatables::of($users)
-                ->addColumn('company_id', function ($row)  use($companies){
+                ->addColumn('company_id', function ($row)  use ($companies) {
                     $item = $companies[$row->company_id] ?? '';
                     return $item;
-                    
                 })
                 ->addColumn('total_salary', function ($row) {
                     return $row->calculateTotalSalary();
@@ -232,13 +230,14 @@ class EssentialsManageEmployeeController extends Controller
                     $professionId = $appointments[$row->id] ?? '';
 
                     $professionName = $job_titles[$professionId] ?? '';
+                 
 
                     return $professionName;
                 })
 
 
 
-                
+
 
 
 
@@ -289,11 +288,19 @@ class EssentialsManageEmployeeController extends Controller
                 })
 
                 ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->where('first_name', $keyword)->orWhere('last_name', $keyword);
-                })
 
+                    $query->whereRaw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
                 ->filterColumn('nationality', function ($query, $keyword) {
                     $query->whereRaw("COALESCE(essentials_countries.nationality, '')  like ?", ["%{$keyword}%"]);
+                })
+
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+
+                ->filterColumn('emp_number', function ($query, $keyword) {
+                    $query->whereRaw("emp_number  like ?", ["%{$keyword}%"]);
                 })
 
                 ->filterColumn('admissions_date', function ($query, $keyword) {
@@ -339,13 +346,14 @@ class EssentialsManageEmployeeController extends Controller
             ->with(compact(
                 'contract_types',
                 'nationalities',
-               'specializations',
+                'specializations',
                 'countries',
                 'job_titles',
                 'status',
                 'offer_prices',
                 'items',
-                'companies','spacializations'
+                'companies',
+                'spacializations'
             ));
     }
 
@@ -360,7 +368,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         $business_id = request()->session()->get('user.business_id');
         if (!$is_admin) {
             $userIds = [];
@@ -403,7 +411,6 @@ class EssentialsManageEmployeeController extends Controller
                         $query->WhereNull('start_from')
                             ->orWhereNull('end_at')
                             ->orWhereNull('profession_id');
-                       
                     })
                     ->orWhereHas('essentials_qualification', function ($query) {
 
@@ -492,7 +499,7 @@ class EssentialsManageEmployeeController extends Controller
         $today = now();
         $endDateThreshold = $today->copy()->addDays(14);
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
@@ -568,7 +575,7 @@ class EssentialsManageEmployeeController extends Controller
         $endDateThreshold = $today->copy()->addDays(60);
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
@@ -635,7 +642,7 @@ class EssentialsManageEmployeeController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
@@ -718,7 +725,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
@@ -814,7 +821,7 @@ class EssentialsManageEmployeeController extends Controller
         // $locations = BusinessLocation::where('business_id', $business_id)
         //     ->Active()
         //     ->get();
-     
+
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
 
@@ -837,7 +844,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::where('type','academic')->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
         $countries = $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
         $companies = Company::all()->pluck('name', 'id');
@@ -845,7 +852,8 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.employee_affairs.create')
             ->with(compact(
                 'roles',
-                'countries','professions',
+                'countries',
+                'professions',
                 'spacializations',
                 'nationalities',
                 'username_ext',
@@ -926,6 +934,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -941,20 +950,19 @@ class EssentialsManageEmployeeController extends Controller
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
 
-            $com_id=request()->input('essentials_department_id');
-            $latestRecord = User::where('company_id',$com_id)->orderBy('emp_number', 'desc')
-                ->first();
+            $com_id = request()->input('company_id');
+            error_log($com_id);
+            // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
+            //     ->first();
 
-            if ($latestRecord) {
-                $latestRefNo = $latestRecord->emp_number;
-                $latestRefNo++;
-                $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-            } 
-            else
-             {
+            // if ($latestRecord) {
+            //     $latestRefNo = $latestRecord->emp_number;
+            //     $latestRefNo++;
+            //     $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+            // } else {
 
-                $request['emp_number'] =  $business_id . '000';
-             }
+            //     $request['emp_number'] =  $com_id . '001';
+            // }
 
 
 
@@ -967,8 +975,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $user = $this->moduleUtil->createUser($request);
 
-            event(new UserCreatedOrModified($user, 'added'));
-
+            $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
             $output = [
                 'success' => 1,
                 'msg' => __('user.user_added'),
@@ -1050,7 +1057,7 @@ class EssentialsManageEmployeeController extends Controller
         $can_show_employee = auth()->user()->can('essentials.show_employee');
         $business_id = request()->session()->get('user.business_id');
         $documents = null;
-        
+
         if (!($is_admin || $can_show_employee)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -1058,18 +1065,16 @@ class EssentialsManageEmployeeController extends Controller
             ]);
         }
 
-      
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
-        
-        if (!$is_admin) 
-        {
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
-
         }
 
-       
+
 
         $user = User::whereIn('users.id', $userIds)
             ->with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
@@ -1079,7 +1084,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-        
+
 
         if ($user) {
             if ($user->user_type == 'employee') {
@@ -1126,7 +1131,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $user->profession = $profession;
-       
+
 
 
         $view_partials = $this->moduleUtil->getModuleData(
@@ -1187,15 +1192,13 @@ class EssentialsManageEmployeeController extends Controller
         $appointments = EssentialsEmployeeAppointmet::select([
 
             'profession_id',
-     
+
         ])->where('employee_id', $id)
             ->first();
         if ($appointments !== null) {
             $user->profession_id = $appointments['profession_id'];
-        
         } else {
             $user->profession_id = null;
-         
         }
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -1216,9 +1219,16 @@ class EssentialsManageEmployeeController extends Controller
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->select('*')->get();
 
+        $allowance_deduction_ids = [];
+        if (!empty($user)) {
+            $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::with('essentialsAllowanceAndDeduction')
+                ->where('user_id', $user->id)
+                ->get();
+        }
+   
       
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::where('type','academic')->pluck( 'name','id');
+        $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
         if ($user->status == 'active') {
             $is_checked_checkbox = true;
         } else {
@@ -1260,7 +1270,7 @@ class EssentialsManageEmployeeController extends Controller
                 'username_ext',
                 'contract_types',
                 'nationalities',
-          
+                'allowance_deduction_ids',
                 'professions'
             ));
     }
@@ -1273,6 +1283,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
+    
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1300,17 +1311,8 @@ class EssentialsManageEmployeeController extends Controller
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
             }
-            if (empty($request->input('allow_login'))) {
-                $user_data['username'] = null;
-                $user_data['password'] = null;
-                $user_data['allow_login'] = 0;
-            } else {
-                $user_data['allow_login'] = 1;
-            }
-
-            if (!empty($request->input('password'))) {
-                $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
-            }
+           
+         
 
             $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
 
@@ -1330,20 +1332,9 @@ class EssentialsManageEmployeeController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-
+           
             DB::beginTransaction();
-            if ($user_data['allow_login'] && $request->has('username')) {
-                $user_data['username'] = $request->input('username');
-                $ref_count = $this->moduleUtil->setAndGetReferenceCount('username');
-                if (blank($user_data['username'])) {
-                    $user_data['username'] = $this->moduleUtil->generateReferenceNumber('username', $ref_count);
-                }
-
-                $username_ext = $this->moduleUtil->getUsernameExtension();
-                if (!empty($username_ext)) {
-                    $user_data['username'] .= $username_ext;
-                }
-            }
+          
 
             $user = User::findOrFail($id);
 

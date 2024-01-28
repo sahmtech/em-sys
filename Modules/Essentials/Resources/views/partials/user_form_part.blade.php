@@ -3,8 +3,8 @@
     <h4>@lang('essentials::lang.hrm_details_create_edit'):</h4>
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('location_id', __('essentials::lang.company') . ':*') !!}
-            {!! Form::select('location_id', $companies, !empty($user->company_id) ? $user->company_id : null, [
+            {!! Form::label('company_id', __('essentials::lang.company') . ':*') !!}
+            {!! Form::select('company_id', $companies, !empty($user->company_id) ? $user->company_id : null, [
                 'class' => 'form-control select2',
                 'style' => 'height:40px',
                 'required',
@@ -14,7 +14,7 @@
     </div>
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':*') !!}
+            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':') !!}
             <div class="form-group">
                 {!! Form::select(
                     'essentials_department_id',
@@ -23,7 +23,7 @@
                     [
                         'class' => 'form-control select2',
                         'style' => 'height:40px',
-                        'required',
+                
                         'style' => 'width: 100%;',
                         'placeholder' => __('messages.please_select'),
                     ],
@@ -45,25 +45,8 @@
         </div>
     </div>
 
-    {{--
-        <div class="col-sm-3">
-        <div class="form-group">
-            {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-            {!! Form::select(
-                'specialization',
-                $specializations,
-                !empty($user->specialization_id) ? $user->specialization_id : null,
-                [
-                    'class' => 'form-control select2',
-                    'style' => 'height:40px',
-                    'required',
-                    'placeholder' => __('sales::lang.specialization'),
-                    'id' => 'specializationSelect',
-                ],
-            ) !!}
-        </div>
-    </div> --}}
-   
+
+
 </div>
 
 
@@ -203,7 +186,7 @@
             </table>
         </div>
     </div>
-    
+
     <div class="col-md-1">
 
 
@@ -239,6 +222,11 @@
                                 'placeholder' => __('essentials::lang.amount'),
                             ]) !!}
 
+                        </td>
+                        <td>
+                            <button type="button" id="remove-row"
+                                class="btn btn-danger remove-row">{{ __('messages.delete') }}
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -281,16 +269,28 @@
     <h4>@lang('essentials::lang.features'):</h4>
 
     <div>
+       
         <div class="form-group col-md-3">
             {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
-            {{-- <input type="checkbox" id="can_add_category" name="can_add_category" value="1"> --}}
-            <select id="can_add_category" name="can_add_category" class ="form-control" style="height:40px">
-                <option value="#">@lang('essentials::lang.select_for_travel')</option>
-                <option value="1">@lang('essentials::lang.includes')</option>
-                <option value="0">@lang('essentials::lang.does_not_include')</option>
+            <select id="can_add_category" name="can_add_category" class="form-control" style="height:40px">
+                @if (empty($user))
+                    <option value="#" selected>@lang('essentials::lang.select_for_travel')</option>
+                    <option value="1">@lang('essentials::lang.includes')</option>
+                    <option value="0">@lang('essentials::lang.does_not_include')</option>
+                @elseif(!empty($user))
+                    @if (is_null($user_travel))
+                        <option value="#">@lang('essentials::lang.select_for_travel')</option>
+                        <option value="1">@lang('essentials::lang.includes')</option>
+                        <option value="0" selected>@lang('essentials::lang.does_not_include')</option>
+                    @else
+                        <option value="#">@lang('essentials::lang.select_for_travel')</option>
+                        <option value="1" selected>@lang('essentials::lang.includes')</option>
+                        <option value="0">@lang('essentials::lang.does_not_include')</option>
+                    @endif
+                @endif
             </select>
-
         </div>
+
         <div class="form-group col-md-3" id="category_input" style="display: none;">
             {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
             {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, [
@@ -306,7 +306,7 @@
         {!! Form::select(
             'health_insurance',
             ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
-            null,
+            $user->has_insurance ?? null,
             ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
         ) !!}
     </div>
@@ -501,71 +501,118 @@
             }
         });
 
-        function addRow() {
+        function toggleCategoryInput() {
+            var selectedOption = $('#can_add_category').val();
+            console.log(selectedOption);
+            if (selectedOption === '1') {
+                $('#category_input').show();
+                @if (!is_null($user_travel))
+                    $('#travel_ticket_categorie').val('{{ $user_travel->categorie_id }}');
+                @endif
+            } else {
+                $('#category_input').hide();
+            }
+        }
+
+        // Initial check
+        toggleCategoryInput();
+
+        // Check on change
+        $('#can_add_category').change(function() {
+            toggleCategoryInput();
+        });
+    });
+
+
+
+    $(document).on('change', 'select[name="salary_type[]"]', function() {
+        updateSelectedData();
+    });
+
+    $(document).on('input', 'input[name="amount[]"]', function() {
+        updateSelectedData();
+    });
+
+    var allowanceDeductionIds = @json($allowance_deduction_ids);
+    console.log(allowanceDeductionIds);
+    if (Array.isArray(allowanceDeductionIds) && allowanceDeductionIds.length > 0) {
+
+        allowanceDeductionIds.forEach(function(item) {
 
             var newRow = $('#salary-table-body tr:first').clone();
             newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
             newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
 
+            newRow.find('select[name="salary_type[]"]').val(item.essentials_allowance_and_deduction.id);
+            newRow.find('input[name="amount[]"]').val(item.amount);
             $('#salary-table-body').append(newRow);
-        }
-
-        $('#add-row').click(function() {
-
-            addRow();
         });
 
-        $(document).on('change', 'select[name="salary_type[]"]', function() {
-            updateSelectedData();
-        });
+        $('#salary-table-body tr:first').remove();
+    }
 
-        $(document).on('input', 'input[name="amount[]"]', function() {
-            updateSelectedData();
-        });
+    $('#salary-table-body tr:first').find('.remove-row').remove();
+    $('#salary-table-body').on('click', '.remove-row', function() {
+        $(this).closest('tr').remove();
+    });
 
-        function updateSelectedData() {
-            selectedData = [];
+    $('#add-row').click(function() {
+        var newRow = $('#salary-table-body tr:first').clone();
+        newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
+        newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
+        $('#salary-table-body').append(newRow);
+    });
 
-            $('select[name="salary_type[]"]').each(function(index) {
-                var salaryType = $(this).val();
-                var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
-                selectedData.push({
-                    salaryType: salaryType,
-                    amount: amount
-                });
+    $(document).on('change', 'select[name="salary_type[]"]', function() {
+        updateSelectedData();
+    });
+
+    $(document).on('input', 'input[name="amount[]"]', function() {
+        updateSelectedData();
+    });
+
+    function updateSelectedData() {
+        selectedData = [];
+
+        $('select[name="salary_type[]"]').each(function(index) {
+            var salaryType = $(this).val();
+            var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
+            selectedData.push({
+                salaryType: salaryType,
+                amount: amount
             });
-
-            console.log(selectedData);
-            var inputElement = document.getElementById('selectedData');
-            inputElement.value = JSON.stringify(selectedData);
-            calculateTotalSalary();
-        }
-
-
-        function updateAmount(element) {
-            var salaryType = $(element).val();
-            console.log(salaryType);
-
-            $.ajax({
-                url: '/hrm/get-amount/' + salaryType,
-                type: 'GET',
-                success: function(response) {
-
-                    var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
-                    amountInput.val(response ? response.amount : 0);
-                    updateSelectedData();
-                    calculateTotalSalary();
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        }
-
-
-
-        $(document).on('change', 'select[name="salary_type[]"]', function() {
-            updateAmount(this);
         });
+
+        console.log(selectedData);
+        var inputElement = document.getElementById('selectedData');
+        inputElement.value = JSON.stringify(selectedData);
+        calculateTotalSalary();
+    }
+
+
+    function updateAmount(element) {
+        var salaryType = $(element).val();
+        console.log(salaryType);
+
+        $.ajax({
+            url: '/hrm/get-amount/' + salaryType,
+            type: 'GET',
+            success: function(response) {
+
+                var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
+                amountInput.val(response ? response.amount : 0);
+                updateSelectedData();
+                calculateTotalSalary();
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+
+
+
+    $(document).on('change', 'select[name="salary_type[]"]', function() {
+        updateAmount(this);
     });
 </script>

@@ -31,7 +31,7 @@
                             {!! Form::label('mid_name', __('business.mid_name') . ':') !!}
                             {!! Form::text('mid_name', null, [
                                 'class' => 'form-control',
-                                'required',
+                                
                                 'placeholder' => __('business.mid_name'),
                             ]) !!}
                         </div>
@@ -79,7 +79,7 @@
 
                     <div id="workerInput" style="display: none;" class="col-md-5">
                         <div class="form-group">
-                            {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':*') !!}
+                            {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':') !!}
                             {!! Form::select('assigned_to', $contacts, null, [
                                 'class' => 'form-control',
                                 'style' => 'height:40px',

@@ -36,7 +36,7 @@
                     ) !!}
                 </div>
             </div>
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="form-group">
                     <label for="specializations_filter">@lang('essentials::lang.major'):</label>
                     {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
@@ -46,7 +46,7 @@
                         'id' => 'specializations-select',
                     ]) !!}
                 </div>
-            </div>
+            </div> --}}
 
             <div class="col-md-3">
                 <div class="form-group">
@@ -102,7 +102,6 @@
 
                                 <th>@lang('essentials::lang.department')</th>
                                 <th>@lang('essentials::lang.profession')</th>
-                                <th>@lang('essentials::lang.specialization')</th>
                                 <th>@lang('essentials::lang.mobile_number')</th>
                                 <th>@lang('business.email')</th>
                                 <th>@lang('essentials::lang.status')</th>
@@ -198,7 +197,7 @@
                 ajax: {
                     url: "{{ route('work_cards_operation') }}",
                     data: function(d) {
-                        d.specialization = $('#specializations-select').val();
+                    
                         d.nationality = $('#nationalities_select').val();
                         d.status = $('#status_filter').val();
                         d.business = $('#select_business_id').val();
@@ -260,10 +259,7 @@
                         "data": "profession",
                         name: 'profession'
                     },
-                    {
-                        "data": "specialization",
-                        name: 'specialization'
-                    },
+                   
                     {
                         "data": "contact_number"
                     },
@@ -326,15 +322,15 @@
             });
 
 
-$('#employees').on('change', '.tblChk', function() {
+    $('#employees').on('change', '.tblChk', function() {
 
-if ($('.tblChk:checked').length == $('.tblChk').length) {
-    $('#chkAll').prop('checked', true);
-} else {
-    $('#chkAll').prop('checked', false);
-}
-getCheckRecords();
-});
+    if ($('.tblChk:checked').length == $('.tblChk').length) {
+        $('#chkAll').prop('checked', true);
+    } else {
+        $('#chkAll').prop('checked', false);
+    }
+    getCheckRecords();
+    });
 
 
 
@@ -540,9 +536,9 @@ $.ajax({
 });
 
 
-            $('#specializations-select, #nationalities_select, #status-select, #select_business_id').change(
+            $('#nationalities_select, #status-select, #select_business_id').change(
                 function() {
-                    console.log('Specialization selected: ' + $(this).val());
+                 
                     console.log('Nationality selected: ' + $('#nationalities_select').val());
                     console.log('Status selected: ' + $('#status_filter').val());
                     console.log('loc selected: ' + $('#select_business_id').val());

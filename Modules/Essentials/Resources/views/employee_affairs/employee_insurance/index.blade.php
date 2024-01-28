@@ -119,7 +119,7 @@
 
             employee_insurance_table = $('#employee_insurance_table').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ route('employee_insurance') }}",
 

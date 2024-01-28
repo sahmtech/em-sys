@@ -23,15 +23,7 @@
         <div class="col-md-12 box box-primary">
             <h4>@lang('essentials::lang.basic_info'):</h4>
 
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('surname', __('business.prefix') . ':') !!}
-                    {!! Form::text('surname', $user->surname, [
-                        'class' => 'form-control',
-                        'placeholder' => __('business.prefix_placeholder'),
-                    ]) !!}
-                </div>
-            </div>
+        
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('first_name', __('business.first_name') . ':*') !!}
@@ -39,6 +31,15 @@
                         'class' => 'form-control',
                         'required',
                         'placeholder' => __('business.first_name'),
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('mid_name', __('business.mid_name') . ':') !!}
+                    {!! Form::text('mid_name', $user->mid_name, [
+                        'class' => 'form-control',
+                        'placeholder' => __('business.mid_name'),
                     ]) !!}
                 </div>
             </div>
@@ -59,7 +60,6 @@
                         [
                             'manager' => __('user.manager'),
                             'employee' => __('user.employee'),
-                            'worker' => __('user.worker'),
                         ],
                         $user->user_type,
                         [
@@ -166,62 +166,12 @@
                         return markup;
                     },
                 });
-            });
+           
 
-            $('form#user_edit_form').validate({
-                rules: {
-                    first_name: {
-                        required: true,
-                    },
-                    email: {
-                        email: true,
-                        remote: {
-                            url: "/business/register/check-email",
-                            type: "post",
-                            data: {
-                                email: function() {
-                                    return $("#email").val();
-                                },
-                                user_id: {{ $user->id }}
-                            }
-                        }
-                    },
-                    password: {
-                        minlength: 5
-                    },
-                    confirm_password: {
-                        equalTo: "#password",
-                    },
-                    username: {
-                        minlength: 5,
-                        remote: {
-                            url: "/business/register/check-username",
-                            type: "post",
-                            data: {
-                                username: function() {
-                                    return $("#username").val();
-                                },
-                                @if (!empty($username_ext))
-                                    username_ext: "{{ $username_ext }}"
-                                @endif
-                            }
-                        }
-                    }
-                },
-                messages: {
-                    password: {
-                        minlength: 'Password should be minimum 5 characters',
-                    },
-                    confirm_password: {
-                        equalTo: 'Should be same as password'
-                    },
-                    username: {
-                        remote: 'Invalid username or User already exist'
-                    },
-                    email: {
-                        remote: '{{ __('validation.unique', ['attribute' => __('business.email')]) }}'
-                    }
-                }
             });
         </script>
-    @endsection
+    
+    
+    
+        @endsection
+

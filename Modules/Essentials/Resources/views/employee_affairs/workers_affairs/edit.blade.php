@@ -71,8 +71,8 @@
             <h4>@lang('essentials::lang.hrm_details_create_edit'):</h4>
             <div class="col-md-3">
                 <div class="form-group">
-                    {!! Form::label('location_id', __('essentials::lang.company') . ':*') !!}
-                    {!! Form::select('location_id', $companies, !empty($user->company_id) ? $user->company_id : null, [
+                    {!! Form::label('company_id', __('essentials::lang.company') . ':*') !!}
+                    {!! Form::select('company_id', $companies, !empty($user->company_id) ? $user->company_id : null, [
                         'class' => 'form-control select2',
                         'style' => 'height:40px',
                         'required',
@@ -80,7 +80,7 @@
                     ]) !!}
                 </div>
             </div>
-
+            <input type=hidden name='user_type' value='worker'>
 
             <div class="col-md-3">
                 <div class="form-group">
@@ -318,37 +318,39 @@
         <div class="col-md-12 box box-primary" id="section7">
 
             <h4>@lang('essentials::lang.features'):</h4>
-
+        
             <div>
                 <div class="form-group col-md-3">
                     {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
-                    {!! Form::select(
-                        'can_add_category',
-                        [
-                            '#' => __('essentials::lang.select_for_travel'),
-                            '1' => __('essentials::lang.includes'),
-                            '0' => __('essentials::lang.does_not_include'),
-                        ],
-                        !empty($user->employee_travle_categorie) ? ($user->employee_travle_categorie ? '1' : '0') : '0',
-                        ['class' => 'form-control', 'style' => 'height:40px'],
-                    ) !!}
+                    <select id="can_add_category" name="can_add_category" class="form-control" style="height:40px">
+                        @isset($user)
+                            <option value="#">@lang('essentials::lang.select_for_travel')</option>
+                            <option value="0" @selected(is_null($user_travel))>@lang('essentials::lang.does_not_include')</option>
+                            <option value="1" @selected(!is_null($user_travel))>@lang('essentials::lang.includes')</option>
+                        @else
+                            <option value="#" selected>@lang('essentials::lang.select_for_travel')</option>
+                            <option value="1">@lang('essentials::lang.includes')</option>
+                            <option value="0">@lang('essentials::lang.does_not_include')</option>
+                        @endisset
+                    </select>
                 </div>
-                {{-- <div class="form-group col-md-3" id="category_input" style="display: none;">
+            
+                <div class="form-group col-md-3" id="category_input" style="display: none;">
                     {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
                     {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, [
                         'class' => 'form-control',
                         'style' => 'height:40px',
                         'placeholder' => __('essentials::lang.travel_ticket_categorie'),
                     ]) !!}
-                </div> --}}
+                </div>
             </div>
-
+        
             <div class="form-group col-md-3">
                 {!! Form::label('health_insurance', __('essentials::lang.health_insurance') . ':') !!}
                 {!! Form::select(
                     'health_insurance',
                     ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
-                    !empty($user->has_insurance) ? $user->has_insurance : null,
+                    $user->has_insurance ?? null,
                     ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
                 ) !!}
             </div>
@@ -747,6 +749,32 @@
                         remote: '{{ __('validation.unique', ['attribute' => __('business.email')]) }}'
                     }
                 }
+            });
+        </script>
+        <script>
+   
+
+            $(document).ready(function() {
+             
+                toggleCategoryInput();
+        
+            
+                $('#can_add_category').change(function() {
+                    toggleCategoryInput();
+                });
+                function toggleCategoryInput() {
+                
+                var selectedOption = $('#can_add_category').val();
+                console.log(selectedOption);
+                if (selectedOption === '1') {
+                    $('#category_input').show();
+                    @isset($user_travel)
+                        $('#travel_ticket_categorie').val('{{ $user_travel->categorie_id }}');
+                    @endisset
+                } else {
+                    $('#category_input').hide();
+                }
+            }
             });
         </script>
     @endsection
