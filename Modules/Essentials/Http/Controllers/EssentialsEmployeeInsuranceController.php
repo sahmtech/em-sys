@@ -524,7 +524,7 @@ class EssentialsEmployeeInsuranceController extends Controller
        
         ->where(function($query) use($userIds) {
             $query->whereHas('user' ,function($query1) use( $userIds){
-                $query1->whereIn('users.id', $userIds);
+                $query1->whereIn('users.id', $userIds)->where('users.status', '!=', 'inactive');
             })
             ->orWhereHas('essentialsEmployeesFamily' ,function($query2) use( $userIds){
                 $query2->whereIn('essentials_employees_families.employee_id', $userIds);
@@ -626,7 +626,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                 ->make(true);
         }
         $query = User::whereIn('id',$userIds);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $all_users = $query->where('status','!=','inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
         return view('essentials::employee_affairs.employee_insurance.index')

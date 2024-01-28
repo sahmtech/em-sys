@@ -103,6 +103,8 @@ class CustomAdminSidebarMenu
             $this->toDoMenu();
         } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
             $this->helpdeskMenu();
+        }  elseif (Str::startsWith($currentPath, ['employee_requests'])) {
+            $this->myMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -220,6 +222,16 @@ class CustomAdminSidebarMenu
     // }
 
     public function helpdeskMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']
+            );
+        });
+    }
+    public function myMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
             $menu->url(
@@ -1053,6 +1065,13 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'index']),
                     __('essentials::lang.contracts_end_reasons'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'contracts-finish-reasons'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('essentials.view_contract_cancel_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsCancelContractsController::class, 'index']),
+                    __('essentials::lang.cancel_contract'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cancel_contract_requests'],
                 );
             }
             if ($is_admin  || auth()->user()->can('essentials.curd_wishes')) {

@@ -704,8 +704,6 @@ class DataController extends Controller
                     ],
 
 
-
-
                     [
                         'value' => 'essentials.crud_department',
                         'label' => __('essentials::lang.crud_department'),
@@ -878,8 +876,16 @@ class DataController extends Controller
                         'label' => __('essentials::lang.hr_view_department_employees'),
                         'default' => false,
                     ],
-
-
+                    [
+                        'value' => 'essentials.view_contract_cancel_requests',
+                        'label' => __('essentials::lang.view_contract_cancel_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.cancel_contract',
+                        'label' => __('essentials::lang.cancel_contract'),
+                        'default' => false,
+                    ],
 
 
 

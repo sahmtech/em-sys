@@ -1,5 +1,6 @@
 @if($__is_essentials_enabled && $is_employee_allowed)
-	<button 
+	
+<button 
 		type="button" 
 		class="btn bg-blue btn-flat 
 		pull-left m-8 btn-sm mt-10 

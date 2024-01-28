@@ -44,7 +44,9 @@
               <li><a href="#" class="btn-modal" data-href="{{action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create'])}}" data-container="#task_modal">
                   <i class="fas fa-clipboard-check" aria-hidden="true"></i> @lang( 'essentials::lang.add_to_do' )
               </a></li>
+       
             @endif
+            
             <!-- Help Button -->
             {{-- @if(auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
               <li><a id="start_tour" href="#">

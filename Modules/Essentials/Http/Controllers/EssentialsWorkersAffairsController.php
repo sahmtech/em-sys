@@ -100,6 +100,7 @@ class EssentialsWorkersAffairsController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->with(['assignedTo'])
             ->where('user_type', 'worker')
+            ->where('users.status','!=','inactive')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
