@@ -170,6 +170,7 @@ class EssentialsManageEmployeeController extends Controller
                 DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
                 'essentials_admission_to_works.admissions_date as admissions_date',
                 'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'essentials_employees_contracts.contract_type_id',
                 'users.email',
                 'users.allow_login',
                 'users.contact_number',
@@ -182,7 +183,7 @@ class EssentialsManageEmployeeController extends Controller
             ])
             ->orderBy('id', 'desc');
 
-        if (!empty($request->input('specialization'))) {
+        if (!empty($request->input('specialization')) && $request->input('specialization') != 'all') {
 
             $users->whereHas('appointment', function ($query) use ($request) {
                 if (!empty($request->input('specialization'))) {
@@ -192,16 +193,23 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-        if (!empty($request->input('status-select'))) {
+        if (!empty($request->input('status')) && $request->input('status') != 'all') {
             $users->where('users.status', $request->input('status'));
         }
+        if (!empty($request->input('department')) && $request->input('department') != 'all') {
+            $users->where('users.essentials_department_id', $request->input('department'));
+        }
+        if (!empty($request->input('contract_type')) && $request->input('company') != 'all') {
+            //contract_type
+            $users->where('essentials_employees_contracts.contract_type_id', $request->input('contract_type'));
+        }
 
-        if (!empty($request->input('company'))) {
+        if (!empty($request->input('company')) && $request->input('company') != 'all') {
 
             $users->where('users.company_id', $request->input('company'));
         }
 
-        if (!empty($request->input('nationality'))) {
+        if (!empty($request->input('nationality')) && $request->input('nationality') != 'all') {
 
             $users->where('users.nationality_id', $request->input('nationality'));
             error_log("111");
@@ -229,7 +237,7 @@ class EssentialsManageEmployeeController extends Controller
                     $professionId = $appointments[$row->id] ?? '';
 
                     $professionName = $job_titles[$professionId] ?? '';
-                 
+
 
                     return $professionName;
                 })
@@ -343,6 +351,7 @@ class EssentialsManageEmployeeController extends Controller
 
         return view('essentials::employee_affairs.employee_affairs.index')
             ->with(compact(
+                'departments',
                 'contract_types',
                 'nationalities',
                 'specializations',
@@ -933,7 +942,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-   
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -947,7 +956,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-            $request['DocumentTypes'] =$request->input('DocumentTypes');
+            $request['DocumentTypes'] = $request->input('DocumentTypes');
 
             $com_id = request()->input('company_id');
             error_log($com_id);
@@ -1119,7 +1128,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)
-        ->value('profession_id');
+            ->value('profession_id');
 
         if ($professionId !== null) {
             $profession = EssentialsProfession::find($professionId)->name;
@@ -1224,8 +1233,8 @@ class EssentialsManageEmployeeController extends Controller
                 ->where('user_id', $user->id)
                 ->get();
         }
-   
-      
+
+
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
         if ($user->status == 'active') {
@@ -1282,7 +1291,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-    
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1310,8 +1319,8 @@ class EssentialsManageEmployeeController extends Controller
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
             }
-           
-         
+
+
 
             $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
 
@@ -1331,9 +1340,9 @@ class EssentialsManageEmployeeController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-           
+
             DB::beginTransaction();
-          
+
 
             $user = User::findOrFail($id);
 

@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                    <li class="active">Here</li>
-                                                                </ol> -->
+                                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                    <li class="active">Here</li>
+                                                                                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -25,8 +25,28 @@
                         'id' => 'select_company_id',
                         'style' => 'height:36px; width:100%',
                         'placeholder' => __('lang_v1.all'),
-                        'required',
-                        'autofocus',
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="department_filter">@lang('essentials::lang.department'):</label>
+                    {!! Form::select('select_department_id', $departments, null, [
+                        'class' => 'form-control select2',
+                        'id' => 'select_department_id',
+                        'style' => 'height:36px; width:100%',
+                        'placeholder' => __('lang_v1.all'),
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('contract_type_filter', __('essentials::lang.contract_type') . ':') !!}
+                    {!! Form::select('contract_type_filter', $contract_types, null, [
+                        'class' => 'form-control',
+                        'id' => 'contract_type_filter',
+                        'style' => 'width:100%',
+                        'placeholder' => __('lang_v1.all'),
                     ]) !!}
                 </div>
             </div>
@@ -256,7 +276,7 @@
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
-                        
+
                             </div>
                         </div>
                     </div>
@@ -556,6 +576,8 @@
                         d.nationality = $('#nationalities_select').val();
                         d.status = $('#status_filter').val();
                         d.company = $('#select_company_id').val();
+                        d.department = $('#select_department_id').val();
+                        d.contract_type = $('#contract_type_filter').val();
 
                         console.log(d);
                     },
@@ -678,15 +700,16 @@
 
             });
 
-            $('#specializations-select, #nationalities_select, #status-select, #select_company_id').change(
-                function() {
-                    console.log('Specialization selected: ' + $(this).val());
-                    console.log('Nationality selected: ' + $('#nationalities_select').val());
-                    console.log('Status selected: ' + $('#status_filter').val());
-                    console.log('loc selected: ' + $('#select_company_id').val());
-                    users_table.ajax.reload();
+            $('#specializations-select, #nationalities_select, #status-select, #select_company_id,  #contract_type_filter,  #select_department_id')
+                .change(
+                    function() {
+                        console.log('Specialization selected: ' + $(this).val());
+                        console.log('Nationality selected: ' + $('#nationalities_select').val());
+                        console.log('Status selected: ' + $('#status_filter').val());
+                        console.log('loc selected: ' + $('#select_company_id').val());
+                        users_table.ajax.reload();
 
-                });
+                    });
 
 
 
