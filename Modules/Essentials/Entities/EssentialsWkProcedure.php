@@ -26,6 +26,11 @@ class EssentialsWkProcedure extends Model
     {
         return $this->belongsTo(EssentialsDepartment::class, 'next_department_id');
     }
+    // public function escalations()
+    // {
+    //     return $this->hasMany(EssentialsProcedureEscalation::class, 'procedure_id');
+    // }
+
     
     protected $table = 'essentials_wk_procedures';
 }

@@ -496,41 +496,6 @@
     </script>
 
 
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-
-
-            var professionSelect = $('#professionSelect');
-            var specializationSelect = $('#specializationSelect');
-
-
-            professionSelect.on('change', function() {
-                var selectedProfession = $(this).val();
-                console.log(selectedProfession);
-                var csrfToken = $('meta[name="csrf-token"]').attr('content');
-                $.ajax({
-                    url: '{{ route('specializations') }}',
-                    type: 'POST',
-                    data: {
-                        _token: csrfToken,
-                        profession_id: selectedProfession
-                    },
-                    success: function(data) {
-                        specializationSelect.empty();
-                        $.each(data, function(id, name) {
-                            specializationSelect.append($('<option>', {
-                                value: id,
-                                text: name
-                            }));
-                        });
-                    }
-                });
-            });
-
-        });
-    </script>
-
     <script>
         function getGPA() {
             const GPA = [{

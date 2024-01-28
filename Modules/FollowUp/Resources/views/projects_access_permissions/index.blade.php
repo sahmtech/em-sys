@@ -118,18 +118,17 @@
                             projects = response.projects;
                         }
 
-                        // Clear existing options in Select2
                     
 
                         if (projects && Object.keys(projects).length > 0) {
                             $projectsMenu.find('option').each(function() {
                                 var optionValue = $(this).attr('value');
-                                // Check if the current option value is in the response projects
+          
                                 if (projects.hasOwnProperty(optionValue)) {
-                                    // Mark as selected
+               
                                     $(this).prop('selected', true);
                                 } else {
-                                    // Optionally, unselect it if you want to deselect previously selected options
+                                  
                                     $(this).prop('selected', false);
                                 }
                             });

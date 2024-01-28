@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                <li class="active">Here</li>
-                                                            </ol> -->
+                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                    <li class="active">Here</li>
+                                                                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -538,7 +538,7 @@
         $(document).ready(function() {
             var users_table = $('#employees').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ route('employees') }}",
                     data: function(d) {

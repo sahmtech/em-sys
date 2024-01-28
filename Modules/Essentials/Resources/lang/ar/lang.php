@@ -1664,6 +1664,7 @@ return [
   'f_comp_insurance_class_not_found' => 'الشركة المدخلة غير تابعة للمنشاة التابع لها المرافق',
 
   'edit_worker' => 'تعديل عامل',
+
   'user_type_is_valid'=>'نمط الموظف غير مسموح أدخل أحد الأنماط التالية : worker , manager ,employee ,user  في السطر رقم  ',
   'contract_duration_should_be_is_numeric'=>'مدة العقد يجب أن تكون رقم  في السطر',
   'probation_period_should_be_is_numeric'=>'الفترة التجريبية يجب أن تكون رقم في السطر ',
@@ -1676,5 +1677,15 @@ return [
   'import_update_employees_insurances'=>'استيراد (تحديث ) التامين الطبي للموظفين',
   'eqama_number_required'=>'رقم الاقامة مطلوب',
   'insurance_class_id_required'=>'رقم الفئة مطلوب',
-  'insurance_company_id_required'=>'رقم الشركة مطلوب'
+  'insurance_company_id_required'=>'رقم الشركة مطلوب',
+
+
+  'profile_picture'=>'الصورة الشخصية',
+
+
+  'edit_procedure' => 'تعديل إجراء',
+  'repeated_managements_please_re_check' => 'يوجد إدارات مكررة، يرجى إعادة إدخال الإجراء',
+
+
+
 ];

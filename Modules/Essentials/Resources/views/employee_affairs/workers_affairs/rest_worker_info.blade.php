@@ -3,8 +3,8 @@
     <h4>@lang('essentials::lang.hrm_details_create_edit'):</h4>
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('location_id', __('essentials::lang.company') . ':*') !!}
-            {!! Form::select('location_id', $company, null, [
+            {!! Form::label('company_id', __('essentials::lang.company') . ':*') !!}
+            {!! Form::select('company_id', $company, null, [
                 'class' => 'form-control select2',
                 'style' => 'height:40px',
                 'required',
@@ -12,58 +12,22 @@
             ]) !!}
         </div>
     </div>
-    {{--   <div class="col-md-3">
-        <div class="form-group">
-            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':') !!}
-            <div class="form-group">
-                {!! Form::select(
-                    'essentials_department_id',
-                    $departments,
-                    !empty($user->essentials_department_id) ? $user->essentials_department_id : null,
-                    [
-                        'class' => 'form-control select2',
-                        'style' => 'height:40px',
-                     
-                        'style' => 'width: 100%;',
-                        'placeholder' => __('messages.please_select'),
-                    ],
-                ) !!}
-            </div>
-        </div>
-    </div> --}}
+   
 
 
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('profession', __('sales::lang.profession') . ':') !!}
-            {!! Form::select('profession', $professions, !empty($user->profession_id) ? $user->profession_id : null, [
+            {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+            {!! Form::select('profession',$job_titles, !empty($user->profession_id) ? $user->profession_id : null, [
                 'class' => 'form-control select2',
-            
+                'required',
                 'style' => 'height:40px',
                 'placeholder' => __('sales::lang.profession'),
-                'id' => 'professionSelect',
+          
             ]) !!}
         </div>
     </div>
-    {{--
-        <div class="col-sm-3">
-        <div class="form-group">
-            {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-            {!! Form::select(
-                'specialization',
-                $specializations,
-                !empty($user->specialization_id) ? $user->specialization_id : null,
-                [
-                    'class' => 'form-control select2',
-                    'style' => 'height:40px',
-                    'required',
-                    'placeholder' => __('sales::lang.specialization'),
-                    'id' => 'specializationSelect',
-                ],
-            ) !!}
-        </div>
-    </div> --}}
-
+ 
 </div>
 
 
@@ -282,14 +246,19 @@
     <div>
         <div class="form-group col-md-3">
             {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
-            {{-- <input type="checkbox" id="can_add_category" name="can_add_category" value="1"> --}}
-            <select id="can_add_category" name="can_add_category" class ="form-control" style="height:40px">
-                <option value="#">@lang('essentials::lang.select_for_travel')</option>
-                <option value="1">@lang('essentials::lang.includes')</option>
-                <option value="0">@lang('essentials::lang.does_not_include')</option>
+            <select id="can_add_category" name="can_add_category" class="form-control" style="height:40px">
+                @isset($user)
+                    <option value="#">@lang('essentials::lang.select_for_travel')</option>
+                    <option value="1" @selected(is_null($user_travel))>@lang('essentials::lang.includes')</option>
+                    <option value="0" @selected(!is_null($user_travel))>@lang('essentials::lang.does_not_include')</option>
+                @else
+                    <option value="#" selected>@lang('essentials::lang.select_for_travel')</option>
+                    <option value="1">@lang('essentials::lang.includes')</option>
+                    <option value="0">@lang('essentials::lang.does_not_include')</option>
+                @endisset
             </select>
-
         </div>
+    
         <div class="form-group col-md-3" id="category_input" style="display: none;">
             {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
             {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, [
@@ -305,7 +274,7 @@
         {!! Form::select(
             'health_insurance',
             ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
-            null,
+            $user->has_insurance ?? null,
             ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
         ) !!}
     </div>
@@ -351,6 +320,7 @@
 
 <script>
     $(document).ready(function() {
+        
         $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function() {
             updateContractEndDate();
         });
@@ -440,7 +410,7 @@
 
 <script>
     $(document).ready(function() {
-
+        
         function calculateTotalSalary() {
             var essentialsSalary = parseFloat($('#essentials_salary').val()) || 0;
             var totalAllowance = 0;
@@ -465,40 +435,7 @@
 
 
         var selectedData = [];
-        var professionSelect = $('#professionSelect');
-        var specializationSelect = $('#specializationSelect');
-        professionSelect.on('change', function() {
-            var selectedProfession = $(this).val();
-            console.log(selectedProfession);
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            $.ajax({
-                url: '{{ route('specializations') }}',
-                type: 'POST',
-                data: {
-                    _token: csrfToken,
-                    profession_id: selectedProfession
-                },
-                success: function(data) {
-                    specializationSelect.empty();
-                    $.each(data, function(id, name) {
-                        specializationSelect.append($('<option>', {
-                            value: id,
-                            text: name
-                        }));
-                    });
-                }
-            });
-        });
-
-
-        $('#can_add_category').change(function() {
-            if (this.value === '1') {
-                $('#category_input').show();
-            } else {
-                $('#category_input').hide();
-            }
-        });
-
+        
         $('#salary-table-body').on('click', '.remove-row', function() {
             $(this).closest('tr').remove();
         });
@@ -563,5 +500,31 @@
         $(document).on('change', 'select[name="salary_type[]"]', function() {
             updateAmount(this);
         });
+    });
+</script>
+<script>
+   
+
+    $(document).ready(function() {
+     
+        toggleCategoryInput();
+
+    
+        $('#can_add_category').change(function() {
+            toggleCategoryInput();
+        });
+        function toggleCategoryInput() {
+            console.log('11111111111111');
+        var selectedOption = $('#can_add_category').val();
+        console.log(selectedOption);
+        if (selectedOption === '1') {
+            $('#category_input').show();
+            @isset($user_travel)
+                $('#travel_ticket_categorie').val('{{ $user_travel->categorie_id }}');
+            @endisset
+        } else {
+            $('#category_input').hide();
+        }
+    }
     });
 </script>
