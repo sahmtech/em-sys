@@ -153,6 +153,7 @@ class EssentialsManageEmployeeController extends Controller
             ])
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
+            ->where('users.status', '!=', 'inactive')
 
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
@@ -179,9 +180,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
             ])
-
-            ->orderBy('id', 'desc')
-            ->groupBy('id');
+            ->orderBy('id', 'desc');
 
         if (!empty($request->input('specialization'))) {
 
@@ -934,7 +933,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        
+   
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -948,7 +947,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-
+            $request['DocumentTypes'] =$request->input('DocumentTypes');
 
             $com_id = request()->input('company_id');
             error_log($com_id);
@@ -1119,7 +1118,8 @@ class EssentialsManageEmployeeController extends Controller
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
 
 
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)
+        ->value('profession_id');
 
         if ($professionId !== null) {
             $profession = EssentialsProfession::find($professionId)->name;

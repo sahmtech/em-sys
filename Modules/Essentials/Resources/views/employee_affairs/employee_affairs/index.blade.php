@@ -248,6 +248,16 @@
                                     ]) !!}
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {!! Form::label('essentials::lang.qualification_file', __('essentials::lang.qualification_file') . ':') !!}
+                                    {!! Form::file('qualification_file', [
+                                        'class' => 'form-control',
+                                        'style' => 'height:40px',
+                                    ]) !!}
+                                </div>
+                        
+                            </div>
                         </div>
                     </div>
 
@@ -538,7 +548,7 @@
         $(document).ready(function() {
             var users_table = $('#employees').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ route('employees') }}",
                     data: function(d) {

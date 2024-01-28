@@ -87,9 +87,10 @@ class EssentialsEmployeeAppointmentController extends Controller
 
         $employeeAppointments = EssentialsEmployeeAppointmet::join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')
         ->whereIn('u.id', $userIds)
+        //->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employee_appointmets.id',
-                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'u.id_proof_number',
                 'essentials_employee_appointmets.business_location_id',
                 'essentials_employee_appointmets.department_id',
@@ -173,13 +174,13 @@ class EssentialsEmployeeAppointmentController extends Controller
                 ->make(true);
         }
         $query = User::whereIn('id', $userIds);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        $all_users = $query->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-
         $statuses = $this->statuses;
 
-        return view('essentials::employee_affairs.employee_appointments.index')->with(compact('statuses', 'users', 'departments', 'business_locations', 'specializations', 'professions'));
+        return view('essentials::employee_affairs.employee_appointments.index')
+        ->with(compact('statuses', 'users', 'departments', 'business_locations', 'specializations', 'professions'));
     }
 
     public function change_activity(Request $request, $appointmentId)
@@ -271,8 +272,6 @@ class EssentialsEmployeeAppointmentController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
             $input = $request->only(['employee', 'department', 'location', 'profession','start_from']);

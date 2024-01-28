@@ -48,6 +48,7 @@
                             {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
                         </div>
                     </div>
+             
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
@@ -77,16 +78,7 @@
                         </div>
                     </div>
 
-                    <div id="workerInput" style="display: none;" class="col-md-5">
-                        <div class="form-group">
-                            {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':') !!}
-                            {!! Form::select('assigned_to', $contacts, null, [
-                                'class' => 'form-control',
-                                'style' => 'height:40px',
-                                'placeholder' => __('sales::lang.assigned_to'),
-                            ]) !!}
-                        </div>
-                    </div>
+                  
                 </div>
 
                 @include('user.edit_profile_form_part')

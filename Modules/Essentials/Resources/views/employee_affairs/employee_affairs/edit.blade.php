@@ -60,7 +60,6 @@
                         [
                             'manager' => __('user.manager'),
                             'employee' => __('user.employee'),
-                            'worker' => __('user.worker'),
                         ],
                         $user->user_type,
                         [
@@ -73,22 +72,7 @@
                     ) !!}
                 </div>
             </div>
-            @if ($user->user_type == 'worker' && !empty($user->assigned_to))
-                <div class="form-group">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            {!! Form::label('project', __('followup::lang.project') . ':*') !!}
-                            {!! Form::select('project', $projects, !empty($user->assigned_to) ? $user->assigned_to : null, [
-                                'class' => 'form-control select2',
-                                'required',
-                                'style' => 'height:40px',
-                                'placeholder' => __('sales::lang.project'),
-                                'id' => 'project',
-                            ]) !!}
-                        </div>
-                    </div>
-                </div>
-            @endif
+          
         </div>
 
         @include('user.edit_profile_form_part', [

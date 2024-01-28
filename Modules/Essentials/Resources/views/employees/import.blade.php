@@ -59,10 +59,13 @@
                                     {!! Form::file('employee_csv', ['accept'=> '.xls']); !!}
                                 </div>
                             </div>
+                            @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.import_create_employees'))
                             <div class="col-sm-4">
                                 <br>
                                 <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
                             </div>
+                            @endif
+
                             <div class="col-sm-6">
                                 <a href="{{ asset('files/import_employee_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
                             </div>
@@ -70,6 +73,9 @@
                     </div>
                 {!! Form::close() !!}
             </div>
+
+
+
 
             <div class="update-existing-data" style="display: none;">
             {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
@@ -81,10 +87,12 @@
                                     {!! Form::file('update_employee_csv', ['accept'=> '.xls' ]); !!}
                                 </div>
                             </div>
+                            @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.import_update_employees'))
                             <div class="col-sm-4">
                                 <br>
                                 <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
                             </div>
+                            @endif
                             <div class="col-sm-6">
                                 <a href="{{ asset('files/import_update_employee_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('essentials::lang.download_update_template_file')</a>
                             </div>

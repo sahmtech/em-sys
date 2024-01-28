@@ -225,7 +225,7 @@ Route::middleware(['setData'])->group(function () {
 
     Auth::routes();
     //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
-
+  
 
     Route::get('/business/register', [BusinessController::class, 'getRegister'])->name('business.getRegister');
     Route::post('/business/register', [BusinessController::class, 'postRegister'])->name('business.postRegister');
@@ -569,7 +569,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     });
 
     Route::resource('account-types', AccountTypeController::class);
-
+   
     //Restaurant module
     Route::prefix('modules')->group(function () {
         Route::resource('tables', Restaurant\TableController::class);
@@ -653,7 +653,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             Route::post('/store', [TimeSheetController::class, 'storeTimeSheet'])->name('agentTimeSheet.store');
         });
     });
-
+    Route::get('/employee_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_requests'])->name('employee_requests');
 
 
 

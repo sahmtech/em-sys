@@ -137,7 +137,7 @@
         ) !!}
     </div>
 
-
+@if(empty($contract))
     <div class="col-md-3">
         <div class="form-group">
             {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
@@ -148,7 +148,7 @@
         </div>
 
     </div>
-
+@endif
 
 </div>
 
@@ -514,10 +514,9 @@
             }
         }
 
-        // Initial check
+
         toggleCategoryInput();
 
-        // Check on change
         $('#can_add_category').change(function() {
             toggleCategoryInput();
         });
@@ -526,6 +525,8 @@
 
 
     $(document).on('change', 'select[name="salary_type[]"]', function() {
+
+        updateAmount(this);
         updateSelectedData();
     });
 
@@ -563,13 +564,8 @@
         $('#salary-table-body').append(newRow);
     });
 
-    $(document).on('change', 'select[name="salary_type[]"]', function() {
-        updateSelectedData();
-    });
-
-    $(document).on('input', 'input[name="amount[]"]', function() {
-        updateSelectedData();
-    });
+ 
+  
 
     function updateSelectedData() {
         selectedData = [];
@@ -592,7 +588,7 @@
 
     function updateAmount(element) {
         var salaryType = $(element).val();
-        console.log(salaryType);
+       
 
         $.ajax({
             url: '/hrm/get-amount/' + salaryType,
@@ -612,7 +608,5 @@
 
 
 
-    $(document).on('change', 'select[name="salary_type[]"]', function() {
-        updateAmount(this);
-    });
+   
 </script>

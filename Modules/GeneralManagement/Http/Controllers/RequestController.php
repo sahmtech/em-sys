@@ -113,7 +113,7 @@ class RequestController extends Controller
             ->leftJoin('followup_worker_requests_process as process', 'process.id', '=', 'latest_process.max_id')
             ->leftJoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->whereIn('users.id', $userIds)
+            ->whereIn('users.id', $userIds)->where('users.status', '!=', 'inactive')
             ->whereNull('process.sub_status');
 
 
@@ -264,6 +264,14 @@ class RequestController extends Controller
                 }
             }
         }
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+        ->where(function ($query) {
+            $query->Where('name', 'like', '%مجلس%')
+                ->orWhere('name', 'like', '%عليا%');
+        })
+        ->pluck('id')->toArray();
+
+
         $escalatedRequests = FollowupWorkerRequest::where('sub_status', 'escalateRequest')->select([
             'followup_worker_requests.request_no',
             'followup_worker_requests_process.id as process_id',
@@ -277,14 +285,17 @@ class RequestController extends Controller
             'essentials_wk_procedures.department_id as department_id',
             'users.id_proof_number',
             'essentials_wk_procedures.can_return',
-            'users.assigned_to'
+            'users.assigned_to',
+            'essentials_procedure_escalations.escalates_to'
 
         ])
             ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
             ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('followup_worker_requests_process.status', 'pending')->whereIn('users.id', $userIds);
+            ->join('essentials_procedure_escalations', 'essentials_procedure_escalations.procedure_id', '=', 'essentials_wk_procedures.id')
+            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('essentials_procedure_escalations.escalates_to',$departmentIds)
+            ->where('followup_worker_requests_process.status', 'pending')->where('users.status', '!=', 'inactive')->whereIn('users.id', $userIds);
 
+         
         if (request()->ajax()) {
 
 
@@ -354,8 +365,10 @@ class RequestController extends Controller
 
                 if ($procedure && $procedure->end == 1) {
                     $requestProcess->followupWorkerRequest->status = 'approved';
-                    $first_step->status = 'approved';
+                  
                     $requestProcess->followupWorkerRequest->save();
+                    $first_step->status = 'approved';
+                    $first_step->save();
                 } else {
                     $nextDepartmentId = $procedure->next_department_id;
                     $nextProcedure = EssentialsWkProcedure::where('department_id', $nextDepartmentId)
@@ -374,6 +387,7 @@ class RequestController extends Controller
             if ($input['status'] == 'rejected') {
                 $requestProcess->followupWorkerRequest->status = 'rejected';
                 $first_step->status = 'rejected';
+                $first_step->save();
                 $requestProcess->followupWorkerRequest->save();
             }
 

@@ -6,6 +6,8 @@ use App\AccessRole;
 use App\AccessRoleBusiness;
 use App\AccessRoleProject;
 use App\Business;
+use Modules\FollowUp\Entities\FollowupRequestsAttachment;
+
 use App\ContactLocation;
 use App\Utils\ModuleUtil;
 use App\User;
@@ -118,8 +120,8 @@ class InsuranceRequestController extends Controller
             ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
             ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('department_id', $departmentIds)
-            ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests_process.sub_status', null);
-
+            ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests_process.sub_status', null)
+            ->where('users.status', '!=', 'inactive');
 
         if (request()->ajax()) {
 
@@ -255,7 +257,12 @@ class InsuranceRequestController extends Controller
                 $workerRequest->visa_number = $request->visa_number;
                 $workerRequest->atmCardType = $request->atmType;
                 $workerRequest->save();
-
+                if(isset($request->attachment) && !empty($request->attachment)){
+                    FollowupRequestsAttachment::create([
+                        'request_id' => $workerRequest->id,
+                        'file_path' => $attachmentPath,
+            
+                    ]);}
                 if ($workerRequest) {
                     $procedure =EssentialsWkProcedure::where('business_id', $business_id)
                     ->where('type', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();

@@ -51,7 +51,7 @@ class EssentialsEmployeeQualificationController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $employees_qualifications = EssentialsEmployeesQualification::join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
-        ->whereIn('u.id', $userIds)
+        ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employees_qualifications.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -117,7 +117,7 @@ class EssentialsEmployeeQualificationController extends Controller
                 ->make(true);
         }
         $query = User::whereIn('id', $userIds);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        $all_users = $query->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
@@ -150,7 +150,11 @@ class EssentialsEmployeeQualificationController extends Controller
             $input2['degree'] = $input['degree'];
             $input2['marksName'] = $input['marksName'];
             $input2['great_degree'] = $input['great_degree'];
-
+            if (request()->hasFile('qualification_file')) {
+                $file = request()->file('qualification_file');
+                $filePath = $file->store('/employee_qualifications');
+                $input2['file_path'] = $filePath;
+            }
 
             EssentialsEmployeesQualification::create($input2);
 

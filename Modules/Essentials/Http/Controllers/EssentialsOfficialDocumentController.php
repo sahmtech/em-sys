@@ -50,7 +50,7 @@ class EssentialsOfficialDocumentController extends Controller
 
         $official_documents = EssentialsOfficialDocument::join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
 
-            ->whereIn('u.id', $userIds)
+            ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_official_documents.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -150,7 +150,7 @@ class EssentialsOfficialDocumentController extends Controller
                     'doc_number',
                     'issue_date',
                     'issue_place',
-                    'status',
+                  
                     'expiration_date',
                     'file'
                 ]
@@ -162,7 +162,6 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['issue_date'] = $input['issue_date'];
             $input2['expiration_date'] = $input['expiration_date'];
             $input2['employee_id'] =  $request->input('employees2');
-            $input2['status'] = $input['status'];
             $input2['issue_place'] = $input['issue_place'];
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
@@ -252,7 +251,7 @@ class EssentialsOfficialDocumentController extends Controller
         $output = [
             'data' => $doc,
             'users' => $users,
-            // Add any other data you want to include in the JSON response
+  
         ];
 
         return response()->json($output);

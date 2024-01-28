@@ -6,6 +6,7 @@
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
+  
 
     Route::prefix('essentials')->group(function () {
         Route::get('/dashboard', [Modules\Essentials\Http\Controllers\DashboardController::class, 'essentialsDashboard']);
@@ -225,9 +226,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/classes', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'fetchClasses'])->name('classes');
         Route::get('/employee_insurance/edit/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'edit'])->name('employee_insurance.edit');
         Route::post('/updateInsurance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'update'])->name('updateInsurance');
+        
+       
 
         Route::get('/import_employees_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'import_employee_insurance_index'])->name('import_employees_insurance');
         Route::post('/send_import_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostImportEmployee'])->name('send_import_employee_insurance');
+        Route::post('/send_import_update_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostUpdateImportEmployee'])
+        ->name('send_import_update_employee_insurance');
 
 
 
@@ -475,6 +480,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/contracts-finish-reasons/store', [\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'store'])->name('store_finish_reasons');
         Route::delete('/contracts-finish-reasons/delete/{id}', [\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'destroy'])->name('finish_contract.destroy');
 
+        Route::get('/cancel_contract_requests', [\Modules\Essentials\Http\Controllers\EssentialsCancelContractsController::class, 'index'])->name('cancel_contract_requests');
+        Route::get('/finish_contract_procedure/{requestId}', [\Modules\Essentials\Http\Controllers\EssentialsCancelContractsController::class, 'finish_contract_procedure'])->name('finish_contract_procedure');
+      
+        
 
         Route::get('/wishes', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'index'])->name('wishes');
         Route::post('/wish/store', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'store'])->name('store_wish');

@@ -26,7 +26,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_type_filter', __('essentials::lang.doc_type') . ':') !!}
-                            <select class="form-control select2" name="doc_type_filter" required id="doc_type_filter"
+                            <select class="form-control select2" name="doc_type_filter"  id="doc_type_filter"
                                 style="width: 100%;">
                                 <option value="all">@lang('lang_v1.all')</option>
                                 <option value="national_id">@lang('essentials::lang.national_id')</option>
@@ -41,7 +41,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="status_filter">@lang('essentials::lang.status'):</label>
-                            <select class="form-control select2" name="status_filter" required id="status_filter"
+                            <select class="form-control select2" name="status_filter"  id="status_filter"
                                 style="width: 100%;">
                                 <option value="all">@lang('lang_v1.all')</option>
                                 <option value="valid">@lang('essentials::lang.valid')</option>
@@ -142,35 +142,35 @@
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
+                                    {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':') !!}
                                     {!! Form::number('doc_number', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.doc_number'),
-                                        'required',
+                                      
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
+                                    {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':') !!}
                                     {!! Form::date('issue_date', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.issue_date'),
-                                        'required',
+                                    
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
+                                    {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':') !!}
                                     {!! Form::text('issue_place', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.issue_place'),
-                                        'required',
+                                    
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
+                                {{-- <div class="form-group col-md-6">
+                                    {!! Form::label('status', __('essentials::lang.status') . ':') !!}
                                     {!! Form::select(
                                         'status',
                                         [
@@ -182,26 +182,26 @@
                                             'class' => 'form-control',
                                             'style' => 'height:40px',
                                             'placeholder' => __('essentials::lang.select_status'),
-                                            'required',
+                                      
                                         ],
                                     ) !!}
-                                </div>
+                                </div> --}}
                                 <div class="form-group col-md-6">
                                     {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
                                     {!! Form::date('expiration_date', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.expiration_date'),
-                                        'required',
+                                   
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
+                                    {!! Form::label('file', __('essentials::lang.file') . ':') !!}
                                     {!! Form::file('file', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.file'),
-                                        'required',
+                                  
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>

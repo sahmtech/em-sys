@@ -57,7 +57,7 @@ class EssentialsEmployeeContractController extends Controller
 
 
         $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
-            ->whereIn('u.id', $userIds)
+            ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employees_contracts.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -204,8 +204,6 @@ class EssentialsEmployeeContractController extends Controller
             $input2['is_renewable'] = $input['is_renewable'];
 
             $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
-
-
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->contract_number;
                 $numericPart = (int)substr($latestRefNo, 3);
