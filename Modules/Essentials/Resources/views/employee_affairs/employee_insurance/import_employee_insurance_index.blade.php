@@ -34,6 +34,25 @@
 <div class="row">
     <div class="col-sm-12">
         @component('components.widget', ['class' => 'box-primary'])
+
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>@lang('essentials::lang.select_operation'):</label>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="operation" value="add" checked> @lang('essentials::lang.add_new_data')
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="operation" value="update"> @lang('essentials::lang.update_existing_data')
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
            
 
             <div class="add-new-data">
@@ -47,10 +66,14 @@
                                     {!! Form::file('employee_insurance_csv', ['accept'=> '.xls']); !!}
                                 </div>
                             </div>
+
+                            @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.import_employees_insurances"))
                             <div class="col-sm-4">
                                 <br>
                                 <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
                             </div>
+                            @endif
+
                             <div class="col-sm-6">
                                 <a href="{{ asset('files/employee_insurance_csv.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
                             </div>
@@ -58,6 +81,31 @@
                     </div>
                 {!! Form::close() !!}
             </div>
+
+
+            <div class="update-existing-data" style="display: none;">
+                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostUpdateImportEmployee']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="col-sm-8">
+                                    <div class="form-group">
+                                        {!! Form::label('name', __( 'essentials::lang.file_to_update__import' ) . ':') !!}
+                                        {!! Form::file('update_employee_insurance_csv', ['accept'=> '.xls' ]); !!}
+                                    </div>
+                                </div>
+                                @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.import_update_employees_insurances'))
+                                <div class="col-sm-4">
+                                    <br>
+                                    <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
+                                </div>
+                                @endif
+                                <div class="col-sm-6">
+                                    <a href="{{ asset('files/import_update_employee_insurance_csv_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('essentials::lang.download_update_template_file')</a>
+                                </div>
+                            </div>
+                        </div>
+                    {!! Form::close() !!}
+                </div>
 
            
 
@@ -111,5 +159,17 @@
 
 @endsection
 @section('javascript')
-
+<script>
+    $(document).ready(function() {
+        $('input[name="operation"]').change(function() {
+            if (this.value === 'add') {
+                $('.add-new-data').show();
+                $('.update-existing-data').hide();
+            } else if (this.value === 'update') {
+                $('.add-new-data').hide();
+                $('.update-existing-data').show();
+            }
+        });
+    });
+</script>
 @endsection
