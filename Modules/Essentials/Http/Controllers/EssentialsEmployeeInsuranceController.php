@@ -1128,7 +1128,7 @@ class EssentialsEmployeeInsuranceController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
-                'msg' =>  $e->getMessage(),
+                'msg' =>  __('messages.something_went_wrong'),
             ];
         }
 
