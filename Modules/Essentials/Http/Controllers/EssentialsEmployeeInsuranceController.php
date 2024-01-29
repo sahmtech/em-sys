@@ -380,6 +380,12 @@ class EssentialsEmployeeInsuranceController extends Controller
                             $insurance->family_id =null;
                             $insurance->save();
 
+
+                           
+                            $emp->has_insurance =1;
+                            $emp->save();
+                            
+
                             $processedEqamaEmpNos[] = $eqama_emp_no;
 
                             
@@ -405,6 +411,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                             $insurance->family_id =null;
                             $insurance->is_deleted =0;
                             $insurance->save();
+
+                            
+                            $emp_border_no->has_insurance =1;
+                            $emp_border_no->save();
+                            
 
                             $processedEqamaEmpNos[] = $eqama_emp_no;
                            
@@ -1025,7 +1036,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                     $previous_emp_insurance->is_deleted= 1 ;
                     $previous_emp_insurance->save();
 
-
+                    
                     $insurance_data['is_deleted']= 0;
                     $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                     $insurance_data['employee_id'] = $input['employee'];
@@ -1033,6 +1044,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                     ->select('insurance_company_id')->first();
                     $insurance_data['insurance_company_id']=  $insurance_class_company->insurance_company_id;
                     EssentialsEmployeesInsurance::create($insurance_data);
+
+                    $emp_insurance=User::where('employee_id', $input['employee'])->where('status','active')->first();
+                    $emp_insurance->has_insurance =1;
+                    $emp_insurance->save();
+                    
                     
                     $output = [
                         'success' => true,
@@ -1049,6 +1065,12 @@ class EssentialsEmployeeInsuranceController extends Controller
                     ->select('insurance_company_id')->first();
                     $insurance_data['insurance_company_id']=  $insurance_class_company->insurance_company_id;
                     EssentialsEmployeesInsurance::create($insurance_data);
+
+                    $emp_insurance=User::where('employee_id', $input['employee'])->where('status','active')->first();
+                    $emp_insurance->has_insurance =1;
+                    $emp_insurance->save();
+                    
+
                     $output = [
                         'success' => true,
                         'msg' => __('lang_v1.added_success'),
