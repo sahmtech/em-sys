@@ -942,7 +942,7 @@ class EssentialsCardsController extends Controller
         ->where('is_active',1)
         ->latest('created_at')
         ->first();
-        
+
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)
@@ -956,7 +956,7 @@ class EssentialsCardsController extends Controller
         ->value('profession_id');
      
         if ($professionId !== null) {
-            $profession = EssentialsProfession::find($professionId)->name;
+            $profession = EssentialsProfession::find($professionId)?->name ?? " ";
         } 
         else {$profession = "";}
        
