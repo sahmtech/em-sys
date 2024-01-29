@@ -113,7 +113,7 @@
                         
                         <tfoot>
                             <tr>
-                                <td colspan="17">
+                                <td colspan="16">
                                     <div style="display: flex; width: 100%;">
 
                                         &nbsp;
