@@ -22,7 +22,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 {
     protected $moduleUtil;
     protected $statuses;
-    
+
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
@@ -62,7 +62,7 @@ class EssentialsEmployeeAppointmentController extends Controller
         }
 
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -81,16 +81,16 @@ class EssentialsEmployeeAppointmentController extends Controller
 
 
         $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
-        $business_locations = Company::where('business_id',$business_id)->pluck('name', 'id');
+        $business_locations = Company::where('business_id', $business_id)->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
 
         $employeeAppointments = EssentialsEmployeeAppointmet::join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')
-        ->whereIn('u.id', $userIds)
-        //->where('u.status', '!=', 'inactive')
+            ->whereIn('u.id', $userIds)
+            //->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employee_appointmets.id',
-                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'u.id_proof_number',
                 'essentials_employee_appointmets.business_location_id',
                 'essentials_employee_appointmets.department_id',
@@ -99,7 +99,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 'u.status as status',
 
 
-            ])->orderby('id','desc');
+            ])->orderby('id', 'desc');
 
 
         if (request()->ajax()) {
@@ -129,7 +129,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                     return $item;
                 })
-             
+
                 ->editColumn('business_location_id', function ($row) use ($business_locations) {
                     $item = $business_locations[$row->business_location_id] ?? '';
 
@@ -138,7 +138,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_edit_employee_appointments, $can_delete_employee_appointments,$can_activate_employee_appointments) {
+                    function ($row)  use ($is_admin, $can_edit_employee_appointments, $can_delete_employee_appointments, $can_activate_employee_appointments) {
                         $html = '';
                         if ($is_admin  || $can_edit_employee_appointments) {
                             $html .= '<a  href="' . route('appointment.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
@@ -180,24 +180,24 @@ class EssentialsEmployeeAppointmentController extends Controller
         $statuses = $this->statuses;
 
         return view('essentials::employee_affairs.employee_appointments.index')
-        ->with(compact('statuses', 'users', 'departments', 'business_locations', 'specializations', 'professions'));
+            ->with(compact('statuses', 'users', 'departments', 'business_locations', 'specializations', 'professions'));
     }
 
     public function change_activity(Request $request, $appointmentId)
     {
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        
+
         try {
             $input = $request->only(['origValue']);
-            
+
             $appointmet = EssentialsEmployeeAppointmet::find($appointmentId);
-            
+
             if ($appointmet) {
                 $appointmet->is_active = $input['origValue'];
                 $appointmet->end_at = now();
                 $appointmet->save();
-                
+
                 $output = [
                     'success' => true,
                     'msg' => __('lang_v1.updated_success'),
@@ -212,10 +212,10 @@ class EssentialsEmployeeAppointmentController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = ['success' => false, 'msg' => $e->getMessage()];
         }
-    
+
         return $output;
     }
-    
+
 
     public function changeStatus(Request $request)
     {
@@ -274,27 +274,25 @@ class EssentialsEmployeeAppointmentController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         try {
-            $input = $request->only(['employee', 'department', 'location', 'profession','start_from']);
+            $input = $request->only(['employee', 'department', 'location', 'profession', 'start_from']);
 
             $input2['employee_id'] = $input['employee'];
             $input2['department_id'] = $input['department'];
             $input2['business_location_id'] = $input['location'];
             $input2['profession_id'] = $input['profession'];
-          
-            $input2['is_active'] = 1;
-            $input2['start_from']=$input['start_from'];
-            
-            $previous_appoientement = EssentialsEmployeeAppointmet::where('employee_id',$input2['employee_id'])
-            ->latest('created_at')
-            ->first();
-           
 
-            if( $previous_appoientement )
-            {
-                $previous_appoientement->is_active= 0;
-                $previous_appoientement->end_at= $input2['start_from'];
+            $input2['is_active'] = 1;
+            $input2['start_from'] = $input['start_from'];
+
+            $previous_appoientement = EssentialsEmployeeAppointmet::where('employee_id', $input2['employee_id'])
+                ->latest('created_at')
+                ->first();
+
+
+            if ($previous_appoientement) {
+                $previous_appoientement->is_active = 0;
+                $previous_appoientement->end_at = $input2['start_from'];
                 $previous_appoientement->save();
-              
             }
 
 
@@ -335,8 +333,12 @@ class EssentialsEmployeeAppointmentController extends Controller
 
 
         try {
-            EssentialsEmployeeAppointmet::where('id', $id)
-                ->delete();
+            User::where('id', EssentialsEmployeeAppointmet::where('id', $id)->first()->employee_id)->update([
+                'essentials_department_id' => Null,
+            ]);
+            EssentialsEmployeeAppointmet::where('id', $id)->update(['is_active' => 0]);
+            // EssentialsEmployeeAppointmet::where('id', $id)
+            //     ->delete();
 
             $output = [
                 'success' => true,
@@ -360,15 +362,15 @@ class EssentialsEmployeeAppointmentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $business_locations = Company::where('business_id',$business_id)->pluck('name', 'id');
+        $business_locations = Company::where('business_id', $business_id)->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
 
         $Appointmet = EssentialsEmployeeAppointmet::findOrFail($id);
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-   
+
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-   
+
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
@@ -395,7 +397,7 @@ class EssentialsEmployeeAppointmentController extends Controller
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
 
-
+            User::where('id', EssentialsEmployeeAppointmet::where('id', $id)->first()->employee_id)->update(['essentials_department_id' => $input['department']]);
 
             EssentialsEmployeeAppointmet::where('id', $id)->update($input2);
             $output = [
