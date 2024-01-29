@@ -517,6 +517,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                       'last_name',
                                       'email',
                                       'dob',
+                                      'essentials_department_id',
                                       'gender',
                                       'marital_status',
                                       'blood_group',

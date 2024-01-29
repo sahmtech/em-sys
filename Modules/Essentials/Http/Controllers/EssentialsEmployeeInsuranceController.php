@@ -1378,6 +1378,14 @@ class EssentialsEmployeeInsuranceController extends Controller
             }
 
             $insurance->update(['is_deleted' => 1]);
+            if( $insurance->employee_id != null)
+            {
+                $emp=User::where('id', $insurance->employee_id)->first();
+                $emp->has_insurance =0;
+                $emp->save();
+            }
+           
+                            
             $output = [
                 'success' => true,
                 'msg' => __('essentials::lang.canceled_successfully'),
