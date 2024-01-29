@@ -197,6 +197,9 @@ class EssentialsEmployeeAppointmentController extends Controller
                 $appointmet->is_active = $input['origValue'];
                 $appointmet->end_at = now();
                 $appointmet->save();
+                User::where('id',   $appointmet->employee_id)->update([
+                    'essentials_department_id' => Null,
+                ]);
 
                 $output = [
                     'success' => true,
@@ -297,7 +300,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
 
             EssentialsEmployeeAppointmet::create($input2);
-
+            User::where('id', $input['employee'])->update(['essentials_department_id' => $input['department']]);
 
             $output = [
                 'success' => true,
@@ -336,9 +339,8 @@ class EssentialsEmployeeAppointmentController extends Controller
             User::where('id', EssentialsEmployeeAppointmet::where('id', $id)->first()->employee_id)->update([
                 'essentials_department_id' => Null,
             ]);
-            EssentialsEmployeeAppointmet::where('id', $id)->update(['is_active' => 0]);
-            // EssentialsEmployeeAppointmet::where('id', $id)
-            //     ->delete();
+            EssentialsEmployeeAppointmet::where('id', $id)
+                ->delete();
 
             $output = [
                 'success' => true,
@@ -395,9 +397,9 @@ class EssentialsEmployeeAppointmentController extends Controller
 
             //        $input2['superior'] = $input['superior'];
             $input2['profession_id'] = $input['profession'];
-            $input2['specialization_id'] = $input['specialization'];
+           // $input2['specialization_id'] = $input['specialization'];
 
-            User::where('id', EssentialsEmployeeAppointmet::where('id', $id)->first()->employee_id)->update(['essentials_department_id' => $input['department']]);
+            User::where('id', $input['employee'])->update(['essentials_department_id' => $input['department']]);
 
             EssentialsEmployeeAppointmet::where('id', $id)->update($input2);
             $output = [
@@ -406,7 +408,7 @@ class EssentialsEmployeeAppointmentController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
