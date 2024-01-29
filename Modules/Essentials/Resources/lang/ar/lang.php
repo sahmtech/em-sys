@@ -1674,7 +1674,7 @@ return [
 
   'edit_worker' => 'تعديل عامل',
 
-
+'id_proof_number_required'=>'رقم الاقامة مطلوب في السطر  ',
   'user_type_is_valid'=>'نمط الموظف غير مسموح أدخل أحد الأنماط التالية : worker , manager ,employee ,user  في السطر رقم  ',
   'contract_duration_should_be_is_numeric'=>'مدة العقد يجب أن تكون رقم  في السطر',
   'probation_period_should_be_is_numeric'=>'الفترة التجريبية يجب أن تكون رقم في السطر ',

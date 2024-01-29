@@ -152,7 +152,24 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $emp_array['current_address'] = $value[13];
                     $emp_array['permanent_address'] = $value[14];
                     $emp_array['id_proof_name'] = $value[15];
+                  
                     $emp_array['id_proof_number'] = $value[16];
+                    if($value[16] != null)
+                    {
+                        $proof_number = User::where('id_proof_number',$emp_array['id_proof_number'])->first();
+                      if (!$proof_number)
+                      {
+                      
+                          $is_valid = false;
+                          $error_msg = __('essentials::lang.user_not_found').$row_no+1;
+                          break;
+                      } 
+                    }
+                    else{
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.id_proof_number_required').$row_no+1;
+                        break;
+                    }
 
                     
                     if (!empty($value[17]))
@@ -478,8 +495,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                    
                     foreach ($formated_data as $emp_data) 
                     {
-                        try
-                        {
+                       
                             $emp_data['business_id'] = $emp_data['business_id'];
                             $emp_data['created_by'] = $user_id;
                             $emp_data['contract_type_id'] = null;
@@ -501,6 +517,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                       'last_name',
                                       'email',
                                       'dob',
+                                      'essentials_department_id',
                                       'gender',
                                       'marital_status',
                                       'blood_group',
@@ -821,11 +838,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 }
                                 
     
-                              
-    
-    
-    
-    
                                 if($emp_data['admission_date'] != null)
                                 {
                                     $previous_admission = EssentialsAdmissionToWork::where('employee_id',$existingEmployee->id)
@@ -865,41 +877,15 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 $formdata[] = $emp_data;
     
                             } 
-                            else {
-                                $is_valid = false;
-                                $error_msg = __('essentials::lang.user_not_found') .$row_no;
-                                break;
-                             
-                            }
-
-                         
-                        }
-                        catch (\Exception $e) {
-                            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-                            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-                
-                            $output = ['success' => 0,'msg' => $e->getMessage(), ];
-
-                            return redirect()->route('import-employees')
-                            ->with('notification', $output);
-                        }
-                   
-                      
-                       
 
                    }
+                  // dd( $formdata);
                       
                
                  
                    
                 }
 
-   
-                   if (!$is_valid) 
-                   {
-                       throw new \Exception($error_msg);
-                   } 
-               
                 $output = ['success' => 1,'msg' => __('product.file_imported_successfully'),];
 
                 DB::commit();
