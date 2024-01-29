@@ -27,6 +27,7 @@
                 <table class="table table-bordered table-striped" id="allowances_and_deductions_table">
                     <thead>
                         <tr>
+                               <th>#</th>
                             <th>@lang('essentials::lang.applicable_date')</th>   
                             <th>@lang('essentials::lang.description')</th>                           
                             <th>@lang('essentials::lang.type')</th>
@@ -110,6 +111,7 @@
             dataType: 'json', // Set the expected data type
         },
         columns: [
+              { data: 'id'},
             { data: 'applicable_date'},
             { data: 'description'},
             { data: 'type'},
