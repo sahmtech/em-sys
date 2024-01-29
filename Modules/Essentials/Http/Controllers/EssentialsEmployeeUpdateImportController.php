@@ -837,11 +837,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 }
                                 
     
-                              
-    
-    
-    
-    
                                 if($emp_data['admission_date'] != null)
                                 {
                                     $previous_admission = EssentialsAdmissionToWork::where('employee_id',$existingEmployee->id)
@@ -881,12 +876,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 $formdata[] = $emp_data;
     
                             } 
-                            
-                           
-                         
-                        
-                      
-                       
 
                    }
                   // dd( $formdata);
