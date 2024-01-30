@@ -56,6 +56,8 @@ class EssentialsOfficialDocumentController extends Controller
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'essentials_official_documents.type',
                 'essentials_official_documents.status',
+                'essentials_official_documents.issue_date',
+                'essentials_official_documents.issue_place',
                 'essentials_official_documents.number',
                 'essentials_official_documents.expiration_date',
             ])->orderby('id', 'desc');
@@ -90,10 +92,11 @@ class EssentialsOfficialDocumentController extends Controller
                     function ($row)  use ($is_admin, $can_edit_official_documents, $can_delete_official_documents, $can_show_official_documents) {
                         $html = '';
                         if ($is_admin || $can_edit_official_documents) {
-                            $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+                            $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '" data-url="' . route('official_documents.edit', ['docId' => $row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                         }
 
                         if ($is_admin || $can_show_official_documents) {
+                            
                             $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         }
                         if ($is_admin || $can_delete_official_documents) {
@@ -241,20 +244,11 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.expiration_date as expiration_date',
                 'essentials_official_documents.file_path as file_path',
             ])
-            ->firstOrFail();
+            ->first();
 
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
-        $all_users = $query->select(['id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as full_name")])->get();
-        $users = $all_users->pluck('full_name', 'id');
 
-        $output = [
-            'data' => $doc,
-            'users' => $users,
 
-        ];
-
-        return response()->json($output);
+        return response()->json(['doc' => $doc]);
     }
 
 
@@ -265,16 +259,17 @@ class EssentialsOfficialDocumentController extends Controller
      * @return Renderable
      */
 
-    public function update(Request $request, $docId)
+    public function update(Request $request)
     {
 
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         try {
-            $input = $request->all();
-            $input2['expiration_date'] = $input['expiration_date'];
-            $input2['status'] = $input['status'];
+            $docId = $request->docId;
+
+            $input2['expiration_date'] = $request->expiration_date;
+            $input2['status'] = $request->status;
             // if ($request->input('docfile') != null) {
             //     $file = $request->file('docfile');
             //     $filePath = $file->store('/officialDocuments');
@@ -293,8 +288,8 @@ class EssentialsOfficialDocumentController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        return response()->json($output);
-        // return redirect()->back()->with('status', $output);
+        // return response()->json($output);
+        return redirect()->back()->with('status', $output);
     }
 
     /**

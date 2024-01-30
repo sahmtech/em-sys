@@ -2,7 +2,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             {!! Form::open([
-                'route' => ['updateDoc', 'docId'],
+                'route' => 'updateDoc',
                 'method' => 'post',
                 'id' => 'edit_doc_form',
                 'enctype' => 'multipart/form-data',
@@ -19,11 +19,7 @@
             <div class="modal-body">
 
                 <div class="row">
-                    <input type="hidden" id="docIdInput" name="docId">
-
-
-
-
+                    {!! Form::hidden('docId', null, ['id' => 'docId']) !!}
                     <div class="form-group col-md-6">
                         {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
                         {!! Form::select(

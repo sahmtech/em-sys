@@ -82,6 +82,8 @@
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.doc_number')</th>
                                     <th>@lang('essentials::lang.doc_type')</th>
+                                    <th>@lang('essentials::lang.issue_date')</th>
+                                    <th>@lang('essentials::lang.issue_place')</th>
                                     <th>@lang('essentials::lang.expired_date')</th>
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('messages.action')</th>
@@ -290,6 +292,13 @@
                         }
                     },
                     {
+                        data: 'issue_date'
+                    },
+                    {
+                        data: 'issue_place'
+                    },
+
+                    {
                         data: 'expiration_date'
                     },
                     {
@@ -297,8 +306,10 @@
                         render: function(data, type, row) {
                             if (data === 'valid') {
                                 return '@lang('essentials::lang.valid')';
-                            } else {
+                            } else if (data === 'expired') {
                                 return '@lang('essentials::lang.expired')';
+                            } else {
+                                return '';
                             }
                         }
                     },
@@ -324,59 +335,32 @@
                 function() {
                     reloadDataTable();
                 });
-            $('body').on('click', '.open-edit-modal', function() {
-                var docId = $(this).data('id');
-                $('#docIdInput').val(docId);
 
-                var editUrl = '{{ route('official_documents.edit', ':docId') }}';
-                editUrl = editUrl.replace(':docId', docId);
-
+            $(document).on('click', '.open-edit-modal', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var doc_id = $(this).data('id');
                 $.ajax({
-                    url: editUrl,
+                    url: url,
                     type: 'GET',
-                    dataType: 'json',
                     success: function(response) {
-                        var data = response.data;
-                        $('#docIdInput').val(docId);
-                        $('#editdocModal select[name="status"]').val(data.status).trigger(
-                            'change');
-                        $('#editdocModal input[name="expiration_date"]').val(data
+                        var doc = response.doc;
+                        console.log(doc);
+                        $('#editdocModal').find('[name="status"]').val(doc.status);
+                        $('#editdocModal').find('[name="expiration_date"]').val(doc
                             .expiration_date);
-
-                        // Show the modal
+                        $('#editdocModal').find('[name="docId"]').val(doc_id);
                         $('#editdocModal').modal('show');
                     },
-                    error: function(error) {
-                        console.error('Error fetching document data:', error);
+                    error: function(xhr, status, error) {
+
+                        console.error("Error in AJAX request:", error);
                     }
                 });
-            });
 
-            $('body').on('submit', '#editdocModal form', function(e) {
-                e.preventDefault();
-                var docId = $('#docIdInput').val(); // Retrieve docId from the hidden input
-                var urlWithId = '{{ route('updateDoc', ':docId') }}';
-                urlWithId = urlWithId.replace(':docId', docId);
-                var formData = new FormData(this);
-                $.ajax({
-                    url: urlWithId,
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        $('#editdocModal').modal('hide');
 
-                        // Reload the page
-                        location.reload();
-                    },
-                    error: function(error) {
-                        console.error('Error submitting form:', error);
-                        // Show a generic error message
-                        toastr.error('An error occurred while submitting the form.', 'Error');
-                    },
-                });
-            });
+            })
+
 
 
             $(document).on('click', 'button.delete_doc_button', function() {
