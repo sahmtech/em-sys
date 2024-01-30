@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                    <li class="active">Here</li>
-                                                                </ol> -->
+                                                                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                        <li class="active">Here</li>
+                                                                                    </ol> -->
     </section>
 
     <!-- Main content -->
@@ -23,19 +23,40 @@
                     {!! Form::select('select_company_id', $companies, null, [
                         'class' => 'form-control select2',
                         'id' => 'select_company_id',
-                        'style' => 'height:36px; width:100%',
+                        'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
-                        'required',
-                        'autofocus',
                     ]) !!}
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
+                    <label for="department_filter">@lang('essentials::lang.department'):</label>
+                    {!! Form::select('select_department_id', $departments, null, [
+                        'class' => 'form-control select2',
+                        'id' => 'select_department_id',
+                        'style' => 'height:40px; width:100%',
+                        'placeholder' => __('lang_v1.all'),
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="contract_type_filter">@lang('essentials::lang.contract_type'):</label>
+                    {!! Form::select('contract_type_filter', $contract_types, null, [
+                        'class' => 'form-control select2',
+                        'id' => 'select_department_id',
+                        'style' => 'height:40px; width:100%',
+                        'placeholder' => __('lang_v1.all'),
+                    ]) !!}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
                     <label for="specializations_filter">@lang('essentials::lang.job_title'):</label>
                     {!! Form::select('specializations-select', $job_titles, request('specializations-select'), [
                         'class' => 'form-control select2',
-                        'style' => 'height:36px; width:100%',
+                        'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'specializations-select',
                     ]) !!}
@@ -48,7 +69,7 @@
                     {!! Form::select('nationalities_select', $nationalities, request('nationalities_select'), [
                         'class' => 'form-control select2',
                         'placeholder' => __('lang_v1.all'),
-                        'style' => 'height:36px; width:100%',
+                        'style' => 'height:40px; width:100%',
                         'id' => 'nationalities_select',
                     ]) !!}
                 </div>
@@ -58,7 +79,7 @@
                 <div class="form-group">
                     <label for="status_filter">@lang('essentials::lang.status'):</label>
                     <select class="form-control select2" name="status_filter" required id="status_filter"
-                        style="height:36px; width:100%;">
+                        style="height:40px; width:100%;">
                         <option value="all">@lang('lang_v1.all')</option>
                         <option value="active">@lang('sales::lang.active')</option>
                         <option value="inactive">@lang('sales::lang.inactive')</option>
@@ -166,7 +187,7 @@
                                 {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
                                 {!! Form::select('general_specialization', $specializations, null, [
                                     'class' => 'form-control',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'id' => 'professionSelect',
                                     'placeholder' => __('essentials::lang.select_specialization'),
                                 ]) !!}
@@ -177,7 +198,7 @@
                                 {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
                                 {!! Form::select('sub_specialization', [], null, [
                                     'class' => 'form-control',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'id' => 'specializationSelect',
                                 ]) !!}
                             </div>
@@ -256,7 +277,7 @@
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
-                        
+
                             </div>
                         </div>
                     </div>
@@ -556,6 +577,8 @@
                         d.nationality = $('#nationalities_select').val();
                         d.status = $('#status_filter').val();
                         d.company = $('#select_company_id').val();
+                        d.department = $('#select_department_id').val();
+                        d.contract_type = $('#contract_type_filter').val();
 
                         console.log(d);
                     },
@@ -678,15 +701,16 @@
 
             });
 
-            $('#specializations-select, #nationalities_select, #status-select, #select_company_id').change(
-                function() {
-                    console.log('Specialization selected: ' + $(this).val());
-                    console.log('Nationality selected: ' + $('#nationalities_select').val());
-                    console.log('Status selected: ' + $('#status_filter').val());
-                    console.log('loc selected: ' + $('#select_company_id').val());
-                    users_table.ajax.reload();
+            $('#specializations-select, #nationalities_select, #status-select, #select_company_id,  #contract_type_filter,  #select_department_id')
+                .change(
+                    function() {
+                        console.log('Specialization selected: ' + $(this).val());
+                        console.log('Nationality selected: ' + $('#nationalities_select').val());
+                        console.log('Status selected: ' + $('#status_filter').val());
+                        console.log('loc selected: ' + $('#select_company_id').val());
+                        users_table.ajax.reload();
 
-                });
+                    });
 
 
 

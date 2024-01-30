@@ -20,7 +20,7 @@
         {!! Form::select('proof_numbers_select', $proof_numbers->pluck('full_name','id'), null, [
             'class' => 'form-control select2',
             'multiple'=>'multiple',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
            
             'name'=>'proof_numbers_select[]',
             'id' => 'proof_numbers_select'

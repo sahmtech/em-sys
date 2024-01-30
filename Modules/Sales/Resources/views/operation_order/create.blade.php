@@ -31,7 +31,7 @@
                                 </span>
                                 {!! Form::select('contact_id', $leads, null, [
                                     'class' => 'form-control',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'placeholder' => __('sales::lang.select_customer'),
                                     'required',
                                     'id' => 'customer-select',
@@ -52,7 +52,7 @@
                                 </span>
                                 {!! Form::select('sale_contract_id', [], null, [
                                     'class' => 'form-control',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'placeholder' => __('sales::lang.select_contacts'),
                                     'required',
                                     'id' => 'contact-select',

@@ -78,7 +78,7 @@
                         <div class="form-group col-md-6">
                             {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
                  
-                            {!! Form::select('insurance_company', $insurance_companies, null, ['class' => 'form-control','style'=>'height:36px;',
+                            {!! Form::select('insurance_company', $insurance_companies, null, ['class' => 'form-control','style'=>'height:40px;',
                                 'placeholder' => __('essentials::lang.insurance_company'),  'required']) !!}
                         </div>
                             </div>

@@ -51,7 +51,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('dob', __('lang_v1.dob') . ':') !!}
-                        {!! Form::date('dob', null, ['class' => 'form-control', 'style' => 'height:36px']); !!}
+                        {!! Form::date('dob', null, ['class' => 'form-control', 'style' => 'height:40px']); !!}
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('gender', __( 'lang_v1.gender' ) . ':') !!}
@@ -59,7 +59,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('marital_status', __( 'lang_v1.marital_status' ) . ':') !!}
-                        {!! Form::select('marital_status', ['married' => __( 'lang_v1.married'), 'unmarried' => __( 'lang_v1.unmarried' ), 'divorced' => __( 'lang_v1.divorced' )], !empty($user->marital_status) ? $user->marital_status : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.marital_status') ]); !!}
+                        {!! Form::select('marital_status', ['married' => __( 'lang_v1.married'), 'unmarried' => __( 'lang_v1.unmarried' ), 'divorced' => __( 'lang_v1.divorced' )], !empty($user->marital_status) ? $user->marital_status : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'lang_v1.marital_status') ]); !!}
                     </div>
                     <div class="clearfix"></div>
                     <div class="form-group col-md-3">
@@ -75,7 +75,7 @@
                     <div class="clearfix"></div>
                     <div class="form-group col-md-3">
                         {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
-                        {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', ['class' => 'form-control','require','style'=>'height:36px', 'placeholder' => __('lang_v1.mobile_number'), 'oninput' => 'validateContactNumber(this)', 'maxlength' => '10']) !!}
+                        {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', ['class' => 'form-control','require','style'=>'height:40px', 'placeholder' => __('lang_v1.mobile_number'), 'oninput' => 'validateContactNumber(this)', 'maxlength' => '10']) !!}
                         <span id="contactNumberError" class="text-danger"></span>
                     </div>
                     
@@ -85,7 +85,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('family_number', __( 'lang_v1.family_contact_number' ) . ':') !!}
-                        {!! Form::text('family_number', !empty($user->family_number) ? $user->family_number : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.family_contact_number') ]); !!}
+                        {!! Form::text('family_number', !empty($user->family_number) ? $user->family_number : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'lang_v1.family_contact_number') ]); !!}
                     </div>
                     
                     <div class="form-group col-md-3">
@@ -95,11 +95,11 @@
                     <div class="clearfix"></div>
                     <div class="form-group col-md-3">
                         {!! Form::label('permanent_address', __( 'lang_v1.permanent_address') . ':') !!}
-                        {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.permanent_address'), 'rows' => 3 ]); !!}
+                        {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'lang_v1.permanent_address'), 'rows' => 3 ]); !!}
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('current_address', __( 'lang_v1.current_address') . ':') !!}
-                        {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
+                        {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
                     </div>
                   
                     <div class="row">
