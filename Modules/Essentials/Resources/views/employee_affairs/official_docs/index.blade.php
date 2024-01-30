@@ -63,7 +63,7 @@
 
         <div class="row">
             <div class="col-md-12">
-                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.official_documents')])
+                @component('components.widget', ['class' => 'box-solid'])
                     @slot('tool')
                         <div class="box-tools">
 
@@ -93,6 +93,8 @@
                     </div>
                 @endcomponent
             </div>
+
+
 
             <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
@@ -216,7 +218,50 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="addDocFileModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
 
+                        {!! Form::open(['route' => 'storeDocFile', 'enctype' => 'multipart/form-data']) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('essentials::lang.add_doc_file')</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="modal-body">
+                                    {{-- <iframe id="iframeDocViewer" width="100%" height="300px" frameborder="0"></iframe> --}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+
+
+
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('file', __('essentials::lang.file') . ':') !!}
+                                    {!! Form::file('file', null, [
+                                        'class' => 'form-control',
+                                    
+                                        'style' => 'height:40px',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default"
+                                data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -227,6 +272,30 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $(document).on('click', '.view_doc_file_modal', function(e) {
+                e.preventDefault();
+
+                // Get the data-href attribute containing the URL
+                var fileUrl = $(this).data('href');
+
+                if (fileUrl!='#') {
+                    // Set the file URL as the iframe source
+                    $('#iframeDocViewer').attr('src', fileUrl);
+
+                    // Show the iframe and hide any other content
+                    $('#iframeDocViewer').show();
+
+                } else {
+                    // Hide the iframe and show other content
+                    $('#iframeDocViewer').hide();
+
+                }
+
+
+                // Open the modal
+                $('#addDocFileModal').modal('show');
+            });
 
             $('#addDocModal').on('shown.bs.modal', function(e) {
                 $('#employees_select').select2({

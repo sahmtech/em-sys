@@ -13,6 +13,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\User;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Sales\Entities\SalesProject;
 
@@ -96,8 +97,12 @@ class EssentialsOfficialDocumentController extends Controller
                         }
 
                         if ($is_admin || $can_show_official_documents) {
-                            
-                            $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                            if ($row->file_path) {
+                                $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal view_doc_file_modal" data-container=".view_modal" data-href="' . route('viewOfficialDoc', ['filePath' => $row->file_path]) . '"> ' . __('essentials::lang.doc_file') . '</button>  &nbsp;';
+                            } else {
+                                $html .= ' &nbsp; <button class="btn btn-xs btn-success btn-modal view_doc_file_modal" data-container=".view_modal" data-href="#"> ' . __('essentials::lang.doc_file') . '</button>  &nbsp;';
+                            }
+                            // $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         }
                         if ($is_admin || $can_delete_official_documents) {
                             $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
@@ -121,6 +126,10 @@ class EssentialsOfficialDocumentController extends Controller
         $users = $all_users->pluck('full_name', 'id');
 
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
+    }
+    public function storeDocFile()
+    {
+        return "test";
     }
 
 
@@ -198,6 +207,33 @@ class EssentialsOfficialDocumentController extends Controller
         // return $output;
         return redirect()->route('official_documents')->with(compact('users'));
     }
+
+
+    public function viewFile($filePath)
+    {
+        try {
+            // Check if the file exists in the storage
+            if (Storage::exists($filePath)) {
+                // Get the file content
+                $fileContent = Storage::get($filePath);
+
+                // Determine the MIME type of the file
+                $mimeType = Storage::mimeType($filePath);
+
+                // Return a response with the file content and appropriate headers
+                return response($fileContent)
+                    ->header('Content-Type', $mimeType)
+                    ->header('Content-Disposition', 'inline');
+            } else {
+                // Return a response indicating that the file does not exist
+                return response()->json(['error' => 'File not found'], 404);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error viewing file: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while viewing the file'], 500);
+        }
+    }
+
 
     /**
      * Show the specified resource.

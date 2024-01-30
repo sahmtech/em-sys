@@ -1701,5 +1701,7 @@ return [
   'qualification_file' => 'شهادة التأهيل العلمي',
   'created_department_name' => 'الإدارة التي أنشأت الطلب',
   'edit_profile_picture' => 'تعديل صورة الملف الشخصي',
+  'doc_file' => 'ملف الوثيقة',
+  'add_doc_file' => 'إضافة ملف',
 
 ];

@@ -699,5 +699,7 @@ return [
     'bad' => 'Bad',
     'fail' => 'Fail',
     'edit_profile_picture' => 'Edit Profile Picture',
+    'doc_file' => 'Document File',
+    'add_doc_file' => 'Add File',
 
 ];
