@@ -89,13 +89,13 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control','id'=>'employee_select', 'style' => 'height:36px; width:100%', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+                                {!! Form::select('employee',$users, null, ['class' => 'form-control','id'=>'employee_select', 'style' => 'height:40px; width:100%', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
                            
                             <div class="form-group col-md-6">
                             {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
                             {!! Form::date('contract_start_date', !empty($contract->contract_start_date) ? $contract->contract_start_date : null,
-                                 ['class' => 'form-control', 'style' => 'height:36px', 'id' => 'contract_start_date', 'placeholder' => __('essentials::lang.contract_start_date')]); !!}
+                                 ['class' => 'form-control', 'style' => 'height:40px', 'id' => 'contract_start_date', 'placeholder' => __('essentials::lang.contract_start_date')]); !!}
                            </div>
                             <div class="form-group col-md-8">
                                 {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
@@ -103,12 +103,12 @@
                                     <div class="multi-input">
                                         <div class="input-group">
                                             {!! Form::number('contract_duration', !empty($contract->contract_duration) ? $contract->contract_duration : null,
-                                                 ['class' => 'form-control width-40 pull-left', 'style' => 'height:36px', 'id' => 'contract_duration', 'placeholder' => __('essentials::lang.contract_duration')]); !!}
+                                                 ['class' => 'form-control width-40 pull-left', 'style' => 'height:40px', 'id' => 'contract_duration', 'placeholder' => __('essentials::lang.contract_duration')]); !!}
                                             {!! Form::select('contract_duration_unit',
                                                 ['years' => __('essentials::lang.years'),
                                                 'months' => __('essentials::lang.months')], 
                                                 !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
-                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:36px;', 'id' => 'contract_duration_unit']); !!}
+                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:40px;', 'id' => 'contract_duration_unit']); !!}
                                         </div>
                                     </div>
                                 </div>
@@ -117,7 +117,7 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('contract_end_date', __('essentials::lang.contract_end_date') . ':') !!}
                                 {!! Form::date('contract_end_date', !empty($contract->contract_end_date) ? $contract->contract_end_date : null, 
-                                    ['class' => 'form-control', 'style' => 'height:36px',
+                                    ['class' => 'form-control', 'style' => 'height:40px',
                                      'id' => 'contract_end_date', 'placeholder' => __('essentials::lang.contract_end_date')]); !!}
                             </div>
                          
@@ -127,12 +127,12 @@
                             </div>  
                             <div class="form-group col-md-7">
                                 {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
-                                {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control pull-left' ,'style' => 'height:36px; width:100%',]) !!}
+                                {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control pull-left' ,'style' => 'height:40px; width:100%',]) !!}
                             </div>
                         
                             <div class="form-group col-md-4">
                                 {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':*') !!}
-                                {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control  pull-left ','style' => 'height:36px; width:100%', 'required','placeholder' => __('messages.please_select')]); !!}
+                                {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control  pull-left ','style' => 'height:40px; width:100%', 'required','placeholder' => __('messages.please_select')]); !!}
                             </div>
                         
                         

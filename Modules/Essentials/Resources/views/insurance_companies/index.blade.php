@@ -113,7 +113,7 @@
                                     {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
                                     {!! Form::text('insurance_company', null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.insurance_company'),
                                         'required',
                                     ]) !!}
@@ -122,7 +122,7 @@
                                     {!! Form::label('country', __('essentials::lang.country') . ':*') !!}
                                     {!! Form::select('country', $countries, null, [
                                         'class' => 'form-control select',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'required',
                                         'id' => 'country_select',
                                     ]) !!}
@@ -132,7 +132,7 @@
                                     {!! Form::label('city', __('essentials::lang.city') . ':*') !!}
                                     {!! Form::select('city', $cities, null, [
                                         'class' => 'form-control select',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'required',
                                     ]) !!}
                                 </div>
@@ -140,7 +140,7 @@
                                     {!! Form::label('state', __('essentials::lang.state') . ':*') !!}
                                     {!! Form::select('state', $states, null, [
                                         'class' => 'form-control select',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'required',
                                     ]) !!}
                                 </div>
@@ -149,7 +149,7 @@
                                     {!! Form::label('address', __('essentials::lang.address') . ':*') !!}
                                     {!! Form::text('address', null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.address'),
                                         'required',
                                     ]) !!}
@@ -162,7 +162,7 @@
                                     
                                         [
                                             'class' => 'form-control',
-                                            'style' => 'height:36px',
+                                            'style' => 'height:40px',
                                             'placeholder' => __('essentials::lang.tax_number'),
                                             'required',
                                         ],
@@ -172,7 +172,7 @@
                                     {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':*') !!}
                                     {!! Form::number('phone_number', null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.phone_number'),
                                         'required',
                                     ]) !!}
@@ -181,7 +181,7 @@
                                     {!! Form::label('mobile_number', __('essentials::lang.mobile_number') . ':*') !!}
                                     {!! Form::number('mobile_number', null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.mobile_number'),
                                         'required',
                                     ]) !!}

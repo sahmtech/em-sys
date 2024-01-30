@@ -114,7 +114,7 @@
                                 <button class="btn btn-primary pull-right btn-flat" onclick="chooseFields();"
                                     style="margin-top: 24px;
                                 width: 62px;
-                                height: 36px;
+                                height: 40px;
                                 border-radius: 4px;">تطبيق</button>
                             </div>
                         </div>

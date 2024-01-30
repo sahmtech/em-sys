@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.official_documents'))
 
 @section('content')
-   
+
     <section class="content-header">
         <h1>@lang('essentials::lang.official_documents')</h1>
     </section>
@@ -26,8 +26,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_type_filter', __('essentials::lang.doc_type') . ':') !!}
-                            <select class="form-control select2" name="doc_type_filter"  id="doc_type_filter"
-                                style="width: 100%;">
+                            <select class="form-control select2" name="doc_type_filter" id="doc_type_filter" style="width: 100%;">
                                 <option value="all">@lang('lang_v1.all')</option>
                                 <option value="national_id">@lang('essentials::lang.national_id')</option>
                                 <option value="passport">@lang('essentials::lang.passport')</option>
@@ -41,8 +40,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="status_filter">@lang('essentials::lang.status'):</label>
-                            <select class="form-control select2" name="status_filter"  id="status_filter"
-                                style="width: 100%;">
+                            <select class="form-control select2" name="status_filter" id="status_filter" style="width: 100%;">
                                 <option value="all">@lang('lang_v1.all')</option>
                                 <option value="valid">@lang('essentials::lang.valid')</option>
                                 <option value="expired">@lang('essentials::lang.expired')</option>
@@ -65,7 +63,7 @@
 
         <div class="row">
             <div class="col-md-12">
-                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.official_documents')])
+                @component('components.widget', ['class' => 'box-solid'])
                     @slot('tool')
                         <div class="box-tools">
 
@@ -84,6 +82,8 @@
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.doc_number')</th>
                                     <th>@lang('essentials::lang.doc_type')</th>
+                                    <th>@lang('essentials::lang.issue_date')</th>
+                                    <th>@lang('essentials::lang.issue_place')</th>
                                     <th>@lang('essentials::lang.expired_date')</th>
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('messages.action')</th>
@@ -93,6 +93,8 @@
                     </div>
                 @endcomponent
             </div>
+
+
 
             <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
@@ -146,7 +148,7 @@
                                     {!! Form::number('doc_number', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.doc_number'),
-                                      
+                                    
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
@@ -191,7 +193,7 @@
                                     {!! Form::date('expiration_date', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.expiration_date'),
-                                   
+                                    
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
@@ -201,7 +203,7 @@
                                     {!! Form::file('file', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.file'),
-                                  
+                                    
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
@@ -216,17 +218,84 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="addDocFileModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
 
+                        {!! Form::open(['route' => 'storeDocFile', 'enctype' => 'multipart/form-data']) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('essentials::lang.add_doc_file')</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="modal-body">
+                                    {{-- <iframe id="iframeDocViewer" width="100%" height="300px" frameborder="0"></iframe> --}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+
+
+
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('file', __('essentials::lang.file') . ':') !!}
+                                    {!! Form::file('file', null, [
+                                        'class' => 'form-control',
+                                    
+                                        'style' => 'height:40px',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default"
+                                data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
 
-@include('essentials::employee_affairs.official_docs.edit')
+    @include('essentials::employee_affairs.official_docs.edit')
 @endsection
 
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $(document).on('click', '.view_doc_file_modal', function(e) {
+                e.preventDefault();
+
+                // Get the data-href attribute containing the URL
+                var fileUrl = $(this).data('href');
+
+                if (fileUrl!='#') {
+                    // Set the file URL as the iframe source
+                    $('#iframeDocViewer').attr('src', fileUrl);
+
+                    // Show the iframe and hide any other content
+                    $('#iframeDocViewer').show();
+
+                } else {
+                    // Hide the iframe and show other content
+                    $('#iframeDocViewer').hide();
+
+                }
+
+
+                // Open the modal
+                $('#addDocFileModal').modal('show');
+            });
 
             $('#addDocModal').on('shown.bs.modal', function(e) {
                 $('#employees_select').select2({
@@ -292,6 +361,13 @@
                         }
                     },
                     {
+                        data: 'issue_date'
+                    },
+                    {
+                        data: 'issue_place'
+                    },
+
+                    {
                         data: 'expiration_date'
                     },
                     {
@@ -299,8 +375,10 @@
                         render: function(data, type, row) {
                             if (data === 'valid') {
                                 return '@lang('essentials::lang.valid')';
-                            } else {
+                            } else if (data === 'expired') {
                                 return '@lang('essentials::lang.expired')';
+                            } else {
+                                return '';
                             }
                         }
                     },
@@ -326,90 +404,32 @@
                 function() {
                     reloadDataTable();
                 });
-$('body').on('click', '.open-edit-modal', function() {
-    var docId = $(this).data('id');
-    $('#docIdInput').val(docId);
 
-    var editUrl = '{{ route("official_documents.edit", ":docId") }}';
-    editUrl = editUrl.replace(':docId', docId);
+            $(document).on('click', '.open-edit-modal', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var doc_id = $(this).data('id');
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        var doc = response.doc;
+                        console.log(doc);
+                        $('#editdocModal').find('[name="status"]').val(doc.status);
+                        $('#editdocModal').find('[name="expiration_date"]').val(doc
+                            .expiration_date);
+                        $('#editdocModal').find('[name="docId"]').val(doc_id);
+                        $('#editdocModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
 
-    $.ajax({
-        url: editUrl,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response) {
-            var data = response.data;
+                        console.error("Error in AJAX request:", error);
+                    }
+                });
 
-            // Set initial values in the modal
-            $('#editdocModal select[name="employee"]').val(data.employee_id).trigger('change');
-            $('#editdocModal select[name="doc_type"]').val(data.type).trigger('change');
-            $('#editdocModal input[name="doc_number"]').val(data.number);
-            $('#editdocModal input[name="issue_date"]').val(data.issue_date);
-            $('#editdocModal input[name="issue_place"]').val(data.issue_place);
-            $('#editdocModal select[name="status"]').val(data.status).trigger('change');
-            $('#editdocModal input[name="expiration_date"]').val(data.expiration_date);
 
-            // Handle file input
-            var fileInput = $('#editdocModal input[name="file"]');
-            var fileContainer = $('#editdocModal .file-container');
+            })
 
-            if (data.file_path) {
-                // If file exists, show a link to view the file
-                fileContainer.html('<p><a href="/uploads/' + data.file_path + '" target="_blank">{{ __("essentials::lang.view_doc") }}</a></p>');
-                fileInput.prop('disabled', true); // Disable the file input
-            } else {
-                // If file doesn't exist, show the file input for uploading
-                fileContainer.html('');
-                fileInput.prop('disabled', false); // Enable the file input
-            }
-
-            // Show the modal
-            $('#editdocModal').modal('show');
-        },
-        error: function(error) {
-            console.error('Error fetching document data:', error);
-        }
-    });
-});
-
-$('body').on('submit', '#editdocModal form', function (e) {
-    e.preventDefault();
-
-    var docId = $('#docIdInput').val(); // Retrieve docId from the hidden input
-    console.log(docId);
-
-    var urlWithId = '{{ route("updateDoc", ":docId") }}';
-    urlWithId = urlWithId.replace(':docId', docId);
-    console.log(urlWithId);
-
-    var formData = new FormData(this);
-
-    // Log FormData to check if 'file' is present
-    console.log('FormData:', formData);
-
-    $.ajax({
-        url: urlWithId,
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function (response) {
-            if (response.success) {
-                console.log(response);
-                toastr.success(response.msg, 'Success');
-                $('#editdocModal').modal('hide');
-            } else {
-                toastr.error(response.msg);
-                console.log(response);
-            }
-        },
-        error: function (error) {
-            console.error('Error submitting form:', error);
-            // Show a generic error message
-            toastr.error('An error occurred while submitting the form.', 'Error');
-        },
-    });
-});
 
 
             $(document).on('click', 'button.delete_doc_button', function() {
