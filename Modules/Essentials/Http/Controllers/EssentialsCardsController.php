@@ -943,7 +943,8 @@ class EssentialsCardsController extends Controller
         ->latest('created_at')
         ->first();
 
-        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
+        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)
+        ->first();
         
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)
         ->where('is_active',1)
