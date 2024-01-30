@@ -586,8 +586,8 @@ return [
   'crud_travel_categories' => 'إضافة / تعديل / عرض / حذف فئات تذاكر السفر  ',
   'import_employees' => 'عرض استيراد الموظفين',
   'crud_import_employee' => 'عرض استيراد وتحديث الموظفين',
-  'import_create_employees'=>'استيراد (إضافة) الموظفين ',
-  'import_update_employees'=>'استيراد (تحديث) الموظفين',
+  'import_create_employees' => 'استيراد (إضافة) الموظفين ',
+  'import_update_employees' => 'استيراد (تحديث) الموظفين',
   'employee_name' => 'اسم الموظف',
   'employee_name_example' => 'مثال : محمد ',
   'surname' => 'اللقب',
@@ -718,7 +718,7 @@ return [
   'specialization' => 'اسم الاختصاص',
   'add_specialization' => 'إضافة اختصاص',
   'crud_official_documents' => 'إضافة/تعديل/حذف الوثائق الرسمية للموظفين',
- 
+
   'crud_insurance_companies' => 'إضافة/تعديل/حذف شركات التأمين ',
 
   'crud_insurance_contracts' => 'إضافة/تعديل/حذف عقود التأمين ',
@@ -883,7 +883,7 @@ return [
   'specialization' => 'اسم الاختصاص',
   'add_specialization' => 'إضافة اختصاص',
   'crud_official_documents' => 'إضافة/تعديل/حذف الوثائق الرسمية للموظفين',
- 
+
   'crud_insurance_companies' => 'إضافة/تعديل/حذف شركات التأمين ',
 
   'crud_insurance_contracts' => 'إضافة/تعديل/حذف عقود التأمين ',
@@ -958,8 +958,8 @@ return [
   'insurance_class' => 'فئة التأمين',
   'add_Insurance' => 'إضافة تأمين',
   'crud_employees_insurances' => 'عرض تأمين الموظفين',
-  'view_families_insurances'=>'عرض تأمين المرافقين',
-  'families_insurance'=>'التامين الطبي للمرافقين',
+  'view_families_insurances' => 'عرض تأمين المرافقين',
+  'families_insurance' => 'التامين الطبي للمرافقين',
   'select_for_travel' => 'هل تشمله التذاكر',
   'includes' => 'تشمل',
   'does_not_include' => 'لا تشمل',
@@ -1674,23 +1674,23 @@ return [
 
   'edit_worker' => 'تعديل عامل',
 
-'id_proof_number_required'=>'رقم الاقامة مطلوب في السطر  ',
-  'user_type_is_valid'=>'نمط الموظف غير مسموح أدخل أحد الأنماط التالية : worker , manager ,employee ,user  في السطر رقم  ',
-  'contract_duration_should_be_is_numeric'=>'مدة العقد يجب أن تكون رقم  في السطر',
-  'probation_period_should_be_is_numeric'=>'الفترة التجريبية يجب أن تكون رقم في السطر ',
-  'employees_insurance'=>'التامين الطبي للموظفين',
-  'add_families_insurances'=>'إضافة تامين طبي للمرافقين',
-  'employee_assignto_family'=>'الموظف التابع للمرافق',
-  'cancel_insurance'=>'الغاء التامين',
-  'canceled_successfully'=>'تم الغاء التامين',
-  'import_employees_insurances'=>'استيراد (إضافة ) التامين الطبي للموظفين',
-  'import_update_employees_insurances'=>'استيراد (تحديث ) التامين الطبي للموظفين',
-  'eqama_number_required'=>'رقم الاقامة مطلوب',
-  'insurance_class_id_required'=>'رقم الفئة مطلوب',
-  'insurance_company_id_required'=>'رقم الشركة مطلوب',
+  'id_proof_number_required' => 'رقم الاقامة مطلوب في السطر  ',
+  'user_type_is_valid' => 'نمط الموظف غير مسموح أدخل أحد الأنماط التالية : worker , manager ,employee ,user  في السطر رقم  ',
+  'contract_duration_should_be_is_numeric' => 'مدة العقد يجب أن تكون رقم  في السطر',
+  'probation_period_should_be_is_numeric' => 'الفترة التجريبية يجب أن تكون رقم في السطر ',
+  'employees_insurance' => 'التامين الطبي للموظفين',
+  'add_families_insurances' => 'إضافة تامين طبي للمرافقين',
+  'employee_assignto_family' => 'الموظف التابع للمرافق',
+  'cancel_insurance' => 'الغاء التامين',
+  'canceled_successfully' => 'تم الغاء التامين',
+  'import_employees_insurances' => 'استيراد (إضافة ) التامين الطبي للموظفين',
+  'import_update_employees_insurances' => 'استيراد (تحديث ) التامين الطبي للموظفين',
+  'eqama_number_required' => 'رقم الاقامة مطلوب',
+  'insurance_class_id_required' => 'رقم الفئة مطلوب',
+  'insurance_company_id_required' => 'رقم الشركة مطلوب',
 
 
-  'profile_picture'=>'الصورة الشخصية',
+  'profile_picture' => 'الصورة الشخصية',
 
 
 
@@ -1699,6 +1699,9 @@ return [
 
   'add_file' => 'إضافة وثيقة',
   'qualification_file' => 'شهادة التأهيل العلمي',
-  'created_department_name'=>'الإدارة التي أنشأت الطلب'
+  'created_department_name' => 'الإدارة التي أنشأت الطلب',
+  'edit_profile_picture' => 'تعديل صورة الملف الشخصي',
+  'doc_file' => 'ملف الوثيقة',
+  'add_doc_file' => 'إضافة ملف',
 
 ];

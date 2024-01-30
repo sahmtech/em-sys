@@ -41,7 +41,7 @@
                                 [
                                     'class' => 'form-control input-sm',
                                     'id' => 'select_location_id',
-                                    'style' => 'height:36px;',
+                                    'style' => 'height:40px;',
                                     'required',
                                     'autofocus',
                                 ],

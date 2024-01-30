@@ -112,7 +112,7 @@
             {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
             {!! Form::text('border_no', optional($user)->border_no ?? '3', [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('essentials::lang.border_number'),
                 'id' => 'border_no',
                 'maxlength' => '10',

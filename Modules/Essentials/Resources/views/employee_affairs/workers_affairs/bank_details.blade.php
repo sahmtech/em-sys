@@ -9,7 +9,7 @@
         !empty($bank_details['account_holder_name']) ? $bank_details['account_holder_name'] : null,
         [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'id' => 'account_holder_name',
             'placeholder' => __('lang_v1.account_holder_name'),
         ],
@@ -22,7 +22,7 @@
         !empty($bank_details['account_number']) ? $bank_details['account_number'] : null,
         [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'id' => 'account_number',
             'placeholder' => __('lang_v1.account_number'),
         ],
@@ -37,7 +37,7 @@
         !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null,
         [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'id' => 'bank_name',
             'placeholder' => __('lang_v1.bank_name'),
         ],
@@ -51,7 +51,7 @@
         !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
         [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'id' => 'bank_code',
             'placeholder' => __('lang_v1.bank_code'),
             'oninput' => 'validateBankCode(this)',
@@ -64,7 +64,7 @@
     {!! Form::label('branch', __('lang_v1.branch') . ':') !!}
     {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, [
         'class' => 'form-control',
-        'style' => 'height:36px',
+        'style' => 'height:40px',
         'id' => 'branch',
         'placeholder' => __('lang_v1.branch'),
     ]) !!}
@@ -76,7 +76,7 @@
         'class' => 'form-control',
         'placeholder' => __('essentials::lang.Iban_file'),
     
-        'style' => 'height:36px',
+        'style' => 'height:40px',
     ]) !!}
 </div>
 
