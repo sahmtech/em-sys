@@ -20,7 +20,7 @@
             <label for="agency_filter">@lang('internationalrelations::lang.agency_name'):</label>
             {!! Form::select('agency_filter', $agencys, request('agency_filter'), [
                 'class' => 'form-control select2',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('lang_v1.all'),
                 'id' => 'agency_filter',
             ]) !!}

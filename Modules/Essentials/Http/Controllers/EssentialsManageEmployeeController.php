@@ -28,6 +28,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -876,6 +877,46 @@ class EssentialsManageEmployeeController extends Controller
             ));
     }
 
+    public function updateEmployeeProfilePicture(Request $request, $id)
+    {
+        try {
+
+            $user = User::find($id);
+            if (!$user) {
+                throw new \Exception("User not found");
+            }
+
+            if ($request->hasFile('profile_picture')) {
+                // Handle file upload
+                $image = $request->file('profile_picture');
+                $profile = $image->store('/profile_images');
+                $user->update(['profile_image' => $profile]);
+                error_log($profile);
+            } elseif ($request->input('delete_image') == '1') {
+                $oldImage = $user->profile_image;
+                if ($oldImage) {
+                    Storage::delete($oldImage);
+                }
+                $user->update(['profile_image' => null]);
+                // Make sure to reset the delete_image flag in case of future updates
+                $request->request->remove('delete_image');
+            }
+
+            $output = [
+                'success' => 1,
+                'msg' => __('user.user_update_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
 
 
     public function createWorker($id)

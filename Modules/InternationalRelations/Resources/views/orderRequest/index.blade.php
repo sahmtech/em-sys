@@ -19,7 +19,7 @@
                     <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
                     {!! Form::select('contract-select', $contracts->pluck('contract_number', 'contract_number'), null, [
                         'class' => 'form-control',
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                         'placeholder' => __('lang_v1.all'),
                         'required',
                         'id' => 'contract-select',

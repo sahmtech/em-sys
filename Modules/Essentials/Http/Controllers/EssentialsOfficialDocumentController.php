@@ -41,7 +41,7 @@ class EssentialsOfficialDocumentController extends Controller
         $can_show_official_documents = auth()->user()->can('essentials.show_official_documents');
 
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -150,7 +150,7 @@ class EssentialsOfficialDocumentController extends Controller
                     'doc_number',
                     'issue_date',
                     'issue_place',
-                  
+
                     'expiration_date',
                     'file'
                 ]
@@ -251,7 +251,7 @@ class EssentialsOfficialDocumentController extends Controller
         $output = [
             'data' => $doc,
             'users' => $users,
-  
+
         ];
 
         return response()->json($output);
@@ -267,47 +267,34 @@ class EssentialsOfficialDocumentController extends Controller
 
     public function update(Request $request, $docId)
     {
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         try {
-            $file2 = EssentialsOfficialDocument::where('id', $docId)->value('file_path');
-            $employee2 = EssentialsOfficialDocument::where('id', $docId)->value('employee_id');
-
-            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status', 'expiration_date']);
-
-            $input2['type'] = $input['doc_type'];
-            $input2['number'] = $input['doc_number'];
-            $input2['issue_date'] = $input['issue_date'];
+            $input = $request->all();
             $input2['expiration_date'] = $input['expiration_date'];
             $input2['status'] = $input['status'];
-            $input2['issue_place'] = $input['issue_place'];
-
-            if ($input['employee'] != null) {
-                $input2['employee_id'] = $input['employee'];
-            }
-
-            if ($request->input('docfile') != null) {
-                $file = $request->file('docfile');
-                $filePath = $file->store('/officialDocuments');
-                $input2['file_path'] = $filePath;
-            }
-
-            $off = EssentialsOfficialDocument::where('id', $docId)->update($input2);
+            // if ($request->input('docfile') != null) {
+            //     $file = $request->file('docfile');
+            //     $filePath = $file->store('/officialDocuments');
+            //     $input2['file_path'] = $filePath;
+            // }
+            EssentialsOfficialDocument::where('id', $docId)->update($input2);
             $output = [
-                'success' => true,
+                'success' => 1,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
-                'success' => false,
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
         return response()->json($output);
+        // return redirect()->back()->with('status', $output);
     }
 
     /**

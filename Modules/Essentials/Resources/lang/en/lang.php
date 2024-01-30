@@ -698,6 +698,6 @@ return [
     'weak' => 'Weak',
     'bad' => 'Bad',
     'fail' => 'Fail',
-
+    'edit_profile_picture' => 'Edit Profile Picture',
 
 ];
