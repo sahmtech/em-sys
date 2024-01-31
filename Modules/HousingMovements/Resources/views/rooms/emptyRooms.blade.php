@@ -187,7 +187,7 @@
                                     type: 'text',
                                     name: 'room_number[]',
                                     class: inputClasses,
-                                    style: ' height:36px; width:150px; margin-right: 0;',
+                                    style: ' height:40px; width:150px; margin-right: 0;',
                                     placeholder: translations.room_number,
                                     required: true,
                                     value: room.room_number

@@ -21,7 +21,7 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('contact_id', $leads, $operation->contact_id, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('sales::lang.select_customer'), 'required', 'id' => 'customer-select']) !!}
+            {!! Form::select('contact_id', $leads, $operation->contact_id, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.select_customer'), 'required', 'id' => 'customer-select']) !!}
         </div>
     </div>
 </div>
@@ -46,7 +46,7 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('sale_contract_id', [], null, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('sales::lang.select_contacts'), 'required', 'id' => 'contact-select']) !!}
+            {!! Form::select('sale_contract_id', [], null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.select_contacts'), 'required', 'id' => 'contact-select']) !!}
         </div>
     </div>
 </div>

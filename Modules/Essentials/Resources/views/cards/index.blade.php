@@ -17,7 +17,7 @@
                     <label for="offer_type_filter">@lang('essentials::lang.project'):</label>
                     {!! Form::select('contact-select', $sales_projects, null, [
                         'class' => 'form-control select2',
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                         'placeholder' => __('lang_v1.all'),
                     
                         'id' => 'contact-select',
@@ -31,7 +31,7 @@
                     {!! Form::select('proof_numbers_select', $proof_numbers->pluck('full_name', 'id'), null, [
                         'class' => 'form-control select2',
                         'multiple' => 'multiple',
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                     
                         'name' => 'proof_numbers_select[]',
                         'id' => 'proof_numbers_select',

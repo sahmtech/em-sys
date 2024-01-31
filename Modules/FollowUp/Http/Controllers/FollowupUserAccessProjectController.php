@@ -53,7 +53,7 @@ class FollowupUserAccessProjectController extends Controller
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
-            $query->whereIn('department_id', $departmentIds);
+            $query->whereIn('department_id', $departmentIds)->where('is_active', 1);
         })->select([
             'users.*',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),

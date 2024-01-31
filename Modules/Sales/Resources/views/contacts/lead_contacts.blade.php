@@ -186,7 +186,7 @@
                                 'class' => 'form-control',
                                 'placeholder' => __('essentials::lang.city'),
                                 'id' => 'cityDropdown',
-                                'style' => 'height:36px',
+                                'style' => 'height:40px',
                                 'data-url' => route('getEnglishNameForCity'),
                             ]) !!}
                         </div>
