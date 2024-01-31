@@ -189,7 +189,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/updateDoc', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'update'])->name('updateDoc');
         Route::get('/official_documents/edit/{docId}', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'edit'])->name('official_documents.edit');
         Route::post('/storeDocFile', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'storeDocFile'])->name('storeDocFile');
-
+        Route::post('/updateEmployeeOfficalDocuments', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'updateEmployeeOfficalDocuments'])->name('updateEmployeeOfficalDocuments');
 
         Route::get('/employee_families', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'index'])->name('employee_families');
         Route::post('/storeEmployeeFamily', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'store'])->name('storeEmployeeFamily');

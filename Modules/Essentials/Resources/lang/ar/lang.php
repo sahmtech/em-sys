@@ -1707,4 +1707,7 @@ return [
   'select_doc_owner' => 'اختر صاحب الوثيقة',
   'a_manager' => 'مدير',
   'doc_owner_type' => 'نوع صاحب الوثيقة',
+  'id_attachements' => 'مرفقات الوثائق الرسمية',
+  'add_new_document' => 'إضافة وثيقة جديدة',
+  'select_document_type' => 'اختبر نوع الوثيقة',
 ];

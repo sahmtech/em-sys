@@ -407,7 +407,8 @@
                 },
 
                 columns: [{
-                        data: 'user'
+                        data: 'user',
+                        
                     },
                     {
                         data: 'number'
