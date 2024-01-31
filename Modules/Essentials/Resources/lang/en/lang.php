@@ -701,5 +701,8 @@ return [
     'edit_profile_picture' => 'Edit Profile Picture',
     'doc_file' => 'Document File',
     'add_doc_file' => 'Add File',
-
+    'doc_owner'=>'Related Persone',
+    'select_doc_owner'=>'select related person',
+    'a_manager'=>'Manager',
+    'doc_owner_type' => 'Related Persone Type',
 ];

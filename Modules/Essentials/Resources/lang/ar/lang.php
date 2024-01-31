@@ -1703,5 +1703,8 @@ return [
   'edit_profile_picture' => 'تعديل صورة الملف الشخصي',
   'doc_file' => 'ملف الوثيقة',
   'add_doc_file' => 'إضافة ملف',
-
+  'doc_owner' => 'صاحب الوثيقة',
+  'select_doc_owner' => 'اختر صاحب الوثيقة',
+  'a_manager' => 'مدير',
+  'doc_owner_type' => 'نوع صاحب الوثيقة',
 ];
