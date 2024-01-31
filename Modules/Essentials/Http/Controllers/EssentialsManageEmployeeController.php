@@ -1232,7 +1232,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $user = User::with(['contactAccess', 'assignedTo'])
+        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument'])
             ->findOrFail($id);
 
         $contacts = SalesProject::pluck('name', 'id');
@@ -1297,8 +1297,10 @@ class EssentialsManageEmployeeController extends Controller
 
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
+        $officalDocuments = $user->OfficialDocument;
         return view('essentials::employee_affairs.employee_affairs.edit')
             ->with(compact(
+                'officalDocuments',
                 'projects',
                 'contacts',
                 'spacializations',
@@ -1332,7 +1334,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-
+     
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1390,7 +1392,40 @@ class EssentialsManageEmployeeController extends Controller
 
             $user->update($user_data);
 
-
+            $deleted_documents = $request->deleted_documents ?? null;
+            $offical_documents_types = $request->offical_documents_type;
+            $offical_documents_choosen_files = $request->offical_documents_choosen_files;
+            $offical_documents_previous_files = $request->offical_documents_previous_files;
+            $files = [];
+            if ($request->hasFile('offical_documents_files')) {
+                $files = $request->file('offical_documents_files');
+            }
+            if ($deleted_documents) {
+                foreach ($deleted_documents as $deleted_document) {
+                    EssentialsOfficialDocument::where('id', $deleted_document)->delete();
+                }
+            }
+            foreach ($offical_documents_types  as  $index => $offical_documents_type) {
+                if (
+                    $offical_documents_type
+                ) {
+                    if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
+                        if (isset($files[$index])) {
+                            $filePath = $files[$index]->store('/officialDocuments');
+                            EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
+                        }
+                    } elseif ($offical_documents_choosen_files[$index]) {
+                        $document2 = new EssentialsOfficialDocument();
+                        $document2->type = $offical_documents_type;
+                        $document2->employee_id = $id;
+                        if (isset($files[$index])) {
+                            $filePath = $files[$index]->store('/officialDocuments');
+                            $document2->file_path = $filePath;
+                        }
+                        $document2->save();
+                    }
+                }
+            }
 
 
             $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_updated', 'model_instance' => $user, 'request' => $user_data]);

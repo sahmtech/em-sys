@@ -57,10 +57,12 @@ class EssentialsOfficialDocumentController extends Controller
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'essentials_official_documents.type',
                 'essentials_official_documents.status',
+                'essentials_official_documents.file_path',
                 'essentials_official_documents.issue_date',
                 'essentials_official_documents.issue_place',
                 'essentials_official_documents.number',
                 'essentials_official_documents.expiration_date',
+                'u.user_type',
             ])->orderby('id', 'desc');
 
         if (request()->ajax()) {
@@ -69,7 +71,9 @@ class EssentialsOfficialDocumentController extends Controller
             if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
                 $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
             }
-
+            if (!empty(request()->input('user_type')) && request()->input('user_type') !== 'all') {
+                $official_documents->where('u.user_type', request()->input('user_type'));
+            }
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $official_documents->where('essentials_official_documents.status', request()->input('status'));
             }
@@ -98,9 +102,9 @@ class EssentialsOfficialDocumentController extends Controller
 
                         if ($is_admin || $can_show_official_documents) {
                             if ($row->file_path) {
-                                $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal view_doc_file_modal" data-container=".view_modal" data-href="' . route('viewOfficialDoc', ['filePath' => $row->file_path]) . '"> ' . __('essentials::lang.doc_file') . '</button>  &nbsp;';
+                                $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal view_doc_file_modal" data-id="' . $row->id . '" data-href="/uploads/' . $row->file_path . '"> ' . __('essentials::lang.doc_file') . '</button>  &nbsp;';
                             } else {
-                                $html .= ' &nbsp; <button class="btn btn-xs btn-success btn-modal view_doc_file_modal" data-container=".view_modal" data-href="#"> ' . __('essentials::lang.doc_file') . '</button>  &nbsp;';
+                                $html .= ' &nbsp; <button class="btn btn-xs btn-secondary btn-modal view_doc_file_modal" data-id="' . $row->id . '" > ' . __('essentials::lang.doc_file') . '</button>  &nbsp;';
                             }
                             // $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         }
@@ -127,9 +131,29 @@ class EssentialsOfficialDocumentController extends Controller
 
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
     }
-    public function storeDocFile()
+    public function storeDocFile(Request $request)
     {
-        return "test";
+        try {
+            if (request()->hasFile('file')) {
+                $file = request()->file('file');
+                $filePath = $file->store('/officialDocuments');
+                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => $filePath]);
+            } else if (request()->input('delete_file') == 1) {
+                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => Null]);
+            }
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
     }
 
 
@@ -209,30 +233,7 @@ class EssentialsOfficialDocumentController extends Controller
     }
 
 
-    public function viewFile($filePath)
-    {
-        try {
-            // Check if the file exists in the storage
-            if (Storage::exists($filePath)) {
-                // Get the file content
-                $fileContent = Storage::get($filePath);
 
-                // Determine the MIME type of the file
-                $mimeType = Storage::mimeType($filePath);
-
-                // Return a response with the file content and appropriate headers
-                return response($fileContent)
-                    ->header('Content-Type', $mimeType)
-                    ->header('Content-Disposition', 'inline');
-            } else {
-                // Return a response indicating that the file does not exist
-                return response()->json(['error' => 'File not found'], 404);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error viewing file: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while viewing the file'], 500);
-        }
-    }
 
 
     /**

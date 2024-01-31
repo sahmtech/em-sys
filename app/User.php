@@ -68,11 +68,11 @@ class User extends Authenticatable
      * Get the business that owns the user.
      */
 
-    
+
 
     public function appointment()
     {
-        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
+        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id')->where('is_active', 1);;
     }
     public function business()
     {
@@ -81,12 +81,12 @@ class User extends Authenticatable
 
     public function essentialsEmployeesFamily()
     {
-        return $this->hasMany(EssentialsEmployeesFamily::class ,'employee_id');
+        return $this->hasMany(EssentialsEmployeesFamily::class, 'employee_id');
     }
 
     public function essentialsEmployeesInsurance()
     {
-        return $this->hasOne(EssentialsEmployeesInsurance::class ,'employee_id');
+        return $this->hasOne(EssentialsEmployeesInsurance::class, 'employee_id');
     }
 
 
@@ -241,7 +241,7 @@ class User extends Authenticatable
             $query->onlyPermittedLocations();
         }
 
-        $all_users =$query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
