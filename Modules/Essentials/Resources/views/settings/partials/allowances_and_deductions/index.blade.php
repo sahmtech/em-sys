@@ -27,9 +27,10 @@
                 <table class="table table-bordered table-striped" id="allowances_and_deductions_table">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>@lang('essentials::lang.applicable_date')</th>
-                            <th>@lang('essentials::lang.description')</th>
+
+                               <th>#</th>
+                            <th>@lang('essentials::lang.applicable_date')</th>   
+                            <th>@lang('essentials::lang.description')</th>                           
                             <th>@lang('essentials::lang.type')</th>
                             <th>@lang('essentials::lang.amount')</th>
                             <th>@lang('essentials::lang.amount_type')</th>
@@ -128,6 +129,7 @@
 @endsection
 
 @section('javascript')
+
     <script type="text/javascript">
         $(document).ready(function() {
             var allowances_and_deductions_table = $('#allowances_and_deductions_table').DataTable({
@@ -163,6 +165,7 @@
                         searchable: false
                     }
                 ]
+
             });
 
 
