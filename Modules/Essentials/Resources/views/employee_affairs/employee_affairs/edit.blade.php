@@ -16,6 +16,7 @@
                 [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'update'],
                 [$user->id],
             ),
+            'files' => true,
             'method' => 'PUT',
             'id' => 'user_edit_form',
         ]) !!}

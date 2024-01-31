@@ -28,7 +28,6 @@
                             {!! Form::select(
                                 'user_type_filter',
                                 [
-                                   
                                     'worker' => __('essentials::lang.worker'),
                                     'employee' => __('essentials::lang.employee'),
                                     'manager' => __('essentials::lang.a_manager'),
@@ -392,8 +391,13 @@
                         if ($('#user_type_filter').val() && $('#user_type_filter').val() != 'all') {
                             d.user_type = $('#user_type_filter').val();
                         }
-                        d.status = $('#status_filter').val();
-                        d.doc_type = $('#doc_type_filter').val();
+                        if ($('#status_filter').val() && $('#status_filter').val() != 'all') {
+                            d.status = $('#status_filter').val();
+                        }
+                        if ($('#doc_type_filter').val() && $('#doc_type_filter').val() != 'all') {
+                            d.doc_type = $('#doc_type_filter').val();
+                        }
+
                         if ($('#doc_filter_date_range').val() && $('#doc_filter_date_range').val() !=
                             'all') {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate
@@ -408,7 +412,7 @@
 
                 columns: [{
                         data: 'user',
-                        
+
                     },
                     {
                         data: 'number'
@@ -473,7 +477,8 @@
                 reloadDataTable();
             });
 
-            $(document).on('change', '#user_type_filter, #user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter',
+            $(document).on('change',
+                '#user_type_filter, #user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter',
                 function() {
                     reloadDataTable();
                 });

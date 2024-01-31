@@ -155,11 +155,7 @@ class EssentialsOfficialDocumentController extends Controller
         }
         return redirect()->back()->with('status', $output);
     }
-    public function updateEmployeeOfficalDocuments(Request $request)
-    {
-        error_log(json_encode($request->all()));
-        return $request->all();
-    }
+
 
     /**
      * Show the form for creating a new resource.
