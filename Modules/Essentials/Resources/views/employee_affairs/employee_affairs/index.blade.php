@@ -667,16 +667,15 @@
                 ],
                 "createdRow": function(row, data, dataIndex) {
                     var contractEndDate = data.contract_end_date;
-                    console.log(contractEndDate);
                     var currentDate = moment().format("YYYY-MM-DD");
 
                     if (contractEndDate !== null && contractEndDate !== undefined) {
                         var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
 
                         if (daysRemaining <= 0) {
-                            $('td', row).eq(8).addClass('text-danger');
+                            $('td', row).eq(9).addClass('text-danger');
                         } else if (daysRemaining <= 25) {
-                            $('td', row).eq(8).addClass(
+                            $('td', row).eq(9).addClass(
                                 'text-warning');
                         }
                     }
