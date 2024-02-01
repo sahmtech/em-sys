@@ -186,7 +186,7 @@
                             <small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong>
                                 <span></span></small>
                         </div>
-                        <small>
+                        {{-- <small>
                             <strong>
                                 @lang('lang_v1.billing_address'):
                             </strong>
@@ -202,7 +202,7 @@
                                 {{ $walk_in_customer['name'] ?? '' }},<br>
                                 {{ $walk_in_customer['shipping_address'] ?? '' }}
                             </div>
-                        </small>
+                        </small> --}}
                     </div>
 
                     <div class="col-md-3">
@@ -278,7 +278,7 @@
                         </div>
                     @endif
                     @if ($sale_type != 'sales_order')
-                        <div class="col-sm-3">
+                        <div class="col-sm-3" style="display: none">
                             <div class="form-group">
                                 {!! Form::label('invoice_scheme_id', __('invoice.invoice_scheme') . ':') !!}
                                 {!! Form::select('invoice_scheme_id', $invoice_schemes, $default_invoice_schemes->id, [
@@ -676,7 +676,8 @@
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="col-md-4  @if ($sale_type == 'sales_order') hide @endif">
+					
+                    <div style ="display:none" class="col-md-4  @if ($sale_type == 'sales_order') hide @endif">
                         <div class="form-group">
                             {!! Form::label('tax_rate_id', __('sale.order_tax') . ':*') !!}
                             <div class="input-group">
@@ -697,10 +698,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif">
+                    {{-- <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif">
                         <b>@lang('sale.order_tax'):</b>(+)
                         <span class="display_currency" id="order_tax">0</span>
-                    </div>
+                    </div> --}}
 
                     <div class="col-md-12">
                         <div class="form-group">
@@ -710,7 +711,7 @@
                     </div>
                     <input type="hidden" name="is_direct_sale" value="1">
                 @endcomponent
-                @component('components.widget', ['class' => 'box-solid'])
+                {{-- @component('components.widget', ['class' => 'box-solid'])
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('shipping_details', __('sale.shipping_details')) !!}
@@ -1017,7 +1018,7 @@
                             <span id="total_payable">0</span>
                         </div>
                     </div>
-                @endcomponent
+                @endcomponent --}}
             </div>
         </div>
         @if (!empty($common_settings['is_enabled_export']) && $sale_type != 'sales_order')
