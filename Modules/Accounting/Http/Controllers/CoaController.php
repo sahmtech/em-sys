@@ -526,7 +526,7 @@ class CoaController extends Controller
                     'ATM.ref_no',
                     'ATM.note',
                     'accounting_accounts_transactions.amount',
-                    DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                     'T.invoice_no'
                 );
             if (!empty($start_date) && !empty($end_date)) {
