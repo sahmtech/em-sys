@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __( 'lang_v1.all_sales'))
+@section('title', __( 'lang_v1.pills'))
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header no-print">
-    <h1>@lang( 'sale.sells')
+    <h1>@lang( 'lang_v1.pills')
     </h1>
 </section>
 
@@ -23,7 +23,7 @@
             </div>
         @endif
     @endcomponent
-    @component('components.widget', ['class' => 'box-primary', 'title' => __( 'lang_v1.all_sales')])
+    @component('components.widget', ['class' => 'box-primary',])
         @can('direct_sell.access')
             @slot('tool')
                 <div class="box-tools">

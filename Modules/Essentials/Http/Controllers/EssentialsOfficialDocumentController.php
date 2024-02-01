@@ -49,7 +49,7 @@ class EssentialsOfficialDocumentController extends Controller
         }
 
 
-        $official_documents = EssentialsOfficialDocument::join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+        $official_documents = EssentialsOfficialDocument::leftjoin('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
 
             ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
@@ -65,32 +65,34 @@ class EssentialsOfficialDocumentController extends Controller
                 'u.user_type',
             ])->orderby('id', 'desc');
 
+
+        if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
+            $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
+        }
+        if (!empty(request()->input('user_type')) && request()->input('user_type') !== 'all') {
+            $official_documents->where('u.user_type', request()->input('user_type'));
+        }
+        if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+            $official_documents->where('essentials_official_documents.status', request()->input('status'));
+        }
+
+        if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
+            $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
+        }
+
+        if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            $start = request()->start_date;
+            $end = request()->end_date;
+            $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
+                ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
+        }
+        if (!empty(request()->isForHome)) {
+            $official_documents->where('essentials_official_documents.type', 'residence_permit');
+        }
+
         if (request()->ajax()) {
 
 
-            if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
-                $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
-            }
-            if (!empty(request()->input('user_type')) && request()->input('user_type') !== 'all') {
-                $official_documents->where('u.user_type', request()->input('user_type'));
-            }
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $official_documents->where('essentials_official_documents.status', request()->input('status'));
-            }
-
-            if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
-                $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
-            }
-
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
-                $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
-                    ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
-            }
-            if (!empty(request()->isForHome)) {
-                $official_documents->where('essentials_official_documents.type', 'residence_permit');
-            }
             return Datatables::of($official_documents)
                 ->addColumn(
                     'action',
