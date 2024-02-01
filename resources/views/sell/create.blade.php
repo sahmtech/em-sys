@@ -711,7 +711,8 @@
                     </div>
                     <input type="hidden" name="is_direct_sale" value="1">
                 @endcomponent
-                {{-- @component('components.widget', ['class' => 'box-solid'])
+                <div style="display: none">
+                        @component('components.widget', ['class' => 'box-solid'])
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('shipping_details', __('sale.shipping_details')) !!}
@@ -1018,7 +1019,9 @@
                             <span id="total_payable">0</span>
                         </div>
                     </div>
-                @endcomponent --}}
+                @endcomponent 
+                </div>
+           
             </div>
         </div>
         @if (!empty($common_settings['is_enabled_export']) && $sale_type != 'sales_order')
@@ -1138,7 +1141,7 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="row hide payment_row" id="change_return_payment_data">
+                            {{-- <div class="row hide payment_row" id="change_return_payment_data">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         {!! Form::label('change_return_method', __('lang_v1.change_return_payment_method') . ':*') !!}
@@ -1157,7 +1160,7 @@
                                             {!! Form::select('payment[change_return][method]', $_payment_types, $_payment_method, [
                                                 'class' => 'form-control col-md-12 payment_types_dropdown',
                                                 'id' => 'change_return_method',
-                                                'style' => 'width:100%;',
+                                                'style' => 'width:100%; display: none',
                                             ]) !!}
                                         </div>
                                     </div>
@@ -1184,7 +1187,7 @@
                                     'payment_line' => $change_return,
                                     'row_index' => 'change_return',
                                 ])
-                            </div>
+                            </div> --}}
                             <hr>
                             <div class="row">
                                 <div class="col-sm-12">
