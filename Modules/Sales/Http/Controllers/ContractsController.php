@@ -106,8 +106,12 @@ class ContractsController extends Controller
         }
 
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
+
+
+        
         $contracts = DB::table('sales_contracts')
 
             ->select('sales_contracts.number_of_contract as contract_number', 'sales_contracts.id')

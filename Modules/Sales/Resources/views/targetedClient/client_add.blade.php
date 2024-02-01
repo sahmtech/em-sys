@@ -12,7 +12,7 @@
             <div class="form-group">
               {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
               {!! Form::select('profession',$professions,null, ['class' => 'form-control','style'=>'height:40px', 'required',
-                 'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
+                 'placeholder' => __('sales::lang.profession')]); !!}
                  
             </div>
           </div>
@@ -21,7 +21,7 @@
             <div class="form-group">
                 {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
                 {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required','style'=>'height:40px',
-                    'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
+                    'placeholder' => __('sales::lang.specialization')]); !!}
               </div>
           </div>
           <div class="col-sm-4">
