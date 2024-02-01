@@ -42,13 +42,13 @@ class CustomAdminSidebarMenu
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
             $this->assetManagementMenu();
-        } elseif (Str::startsWith($currentPath, ['sale', 'sells'])) {
+        } elseif (Str::startsWith($currentPath, ['sale'])) {
             $this->CUS_salesMenu();
         } elseif (Str::startsWith($currentPath, 'housingmovements')) {
             $this->houseMovementsMenu();
         } elseif (Str::startsWith($currentPath, ['international', 'ir'])) {
             $this->getIRMenu();
-        } elseif (Str::startsWith($currentPath, 'accounting')) {
+        } elseif (Str::startsWith($currentPath, ['accounting','sells'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
             $this->followUpMenu();
@@ -1333,13 +1333,7 @@ class CustomAdminSidebarMenu
                     )],
                 );
             }
-            if ($is_admin) {
-                $menu->url(
-                    action([\App\Http\Controllers\SellController::class, 'index']),
-                    __('lang_v1.pills'),
-                    ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'sells']
-                );
-            }
+           
 
             if ($is_admin || auth()->user()->can('sales.view_sales_projects')) {
                 $menu->url(
@@ -1585,6 +1579,13 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
+            // if ($is_admin) {
+                $menu->url(
+                    action([\App\Http\Controllers\SellController::class, 'index']),
+                    __('lang_v1.pills'),
+                    ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'sells']
+                );
+            // }
             if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
 
                 $menu->url(
