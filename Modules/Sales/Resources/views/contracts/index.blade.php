@@ -349,7 +349,9 @@
     $('#start_date').change(function() {
         updateEndDateFromStartDate();
     });
-
+    $('#contract_duration').change(function() {
+        updateEndDateFromStartDate();
+    });
     
     function updateEndDateFromStartDate() {
         var startDate = $('#start_date').val();
