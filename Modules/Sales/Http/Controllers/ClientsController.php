@@ -470,6 +470,7 @@ class ClientsController extends Controller
 
 
         try {
+            $filePath=null;
             // $selectedRowsData = json_decode($request->input('selectedRowsData'));
             if ($request->hasFile('file_lead')) {
                 $file = $request->file('file_lead');
