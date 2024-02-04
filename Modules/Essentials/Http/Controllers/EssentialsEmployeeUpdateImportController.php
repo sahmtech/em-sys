@@ -249,6 +249,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                   
                   $emp_array['essentials_department_id'] = $value[28];
+                 
                   if ($emp_array['essentials_department_id'] !== null)
                   {
               
@@ -506,7 +507,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             ->first();
     
                             
-                       
+                      
                             if ($existingEmployee)
                             {
                               
@@ -754,13 +755,15 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 }  
                                 
                                 
-                               
+                               // dd( $emp_data['essentials_department_id']);
     
                                 if($emp_data['essentials_department_id'] != null )
                                 {
+                                   
                                     $appointmentData=[];
                                     if( $existingEmployee->user_type == 'worker')
                                         {
+                                           
                                             $appointmentData =
                                             [
                                                 'employee_id'=> $existingEmployee->id,
@@ -775,6 +778,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                    
                                      else
                                         {
+                                            
                                             $appointmentData =
                                             [
                                                 'employee_id'=> $existingEmployee->id,
@@ -805,8 +809,9 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                             $previous_appointment->save();
                                           
                                         }
+                                       
                                         $new_appointement=EssentialsEmployeeAppointmet::Create($filteredAppointmentData);
-                                        $existingEmployee->essentials_department_id =$filteredAppointmentData['essentials_department_id'];
+                                        $existingEmployee->essentials_department_id =$filteredAppointmentData['department_id'];
                                         $existingEmployee->save();
                                         
                                     }
