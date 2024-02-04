@@ -1168,7 +1168,7 @@ class EssentialsManageEmployeeController extends Controller
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
 
 
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
             ->value('profession_id');
 
         if ($professionId !== null) {
@@ -1242,7 +1242,7 @@ class EssentialsManageEmployeeController extends Controller
 
             'profession_id',
 
-        ])->where('employee_id', $id)
+        ])->where('employee_id', $id)->where('is_active', 1)
             ->first();
         if ($appointments !== null) {
             $user->profession_id = $appointments['profession_id'];
@@ -1334,7 +1334,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-     
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
