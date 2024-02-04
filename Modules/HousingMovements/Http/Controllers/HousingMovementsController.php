@@ -40,10 +40,10 @@ class HousingMovementsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_essentials_hr_view_department_employees = auth()->user()->can('essentials.hr_view_department_employees');
+        $can_department_employees = auth()->user()->can('essentials.housingmovements_view_department_employees');
 
 
-        if (!($is_admin || $can_essentials_hr_view_department_employees)) {
+        if (!($is_admin || $can_department_employees)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
