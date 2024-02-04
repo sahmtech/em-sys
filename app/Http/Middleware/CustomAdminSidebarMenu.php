@@ -48,7 +48,7 @@ class CustomAdminSidebarMenu
             $this->houseMovementsMenu();
         } elseif (Str::startsWith($currentPath, ['international', 'ir'])) {
             $this->getIRMenu();
-        } elseif (Str::startsWith($currentPath, ['accounting','sells'])) {
+        } elseif (Str::startsWith($currentPath, ['accounting', 'sells'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
             $this->followUpMenu();
@@ -1333,7 +1333,7 @@ class CustomAdminSidebarMenu
                     )],
                 );
             }
-           
+
 
             if ($is_admin || auth()->user()->can('sales.view_sales_projects')) {
                 $menu->url(
@@ -1546,6 +1546,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
                 );
             }
+            if ($is_admin  || auth()->user()->can('housingmovements.housingmovements_view_department_employees')) {
+                $menu->url(
+
+                    route('housingmovements_department_employees'),
+                    __('housingmovements::lang.department_employees'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'housingmovements_department_employees'],
+                );
+            }
         });
     }
 
@@ -1580,11 +1588,11 @@ class CustomAdminSidebarMenu
                 );
             }
             // if ($is_admin) {
-                $menu->url(
-                    action([\App\Http\Controllers\SellController::class, 'index']),
-                    __('lang_v1.pills'),
-                    ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'sells']
-                );
+            $menu->url(
+                action([\App\Http\Controllers\SellController::class, 'index']),
+                __('lang_v1.pills'),
+                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'sells']
+            );
             // }
             if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
 
