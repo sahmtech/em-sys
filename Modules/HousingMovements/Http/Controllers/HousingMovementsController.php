@@ -62,7 +62,7 @@ class HousingMovementsController extends Controller
             })
             ->pluck('id')->toArray();
 
-        $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
+        $users = User::whereIn('id', $userIds)->whereIn('user_type',['employee','manager'])->whereHas('appointment', function ($query) use ($departmentIds) {
             $query->whereIn('department_id', $departmentIds)->where('is_active', 1);
         })->select([
             'users.*',
