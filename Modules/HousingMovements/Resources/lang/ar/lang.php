@@ -241,5 +241,6 @@ return [
     'total_beds'=>'عدد الأسرة الاجمالي',
     'no_project'=>'بلا مشروع',
     'add_request'=>'إضافة طلب',
+    'department_employees' => 'موظفي الإدارة',
 
 ];
