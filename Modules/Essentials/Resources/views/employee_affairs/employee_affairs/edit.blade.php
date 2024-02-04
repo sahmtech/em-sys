@@ -270,9 +270,17 @@
                     var newRow = $('.template-row').first().clone();
                     newRow.show();
                     newRow.find('select[name="offical_documents_type[]"]').val(doc.type);
-                    var viewButton = newRow.find('.view_document');
-                    viewButton.attr('href', '/uploads/' + doc.file_path);
-                    viewButton.attr('target', '_blank');
+                    if (doc.file_path) {
+                        viewButton.attr('href', '/uploads/' + doc.file_path);
+                        viewButton.attr('target', '_blank');
+                    } else {
+                        viewButton.removeAttr('href');
+                        viewButton.css('pointer-events', 'none');
+                        viewButton.css('opacity', '0.5');
+                        viewButton.on('click', function(e) {
+                            e.preventDefault();
+                        });
+                    }
                     newRow.data('document-id', doc.id);
                     newRow.attr('data-initial-row', 'true');
                     newRow.find('input[name="offical_documents_previous_files[]"]').val(doc.id);
