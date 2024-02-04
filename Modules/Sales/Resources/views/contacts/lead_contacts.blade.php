@@ -92,14 +92,14 @@
 
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('name_en', __('sales::lang.name_en') . ':*') !!}
+                                {!! Form::label('name_en', __('sales::lang.name_en') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fas fa-font"></i>
                                     </span>
                                     {!! Form::text('name_en', null, [
                                         'class' => 'form-control',
-                                        'required',
+                                        // 'required',
                                         'placeholder' => __('sales::lang.name_en'),
                                     ]) !!}
                                 </div>
@@ -288,7 +288,7 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        {!! Form::label('nationality_cs', __('sales::lang.nationality_cs') . ':*') !!}
+                                        {!! Form::label('nationality_cs', __('sales::lang.nationality_cs') . ':') !!}
                                         <div class="input-group">
                                             <span class="input-group-addon">
                                                 <i class="fas fa-globe"></i>
@@ -463,7 +463,7 @@
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        {!! Form::label('mobile_cf', __('sales::lang.mobile_cf') . ':*') !!}
+                                        {!! Form::label('mobile_cf', __('sales::lang.mobile_cf') . ':') !!}
                                         <div class="input-group">
                                             <span class="input-group-addon">
                                                 <i class="fa fa-mobile"></i>
@@ -574,8 +574,8 @@
                         <div class="row" style="margin-top:8px; ">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('file_lead', __('sales::lang.file_lead') . '*') !!}
-                                    {!! Form::file('file_lead', ['class' => 'form-control', 'required', 'accept' => 'doc/*']) !!}
+                                    {!! Form::label('file_lead', __('sales::lang.file_lead') . ':') !!}
+                                    {!! Form::file('file_lead', ['class' => 'form-control', 'accept' => 'doc/*']) !!}
 
 
                                 </div>
@@ -716,72 +716,72 @@
                 }
             });
 
-            $('#allow_login_cs_checkbox').change(function() {
+            // $('#allow_login_cs_checkbox').change(function() {
 
-                if ($(this).prop('checked')) {
-                    $('#username_cs').prop('required', true);
-                    $('#password_cs').prop('required', true);
-                    $('#confirm_password_cs').prop('required', true);
+            //     if ($(this).prop('checked')) {
+            //         $('#username_cs').prop('required', true);
+            //         $('#password_cs').prop('required', true);
+            //         $('#confirm_password_cs').prop('required', true);
 
 
-                    $('#username_cs_wrapper').show();
-                    $('#password_cs_wrapper').show();
-                    $('#confirm_password_cs_wrapper').show();
-                } else {
+            //         $('#username_cs_wrapper').show();
+            //         $('#password_cs_wrapper').show();
+            //         $('#confirm_password_cs_wrapper').show();
+            //     } else {
 
-                    $('#username_cs').prop('required', false);
-                    $('#password_cs').prop('required', false);
-                    $('#confirm_password_cs').prop('required', false);
+            //         $('#username_cs').prop('required', false);
+            //         $('#password_cs').prop('required', false);
+            //         $('#confirm_password_cs').prop('required', false);
 
-                    $('#username_cs_wrapper').hide();
-                    $('#password_cs_wrapper').hide();
-                    $('#confirm_password_cs_wrapper').hide();
-                }
-            });
+            //         $('#username_cs_wrapper').hide();
+            //         $('#password_cs_wrapper').hide();
+            //         $('#confirm_password_cs_wrapper').hide();
+            //     }
+            // });
 
-            $('#allow_login_cf_checkbox').change(function() {
-                if ($(this).prop('checked')) {
-                    $('#username_cf').prop('required', true);
-                    $('#password_cf').prop('required', true);
-                    $('#confirm_password_cf').prop('required', true);
+            // $('#allow_login_cf_checkbox').change(function() {
+            //     if ($(this).prop('checked')) {
+            //         $('#username_cf').prop('required', true);
+            //         $('#password_cf').prop('required', true);
+            //         $('#confirm_password_cf').prop('required', true);
 
-                    $('#username_cf_wrapper').show();
-                    $('#password_cf_wrapper').show();
-                    $('#confirm_password_cf_wrapper').show();
-                } else {
-                    $('#username_cf').prop('required', false);
-                    $('#password_cf').prop('required', false);
-                    $('#confirm_password_cf').prop('required', false);
+            //         $('#username_cf_wrapper').show();
+            //         $('#password_cf_wrapper').show();
+            //         $('#confirm_password_cf_wrapper').show();
+            //     } else {
+            //         $('#username_cf').prop('required', false);
+            //         $('#password_cf').prop('required', false);
+            //         $('#confirm_password_cf').prop('required', false);
 
-                    $('#username_cf_wrapper').hide();
-                    $('#password_cf_wrapper').hide();
-                    $('#confirm_password_cf_wrapper').hide();
-                }
-            });
+            //         $('#username_cf_wrapper').hide();
+            //         $('#password_cf_wrapper').hide();
+            //         $('#confirm_password_cf_wrapper').hide();
+            //     }
+            // });
 
-            $('#allow_login_cs_checkbox').change(function() {
-                if (this.checked) {
-                    $('#username_cs_wrapper').show();
-                    $('#password_cs_wrapper').show();
-                    $('#confirm_password_cs_wrapper').show();
-                } else {
-                    $('#username_cs_wrapper').hide();
-                    $('#password_cs_wrapper').hide();
-                    $('#confirm_password_cs_wrapper').hide();
-                }
-            });
+            // $('#allow_login_cs_checkbox').change(function() {
+            //     if (this.checked) {
+            //         $('#username_cs_wrapper').show();
+            //         $('#password_cs_wrapper').show();
+            //         $('#confirm_password_cs_wrapper').show();
+            //     } else {
+            //         $('#username_cs_wrapper').hide();
+            //         $('#password_cs_wrapper').hide();
+            //         $('#confirm_password_cs_wrapper').hide();
+            //     }
+            // });
 
-            $('#allow_login_cf_checkbox').change(function() {
-                if (this.checked) {
-                    $('#username_cf_wrapper').show();
-                    $('#password_cf_wrapper').show();
-                    $('#confirm_password_cf_wrapper').show();
-                } else {
-                    $('#username_cf_wrapper').hide();
-                    $('#password_cf_wrapper').hide();
-                    $('#confirm_password_cf_wrapper').hide();
-                }
-            });
+            // $('#allow_login_cf_checkbox').change(function() {
+            //     if (this.checked) {
+            //         $('#username_cf_wrapper').show();
+            //         $('#password_cf_wrapper').show();
+            //         $('#confirm_password_cf_wrapper').show();
+            //     } else {
+            //         $('#username_cf_wrapper').hide();
+            //         $('#password_cf_wrapper').hide();
+            //         $('#confirm_password_cf_wrapper').hide();
+            //     }
+            // });
 
 
             $('#moreInfoButton').click(function() {

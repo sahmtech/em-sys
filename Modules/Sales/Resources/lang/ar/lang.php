@@ -243,7 +243,7 @@ return [
     'operation_available_contracts' => 'العقود المتاحة للتشغيل',
     'offer_price_number' => 'رقم عرض السعر',
     'lead_contacts' => 'العملاء المحتملين',
-    'qualified_contacts' => 'العملاء المؤهين',
+    'qualified_contacts' => 'العملاء المؤهلين',
     'unqualified_contacts' => 'العملاء الغير مؤهلين',
     'converted_contacts' => 'العملاء المحولين',
     'change_contact_status' => 'تغيير حالة العميل',

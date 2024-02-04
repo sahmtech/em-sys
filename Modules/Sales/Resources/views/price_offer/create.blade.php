@@ -632,7 +632,20 @@
             updateTotalMonthlyAmount();
             updateTotalSum();
             updateTotalFees();
+            $('#add_client').on('shown.bs.modal', function(e) {
+            $('#professionSearch').select2({
+                dropdownParent: $(
+                    '#add_client'),
+                width: '100%',
+            });
+            $('#specializationSearch').select2({
+                dropdownParent: $(
+                    '#add_client'),
+                width: '100%',
+            });
 
+        });
+        
             $('#fees_section').on('input', '#contract_duration_input', function() {
                 updateTotalContractCost();
             });
@@ -919,5 +932,8 @@ console.log("fees:", fees);
 
 
         });
+
+
+        
     </script>
 @endsection
