@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-lg" role="document" id='add_client'>
+<div class="modal-dialog modal-lg" role="document" id='add_client_modal'>
     <div class="modal-content">
         {!! Form::open(['method' => 'post', 'id' => 'quick_add_client_form']) !!}
         <input type="hidden">
@@ -13,7 +13,7 @@
                     <div class="form-group">
                         {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
                         {!! Form::select('profession', $professions, null, [
-                            'class' => 'form-control Select2',
+                            'class' => 'form-control select2',
                             'id' => 'professionSearch',
                             'style' => 'height:40px',
                             'required',
@@ -27,7 +27,7 @@
                     <div class="form-group">
                         {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
                         {!! Form::select('specialization', $specializations, null, [
-                            'class' => 'form-control Select2',
+                            'class' => 'form-control select2',
                             'id' => 'specializationSearch',
                             'required',
                             'style' => 'height:40px',
@@ -193,21 +193,6 @@
 
 <script>
     $(document).ready(function() {
-
-
-        $('#add_client').on('shown.bs.modal', function(e) {
-            $('#professionSearch').Select2({
-                dropdownParent: $(
-                    '#add_client'),
-                width: '100%',
-            });
-            $('#specializationSearch').Select2({
-                dropdownParent: $(
-                    '#add_client'),
-                width: '100%',
-            });
-
-        });
         var selectedData = [];
         const form = document.getElementById('quick_add_client_form');
         $('#submit_quick_client').on('click', function(event) {
