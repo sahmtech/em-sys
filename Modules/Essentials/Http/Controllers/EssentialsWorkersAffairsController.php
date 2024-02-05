@@ -1,6 +1,7 @@
 <?php
 
 namespace Modules\Essentials\Http\Controllers;
+
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use App\Category;
 use App\AccessRole;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 use Modules\Sales\Entities\SalesProject;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Support\Facades\Storage;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
@@ -80,7 +82,7 @@ class EssentialsWorkersAffairsController extends Controller
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -100,7 +102,7 @@ class EssentialsWorkersAffairsController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->with(['assignedTo'])
             ->where('user_type', 'worker')
-            ->where('users.status','!=','inactive')
+            ->where('users.status', '!=', 'inactive')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
@@ -143,11 +145,11 @@ class EssentialsWorkersAffairsController extends Controller
         if (request()->ajax()) {
 
             return DataTables::of($users)
-               
+
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
-           
+
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
                         ->where('type', 'residence_permit')
@@ -214,7 +216,7 @@ class EssentialsWorkersAffairsController extends Controller
 
         $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
         return view('essentials::employee_affairs.workers_affairs.index')
-            ->with(compact('companies','contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+            ->with(compact('companies', 'contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
     private function getDocumentnumber($user, $documentType)
@@ -225,6 +227,47 @@ class EssentialsWorkersAffairsController extends Controller
             }
         }
         return ' ';
+    }
+
+    public function updateWorkerProfilePicture(Request $request, $id)
+    {
+        try {
+
+            $user = User::find($id);
+            if (!$user) {
+                throw new \Exception("User not found");
+            }
+
+            if ($request->hasFile('profile_picture')) {
+                // Handle file upload
+                $image = $request->file('profile_picture');
+                $profile = $image->store('/profile_images');
+                $user->update(['profile_image' => $profile]);
+                error_log($profile);
+            } elseif ($request->input('delete_image') == '1') {
+                $oldImage = $user->profile_image;
+                if ($oldImage) {
+                    Storage::delete($oldImage);
+                }
+                $user->update(['profile_image' => null]);
+                // Make sure to reset the delete_image flag in case of future updates
+                $request->request->remove('delete_image');
+            }
+
+            $output = [
+                'success' => 1,
+                'msg' => __('user.user_update_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
     }
 
 
@@ -310,7 +353,8 @@ class EssentialsWorkersAffairsController extends Controller
                 'spacializations',
                 'nationalities',
                 'username_ext',
-                'blood_types','job_titles',
+                'blood_types',
+                'job_titles',
                 'contacts',
                 'company',
                 'banks',
@@ -349,16 +393,17 @@ class EssentialsWorkersAffairsController extends Controller
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-            $request['user_type'] ='worker';
+            $request['user_type'] = 'worker';
 
-            if ($request->input('id_proof_number')){
-                 $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+            if ($request->input('id_proof_number')) {
+                $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
 
-            if ($existingprofnumber) {
-                $errorMessage = trans('essentials::lang.worker_with_same_id_proof_number_exists');
-                throw new \Exception($errorMessage);
-            }}
-           
+                if ($existingprofnumber) {
+                    $errorMessage = trans('essentials::lang.worker_with_same_id_proof_number_exists');
+                    throw new \Exception($errorMessage);
+                }
+            }
+
 
             $user = $this->moduleUtil->createUser($request);
             $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
@@ -551,8 +596,8 @@ class EssentialsWorkersAffairsController extends Controller
         } else {
             $contract = null;
         }
-        if (!empty($user)) 
-        $user_travel=EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->where('categorie_id', '!=',null)->first();
+        if (!empty($user))
+            $user_travel = EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->where('categorie_id', '!=', null)->first();
         else {
             $user_travel = null;
         }
@@ -596,7 +641,8 @@ class EssentialsWorkersAffairsController extends Controller
                 'qualification',
                 'resident_doc',
                 'countries',
-                'banks','user_travel',
+                'banks',
+                'user_travel',
                 'idProofName',
                 'user',
                 'contact_access',
@@ -625,7 +671,7 @@ class EssentialsWorkersAffairsController extends Controller
      */
     public function update(Request $request, $id)
     {
-      
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -635,8 +681,8 @@ class EssentialsWorkersAffairsController extends Controller
                 'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status', 'border_no', 'bank_details',
                 'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1', 'location_id',
                 'social_media_2', 'permanent_address', 'current_address', 'profession', 'specialization',
-                'company_id','guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
-                'contract_duration', 'probation_period','user_type',
+                'company_id', 'guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
+                'contract_duration', 'probation_period', 'user_type',
                 'is_renewable', 'contract_file', 'essentials_salary', 'essentials_pay_period',
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
@@ -651,14 +697,14 @@ class EssentialsWorkersAffairsController extends Controller
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
             }
-            
+
             if (!empty($request->input('password'))) {
                 $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
             }
 
             $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
 
-         
+
 
             $user_data['max_sales_discount_percent'] = null;
             if (!empty($request->input('dob'))) {
@@ -676,8 +722,8 @@ class EssentialsWorkersAffairsController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-           
-      
+
+
 
             $user = User::findOrFail($id);
 
@@ -691,14 +737,12 @@ class EssentialsWorkersAffairsController extends Controller
 
             $this->moduleUtil->activityLog($user, 'edited', null, ['name' => $user->user_full_name]);
 
-  
+
 
             $output = [
                 'success' => 1,
                 'msg' => __('user.user_update_success'),
             ];
-
-   
         } catch (\Exception $e) {
             DB::rollBack();
 

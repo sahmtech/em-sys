@@ -21,7 +21,7 @@
                     <label for="professions_filter">@lang('essentials::lang.professions'):</label>
                     {!! Form::select('professions-select', $professions, request('professions-select'), [
                         'class' => 'form-control select2', // Add the select2 class
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'professions-select',
                     ]) !!}
@@ -33,7 +33,7 @@
                     <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
                     {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
                         'class' => 'form-control select2',
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'specializations-select',
                     ]) !!}
@@ -47,7 +47,7 @@
                     <label for="agency_filter">@lang('internationalrelations::lang.agency_name'):</label>
                     {!! Form::select('agency_filter', $agencys, request('agency_filter'), [
                         'class' => 'form-control select2', // Add the select2 class
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'agency_filter',
                     ]) !!}

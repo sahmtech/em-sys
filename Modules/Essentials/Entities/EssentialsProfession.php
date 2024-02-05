@@ -4,10 +4,11 @@ namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class EssentialsProfession extends Model
 {
     protected $guarded = ['id'];
-   
+
     public function specializations(): HasMany
     {
         return $this->hasMany(EssentialsSpecialization::class, 'profession_id');
@@ -17,5 +18,9 @@ class EssentialsProfession extends Model
         $countries = EssentialsProfession::all()->pluck('name', 'id');
 
         return $countries;
+    }
+    public function essentialsEmployeeAppointmets()
+    {
+        return $this->hasMany(EssentialsEmployeeAppointmet::class, 'profession_id');
     }
 }

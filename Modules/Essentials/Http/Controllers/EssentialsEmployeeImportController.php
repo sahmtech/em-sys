@@ -212,7 +212,7 @@ class EssentialsEmployeeImportController extends Controller
                         break;
                     }
                 }
-
+                $emp_array['proof_end_date']=$value[16];
                 if (!empty($value[16])) 
                 {
                     if (is_numeric($value[16])) {
@@ -235,7 +235,7 @@ class EssentialsEmployeeImportController extends Controller
                else{ $emp_array['proof_end_date'] = null;}
 
                $emp_array['passport_number'] = $value[17];
-               
+               $emp_array['passport_end_date']=$value[18];
                if (!empty($value[18])) 
                {
                    if (is_numeric($value[18]))
@@ -547,7 +547,7 @@ class EssentialsEmployeeImportController extends Controller
                                           
             ];
             $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data);  
-                      
+              // dd( $formated_data );     
             if (! empty($formated_data)) 
             {
                  
@@ -835,11 +835,11 @@ class EssentialsEmployeeImportController extends Controller
 
                       
                     }
+                   
                 }
-                if (!$is_valid) 
-                {
-                   throw new \Exception($error_msg);
-                }
+
+              
+               
 
                 $output = ['success' => 1,'msg' => __('product.file_imported_successfully'),];
                 DB::commit();
@@ -855,12 +855,13 @@ class EssentialsEmployeeImportController extends Controller
                 'msg' => $e->getMessage(),
             ];
 
+           
             return redirect()->route('import-employees')
-            ->with( $output);
+            ->with('notification', $output);
         }
        
         return redirect()->action([\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])
-        ->with( $output);
+        ->with('notification', $output);
     }
 
 

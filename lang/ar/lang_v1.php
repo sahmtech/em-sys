@@ -113,7 +113,7 @@ return [
     "months" => "الأشهر",
     "days" => "الأيام",
     "suppliers" => "الموردين",
-    'calendar'=>'التقويم',
+    'calendar' => 'التقويم',
     "customers" => "العملاء",
     "enter_product_name_to_print_labels" => "أدخل اسم الصنف لطباعة الملصقات",
     "manage_product_variations" => "إدارة المواصفات الإضافية",
@@ -1454,6 +1454,8 @@ return [
     'the_passport_number_already_exists' => 'رقم جواز السفر المدخل موجود سابقاً',
     'address' => 'العنوان',
     'privacy_policy' => 'سياسة الخصوصية',
-    'finished_success'=>'تم الإنهاء بنجاح'
+    'finished_success' => 'تم الإنهاء بنجاح',
+    'pills' => 'الفواتير',
+    'create_pill' => 'إنشاء فاتورة',
 
 ];

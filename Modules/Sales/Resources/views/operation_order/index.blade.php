@@ -19,7 +19,7 @@
                     <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
                     {!! Form::select('contract-select', $contracts->pluck('contract_number', 'contract_number'), null, [
                         'class' => 'form-control',
-                        'style' => 'height:36px',
+                        'style' => 'height:40px',
                         'placeholder' => __('lang_v1.all'),
                         'required',
                         'id' => 'contract-select',
@@ -96,7 +96,7 @@
                                 {!! Form::label('contact_id', __('sales::lang.customer') . ':*') !!}
                                 {!! Form::select('contact_id', $leads, null, [
                                     'class' => 'form-control',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'placeholder' => __('sales::lang.select_customer'),
                                     'required',
                                     'id' => 'customer-select',
@@ -107,7 +107,7 @@
                                 {!! Form::label('contract_id', __('sales::lang.contract') . ':*') !!}
                                 {!! Form::select('sale_contract_id', [], null, [
                                     'class' => 'form-control',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'placeholder' => __('sales::lang.select_contacts'),
                                     'required',
                                     'id' => 'contact-select',

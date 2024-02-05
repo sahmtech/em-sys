@@ -27,7 +27,7 @@
                         [
                             'class' => 'form-control select2',
                             'id' => 'select_business_id',
-                            'style' => 'height:36px; width:100%',
+                            'style' => 'height:40px; width:100%',
                             'placeholder' => __('lang_v1.all'),
                             'required',
                             'autofocus',
@@ -41,7 +41,7 @@
                     <label for="specializations_filter">@lang('essentials::lang.major'):</label>
                     {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
                         'class' => 'form-control select2',
-                        'style' => 'height:36px; width:100%',
+                        'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'specializations-select',
                     ]) !!}
@@ -54,7 +54,7 @@
                     {!! Form::select('nationalities_select', $nationalities, request('nationalities_select'), [
                         'class' => 'form-control select2', 
                         'placeholder' => __('lang_v1.all'),
-                        'style' => 'height:36px; width:100%',
+                        'style' => 'height:40px; width:100%',
                         'id' => 'nationalities_select',
                     ]) !!}
                 </div>
@@ -64,7 +64,7 @@
                 <div class="form-group">
                     <label for="status_filter">@lang('essentials::lang.status'):</label>
                     <select class="form-control select2" name="status_filter" required id="status_filter"
-                        style="height:36px; width:100%;">
+                        style="height:40px; width:100%;">
                         <option value="all">@lang('lang_v1.all')</option>
                         <option value="active">@lang('sales::lang.active')</option>
                         <option value="inactive">@lang('sales::lang.inactive')</option>
@@ -113,7 +113,7 @@
                         
                         <tfoot>
                             <tr>
-                                <td colspan="17">
+                                <td colspan="16">
                                     <div style="display: flex; width: 100%;">
 
                                         &nbsp;

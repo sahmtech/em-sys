@@ -44,7 +44,7 @@
                         {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
                         {!! Form::select('general_specialization', $spacializations, null, [
                             'class' => 'form-control',
-                            'style' => 'height:36px',   'id' => 'professionSelect',
+                            'style' => 'height:40px',   'id' => 'professionSelect',
                             'placeholder' => __('essentials::lang.select_specialization'),
                         ]) !!}
                     </div>
@@ -54,7 +54,7 @@
                         {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
                         {!! Form::select('sub_specialization', [], null, [
                             'class' => 'form-control',
-                            'style' => 'height:36px','id' => 'specializationSelect',
+                            'style' => 'height:40px','id' => 'specializationSelect',
                           
                         ]) !!}
                     </div>

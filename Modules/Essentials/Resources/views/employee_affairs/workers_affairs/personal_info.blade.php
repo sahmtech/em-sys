@@ -6,7 +6,7 @@
         {!! Form::label('user_dob', __('lang_v1.dob') . ':') !!}
         {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'placeholder' => __('lang_v1.dob'),
             'readonly',
             'id' => 'user_dob',
@@ -21,7 +21,7 @@
             !empty($user->gender) ? $user->gender : null,
             [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'id' => 'gender',
                 'placeholder' => __('messages.please_select'),
             ],
@@ -34,7 +34,7 @@
             'marital_status',
             ['married' => __('lang_v1.married'), 'unmarried' => __('lang_v1.unmarried'), 'divorced' => __('lang_v1.divorced')],
             !empty($user->marital_status) ? $user->marital_status : null,
-            ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('lang_v1.marital_status')],
+            ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.marital_status')],
         ) !!}
     </div>
 
@@ -44,7 +44,7 @@
         {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
             'class' => 'form-control',
             'require',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'placeholder' => __('lang_v1.mobile_number'),
             'oninput' => 'validateContactNumber(this)',
             'maxlength' => '10',
@@ -55,7 +55,7 @@
 
     <div class="form-group col-md-3">
         {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-        <select id="id_proof_name" style="height:36px" required name="id_proof_name" class="form-control">
+        <select id="id_proof_name" style="height:40px" required name="id_proof_name" class="form-control">
             <option value="">@lang('user.select_proof_name')</option>
 
             <option value="eqama">
@@ -72,7 +72,7 @@
         {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
         {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '', [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'placeholder' => __('lang_v1.eqama_end_date'),
             'id' => 'eqama_end_date',
         ]) !!}
@@ -82,7 +82,7 @@
         {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
         {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'placeholder' => __('lang_v1.id_proof_number'),
             'oninput' => 'validateIdProofNumber(this)',
         ]) !!}
@@ -95,7 +95,7 @@
         {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
         {!! Form::text('border_no', optional($user)->border_no ?? '3', [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'placeholder' => __('essentials::lang.border_number'),
             'id' => 'border_no',
             'maxlength' => '10',
@@ -111,7 +111,7 @@
         {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, [
             'class' => 'form-control select2',
             'id' => 'nationalities_select',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'required',
             'placeholder' => __('sales::lang.nationality'),
         ]) !!}
@@ -135,7 +135,7 @@
                 null,
                 [
                     'class' => 'form-control ',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'placeholder' => __('essentials::lang.select_type'),
                 ],
             ) !!}
@@ -147,7 +147,7 @@
             {!! Form::file('document_file', [
                 'class' => 'form-control',
                 'placeholder' => __('essentials::lang.file'),
-                'style' => 'height:36px',
+                'style' => 'height:40px',
             ]) !!}
         </div>
     </div>

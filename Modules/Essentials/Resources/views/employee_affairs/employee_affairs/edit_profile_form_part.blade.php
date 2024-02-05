@@ -17,7 +17,16 @@
 
     <div class="col-md-12 box box-primary">
         <h4>@lang('essentials::lang.personal_info'):</h4>
-
+        <div class="form-group col-md-3">
+            {!! Form::label('user_hijri_dob', __('lang_v1.hijri_dob') . ':') !!}
+            {!! Form::text('hijrii_date', !empty($user->hijrii_date) ? $user->hijrii_date : null, [
+                'class' => 'form-control hijri-date-picker',
+                'style' => 'height:40px',
+                'placeholder' => __('lang_v1.hijri_dob'),
+                'readonly',
+                'id' => 'user_hijri_dob',
+            ]) !!}
+        </div>
 
         <div class="form-group col-md-3">
             {!! Form::label('user_dob', __('lang_v1.dob') . ':') !!}
@@ -54,7 +63,15 @@
                 ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.marital_status')],
             ) !!}
         </div>
+        <div class="form-group col-md-3">
+            {!! Form::label('blood_group', __('lang_v1.blood_group') . ':') !!}
 
+            {!! Form::select('blood_group', $blood_types, !empty($user->blood_group) ? $user->blood_group : null, [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('essentials::lang.blood_group'),
+            ]) !!}
+        </div>
 
 
         <div class="form-group col-md-3">
@@ -71,18 +88,27 @@
         </div>
 
 
+        <div class="form-group col-md-6">
+            {!! Form::label('permanent_address', __('lang_v1.address') . ':') !!}
+            {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('lang_v1.address'),
+                'rows' => 3,
+            ]) !!}
+        </div>
+
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
             <select id="id_proof_name" style="height:40px" required name="id_proof_name" class="form-control"
                 onchange="updateNationalityOptions(this)">
                 <option value="">@lang('user.select_proof_name')</option>
-
+                <option value="national_id"
+                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'national_id' ? 'selected' : '' }}>
+                    @lang('user.national_id')</option>
                 <option value="eqama"
                     {{ !empty($user->id_proof_name) && $user->id_proof_name == 'eqama' ? 'selected' : '' }}>
                     @lang('user.eqama')</option>
-                <option value="border"
-                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'border' ? 'selected' : '' }}>
-                    @lang('essentials::lang.border_number')</option>
             </select>
         </div>
 
@@ -97,30 +123,17 @@
             ]) !!}
         </div>
 
-        <div class="form-group col-md-3" id="proof_no_container" style="display:none">
-            {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
+        <div class="form-group col-md-3" id="proof_no_container" style="<?php echo !empty($user->id_proof_name) ? 'display:block' : 'display:none'; ?>">
+            {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':*') !!}
             {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
                 'class' => 'form-control',
                 'style' => 'height:40px',
+                'required',
                 'placeholder' => __('lang_v1.id_proof_number'),
                 'oninput' => 'validateIdProofNumber(this)',
             ]) !!}
             <span id="idProofNumberError" class="text-danger"></span>
         </div>
-        <div class="form-group col-md-6" id="border_no_container"
-            style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
-            {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
-            {!! Form::text('border_no', optional($user)->border_no ?? '3', [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-                'placeholder' => __('essentials::lang.border_number'),
-                'id' => 'border_no',
-                'maxlength' => '10',
-                'oninput' => 'validateBorderNumber()',
-            ]) !!}
-            <div id="border_no_error" class="text-danger"></div>
-        </div>
-
 
         <div class="form-group col-md-3">
             {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
@@ -134,43 +147,222 @@
         </div>
 
         <div class="clearfix"></div>
+        <br>
+        <div class="form-group col-md-3">
+            <button type="button" class="btn btn-success align-self-center id_attachements_btn">
+                {{ __('essentials::lang.id_attachements') }}
+            </button>
+        </div>
 
-        {{-- <div class="col-md-3">
-            <div class="form-group ">
-                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}
+
+
+        
+        @if (empty($user))
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <table id="documentsTable" class="table">
+                            <thead>
+                                <tr>
+                                    <th>{!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}</th>
+                                    <th>{!! Form::label('document_file', __('essentials::lang.file') . ':') !!}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <!-- Document Type Select -->
+                                        {!! Form::select(
+                                            'document_type[]',
+                                            [
+                                                'national_id' => __('essentials::lang.national_id'),
+                                                'passport' => __('essentials::lang.passport'),
+                                                'residence_permit' => __('essentials::lang.residence_permit'),
+                                                'drivers_license' => __('essentials::lang.drivers_license'),
+                                                'car_registration' => __('essentials::lang.car_registration'),
+                                                'international_certificate' => __('essentials::lang.international_certificate'),
+                                            ],
+                                            null,
+                                            [
+                                                'class' => 'form-control',
+                                                'style' => 'height:40px',
+                                                'placeholder' => __('essentials::lang.select_type'),
+                                            ],
+                                        ) !!}
+                                    </td>
+                                    <td>
+                                        <!-- File Input -->
+                                        {!! Form::file('document_file[]', [
+                                            'class' => 'form-control',
+                                            'style' => 'height:40px',
+                                        ]) !!}
+                                    </td>
+                                    <td>
+                                        {{-- <button type="button" id="remove-row"
+                                        class="btn btn-danger remove-row">{{ __('messages.delete') }}
+                                    </button> --}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex justify-content-center">
+
+                    <button type="button" class="btn btn-success align-self-center" onclick="addRow()">
+                        {{ __('essentials::lang.add_file') }}
+                    </button>
+                </div>
+            </div>
+        @endif
+        <input type="hidden" id="DocumentTypes" name="DocumentTypes" value="">
+    </div>
+
+
+
+    <div class="col-md-12 box box-primary">
+
+        <h4>@lang('lang_v1.add_qualification'):</h4>
+
+
+
+
+        <div class=" col-md-4">
+            <div class="form-group">
+
+                {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':') !!}
                 {!! Form::select(
-                    'document_type',
+                    'qualification_type',
                     [
-                        'national_id' => __('essentials::lang.national_id'),
-                        'passport' => __('essentials::lang.passport'),
-                        'residence_permit' => __('essentials::lang.residence_permit'),
-                        'drivers_license' => __('essentials::lang.drivers_license'),
-                        'car_registration' => __('essentials::lang.car_registration'),
-                        'international_certificate' => __('essentials::lang.international_certificate'),
+                        'bachelors' => __('essentials::lang.bachelors'),
+                        'master' => __('essentials::lang.master'),
+                        'PhD' => __('essentials::lang.PhD'),
+                        'diploma' => __('essentials::lang.diploma'),
                     ],
-                    null,
+                    !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
+                    ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                ) !!}
+            </div>
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group ">
+                {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
+                {!! Form::select(
+                    'general_specialization',
+                    $professions,
+                    !empty($qualification->specialization) ? $qualification->specialization : null,
                     [
-                        'class' => 'form-control ',
+                        'class' => 'form-control',
                         'style' => 'height:40px',
-                        'placeholder' => __('essentials::lang.select_type'),
+                        'id' => 'professionSelect',
+                        'placeholder' => __('essentials::lang.select_specialization'),
+                    ],
+                ) !!}
+            </div>
+
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group ">
+                {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
+                {!! Form::select(
+                    'sub_specialization',
+                    $spacializations,
+                    !empty($qualification->sub_specialization) ? $qualification->sub_specialization : null,
+                    [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                        'id' => 'specializationSelect',
+                    ],
+                ) !!}
+            </div>
+
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
+                {!! Form::date(
+                    'graduation_year',
+                    !empty($qualification->graduation_year) ? $qualification->graduation_year : null,
+                    ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year')],
+                ) !!}
+            </div>
+        </div>
+
+
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
+                {!! Form::text(
+                    'graduation_institution',
+                    !empty($qualification->graduation_institution) ? $qualification->graduation_institution : null,
+                    ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_institution')],
+                ) !!}
+            </div>
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
+                {!! Form::select(
+                    'graduation_country',
+                    $countries,
+                    !empty($qualification->graduation_country) ? $qualification->graduation_country : null,
+                    [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                        'placeholder' => __('essentials::lang.select_country'),
                     ],
                 ) !!}
             </div>
         </div>
-        <div class="col-md-3">
+        <div class=" col-md-2">
             <div class="form-group">
-                {!! Form::label('document_file', __('essentials::lang.file') . ':') !!}
-                {!! Form::file('document_file', [
+                {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
+                {!! Form::number('degree', !empty($qualification->degree) ? $qualification->degree : null, [
                     'class' => 'form-control',
-                    'placeholder' => __('essentials::lang.file'),
-                    'style' => 'height:40px',
+                    'placeholder' => __('essentials::lang.degree'),
+                    'step' => 'any',
+                    'onkeyup' => 'getGPA()',
                 ]) !!}
             </div>
         </div>
-            --}}
+
+        <div class=" col-md-2">
+            <div class="form-group">
+                {!! Form::label('great_degree', __('essentials::lang.great_degree') . ':') !!}
+                {!! Form::number('great_degree', !empty($qualification->great_degree) ? $qualification->great_degree : null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.great_degree'),
+                    'step' => 'any',
+                    'onkeyup' => 'getGPA()',
+                ]) !!}
+
+            </div>
+        </div>
+
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('marksName', __('essentials::lang.marksName') . ':') !!}
+                {!! Form::text('marksName', !empty($qualification->marksName) ? $qualification->marksName : null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.marksName'),
+                    'step' => 'any',
+                    'readonly',
+                ]) !!}
+            </div>
+        </div>
+        @if (empty($qualification))
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('essentials::lang.qualification_file', __('essentials::lang.qualification_file') . ':') !!}
+                    {!! Form::file('qualification_file', [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                    ]) !!}
+                </div>
+
+            </div>
+        @endif
     </div>
-
-
 
 
     <div class="col-md-12  box box-primary" id="section3">
@@ -245,7 +437,7 @@
             ]) !!}
         </div>
 
-        {{-- <div class="form-group col-md-4">
+        <div class="form-group col-md-4">
             {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':') !!}
             {!! Form::file('Iban_file', [
                 'class' => 'form-control',
@@ -253,7 +445,7 @@
             
                 'style' => 'height:40px',
             ]) !!}
-        </div> --}}
+        </div>
 
 
         {{--
@@ -267,9 +459,122 @@
 
 
     </div>
+
+
+
+    <script>
+        $(document).ready(function() {
+
+            toggleBorderNoVisibility();
+
+
+            $('#id_proof_name').on('change', function() {
+                toggleBorderNoVisibility();
+            });
+
+
+            function toggleBorderNoVisibility() {
+                var idProofName = $('#id_proof_name').val();
+                if (idProofName === 'eqama') {
+                    $('#border_no_container').show();
+                } else {
+                    $('#border_no_container').hide();
+                }
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#id_proof_name').change(function() {
+                var selectedProof = $(this).val();
+                var eqamaEndDateInput = $('#eqamaEndDateInput');
+
+                if (selectedProof === 'eqama') {
+
+                    eqamaEndDateInput.show();
+                } else {
+
+                    eqamaEndDateInput.hide();
+                    $('#expiration_date').val('');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function addRow() {
+            var table = document.getElementById('documentsTable').getElementsByTagName('tbody')[0];
+            var newRow = table.rows[0].cloneNode(true);
+            var len = table.rows.length;
+
+
+            newRow.cells[0].getElementsByTagName('select')[0].name = 'document_type[' + len + ']';
+            newRow.cells[1].getElementsByTagName('input')[0].name = 'document_file[' + len + ']';
+
+
+            var removeButton =
+                '<button type="button" class="btn btn-danger remove-row">{{ __('messages.delete') }}</button>';
+            if (newRow.cells[2]) {
+                newRow.cells[2].innerHTML = removeButton;
+            } else {
+                var newCell = newRow.insertCell(2);
+                newCell.innerHTML = removeButton;
+            }
+
+
+            table.appendChild(newRow);
+        }
+
+        $(document).on('click', '.remove-row', function() {
+
+            if ($('#documentsTable tbody tr').length > 1) {
+                $(this).closest('tr').remove();
+            }
+        });
+
+        $(document).on('change', 'select[name^="document_type"]', function() {
+            updateDocumentTypes();
+        });
+
+        $(document).on('change', 'input[name^="document_file"]', function() {
+            updateDocumentTypes();
+        });
+
+        function updateDocumentTypes() {
+            var DocumentTypes = [];
+
+            $('select[name^="document_type"]').each(function(index) {
+                var document_type = $(this).val();
+                var document_file = $('input[name^="document_file"]').eq(index)
+                    .val(); // Get the file input based on the index
+                if (document_type && document_file) { // Check if both values are not empty
+                    DocumentTypes.push({
+                        document_type: document_type,
+                        document_file: document_file // This will be the file name
+                    });
+                }
+            });
+
+            console.log(DocumentTypes);
+            var inputElement = document.getElementById('DocumentTypes');
+            if (inputElement) {
+                inputElement.value = JSON.stringify(DocumentTypes);
+            } else {
+                // If the element does not exist, create it and append to the form
+                inputElement = document.createElement('input');
+                inputElement.type = 'hidden';
+                inputElement.id = 'DocumentTypes';
+                inputElement.name = 'DocumentTypes';
+                $('form').append(inputElement);
+                inputElement.value = JSON.stringify(DocumentTypes);
+            }
+        }
+    </script>
+
+
+
     <script>
         function validateBorderNumber() {
-            console.log("border");
             var borderNoInput = document.getElementById('border_no');
             var borderNo = borderNoInput.value.trim();
 
@@ -290,54 +595,6 @@
 
         document.getElementById('border_no').addEventListener('input', validateBorderNumber);
     </script>
-    <script>
-        $(document).ready(function() {
-            // Function to handle the showing and hiding of elements
-            function handleIdProofSelection() {
-                var selectedProof = $('#id_proof_name').val();
-
-                if (selectedProof === 'eqama') {
-                    $('#border_no_container').hide();
-                    $('#proof_no_container').show();
-                } else if (selectedProof === 'border') {
-                    $('#border_no_container').show();
-                    $('#proof_no_container').hide();
-                } else {
-                    $('#border_no_container').hide();
-                    $('#proof_no_container').hide();
-                }
-            }
-
-            // Bind the change event of the dropdown to the handler function
-            $('#id_proof_name').change(handleIdProofSelection);
-
-            // Call the handler function on page load to set the initial state
-            handleIdProofSelection();
-        });
-    </script>
-
-
-    <script>
-        $(document).ready(function() {
-            $('#id_proof_name').change(function() {
-                var selectedProof = $(this).val();
-                var eqamaEndDateInput = $('#eqamaEndDateInput');
-
-                if (selectedProof === 'eqama') {
-
-                    eqamaEndDateInput.show();
-
-                } else {
-
-                    eqamaEndDateInput.hide();
-                    $('#expiration_date').val('');
-                }
-            });
-
-        });
-    </script>
-
-
 
 
 
@@ -391,7 +648,6 @@
 
         $(document).ready(function() {
 
-
             var nationalities = @json($nationalities);
             var selectedNationalityId = {{ $user->nationality_id ?? 'null' }};
 
@@ -417,6 +673,7 @@
             $('#id_proof_name').change(function() {
                 var selectedOption = $(this).val();
                 console.log(selectedOption);
+
                 const idProofNumberInput = document.getElementById('id_proof_number');
                 const border_no_containerInput = document.getElementById('border_no');
                 idProofNumberInput.minLength = validationLength;
@@ -439,41 +696,43 @@
                 if (selectedOption === 'eqama') {
                     validationLength = 10;
                     idProofNumberInput.value = '2';
-                    border_no_containerInput.value = '';
+
                     $('#border_no_container').hide();
                     $('#proof_no_container').show();
 
 
-
                     for (const [id, name] of Object.entries(nationalities)) {
-                        if (id != '5') {
+
+                        if (id !== '5') {
                             const option = document.createElement('option');
                             option.value = id;
                             option.text = name;
                             nationalitySelect.appendChild(option);
                         }
-
                     }
-                } else if (selectedOption === 'border') {
+                } else if (selectedOption === 'national_id') {
                     // validationLength = 13;
+                    console.log(selectedOption);
 
-                    border_no_containerInput.value = '3';
-                    console.log(border_no_containerInput.value);
+
+
                     validationLength = 10;
-                    idProofNumberInput.value = '';
+                    idProofNumberInput.value = '1';
 
                     $('#border_no_container').show();
-                    $('#proof_no_container').hide();
+                    $('#proof_no_container').show();
 
-                    for (const [id, name] of Object.entries(nationalities)) {
-                        if (id != '5') {
-                            const option = document.createElement('option');
-                            option.value = id;
-                            option.text = name;
-                            nationalitySelect.appendChild(option);
-                        }
+                    const option = document.createElement('option');
+                    option.value = '5';
+                    option.text = nationalities['5'];
+                    nationalitySelect.appendChild(option);
 
-                    }
+                    // for (const [id, name] of Object.entries(nationalities)) {
+                    //     const option = document.createElement('option');
+                    //     option.value = id;
+                    //     option.text = name;
+                    //     nationalitySelect.appendChild(option);
+                    // }
                 } else {
                     validationLength = 10;
                     idProofNumberInput.value = '';
@@ -488,13 +747,47 @@
                     $('#border_no_container').hide();
                     $('#proof_no_container').hide();
                 }
-            });
 
+            });
 
 
         });
     </script>
 
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+
+            var professionSelect = $('#professionSelect');
+            var specializationSelect = $('#specializationSelect');
+
+
+            professionSelect.on('change', function() {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function(data) {
+                        specializationSelect.empty();
+                        $.each(data, function(id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
 
     <script>
         function getGPA() {
@@ -587,6 +880,9 @@
         }
 
 
+        function updateberPProofNumrefix(select) {
+
+        }
 
         function validateIdProofNumber(input) {
             const idProofName = document.getElementById('id_proof_name').value;
@@ -602,6 +898,12 @@
                 input.value = idProofNumber;
                 return;
             }
+            if (idProofName === 'eqama') {
+                idProofNumberInput.setAttribute('type', 'text');
+            } else if (idProofName === 'national_id') {
+                idProofNumberInput.setAttribute('type', 'number');
+            }
+
             if (idProofNumber.startsWith(prefix)) {
                 if (idProofName === 'eqama' && idProofNumber.length !== 10) {
                     idProofNumberError.innerText = 'يجب أن تكون مكونة من 10 أرقام';
@@ -615,7 +917,6 @@
             }
         }
     </script>
-
 
 </body>
 

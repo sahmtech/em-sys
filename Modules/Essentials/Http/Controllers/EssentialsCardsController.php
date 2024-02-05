@@ -339,7 +339,7 @@ class EssentialsCardsController extends Controller
             ])->orderby('id', 'desc');
 
 
-
+        
         if (!empty($request->input('status-select'))) {
             $users->where('users.status', $request->input('status'));
         }
@@ -497,7 +497,8 @@ class EssentialsCardsController extends Controller
         if ($user->user_type == 'employee') {
 
                 $documents = $user->OfficialDocument;
-            } else if ($user->user_type == 'worker') {
+            } 
+        else if ($user->user_type == 'worker') {
 
 
                 if (!empty($user->proposal_worker_id)) {
@@ -521,34 +522,30 @@ class EssentialsCardsController extends Controller
 
 
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
-        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
-        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
-        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-      
+        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)
+        ->where('is_active',1)
+        ->latest('created_at')
+        ->first();
+
+        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)
+        ->first();
+        
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)
+        ->where('is_active',1)
+        ->latest('created_at')
+        ->first();
+
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)
+        ->where('is_active',1)
+        ->latest('created_at')
+        ->value('profession_id');
+     
         if ($professionId !== null) {
-            $profession = EssentialsProfession::find($professionId)->name;
+            $profession = EssentialsProfession::find($professionId)?->name ?? " ";
         } 
-        else 
-        {
-            $profession = "";
-        }
-
-      
-        // if ($specializationId !== null) {
-        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
-        // } 
-        // else 
-        // {
-        //     $specialization = "";
-        // }
-
-
+        else {$profession = "";}
+       
         $user->profession = $profession;
-     //   $user->specialization = $specialization;
-
-
         $view_partials = $this->moduleUtil->getModuleData(
             'moduleViewPartials',
             ['view' => 'manage_user.show', 'user' => $user]
@@ -558,14 +555,12 @@ class EssentialsCardsController extends Controller
         $query = User::whereIn('id', $userIds);
         $all_users =$query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
-       
         $users = $all_users->pluck('full_name', 'id');
-        
-       
         $activities = Activity::forSubject($user)
             ->with(['causer', 'subject'])
             ->latest()
             ->get();
+
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $nationality_id = $user->nationality_id;

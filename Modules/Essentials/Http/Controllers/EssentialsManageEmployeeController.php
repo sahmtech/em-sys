@@ -22,6 +22,10 @@ use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Carbon\Carbon;
+
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -165,6 +169,7 @@ class EssentialsManageEmployeeController extends Controller
                 DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
                 'essentials_admission_to_works.admissions_date as admissions_date',
                 'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'essentials_employees_contracts.contract_type_id',
                 'users.email',
                 'users.allow_login',
                 'users.contact_number',
@@ -177,7 +182,7 @@ class EssentialsManageEmployeeController extends Controller
             ])
             ->orderBy('id', 'desc');
 
-        if (!empty($request->input('specialization'))) {
+        if (!empty($request->input('specialization')) && $request->input('specialization') != 'all') {
 
             $users->whereHas('appointment', function ($query) use ($request) {
                 if (!empty($request->input('specialization'))) {
@@ -187,16 +192,23 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-        if (!empty($request->input('status-select'))) {
+        if (!empty($request->input('status')) && $request->input('status') != 'all') {
             $users->where('users.status', $request->input('status'));
         }
+        if (!empty($request->input('department')) && $request->input('department') != 'all') {
+            $users->where('users.essentials_department_id', $request->input('department'));
+        }
+        if (!empty($request->input('contract_type')) && $request->input('company') != 'all') {
+            //contract_type
+            $users->where('essentials_employees_contracts.contract_type_id', $request->input('contract_type'));
+        }
 
-        if (!empty($request->input('company'))) {
+        if (!empty($request->input('company')) && $request->input('company') != 'all') {
 
             $users->where('users.company_id', $request->input('company'));
         }
 
-        if (!empty($request->input('nationality'))) {
+        if (!empty($request->input('nationality')) && $request->input('nationality') != 'all') {
 
             $users->where('users.nationality_id', $request->input('nationality'));
             error_log("111");
@@ -224,7 +236,7 @@ class EssentialsManageEmployeeController extends Controller
                     $professionId = $appointments[$row->id] ?? '';
 
                     $professionName = $job_titles[$professionId] ?? '';
-                 
+
 
                     return $professionName;
                 })
@@ -327,6 +339,7 @@ class EssentialsManageEmployeeController extends Controller
 
         return view('essentials::employee_affairs.employee_affairs.index')
             ->with(compact(
+                'departments',
                 'contract_types',
                 'nationalities',
                 'specializations',
@@ -854,6 +867,46 @@ class EssentialsManageEmployeeController extends Controller
             ));
     }
 
+    public function updateEmployeeProfilePicture(Request $request, $id)
+    {
+        try {
+
+            $user = User::find($id);
+            if (!$user) {
+                throw new \Exception("User not found");
+            }
+
+            if ($request->hasFile('profile_picture')) {
+                // Handle file upload
+                $image = $request->file('profile_picture');
+                $profile = $image->store('/profile_images');
+                $user->update(['profile_image' => $profile]);
+                error_log($profile);
+            } elseif ($request->input('delete_image') == '1') {
+                $oldImage = $user->profile_image;
+                if ($oldImage) {
+                    Storage::delete($oldImage);
+                }
+                $user->update(['profile_image' => null]);
+                // Make sure to reset the delete_image flag in case of future updates
+                $request->request->remove('delete_image');
+            }
+
+            $output = [
+                'success' => 1,
+                'msg' => __('user.user_update_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
 
 
     public function createWorker($id)
@@ -920,7 +973,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-   
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -934,7 +987,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-            $request['DocumentTypes'] =$request->input('DocumentTypes');
+            $request['DocumentTypes'] = $request->input('DocumentTypes');
 
             $com_id = request()->input('company_id');
             error_log($com_id);
@@ -1106,7 +1159,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)
-        ->value('profession_id');
+            ->value('profession_id');
 
         if ($professionId !== null) {
             $profession = EssentialsProfession::find($professionId)->name;
@@ -1169,7 +1222,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $user = User::with(['contactAccess', 'assignedTo'])
+        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument'])
             ->findOrFail($id);
 
         $contacts = SalesProject::pluck('name', 'id');
@@ -1211,8 +1264,8 @@ class EssentialsManageEmployeeController extends Controller
                 ->where('user_id', $user->id)
                 ->get();
         }
-   
-      
+
+
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
         if ($user->status == 'active') {
@@ -1234,8 +1287,10 @@ class EssentialsManageEmployeeController extends Controller
 
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
+        $officalDocuments = $user->OfficialDocument;
         return view('essentials::employee_affairs.employee_affairs.edit')
             ->with(compact(
+                'officalDocuments',
                 'projects',
                 'contacts',
                 'spacializations',
@@ -1269,7 +1324,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-    
+     
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1297,8 +1352,8 @@ class EssentialsManageEmployeeController extends Controller
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
             }
-           
-         
+
+
 
             $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
 
@@ -1318,16 +1373,49 @@ class EssentialsManageEmployeeController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-           
+
             DB::beginTransaction();
-          
+
 
             $user = User::findOrFail($id);
 
 
             $user->update($user_data);
 
-
+            $deleted_documents = $request->deleted_documents ?? null;
+            $offical_documents_types = $request->offical_documents_type;
+            $offical_documents_choosen_files = $request->offical_documents_choosen_files;
+            $offical_documents_previous_files = $request->offical_documents_previous_files;
+            $files = [];
+            if ($request->hasFile('offical_documents_files')) {
+                $files = $request->file('offical_documents_files');
+            }
+            if ($deleted_documents) {
+                foreach ($deleted_documents as $deleted_document) {
+                    EssentialsOfficialDocument::where('id', $deleted_document)->delete();
+                }
+            }
+            foreach ($offical_documents_types  as  $index => $offical_documents_type) {
+                if (
+                    $offical_documents_type
+                ) {
+                    if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
+                        if (isset($files[$index])) {
+                            $filePath = $files[$index]->store('/officialDocuments');
+                            EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
+                        }
+                    } elseif ($offical_documents_choosen_files[$index]) {
+                        $document2 = new EssentialsOfficialDocument();
+                        $document2->type = $offical_documents_type;
+                        $document2->employee_id = $id;
+                        if (isset($files[$index])) {
+                            $filePath = $files[$index]->store('/officialDocuments');
+                            $document2->file_path = $filePath;
+                        }
+                        $document2->save();
+                    }
+                }
+            }
 
 
             $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_updated', 'model_instance' => $user, 'request' => $user_data]);
