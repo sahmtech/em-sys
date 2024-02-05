@@ -389,9 +389,9 @@ class RequestUtil extends Util
     public function saveAttachment(Request $request, $requestId)
     {
 
-        $request->validate([
-            'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
-        ]);
+        // $request->validate([
+        //     'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
+        // ]);
 
         $attachment = $request->file('attachment');
         $attachmentPath = $attachment->store('/requests_attachments');
@@ -685,9 +685,6 @@ class RequestUtil extends Util
 
         $firstStep = RequestProcess::where('id', $request->process[0]->id)->first();
         $firstProcedure = WkProcedure::where('request_type_id', $request->request_type_id)->first();
-        // $departmentRequest= RequestProcess::where('id',$request->process[0])->first();
-        // $type=$departmentRequest->request_type_id;
-        // $nextDep = WkProcedure::where('request_type_id', $type)->first();
         $workflow[] = [
             'id' => null,
             'process_id' =>  $firstStep->id,

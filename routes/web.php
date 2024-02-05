@@ -451,7 +451,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/returnRequest', [\App\Utils\RequestUtil::class, 'returnRequest'])->name('returnRequest');
     Route::get('/get-request-type/{selectedId}',[\App\Utils\RequestUtil::class, 'getTypeById'])->name('get-request-type');
     Route::post('/get-sub-reasons', [\App\Utils\RequestUtil::class, 'getSubReasons'])->name('getSubReasons');
-
+    Route::post('/save-attachment/{requestId}',  [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
     
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
