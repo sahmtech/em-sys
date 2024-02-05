@@ -446,7 +446,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/reports/get-stock-value', [ReportController::class, 'getStockValue']);
 
     Route::get('business-location/activate-deactivate/{location_id}', [BusinessLocationController::class, 'activateDeactivateLocation']);
+    Route::post('/changeRequestStatus', [\App\Utils\RequestUtil::class, 'changeRequestStatus'])->name('changeRequestStatus');
+    Route::get('/viewUserRequest/{requestId}',[\App\Utils\RequestUtil::class, 'viewRequest'])->name('viewUserRequest');
+    Route::post('/returnRequest', [\App\Utils\RequestUtil::class, 'returnRequest'])->name('returnRequest');
+    Route::get('/get-request-type/{selectedId}',[\App\Utils\RequestUtil::class, 'getTypeById'])->name('get-request-type');
+    Route::post('/get-sub-reasons', [\App\Utils\RequestUtil::class, 'getSubReasons'])->name('getSubReasons');
 
+    
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
         Route::get('settings', [LocationSettingsController::class, 'index'])->name('settings');

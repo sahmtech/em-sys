@@ -232,7 +232,7 @@
                     },
                 
                     {
-                        data: 'type',
+                        data: 'request_type_id',
                         render: function(data, type, row) {
                             if (data === 'exitRequest') {
                                 return '@lang('followup::lang.exitRequest')';

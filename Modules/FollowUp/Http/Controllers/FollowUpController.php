@@ -2,25 +2,19 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleBusiness;
-use App\AccessRoleProject;
+
 use App\Business;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Charts\CommonChart;
-use App\Contact;
 use App\User;
+use App\Request as UserRequest;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
-use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
 
 class FollowUpController extends Controller
@@ -49,12 +43,41 @@ class FollowUpController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $business = Business::where('id', $business_id)->first();
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+        ->where('name', 'LIKE', '%متابعة%')
+        ->pluck('id')->toArray();
 
-        $new_requests = FollowupWorkerRequest::whereDate('created_at', Carbon::now($business->time_zone)->toDateString())->count();
+        $new_requests = UserRequest::whereDate('created_at', Carbon::now($business->time_zone)->toDateString())->count();
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
 
-        $on_going_requests = FollowupWorkerRequest::where('status', 'under_process')->count();
-        $finished_requests = FollowupWorkerRequest::where('status', 'rejected')->orWhere('status', 'approved')->count();
-        $total_requests = FollowupWorkerRequest::count();
+
+
+        $on_going_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+        ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
+            $query->whereIn('wk_procedures.department_id', $departmentIds)
+                ->orWhereIn('request_processes.superior_department_id', $departmentIds);
+        })->where('requests.status', 'under_process')->count();
+
+        $finished_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+        ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
+            $query->whereIn('wk_procedures.department_id', $departmentIds)
+                ->orWhereIn('request_processes.superior_department_id', $departmentIds);
+        })->where(function ($query) {
+            $query->where('requests.status', 'rejected')
+                ->orWhere('requests.status', 'approved');
+        })->count();
+        
+        $total_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+        ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
+            $query->whereIn('wk_procedures.department_id', $departmentIds)
+                ->orWhereIn('request_processes.superior_department_id', $departmentIds);
+        })->count();
+
 
 
         return view('followup::index', compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests'));

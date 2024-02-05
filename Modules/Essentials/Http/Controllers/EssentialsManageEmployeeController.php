@@ -3,17 +3,13 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\AccessRole;
-use App\AccessRoleBusiness;
 use App\AccessRoleCompany;
-use App\AccessRoleProject;
-use App\Business;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
 use App\BusinessLocation;
 use App\User;
-use App\ContactLocation;
 use App\Category;
 use App\Company;
 use App\Transaction;
@@ -21,13 +17,11 @@ use App\Contact;
 use Modules\Sales\Entities\salesContractItem;
 use DB;
 use Spatie\Permission\Models\Permission;
-use Modules\Essentials\Http\RequestsempRequest;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -40,10 +34,11 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\Sales\Entities\SalesProject;
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
+use App\Request as UserRequest;
+use App\RequestProcess;
+use Modules\CEOManagment\Entities\RequestsType;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -234,14 +229,6 @@ class EssentialsManageEmployeeController extends Controller
                     return $professionName;
                 })
 
-
-
-
-
-
-
-
-
                 ->addColumn(
                     'action',
                     function ($row)  use ($is_admin, $can_show_employee_options) {
@@ -259,9 +246,6 @@ class EssentialsManageEmployeeController extends Controller
                              
                                 </a>
                                 </li>';
-
-
-
 
 
                             $html .= '<li>
@@ -389,15 +373,19 @@ class EssentialsManageEmployeeController extends Controller
             ->whereDate('contract_end_date', '<=', $endDateThreshold)
             ->count();
 
-        $late_vacation = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with(['user'])
-            ->where('type', 'leavesAndDepartures')
-            ->where('type', 'returnRequest')
-            ->whereHas('user', function ($query) {
-
-                $query->where('status', 'vecation');
-            })
-            ->where('end_date', '<', now())
-            ->count();
+       
+        $late_vacation=0;
+        $type=RequestsType::where('type','leavesAndDepartures')->where('for','employee')->first();
+        if($type){
+            $late_vacation = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->where('request_type_id',$type->id)
+                ->whereHas('related_to_user', function ($query) {
+                    $query->where('status', 'vecation');
+                })
+                ->where('end_date', '<', now())
+                ->select('end_date')->count();
+        }
+       
 
         $nullCount = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
             ->where(function ($query) {
@@ -421,68 +409,67 @@ class EssentialsManageEmployeeController extends Controller
             })
             ->count();
 
-        $departmentIds = EssentialsDepartment::where('business_id',  $business_id)
-            ->where('name', 'LIKE', '%موظف%')
-            ->pluck('id')->toArray();
+  
 
         $requestsProcess = null;
 
-        if (!empty($departmentIds)) {
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+       
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+        ->where('name', 'LIKE', '%موظف%')
+        ->pluck('id')->toArray();
 
-            $requestsProcess = FollowupWorkerRequest::select([
-                'followup_worker_requests.request_no',
-                'followup_worker_requests_process.id as process_id',
-                'followup_worker_requests.id',
-                'followup_worker_requests.type as type',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'followup_worker_requests.created_at',
-                'followup_worker_requests_process.status',
-                'followup_worker_requests_process.status_note as note',
-                'followup_worker_requests.reason',
-                'essentials_wk_procedures.department_id as department_id',
-                'users.id_proof_number',
-                'essentials_wk_procedures.can_return',
-                'users.assigned_to'
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
+            ->groupBy('request_id');
+       
+    
+        $requestsProcess = UserRequest::select([
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
-            ])
-                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('department_id', $departmentIds)
-                ->where('followup_worker_requests_process.sub_status', null)
-                ->whereIn('followup_worker_requests.worker_id', $userIds);
-        } else {
-            $output = [
-                'success' => false,
-                'msg' => __('essentials::lang.please_add_the_employee_affairs_department'),
-            ];
-            return redirect()->route('home')->with('status', $output);
-        }
+            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+
+            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+
+        ])
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('requests.id', '=', 'latest_process.request_id');
+            })
+            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+            ->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('process.superior_department_id', $departmentIds);
+            })
+
+
+            ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
+            ->where('users.status', '!=', 'inactive');
+
 
         if (request()->ajax()) {
 
-
             return DataTables::of($requestsProcess ?? [])
-
                 ->editColumn('created_at', function ($row) {
-
                     return Carbon::parse($row->created_at);
                 })
-                ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
-                    $item = $ContactsLocation[$row->assigned_to] ?? '';
-
-                    return $item;
+                ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                    return $allRequestTypes[$row->request_type_id];
                 })
-                ->editColumn('status', function ($row) {
-                    return trans('followup::lang.' . $row->status) ?? '';
+                ->editColumn('status', function ($row)  {
+                    $status = trans('request.' . $row->status);
+                  
+                    return $status;
                 })
+               
 
-                ->rawColumns(['status'])
+                ->rawColumns(['status', 'request_type_id'])
 
 
                 ->make(true);
         }
-
         return view('essentials::employee_affairs.dashboard')
             ->with(compact(
                 'probation_period',
@@ -731,67 +718,67 @@ class EssentialsManageEmployeeController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-
-
-        $late_vacation = FollowupWorkerRequest::whereIn('worker_id', $userIds)
-            ->with(['user'])
-            ->where('type', 'leavesAndDepartures')
-            ->where('type', 'returnRequest')
-            ->whereHas('user', function ($query) {
-
-                $query->where('status', 'vecation');
-            })
-            ->where('end_date', '<', now());
-
-
+        $late_vacation=[];
+        $type = RequestsType::where('type','leavesAndDepartures')->where('for','employee')->first();
+         if ($type)
+        {
+            $late_vacation = UserRequest::with('related_to_user')->whereIn('related_to', $userIds)
+                ->where('request_type_id',$type->id)
+                ->whereHas('related_to_user', function ($query) {
+                    $query->where('status', 'vecation');
+                })
+                ->where('end_date', '<', now());
+              
+        }
         if (request()->ajax()) {
 
             return DataTables::of($late_vacation)
-                ->addColumn(
-                    'worker_name',
-                    function ($row) {
-                        return $row->user->first_name . ' ' . $row->user->last_name ?? '';
-                    }
-                )
-
-                ->addColumn(
-                    'project',
-                    function ($row) {
-                        return $row->user->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'customer_name',
-                    function ($row) {
-                        return $row->user->assignedTo?->contact->supplier_business_name ?? null;
-                    }
-                )
-
-                ->addColumn(
-                    'customer_name',
-                    function ($row) {
-                        return $row->user->status ?? null;
-                    }
-                )
-
-                ->addColumn(
-                    'action',
-                    ''
-                    // function ($row) {
-                    //     $html = '';
-                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
-                    //     return $html;
-                    // }
-                )
-
-
-                ->removeColumn('id')
-                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-                ->make(true);
-        }
+                           ->addColumn(
+                               'worker_name',
+                               function ($row) {
+                                   return $row->user->first_name . ' ' . $row->user->last_name ?? '';
+                               }
+                           )
+           
+                           ->addColumn(
+                               'project',
+                               function ($row) {
+                                   return $row->user->assignedTo?->contact?->supplier_business_name ?? null;
+                               }
+                           )
+                           ->addColumn(
+                               'customer_name',
+                               function ($row) {
+                                   return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                               }
+                           )
+           
+                           ->addColumn(
+                               'customer_name',
+                               function ($row) {
+                                   return $row->user->status ?? null;
+                               }
+                           )
+           
+                           ->addColumn(
+                               'action',
+                               ''
+                               // function ($row) {
+                               //     $html = '';
+                               //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                               //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                               //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+           
+                               //     return $html;
+                               // }
+                           )
+           
+           
+                           ->removeColumn('id')
+                           ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                           ->make(true);
+                   }
+       
 
         return view('essentials::employee_affairs.statistics.late_vacaction');
     }

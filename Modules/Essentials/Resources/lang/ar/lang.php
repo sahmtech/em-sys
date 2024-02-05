@@ -1699,6 +1699,7 @@ return [
 
   'add_file' => 'إضافة وثيقة',
   'qualification_file' => 'شهادة التأهيل العلمي',
-  'created_department_name'=>'الإدارة التي أنشأت الطلب'
+  'created_department_name'=>'الإدارة التي أنشأت الطلب',
+  'workInjuriesDate'=>'تاريخ الإصابة'
 
 ];
