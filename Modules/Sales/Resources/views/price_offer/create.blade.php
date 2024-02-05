@@ -41,7 +41,7 @@
                                 [
                                     'class' => 'form-control input-sm',
                                     'id' => 'select_location_id',
-                                    'style' => 'height:36px;',
+                                    'style' => 'height:40px;',
                                     'required',
                                     'autofocus',
                                 ],
@@ -265,7 +265,7 @@
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-primary btn-flat pos_add_quick_product"
                                         data-href="{{ action([\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'clientAdd']) }}"
-                                        data-container=".quick_add_client_modal">
+                                        data-container=".quick_add_client_modal" data-modal-id="#add_client_modal">
                                         <i class="fa fa-plus-circle text-white fa-lg"></i>
                                         @lang('sales::lang.add_element')
                                     </button>
@@ -341,7 +341,8 @@
                     <input type="hidden" id="quantityArrDisplay" name="quantityArrDisplay" value="">
                     <input type="hidden" name="fees_input" id="fees_input_hidden" value="0">
                     <input type="hidden" id="total_amount_with_fees2" name="total_amount_with_fees" value="">
-                    <input type="hidden" id="total_monthly_for_all_workers" name="total_monthly_for_all_workers2" value="">
+                    <input type="hidden" id="total_monthly_for_all_workers" name="total_monthly_for_all_workers2"
+                        value="">
                     <input type="hidden" id="total_contract_cost2" name="total_contract_cost" value="">
                 @endcomponent
                 @component('components.widget', ['class' => 'box-solid', 'id' => 'myComponent'])
@@ -369,8 +370,8 @@
                                     <td>
                                         <div class="form-group">
                                             <label for="fees_input">@lang('sales::lang.emdadat_fees')</label>
-                                            <input type="number" id="fees_input" name="fees_input" class="form-control custom-width-input"
-                                                placeholder="Enter fees">
+                                            <input type="number" id="fees_input" name="fees_input"
+                                                class="form-control custom-width-input" placeholder="Enter fees">
                                         </div>
 
                                         <div class="larger-text">
@@ -402,7 +403,7 @@
                         </div>
                     </div>
                 @endcomponent
-              
+
 
 
             </div>
@@ -633,19 +634,19 @@
             updateTotalSum();
             updateTotalFees();
             $('#add_client').on('shown.bs.modal', function(e) {
-            $('#professionSearch').select2({
-                dropdownParent: $(
-                    '#add_client'),
-                width: '100%',
-            });
-            $('#specializationSearch').select2({
-                dropdownParent: $(
-                    '#add_client'),
-                width: '100%',
+                $('#professionSearch').select2({
+                    dropdownParent: $(
+                        '#add_client'),
+                    width: '100%',
+                });
+                $('#specializationSearch').select2({
+                    dropdownParent: $(
+                        '#add_client'),
+                    width: '100%',
+                });
+
             });
 
-        });
-        
             $('#fees_section').on('input', '#contract_duration_input', function() {
                 updateTotalContractCost();
             });
@@ -887,12 +888,12 @@
             });
 
             function updateTotalFees() {
-                
+
                 var totalSum = parseFloat($('#total_sum_value').text()) || 0;
                 var fees = parseFloat($('#fees_input').val()) || 0;
-console.log(totalSum);
-console.log(fees);
-console.log("fees:", fees);
+                console.log(totalSum);
+                console.log(fees);
+                console.log("fees:", fees);
                 totalAmountWithFees = totalSum + fees;
 
                 console.log("Grand Total:", totalAmountWithFees);
@@ -932,8 +933,5 @@ console.log("fees:", fees);
 
 
         });
-
-
-        
     </script>
 @endsection

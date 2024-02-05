@@ -94,7 +94,7 @@
             </span>
             {!! Form::text('Residency_no', null, [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('essentials::lang.Residency_no'),
                 'style' => 'width: 100%;',
                 'id' => 'Residency_no',
@@ -112,7 +112,7 @@
             </span>
             {!! Form::text('border_no', null, [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('essentials::lang.border_number'),
                 'style' => 'width: 100%;',
                 'id' => 'border_no',
@@ -148,7 +148,7 @@
             </span>
             {!! Form::select('business', $business, null, [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'placeholder' => __('essentials::lang.business'),
                 'id' => 'business',
             ]) !!}

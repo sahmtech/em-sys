@@ -62,7 +62,7 @@
                                     {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
                                     {!! Form::select('employee', $users, null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.select_employee'),
                                         'required',
                                         'id' => 'employeeSelect',
@@ -72,7 +72,7 @@
                                     {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
                                      {!! Form::select('insurance_class', $insurance_classes, null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px',
+                                        'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.insurance_class'),
                                         'required',
                                         'id' => 'classSelect',

@@ -26,10 +26,10 @@
                                 $img_src = '/uploads/' . $user->profile_image;
                             }
                         @endphp
-
-                        <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
-                            alt="User profile picture">
-
+                        <a id="profileImageLink" href="#">
+                            <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
+                                alt="User profile picture" id="profileImage">
+                        </a>
                         <h3 class="profile-username text-center">
                             {{ $user->user_full_name }}
                         </h3>
@@ -246,7 +246,7 @@
                                         </p>
                                         <p><strong>@lang('lang_v1.mobile_number'):</strong> {{ $user->contact_number ?? '' }}</p>
                                     </div>
-                                   
+
 
 
                                     <div class="clearfix"></div>
@@ -269,8 +269,8 @@
 
                                     <div class="col-md-4">
                                         <p><strong>@lang('lang_v1.id_proof_number'):</strong>
-                                            {{ $user->id_proof_number ?? $user->border_no ?? '' }}</p>
-                                 
+                                            {{ $user->id_proof_number ?? ($user->border_no ?? '') }}</p>
+
                                     </div>
 
                                     <div class="clearfix"></div>
@@ -322,9 +322,9 @@
 
                                     <div class="clearfix"></div>
                                     <hr>
-                                    
 
-                                   
+
+
 
                                     <div class="col-md-12">
                                         <h4>@lang('lang_v1.bank_details'):</h4>
@@ -345,7 +345,7 @@
                                     <div class="col-md-4">
 
                                         <p><strong>@lang('lang_v1.branch'):</strong> {{ $bank_details['branch'] ?? '' }}</p>
-                                       
+
                                     </div>
 
                                     @if (!empty($view_partials))
@@ -359,6 +359,66 @@
 
 
                         </div>
+
+
+                        <div class="modal fade" id="imagePopupModal" tabindex="-1" role="dialog"
+                            aria-labelledby="gridSystemModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+
+                                    {!! Form::open([
+                                        'url' => action(
+                                            [
+                                                \Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class,
+                                                'updateEmployeeProfilePicture',
+                                            ],
+                                            [$user->id],
+                                        ),
+                                        'enctype' => 'multipart/form-data',
+                                        'method' => 'PUT',
+                                        'id' => 'update_profile_picture_form',
+                                    ]) !!}
+                                    {!! Form::hidden('delete_image', '0', ['id' => 'delete_image_input']) !!}
+
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">@lang('essentials::lang.edit_profile_picture')</h4>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="form-group col-md-12">
+                                                <img src="" id="popupImage" alt="@lang('essentials::lang.profile_picture')"
+                                                    style="max-width: 100%; height: auto;" />
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="button"
+                                                    class="btn btn-danger deleteImage">@lang('messages.delete')</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary saveImage"
+                                            disabled>@lang('messages.save')</button>
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">@lang('messages.close')</button>
+                                    </div>
+                                    {!! Form::close() !!}
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog"
                             aria-labelledby="gridSystemModalLabel">
@@ -496,6 +556,66 @@
 
 
     <script type="text/javascript">
+        $(document).ready(function() {
+            $('#profileImageLink').on('click', function(e) {
+                e.preventDefault(); // Prevent default anchor action
+                openImagePopup();
+            });
+
+            let imageChanged = false;
+
+            $('#profileImageLink').on('click', function(e) {
+                e.preventDefault();
+                openImagePopup();
+            });
+
+            $('.deleteImage').on('click', function() {
+                $('#popupImage').attr('src', ''); // Remove image source
+                $('input[type="file"]').val(''); // Clear file input
+                $('#delete_image_input').val('1'); // Indicate that the image should be deleted
+                imageChanged = true;
+                enableSaveButton();
+            });
+
+
+            $('input[type="file"]').on('change', function() {
+                previewImage(event);
+                imageChanged = true;
+                enableSaveButton();
+            });
+
+            function enableSaveButton() {
+                $('.saveImage').prop('disabled', !imageChanged);
+            }
+
+            $('#update_profile_picture_form').submit(function(e) {
+                if (!imageChanged) {
+                    e.preventDefault(); // Prevent form submission if no changes made
+                }
+            });
+
+            function openImagePopup() {
+                console.log('before');
+                $('#popupImage').attr('src', $('#profileImage').attr('src'));
+                $('#imagePopupModal').modal('show');
+                console.log($('#profileImage').attr('src'));
+                console.log('after');
+            }
+
+            function previewImage(event) {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var output = document.getElementById('popupImage');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
+        });
+
+
+
+
         $(document).ready(function() {
             $('#user_id').change(function() {
                 if ($(this).val()) {

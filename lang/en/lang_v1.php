@@ -1536,16 +1536,17 @@ return [
     'dropdown' => 'Dropdown',
     'enter_dropdown_values' => 'Enter dropdown options, one option per line',
 
-    'Invalid_nationality'=>'nationality not found for row number ',
-    'Invalid_profession'=>'profession not found for row number ',
-    'Invalid_specialization'=>'specialization not found for row number ',
-    'Invalid_department'=>'department not found for row number ',
-    'Invalid_location'=>'location not found for row number ',
-    'eqama_end_date'=>'eqama end date',
-    'pending'=>'pending',
-'approved'=>'approved',
-'cancelled'=>'cancelled',
-'validate_mobile'=>'Mobile number should start with 05 and have exactly 10 digits',
-
+    'Invalid_nationality' => 'nationality not found for row number ',
+    'Invalid_profession' => 'profession not found for row number ',
+    'Invalid_specialization' => 'specialization not found for row number ',
+    'Invalid_department' => 'department not found for row number ',
+    'Invalid_location' => 'location not found for row number ',
+    'eqama_end_date' => 'eqama end date',
+    'pending' => 'pending',
+    'approved' => 'approved',
+    'cancelled' => 'cancelled',
+    'validate_mobile' => 'Mobile number should start with 05 and have exactly 10 digits',
+    'pills' => 'Pills',
+    'create_pill' => 'create pill',
 
 ];

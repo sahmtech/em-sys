@@ -106,7 +106,7 @@
                                                 {!! Form::select('offer_price', $offer_prices, null, [
                                                     'class' => 'form-control',
                                                     'id' => 'offer_price',
-                                                    'style'=>'height:36px;',
+                                                    'style'=>'height:40px;',
                                                     'placeholder' => __('sales::lang.select_offer_price'),
                                                  
                                                 ]) !!}
@@ -133,7 +133,7 @@
                                                 {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
                                                 {!! Form::date('start_date', !empty($contract->start_date) ? $contract->start_date : null, [
                                                     'class' => 'form-control',
-                                                    'style' => 'height:36px',
+                                                    'style' => 'height:40px',
                                                     'id' => 'start_date',
                                                     'placeholder' => __('essentials::lang.start_date'),
                                                 ]) !!}
@@ -143,7 +143,7 @@
                                                 {!! Form::label('end_date', __('essentials::lang.end_date') . ':') !!}
                                                 {!! Form::date('end_date', !empty($contract->end_date) ? $contract->end_date : null, [
                                                     'class' => 'form-control',
-                                                    'style' => 'height:36px',
+                                                    'style' => 'height:40px',
                                                     'id' => 'end_date',
                                                     'placeholder' => __('essentials::lang.end_date'),
                                                 ]) !!}
@@ -159,7 +159,7 @@
                                                                   null,
                                                                 [
                                                                     'class' => 'form-control width-40 pull-left',
-                                                                    'style' => 'height:36px',
+                                                                    'style' => 'height:40px',
                                                                     'id' => 'contract_duration',
                                                                     'placeholder' => __('essentials::lang.contract_duration'),
                                                                 ],
@@ -168,7 +168,7 @@
                                                                 'contract_duration_unit',
                                                                 [ 'months' => __('essentials::lang.months')],
                                                                 !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
-                                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:36px;', 'id' => 'contract_duration_unit'],
+                                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:40px;', 'id' => 'contract_duration_unit'],
                                                             ) !!}
                                                         </div>
                                                     </div>
@@ -251,7 +251,7 @@
                                                             <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
                                                             {!! Form::select('contract-select', $contracts->pluck('contract_number', 'id'), null, [
                                                                 'class' => 'form-control',
-                                                                'style' => 'height:36px',
+                                                                'style' => 'height:40px',
                                                                 'placeholder' => __('lang_v1.all'),
                                                                
                                                                 'id' => 'contract-select',

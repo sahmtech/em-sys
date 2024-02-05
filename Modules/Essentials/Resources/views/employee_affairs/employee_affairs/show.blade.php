@@ -10,8 +10,8 @@
                 <h3>@lang('essentials::lang.view_employee')</h3>
             </div>
             <!-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
-                                {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
-                            </div> -->
+                                                                                                                                            {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
+                                                                                                                                        </div> -->
         </div>
 
         <div class="row">
@@ -26,10 +26,10 @@
                                 $img_src = '/uploads/' . $user->profile_image;
                             }
                         @endphp
-
-                        <img class="profile-user-img img-responsive img-circle" src="{{ $img_src}}"
-                            alt="@lang('essentials::lang.profile_picture')">
-
+                        <a id="profileImageLink" href="#">
+                            <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
+                                alt="@lang('essentials::lang.profile_picture')" id="profileImage">
+                        </a>
                         <h3 class="profile-username text-center">
                             {{ $user->full_name }}
                         </h3>
@@ -39,7 +39,7 @@
                         </p>
 
                         <ul class="list-group list-group-unbordered">
-                         
+
                             <li class="list-group-item">
                                 <b>{{ __('lang_v1.status_for_user') }}</b>
                                 @if ($user->status == 'active')
@@ -112,9 +112,14 @@
                                         <div class="checkbox">
                                             <label>
 
-                                                @if ($document->file_path || $document->attachment)
+                                                @if ($document->file_path)
                                                     <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
                                                         data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                    </a>
+                                                @elseif($document->attachment)
+                                                    <a href="/uploads/{{ $document->attachment }}"
+                                                        data-file-url="{{ $document->attachment }}">
                                                         {{ trans('followup::lang.' . $document->type) }}
                                                     </a>
                                                 @else
@@ -199,17 +204,17 @@
 
                                     </div>
                                     {{-- <div class="col-md-4">
-			<p><strong>@lang( 'lang_v1.fb_link' ):</strong> {{$user->fb_link ?? ''}}</p>
-			<p><strong>@lang( 'lang_v1.twitter_link' ):</strong> {{$user->twitter_link ?? ''}}</p>
-			<p><strong>@lang( 'lang_v1.social_media', ['number' => 1] ):</strong> {{$user->social_media_1 ?? ''}}</p>
-			<p><strong>@lang( 'lang_v1.social_media', ['number' => 2] ):</strong> {{$user->social_media_2 ?? ''}}</p>
-		</div> --}}
+                                <p><strong>@lang( 'lang_v1.fb_link' ):</strong> {{$user->fb_link ?? ''}}</p>
+                                <p><strong>@lang( 'lang_v1.twitter_link' ):</strong> {{$user->twitter_link ?? ''}}</p>
+                                <p><strong>@lang( 'lang_v1.social_media', ['number' => 1] ):</strong> {{$user->social_media_1 ?? ''}}</p>
+                                <p><strong>@lang( 'lang_v1.social_media', ['number' => 2] ):</strong> {{$user->social_media_2 ?? ''}}</p>
+                            </div> --}}
                                     {{-- <div class="col-md-4">
-			<p><strong>{{ $custom_labels['user']['custom_field_1'] ?? __('lang_v1.user_custom_field1' )}}:</strong> {{$user->custom_field_1 ?? ''}}</p>
-			<p><strong>{{ $custom_labels['user']['custom_field_2'] ?? __('lang_v1.user_custom_field2' )}}:</strong> {{$user->custom_field_2 ?? ''}}</p>
-			<p><strong>{{ $custom_labels['user']['custom_field_3'] ?? __('lang_v1.user_custom_field3' )}}:</strong> {{$user->custom_field_3 ?? ''}}</p>
-			<p><strong>{{ $custom_labels['user']['custom_field_4'] ?? __('lang_v1.user_custom_field4' )}}:</strong> {{$user->custom_field_4 ?? ''}}</p>
-		</div> --}}
+                                <p><strong>{{ $custom_labels['user']['custom_field_1'] ?? __('lang_v1.user_custom_field1' )}}:</strong> {{$user->custom_field_1 ?? ''}}</p>
+                                <p><strong>{{ $custom_labels['user']['custom_field_2'] ?? __('lang_v1.user_custom_field2' )}}:</strong> {{$user->custom_field_2 ?? ''}}</p>
+                                <p><strong>{{ $custom_labels['user']['custom_field_3'] ?? __('lang_v1.user_custom_field3' )}}:</strong> {{$user->custom_field_3 ?? ''}}</p>
+                                <p><strong>{{ $custom_labels['user']['custom_field_4'] ?? __('lang_v1.user_custom_field4' )}}:</strong> {{$user->custom_field_4 ?? ''}}</p>
+                            </div> --}}
 
 
                                     <div class="clearfix"></div>
@@ -329,6 +334,64 @@
 
                         </div>
 
+                        <div class="modal fade" id="imagePopupModal" tabindex="-1" role="dialog"
+                            aria-labelledby="gridSystemModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+
+                                    {!! Form::open([
+                                        'url' => action(
+                                            [
+                                                \Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class,
+                                                'updateEmployeeProfilePicture',
+                                            ],
+                                            [$user->id],
+                                        ),
+                                        'enctype' => 'multipart/form-data',
+                                        'method' => 'PUT',
+                                        'id' => 'update_profile_picture_form',
+                                    ]) !!}
+                                    {!! Form::hidden('delete_image', '0', ['id' => 'delete_image_input']) !!}
+
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                                aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">@lang('essentials::lang.edit_profile_picture')</h4>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="form-group col-md-12">
+                                                <img src="" id="popupImage" alt="@lang('essentials::lang.profile_picture')"
+                                                    style="max-width: 100%; height: auto;" />
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="button"
+                                                    class="btn btn-danger deleteImage">@lang('messages.delete')</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary saveImage"
+                                            disabled>@lang('messages.save')</button>
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">@lang('messages.close')</button>
+                                    </div>
+                                    {!! Form::close() !!}
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog"
                             aria-labelledby="gridSystemModalLabel">
                             <div class="modal-dialog" role="document">
@@ -336,8 +399,8 @@
 
                                     {!! Form::open(['route' => 'storeOfficialDoc', 'enctype' => 'multipart/form-data']) !!}
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                                aria-hidden="true">&times;</span></button>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                         <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
                                     </div>
 
@@ -466,6 +529,67 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#profileImageLink').on('click', function(e) {
+                e.preventDefault(); // Prevent default anchor action
+                openImagePopup();
+            });
+
+            let imageChanged = false;
+
+            $('#profileImageLink').on('click', function(e) {
+                e.preventDefault();
+                openImagePopup();
+            });
+
+            $('.deleteImage').on('click', function() {
+                $('#popupImage').attr('src', ''); // Remove image source
+                $('input[type="file"]').val(''); // Clear file input
+                $('#delete_image_input').val('1'); // Indicate that the image should be deleted
+                imageChanged = true;
+                enableSaveButton();
+            });
+
+
+            $('input[type="file"]').on('change', function() {
+                previewImage(event);
+                imageChanged = true;
+                enableSaveButton();
+            });
+
+            function enableSaveButton() {
+                $('.saveImage').prop('disabled', !imageChanged);
+            }
+
+            $('#update_profile_picture_form').submit(function(e) {
+                if (!imageChanged) {
+                    e.preventDefault(); // Prevent form submission if no changes made
+                }
+            });
+
+            function openImagePopup() {
+                console.log('before');
+                $('#popupImage').attr('src', $('#profileImage').attr('src'));
+                $('#imagePopupModal').modal('show');
+                console.log($('#profileImage').attr('src'));
+                console.log('after');
+            }
+
+            function previewImage(event) {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var output = document.getElementById('popupImage');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
+        });
+
+
+
+
+
+        $(document).ready(function() {
             $('#user_id').change(function() {
                 if ($(this).val()) {
                     window.location = "{{ url('/users') }}/" + $(this).val();
@@ -473,6 +597,7 @@
             });
         });
     </script>
+
 
 
 
