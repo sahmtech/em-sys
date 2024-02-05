@@ -24,6 +24,55 @@ return [
     'add_deputy'=>'إضافة نائب',
     'delete_procedure' => 'حذف إجراءات سير العمل',
     'edit_procedure' => 'تعديل إجراءات سير العمل',
+    'requests_types'=>'أنواع الطلبات',
+    'view_requests_types'=>'استعراض أنواع الطلبات',
+    'add_requests_type'=>'إضافة نوع طلب',
+    'delete_requests_type'=>'حذف نوع طلب',
+    'edit_requests_type'=>'تعديل نوع طلب',
+    'request_type'=>'نوع الطلب',
+    'request_prefix'=>'رمز الطلب',
+    'action'=>'العمليات',
+    'example'=>'مثال',
+    'leave'=>'إجازة',
+    'employees_procedures'=>'إجراءات الموظفين',
+    'workers_procedures'=>'إجراءات العمال',
+    'procedures'=>'إجراءات سير العمل',
+    'employees'=>'الموظفين',
+    'workers'=>'العمال',
+    'request_for'=>'نوع صاحب الطلب',
+    'select_type'=>'اختر نوع',
+    'worker'=>'عامل',
+    'employee'=>'موظف',
+    'both'=>'كلاهما',
+    'exitRequest' => 'طلب خروح نهائي',
+    'returnRequest' => 'طلب خروج وعودة',
+    'escapeRequest' => 'تبليغ هروب',
+    'advanceSalary' => 'السلف',
+    'leavesAndDepartures' => 'الإجازات والمغادرات',
+    'atmCard' => 'بطاقة صراف آلي',
+    'residenceRenewal' => 'طلب تجديد إقامة',
+    'residenceCard' => 'بطاقة إقامة',
+    'workerTransfer' => 'طلبات نقل العمال',
+    'workInjuriesRequest' => ' طلبات إصابة العمل',
+    'residenceEditRequest' => ' طلبات تعديل بيانات الإقامة',
+    'baladyCardRequest' => ' طلبات كرت بلدية',
+    'insuranceUpgradeRequest' => ' طلبات ترقية التأمين',
+    'mofaRequest' => ' طلبات تصديق وزارة الخارجية',
+    'chamberRequest' => ' طلبات تصديق غرفة تجارية',
+    'cancleContractRequest' => 'طلب إنهاء العلاقة التعاقدية',
+    'WarningRequest' => 'طلب إنذار',
+    'assetRequest' => 'طلب عُهدة',
+    'passportRenewal' => 'طلب تجديد جواز سفر',
+    'cant_delete,delete_the_procedure_first'=>'لا يمكن حذف هذا النوع، قم بحذف الإجراء المرتبط به أولاً',
+    'this_type_is_already_exists'=>'هذا النوع  من الطلبات موجود مسبقا',
+    
+
+
+
+
+
+
+
 
 
 ];

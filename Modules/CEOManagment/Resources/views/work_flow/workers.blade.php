@@ -30,6 +30,7 @@
 
     <!-- Main content -->
     <section class="content">
+        @include('ceomanagment::layouts.nav_wk_procedures')
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
                 <div class="box-tools">
@@ -63,7 +64,7 @@
             aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog custom-modal-dialog style ">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'storeProcedure']) !!}
+                    {!! Form::open(['route' => 'storeWorkerProcedure']) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
@@ -78,17 +79,18 @@
                                     {!! Form::label('type', __('essentials::lang.procedure_type') . ':*') !!}
                                     {!! Form::select(
                                         'type',
-                                        array_combine($missingTypes, array_map(fn($type) => trans("followup::lang.$type"), $missingTypes)),
+                                        collect($missingTypes)->mapWithKeys(fn($type, $id) => [$id => trans("ceomanagment::lang.$type")])->toArray(),
                                         null,
                                         [
                                             'class' => 'form-control',
                                             'id' => 'type_select',
                                             'placeholder' => __('essentials::lang.procedure_type'),
                                             'required',
-                                            'style' => 'height:35px',
+                                            'style' => 'width:100%;',
                                         ],
                                     ) !!}
                                 </div>
+                                
                                 <div class="clearfix"></div>
 
 
@@ -378,50 +380,54 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('procedures') }}",
+                    url: "{{ route('workersProcedures') }}",
 
                 },
                 columns: [
 
                     {
-                        data: 'type',
+                        data: 'request_type_id',
                         render: function(data, type, row) {
                             if (data === 'exitRequest') {
-                                return '@lang('followup::lang.exitRequest')';
+                                return '@lang('request.exitRequest')';
 
                             } else if (data === 'returnRequest') {
-                                return '@lang('followup::lang.returnRequest')';
+                                return '@lang('request.returnRequest')';
                             } else if (data === 'escapeRequest') {
-                                return '@lang('followup::lang.escapeRequest')';
+                                return '@lang('request.escapeRequest')';
                             } else if (data === 'advanceSalary') {
-                                return '@lang('followup::lang.advanceSalary')';
+                                return '@lang('request.advanceSalary')';
                             } else if (data === 'leavesAndDepartures') {
-                                return '@lang('followup::lang.leavesAndDepartures')';
+                                return '@lang('request.leavesAndDepartures')';
                             } else if (data === 'atmCard') {
-                                return '@lang('followup::lang.atmCard')';
+                                return '@lang('request.atmCard')';
                             } else if (data === 'residenceRenewal') {
-                                return '@lang('followup::lang.residenceRenewal')';
+                                return '@lang('request.residenceRenewal')';
                             } else if (data === 'workerTransfer') {
-                                return '@lang('followup::lang.workerTransfer')';
+                                return '@lang('request.workerTransfer')';
                             } else if (data === 'residenceCard') {
-                                return '@lang('followup::lang.residenceCard')';
+                                return '@lang('request.residenceCard')';
                             } else if (data === 'workInjuriesRequest') {
-                                return '@lang('followup::lang.workInjuriesRequest')';
+                                return '@lang('request.workInjuriesRequest')';
                             } else if (data === 'residenceEditRequest') {
-                                return '@lang('followup::lang.residenceEditRequest')';
+                                return '@lang('request.residenceEditRequest')';
                             } else if (data === 'baladyCardRequest') {
-                                return '@lang('followup::lang.baladyCardRequest')';
+                                return '@lang('request.baladyCardRequest')';
                             } else if (data === 'mofaRequest') {
-                                return '@lang('followup::lang.mofaRequest')';
+                                return '@lang('request.mofaRequest')';
                             } else if (data === 'insuranceUpgradeRequest') {
-                                return '@lang('followup::lang.insuranceUpgradeRequest')';
+                                return '@lang('request.insuranceUpgradeRequest')';
                             } else if (data === 'chamberRequest') {
-                                return '@lang('followup::lang.chamberRequest')';
+                                return '@lang('request.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
-                                return '@lang('followup::lang.cancleContractRequest')';
+                                return '@lang('request.cancleContractRequest')';
                             } else if (data === 'WarningRequest') {
-                                return '@lang('followup::lang.WarningRequest')';
-                            } else {
+                                return '@lang('request.WarningRequest')';
+                            }   else if (data === 'assetRequest') {
+                                return '@lang('request.assetRequest')';
+                            }else if (data === 'passportRenewal') {
+                                return '@lang('request.passportRenewal')';
+                            }else {
                                 return data;
                             }
                         }

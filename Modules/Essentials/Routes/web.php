@@ -313,8 +313,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/editAttendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'edit'])->name('editAttendanceStatus');
 
 
-
-
         Route::get('/contract_types', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'index'])->name('contract_types');
         Route::get('/createContractType', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'create'])->name('createContractType');
         Route::post('/storeContractType', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'store'])->name('storeContractType');
@@ -400,19 +398,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateAllowance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'update'])->name('updateAllowance');
 
 
-
-
-
-
         Route::get('/features', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'index'])->name('features');
         Route::post('/storeFeatures', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'store'])->name('storeFeatures');
         Route::delete('/features/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'destroy'])->name('feature.destroy');
         Route::get('/features.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'show'])->name('feature.view');
         Route::put('/updateFeatures/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'update'])->name('updateFeatures');
         Route::get('/features/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'edit'])->name('feature.edit');
-
-
-
 
 
         Route::post('/import-attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'importAttendance']);
