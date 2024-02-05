@@ -389,9 +389,9 @@ class RequestUtil extends Util
     public function saveAttachment(Request $request, $requestId)
     {
 
-        $request->validate([
-            'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
-        ]);
+        // $request->validate([
+        //     'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
+        // ]);
 
         $attachment = $request->file('attachment');
         $attachmentPath = $attachment->store('/requests_attachments');
