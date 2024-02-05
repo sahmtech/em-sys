@@ -197,7 +197,11 @@
     'requests_by_sequential' => 'الطلبات حسب التسلسل',
     'select_type' => 'اختر نوع',
     'request_owner' => ' صاحب الطلب',
-    
+    'contract_cancel_requests'=>'طلبات إنهاء العلاقات التعاقدية',
+    'end_work_date'=>'آخر يوم عمل',
+    'my_requests'=>'طلباتي',
+
+
    
 
  ];
