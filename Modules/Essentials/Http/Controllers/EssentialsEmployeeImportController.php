@@ -711,6 +711,7 @@ class EssentialsEmployeeImportController extends Controller
                             if($emp_data['contract_start_date'] != null && $emp_data['contract_end_date'] == null )
                             {
     
+                                
                                 $contract_start_date =$emp_data['contract_start_date']; 
                                 $final_contract_start_date=   $contract_start_date;
                                 
