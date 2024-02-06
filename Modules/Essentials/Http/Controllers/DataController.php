@@ -2481,46 +2481,46 @@ class DataController extends Controller
                 $qualification2->degree =  request()->input('degree');
                 $qualification2->marksName =  request()->input('marksName');
                 $qualification2->great_degree =  request()->input('great_degree');
-                if (request()->hasFile('qualification_file')) {
-                    $file = request()->file('qualification_file');
-                    $filePath = $file->store('/employee_qualifications');
-                    $qualification2->file_path = $filePath;
-                }
+                // if (request()->hasFile('qualification_file')) {
+                //     $file = request()->file('qualification_file');
+                //     $filePath = $file->store('/employee_qualifications');
+                //     $qualification2->file_path = $filePath;
+                // }
                 $qualification2->save();
             }
 
-            if (request()->input('document_type')) {
-                $document2 = EssentialsOfficialDocument::where('employee_id', $id)->first();
-                if ($document2) {
+            // if (request()->input('document_type')) {
+            //     $document2 = EssentialsOfficialDocument::where('employee_id', $id)->first();
+            //     if ($document2) {
 
-                    $document2->type = request()->input('document_type');
-                    $document2->employee_id =   $user->id;
-                    $document2->status = 'valid';
+            //         $document2->type = request()->input('document_type');
+            //         $document2->employee_id =   $user->id;
+            //         $document2->status = 'valid';
 
-                    if (request()->hasFile('document_file')) {
-                        $file = request()->file('document_file');
-                        $filePath = $file->store('/officialDocuments');
+            //         if (request()->hasFile('document_file')) {
+            //             $file = request()->file('document_file');
+            //             $filePath = $file->store('/officialDocuments');
 
-                        $document2->file_path = $filePath;
-                    }
+            //             $document2->file_path = $filePath;
+            //         }
 
-                    $document2->save();
-                } else {
-                    $document2 = new EssentialsOfficialDocument();
-                    $document2->type = request()->input('document_type');
-                    $document2->employee_id =   $user->id;
-                    $document2->status = 'valid';
+            //         $document2->save();
+            //     } else {
+            //         $document2 = new EssentialsOfficialDocument();
+            //         $document2->type = request()->input('document_type');
+            //         $document2->employee_id =   $user->id;
+            //         $document2->status = 'valid';
 
-                    if (request()->hasFile('document_file')) {
-                        $file = request()->file('document_file');
-                        $filePath = $file->store('/officialDocuments');
+            //         if (request()->hasFile('document_file')) {
+            //             $file = request()->file('document_file');
+            //             $filePath = $file->store('/officialDocuments');
 
-                        $document2->file_path = $filePath;
-                    }
+            //             $document2->file_path = $filePath;
+            //         }
 
-                    $document2->save();
-                }
-            }
+            //         $document2->save();
+            //     }
+            // }
 
             $id = $data['model_instance']['id'];
             if (

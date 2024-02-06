@@ -231,7 +231,7 @@ class Util
      */
     public function uf_date($date, $time = false)
     {
-        error_log(session('business.date_format'));
+      
         $date_format = session('business.date_format');
         $mysql_format = 'Y-m-d';
         if ($time) {

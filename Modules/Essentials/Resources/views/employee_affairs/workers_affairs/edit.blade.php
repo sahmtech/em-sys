@@ -16,6 +16,7 @@
                 [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'],
                 [$user->id],
             ),
+            'files' => true,
             'method' => 'PUT',
             'id' => 'user_edit_form',
         ]) !!}
@@ -38,7 +39,7 @@
                     {!! Form::label('mid_name', __('business.mid_name') . ':') !!}
                     {!! Form::text('mid_name', $user->mid_name, [
                         'class' => 'form-control',
-         
+                    
                         'placeholder' => __('business.mid_name'),
                     ]) !!}
                 </div>
@@ -318,7 +319,7 @@
         <div class="col-md-12 box box-primary" id="section7">
 
             <h4>@lang('essentials::lang.features'):</h4>
-        
+
             <div>
                 <div class="form-group col-md-3">
                     {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
@@ -334,7 +335,7 @@
                         @endisset
                     </select>
                 </div>
-            
+
                 <div class="form-group col-md-3" id="category_input" style="display: none;">
                     {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
                     {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, [
@@ -344,7 +345,7 @@
                     ]) !!}
                 </div>
             </div>
-        
+
             <div class="form-group col-md-3">
                 {!! Form::label('health_insurance', __('essentials::lang.health_insurance') . ':') !!}
                 {!! Form::select(
@@ -370,7 +371,103 @@
         </div>
 
 
+        <div class="modal fade" id="editIdAttachementsModal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog  modal-lg" role="document">
 
+                <div class="modal-content">
+
+                    {{-- {!! Form::open(['route' => 'updateEmployeeOfficalDocuments', 'enctype' => 'multipart/form-data']) !!} --}}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.id_attachements')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <button type="button"
+                            class="btn btn-success add_new_document">{{ __('essentials::lang.add_new_document') }}</button>
+                        <div class="col-md-12">
+                            <div class="form-group">
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="id_documents_table">
+                                        <tr class="template-row" style="display: none;">
+                                            <td>
+                                                <div class="col-md-12">
+                                                    <div class="col-md-3">
+                                                        {!! Form::hidden('offical_documents_type[]', null, []) !!}
+                                                        {!! Form::select(
+                                                            'offical_documents_type_select[]',
+                                                            [
+                                                                'national_id' => __('essentials::lang.national_id'),
+                                                                'passport' => __('essentials::lang.passport'),
+                                                                'residence_permit' => __('essentials::lang.residence_permit'),
+                                                                'drivers_license' => __('essentials::lang.drivers_license'),
+                                                                'car_registration' => __('essentials::lang.car_registration'),
+                                                                'international_certificate' => __('essentials::lang.international_certificate'),
+                                                                // 'visa' => _('essentials::lang.visa'),
+                                                            ],
+                                                            null,
+                                                            [
+                                                                'class' => 'form-control',
+                                                                'style' => 'height:40px',
+                                                                'placeholder' => __('essentials::lang.select_document_type'),
+                                                            ],
+                                                        ) !!}
+                                                    </div>
+
+                                                    <div class="col-md-1">
+                                                        <a href="#" style="height:36px"
+                                                            class="btn btn-info view_document">{{ __('messages.view') }}</a>
+
+                                                    </div>
+                                                    <div class="col-md-1">
+
+                                                        <button type="button" style="height:36px"
+                                                            class="btn btn-primary edit_document">{{ __('messages.edit') }}
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-md-4 fileInputContainer" style= "display: none;">
+                                                        {!! Form::hidden('offical_documents_previous_files[]', null, ['class' => 'previous-file']) !!}
+                                                        {!! Form::hidden('offical_documents_choosen_files[]', null, ['class' => 'chosen-file']) !!}
+                                                        {!! Form::file('offical_documents_files[]', [
+                                                            'class' => 'form-control fileInput',
+                                                            'style' => 'height:36px; ',
+                                                        ]) !!}
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <button type="button" style="height:36px"
+                                                            class="btn btn-danger remove_document">{{ __('messages.delete') }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+
+
+
+                        {{-- <button type="submit" class="btn btn-primary" >@lang('messages.save')</button> --}}
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
+                    </div>
+                    {{-- {!! Form::close() !!} --}}
+                </div>
+            </div>
+        </div>
 
 
 
@@ -383,6 +480,95 @@
     @section('javascript')
 
         <script>
+            $(document).ready(function() {
+                $('.add_new_document').on('click', function() {
+                    var newRow = $('.template-row').first().clone();
+                    newRow.show();
+                    newRow.find('input, select').val('');
+                    newRow.find('select').prop('disabled', false);
+                    $('#id_documents_table').append(newRow);
+                    var fileInputContainer = newRow.find('.fileInputContainer');
+                    fileInputContainer.toggle();
+                    if (!fileInputContainer.is(':visible')) {
+                        fileInputContainer.find('.fileInput').val('');
+                    }
+                    newRow.find('.view_document').prop('disabled', true);
+                });
+                $('#id_documents_table').on('click', '.remove_document', function() {
+                    var row = $(this).closest('tr');
+                    if (row.data('initial-row')) {
+                        var documentId = row.data('document-id');
+                        if (documentId) {
+                            var hiddenInput = $('<input>').attr({
+                                type: 'hidden',
+                                name: 'deleted_documents[]',
+                                value: documentId
+                            });
+                            $('form').append(hiddenInput);
+                        }
+                        row.hide();
+                        row.find('input, select').prop('disabled', true);
+                    } else {
+                        row.remove();
+                    }
+                });
+                $('#id_documents_table').on('click', '.edit_document', function() {
+                    var fileInputContainer = $(this).closest('tr').find('.fileInputContainer');
+                    fileInputContainer.toggle();
+                    if (!fileInputContainer.is(':visible')) {
+                        fileInputContainer.find('.fileInput').val('');
+                    }
+                });
+                $(document).on('click', '.id_attachements_btn', function(e) {
+                    e.preventDefault();
+                    $('#editIdAttachementsModal').modal('show');
+                });
+
+                var documents = @json($officalDocuments);
+                $('#id_documents_table tbody').find('tr').not('.template-row').remove();
+                documents.forEach(function(doc) {
+                    var newRow = $('.template-row').first().clone();
+                    newRow.show();
+                    newRow.find('select[name="offical_documents_type_select[]"]').val(doc.type);
+                    newRow.find('select[name="offical_documents_type_select[]"]').prop('disabled', true);
+                    newRow.find('input[name="offical_documents_type[]"]').val(doc.type);
+
+                    var viewButton = newRow.find('.view_document');
+
+                    if (doc.file_path) {
+
+                        viewButton.attr('href', '/uploads/' + doc.file_path);
+                        viewButton.attr('target', '_blank');
+                    } else {
+
+                        viewButton.removeAttr('href');
+                        viewButton.css('pointer-events', 'none');
+                        viewButton.removeClass('btn-info').addClass('btn-secondary');
+
+                        viewButton.on('click', function(e) {
+                            e.preventDefault(); // Prevent the link from being followed
+                        });
+                    }
+
+                    newRow.data('document-id', doc.id);
+                    newRow.attr('data-initial-row', 'true');
+                    newRow.find('input[name="offical_documents_previous_files[]"]').val(doc.id);
+                    $('#id_documents_table').append(newRow);
+                });
+
+                $('#id_documents_table').on('change', '.fileInput', function() {
+                    var fileName = $(this).val().split('\\').pop();
+                    $(this).closest('tr').find('input[name="offical_documents_choosen_files[]"]').val(fileName);
+                });
+                $('#id_documents_table').on('change', 'select[name="offical_documents_type_select[]"]', function() {
+                    var parentRow = $(this).closest('tr');
+                    var hiddenInput = parentRow.find('input[name="offical_documents_type[]"]');
+                    hiddenInput.val($(this).val());
+                });
+
+
+            });
+
             $(document).ready(function() {
                 $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function() {
                     updateContractEndDate();
@@ -752,29 +938,28 @@
             });
         </script>
         <script>
-   
-
             $(document).ready(function() {
-             
+
                 toggleCategoryInput();
-        
-            
+
+
                 $('#can_add_category').change(function() {
                     toggleCategoryInput();
                 });
+
                 function toggleCategoryInput() {
-                
-                var selectedOption = $('#can_add_category').val();
-                console.log(selectedOption);
-                if (selectedOption === '1') {
-                    $('#category_input').show();
-                    @isset($user_travel)
-                        $('#travel_ticket_categorie').val('{{ $user_travel->categorie_id }}');
-                    @endisset
-                } else {
-                    $('#category_input').hide();
+
+                    var selectedOption = $('#can_add_category').val();
+                    console.log(selectedOption);
+                    if (selectedOption === '1') {
+                        $('#category_input').show();
+                        @isset($user_travel)
+                            $('#travel_ticket_categorie').val('{{ $user_travel->categorie_id }}');
+                        @endisset
+                    } else {
+                        $('#category_input').hide();
+                    }
                 }
-            }
             });
         </script>
     @endsection
