@@ -1708,7 +1708,7 @@ class Util
         if ($request->has('DocumentTypes')) {
 
             $documents = json_decode($request->input('DocumentTypes'), true);
-        
+        if( $documents){
             foreach ($documents as $index => $document) {
                 $document2 = new EssentialsOfficialDocument();
                 $document2->type = $document['document_type'];
@@ -1743,6 +1743,8 @@ class Util
         
                 $document2->save();
             }
+        }
+            
         }
 
 
