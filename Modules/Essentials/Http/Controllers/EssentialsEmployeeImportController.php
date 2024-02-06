@@ -129,7 +129,7 @@ class EssentialsEmployeeImportController extends Controller
                 else 
                 {
                     $is_valid = false;
-                    $error_msg = __('essentials::lang.first_name_required') .$row_no;
+                    $error_msg = __('essentials::lang.first_name_required') .$row_no+1;
                     break;
                 }
 
@@ -150,14 +150,14 @@ class EssentialsEmployeeImportController extends Controller
                 
                     if (!in_array($emp_array['user_type'], $allowedUserTypes)) {
                         $is_valid = false;
-                        $error_msg = __('essentials::lang.user_type_is_valid' ).$row_no;
+                        $error_msg = __('essentials::lang.user_type_is_valid' ).$row_no+1;
                         break;
                     }
                 } 
                 else 
                 {
                     $is_valid = false;
-                    $error_msg = __('essentials::lang.user_type_required') . $row_no;
+                    $error_msg = __('essentials::lang.user_type_required') .$row_no+1;
                     break;
                 }
                 
@@ -208,7 +208,7 @@ class EssentialsEmployeeImportController extends Controller
                     if ($proof_number) 
                     {
                         $is_valid = false;
-                        $error_msg = __('essentials::lang.proof_number_validated' ) .$row_no;
+                        $error_msg = __('essentials::lang.proof_number_validated' ) .$row_no+1;
                         break;
                     }
                 }
@@ -276,7 +276,7 @@ class EssentialsEmployeeImportController extends Controller
                    {
                    
                        $is_valid = false;
-                       $error_msg = __('essentials::lang.contact_not_found').$row_no;
+                       $error_msg = __('essentials::lang.contact_not_found').$row_no+1;
                        break;
                    }
                }
@@ -297,14 +297,14 @@ class EssentialsEmployeeImportController extends Controller
                    {
                    
                        $is_valid = false;
-                       $error_msg = __('essentials::lang.company_not_found').$row_no;
+                       $error_msg = __('essentials::lang.company_not_found').$row_no+1;
                        break;
                    }
                }
                else
                {
                    $is_valid = false;
-                   $error_msg =__('essentials::lang.company_required' ) .$row_no;
+                   $error_msg =__('essentials::lang.company_required' ) .$row_no+1;
                    break;
                } 
 
@@ -319,7 +319,7 @@ class EssentialsEmployeeImportController extends Controller
                    {
                    
                        $is_valid = false;
-                       $error_msg = __('essentials::lang.dep_not_found' ) .$row_no;
+                       $error_msg = __('essentials::lang.dep_not_found' ) .$row_no+1;
                        break;
                    }
                } 
@@ -361,7 +361,7 @@ class EssentialsEmployeeImportController extends Controller
                    {
                    
                        $is_valid = false;
-                       $error_msg = __('essentials::lang.prof_not_found') .$row_no;
+                       $error_msg = __('essentials::lang.prof_not_found') .$row_no+1;
                        break;
                    }
                } else
@@ -380,7 +380,7 @@ class EssentialsEmployeeImportController extends Controller
                    {
                    
                        $is_valid = false;
-                       $error_msg =  __('essentials::lang.nationality_not_found') .$row_no;
+                       $error_msg =  __('essentials::lang.nationality_not_found') .$row_no+1;
                        break;
                    }
                } 
@@ -450,7 +450,7 @@ class EssentialsEmployeeImportController extends Controller
             //     if(!is_numeric( $emp_array['contract_duration']))
             //     {
             //         $is_valid = false;
-            //         $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no;
+            //         $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no+1;
             //         break;
             //     }
             // } 
@@ -462,7 +462,7 @@ class EssentialsEmployeeImportController extends Controller
                 if(!is_numeric( $emp_array['probation_period']))
                 {
                     $is_valid = false;
-                    $error_msg =  __('essentials::lang.probation_period_should_be_is_numeric') .$row_no;
+                    $error_msg =  __('essentials::lang.probation_period_should_be_is_numeric') .$row_no+1;
                     break;
                 }
             } 
@@ -484,7 +484,7 @@ class EssentialsEmployeeImportController extends Controller
                 if (!$housing_allowance_id) {
                 
                     $is_valid = false;
-                    $error_msg = __('essentials::lang.housing_allowance_id_not_found') .$row_no;
+                    $error_msg = __('essentials::lang.housing_allowance_id_not_found') .$row_no+1;
                     break;
                 }
             } 
@@ -497,7 +497,7 @@ class EssentialsEmployeeImportController extends Controller
                 if (!$trans_allowance_id) {
                 
                     $is_valid = false;
-                    $error_msg = __('essentials::lang.trans_allowance_id_not_found') .$row_no;
+                    $error_msg = __('essentials::lang.trans_allowance_id_not_found') .$row_no+1;
                     break;
                 }
             } 
@@ -510,7 +510,7 @@ class EssentialsEmployeeImportController extends Controller
                 if (!$other_allowance_id) {
                 
                     $is_valid = false;
-                    $error_msg = __('essentials::lang.other_allowance_id_not_found') .$row_no;
+                    $error_msg = __('essentials::lang.other_allowance_id_not_found') .$row_no+1;
                     break;
                 }
             }
