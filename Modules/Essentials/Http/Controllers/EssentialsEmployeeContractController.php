@@ -46,8 +46,8 @@ class EssentialsEmployeeContractController extends Controller
         $can_show_employee_contracts = auth()->user()->can('essentials.show_employee_contracts');
         $can_delete_employee_contracts = auth()->user()->can('essentials.delete_employee_contracts');
 
-      
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -215,13 +215,13 @@ class EssentialsEmployeeContractController extends Controller
             }
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
-                $filePath = $file->store('/employeeContracts');
+                $filePath = $file->store('/employee_contracts');
 
 
                 $input2['file_path'] = $filePath;
             }
 
-
+            EssentialsEmployeesContract::where('employee_id', $input['employee'])->update(['is_active' => 0]);
             $contract = EssentialsEmployeesContract::create($input2);
             // dd( $contract );
 

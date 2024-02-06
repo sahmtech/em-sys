@@ -44,6 +44,8 @@ use App\Request as UserRequest;
 use App\RequestProcess;
 use Modules\CEOManagment\Entities\RequestsType;
 
+
+
 class EssentialsManageEmployeeController extends Controller
 {
     protected $moduleUtil;
@@ -153,7 +155,7 @@ class EssentialsManageEmployeeController extends Controller
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
             ->where('users.status', '!=', 'inactive')
-
+            ->where('essentials_employees_contracts.is_active', 1)
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
@@ -1124,11 +1126,12 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-
+        
         if ($user) {
-            if ($user->user_type == 'employee') {
+            if ($user->user_type == 'employee' || $user->user_type == 'manager') {
 
                 $documents = $user->OfficialDocument;
+            
             } else if ($user->user_type == 'worker') {
 
 
@@ -1158,7 +1161,7 @@ class EssentialsManageEmployeeController extends Controller
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
 
 
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
             ->value('profession_id');
 
         if ($professionId !== null) {
@@ -1192,7 +1195,7 @@ class EssentialsManageEmployeeController extends Controller
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
 
-
+     
 
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact(
             'user',
@@ -1232,7 +1235,7 @@ class EssentialsManageEmployeeController extends Controller
 
             'profession_id',
 
-        ])->where('employee_id', $id)
+        ])->where('employee_id', $id)->where('is_active', 1)
             ->first();
         if ($appointments !== null) {
             $user->profession_id = $appointments['profession_id'];
@@ -1288,6 +1291,7 @@ class EssentialsManageEmployeeController extends Controller
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
         $officalDocuments = $user->OfficialDocument;
+        
         return view('essentials::employee_affairs.employee_affairs.edit')
             ->with(compact(
                 'officalDocuments',
@@ -1324,7 +1328,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-     
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1392,7 +1396,13 @@ class EssentialsManageEmployeeController extends Controller
             }
             if ($deleted_documents) {
                 foreach ($deleted_documents as $deleted_document) {
-                    EssentialsOfficialDocument::where('id', $deleted_document)->delete();
+                    $filePath = EssentialsOfficialDocument::where('id', $deleted_document)->first()->file_path;
+                    if ($filePath) {
+                        Storage::delete($filePath);
+                        EssentialsOfficialDocument::where('id', $deleted_document)->update([
+                            'file_path' => Null,
+                        ]);
+                    }
                 }
             }
             foreach ($offical_documents_types  as  $index => $offical_documents_type) {
@@ -1402,6 +1412,7 @@ class EssentialsManageEmployeeController extends Controller
                     if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
                         if (isset($files[$index])) {
                             $filePath = $files[$index]->store('/officialDocuments');
+
                             EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
                         }
                     } elseif ($offical_documents_choosen_files[$index]) {
@@ -1414,6 +1425,31 @@ class EssentialsManageEmployeeController extends Controller
                         }
                         $document2->save();
                     }
+                }
+            }
+
+            $delete_qualification_file = $request->delete_qualification_file ?? null;
+            if ($request->hasFile('qualification_file')) {
+
+                $qual = EssentialsEmployeesQualification::where('employee_id', $id)->first();
+                if (!$qual) {
+                    $qual = new EssentialsEmployeesQualification();
+                }
+                $qual_file = request()->file('qualification_file');
+                $qual_file_path = $qual_file->store('/employee_qualifications');
+
+                $qual->file_path = $qual_file_path;
+
+                $qual->save();
+            }
+            if ($delete_qualification_file && $delete_qualification_file == 1) {
+
+                $filePath = EssentialsEmployeesQualification::where('employee_id', $id)->first()->file_path;
+                if ($filePath) {
+                    Storage::delete($filePath);
+                    EssentialsEmployeesQualification::where('employee_id', $id)->update([
+                        'file_path' => Null,
+                    ]);
                 }
             }
 
@@ -1441,7 +1477,8 @@ class EssentialsManageEmployeeController extends Controller
             ];
         }
 
-        return redirect()->route('employees')->with('status', $output);
+        return redirect()->route('showEmployee',['id' => $id])->with('status', $output);
+        //  return redirect()->route('employees')->with('status', $output);
     }
 
     /**

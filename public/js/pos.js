@@ -1228,6 +1228,10 @@ $(document).ready(function () {
                     dropdownParent: $('#add_client_modal'),
                     width: '100%',
                 });
+                 $('#nationalitySearch').select2({
+                    dropdownParent: $('#add_client_modal'),
+                    width: '100%',
+                });
             },
         });
     });

@@ -529,11 +529,6 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#profileImageLink').on('click', function(e) {
-                e.preventDefault(); // Prevent default anchor action
-                openImagePopup();
-            });
-
             let imageChanged = false;
 
             $('#profileImageLink').on('click', function(e) {

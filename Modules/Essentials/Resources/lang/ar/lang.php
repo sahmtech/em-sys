@@ -719,7 +719,7 @@ return [
   'add_specialization' => 'إضافة اختصاص',
 
   'crud_official_documents' => 'عرض الوثائق الرسمية للموظفين',
- 
+
   'crud_insurance_companies' => 'عرض شركات التأمين ',
 
 
@@ -886,7 +886,7 @@ return [
   'add_specialization' => 'إضافة اختصاص',
 
   'crud_official_documents' => 'عرض الوثائق الرسمية للموظفين',
- 
+
   'crud_insurance_companies' => 'عرض شركات التأمين ',
 
   'crud_insurance_contracts' => 'عرض عقود التأمين ',
@@ -1719,5 +1719,10 @@ return [
   'id_attachements' => 'مرفقات الوثائق الرسمية',
   'add_new_document' => 'إضافة وثيقة جديدة',
   'select_document_type' => 'اختبر نوع الوثيقة',
+
+  'qualification_attachements' => 'مرفقات المؤهلات العلمية',
+  'edit_qualification_attachements' => 'تعديل مرفقات المؤهلات العلمية',
+  'visa' => 'تأشيرة دخول',
+
 
 ];

@@ -708,4 +708,6 @@ return [
     'id_attachements' => 'Offical Documents Attachements',
     'add_new_document' => 'Add New Document',
     'select_document_type' => 'Select Document Type',
+    'qualification_attachements' => 'Qualification Attachements',
+    'visa' => 'VISA',
 ];

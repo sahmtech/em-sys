@@ -633,8 +633,10 @@ class EssentialsWorkersAffairsController extends Controller
         $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
+        $officalDocuments = $user->OfficialDocument;
         return view('essentials::employee_affairs.workers_affairs.edit')
             ->with(compact(
+                'officalDocuments',
                 'projects',
                 'contacts',
                 'spacializations',
@@ -732,6 +734,53 @@ class EssentialsWorkersAffairsController extends Controller
 
 
 
+            $deleted_documents = $request->deleted_documents ?? null;
+            $offical_documents_types = $request->offical_documents_type;
+            $offical_documents_choosen_files = $request->offical_documents_choosen_files;
+            $offical_documents_previous_files = $request->offical_documents_previous_files;
+            $files = [];
+            if ($request->hasFile('offical_documents_files')) {
+                $files = $request->file('offical_documents_files');
+            }
+            if ($deleted_documents) {
+                foreach ($deleted_documents as $deleted_document) {
+                    $filePath = EssentialsOfficialDocument::where('id', $deleted_document)->first()->file_path;
+                    EssentialsOfficialDocument::where('id', $deleted_document)->delete();
+                    if ($filePath) {
+                        Storage::delete($filePath);
+                        // EssentialsOfficialDocument::where('id', $deleted_document)->update([
+                        //     'file_path' => Null,
+                        // ]);
+                    }
+                }
+            }
+            foreach ($offical_documents_types  as  $index => $offical_documents_type) {
+           
+                if (
+                    $offical_documents_type
+                ) {
+                    if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
+                        if (isset($files[$index])) {
+                            $filePath = $files[$index]->store('/officialDocuments');
+                            error_log("!111111111111111");
+                            error_log($filePath);
+                            EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
+                        }
+                    } elseif ($offical_documents_choosen_files[$index]) {
+                        $document2 = new EssentialsOfficialDocument();
+                        $document2->type = $offical_documents_type;
+                        $document2->employee_id = $id;
+                        if (isset($files[$index])) {
+                            $filePath = $files[$index]->store('/officialDocuments');
+                            $document2->file_path = $filePath;
+                        }
+                        error_log("!22222222222");
+                        error_log($filePath);
+                        $document2->save();
+                    }
+                }
+            }
+
 
             $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_updated', 'model_instance' => $user, 'request' => $user_data]);
 
@@ -753,8 +802,7 @@ class EssentialsWorkersAffairsController extends Controller
                 'msg' => $e->getMessage(),
             ];
         }
-
-        return redirect()->route('workers_affairs')->with('status', $output);
+        return redirect()->route('show_workers_affairs', ['id' => $id])->with('status', $output);
     }
 
     /**
