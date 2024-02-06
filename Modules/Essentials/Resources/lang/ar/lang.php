@@ -1708,4 +1708,5 @@ return [
   'doc_file' => 'ملف الوثيقة',
   'add_doc_file' => 'إضافة ملف',
 
+  'contract_type_id_not_found'=>'رقم نوع العقد غير موجود في السطر رقم ',
 ];

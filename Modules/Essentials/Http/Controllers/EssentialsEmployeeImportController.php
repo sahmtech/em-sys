@@ -36,6 +36,7 @@ use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsInsuranceCompany;
@@ -474,12 +475,28 @@ class EssentialsEmployeeImportController extends Controller
             } 
             else{ $emp_array['is_renewable'] = null;}
 
-            $emp_array['essentials_salary'] = $value[40];
 
-            if ($value[41] !== null)
+            $emp_array['contract_type_id']=$value[40];
+            if (!empty($value[40]))
+            {
+                $contract_type = EssentialsContractType::find($value[40]);
+                if (!$contract_type) {
+               
+                    $is_valid = false;
+                    $error_msg = __('essentials::lang.contract_type_id_not_found') .$row_no+1;
+                    break;
+                }
+               
+            } 
+            else{   $emp_array['contract_type_id'] = null;}
+            
+
+            $emp_array['essentials_salary'] = $value[41];
+
+            if ($value[42] !== null)
             {
                                         
-                $housing_allowance_id = EssentialsAllowanceAndDeduction::find($value[41]);
+                $housing_allowance_id = EssentialsAllowanceAndDeduction::find($value[42]);
               
                 if (!$housing_allowance_id) {
                 
@@ -489,10 +506,10 @@ class EssentialsEmployeeImportController extends Controller
                 }
             } 
 
-            if ($value[43] !== null) 
+            if ($value[44] !== null) 
             {
                     
-                $trans_allowance_id = EssentialsAllowanceAndDeduction::find($value[43]);
+                $trans_allowance_id = EssentialsAllowanceAndDeduction::find($value[44]);
               
                 if (!$trans_allowance_id) {
                 
@@ -502,10 +519,10 @@ class EssentialsEmployeeImportController extends Controller
                 }
             } 
 
-            if ($value[45] !== null) 
+            if ($value[46] !== null) 
             {
                     
-                $other_allowance_id = EssentialsAllowanceAndDeduction::find($value[45]);
+                $other_allowance_id = EssentialsAllowanceAndDeduction::find($value[46]);
               
                 if (!$other_allowance_id) {
                 
@@ -517,17 +534,17 @@ class EssentialsEmployeeImportController extends Controller
             
             $emp_array['allowance_data'] = 
             [
-                'housing_allowance' => json_encode(['salaryType' => $value[41], 'amount' => $value[42]]),
-                'transportation_allowance' => json_encode(['salaryType' => $value[43], 'amount' => $value[44]]),
-                'other' => json_encode(['salaryType' => $value[45], 'amount' => $value[46]]),
+                'housing_allowance' => json_encode(['salaryType' => $value[42], 'amount' => $value[43]]),
+                'transportation_allowance' => json_encode(['salaryType' => $value[44], 'amount' => $value[45]]),
+                'other' => json_encode(['salaryType' => $value[46], 'amount' => $value[47]]),
               
             ];
               
-            $emp_array['total_salary'] = $value[47]; 
+            $emp_array['total_salary'] = $value[48]; 
             
-            if($value[48] != null)
+            if($value[49] != null)
             {
-                $emp_array['emp_number'] = $value[48];
+                $emp_array['emp_number'] = $value[49];
             }
             else{ $emp_array['emp_number']=null;}
            
@@ -574,7 +591,7 @@ class EssentialsEmployeeImportController extends Controller
                    
                    
                     $emp_data['employee_id'] = $emp->id;
-                    $emp_data['contract_type_id'] = null;
+                   // $emp_data['contract_type_id'] = null;
                     foreach ($emp_data['allowance_data'] as $allowanceType => $allowanceJson)
                     {
                             $allowanceData = json_decode($allowanceJson, true);
@@ -650,9 +667,10 @@ class EssentialsEmployeeImportController extends Controller
 
 
                         $final_contract_start_date=null;
-                        if($emp_data['contract_start_date'] != null ||  $emp_data['contract_start_date'] != null )
+                       
+                        if($emp_data['contract_start_date'] != null ||  $emp_data['contract_end_date'] != null )
                         {
-
+                           
                             $previous_contract = EssentialsEmployeesContract::where('employee_id',  $emp->id)
                             ->where('is_active',1)
                             ->latest('created_at')
@@ -669,7 +687,7 @@ class EssentialsEmployeeImportController extends Controller
 
                             $contract =new EssentialsEmployeesContract();
                             $contract->employee_id  = $emp->id;
-
+                         
                             if( $emp_data['contract_number'] == null)
                             {
                                 $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();

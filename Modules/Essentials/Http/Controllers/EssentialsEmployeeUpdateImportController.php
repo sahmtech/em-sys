@@ -32,6 +32,7 @@ use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsEmployeeImport;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Sales\Entities\SalesProject;
+use Modules\Essentials\Entities\EssentialsContractType;
 
 
 
@@ -417,10 +418,18 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         } 
                         else{   $emp_array['is_renewable'] = null;}
 
+                       
                         $emp_array['contract_type_id']=$value[40];
                         if (!empty($value[40]))
                         {
-                            $emp_array['contract_type_id'] = $value[40];
+                            $contract_type = EssentialsContractType::find($value[40]);
+                            if (!$contract_type) {
+                           
+                                $is_valid = false;
+                                $error_msg = __('essentials::lang.contract_type_id_not_found') .$row_no+1;
+                                break;
+                            }
+                           
                         } 
                         else{   $emp_array['contract_type_id'] = null;}
                         
@@ -678,14 +687,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                
                           
                                 $final_contract_start_date=null;
-                             
+                              
                                 if($emp_data['contract_start_date'] != null  ||  $emp_data['contract_end_date'] != null )
                                 {
                                     $previous_contract = EssentialsEmployeesContract::where('employee_id',  $existingEmployee->id)
                                     ->where('is_active',1)
                                     ->latest('created_at')
                                     ->first();
-                                  ;
+                                  
                                    
                                     if( $previous_contract )
                                     {
