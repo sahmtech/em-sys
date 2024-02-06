@@ -3,7 +3,7 @@
         <div class="modal-content">
 
             {!! Form::open([
-                'url' => action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'changeStatus']),
+                'url' => action([\App\Utils\RequestUtil::class, 'changeRequestStatus']),
                 'method' => 'post',
                 'id' => 'change_status_form',
             ]) !!}

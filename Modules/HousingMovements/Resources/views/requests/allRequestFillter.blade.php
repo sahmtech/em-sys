@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('followup::lang.allRequests'))
+@section('title', __('request.allRequests'))
 
 @section('content')
 
 
     <section class="content-header">
         <h1>
-            <span>@lang('followup::lang.allRequests')</span>
+            <span>@lang('request.allRequests')</span>
         </h1>
     </section>
 
@@ -26,7 +26,7 @@
             }
 
             .workflow-circle {
-                width: 110px;
+                min-width: 110px;
                 height: 110px;
                 border-radius: 50%;
                 display: flex;
@@ -36,6 +36,7 @@
                 margin-right: 10px;
                 font-weight: bold;
                 color: #fff;
+                padding: 10px;
 
             }
 
@@ -109,7 +110,7 @@
     @endif
     <section class="content">
 
-        {{-- @include('housingmovements::layouts.nav_requests') --}}
+
         @component('components.widget', ['class' => 'box-primary'])
           
 
@@ -117,15 +118,15 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                            <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.worker_name')</th>
-                            <th>@lang('followup::lang.eqama_number')</th>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('followup::lang.request_type')</th>
-                            <th>@lang('followup::lang.request_date')</th>
-                            <th>@lang('followup::lang.status')</th>
-                            <th>@lang('followup::lang.note')</th>
-                            {{-- <th>@lang('followup::lang.action')</th> --}}
+                            <th>@lang('request.request_number')</th>
+                            <th>@lang('request.request_owner')</th>
+                            <th>@lang('request.eqama_number')</th>
+                
+                            <th>@lang('request.request_type')</th>
+                            <th>@lang('request.request_date')</th>
+                            <th>@lang('request.status')</th>
+                            <th>@lang('request.note')</th>
+                  
 
 
                         </tr>
@@ -174,47 +175,45 @@
                     {
                         data: 'id_proof_number'
                     },
+                  
                     {
-                        data: 'assigned_to'
-                    },
-                    {
-                        data: 'type',
+                        data: 'request_type_id',
                         render: function(data, type, row) {
                             if (data === 'exitRequest') {
-                                return '@lang('followup::lang.exitRequest')';
+                                return '@lang('request.exitRequest')';
 
                             } else if (data === 'returnRequest') {
-                                return '@lang('followup::lang.returnRequest')';
+                                return '@lang('request.returnRequest')';
                             } else if (data === 'escapeRequest') {
-                                return '@lang('followup::lang.escapeRequest')';
+                                return '@lang('request.escapeRequest')';
                             } else if (data === 'advanceSalary') {
-                                return '@lang('followup::lang.advanceSalary')';
+                                return '@lang('request.advanceSalary')';
                             } else if (data === 'leavesAndDepartures') {
-                                return '@lang('followup::lang.leavesAndDepartures')';
+                                return '@lang('request.leavesAndDepartures')';
                             } else if (data === 'atmCard') {
-                                return '@lang('followup::lang.atmCard')';
+                                return '@lang('request.atmCard')';
                             } else if (data === 'residenceRenewal') {
-                                return '@lang('followup::lang.residenceRenewal')';
+                                return '@lang('request.residenceRenewal')';
                             } else if (data === 'workerTransfer') {
-                                return '@lang('followup::lang.workerTransfer')';
+                                return '@lang('request.workerTransfer')';
                             } else if (data === 'residenceCard') {
-                                return '@lang('followup::lang.residenceCard')';
+                                return '@lang('request.residenceCard')';
                             } else if (data === 'workInjuriesRequest') {
-                                return '@lang('followup::lang.workInjuriesRequest')';
+                                return '@lang('request.workInjuriesRequest')';
                             } else if (data === 'residenceEditRequest') {
-                                return '@lang('followup::lang.residenceEditRequest')';
+                                return '@lang('request.residenceEditRequest')';
                             } else if (data === 'baladyCardRequest') {
-                                return '@lang('followup::lang.baladyCardRequest')';
+                                return '@lang('request.baladyCardRequest')';
                             } else if (data === 'mofaRequest') {
-                                return '@lang('followup::lang.mofaRequest')';
+                                return '@lang('request.mofaRequest')';
                             } else if (data === 'insuranceUpgradeRequest') {
-                                return '@lang('followup::lang.insuranceUpgradeRequest')';
+                                return '@lang('request.insuranceUpgradeRequest')';
                             } else if (data === 'chamberRequest') {
-                                return '@lang('followup::lang.chamberRequest')';
+                                return '@lang('request.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
-                                return '@lang('followup::lang.cancleContractRequest')';
+                                return '@lang('request.cancleContractRequest')';
                             }  else if (data === 'WarningRequest') {
-                                return '@lang('followup::lang.WarningRequest')';
+                                return '@lang('request.WarningRequest')';
                             }else {
                                 return data;
                             }
@@ -234,75 +233,7 @@
                 ],
             });
 
-            $(document).on('click', 'a.change_status', function(e) {
-                e.preventDefault();
-
-                $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value'))
-                    .change();
-                $('#change_status_modal').find('#request_id').val($(this).data('request-id'));
-                $('#change_status_modal').modal('show');
-
-
-            });
-
-
-            $(document).on('submit', 'form#change_status_form', function(e) {
-                e.preventDefault();
-                var data = $(this).serialize();
-                var ladda = Ladda.create(document.querySelector('.update-offer-status'));
-                ladda.start();
-                $.ajax({
-                    method: $(this).attr('method'),
-                    url: $(this).attr('action'),
-                    dataType: 'json',
-                    data: data,
-                    success: function(result) {
-                        ladda.stop();
-                        if (result.success == true) {
-                            $('div#change_status_modal').modal('hide');
-                            toastr.success(result.msg);
-                            requests_table.ajax.reload();
-
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                });
-            });
-            $('#requests_table').on('click', '.btn-return', function() {
-                var requestId = $(this).data('request-id');
-                $('#returnModal').modal('show');
-                $('#returnModal').data('id', requestId);
-            });
-
-
-            $('#returnModalForm').submit(function(e) {
-                e.preventDefault();
-
-                var requestId = $('#returnModal').data('id');
-                var reason = $('#reasonInput').val();
-
-                $.ajax({
-                    url: "{{ route('hm.returnReq') }}",
-                    method: "POST",
-                    data: {
-                        requestId: requestId,
-                        reason: reason
-                    },
-                    success: function(result) {
-
-                        if (result.success == true) {
-                            $('#returnModal').modal('hide');
-                            toastr.success(result.msg);
-                            requests_table.ajax.reload();
-
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                });
-            });
-
+         
 
             $(document).on('click', '.btn-view-request', function() {
                 var requestId = $(this).data('request-id');
@@ -313,7 +244,7 @@
             
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
@@ -350,65 +281,65 @@
 
                             //  worker info
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.worker_name') }}' + ': ' + response
+                                '{{ __('request.worker_name') }}' + ': ' + response
                                 .user_info.worker_full_name + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.nationality') }}' + ': ' + response
+                                '{{ __('request.nationality') }}' + ': ' + response
                                 .user_info.nationality + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.project_name') }}' + ': ' + response
+                                '{{ __('request.project_name') }}' + ': ' + response
                                 .user_info.assigned_to + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.eqama_number') }}' + ': ' + response
+                                '{{ __('request.eqama_number') }}' + ': ' + response
                                 .user_info.id_proof_number + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.contract_end_date') }}' + ': ' +
+                                '{{ __('request.contract_end_date') }}' + ': ' +
                                 response.user_info.contract_end_date + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.eqama_end_date') }}' + ': ' +
+                                '{{ __('request.eqama_end_date') }}' + ': ' +
                                 response.user_info.eqama_end_date + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.passport_number') }}' + ': ' +
+                                '{{ __('request.passport_number') }}' + ': ' +
                                 response.user_info.passport_number + '</p>');
 
 
 
                             //activities
 
-                            // activitiesList.append('<p class="worker-info">' + '{{ __('followup::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
+                            // activitiesList.append('<p class="worker-info">' + '{{ __('request.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
 
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
                                 activity += '<p>' +
-                                    '{{ __('followup::lang.department_name') }}' + ': ' +
+                                    '{{ __('request.department_name') }}' + ': ' +
                                     response.followup_processes[j].department.name;
 
-                                activity += '<p class="{{ __('followup::lang.status') }} ' +
+                                activity += '<p class="{{ __('request.status') }} ' +
                                     response.followup_processes[j].status.toLowerCase() + '">' +
-                                    '<strong>{{ __('followup::lang.status') }}:</strong> ' +
+                                    '<strong>{{ __('request.status') }}:</strong> ' +
                                     response.followup_processes[j].status + '</p>';
 
 
-                                activity += '<p>' + '{{ __('followup::lang.reason') }}' + ': ';
+                                activity += '<p>' + '{{ __('request.reason') }}' + ': ';
                                 if (response.followup_processes[j].reason) {
                                     activity += '<strong>' + response.followup_processes[j]
                                         .reason + '</strong>';
                                 } else {
-                                    activity += '{{ __('followup::lang.not_exist') }}';
+                                    activity += '{{ __('request.not_exist') }}';
                                 }
-                                activity += '<p>' + '{{ __('followup::lang.note') }}' + ': ';
+                                activity += '<p>' + '{{ __('request.note') }}' + ': ';
                                 if (response.followup_processes[j].status_note) {
                                     activity += '<strong>' + response.followup_processes[j]
                                         .status_note + '</strong>';
                                 } else {
-                                    activity += '{{ __('followup::lang.not_exist') }}';
+                                    activity += '{{ __('request.not_exist') }}';
                                 }
                                 activity += '</p>';
                                 activity += '<p style="color: green;">' +
-                                    '{{ __('followup::lang.updated_by') }}' + ': ' + (
+                                    '{{ __('request.updated_by') }}' + ': ' + (
                                         response.followup_processes[j].updated_by ||
-                                        '{{ __('followup::lang.not_exist') }}') + '</p>';
+                                        '{{ __('request.not_exist') }}') + '</p>';
                                 activity += '</li>';
 
                                 activitiesList.append(activity);
@@ -419,7 +350,7 @@
 
                                     attachment += '<p>';
                                    
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
+                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("request.attach") }} ' + (j + 1) + '</a>';
                                
                                  attachment += '</p>';
                                 attachment += '</li>';
@@ -450,152 +381,7 @@
     </script>
 
 
-    <script>
-        $(document).ready(function() {
-            var mainReasonSelect = $('#mainReasonSelect');
-            var subReasonContainer = $('#sub_reason_container');
-            var subReasonSelect = $('#subReasonSelect');
-
-            handleTypeChange();
-            $('#requestType').change(handleTypeChange);
-
-            function handleTypeChange() {
-                var selectedType = $('#requestType').val();
-
-                console.log(selectedType);
-                if (selectedType === 'leavesAndDepartures') {
-                    $('#start_date').show();
-
-                } else {
-                    $('#start_date').hide();
-                }
-
-                if (selectedType === 'leavesAndDepartures') {
-                    $('#end_date').show();
-                } else {
-                    $('#end_date').hide();
-                }
-                if (selectedType === 'returnRequest') {
-                    $('#exit_date').show();
-                    $('#return_date').show();
-
-                } else {
-                    $('#exit_date').hide();
-                    $('#return_date').hide();
-
-                }
-                if (selectedType === 'leavesAndDepartures') {
-                    $('#leaveType').show();
-                } else {
-                    $('#leaveType').hide();
-                }
-                if (selectedType === 'workInjuriesRequest') {
-                    $('#workInjuriesDate').show();
-                } else {
-                    $('#workInjuriesDate').hide();
-                }
-
-
-                if (selectedType === 'escapeRequest') {
-                    $('#escape_time').show();
-                    $('#escape_date').show();
-
-                } else {
-                    $('#escape_time').hide();
-                    $('#escape_date').hide();
-                }
-                if (selectedType === 'advanceSalary') {
-                    $('#installmentsNumber').show();
-                    $('#monthlyInstallment').show();
-                    $('#amount').show();
-
-                } else {
-                    $('#installmentsNumber').hide();
-                    $('#monthlyInstallment').hide();
-                    $('#amount').hide();
-                }
-                if (selectedType === 'residenceEditRequest') {
-                    $('#resEditType').show();
-
-
-                } else {
-                    $('#resEditType').hide();
-
-                }
-                if (selectedType === 'baladyCardRequest') {
-                    $('#baladyType').show();
-
-
-                } else {
-                    $('#baladyType').hide();
-
-                }
-                if (selectedType === 'insuranceUpgradeRequest') {
-                    $('#ins_class').show();
-
-
-                } else {
-                    $('#ins_class').hide();
-
-                }
-                if (selectedType === 'cancleContractRequest') {
-                    $('#main_reason').show();
-
-
-                } else {
-                    $('#main_reason').hide();
-
-                }
-                if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest') {
-                    $('#visa_number').show();
-
-
-                } else {
-                    $('#visa_number').hide();
-
-                }
-                if (selectedType === 'atmCard') {
-                    $('#atmType').show();
-
-
-                } else {
-                    $('#atmType').hide();
-
-                }
-            }
-
-            mainReasonSelect.on('change', function() {
-                var selectedMainReason = $(this).val();
-                var csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-                $.ajax({
-                    url: '{{ route('getSubReasons') }}',
-                    type: 'POST',
-                    data: {
-                        _token: csrfToken,
-                        main_reason: selectedMainReason
-                    },
-                    success: function(data) {
-                        subReasonSelect.empty();
-
-                        if (data.sub_reasons.length > 0) {
-                            subReasonContainer.show();
-
-                            $.each(data.sub_reasons, function(index, subReason) {
-                                subReasonSelect.append($('<option>', {
-                                    value: subReason.id,
-                                    text: subReason.name
-                                }));
-                            });
-                        } else {
-                            subReasonContainer.hide();
-                        }
-                    }
-                });
-
-            });
-        });
-    </script>
+    
 
 <script>
     $('#addRequestModal').on('shown.bs.modal', function(e) {

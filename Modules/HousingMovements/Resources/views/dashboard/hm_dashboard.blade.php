@@ -151,7 +151,7 @@
                                     <th>@lang('followup::lang.request_number')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.eqama_number')</th>
-                                    <th>@lang('followup::lang.project_name')</th>
+                                    {{-- <th>@lang('followup::lang.project_name')</th> --}}
                                     <th>@lang('followup::lang.request_type')</th>
                                     <th>@lang('followup::lang.request_date')</th>
                                     <th>@lang('followup::lang.status')</th>
@@ -200,11 +200,11 @@
                     {
                         data: 'id_proof_number'
                     },
+                    // {
+                    //     data: 'assigned_to'
+                    // },
                     {
-                        data: 'assigned_to'
-                    },
-                    {
-                        data: 'type',
+                        data: 'request_type_id',
                         render: function(data, type, row) {
                             if (data === 'exitRequest') {
                                 return '@lang('followup::lang.exitRequest')';
@@ -256,6 +256,9 @@
                     {
                         data: 'note'
                     },
+                    // {
+                    //     data: 'can_return'
+                    // },
 
 
                 ],

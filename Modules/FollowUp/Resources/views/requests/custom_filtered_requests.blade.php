@@ -62,8 +62,49 @@
 
                     {
                         data: 'user'
-                    }, {
-                        data: 'type'
+                    }, 
+                    {
+                        data: 'request_type_id',
+                        render: function(data, type, row) {
+                            if (data === 'exitRequest') {
+                                return '@lang('followup::lang.exitRequest')';
+
+                            } else if (data === 'returnRequest') {
+                                return '@lang('followup::lang.returnRequest')';
+                            } else if (data === 'escapeRequest') {
+                                return '@lang('followup::lang.escapeRequest')';
+                            } else if (data === 'advanceSalary') {
+                                return '@lang('followup::lang.advanceSalary')';
+                            } else if (data === 'leavesAndDepartures') {
+                                return '@lang('followup::lang.leavesAndDepartures')';
+                            } else if (data === 'atmCard') {
+                                return '@lang('followup::lang.atmCard')';
+                            } else if (data === 'residenceRenewal') {
+                                return '@lang('followup::lang.residenceRenewal')';
+                            } else if (data === 'workerTransfer') {
+                                return '@lang('followup::lang.workerTransfer')';
+                            } else if (data === 'residenceCard') {
+                                return '@lang('followup::lang.residenceCard')';
+                            } else if (data === 'workInjuriesRequest') {
+                                return '@lang('followup::lang.workInjuriesRequest')';
+                            } else if (data === 'residenceEditRequest') {
+                                return '@lang('followup::lang.residenceEditRequest')';
+                            } else if (data === 'baladyCardRequest') {
+                                return '@lang('followup::lang.baladyCardRequest')';
+                            } else if (data === 'mofaRequest') {
+                                return '@lang('followup::lang.mofaRequest')';
+                            } else if (data === 'insuranceUpgradeRequest') {
+                                return '@lang('followup::lang.insuranceUpgradeRequest')';
+                            } else if (data === 'chamberRequest') {
+                                return '@lang('followup::lang.chamberRequest')';
+                            } else if (data === 'WarningRequest') {
+                                return '@lang('followup::lang.WarningRequest')';
+                            } else if (data === 'cancleContractRequest') {
+                                return '@lang('followup::lang.cancleContractRequest')';
+                            } else {
+                                return data;
+                            }
+                        }
                     },
                     {
                         data: 'created_at'
@@ -71,21 +112,6 @@
 
                     {
                         data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-
-
-                                case 'approved':
-                                    return '{{ trans('followup::lang.approved') }}';
-                                case 'under process':
-                                    return '{{ trans('followup::lang.under process') }}';
-
-                                case 'rejected':
-                                    return '{{ trans('followup::lang.rejected') }}';
-                                default:
-                                    return data;
-                            }
-                        }
                     },
                     {
                         data: 'note'

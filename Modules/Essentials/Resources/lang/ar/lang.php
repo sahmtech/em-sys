@@ -1703,6 +1703,11 @@ return [
 
   'add_file' => 'إضافة وثيقة',
   'qualification_file' => 'شهادة التأهيل العلمي',
+
+  'created_department_name'=>'الإدارة التي أنشأت الطلب',
+  'workInjuriesDate'=>'تاريخ الإصابة',
+
+
   'created_department_name' => 'الإدارة التي أنشأت الطلب',
   'edit_profile_picture' => 'تعديل صورة الملف الشخصي',
   'doc_file' => 'ملف الوثيقة',
@@ -1714,8 +1719,10 @@ return [
   'id_attachements' => 'مرفقات الوثائق الرسمية',
   'add_new_document' => 'إضافة وثيقة جديدة',
   'select_document_type' => 'اختبر نوع الوثيقة',
+
   'qualification_attachements' => 'مرفقات المؤهلات العلمية',
   'edit_qualification_attachements' => 'تعديل مرفقات المؤهلات العلمية',
   'visa' => 'تأشيرة دخول',
+
 
 ];
