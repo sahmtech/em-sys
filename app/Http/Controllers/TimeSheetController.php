@@ -15,6 +15,8 @@ use App\Category;
 use App\Transaction;
 use Carbon\Carbon;
 use DB;
+use App\Request as UserRequest;
+use Modules\CEOManagment\Entities\RequestsType;
 use Illuminate\Http\Request;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsAttendance;
@@ -626,9 +628,10 @@ class TimeSheetController extends Controller
         $year = $currentDateTime->year;
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
-
-        $leaves = FollowupWorkerRequest::where('worker_id', $id)
-            ->where('type', 'leavesAndDepartures')
+        $leavesTypes= RequestsType::where('type','leavesAndDepartures')->where('for','worker')->pluck('id')->toArray();
+       
+        $leaves = UserRequest::where('related_to', $id)
+            ->whereIn('request_type_id',$leavesTypes)
             ->whereDate('start_date', '>=', $start_of_month)
             ->whereDate('end_date', '<=', $end_of_month)->where('status', 'approved')->get();
 
