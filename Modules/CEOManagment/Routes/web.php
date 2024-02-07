@@ -51,9 +51,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/storeEmployeeProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeEmployeeProcedure'])->name('storeEmployeeProcedure');
         Route::post('/storeWorkerProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeWorkerProcedure'])->name('storeWorkerProcedure');
-      
+        
       
         Route::put('/updateProcedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'update'])->name('updateProcedure');
+        Route::put('/updateEmployeeProcedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'updateEmployeeProcedure'])->name('updateEmployeeProcedure');
+        
+        
         Route::delete('/procedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'destroy'])->name('procedure.destroy');
         Route::get('/getProcedure/{procedure_id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'getProcedure'])->name('getProcedure');
     });

@@ -1551,6 +1551,17 @@ class CustomAdminSidebarMenu
                 );
             }
 
+            if ($is_admin  || auth()->user()->can('housingmovements.view_import_rooms')) {
+
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'index']),
+
+                    __('housingmovements::lang.import_rooms'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && 
+                    request()->segment(2) == 'import_rooms']
+                );
+            }
+
             if (($is_admin  || auth()->user()->can('housingmovements.crud_facilities'))) {
 
                 $menu->url(

@@ -4,7 +4,7 @@
     .custom-modal-dialog.style {
         width: 72% !important;
 
-    } 
+    }
 
     .hidden-step-details {
         display: none;
@@ -20,7 +20,7 @@
         margin-bottom: 10px;
     }
 </style>
-@section('content') 
+@section('content')
 
     <section class="content-header">
         <h1>
@@ -107,6 +107,7 @@
                                 <div id="workflow-step_add_modal">
 
                                     <div class="form-group col-md-12 entire_step" id="add_modal_step_0">
+                                        {!! Form::hidden('escalation_count', 1) !!}
                                         <div class="form-group col-md-6">
                                             {!! Form::label('add_modal_department_id_steps', __('essentials::lang.managment') . ':*') !!}
                                             {!! Form::select('step[0][add_modal_department_id_steps][]', $departments, null, [
@@ -137,7 +138,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group col-md-4">
-                                            <button type="button"id="add_modal_remove_step_btn_0"
+                                            <button type="button"id="add_modal_remove_step_btn_0" style="display:none"
                                                 class="btn btn-danger btn-sm add_modal_remove_step_btn">
                                                 @lang('essentials::lang.remove_department')
                                             </button>
@@ -245,6 +246,7 @@
                                 <div id="workflow-step_edit_modal">
 
                                     <div class="form-group col-md-12 entire_step" id="edit_modal_step_0">
+                                        {!! Form::hidden('escalation_count', 1) !!}
                                         <div class="form-group col-md-6">
                                             {!! Form::label('edit_modal_department_id_steps', __('essentials::lang.managment') . ':*') !!}
                                             {!! Form::select('step[0][edit_modal_department_id_steps][]', $departments, null, [
@@ -275,7 +277,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group col-md-4">
-                                            <button type="button"id="edit_modal_remove_step_btn_0"
+                                            <button type="button"id="edit_modal_remove_step_btn_0" style="display:none"
                                                 class="btn btn-danger btn-sm edit_modal_remove_step_btn">
                                                 @lang('essentials::lang.remove_department')
                                             </button>
@@ -372,7 +374,7 @@
                 width: '100%'
             });
 
-
+            let excilation_max_count = {{ count($escalates_departments) }};
             var procedures_table = $('#procedures_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -420,13 +422,11 @@
                                 return '@lang('request.cancleContractRequest')';
                             } else if (data === 'WarningRequest') {
                                 return '@lang('request.WarningRequest')';
-                            } 
-                            else if (data === 'assetRequest') {
+                            } else if (data === 'assetRequest') {
                                 return '@lang('request.assetRequest')';
-                            }else if (data === 'passportRenewal') {
+                            } else if (data === 'passportRenewal') {
                                 return '@lang('request.passportRenewal')';
-                            }
-                            else {
+                            } else {
                                 return data;
                             }
                         }
@@ -477,48 +477,67 @@
                 stepDiv.remove();
             });
             $(document).on("click", ".add_modal_add_escalation_steps_btn", function() {
-                var clone = $(this).closest('.entire_step').find('.escalation-field-template').first()
-                    .clone();
 
-                clone.find('input').val('');
-                clone.find('select').val('');
-                $(this).closest('.entire_step').find('.escalations-container').append(clone);
+                var stepContainer = $(this).closest('.entire_step');
+                var escalationContainer = stepContainer.find('.escalations-container');
+                var escalationCountInput = stepContainer.find(
+                    'input[name^="escalation_count"]');
+                var currentEscalationCount = parseInt(escalationCountInput.val());
+
+                if (currentEscalationCount < excilation_max_count) {
+
+                    var clone = $(this).closest('.entire_step').find('.escalation-field-template').first()
+                        .clone();
+
+                    clone.find('input').val('');
+                    clone.find('select').val('');
+                    $(this).closest('.entire_step').find('.escalations-container').append(clone);
+                    escalationCountInput.val(currentEscalationCount + 1);
+                }
+
             });
 
             $(document).on("click", ".add_modal_remove_escalation_steps_btn", function() {
                 var entireStep = $(this).closest('.entire_step');
+                var escalationCountInput = entireStep.find(
+                    'input[name^="escalation_count"]');
+                var currentEscalationCount = parseInt(escalationCountInput.val());
+
                 var numberOfTemplates = entireStep.find('.escalation-field-template').length;
                 if (numberOfTemplates > 1) {
                     $(this).closest('.escalation-field-template').remove();
+                    var newEscalationCount = Math.max(currentEscalationCount - 1, 1);
+                    escalationCountInput.val(newEscalationCount);
                 }
             });
             let stepZeroVisible = false;
             $(document).on("click", "#add_modal_add_step", function() {
-                if (!stepZeroVisible) {
-                    $("#add_modal_step_0").css('display', 'block');
-                    stepZeroVisible = true;
-                } else {
-                    var stepZero = $("#add_modal_step_0");
-                    stepZero.find('.escalation-field-template').not(':first').remove();
-                    var newStep = stepZero.clone();
-                    add_modal_steps_count++;
-                    newStep.attr('id', 'add_modal_step_' + add_modal_steps_count);
-                    newStep.find('[id]').each(function() {
-                        var newId = $(this).attr('id').replace(/_0$/, '_' + add_modal_steps_count);
-                        $(this).attr('id', newId);
-                    });
-                    newStep.find('[name]').each(function() {
-                        var newName = $(this).attr('name').replace(/step\[0\]/, 'step[' +
-                            add_modal_steps_count + ']');
-                        $(this).attr('name', newName);
-                    });
-                    newStep.css('display', 'block');
-                    newStep.find('.escalation-field-template').find('input').val(
-                        '');
-                    newStep.find('.escalation-field-template').find('select').val(
-                        '');
-                    $("#workflow-step_add_modal").append(newStep);
-                }
+
+                var stepZero = $("#add_modal_step_0");
+                var newStep = stepZero.clone();
+                newStep.find('.escalation-field-template').not(':first').remove();
+                add_modal_steps_count++;
+                newStep.attr('id', 'add_modal_step_' + add_modal_steps_count);
+                newStep.find('[id]').each(function() {
+                    var newId = $(this).attr('id').replace(/_0$/, '_' + add_modal_steps_count);
+                    $(this).attr('id', newId);
+                });
+                newStep.find('[name]').each(function() {
+                    var newName = $(this).attr('name').replace(/step\[0\]/, 'step[' +
+                        add_modal_steps_count + ']');
+                    $(this).attr('name', newName);
+                });
+                newStep.css('display', 'block');
+                newStep.find('.escalation-field-template').find('input').val(
+                    '');
+                newStep.find('.escalation-field-template').find('select').val(
+                    '');
+                newStep.find('.add_modal_remove_step_btn').css('display', 'block');
+                escalationCountInput = newStep.find(
+                    'input[name^="escalation_count"]').val(1);
+
+                $("#workflow-step_add_modal").append(newStep);
+
             });
 
 
@@ -531,43 +550,67 @@
                 stepDiv.remove();
             });
             $(document).on("click", ".edit_modal_add_escalation_steps_btn", function() {
-                var clone = $(this).closest('.entire_step').find('.escalation-field-template').first()
-                    .clone();
-                clone.find('input').val('');
-                clone.find('select').val('');
-                $(this).closest('.entire_step').find('.escalations-container').append(clone);
+
+                var stepContainer = $(this).closest('.entire_step');
+                var escalationContainer = stepContainer.find('.escalations-container');
+                var escalationCountInput = stepContainer.find(
+                    'input[name^="escalation_count"]');
+                var currentEscalationCount = parseInt(escalationCountInput.val());
+
+                if (currentEscalationCount < excilation_max_count) {
+
+
+                    var clone = $(this).closest('.entire_step').find('.escalation-field-template').first()
+                        .clone();
+                    clone.find('input').val('');
+                    clone.find('select').val('');
+                    $(this).closest('.entire_step').find('.escalations-container').append(clone);
+                    escalationCountInput.val(currentEscalationCount + 1);
+                }
             });
 
             $(document).on("click", ".edit_modal_remove_escalation_steps_btn", function() {
+
                 var entireStep = $(this).closest('.entire_step');
+                var escalationCountInput = entireStep.find(
+                    'input[name^="escalation_count"]');
+                var currentEscalationCount = parseInt(escalationCountInput.val());
+
                 var numberOfTemplates = entireStep.find('.escalation-field-template').length;
                 if (numberOfTemplates > 1) {
-                    $(this).closest('.escalation-field-template').remove();
+
+
+                    var entireStep = $(this).closest('.entire_step');
+                    var numberOfTemplates = entireStep.find('.escalation-field-template').length;
+                    if (numberOfTemplates > 1) {
+                        $(this).closest('.escalation-field-template').remove();
+                    }
+                    var newEscalationCount = Math.max(currentEscalationCount - 1, 1);
+                    escalationCountInput.val(newEscalationCount);
                 }
             });
             let editStepZeroVisible = false;
             $(document).on("click", "#edit_modal_add_step", function() {
-                if (!editStepZeroVisible) {
-                    $("#edit_modal_step_0").css('display', 'block');
-                    editStepZeroVisible = true;
-                } else {
-                    var stepZero = $("#edit_modal_step_0");
-                    stepZero.find('.escalation-field-template').not(':first').remove();
-                    var newStep = stepZero.clone();
-                    edit_modal_steps_count++;
-                    newStep.attr('id', 'edit_modal_step_' + edit_modal_steps_count);
-                    newStep.find('[id]').each(function() {
-                        var newId = $(this).attr('id').replace(/_0$/, '_' + edit_modal_steps_count);
-                        $(this).attr('id', newId);
-                    });
-                    newStep.find('[name]').each(function() {
-                        var newName = $(this).attr('name').replace(/step\[0\]/, 'step[' +
-                            edit_modal_steps_count + ']');
-                        $(this).attr('name', newName);
-                    });
-                    newStep.css('display', 'block');
-                    $("#workflow-step_edit_modal").append(newStep);
-                }
+                var stepZero = $("#edit_modal_step_0");
+                var newStep = stepZero.clone();
+                newStep.find('.escalation-field-template').not(':first').remove();
+                edit_modal_steps_count++;
+                newStep.attr('id', 'edit_modal_step_' + edit_modal_steps_count);
+                newStep.find('[id]').each(function() {
+                    var newId = $(this).attr('id').replace(/_0$/, '_' + edit_modal_steps_count);
+                    $(this).attr('id', newId);
+                });
+                newStep.find('[name]').each(function() {
+                    var newName = $(this).attr('name').replace(/step\[0\]/, 'step[' +
+                        edit_modal_steps_count + ']');
+                    $(this).attr('name', newName);
+                });
+                newStep.css('display', 'block');
+                newStep.find('.edit_modal_remove_step_btn').css('display', 'block');
+                escalationCountInput = newStep.find(
+                    'input[name^="escalation_count"]').val(1);
+                $("#workflow-step_edit_modal").append(newStep);
+
             });
 
 
@@ -577,7 +620,9 @@
             function clearEditModal() {
                 $('#editProceduresModal input[type="text"], #editProceduresModal textarea').val('');
                 $('#editProceduresModal select').val('').trigger('change');
-
+                $("#workflow-step_edit_modal").find('.entire_step').find('.escalation-field-template').not(':first')
+                    .remove();
+                $("#workflow-step_edit_modal").find('.entire_step').not(':first').remove();
 
             }
 
@@ -585,17 +630,18 @@
                 e.preventDefault();
                 var url = $(this).data('url');
                 var procedureId = $(this).data('id');
-                var updateUrl = "{{ route('updateProcedure', ['id' => ':id']) }}".replace(':id', procedureId);; // Construct the update URL
+                var updateUrl = "{{ route('updateEmployeeProcedure', ['id' => ':id']) }}".replace(':id',
+                    procedureId); // Construct the update URL
 
                 // Set the action of the form
                 $('#editProcedureForm').attr('action', updateUrl);
 
-
+                clearEditModal();
                 $.ajax({
                     url: url,
                     type: 'GET',
                     success: function(response) {
-                        clearEditModal();
+
                         var procedures = typeof response.procedures === 'string' ? JSON.parse(
                             response.procedures) : response.procedures;
                         // var startingDepartments = procedures.filter(function(procedure) {
@@ -634,6 +680,7 @@
 
                 function populateStepData(stepSelector, index, stepData) {
 
+
                     // Populate the step with data
                     $(stepSelector).find('[name^="step[' + index + '][edit_modal_department_id_steps]"]')
                         .val(stepData.department_id);
@@ -658,6 +705,13 @@
                     var escalationsContainer = $(stepSelector).find('.escalations-container');
                     if (stepData.escalations.length > 1) {
                         stepData.escalations.slice(1).forEach(function(escalation, escalationIndex) {
+
+                            var stepContainer = $(stepSelector).closest('.entire_step');
+                            var escalationContainer = stepContainer.find('.escalations-container');
+                            var escalationCountInput = stepContainer.find(
+                                'input[name^="escalation_count"]');
+                            var currentEscalationCount = parseInt(escalationCountInput.val());
+
                             var escalationClone = $(stepSelector).find('.escalation-field-template')
                                 .first().clone();
 
@@ -682,7 +736,8 @@
                             // Remove ID attributes to avoid duplicates
                             escalationClone.find('[id]').removeAttr('id');
 
-                            // Append the cloned and populated escalation
+                            escalationCountInput.val(currentEscalationCount + 1);
+
                             escalationsContainer.append(escalationClone);
                         });
                     }
@@ -713,6 +768,7 @@
 
                     populateStepData(stepTemplate, stepIndex, stepData);
                     stepTemplate.css('display', 'block');
+                    stepTemplate.find('.edit_modal_remove_step_btn').css('display', 'block');
                     $('#workflow-step_edit_modal').append(stepTemplate);
                 }
 
