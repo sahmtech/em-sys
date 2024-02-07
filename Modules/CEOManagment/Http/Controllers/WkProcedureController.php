@@ -410,7 +410,7 @@ class WkProcedureController extends Controller
             $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
             if ($procedures) {
                 foreach ($procedures as $procedure) {
-                    EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
+               //     EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
                     $procedure->delete();
                 }
             }
@@ -492,8 +492,6 @@ class WkProcedureController extends Controller
 
 
 
-
-
             $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
         } catch (\Exception $e) {
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -502,42 +500,40 @@ class WkProcedureController extends Controller
 
         return redirect()->back()->with(['status' => $output]);
     }
-    public function updateEmployeeProcedure(Request $request, $id)
+     public function updateEmployeeProcedure(Request $request, $id)
     {
 
         try {
             $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
-            $for = WkProcedure::where('id', $id)->first()->request_owner_type;
 
             $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
             if ($procedures) {
                 foreach ($procedures as $procedure) {
-                    EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
+                 //   EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
                     $procedure->delete();
                 }
             }
 
-            $type = $request->input('type');
+          //  $type = $request->input('type');
             $steps = $request->input('step');
-    
-    
-    
-                $check_repeated = [];
-                foreach ($steps  as $index => $step) {
-                    $check_repeated[] = $step['edit_modal_department_id_steps'][0];
-                }
-                if (count($check_repeated) !== count(array_unique($check_repeated))) {
-                    throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
-                }
-    
-                $previousStepIds = [];
-                if($steps){
 
-foreach ($steps  as $index => $step) {
+
+            $check_repeated = [];
+            foreach ($steps  as $index => $step) {
+                $check_repeated[] = $step['edit_modal_department_id_steps'][0];
+            }
+            if (count($check_repeated) !== count(array_unique($check_repeated))) {
+                throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+            }
+
+            $previousStepIds = [];
+            if($steps){
+
+                foreach ($steps  as $index => $step) {
                     $start_dep = $step['edit_modal_department_id_steps'][0];
                     $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = WkProcedure::create([
-                        'request_type_id' => $type,
+                        'request_type_id' => $procedureType,
                         'request_owner_type' => 'employee',
                         'department_id' => $start_dep,
                         'business_id' => $business_id,
@@ -552,21 +548,30 @@ foreach ($steps  as $index => $step) {
                     }
                     $previousStepIds = [];
                     $previousStepIds[] = $workflowStep->id;
-                    
+                    // if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+                    //     foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+                    //         EssentialsProceduresEscalation::create([
+                    //             'procedure_id' => $workflowStep->id,
+                    //             'escalates_to' => $escalationDept,
+                    //             'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+                    //         ]);
+                    //     }
+                    // }
                 }
+            }
+          
 
-                }
-                
-    
 
+            \DB::commit();
 
             $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
         } catch (\Exception $e) {
+            \DB::rollBack();
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = ['success' => false, 'msg' =>  $e->getMessage()];
         }
 
-        return redirect()->back()->with(['status' => $output]);
+        return redirect()->route('employeesProcedures')->with(['status' => $output]);
     }
     /**
      * Remove the specified resource from storage.
