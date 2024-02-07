@@ -245,7 +245,7 @@ class WkProcedureController extends Controller
                 $check_repeated[] = $step['add_modal_department_id_steps'][0];
             }
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
-                throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+                throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
 
             $previousStepIds = [];
@@ -327,7 +327,7 @@ class WkProcedureController extends Controller
                 $check_repeated[] = $step['add_modal_department_id_steps'][0];
             }
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
-                throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+                throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
 
             $previousStepIds = [];
@@ -374,36 +374,20 @@ class WkProcedureController extends Controller
         return redirect()->route('employeesProcedures')->with(['status' => $output]);
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('essentials::show');
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('essentials::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
     public function update(Request $request, $id)
     {
 
         try {
+            $type = WkProcedure::where('id', $id)->first()->request_type_id;
+            $requests = UserRequest::where('request_type_id', $type)->get();
+            if ($requests->count() != 0) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_requests'),
+                ];
+                return redirect()->back()->with(['status' => $output]);
+            }
             $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
             $for = WkProcedure::where('id', $id)->first()->request_owner_type;
 
@@ -434,7 +418,7 @@ class WkProcedureController extends Controller
             }
 
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
-                throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+                throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
 
             $previousStepIds = [];
@@ -504,6 +488,15 @@ class WkProcedureController extends Controller
     {
 
         try {
+            $type = WkProcedure::where('id', $id)->first()->request_type_id;
+            $requests = UserRequest::where('request_type_id', $type)->get();
+            if ($requests->count() != 0) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_requests'),
+                ];
+                return redirect()->back()->with(['status' => $output]);
+            }
             $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
 
             $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
@@ -523,7 +516,7 @@ class WkProcedureController extends Controller
                 $check_repeated[] = $step['edit_modal_department_id_steps'][0];
             }
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
-                throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+                throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
 
             $previousStepIds = [];
@@ -589,7 +582,7 @@ class WkProcedureController extends Controller
             if ($requests->count() != 0) {
                 $output = [
                     'success' => false,
-                    'msg' => __('essentials::lang.cant_delete_procedure_it_have_requests'),
+                    'msg' => __('ceomanagment::lang.cant_delete_procedure_it_have_requests'),
                 ];
                 return $output;
             }
