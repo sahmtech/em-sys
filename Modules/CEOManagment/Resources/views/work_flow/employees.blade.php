@@ -630,7 +630,7 @@
                 e.preventDefault();
                 var url = $(this).data('url');
                 var procedureId = $(this).data('id');
-                var updateUrl = "{{ route('updateProcedure', ['id' => ':id']) }}".replace(':id',
+                var updateUrl = "{{ route('updateEmployeeProcedure', ['id' => ':id']) }}".replace(':id',
                     procedureId); // Construct the update URL
 
                 // Set the action of the form
