@@ -63,6 +63,17 @@ class DataController extends Controller
                     ],
 
                     [
+                        'value' => 'housingmovements.view_import_rooms',
+                        'label' => __('housingmovements::lang.view_import_rooms'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.submit_import_rooms',
+                        'label' => __('housingmovements::lang.submit_import_rooms'),
+                        'default' => false,
+                    ],
+
+                    [
                         'value' => 'room.workers',
                         'label' => __('housingmovements::lang._room_workers'),
                         'default' => false,
