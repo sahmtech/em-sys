@@ -3,6 +3,8 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\User;
+use App\Request as UserRequest;
+Use Modules\CEOManagment\Entities\RequestsType;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
@@ -25,9 +27,7 @@ class EssentialsCancelContractsController extends Controller
     public function index()
     {
 
-        $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -38,29 +38,24 @@ class EssentialsCancelContractsController extends Controller
         $main_reasons = DB::table('essentails_reason_wishes')->pluck('reason', 'id');
         $sub_reasons = DB::table('essentails_reason_wishes')->pluck('sub_reason', 'id');
 
-     
-
         $requestsProcess = null;
 
-        $requestsProcess = FollowupWorkerRequest::select([
-            'followup_worker_requests.request_no',
-            'followup_worker_requests.id',
-            'followup_worker_requests.status as status',
-            'followup_worker_requests.type as type',
-            'followup_worker_requests.created_at',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-            'followup_worker_requests.contract_main_reason_id as main_reason',
-            'followup_worker_requests.note as note',
-            'users.id_proof_number',
-            'followup_worker_requests.contract_sub_reason_id as sub_reason',
+        $types =RequestsType::where('type','cancleContractRequest')->pluck('id')->toArray();
+        $requestsProcess = UserRequest::select([
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.status', 
+
+            'requests.contract_main_reason_id as main_reason',  'requests.note as note','requests.contract_sub_reason_id as sub_reason',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),'users.id_proof_number',
+           
             'users.status as userStatus','essentials_employees_contracts.contract_end_date as contract_end_date'
             
         ])
            
-            ->where('type','cancleContractRequest')->where('followup_worker_requests.status','approved')
-            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+            ->whereIn('requests.request_type_id',$types)->where('requests.status','approved')
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
             ->leftJoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', '=', 'users.id')
-            ->whereIn('followup_worker_requests.worker_id', $userIds);
+            ->whereIn('requests.related_to', $userIds);
 
 
 
@@ -102,16 +97,16 @@ class EssentialsCancelContractsController extends Controller
     public function finish_contract_procedure($id)
 {
     try {
-        $followupWorkerRequest = FollowupWorkerRequest::find($id);
-        if (!$followupWorkerRequest) {
+        $userRequest = UserRequest::find($id);
+        if (!$userRequest) {
             return ['success' => false, 'msg' => __('messages.not_found')];
         }
 
-        $user = User::find($followupWorkerRequest->worker_id);
+        $user = User::find($userRequest->related_to);
         if (!$user) {
             return ['success' => false, 'msg' => __('messages.user_not_found')];
         }
-        error_log($user);
+     
         $user->update([
             'status' => 'inactive',
             'allow_login' => '0'

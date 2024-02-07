@@ -37,8 +37,9 @@ class SalesTargetedClientController extends Controller
         if (! auth()->user()->can('product.create')) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $specializations=EssentialsSpecialization::all()->pluck('name','id');
-        $professions=EssentialsProfession::all()->pluck('name','id');
+      $specializations=EssentialsSpecialization::all()->pluck('name','id');
+        $professions=EssentialsProfession::where('type','job_title')->pluck('name','id');
+      //  $specializations=EssentialsProfession::where('type','academic')->pluck('name','id');
         $nationalities=EssentialsCountry::nationalityForDropdown();
 
         return view('sales::targetedClient.client_add')->with(compact('specializations','professions','nationalities'));

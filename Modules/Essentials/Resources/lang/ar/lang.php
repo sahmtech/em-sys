@@ -719,7 +719,7 @@ return [
   'add_specialization' => 'إضافة اختصاص',
 
   'crud_official_documents' => 'عرض الوثائق الرسمية للموظفين',
- 
+
   'crud_insurance_companies' => 'عرض شركات التأمين ',
 
 
@@ -886,7 +886,7 @@ return [
   'add_specialization' => 'إضافة اختصاص',
 
   'crud_official_documents' => 'عرض الوثائق الرسمية للموظفين',
- 
+
   'crud_insurance_companies' => 'عرض شركات التأمين ',
 
   'crud_insurance_contracts' => 'عرض عقود التأمين ',
@@ -1703,10 +1703,27 @@ return [
 
   'add_file' => 'إضافة وثيقة',
   'qualification_file' => 'شهادة التأهيل العلمي',
+
+  'created_department_name'=>'الإدارة التي أنشأت الطلب',
+  'workInjuriesDate'=>'تاريخ الإصابة',
+
+
   'created_department_name' => 'الإدارة التي أنشأت الطلب',
   'edit_profile_picture' => 'تعديل صورة الملف الشخصي',
   'doc_file' => 'ملف الوثيقة',
   'add_doc_file' => 'إضافة ملف',
+  'doc_owner' => 'صاحب الوثيقة',
+  'select_doc_owner' => 'اختر صاحب الوثيقة',
+  'a_manager' => 'مدير',
+  'doc_owner_type' => 'نوع صاحب الوثيقة',
+  'id_attachements' => 'مرفقات الوثائق الرسمية',
+  'add_new_document' => 'إضافة وثيقة جديدة',
+  'select_document_type' => 'اختبر نوع الوثيقة',
+
+  'qualification_attachements' => 'مرفقات المؤهلات العلمية',
+  'edit_qualification_attachements' => 'تعديل مرفقات المؤهلات العلمية',
+  'visa' => 'تأشيرة دخول',
+
 
   'contract_type_id_not_found'=>'رقم نوع العقد غير موجود في السطر رقم ',
 ];

@@ -10,8 +10,8 @@
                 <h3>@lang('essentials::lang.view_employee')</h3>
             </div>
             <!-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
-                                                                                                                                {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
-                                                                                                                            </div> -->
+                                                                                                                                            {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
+                                                                                                                                        </div> -->
         </div>
 
         <div class="row">
@@ -112,9 +112,14 @@
                                         <div class="checkbox">
                                             <label>
 
-                                                @if ($document->file_path || $document->attachment)
+                                                @if ($document->file_path)
                                                     <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
                                                         data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                    </a>
+                                                @elseif($document->attachment)
+                                                    <a href="/uploads/{{ $document->attachment }}"
+                                                        data-file-url="{{ $document->attachment }}">
                                                         {{ trans('followup::lang.' . $document->type) }}
                                                     </a>
                                                 @else
@@ -524,11 +529,6 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#profileImageLink').on('click', function(e) {
-                e.preventDefault(); // Prevent default anchor action
-                openImagePopup();
-            });
-
             let imageChanged = false;
 
             $('#profileImageLink').on('click', function(e) {

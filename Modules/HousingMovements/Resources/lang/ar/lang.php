@@ -243,6 +243,7 @@ return [
     'total_beds'=>'عدد الأسرة الاجمالي',
     'no_project'=>'بلا مشروع',
     'add_request'=>'إضافة طلب',
+
     'view_import_rooms'=>'عرض استيراد الغرف',
     'import_rooms'=>'استيراد الغرف',
     'select_operation'=>'اختر العملية',
@@ -255,6 +256,9 @@ return [
      'area_should_be_numeric'=>'المساحة يجب أن تكون رقم في السطر  ',
 
     
+
+
+    'department_employees' => 'موظفي الإدارة',
 
 
 ];
