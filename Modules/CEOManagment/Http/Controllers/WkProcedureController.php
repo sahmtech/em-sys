@@ -502,7 +502,72 @@ class WkProcedureController extends Controller
 
         return redirect()->back()->with(['status' => $output]);
     }
+    public function updateEmployeeProcedure(Request $request, $id)
+    {
 
+        try {
+            $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
+            $for = WkProcedure::where('id', $id)->first()->request_owner_type;
+
+            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
+            if ($procedures) {
+                foreach ($procedures as $procedure) {
+                    EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
+                    $procedure->delete();
+                }
+            }
+
+            $type = $request->input('type');
+            $steps = $request->input('step');
+    
+    
+    
+                $check_repeated = [];
+                foreach ($steps  as $index => $step) {
+                    $check_repeated[] = $step['edit_modal_department_id_steps'][0];
+                }
+                if (count($check_repeated) !== count(array_unique($check_repeated))) {
+                    throw new \Exception(__('essentials::lang.repeated_managements_please_re_check'));
+                }
+    
+                $previousStepIds = [];
+                if($steps){
+
+foreach ($steps  as $index => $step) {
+                    $start_dep = $step['edit_modal_department_id_steps'][0];
+                    $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+                    $workflowStep = WkProcedure::create([
+                        'request_type_id' => $type,
+                        'request_owner_type' => 'employee',
+                        'department_id' => $start_dep,
+                        'business_id' => $business_id,
+                        'next_department_id' => null,
+                        'start' => $index === 0 ? 1 : 0,
+                        'end' => $index === count($steps) - 1 ? 1 : 0,
+                        'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
+                        'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
+                    ]);
+                    foreach ($previousStepIds as $id) {
+                        WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
+                    }
+                    $previousStepIds = [];
+                    $previousStepIds[] = $workflowStep->id;
+                    
+                }
+
+                }
+                
+    
+
+
+            $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
+        } catch (\Exception $e) {
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' =>  $e->getMessage()];
+        }
+
+        return redirect()->back()->with(['status' => $output]);
+    }
     /**
      * Remove the specified resource from storage.
      * @param int $id
