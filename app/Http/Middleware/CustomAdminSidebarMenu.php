@@ -277,11 +277,11 @@ class CustomAdminSidebarMenu
                 ],
             );
 
-            if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') ||auth()->user()->can('generalmanagement.view_GM_escalate_requests') ) {
-                
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') || auth()->user()->can('generalmanagement.view_GM_escalate_requests')) {
+
 
                 $menu->url(
-                   ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests'))?action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']):action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
+                    ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
                     __('generalmanagement::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
                 );
@@ -312,7 +312,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'departments'],
                 );
             }
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types') ) {
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types')) {
                 $menu->url(
                     action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
                     __('ceomanagment::lang.requests_types'),
@@ -321,14 +321,14 @@ class CustomAdminSidebarMenu
             }
 
             if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
-               
+
                 $menu->url(
-                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee'))?action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']):action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
+                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
                     __('ceomanagment::lang.procedures'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures' )],
-                 );
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures')],
+                );
             }
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') ||auth()->user()->can('ceomanagment.view_CEO_escalate_requests') ) {
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') || auth()->user()->can('ceomanagment.view_CEO_escalate_requests')) {
 
                 $menu->url(
                     action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
@@ -336,8 +336,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
-          
-           
         });
     }
     public function agnetMenu()
@@ -1333,20 +1331,38 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
             );
 
-            //$menu->header("");
-            //$menu->header("");
-            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') || auth()->user()->can('sales.view_qualified_contacts') || auth()->user()->can('sales.view_unqualified_contacts') || auth()->user()->can('sales.view_converted_contacts')) {
+
+            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') 
+            || auth()->user()->can('sales.view_qualified_contacts') 
+            || auth()->user()->can('sales.view_unqualified_contacts') 
+            || auth()->user()->can('sales.view_converted_contacts') 
+            || auth()->user()->can('sales.view_draft_contacts')) {
+
+
                 $menu->url(
-                    action([\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts']),
-                    __('sales::lang.lead_contacts'),
+                    ($is_admin  || auth()->user()->can('sales.view_draft_contacts')) ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'draft_contacts'
+                    ]) : (auth()->user()->can('sales.view_lead_contacts') ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'lead_contacts'
+                    ]) : (auth()->user()->can('sales.view_qualified_contacts') ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'qualified_contacts'
+                    ]) : (auth()->user()->can('sales.view_unqualified_contacts') ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'unqualified_contacts'
+                    ]) : action([\Modules\Sales\Http\Controllers\ClientsController::class, 'converted_contacts'])))),
+
+                    __('sales::lang.contacts'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && (request()->segment(2) == 'lead_contacts'
                         || request()->segment(2) == 'qualified_contacts'
                         || request()->segment(2) == 'unqualified_contacts'
                         || request()->segment(2) == 'converted_contacts'
+                        || request()->segment(2) == 'draft_contacts'
                     )],
                 );
             }
-
 
             if ($is_admin || auth()->user()->can('sales.view_sales_projects')) {
                 $menu->url(

@@ -52,6 +52,69 @@ class ClientsController extends Controller
     }
 
 
+    public function draft_contacts(Request $request)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $can_edit_contact = auth()->user()->can('sales.edit_draft_contact');
+        $can_view_contact_info = auth()->user()->can('sales.view_contact_info');
+        $can_change_contact_status = auth()->user()->can('sales.change_to_lead');
+
+
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+
+
+        $contacts = DB::table('contacts')
+            ->select([
+                'id', 'supplier_business_name', 'type', 'contact_id', 'created_by', 'created_at',
+                'commercial_register_no', 'mobile', 'email', 'city'
+
+            ])->where('business_id', $business_id)->where('type', 'draft');
+        $cities = EssentialsCity::forDropdown();
+        if (request()->ajax()) {
+
+
+            return Datatables::of($contacts)
+
+                ->addColumn('action', function ($row) use ($is_admin, $can_edit_contact, $can_view_contact_info, $can_change_contact_status) {
+                    $html  ='';
+                    if ($is_admin || $can_edit_contact) {
+                        $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                    }
+                    if ($is_admin || $can_view_contact_info) {
+                        $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    }
+                    if ($is_admin || $can_change_contact_status) { 
+                        $html .= '<button style="height: 25px; padding: 0 12px; font-size: 1.0 rem;" class="btn btn-warning btn-sm btn-change-to-lead" data-contact-id="' . $row->id .'">'.__('sales::lang.change_to_lead').'</button>';
+                    }
+                    
+                    return $html;
+                })
+
+                ->editColumn('created_by', function ($row) use ($users) {
+
+                    return $users[$row->created_by];
+                })
+                ->editColumn('created_at', function ($row) use ($users) {
+
+                    return Carbon::parse($row->created_at);
+                })
+
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        $status = $this->statuses;
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        return view('sales::contacts.draft_contacts')->with(compact('users', 'status', 'cities', 'nationalities'));
+    }
     public function lead_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -79,12 +142,10 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) use ($is_admin, $can_edit_contact, $can_view_contact_info, $can_change_contact_status) {
-                    if ($is_admin || $can_edit_contact) {
-                        $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                    }
+                ->addColumn('action', function ($row) use ($is_admin, $can_view_contact_info, $can_change_contact_status) {
+                  
                     if ($is_admin || $can_view_contact_info) {
-                        $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                        $html = '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     }
                     if ($is_admin || $can_change_contact_status) {
                         $html .= '&nbsp;<a href="' . route('changeContactStatus', ['id' => $row->id]) . '"
@@ -291,7 +352,7 @@ class ClientsController extends Controller
 
             // $input['allow_login_cs'] = $request->filled('allow_login_cs');
             // $input['allow_login_cf'] = $request->filled('allow_login_cf');
-            $latestRecord = Contact::whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
+            $latestRecord = Contact::whereIn('type', ['draft','lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
 
 
             if ($latestRecord) {
@@ -315,7 +376,7 @@ class ClientsController extends Controller
             $contact_input['email'] = $request->input('email');
             $contact_input['business_id'] = $business_id;
             $contact_input['created_by'] = $request->session()->get('user.id');
-            $contact_input['type'] = "lead";
+            $contact_input['type'] = "draft";
 
 
             $output = $this->contactUtil->createNewContact($contact_input);
@@ -401,7 +462,7 @@ class ClientsController extends Controller
         }
 
 
-        return redirect()->route('lead_contacts');
+        return redirect()->route('draft_contacts');
     }
 
     public function changeStatus(Request $request)
@@ -774,7 +835,7 @@ class ClientsController extends Controller
             ];
         }
 
-        return redirect()->route('lead_contacts');
+        return redirect()->route('draft _contacts');
     }
 
     /**
@@ -816,6 +877,31 @@ class ClientsController extends Controller
         return $output;
     }
 
+    public function changeDraftStatus($id){
+    
+            try {
+                $draft = Contact::find($id);
+                if (!$draft) {
+                    return ['success' => false, 'msg' => __('messages.not_found')];
+                }
+        
+                $draft->update([
+                    'type' => 'lead',
+         
+                ]);
+        
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.updated_success'),
+                ];
+            } catch (\Exception $e) {
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
+            }
+        
+            return $output;
+        
+    }
 
     public function deleteContact($id)
     {
