@@ -1333,20 +1333,38 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
             );
 
-            //$menu->header("");
-            //$menu->header("");
-            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') || auth()->user()->can('sales.view_qualified_contacts') || auth()->user()->can('sales.view_unqualified_contacts') || auth()->user()->can('sales.view_converted_contacts')) {
+
+            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') 
+            || auth()->user()->can('sales.view_qualified_contacts') 
+            || auth()->user()->can('sales.view_unqualified_contacts') 
+            || auth()->user()->can('sales.view_converted_contacts') 
+            || auth()->user()->can('sales.view_draft_contacts')) {
+
+
                 $menu->url(
-                    action([\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts']),
-                    __('sales::lang.lead_contacts'),
+                    ($is_admin  || auth()->user()->can('sales.view_draft_contacts')) ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'draft_contacts'
+                    ]) : (auth()->user()->can('sales.view_lead_contacts') ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'lead_contacts'
+                    ]) : (auth()->user()->can('sales.view_qualified_contacts') ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'qualified_contacts'
+                    ]) : (auth()->user()->can('sales.view_unqualified_contacts') ? action([
+                        \Modules\Sales\Http\Controllers\ClientsController::class,
+                        'unqualified_contacts'
+                    ]) : action([\Modules\Sales\Http\Controllers\ClientsController::class, 'converted_contacts'])))),
+
+                    __('sales::lang.contacts'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && (request()->segment(2) == 'lead_contacts'
                         || request()->segment(2) == 'qualified_contacts'
                         || request()->segment(2) == 'unqualified_contacts'
                         || request()->segment(2) == 'converted_contacts'
+                        || request()->segment(2) == 'draft_contacts'
                     )],
                 );
             }
-
 
             if ($is_admin || auth()->user()->can('sales.view_sales_projects')) {
                 $menu->url(

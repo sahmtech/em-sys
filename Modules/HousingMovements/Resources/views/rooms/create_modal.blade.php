@@ -2,7 +2,7 @@
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
-            {!! Form::open(['route' => 'storeRoom']) !!}
+            {!! Form::open(['route' => 'storeRoom' ,'id'=>'createRoomModal' ,'method' => 'post',]) !!}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
@@ -20,7 +20,8 @@
                     </div>
                     <div class="form-group col-md-4">
                         {!! Form::label('area', __('housingmovements::lang.area') . ':') !!}
-                        {!! Form::text('area', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.area')]) !!}
+                        {!! Form::text('area', null, ['class' => 'form-control',
+                         'placeholder' => __('housingmovements::lang.area')]) !!}
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
@@ -43,7 +44,7 @@
                     </div>
 
                     <div class="form-group col-md-8">
-                        {!! Form::label('contents', __('housingmovements::lang.contents') . ':*') !!}
+                        {!! Form::label('contents', __('housingmovements::lang.contents') . ':') !!}
                         {!! Form::textarea('contents', null, [
                             'class' => 'form-control ',
                             'placeholder' => __('housingmovements::lang.contents'),
@@ -53,7 +54,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                <button type="submit" class="btn btn-primary add_room">@lang('messages.save')</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
             </div>
             {!! Form::close() !!}

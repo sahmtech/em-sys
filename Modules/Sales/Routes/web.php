@@ -64,6 +64,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/clients', [\Modules\Sales\Http\Controllers\ClientsController::class, 'index'])->name('sale.clients');
         Route::get('/lead_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts'])->name('lead_contacts');
+        Route::get('/draft_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'draft_contacts'])->name('draft_contacts');
+       
         Route::get('/qualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'qualified_contacts'])->name('qualified_contacts');
         Route::get('/unqualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'unqualified_contacts'])->name('unqualified_contacts');
         Route::get('/converted_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'converted_contacts'])->name('converted_contacts');
@@ -73,7 +75,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/change_to_converted_client', [\Modules\Sales\Http\Controllers\ClientsController::class, 'change_to_converted_client'])->name('change_to_converted_client');
         Route::post('/change-status-contact/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeStatusContact'])->name('changeStatusContact');
         Route::get('/change-contact-status', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeContact_Status_dialog'])->name('changeContactStatus');
+    
+       // Route::get('changeDraftStatus', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
 
+    //    Route::get('changeDraftStatus/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
+        Route::get('sale/changeDraftStatus/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
+        Route::get('/changeDraftStatus/{contactId}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
 
 
         Route::get('/clients/create', [\Modules\Sales\Http\Controllers\ClientsController::class, 'create'])->name('sale.clients.create');

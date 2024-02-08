@@ -404,41 +404,47 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-
-        $business_id = $request->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
         try {
             $input = $request->only(['room_number', 'htr_building', 'area', 'beds_count', 'contents']);
-
-
-            $input2['room_number'] = $input['room_number'];
-            $input2['htr_building_id'] = $input['htr_building'];
-            $input2['area'] = $input['area'];
-            $input2['beds_count'] = $input['beds_count'];
-            $input2['total_beds'] = $input['beds_count'];
-            $input2['contents'] = $input['contents'];
-
-            DB::table('htr_rooms')->insert($input2);
-
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.added_success'),
-            ];
+          
+            $existingRoom = DB::table('htr_rooms')
+                ->where('room_number', $input['room_number'])
+                ->exists();
+    
+            if ($existingRoom) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('housingmovements::lang.room_number_already_exists'),
+                ];
+            } else {
+                $input2['room_number'] = $input['room_number'];
+                $input2['htr_building_id'] = $input['htr_building'];
+                $input2['area'] = $input['area'];
+                $input2['beds_count'] = $input['beds_count'];
+                $input2['total_beds'] = $input['beds_count'];
+                $input2['contents'] = $input['contents'];
+    
+                DB::table('htr_rooms')->insert($input2);
+    
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.added_success'),
+                ];
+            }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+    
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => __('messages.somthing_wrong'),
             ];
         }
-
-
-        return redirect()->route('rooms');
+    
+        // Return JSON response
+        return response()->json($output);
     }
+    
+    
 
     /**
      * Show the specified resource.

@@ -18,7 +18,8 @@
                 </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('area', __('housingmovements::lang.area') . ':') !!}
-                    {!! Form::text('area',null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.area'),'required']) !!}
+                    {!! Form::text('area',null, ['class' => 'form-control',
+                     'placeholder' => __('housingmovements::lang.area'),]) !!}
                 </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
@@ -34,7 +35,7 @@
                 </div>
                 <div class="clearfix" ></div>
                 <div class="form-group col-md-6">
-                    {!! Form::label('contents', __('housingmovements::lang.contents') . ':*') !!}
+                    {!! Form::label('contents', __('housingmovements::lang.contents') . ':') !!}
                     {!! Form::textarea('contents', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.contents'),'row'=>'2']) !!}
                 </div>
             </div>

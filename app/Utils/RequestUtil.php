@@ -652,13 +652,13 @@ class RequestUtil extends Util
                 'next_department' => null,
             ];
         };
-        // $isDone = UserRequest::where('id', $request->id)->first()->is_done;
-        // $workflow[] = [
-        //     'id' => null,
-        //     'process_id' => $this->getProcessIdForStep($request, $currentStep),
-        //     'status' => $isDone,
-        //     'department' => 'التنفيذ',
-        // ];
+        $isDone = UserRequest::where('id', $request->id)->first()->is_done;
+        $workflow[] = [
+            'id' => null,
+            'status' => $isDone?'approved':'',
+            'department' => $isDone ? trans('request.done') : trans('request.not_yet_done'),
+       
+        ];
 
         $attachments = null;
         if ($request->attachments) {
@@ -778,13 +778,8 @@ class RequestUtil extends Util
                 ->where('department_id', $firstProcedure->next_department_id)
                 ->first();
         }
-        // $isDone = UserRequest::where('id', $request->id)->first()->is_done;
-        // $workflow[] = [
-        //     'id' => null,
-        //     'process_id' => $firstStep->id,
-        //     'status' => $isDone,
-        //     'department' => 'التنفيذ',
-        // ];
+       
+       
 
         if ($firstProcedure && $firstProcedure->end == 1) {
             $workflow[] = [
@@ -795,7 +790,13 @@ class RequestUtil extends Util
                 'next_department' => null,
             ];
         };
-
+        $isDone = UserRequest::where('id', $request->id)->first()->is_done;
+        $workflow[] = [
+            'id' => null,
+            'status' => $isDone?'approved':'',
+            'department' => $isDone ? trans('request.done') : trans('request.not_yet_done'),
+       
+        ];
 
         $attachments = null;
         if ($request->attachments) {

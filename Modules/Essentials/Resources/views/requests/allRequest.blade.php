@@ -94,6 +94,10 @@
                 margin-top: 5px;
                 font-weight: bold;
             }
+            .workflow-circle.green {
+                background-color: #4CAF50;
+            }
+
         </style>
     </head>
     <!-- Main content -->
@@ -597,29 +601,7 @@
 
                     {
                         data: 'can_return',
-                        // render: function(data, type, row) {
-                        //     var buttonsHtml = '';
-
-
-                        //     if (data == 1 &&  trans('request.' . $row->status) =='pending'){
-                        //         buttonsHtml +=
-                        //             '@if (auth()->user()->hasRole('Admin#1') ||
-                                auth()->user()->can('essentials.return_essentials_request')) <button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                        //             row.process_id +
-                        //             '">@lang('request.return_the_request')</button>@endif';
-                        //     }
-
-
-
-
-                        //     buttonsHtml +=
-                        //         '@if (auth()->user()->hasRole('Admin#1') ||
-                                auth()->user()->can('essentials.show_essentials_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                        //         row.id +
-                        //         '">@lang('request.view_request')</button>@endif';
-
-                        //     return buttonsHtml;
-                        // }
+                    
                     },
 
 
