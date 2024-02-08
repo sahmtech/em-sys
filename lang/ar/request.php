@@ -201,7 +201,9 @@
     'end_work_date'=>'آخر يوم عمل',
     'my_requests'=>'طلباتي',
     'please_add_afile_before_saved'=>'الرجاء إضافة ملف قبل حفظ الطلب',
-    'this_user_has_this_request_recently'=>'هذا المستخدم لديه الطلب مسبقا و لم يتم انتهاء الاجراء الذي يخصّه'
+    'this_user_has_this_request_recently'=>'هذا المستخدم لديه الطلب مسبقا و لم يتم انتهاء الاجراء الذي يخصّه',
+   'done'=>'تم التنفيذ',
+   'not_yet_done'=>'لم يتم التنفيذ بعد',
 
 
    

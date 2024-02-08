@@ -17,6 +17,14 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
 
+                    @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.view_draft_contacts'))
+                    <li @if (request()->segment(2) == 'draft_contacts') class="active" @endif>
+                        <a href="{{ route('draft_contacts') }}">
+                            <i class="fas fa-bullseye" aria-hidden="true" style="font-size: smaller;"></i>
+                            @lang('sales::lang.draft_contacts')
+                        </a>
+                    </li>
+                    @endif
                     @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.view_lead_contacts'))
                     <li @if (request()->segment(2) == 'lead_contacts') class="active" @endif>
                         <a href="{{ route('lead_contacts') }}">
