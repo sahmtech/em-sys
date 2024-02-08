@@ -48,6 +48,8 @@ class CustomAdminSidebarMenu
             $this->houseMovementsMenu();
         } elseif (Str::startsWith($currentPath, ['international', 'ir'])) {
             $this->getIRMenu();
+        } elseif (Str::startsWith($currentPath, ['all-accounting',])) {
+            $this->allAccountingMenu();
         } elseif (Str::startsWith($currentPath, ['accounting', 'sells'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
@@ -277,11 +279,11 @@ class CustomAdminSidebarMenu
                 ],
             );
 
-            if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') ||auth()->user()->can('generalmanagement.view_GM_escalate_requests') ) {
-                
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') || auth()->user()->can('generalmanagement.view_GM_escalate_requests')) {
+
 
                 $menu->url(
-                   ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests'))?action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']):action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
+                    ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
                     __('generalmanagement::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
                 );
@@ -312,7 +314,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'departments'],
                 );
             }
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types') ) {
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types')) {
                 $menu->url(
                     action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
                     __('ceomanagment::lang.requests_types'),
@@ -321,14 +323,14 @@ class CustomAdminSidebarMenu
             }
 
             if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
-               
+
                 $menu->url(
-                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee'))?action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']):action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
+                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
                     __('ceomanagment::lang.procedures'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures' )],
-                 );
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures')],
+                );
             }
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') ||auth()->user()->can('ceomanagment.view_CEO_escalate_requests') ) {
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') || auth()->user()->can('ceomanagment.view_CEO_escalate_requests')) {
 
                 $menu->url(
                     action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
@@ -336,8 +338,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
-          
-           
         });
     }
     public function agnetMenu()
@@ -1557,8 +1557,8 @@ class CustomAdminSidebarMenu
                     action([\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'index']),
 
                     __('housingmovements::lang.import_rooms'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && 
-                    request()->segment(2) == 'import_rooms']
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' &&
+                        request()->segment(2) == 'import_rooms']
                 );
             }
 
@@ -1580,7 +1580,23 @@ class CustomAdminSidebarMenu
             }
         });
     }
-
+    public function allAccountingMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fa fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+        });
+    }
     public function accountingMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
