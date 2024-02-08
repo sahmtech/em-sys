@@ -73,7 +73,21 @@ class ImportRoomsController extends Controller
                         $is_valid = false;
                         $error_msg = __('housingmovements::lang.room_number_required') .$row_no+1;
                         break;
-                    }  
+                    } 
+                    else{
+                        $existingRoom = DB::table('htr_rooms')
+                        ->where('room_number', $value[0])
+                        ->exists();
+
+                        if ($existingRoom) {
+                            
+                            $is_valid = false;
+                            $error_msg = __('housingmovements::lang.room_number_already_exists') .$row_no+1;
+                            break;
+                           
+                        }
+            
+                    } 
 
                     $emp_array['htr_building_id'] = $value[1];
                     if(!empty($value[1]))

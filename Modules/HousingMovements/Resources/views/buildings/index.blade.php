@@ -44,6 +44,7 @@
                     <table class="table table-bordered table-striped" id="buildings_table">
                         <thead>
                             <tr>
+                                <th>@lang('housingmovements::lang.id')</th>
                                 <th>@lang('housingmovements::lang.building_name')</th>
                                 <th>@lang('housingmovements::lang.address')</th>
                                 <th>@lang('housingmovements::lang.building_end_date')</th>
@@ -93,20 +94,29 @@
                             <div class="clearfix"></div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':') !!}
-                                {!! Form::select('guard', $users2, null,
-                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;', 'style'=>'height:40px; width:100%',  'multiple',
-                                      'placeholder' => __('housingmovements::lang.building_guard'), ]) !!}
+                                {!! Form::select('guard[]', $users2, null, [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%;height:40px;',
+                                    'multiple' => 'multiple',
+                                    'placeholder' => __('housingmovements::lang.building_guard')
+                                ]) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':') !!}
-                                {!! Form::select('supervisor', $users2, null,
-                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;','style'=>'height:40px; width:100%',   'multiple',
-                                      'placeholder' => __('housingmovements::lang.building_supervisor'), ]) !!}
+                                {!! Form::select('supervisor[]', $users2, null,
+                                     ['class' => 'form-control select2',
+                                     'style'=>'width:100%;height:40px;',
+                                     'style'=>'height:40px; width:100%',
+                                     'multiple' => 'multiple',
+                                     'placeholder' => __('housingmovements::lang.building_supervisor'), ]) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':') !!}
-                                {!! Form::select('cleaner', $users2, null, ['class' => 'form-control select2','style'=>'width:100%;height:40px;',   'multiple',
-                                     'placeholder' => __('housingmovements::lang.building_cleaner'), ]) !!}
+                                {!! Form::select('cleaner[]', $users2, null, 
+                                ['class' => 'form-control select2',
+                                'style'=>'width:100%;height:40px;',   
+                                'multiple' => 'multiple',
+                                'placeholder' => __('housingmovements::lang.building_cleaner'), ]) !!}
                             </div>
 
                             <div class="form-group col-md-6">
@@ -175,6 +185,7 @@
                 }
             },
             columns: [
+                { data: 'id' },
                 { data: 'name' },
                 { data: 'address' },
                 {data:'building_contract_end_date'},
@@ -209,11 +220,16 @@ $('body').on('click', '.open-edit-modal', function() {
             $('#editbuildingModal input[name="name"]').val(data.building.name);
             $('#editbuildingModal input[name="address"]').val(data.building.address);
             $('#editbuildingModal input[name="building_end_date"]').val(data.building.building_contract_end_date);
-             
             $('#editbuildingModal select[name="city"]').val(data.building.city_id).trigger('change');
-            $('#editbuildingModal select[name="guard"]').val(data.building.guard_id).trigger('change');
-            $('#editbuildingModal select[name="supervisor"]').val(data.building.supervisor_id).trigger('change');
-            $('#editbuildingModal select[name="cleaner"]').val(data.building.cleaner_id).trigger('change');
+            
+           // Populate guard select dropdown
+           $('#editbuildingModal select[name="guard[]"]').val(JSON.parse(data.building.guard_ids_data)).trigger('change');
+            
+            // Populate supervisor select dropdown
+            $('#editbuildingModal select[name="supervisor[]"]').val(JSON.parse(data.building.supervisor_ids_data)).trigger('change');
+            
+            // Populate cleaner select dropdown
+            $('#editbuildingModal select[name="cleaner[]"]').val(JSON.parse(data.building.cleaner_ids_data)).trigger('change');
 
             $('#editbuildingModal').modal('show');
         },

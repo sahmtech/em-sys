@@ -14,11 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('htr_buildings', function (Blueprint $table) {
-            $table->unsignedBigInteger('guard_id')->nullable()->change();
-            $table->unsignedBigInteger('supervisor_id')->nullable()->change();
-            $table->unsignedBigInteger('cleaner_id')->nullable()->change();
-            $table->string('address')->nullable()->change();
-           
+       
+            $table->dropColumn('supervisor_id');
+            $table->json('supervisor_ids_data')->nullable()->after('guard_ids_data');
         });
     }
 

@@ -28,18 +28,24 @@
                          'placeholder' => __('housingmovements::lang.city'), 'required']) !!}
                 </div>
 
-               
+                <div class="clearfix"></div>
                 <div class="form-group col-md-6">
                     {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':') !!}
-                    {!! Form::select('guard', $users2, null, ['class' => 'form-control select2','style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_guard'), ]) !!}
+                    {!! Form::select('guard[]', $users2, null, ['class' => 'form-control select2',  'multiple' => 'multiple',
+                    'style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_guard'), ]) !!}
                 </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':') !!}
-                    {!! Form::select('supervisor', $users2, null, ['class' => 'form-control select2','style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_supervisor'), ]) !!}
+                    {!! Form::select('supervisor[]', $users2, null, ['class' => 'form-control select2',  'multiple' => 'multiple',
+                    'style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_supervisor'), ]) !!}
                 </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':') !!}
-                    {!! Form::select('cleaner', $users2, null, ['class' => 'form-control select2','style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_cleaner'), ]) !!}
+                    {!! Form::select('cleaner[]', $users2, null,
+                     ['class' => 'form-control select2',
+                     'style'=>'height:40px; width:100%',
+                     'multiple' => 'multiple',
+                     'placeholder' => __('housingmovements::lang.building_cleaner'), ]) !!}
                 </div>
 
 

@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('htr_buildings', function (Blueprint $table) {
-            $table->unsignedBigInteger('guard_id')->nullable()->change();
-            $table->unsignedBigInteger('supervisor_id')->nullable()->change();
-            $table->unsignedBigInteger('cleaner_id')->nullable()->change();
-            $table->string('address')->nullable()->change();
+        Schema::table('htr_rooms', function (Blueprint $table) {
+            
+            $table->decimal('area')->nullable()->change();
            
         });
     }

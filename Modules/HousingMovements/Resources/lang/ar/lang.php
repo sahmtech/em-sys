@@ -256,11 +256,12 @@ return [
      'area_should_be_numeric'=>'المساحة يجب أن تكون رقم في السطر  ',
      'beds_count_required'=>'عدد الأسرة مطلوب في السطر رقم ',
      'building_end_date'=>'تاريخ انتهاء عقد سكن ',
-
-    
+     'room_number_already_exists'=>'رقم الغرفة موجود سابقا ً',
+     'id'=>'الرقم',
 
 
     'department_employees' => 'موظفي الإدارة',
+
 
 
 ];

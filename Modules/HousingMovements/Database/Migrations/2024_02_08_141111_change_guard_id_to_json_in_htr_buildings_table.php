@@ -14,15 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::table('htr_buildings', function (Blueprint $table) {
-            $table->unsignedBigInteger('guard_id')->nullable()->change();
-            $table->unsignedBigInteger('supervisor_id')->nullable()->change();
-            $table->unsignedBigInteger('cleaner_id')->nullable()->change();
-            $table->string('address')->nullable()->change();
-           
+       
+            $table->dropColumn('guard_id');
+            $table->json('guard_ids_data')->nullable()->after('building_contract_end_date');
         });
     }
 
-    /**
+    /**building_contract_end_date
      * Reverse the migrations.
      *
      * @return void
