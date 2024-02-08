@@ -231,7 +231,7 @@ class Util
      */
     public function uf_date($date, $time = false)
     {
-      
+
         $date_format = session('business.date_format');
         $mysql_format = 'Y-m-d';
         if ($time) {
@@ -1677,8 +1677,8 @@ class Util
 
         $user_details['selected_contacts'] = isset($user_details['selected_contacts']) ? $user_details['selected_contacts'] : 0;
 
-        if ($request->hasFile('bank_details.Iban_file')) {
-            $file = $request->file('bank_details.Iban_file');
+        if ($request->hasFile('Iban_file')) {
+            $file = $request->file('Iban_file');
             $path = $file->store('/employee_bank_ibans');
             $user_details['bank_details']['Iban_file'] = $path;
         }
@@ -1708,43 +1708,42 @@ class Util
         if ($request->has('DocumentTypes')) {
 
             $documents = json_decode($request->input('DocumentTypes'), true);
-        if( $documents){
-            foreach ($documents as $index => $document) {
-                $document2 = new EssentialsOfficialDocument();
-                $document2->type = $document['document_type'];
-                $document2->employee_id = $user->id;
-                
+            if ($documents) {
+                foreach ($documents as $index => $document) {
+                    $document2 = new EssentialsOfficialDocument();
+                    $document2->type = $document['document_type'];
+                    $document2->employee_id = $user->id;
 
-                if ($document['document_type'] == 'national_id' && $request->input('id_proof_name') == 'national_id') {
-                    $document2->number = $request->input('id_proof_number');
-                }
-                
-                if ($document['document_type'] == 'residence_permit' && $request->input('expiration_date') && $request->input('id_proof_name') == 'eqama') {
-                    $document2->expiration_date = $request->input('expiration_date');
-                    $document2->number = $request->input('id_proof_number');
-                }
-                
-                if ($request->input('expiration_date')) {
-                    $document2->expiration_date = $request->input('expiration_date');
-                }
-        
-                $document2->status = 'valid';
-        
-  
-                if (isset($document['document_file'])) {
-       
-                    $file = $request->file('document_file')[$index];
-                    
-                    if ($file) {
-                        $filePath = $file->store('/officialDocuments');
-                        $document2->file_path = $filePath;
+
+                    if ($document['document_type'] == 'national_id' && $request->input('id_proof_name') == 'national_id') {
+                        $document2->number = $request->input('id_proof_number');
                     }
+
+                    if ($document['document_type'] == 'residence_permit' && $request->input('expiration_date') && $request->input('id_proof_name') == 'eqama') {
+                        $document2->expiration_date = $request->input('expiration_date');
+                        $document2->number = $request->input('id_proof_number');
+                    }
+
+                    if ($request->input('expiration_date')) {
+                        $document2->expiration_date = $request->input('expiration_date');
+                    }
+
+                    $document2->status = 'valid';
+
+
+                    if (isset($document['document_file'])) {
+
+                        $file = $request->file('document_file')[$index];
+
+                        if ($file) {
+                            $filePath = $file->store('/officialDocuments');
+                            $document2->file_path = $filePath;
+                        }
+                    }
+
+                    $document2->save();
                 }
-        
-                $document2->save();
             }
-        }
-            
         }
 
 

@@ -388,19 +388,19 @@ class EssentialsManageEmployeeController extends Controller
             ->whereDate('contract_end_date', '<=', $endDateThreshold)
             ->count();
 
-       
-        $late_vacation=0;
-        $type=RequestsType::where('type','leavesAndDepartures')->where('for','employee')->first();
-        if($type){
+
+        $late_vacation = 0;
+        $type = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first();
+        if ($type) {
             $late_vacation = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
-                ->where('request_type_id',$type->id)
+                ->where('request_type_id', $type->id)
                 ->whereHas('related_to_user', function ($query) {
                     $query->where('status', 'vecation');
                 })
                 ->where('end_date', '<', now())
                 ->select('end_date')->count();
         }
-       
+
 
         $nullCount = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
             ->where(function ($query) {
@@ -424,20 +424,20 @@ class EssentialsManageEmployeeController extends Controller
             })
             ->count();
 
-  
+
 
         $requestsProcess = null;
 
         $allRequestTypes = RequestsType::pluck('type', 'id');
-       
+
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%موظف%')
-        ->pluck('id')->toArray();
+            ->where('name', 'LIKE', '%موظف%')
+            ->pluck('id')->toArray();
 
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
-       
-    
+
+
         $requestsProcess = UserRequest::select([
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
@@ -473,12 +473,12 @@ class EssentialsManageEmployeeController extends Controller
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
                 })
-                ->editColumn('status', function ($row)  {
+                ->editColumn('status', function ($row) {
                     $status = trans('request.' . $row->status);
-                  
+
                     return $status;
                 })
-               
+
 
                 ->rawColumns(['status', 'request_type_id'])
 
@@ -733,67 +733,65 @@ class EssentialsManageEmployeeController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $late_vacation=[];
-        $type = RequestsType::where('type','leavesAndDepartures')->where('for','employee')->first();
-         if ($type)
-        {
+        $late_vacation = [];
+        $type = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first();
+        if ($type) {
             $late_vacation = UserRequest::with('related_to_user')->whereIn('related_to', $userIds)
-                ->where('request_type_id',$type->id)
+                ->where('request_type_id', $type->id)
                 ->whereHas('related_to_user', function ($query) {
                     $query->where('status', 'vecation');
                 })
                 ->where('end_date', '<', now());
-              
         }
         if (request()->ajax()) {
 
             return DataTables::of($late_vacation)
-                           ->addColumn(
-                               'worker_name',
-                               function ($row) {
-                                   return $row->user->first_name . ' ' . $row->user->last_name ?? '';
-                               }
-                           )
-           
-                           ->addColumn(
-                               'project',
-                               function ($row) {
-                                   return $row->user->assignedTo?->contact?->supplier_business_name ?? null;
-                               }
-                           )
-                           ->addColumn(
-                               'customer_name',
-                               function ($row) {
-                                   return $row->user->assignedTo?->contact->supplier_business_name ?? null;
-                               }
-                           )
-           
-                           ->addColumn(
-                               'customer_name',
-                               function ($row) {
-                                   return $row->user->status ?? null;
-                               }
-                           )
-           
-                           ->addColumn(
-                               'action',
-                               ''
-                               // function ($row) {
-                               //     $html = '';
-                               //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                               //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                               //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-           
-                               //     return $html;
-                               // }
-                           )
-           
-           
-                           ->removeColumn('id')
-                           ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-                           ->make(true);
-                   }
-       
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user->first_name . ' ' . $row->user->last_name ?? '';
+                    }
+                )
+
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user->status ?? null;
+                    }
+                )
+
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                    //     return $html;
+                    // }
+                )
+
+
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
+
 
         return view('essentials::employee_affairs.statistics.late_vacaction');
     }
@@ -1126,12 +1124,11 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-        
+
         if ($user) {
             if ($user->user_type == 'employee' || $user->user_type == 'manager') {
 
                 $documents = $user->OfficialDocument;
-            
             } else if ($user->user_type == 'worker') {
 
 
@@ -1195,7 +1192,7 @@ class EssentialsManageEmployeeController extends Controller
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
 
-     
+
 
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact(
             'user',
@@ -1291,7 +1288,7 @@ class EssentialsManageEmployeeController extends Controller
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
         $officalDocuments = $user->OfficialDocument;
-        
+
         return view('essentials::employee_affairs.employee_affairs.edit')
             ->with(compact(
                 'officalDocuments',
@@ -1377,12 +1374,29 @@ class EssentialsManageEmployeeController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-
+         
             DB::beginTransaction();
 
 
             $user = User::findOrFail($id);
 
+            $delete_iban_file = $request->delete_iban_file ?? null;
+            if ($delete_iban_file && $delete_iban_file == 1) {
+
+                $filePath =  !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? null : null;
+                if ($filePath) {
+                    Storage::delete($filePath);
+                }
+            }
+
+            if ($request->hasFile('Iban_file')) {
+                error_log("1111");
+                $file = request()->file('Iban_file');
+                $path = $file->store('/employee_bank_ibans');
+                $bank_details = $request->input('bank_details');
+                $bank_details['Iban_file'] = $path;
+                $user_data['bank_details'] = json_encode($bank_details);
+            }
 
             $user->update($user_data);
 
@@ -1477,7 +1491,7 @@ class EssentialsManageEmployeeController extends Controller
             ];
         }
 
-        return redirect()->route('showEmployee',['id' => $id])->with('status', $output);
+        return redirect()->route('showEmployee', ['id' => $id])->with('status', $output);
         //  return redirect()->route('employees')->with('status', $output);
     }
 
