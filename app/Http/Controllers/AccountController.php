@@ -1075,7 +1075,7 @@ class AccountController extends Controller
                 ->rawColumns(['credit', 'debit', 'balance', 'sub_type', 'total_balance', 'payment_details'])
                 ->make(true);
         }
-        $accounts = Account::forDropdown($business_id, false);
+        $accounts = Account::forDropdown($business_id, false,false,false);
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 

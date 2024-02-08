@@ -11,6 +11,7 @@ use App\Utils\ModuleUtil;
 use Modules\Accounting\Entities\AccountingAccountType;
 use DB;
 use Excel;
+use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Exports\BudgetExport;
 
 class BudgetController extends Controller
@@ -33,6 +34,8 @@ class BudgetController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+     
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_manage_budget= auth()->user()->can('accounting.manage_budget');
@@ -47,7 +50,7 @@ class BudgetController extends Controller
         $budget = [];
         $accounts = [];
         if($fy_year!= null) {
-            $accounts = AccountingAccount::where('business_id', $business_id)
+            $accounts = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
                                 ->where('status', 'active')
                                 ->select('name', 'id', 'account_primary_type')
                                 ->get();
@@ -179,12 +182,13 @@ class BudgetController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-
+        $company_id = Session::get('selectedCompanyId');
+        
     
 
         $fy_year = request()->input('financial_year');
 
-        $accounts = AccountingAccount::where('business_id', $business_id)
+        $accounts = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
                                 ->where('status', 'active')
                                 ->select('name', 'id')
                                 ->get();
@@ -205,7 +209,8 @@ class BudgetController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-
+        $company_id = Session::get('selectedCompanyId');
+        
      
         
         try {

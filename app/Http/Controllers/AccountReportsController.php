@@ -349,7 +349,7 @@ class AccountReportsController extends Controller
                     ->make(true);
         }
 
-        $accounts = Account::forDropdown($business_id, false);
+        $accounts = Account::forDropdown($business_id, false,false,false);
         $accounts = ['' => __('messages.all'), 'none' => __('lang_v1.none')] + $accounts;
 
         return view('account_reports.payment_account_report')
@@ -370,7 +370,7 @@ class AccountReportsController extends Controller
         $business_id = session()->get('user.business_id');
         if (request()->ajax()) {
             $payment = TransactionPayment::where('business_id', $business_id)->findOrFail($id);
-            $accounts = Account::forDropdown($business_id, false);
+            $accounts = Account::forDropdown($business_id, false,false,false);
 
             return view('account_reports.link_account_modal')
                 ->with(compact('accounts', 'payment'));

@@ -13,6 +13,7 @@ use Modules\Accounting\Entities\AccountingAccountsTransaction;
 use Modules\Accounting\Entities\AccountingAccTransMapping;
 use Modules\Accounting\Utils\AccountingUtil;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingAccountType;
 use Modules\Accounting\Entities\AccountingAccTransMappingSettingTest;
@@ -22,6 +23,8 @@ class AutomatedMigrationController extends Controller
 {
 
     protected $util;
+    protected $moduleUtil;
+    protected $accountingUtil;
 
     public function __construct(Util $util, ModuleUtil $moduleUtil, AccountingUtil $accountingUtil)
     {
@@ -37,7 +40,7 @@ class AutomatedMigrationController extends Controller
     public function index()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_automatedMigration=auth()->user()->can('accounting.automatedMigration');
+        $can_automatedMigration = auth()->user()->can('accounting.automatedMigration');
         if (!($is_admin || $can_automatedMigration)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -67,8 +70,9 @@ class AutomatedMigrationController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
-     
+
         // try {
         DB::beginTransaction();
 
@@ -83,7 +87,7 @@ class AutomatedMigrationController extends Controller
         $amount_type_2 = $request->get('amount_type2');
         $journal_date = $request->get('journal_date');
 
-        $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
+        $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
 
 
         $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
@@ -102,8 +106,8 @@ class AutomatedMigrationController extends Controller
         ]);
 
 
-        $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
-        $_ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
+        $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
+        $_ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
         foreach ($account_ids_1 as $index => $account_id) {
             if (!empty($account_id)) {
 
@@ -112,6 +116,7 @@ class AutomatedMigrationController extends Controller
                 $transaction_row['type'] =  $type_1[$index];
                 $transaction_row['created_by'] = $user_id;
                 $transaction_row['business_id'] = $business_id;
+                $transaction_row['company_id'] = $company_id;
                 $transaction_row['ref_no'] = $ref_no;
                 $transaction_row['amount'] = $amount_type_1[$index];
                 $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
@@ -136,6 +141,7 @@ class AutomatedMigrationController extends Controller
                 $transaction_row_['type'] =  $type_2[$index];
                 $transaction_row_['created_by'] = $user_id;
                 $transaction_row_['business_id'] = $business_id;
+                $transaction_row_['company_id'] = $company_id;
                 $transaction_row_['ref_no'] = $_ref_no;
                 $transaction_row_['amount'] = $amount_type_2[$index];
                 $transaction_row_['operation_date'] = $this->util->uf_date($journal_date, true);
@@ -210,8 +216,10 @@ class AutomatedMigrationController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
         // return $request;
-   
+
         // try {
         DB::beginTransaction();
 
@@ -226,7 +234,7 @@ class AutomatedMigrationController extends Controller
         $amount_type_2 = $request->get('amount_type2');
         $journal_date = $request->get('journal_date');
 
-        $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
+        $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
 
 
         $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
@@ -244,8 +252,8 @@ class AutomatedMigrationController extends Controller
         ]);
 
         AccountingAccTransMappingSettingTest::where('mapping_setting_id', $id)->delete();
-        $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
-        $_ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
+        $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
+        $_ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
         foreach ($account_ids_1 as $index => $account_id) {
             if (!empty($account_id)) {
 
@@ -254,6 +262,7 @@ class AutomatedMigrationController extends Controller
                 $transaction_row['type'] =  $type_1[$index];
                 $transaction_row['created_by'] = $user_id;
                 $transaction_row['business_id'] = $business_id;
+                $transaction_row['company_id'] = $company_id;
                 $transaction_row['ref_no'] = $ref_no;
                 $transaction_row['amount'] = $amount_type_1[$index];
                 $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
@@ -277,6 +286,7 @@ class AutomatedMigrationController extends Controller
                 $transaction_row_['type'] =  $type_2[$index];
                 $transaction_row_['created_by'] = $user_id;
                 $transaction_row_['business_id'] = $business_id;
+                $transaction_row['company_id'] = $company_id;
                 $transaction_row_['ref_no'] = $_ref_no;
                 $transaction_row_['amount'] = $amount_type_2[$index];
                 $transaction_row_['operation_date'] = $this->util->uf_date($journal_date, true);

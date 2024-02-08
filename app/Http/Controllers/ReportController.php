@@ -1714,7 +1714,7 @@ class ReportController extends Controller
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id);
-        $suppliers = Contact::suppliersDropdown($business_id);
+        $suppliers = Contact::suppliersDropdown($business_id,true,true);
         $brands = Brands::forDropdown($business_id);
 
         return view('report.product_purchase_report')
@@ -2319,7 +2319,7 @@ class ReportController extends Controller
                 ->make(true);
         }
         $business_locations = BusinessLocation::forDropdown($business_id);
-        $suppliers = Contact::suppliersDropdown($business_id, false);
+        $suppliers = Contact::suppliersDropdown($business_id, false,true);
 
         return view('report.purchase_payment_report')
             ->with(compact('business_locations', 'suppliers'));
@@ -3302,7 +3302,7 @@ class ReportController extends Controller
                 ->make(true);
         }
 
-        $suppliers = Contact::suppliersDropdown($business_id, false);
+        $suppliers = Contact::suppliersDropdown($business_id, false,true);
         $customers = Contact::customersDropdown($business_id, false);
         $business_locations = BusinessLocation::forDropdown($business_id);
 
@@ -3457,7 +3457,7 @@ class ReportController extends Controller
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id);
-        $suppliers = Contact::suppliersDropdown($business_id, false);
+        $suppliers = Contact::suppliersDropdown($business_id, false,true);
         $orderStatuses = $this->productUtil->orderStatuses();
 
         return view('report.purchase_report')
@@ -3937,7 +3937,7 @@ class ReportController extends Controller
                 ->make(true);
         }
 
-        $suppliers = Contact::suppliersDropdown($business_id);
+        $suppliers = Contact::suppliersDropdown($business_id,true,true);
 
         return view('report.gst_purchase_report')->with(compact('suppliers', 'taxes'));
     }

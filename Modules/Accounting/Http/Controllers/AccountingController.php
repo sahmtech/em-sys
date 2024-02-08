@@ -63,7 +63,7 @@ class AccountingController extends Controller
      */
     public function dashboard()
     {
-        $selectedCompanyId = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $business_id = request()->session()->get('user.business_id');
 
@@ -75,6 +75,7 @@ class AccountingController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
+
         $start_date = request()->get('start_date', session()->get('financial_year.start'));
         $end_date = request()->get('end_date', session()->get('financial_year.end'));
         $balance_formula = $this->accountingUtil->balanceFormula();
@@ -86,6 +87,7 @@ class AccountingController extends Controller
             'accounting_accounts.id'
         )
             ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
             ->whereDate('AAT.operation_date', '>=', $start_date)
             ->whereDate('AAT.operation_date', '<=', $end_date)
             ->select(
@@ -206,8 +208,9 @@ class AccountingController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
             $q = request()->input('q', '');
-            $accounts = AccountingAccount::forDropdown($business_id, true, $q);
+            $accounts = AccountingAccount::forDropdown($business_id, $company_id, true, $q);
 
             $accounts_array = [];
             foreach ($accounts as $account) {

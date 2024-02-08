@@ -12,6 +12,8 @@ use Modules\Accounting\Entities\CostCenter;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 
+use Illuminate\Support\Facades\Session as FacadesSession;
+
 class CostCenterController extends Controller
 {
     protected $moduleUtil;
@@ -25,6 +27,8 @@ class CostCenterController extends Controller
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = FacadesSession::get('selectedCompanyId');
+
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_cost_center= auth()->user()->can('accounting.cost_center');
@@ -38,7 +42,7 @@ class CostCenterController extends Controller
         $can_costCenter_delete = auth()->user()->can('accounting.costCenter.delete');
         $mainCenters = CostCenter::query()->whereNull('deleted_at')->whereNull('parent_id')->get();
         $allCenters = CostCenter::query()->whereNull('deleted_at')->get();
-        $businessLocations = BusinessLocation::where('business_id', $business_id)->get();
+        $businessLocations = BusinessLocation::where('business_id', $business_id) ->where('company_id', $company_id)->get();
         // $businessLocations = BusinessLocation::query()->get();
         if (request()->ajax()) {
             $costCenters = CostCenter::query()->orderBy('id');
@@ -77,6 +81,8 @@ class CostCenterController extends Controller
 
     protected function store(Request $request)
     {
+        $company_id = FacadesSession::get('selectedCompanyId');
+
 
         $rules = [
             'ar_name' => 'required|String|min:3|max:191|unique:accounting_cost_centers,ar_name',
@@ -104,6 +110,8 @@ class CostCenterController extends Controller
         }
         $validated = $validator->validated();
         $validated['business_id'] = $request->session()->get('user.business_id');
+        $validated['company_id'] = $company_id;
+
         CostCenter::query()->create($validated);
         //   return response()->json([
         //     'success' => true,
