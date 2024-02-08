@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsCity;
+use  Modules\HousingMovements\Entities\HtrBuilding;
 
 class BuildingController extends Controller
 {
@@ -53,12 +54,18 @@ class BuildingController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $cities = EssentialsCity::forDropdown();
-        if (request()->ajax()) {
-            $buildings = DB::table('htr_buildings')->select(['id', 'name', 'city_id', 'address', 'guard_id', 'supervisor_id', 'cleaner_id']);
 
-            if (!empty(request()->input('city')) && request()->input('city') !== 'all') {
-                $buildings->where('city_id', request()->input('city'));
-            }
+        $buildings = HtrBuilding::select(['id', 'name', 'city_id', 'address', 'guard_id', 'supervisor_id',
+         'cleaner_id','building_contract_end_date'])
+         ->orderBy('id','desc');
+
+        if (!empty(request()->input('city')) && request()->input('city') !== 'all') {
+            $buildings->where('city_id', request()->input('city'));
+        }
+
+        if (request()->ajax()) {
+            
+           
             return Datatables::of($buildings)
                 ->editColumn('city_id', function ($row) use ($cities) {
                     $item = $cities[$row->city_id] ?? '';
@@ -97,7 +104,7 @@ class BuildingController extends Controller
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
-                ->removeColumn('id')
+             
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -127,14 +134,10 @@ class BuildingController extends Controller
      */
     public function store(Request $request)
     {
-
-        $business_id = $request->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
         try {
-            $input = $request->only(['name', 'city', 'address', 'guard', 'supervisor', 'cleaner']);
+            $input = $request->only(['name', 'city',
+             'address', 'guard', 'supervisor',
+              'cleaner','building_end_date']);
 
 
             $input2['name'] = $input['name'];
@@ -143,8 +146,11 @@ class BuildingController extends Controller
             $input2['guard_id'] = $input['guard'];
             $input2['supervisor_id'] = $input['supervisor'];
             $input2['cleaner_id'] = $input['cleaner'];
+            $input2['building_contract_end_date'] = $input['building_end_date'];
 
-            DB::table('htr_buildings')->insert($input2);
+           
+            HtrBuilding::create($input2);
+        
 
             $output = [
                 'success' => true,
@@ -152,7 +158,6 @@ class BuildingController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
@@ -160,7 +165,7 @@ class BuildingController extends Controller
         }
 
 
-        return redirect()->route('buildings');
+        return redirect()->route('buildings')->with($output);
     }
 
     /**

@@ -45,14 +45,13 @@
                     </div>
 
                     <div class="modal-body">
-                        <div class="form-group">
+                        <div class="form-group col-md-6">
                             {!! Form::label('name',   __('essentials::lang.job_title') .':*') !!}
                             {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.job_title'), 'required']) !!}
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group col-md-6">
                             {!! Form::label('en_name', __('essentials::lang.en_name') . ' (' . __('essentials::lang.optional') . '):') !!}
-
                             {!! Form::text('en_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.en_name')]) !!}
                         </div>
 
@@ -67,9 +66,9 @@
             </div>
         </div>
 
-
+@include('essentials::settings.partials.professions_and_specializations.edit_modal')
 </section>
-<!-- /.content -->
+
 
 @endsection
 @section('javascript')
@@ -84,14 +83,75 @@
                 { data: 'id'},
                 { data: 'name'},
                 { data: 'en_name'},
-               
-
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });
 
    
-      
+    //edit----------------------------------------------------------------
+    $('body').on('click', '.open-professions-edit-modal', function() {
+            var professionId = $(this).data('id'); 
+            $('#professionIdInput').val(professionId);
+
+            var editUrl = '{{ route("professions.edit", ":professionId") }}'
+            editUrl = editUrl.replace(':professionId', professionId);
+            console.log(editUrl);
+
+            $.ajax({
+                url: editUrl,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    var data = response.data;
+
+                    $('#editprofessionModal input[name="name"]').val(data.profession.name);
+                    $('#editprofessionModal input[name="en_name"]').val(data.profession.en_name);
+                    $('#editprofessionModal').modal('show');
+                },
+
+                error: function(error) 
+                {
+                    console.error('Error fetching building data:', error);
+                }
+            });
+        });
+        //submit update--------------------------------------------------------------------------------------------  
+        $('body').on('submit', '#editprofessionModal form', function (e) {
+            e.preventDefault();
+
+            var professionId = $('#professionIdInput').val();
+            console.log(professionId);
+
+            var urlWithId = '{{ route("professions.update", ":professionId") }}';
+            urlWithId = urlWithId.replace(':professionId', professionId);
+            console.log(urlWithId);
+
+            $.ajax({
+                url: urlWithId,
+                type: 'POST',
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response); 
+                    if (response.success) {
+                        console.log(response);
+                        professions_table.ajax.reload();
+                        toastr.success(response.msg);
+                        $('#editprofessionModal').modal('hide');
+                    } else {
+                        toastr.error(response.msg);
+                        console.log(response);
+                    }
+                },
+                error: function (error) {
+                    console.error('Error submitting form:', error);
+                    
+                    toastr.error('An error occurred while submitting the form.', 'Error');
+                },
+            });
+        });
+        //-----------------------------------------------------------------
   
     $(document).on('click', 'button.delete_profession_button', function () {
             swal({
