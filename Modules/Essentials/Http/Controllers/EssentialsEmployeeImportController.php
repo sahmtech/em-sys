@@ -40,14 +40,12 @@ use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsInsuranceCompany;
-
+use Maatwebsite\Excel\Concerns\FromCollection;
 
 class EssentialsEmployeeImportController extends Controller
 {
 
     protected $moduleUtil;
-   
-
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
@@ -87,7 +85,45 @@ class EssentialsEmployeeImportController extends Controller
        
     }
 
-
+    public function processUpload(Request $request)
+    {
+        $file = $request->file('employee_csv');
+        $parsed_array = Excel::toArray([], $file);
+        $imported_data = array_splice($parsed_array[0], 1);
+            
+        $existingProofNumbers = [];
+        $nonExistingProofNumbers = [];
+    
+        
+        foreach ($imported_data as $key => $value) {
+            $proofNumber = $value[0]; 
+    
+            
+            $exists = User::where('id_proof_number', $proofNumber)->exists();
+    
+            
+            if ($exists) {
+                $existingProofNumbers[] = $value;
+            } else {
+                $nonExistingProofNumbers[] = $value;
+            }
+        }
+    
+        
+        $existingExcel = Excel::raw(new ProofNumbersExport($existingProofNumbers), \Maatwebsite\Excel\Excel::XLSX);
+        $nonExistingExcel = Excel::raw(new ProofNumbersExport($nonExistingProofNumbers), \Maatwebsite\Excel\Excel::XLSX);
+    
+        
+        $headers = [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="non_existing_proof_numbers.xlsx"',
+        ];
+    
+        
+        return response()->stream(function () use ($nonExistingExcel) {
+            echo $nonExistingExcel;
+        }, 200, $headers)->send();
+    }
     
     public function postImportEmployee(Request $request)
     {
@@ -445,17 +481,17 @@ class EssentialsEmployeeImportController extends Controller
             }
             else{ $emp_array['contract_end_date'] = null;}
 
-            // if (!empty($value[37]))
-            // {
-            //     $emp_array['contract_duration'] = $value[37];
-            //     if(!is_numeric( $emp_array['contract_duration']))
-            //     {
-            //         $is_valid = false;
-            //         $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no+1;
-            //         break;
-            //     }
-            // } 
-            // else{$emp_array['contract_duration'] = null;}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
             if (!empty($value[38])) 
             {
@@ -564,7 +600,7 @@ class EssentialsEmployeeImportController extends Controller
                                           
             ];
             $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data);  
-              // dd( $formated_data );     
+              
             if (! empty($formated_data)) 
             {
                  
@@ -584,14 +620,14 @@ class EssentialsEmployeeImportController extends Controller
                     
                     if($emp_data['emp_number'] == null)
                     {
-                       //add code here
+                       
                     }
                     
                     $emp = User::create($emp_data);
                    
                    
                     $emp_data['employee_id'] = $emp->id;
-                   // $emp_data['contract_type_id'] = null;
+                   
                     foreach ($emp_data['allowance_data'] as $allowanceType => $allowanceJson)
                     {
                             $allowanceData = json_decode($allowanceJson, true);
@@ -623,7 +659,7 @@ class EssentialsEmployeeImportController extends Controller
                         
                             if( $previous_proof_date )
                             {
-                                //review the expire date of previous 
+                                
                                 $previous_proof_date->is_active= 0;
                                 $previous_proof_date->save();
                             
@@ -648,7 +684,7 @@ class EssentialsEmployeeImportController extends Controller
                            
                             if( $previous_passport_date )
                             {
-                                  //review the expire date of previous 
+                                  
                                 $previous_passport_date->is_active= 0;
                                 $previous_passport_date->save();
                               
@@ -678,9 +714,9 @@ class EssentialsEmployeeImportController extends Controller
                            
                             if( $previous_contract )
                             {
-                                 //review the expire date of previous 
+                                 
                                 $previous_contract->is_active= 0;
-                               // $previous_contract->contract_end_date= $emp_data['contract_start_date'];
+                               
                                 $previous_contract->save();
                               
                             }
@@ -707,7 +743,7 @@ class EssentialsEmployeeImportController extends Controller
                             {$contract->contract_number = $emp_data['contract_number'] ;}
                            
                           
-                            //start date is exist , end date is not exist
+                            
                             if($emp_data['contract_start_date'] != null && $emp_data['contract_end_date'] == null )
                             {
     
@@ -722,7 +758,7 @@ class EssentialsEmployeeImportController extends Controller
                                 $contract->contract_start_date=$emp_data['contract_start_date']; 
                                 $contract->contract_duration=1;
     
-                            } //end date is exist , start date is not exist
+                            } 
                             else if($emp_data['contract_start_date'] == null && $emp_data['contract_end_date'] != null )
                             {
                                 $contract_end_date =$emp_data['contract_end_date']; 
@@ -735,7 +771,7 @@ class EssentialsEmployeeImportController extends Controller
                                 $contract->contract_end_date=$emp_data['contract_end_date']; 
                                 $contract->contract_duration=1;
      
-                            }//end date is exist , start date is  exist
+                            }
                             else{
                                 $contract_end_date =$emp_data['contract_end_date']; 
                                 $contract_start_date =$emp_data['contract_start_date']; 
@@ -802,7 +838,7 @@ class EssentialsEmployeeImportController extends Controller
                                 $previous_appointment->save();
                               
                             }
-                            //contract start date --> appointement start date
+                            
                             $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                             $essentials_employee_appointmets->employee_id = $emp->id;
                             $essentials_employee_appointmets->start_from= $final_contract_start_date;
@@ -827,7 +863,7 @@ class EssentialsEmployeeImportController extends Controller
                                 $previous_admission->is_active= 0;
                                 $previous_admission->save();
 
-                               //contract start date compare 
+                               
                                 $essentials_admission_to_works = new EssentialsAdmissionToWork();
                                 $essentials_admission_to_works->admissions_date=$emp_data['admission_date'];
                                 $essentials_admission_to_works->employee_id = $emp->id;
@@ -839,7 +875,7 @@ class EssentialsEmployeeImportController extends Controller
                            }
                            else
                            {
-                                //also contract  start date
+                                
                                 $essentials_admission_to_works = new EssentialsAdmissionToWork();
                                 $essentials_admission_to_works->admissions_date=$emp_data['admission_date'];
                                 $essentials_admission_to_works->employee_id = $emp->id;
@@ -901,7 +937,7 @@ class EssentialsEmployeeImportController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -932,7 +968,7 @@ class EssentialsEmployeeImportController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -942,7 +978,22 @@ class EssentialsEmployeeImportController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
+    }
+}
+
+class ProofNumbersExport implements FromCollection
+{
+    protected $data;
+
+    public function __construct($data)
+    {
+        $this->data = $data;
+    }
+
+    public function collection()
+    {
+        return collect($this->data);
     }
 }
 	

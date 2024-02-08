@@ -91,6 +91,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 {
                     $row_no = $key + 1;
                     $emp_array = [];  
+                    $emp_array['emp_number'] = $value[0]; 
 
                     $emp_array['first_name'] = $value[1];                      
                     $emp_array['mid_name'] = $value[2];
@@ -556,6 +557,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                        'nationality_id',
                                        'bank_details',
                                        'company_id',
+                                       'emp_number'
                                       
                                 ];
     
