@@ -469,6 +469,53 @@
             </div>
         </div>
 
+        <div class="modal fade"
+            data-file-path="{{ !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? '' : '' }}"
+            id="ibanFilePopupModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+
+                    <input type="hidden" name="delete_iban_file" value="0" id="delete_iban_file_input">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.Iban_file')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row" id="ibanFilePreviewRow" style="display: none;">
+                            <div class="form-group col-md-12">
+                                <iframe src="" id="popupIbanFilePreview" style="width: 100%; height: 400px;"
+                                    frameborder="0"></iframe>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    {!! Form::file('Iban_file', [
+                                        'class' => 'form-control',
+                                        'style' => 'height:36px; ',
+                                        'accept' => '.*',
+                                    ]) !!}
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-danger deleteIbanFile">@lang('messages.delete')</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
+                    </div>
+                 
+                </div>
+            </div>
+        </div>
+
 
 
 
@@ -480,6 +527,77 @@
     @section('javascript')
 
         <script>
+            $(document).ready(function() {
+                let ibanFileChanged = false;
+
+                $('#ibanFileLink').on('click', function(e) {
+                    e.preventDefault();
+                    openIbanFilePopup();
+                });
+
+                $('input[type="file"]').on('change', function(event) {
+                    previewIbanFile(event);
+                    ibanFileChanged = true;
+                    $('#delete_iban_file_input').val('0');
+                    enableSaveButton();
+                });
+
+
+                $('#update_iban_file_form').submit(function(e) {
+                    if (!ibanFileChanged) {
+                        e.preventDefault(); // Prevent form submission if no changes made
+                    }
+                });
+
+                function openIbanFilePopup() {
+                    const modal = $('#ibanFilePopupModal');
+                    const filePath = modal.data('file-path');
+                    const filePreviewIframe = $('#popupIbanFilePreview');
+                    const filePreviewRow = $('#ibanFilePreviewRow');
+
+                    if (filePath) {
+                        filePreviewIframe.attr('src', '/uploads/' + filePath);
+                        filePreviewRow.show(); // Show the preview row
+                    } else {
+                        filePreviewIframe.attr('src', '');
+                        filePreviewRow.hide(); // Hide the preview row if there's no file
+                    }
+
+                    modal.modal('show');
+                }
+
+                function enableSaveButton() {
+                    $('.saveFile').prop('disabled', !fileChanged);
+                }
+
+                function previewIbanFile(event) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var output = document.getElementById('popupIbanFilePreview');
+                        output.src = e.target.result;
+                        document.getElementById('ibanFilePreviewRow').style.display =
+                            ''; // Show the row by clearing the display style
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+
+                $('.deleteIbanFile').on('click', function() {
+                    $('#popupIbanFilePreview').attr('src', ''); // Remove iframe source
+                    $('input[type="file"]').val(''); // Clear file input
+                    $('#delete_iban_file_input').val('1'); // Indicate that the file should be deleted
+                    ibanFileChanged = true;
+                    enableSaveButton();
+                    document.getElementById('ibanFilePreviewRow').style.display =
+                        'none'; // Hide the row by setting display to none
+                });
+            });
+
+
+
+
+
+
+
             $(document).ready(function() {
                 $('.add_new_document').on('click', function() {
                     var newRow = $('.template-row').first().clone();

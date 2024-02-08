@@ -1677,8 +1677,8 @@ class Util
 
         $user_details['selected_contacts'] = isset($user_details['selected_contacts']) ? $user_details['selected_contacts'] : 0;
 
-        if ($request->hasFile('bank_details.Iban_file')) {
-            $file = $request->file('bank_details.Iban_file');
+        if ($request->hasFile('Iban_file')) {
+            $file = $request->file('Iban_file');
             $path = $file->store('/employee_bank_ibans');
             $user_details['bank_details']['Iban_file'] = $path;
         }
