@@ -436,7 +436,7 @@ class RoomController extends Controller
     
             $output = [
                 'success' => false,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_wrong'),
             ];
         }
     
