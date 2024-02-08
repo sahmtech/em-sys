@@ -89,9 +89,9 @@
                         <!-- Employee Profile Card Content -->
                         <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
                         <div class="employee-info">
-                            <h3>متعب الكبرى</h3>
+                            <h3>الموظف المثالي</h3>
 
-                            <p>مدير إدارة التشغيل</p>
+                            {{-- <p>مدير إدارة التشغيل</p> --}}
                         </div>
                     </div>
                 </div>

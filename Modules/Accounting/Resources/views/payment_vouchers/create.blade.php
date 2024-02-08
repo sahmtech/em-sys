@@ -44,7 +44,7 @@
                                         id="contact_id" required>
                                     <option value="">@lang('messages.please_select')</option>
                                     @foreach($contacts as $contact)
-                                        <option value="{{$contact['id']}}">{{ $contact['first_name'].' '.$contact['last_name'].' - '.$contact['mobile'] }}</option>
+                                        <option value="{{$contact['id']}}">{{ $contact['name'].' - '.$contact['supplier_business_name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>

@@ -42,13 +42,13 @@ class CustomAdminSidebarMenu
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
             $this->assetManagementMenu();
-        } elseif (Str::startsWith($currentPath, 'sale')) {
+        } elseif (Str::startsWith($currentPath, ['sale'])) {
             $this->CUS_salesMenu();
         } elseif (Str::startsWith($currentPath, 'housingmovements')) {
             $this->houseMovementsMenu();
         } elseif (Str::startsWith($currentPath, ['international', 'ir'])) {
             $this->getIRMenu();
-        } elseif (Str::startsWith($currentPath, 'accounting')) {
+        } elseif (Str::startsWith($currentPath, ['accounting', 'sells'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
             $this->followUpMenu();
@@ -103,7 +103,7 @@ class CustomAdminSidebarMenu
             $this->toDoMenu();
         } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
             $this->helpdeskMenu();
-        }  elseif (Str::startsWith($currentPath, ['employee_requests'])) {
+        } elseif (Str::startsWith($currentPath, ['employee_requests'])) {
             $this->myMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
@@ -265,7 +265,7 @@ class CustomAdminSidebarMenu
     public function generalmanagementMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
-             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(
@@ -276,9 +276,12 @@ class CustomAdminSidebarMenu
                     // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ],
             );
+
             if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') ||auth()->user()->can('generalmanagement.view_GM_escalate_requests') ) {
+                
+
                 $menu->url(
-                    action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']),
+                   ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests'))?action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']):action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
                     __('generalmanagement::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
                 );
@@ -300,7 +303,7 @@ class CustomAdminSidebarMenu
 
                 ],
             );
-         
+
             if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
                 $menu->url(
 
@@ -309,21 +312,32 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'departments'],
                 );
             }
-            if ($is_admin  || auth()->user()->can('ceomanagment.crud_all_procedures')) {
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types') ) {
                 $menu->url(
-
-                    action([\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index']),
-                    __('essentials::lang.procedures'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'procedures'],
+                    action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
+                    __('ceomanagment::lang.requests_types'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests_types')]
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
+               
+                $menu->url(
+                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee'))?action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']):action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
+                    __('ceomanagment::lang.procedures'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures' )],
+                 );
+            }
             if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') ||auth()->user()->can('ceomanagment.view_CEO_escalate_requests') ) {
+
                 $menu->url(
                     action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
                     __('ceomanagment::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
+          
+           
         });
     }
     public function agnetMenu()
@@ -703,7 +717,6 @@ class CustomAdminSidebarMenu
             }
         });
     }
-
 
     public function workCardsMenu()
     {
@@ -1334,6 +1347,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
+
             if ($is_admin || auth()->user()->can('sales.view_sales_projects')) {
                 $menu->url(
                     route('sale.saleProjects'),
@@ -1556,6 +1570,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
                 );
             }
+            if ($is_admin  || auth()->user()->can('housingmovements.housingmovements_view_department_employees')) {
+                $menu->url(
+
+                    route('housingmovements_department_employees'),
+                    __('housingmovements::lang.department_employees'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'housingmovements_department_employees'],
+                );
+            }
         });
     }
 
@@ -1589,6 +1611,13 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
+            // if ($is_admin) {
+            $menu->url(
+                action([\App\Http\Controllers\SellController::class, 'index']),
+                __('lang_v1.pills'),
+                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'sells']
+            );
+            // }
             if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
 
                 $menu->url(

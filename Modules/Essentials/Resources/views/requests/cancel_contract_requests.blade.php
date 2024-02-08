@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.contract_cancel_requests'))
+@section('title', __('request.contract_cancel_requests'))
 
 @section('content')
 
 
     <section class="content-header">
         <h1>
-            <span>@lang('essentials::lang.contract_cancel_requests')</span>
+            <span>@lang('request.contract_cancel_requests')</span>
         </h1>
     </section>
 
@@ -26,7 +26,7 @@
             }
 
             .workflow-circle {
-                width: 110px;
+                min-width: 110px;
                 height: 110px;
                 border-radius: 50%;
                 display: flex;
@@ -36,6 +36,7 @@
                 margin-right: 10px;
                 font-weight: bold;
                 color: #fff;
+                padding: 10px;
 
             }
 
@@ -114,15 +115,15 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                            <th>@lang('essentials::lang.request_number')</th>
-                            <th>@lang('essentials::lang.name')</th>
-                            <th>@lang('essentials::lang.eqama_number')</th>
-                            <th>@lang('essentials::lang.end_work_date')</th>
-                            <th>@lang('essentials::lang.request_date')</th>
-                            <th>@lang('essentials::lang.main_reason')</th>
-                            <th>@lang('essentials::lang.sub_reason')</th>
-                            <th>@lang('essentials::lang.note')</th>
-                            <th>@lang('essentials::lang.action')</th>
+                            <th>@lang('request.request_number')</th>
+                            <th>@lang('request.request_owner')</th>
+                            <th>@lang('request.eqama_number')</th>
+                            <th>@lang('request.end_work_date')</th>
+                            <th>@lang('request.request_date')</th>
+                            <th>@lang('request.main_reason')</th>
+                            <th>@lang('request.sub_reason')</th>
+                            <th>@lang('request.note')</th>
+                            <th>@lang('request.action')</th>
 
 
                         </tr>
@@ -140,7 +141,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title">@lang('essentials::lang.view_request')</h4>
+                        <h4 class="modal-title">@lang('request.view_request')</h4>
                     </div>
 
                     <div class="modal-body">
@@ -152,18 +153,18 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>@lang('essentials::lang.request_owner')</h4>
+                                <h4>@lang('request.request_owner')</h4>
                                 <ul id="worker-list">
 
                                 </ul>
-                                <h4>@lang('essentials::lang.attachments')</h4>
+                                <h4>@lang('request.attachments')</h4>
                                 <ul id="attachments-list">
 
                                 </ul>
                             </div>
                             <div class="col-md-6">
 
-                                <h4>@lang('essentials::lang.activites')</h4>
+                                <h4>@lang('request.activites')</h4>
                                 <ul id="activities-list">
 
                                 </ul>
@@ -177,7 +178,7 @@
 
                             <div class="form-group">
                                 <label for="attachment">
-                                    <h4>@lang('essentials::lang.add_attachment')</h4>
+                                    <h4>@lang('request.add_attachment')</h4>
                                 </label>
                                 <input type="file" class="form-control" style="width: 250px;" id="attachment"
                                     name="attachment">
@@ -200,7 +201,7 @@
                     <form action="{{ route('finish_contract_procedure') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-header">
-                            <h5 class="modal-title" id="finish_procedure_modelLabel">@lang('essentials::lang.finish_procedure')</h5>
+                            <h5 class="modal-title" id="finish_procedure_modelLabel">@lang('request.finish_procedure')</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -289,13 +290,13 @@
                             buttonsHtml +=
                                 '@if (auth()->user()->hasRole('Admin#1') ||auth()->user()->can('essentials.show_essentials_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
                                 row.id +
-                                '">@lang('essentials::lang.view_request')</button>@endif';
+                                '">@lang('request.view_request')</button>@endif';
 
                             if(data != 'inactive'){
                             buttonsHtml +=
                                 '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.cancel_contract'))<button class="btn btn-primary btn-sm btn-finish-procedure" data-request-id="' +
                                 row.id +
-                                '">@lang('essentials::lang.finish_procedure')</button>@endif';
+                                '">@lang('request.finish_procedure')</button>@endif';
                             }
 
                             return buttonsHtml;
@@ -314,7 +315,7 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewHrRequest', ['requestId' => ':requestId']) }}'.replace(
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
@@ -350,37 +351,37 @@
 
                             //  worker info
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('essentials::lang.name') }}' + ': ' + response
+                                '{{ __('request.name') }}' + ': ' + response
                                 .user_info.worker_full_name + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('essentials::lang.nationality') }}' + ': ' + response
+                                '{{ __('request.nationality') }}' + ': ' + response
                                 .user_info.nationality + '</p>');
                             if (response.user_info.assigned_to) {
                                 workerList.append('<p class="worker-info">' +
-                                    '{{ __('essentials::lang.project_name') }}' + ': ' +
+                                    '{{ __('request.project_name') }}' + ': ' +
                                     response
                                     .user_info.assigned_to + '</p>');
                             }
                             if (response.user_info.id_proof_number) {
                                 workerList.append('<p class="worker-info">' +
-                                    '{{ __('essentials::lang.eqama_number') }}' + ': ' +
+                                    '{{ __('request.eqama_number') }}' + ': ' +
                                     response
                                     .user_info.id_proof_number + '</p>');
                             }
                             if (response.user_info.contract_end_date) {
                                 workerList.append('<p class="worker-info">' +
-                                    '{{ __('essentials::lang.contract_end_date') }}' +
+                                    '{{ __('request.contract_end_date') }}' +
                                     ': ' +
                                     response.user_info.contract_end_date + '</p>');
                             }
                             if (response.user_info.eqama_end_date) {
                                 workerList.append('<p class="worker-info">' +
-                                    '{{ __('essentials::lang.eqama_end_date') }}' + ': ' +
+                                    '{{ __('request.eqama_end_date') }}' + ': ' +
                                     response.user_info.eqama_end_date + '</p>');
                             }
                             if (response.user_info.passport_number) {
                                 workerList.append('<p class="worker-info">' +
-                                    '{{ __('essentials::lang.passport_number') }}' + ': ' +
+                                    '{{ __('request.passport_number') }}' + ': ' +
                                     response.user_info.passport_number + '</p>');
                             }
 
@@ -390,45 +391,45 @@
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
-                                if (j === 0) {
-                                    activity += '<p>' +
-                                        '{{ __('essentials::lang.created_department_name') }}' + ': ' +
-                                        response.followup_processes[j].department.name + '</p>';
-                                } else {
+                                // if (j === 0) {
+                                //     activity += '<p>' +
+                                //         '{{ __('request.created_department_name') }}' + ': ' +
+                                //         response.followup_processes[j].department.name + '</p>';
+                                // } else {
                                  
                                     activity += '<p>' +
-                                        '{{ __('essentials::lang.department_name') }}' + ': ' +
+                                        '{{ __('request.department_name') }}' + ': ' +
                                         response.followup_processes[j].department.name;
 
                                     activity +=
-                                        '<p class="{{ __('essentials::lang.status') }} ' +
+                                        '<p class="{{ __('request.status') }} ' +
                                         response.followup_processes[j].status.toLowerCase() +
                                         '">' +
-                                        '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
+                                        '<strong>{{ __('request.status') }}:</strong> ' +
                                         response.followup_processes[j].status + '</p>';
 
-                                    activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
+                                    activity += '<p>' + '{{ __('request.reason') }}' +
                                         ': ';
                                     if (response.followup_processes[j].reason) {
                                         activity += '<strong>' + response.followup_processes[j]
                                             .reason + '</strong>';
                                     } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
+                                        activity += '{{ __('request.not_exist') }}';
                                     }
-                                    activity += '<p>' + '{{ __('essentials::lang.note') }}' +
+                                    activity += '<p>' + '{{ __('request.note') }}' +
                                         ': ';
                                     if (response.followup_processes[j].status_note) {
                                         activity += '<strong>' + response.followup_processes[j]
                                             .status_note + '</strong>';
                                     } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
+                                        activity += '{{ __('request.not_exist') }}';
                                     }
                                     activity += '</p>';
                                     activity += '<p style="color: green;">' +
-                                        '{{ __('essentials::lang.updated_by') }}' + ': ' + (
+                                        '{{ __('request.updated_by') }}' + ': ' + (
                                             response.followup_processes[j].updated_by ||
-                                            '{{ __('essentials::lang.not_exist') }}') + '</p>';
-                                }
+                                            '{{ __('request.not_exist') }}') + '</p>';
+                                
 
                                 activity += '</li>';
                                 activitiesList.append(activity);
@@ -443,7 +444,7 @@
                                     .attachments[j].file_path +
                                     '" target="_blank" onclick="openAttachment(\'' + response
                                     .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
-                                    '{{ trans('essentials::lang.attach') }} ' + (j + 1) +
+                                    '{{ trans('request.attach') }} ' + (j + 1) +
                                     '</a>';
 
                                 attachment += '</p>';

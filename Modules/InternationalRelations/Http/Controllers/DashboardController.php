@@ -3,13 +3,13 @@
 namespace Modules\InternationalRelations\Http\Controllers;
 
 use App\User;
+use App\Request as UserRequest;
 use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\InternationalRelations\Entities\IrVisaCard;
 
@@ -35,10 +35,10 @@ class DashboardController extends Controller
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%دولي%')
             ->pluck('id')->toArray();
-        $requestsProcess_count = FollowupWorkerRequest::where('followup_worker_requests_process.status', 'pending')->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-            ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('department_id', $departmentIds)
-            ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests_process.sub_status', null)->count();
+        $requestsProcess_count = UserRequest::where('request_processes.status', 'pending')->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')->whereIn('wk_procedures.department_id', $departmentIds)
+            ->whereIn('requests.related_to', $userIds)->whereNull('request_processes.sub_status')->count();
 
         $operations_count = DB::table('sales_orders_operations')
             ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')

@@ -243,6 +243,7 @@ return [
     'total_beds'=>'عدد الأسرة الاجمالي',
     'no_project'=>'بلا مشروع',
     'add_request'=>'إضافة طلب',
+
     'view_import_rooms'=>'عرض استيراد الغرف',
     'import_rooms'=>'استيراد الغرف',
     'select_operation'=>'اختر العملية',
@@ -257,6 +258,9 @@ return [
      'building_end_date'=>'تاريخ انتهاء عقد سكن ',
 
     
+
+
+    'department_employees' => 'موظفي الإدارة',
 
 
 ];

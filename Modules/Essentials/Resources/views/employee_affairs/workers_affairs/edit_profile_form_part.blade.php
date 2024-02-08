@@ -134,6 +134,14 @@
         </div>
 
         <div class="clearfix"></div>
+        <br>
+        <div class="form-group col-md-3">
+            <button type="button" class="btn btn-success align-self-center id_attachements_btn">
+                {{ __('essentials::lang.id_attachements') }}
+            </button>
+        </div>
+
+
 
         {{-- <div class="col-md-3">
             <div class="form-group ">

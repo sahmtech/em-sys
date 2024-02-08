@@ -355,7 +355,7 @@
     @endif
 
     <!-- document & note.js -->
-    @include('documents_and_notes.document_and_note_js')
+    {{-- @include('documents_and_notes.document_and_note_js')
     @if (!empty($contact_view_tabs))
         @foreach ($contact_view_tabs as $key => $tabs)
             @foreach ($tabs as $index => $value)
@@ -364,7 +364,7 @@
                 @endif
             @endforeach
         @endforeach
-    @endif
+    @endif --}}
 
     <script type="text/javascript">
         $(document).ready(function() {

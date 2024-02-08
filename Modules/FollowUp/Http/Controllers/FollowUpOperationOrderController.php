@@ -41,7 +41,12 @@ class FollowUpOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-
+     //   $contracts= salesContract::all()->pluck('id','contract_number');
+        $contracts = DB::table('sales_orders_operations')
+        ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+        ->select('sales_contracts.number_of_contract as contract_number')
+        ->get();
+        
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');

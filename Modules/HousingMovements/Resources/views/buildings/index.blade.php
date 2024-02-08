@@ -3,28 +3,32 @@
 
 @section('content')
 
-<section class="content-header">
-    <h1>
-        <span>@lang('housingmovements::lang.buildings')</span>
-    </h1>
-</section>
+    <section class="content-header">
+        <h1>
+            <span>@lang('housingmovements::lang.buildings')</span>
+        </h1>
+    </section>
 
-<!-- Main content -->
-<section class="content">
-    <div class="row">
-        <div class="col-md-12">
-            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                @if (!empty($cities))
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('city_filter', __('housingmovements::lang.city') . ':') !!}
-                        {!! Form::select('city_filter', $cities, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                    </div>
-                </div>
-                @endif
-            @endcomponent
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                    @if (!empty($cities))
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('city_filter', __('housingmovements::lang.city') . ':') !!}
+                                {!! Form::select('city_filter', $cities, null, [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%',
+                                    'placeholder' => __('lang_v1.all'),
+                                ]) !!}
+                            </div>
+                        </div>
+                    @endif
+                @endcomponent
+            </div>
         </div>
-    </div>
 
     <div class="row">
         <div class="col-md-12">
@@ -42,7 +46,6 @@
                             <tr>
                                 <th>@lang('housingmovements::lang.building_name')</th>
                                 <th>@lang('housingmovements::lang.address')</th>
-                                <th>@lang('housingmovements::lang.building_end_date')</th>
                                 <th>@lang('housingmovements::lang.city')</th>
                                 <th>@lang('housingmovements::lang.building_guard')</th>
                                 <th>@lang('housingmovements::lang.building_supervisor')</th>
@@ -55,7 +58,8 @@
             @endcomponent
         </div>
 
-       
+        <div class="modal fade building_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
+
         <div class="modal fade" id="addBuildingModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -69,50 +73,39 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('name', __('housingmovements::lang.building_name') . ':*') !!}
                                 {!! Form::text('name', null,
-                                     ['class' => 'form-control ','style'=>'height:36px; width:100%',
+                                     ['class' => 'form-control ',
                                       'placeholder' => __('housingmovements::lang.building_name'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('address', __('housingmovements::lang.address') . ':') !!}
                                 {!! Form::text('address', null,
-                                     ['class' => 'form-control','style'=>'height:36px; width:100%',
+                                     ['class' => 'form-control',
                                       'placeholder' => __('housingmovements::lang.address'),'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('city', __('housingmovements::lang.city') . ':*') !!}
                                 {!! Form::select('city', $cities, null,
-                                     ['class' => 'form-control', 'style'=>'height:36px; width:100%',
+                                     ['class' => 'form-control', 'style'=>' width:100%',
                                       'placeholder' => __('housingmovements::lang.city'), 'required']) !!}
                             </div>
         
-                           <div class="clearfix"></div>
+                        
                             <div class="form-group col-md-6">
-                                {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':') !!}
+                                {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':*') !!}
                                 {!! Form::select('guard', $users2, null,
-                                     ['class' => 'form-control select2', 'style'=>'height:40px; width:100%',
-                                      'placeholder' => __('housingmovements::lang.building_guard'), ]) !!}
+                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;', 'style'=>'height:40px; width:100%',  'multiple',
+                                      'placeholder' => __('housingmovements::lang.building_guard'), 'required']) !!}
                             </div>
-
-
                             <div class="form-group col-md-6">
-                                {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':') !!}
+                                {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':*') !!}
                                 {!! Form::select('supervisor', $users2, null,
-                                     ['class' => 'form-control select2','style'=>'height:40px; width:100%',
-                                      'placeholder' => __('housingmovements::lang.building_supervisor'), ]) !!}
+                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;','style'=>'height:40px; width:100%',   'multiple',
+                                      'placeholder' => __('housingmovements::lang.building_supervisor'), 'required']) !!}
                             </div>
-
                             <div class="form-group col-md-6">
-                                {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':') !!}
-                                {!! Form::select('cleaner', $users2, null, ['class' => 'form-control select2','style'=>'width:100%;height:40px;',
-                                     'placeholder' => __('housingmovements::lang.building_cleaner'), ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('building_end_date', __('housingmovements::lang.building_end_date') . ':') !!}
-                                {!! Form::date('building_end_date', null,
-                                 ['class' => 'form-control ',
-                                   'style'=>'width:100%;height:36px;',
-                                   'placeholder' => __('housingmovements::lang.building_end_date'), ]) !!}
+                                {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':*') !!}
+                                {!! Form::select('cleaner', $users2, null, ['class' => 'form-control select2','style'=>'width:100%;height:40px;',   'multiple',
+                                     'placeholder' => __('housingmovements::lang.building_cleaner'), 'required']) !!}
                             </div>
                         </div>
                     </div>
@@ -126,17 +119,39 @@
         </div>
     </div>
 </section>
-
+<!-- /.content -->
 @include('housingmovements::buildings.edit')
 @endsection
 
 @section('javascript')
-<script type="text/javascript">
-    var buildings_table;
+    <script type="text/javascript">
+        $('#addBuildingModal').on('shown.bs.modal', function(e) {
+             $('#guard').select2({
+                dropdownParent: $(
+                    '#addBuildingModal'),
+                width: '100%',
+            });
+            $('#supervisor').select2({
+                dropdownParent: $(
+                    '#addBuildingModal'),
+                width: '100%',
+            });
+            $('#cleaner').select2({
+                dropdownParent: $(
+                    '#addBuildingModal'),
+                width: '100%',
+            });
 
-    function reloadDataTable() {
-        buildings_table.ajax.reload();
-    }
+
+        });
+
+
+
+        var buildings_table;
+
+        function reloadDataTable() {
+            buildings_table.ajax.reload();
+        }
 
     $(document).ready(function () {
         buildings_table = $('#buildings_table').DataTable({
@@ -153,7 +168,6 @@
             columns: [
                 { data: 'name' },
                 { data: 'address' },
-                {data:  'building_contract_end_date'},
                 { data: 'city_id' },
                 { data: 'guard_id' },
                 { data: 'supervisor_id' },
@@ -162,111 +176,108 @@
             ]
         });
 
-        $('#city_filter').on('change', function () {
-            reloadDataTable();
-        });
-
-
-        $('body').on('click', '.open-edit-modal', function() {
-            var buildingId = $(this).data('id'); 
-            $('#buildingIdInput').val(buildingId);
-
-            var editUrl = '{{ route("building.edit", ":buildingId") }}'
-            editUrl = editUrl.replace(':buildingId', buildingId);
-            console.log(editUrl);
-
-            $.ajax({
-                url: editUrl,
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    var data = response.data;
-
-                    $('#editbuildingModal input[name="name"]').val(data.building.name);
-                    $('#editbuildingModal input[name="address"]').val(data.building.address);
-                    $('#editbuildingModal input[name="building_end_date"]').val(data.building.building_contract_end_date);
-                    
-                    $('#editbuildingModal select[name="city"]').val(data.building.city_id).trigger('change');
-                    $('#editbuildingModal select[name="guard"]').val(data.building.guard_id).trigger('change');
-                    $('#editbuildingModal select[name="supervisor"]').val(data.building.supervisor_id).trigger('change');
-                    $('#editbuildingModal select[name="cleaner"]').val(data.building.cleaner_id).trigger('change');
-
-                    $('#editbuildingModal').modal('show');
-                },
-
-                error: function(error) {
-                    console.error('Error fetching building data:', error);
-                }
+            $('#city_filter').on('change', function() {
+                reloadDataTable();
             });
-        });
 
 
+$('body').on('click', '.open-edit-modal', function() {
+    var buildingId = $(this).data('id'); 
+    $('#buildingIdInput').val(buildingId);
 
+    var editUrl = '{{ route("building.edit", ":buildingId") }}'
+    editUrl = editUrl.replace(':buildingId', buildingId);
+    console.log(editUrl);
 
-        $('body').on('submit', '#editbuildingModal form', function (e) {
-            e.preventDefault();
+    $.ajax({
+        url: editUrl,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var data = response.data;
 
-            var buildingId = $('#buildingIdInput').val();
-            console.log(buildingId);
+            $('#editbuildingModal input[name="name"]').val(data.building.name);
+            $('#editbuildingModal input[name="address"]').val(data.building.address);
+            $('#editbuildingModal select[name="city"]').val(data.building.city_id).trigger('change');
+            $('#editbuildingModal select[name="guard"]').val(data.building.guard_id).trigger('change');
+            $('#editbuildingModal select[name="supervisor"]').val(data.building.supervisor_id).trigger('change');
+            $('#editbuildingModal select[name="cleaner"]').val(data.building.cleaner_id).trigger('change');
 
-            var urlWithId = '{{ route("updateBuilding", ":buildingId") }}';
-            urlWithId = urlWithId.replace(':buildingId', buildingId);
-            console.log(urlWithId);
+            $('#editbuildingModal').modal('show');
+        },
 
-            $.ajax({
-                url: urlWithId,
-                type: 'POST',
-                data: new FormData(this),
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    console.log(response); 
-                    if (response.success) {
-                        console.log(response);
-                        buildings_table.ajax.reload();
-                        toastr.success(response.msg);
-                        $('#editbuildingModal').modal('hide');
-                    } else {
-                        toastr.error(response.msg);
-                        console.log(response);
-                    }
-                },
-                error: function (error) {
-                    console.error('Error submitting form:', error);
-                    
-                    toastr.error('An error occurred while submitting the form.', 'Error');
-                },
-            });
-        });
-
-        $(document).on('click', 'button.delete_building_button', function () {
-             swal({
-                title: LANG.sure,
-                text: LANG.confirm_delete_building,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    var href = $(this).data('href');
-                    $.ajax({
-                        method: "DELETE",
-                        url: href,
-                        dataType: "json",
-                        success: function (result) {
-                            if (result.success == true) {
-                                toastr.success(result.msg);
-                                buildings_table.ajax.reload();
-                                $('#editbuildingModal').modal('hide');
-                            } else {
-                                toastr.error(result.msg);
-                            }
-                        }
-                    });
-                }
-            });
-        });
+        error: function(error) {
+            console.error('Error fetching building data:', error);
+        }
     });
+});
 
-</script>
+
+
+
+$('body').on('submit', '#editbuildingModal form', function (e) {
+    e.preventDefault();
+
+    var buildingId = $('#buildingIdInput').val();
+    console.log(buildingId);
+
+    var urlWithId = '{{ route("updateBuilding", ":buildingId") }}';
+    urlWithId = urlWithId.replace(':buildingId', buildingId);
+    console.log(urlWithId);
+
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log(response); 
+            if (response.success) {
+                console.log(response);
+                buildings_table.ajax.reload();
+                toastr.success(response.msg);
+                $('#editbuildingModal').modal('hide');
+            } else {
+                toastr.error(response.msg);
+                console.log(response);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+            
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
+});
+
+            $(document).on('click', 'button.delete_building_button', function() {
+                swal({
+                    title: LANG.sure,
+                    text: LANG.confirm_delete_building,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        var href = $(this).data('href');
+                        $.ajax({
+                            method: "DELETE",
+                            url: href,
+                            dataType: "json",
+                            success: function(result) {
+                                if (result.success == true) {
+                                    toastr.success(result.msg);
+                                    buildings_table.ajax.reload();
+                                    $('#editbuildingModal').modal('hide');
+                                } else {
+                                    toastr.error(result.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

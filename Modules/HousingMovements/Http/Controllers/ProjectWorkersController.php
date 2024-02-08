@@ -56,8 +56,8 @@ class ProjectWorkersController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.workcards_indexWorkerProjects');
-        if (!($is_admin || $can_workcards_indexWorkerProjects)) {
+        $can_housemovements_all_worker = auth()->user()->can('housingmovements.all_workers');
+        if (!($is_admin || $can_housemovements_all_worker)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),

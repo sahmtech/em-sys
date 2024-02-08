@@ -13,7 +13,7 @@
                     @if (!empty($users))
                         <div class="col-md-3">
                             <div class="form-group">
-                                {!! Form::label('user_id_filter', __('essentials::lang.employee') . ':') !!}
+                                {!! Form::label('user_id_filter', __('essentials::lang.doc_owner') . ':') !!}
                                 {!! Form::select('user_id_filter', $users, null, [
                                     'class' => 'form-control select2',
                                     'style' => 'width:100%',
@@ -22,11 +22,30 @@
                             </div>
                         </div>
                     @endif
-
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('user_type_filter', __('essentials::lang.doc_owner_type') . ':') !!}
+                            {!! Form::select(
+                                'user_type_filter',
+                                [
+                                    'worker' => __('essentials::lang.worker'),
+                                    'employee' => __('essentials::lang.employee'),
+                                    'manager' => __('essentials::lang.a_manager'),
+                                ],
+                                null,
+                                [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%',
+                                    'placeholder' => __('lang_v1.all'),
+                                ],
+                            ) !!}
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_type_filter', __('essentials::lang.doc_type') . ':') !!}
-                            <select class="form-control select2" name="doc_type_filter" id="doc_type_filter" style="width: 100%;">
+                            <select class="form-control select2" name="doc_type_filter" id="doc_type_filter"
+                                style="width: 100%;">
                                 <option value="all">@lang('lang_v1.all')</option>
                                 <option value="national_id">@lang('essentials::lang.national_id')</option>
                                 <option value="passport">@lang('essentials::lang.passport')</option>
@@ -79,7 +98,7 @@
                         <table class="table table-bordered table-striped" id="official_documents_table">
                             <thead>
                                 <tr>
-                                    <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.doc_owner')</th>
                                     <th>@lang('essentials::lang.doc_number')</th>
                                     <th>@lang('essentials::lang.doc_type')</th>
                                     <th>@lang('essentials::lang.issue_date')</th>
@@ -111,10 +130,10 @@
 
                             <div class="row">
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('employees2', __('essentials::lang.employee') . ':*') !!}
+                                    {!! Form::label('employees2', __('essentials::lang.doc_owner') . ':*') !!}
                                     {!! Form::select('employees2', $users, null, [
                                         'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.select_employee'),
+                                        'placeholder' => __('essentials::lang.select_doc_owner'),
                                         'required',
                                         'style' => 'height:40px',
                                         'id' => 'employees_select',
@@ -233,15 +252,13 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="modal-body">
-                                    {{-- <iframe id="iframeDocViewer" width="100%" height="300px" frameborder="0"></iframe> --}}
+                                    <iframe id="iframeDocViewer" width="100%" height="300px" frameborder="0"></iframe>
                                 </div>
                             </div>
 
                             <div class="row">
-
-
-
-
+                                {!! Form::hidden('delete_file', '0', ['id' => 'delete_file_input']) !!}
+                                {!! Form::hidden('doc_id', null, ['id' => 'doc_id']) !!}
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('essentials::lang.file') . ':') !!}
                                     {!! Form::file('file', null, [
@@ -250,11 +267,14 @@
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-danger deleteFile">@lang('messages.delete')</button>
+                                </div>
                             </div>
                         </div>
 
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="submit" class="btn btn-primary saveFile" disabled>@lang('messages.save')</button>
                             <button type="button" class="btn btn-default"
                                 data-dismiss="modal">@lang('messages.close')</button>
                         </div>
@@ -277,10 +297,11 @@
                 e.preventDefault();
 
                 // Get the data-href attribute containing the URL
-                var fileUrl = $(this).data('href');
-
-                if (fileUrl!='#') {
-                    // Set the file URL as the iframe source
+                var fileUrl = $(this).data('href') ?? null;
+                var doc_id = $(this).data('id');
+                $('#doc_id').val(doc_id);
+                if (fileUrl != null) {
+                    console.log(fileUrl);
                     $('#iframeDocViewer').attr('src', fileUrl);
 
                     // Show the iframe and hide any other content
@@ -295,6 +316,52 @@
 
                 // Open the modal
                 $('#addDocFileModal').modal('show');
+            });
+            $('#addDocFileModal').on('hidden.bs.modal', function() {
+                $('#iframeDocViewer').attr('src', '');
+            });
+            let fileChanged = false;
+            $('.deleteFile').on('click', function() {
+                $('#iframeDocViewer').attr('src', ''); // Remove image source
+                $('input[type="file"]').val(''); // Clear file input
+                $('#delete_file_input').val('1'); // Indicate that the image should be deleted
+                $('#iframeDocViewer').hide();
+                fileChanged = true;
+                enableSaveButton();
+            });
+
+
+            function enableSaveButton() {
+                $('.saveFile').prop('disabled', !fileChanged);
+            }
+
+            $('input[type="file"]').on('change', function(event) {
+                var file = event.target.files[0];
+
+                if (file) {
+                    var fileType = file.type;
+                    var url = '';
+
+                    // Check file type and create URL accordingly
+                    if (fileType.match(/image.*/)) {
+                        // If the file is an image
+                        url = URL.createObjectURL(file);
+                    } else if (fileType === 'application/pdf') {
+                        // If the file is a PDF - you might want to use PDF.js here
+                        url = URL.createObjectURL(file);
+                    } else {
+                        // Handle other file types or show an error message
+                        alert('File type not supported for preview');
+                        return;
+                    }
+
+                    // Update the iframe src to show the file
+                    $('#iframeDocViewer').attr('src', url).show();
+                } else {
+
+                }
+                fileChanged = true;
+                enableSaveButton();
             });
 
             $('#addDocModal').on('shown.bs.modal', function(e) {
@@ -318,12 +385,21 @@
                 ajax: {
                     "url": "{{ action([\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index']) }}",
                     "data": function(d) {
-                        if ($('#user_id_filter').length) {
+                        if ($('#user_id_filter').val() && $('#user_id_filter').val() != 'all') {
                             d.user_id = $('#user_id_filter').val();
                         }
-                        d.status = $('#status_filter').val();
-                        d.doc_type = $('#doc_type_filter').val();
-                        if ($('#doc_filter_date_range').val()) {
+                        if ($('#user_type_filter').val() && $('#user_type_filter').val() != 'all') {
+                            d.user_type = $('#user_type_filter').val();
+                        }
+                        if ($('#status_filter').val() && $('#status_filter').val() != 'all') {
+                            d.status = $('#status_filter').val();
+                        }
+                        if ($('#doc_type_filter').val() && $('#doc_type_filter').val() != 'all') {
+                            d.doc_type = $('#doc_type_filter').val();
+                        }
+
+                        if ($('#doc_filter_date_range').val() && $('#doc_filter_date_range').val() !=
+                            'all') {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate
                                 .format('YYYY-MM-DD');
                             var end = $('#doc_filter_date_range').data('daterangepicker').endDate
@@ -335,7 +411,8 @@
                 },
 
                 columns: [{
-                        data: 'user'
+                        data: 'user',
+
                     },
                     {
                         data: 'number'
@@ -400,7 +477,8 @@
                 reloadDataTable();
             });
 
-            $(document).on('change', '#user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter',
+            $(document).on('change',
+                '#user_type_filter, #user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter',
                 function() {
                     reloadDataTable();
                 });
