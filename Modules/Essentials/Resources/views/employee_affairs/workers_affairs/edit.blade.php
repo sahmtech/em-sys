@@ -569,35 +569,7 @@
 
             });
 
-            $(document).ready(function() {
-                $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function() {
-                    updateContractEndDate();
-                });
-
-                function updateContractEndDate() {
-                    var startDate = $('#contract_start_date').val();
-                    var duration = $('#contract_duration').val();
-                    var unit = $('#contract_duration_unit').val();
-
-                    if (startDate && duration && unit) {
-                        var newEndDate = calculateEndDate(startDate, duration, unit);
-                        $('#contract_end_date').val(newEndDate);
-                    }
-                }
-
-                function calculateEndDate(startDate, duration, unit) {
-                    var startDateObj = new Date(startDate);
-                    var endDateObj = new Date(startDateObj);
-
-                    if (unit === 'years') {
-                        endDateObj.setFullYear(startDateObj.getFullYear() + parseInt(duration));
-                    } else if (unit === 'months') {
-                        endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
-                    }
-
-                    return endDateObj.toISOString().split('T')[0];
-                }
-            });
+            
         </script>
 
 
@@ -642,6 +614,9 @@
                     } else if (unit === 'months') {
                         endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
                     }
+
+                    // Subtract 1 day
+                    endDateObj.setDate(endDateObj.getDate() - 1);
 
                     return endDateObj.toISOString().split('T')[0];
                 }
