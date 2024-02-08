@@ -94,6 +94,10 @@
                 margin-top: 5px;
                 font-weight: bold;
             }
+            .workflow-circle.green {
+                background-color: #4CAF50;
+            }
+
         </style>
     </head>
     <!-- Main content -->
