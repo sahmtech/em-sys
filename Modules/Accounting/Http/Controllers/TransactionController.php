@@ -15,6 +15,7 @@ use DB;
 use App\TransactionPayment;
 use App\BusinessLocation;
 use App\Contact;
+use Illuminate\Support\Facades\Session;
 
 class TransactionController extends Controller
 {
@@ -69,9 +70,11 @@ class TransactionController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
-        $business_locations = BusinessLocation::forDropdown($business_id);
-        $suppliers = Contact::suppliersDropdown($business_id, false);
+
+        $business_locations = BusinessLocation::forDropdownWithCompany($business_id, $company_id);
+        $suppliers = Contact::suppliersDropdown($business_id, false, true, $company_id);
         $orderStatuses = $this->transactionUtil->orderStatuses();
 
         return view('accounting::transactions.index')
@@ -82,11 +85,13 @@ class TransactionController extends Controller
     {
         $sale_type = 'sell';
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
-        $sells = $this->transactionUtil->getListSells($business_id, $sale_type);
+
+        $sells = $this->transactionUtil->getListSells($business_id, $sale_type, $company_id);
         $sells->groupBy('transactions.id');
 
-        $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+        $payment_types = $this->transactionUtil->payment_types(null, true, $business_id, $company_id);
         $sales_order_statuses = Transaction::sales_order_statuses();
 
         $datatable = Datatables::of($sells)
@@ -237,6 +242,8 @@ class TransactionController extends Controller
     {
         $transaction_type = request()->input('transaction_type');
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
         $query = TransactionPayment::join(
             'transactions as T',
@@ -246,6 +253,7 @@ class TransactionController extends Controller
         )
             ->leftjoin('accounts as A', 'transaction_payments.account_id', '=', 'A.id')
             ->where('transaction_payments.business_id', $business_id)
+            ->where('transaction_payments.company_id', $company_id)
             ->where('T.type', $transaction_type)
             ->whereNull('transaction_payments.parent_id')
             ->where('transaction_payments.method', '!=', 'advance')
@@ -349,7 +357,9 @@ class TransactionController extends Controller
     protected function _allPurchases()
     {
         $business_id = request()->session()->get('user.business_id');
-        $purchases = $this->transactionUtil->getListPurchases($business_id);
+        $company_id = Session::get('selectedCompanyId');
+
+        $purchases = $this->transactionUtil->getListPurchases($business_id, $company_id);
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_purchase_view = auth()->user()->can("purchase.view");
         $can_map_transactions = auth()->user()->can('accounting.map_transactions');
@@ -415,6 +425,8 @@ class TransactionController extends Controller
     public function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -425,6 +437,7 @@ class TransactionController extends Controller
 
             if ($type == 'sell') {
                 $transaction = Transaction::where('id', $id)->where('business_id', $business_id)
+                    ->where('company_id', $company_id)
                     ->firstorFail();
 
                 //setting defaults
@@ -447,7 +460,7 @@ class TransactionController extends Controller
                 return view('accounting::transactions.map')
                     ->with(compact('transaction', 'type', 'default_payment_account', 'default_deposit_to'));
             } elseif (in_array($type, ['purchase_payment', 'sell_payment'])) {
-                $transaction_payment = TransactionPayment::where('id', $id)->where('business_id', $business_id)
+                $transaction_payment = TransactionPayment::where('id', $id)->where('business_id', $business_id)->where('company_id', $company_id)
                     ->firstorFail();
 
                 $existing_payment = AccountingAccountsTransaction::where('transaction_payment_id', $id)
@@ -462,7 +475,7 @@ class TransactionController extends Controller
                 return view('accounting::transactions.map')
                     ->with(compact('transaction_payment', 'type', 'default_payment_account', 'default_deposit_to'));
             } elseif ($type == 'purchase') {
-                $transaction = Transaction::where('id', $id)->where('business_id', $business_id)
+                $transaction = Transaction::where('id', $id)->where('business_id', $business_id)->where('company_id', $company_id)
                     ->firstorFail();
 
                 //setting defaults
@@ -491,6 +504,8 @@ class TransactionController extends Controller
     public function saveMap(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -506,7 +521,7 @@ class TransactionController extends Controller
                 $payment_account = $request->get('payment_account');
 
                 if ($type == 'sell') {
-                    $transaction = Transaction::where('business_id', $business_id)->where('id', $id)->firstorFail();
+                    $transaction = Transaction::where('business_id', $business_id)->where('company_id', $company_id)->where('id', $id)->firstorFail();
 
                     //$payment_account will increase = sales = credit
                     $payment_data = [
@@ -534,7 +549,7 @@ class TransactionController extends Controller
                         'operation_date' => \Carbon::now(),
                     ];
                 } elseif (in_array($type, ['purchase_payment', 'sell_payment'])) {
-                    $transaction_payment = TransactionPayment::where('id', $id)->where('business_id', $business_id)
+                    $transaction_payment = TransactionPayment::where('id', $id)->where('business_id', $business_id)->where('company_id', $company_id)
                         ->firstorFail();
 
                     //$payment_account will increase = sales = credit
@@ -563,7 +578,7 @@ class TransactionController extends Controller
                         'operation_date' => \Carbon::now(),
                     ];
                 } elseif ($type == 'purchase') {
-                    $transaction = Transaction::where('business_id', $business_id)->where('id', $id)->firstorFail();
+                    $transaction = Transaction::where('business_id', $business_id)->where('company_id', $company_id)->where('id', $id)->firstorFail();
 
                     //$payment_account will increase = sales = credit
                     $payment_data = [

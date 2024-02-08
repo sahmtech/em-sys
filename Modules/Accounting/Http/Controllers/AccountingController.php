@@ -11,15 +11,18 @@ use Illuminate\Routing\Controller;
 use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingAccountType;
 use App\Charts\CommonChart;
+use App\Company;
 use DB;
 use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\ModuleUtil;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Illuminate\Support\Facades\Session;
 
 class AccountingController extends Controller
 {
     protected $accountingUtil;
+    protected $moduleUtil;
     /**
      * Constructor
      *
@@ -32,6 +35,27 @@ class AccountingController extends Controller
     }
 
 
+    public function landing()
+    {
+        $companies = Company::all();
+
+        $cardsOfCompanies = [];
+        foreach ($companies as $company) {
+            $cardsOfCompanies[] = [
+                'id' => $company->id,
+                'name' => $company->name,
+                'link' => route('setSession', ['companyId' => $company->id]),
+                // 'link' => action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
+            ];
+        }
+        return view('accounting::accounting_landing_page')->with(compact('cardsOfCompanies'));
+    }
+
+    public function setSession(Request $request)
+    {
+        Session::put('selectedCompanyId', $request->companyId);
+        return redirect()->route('accounting.dashboard');
+    }
     /**
      * @return Factory|View|Application
      * @throws ContainerExceptionInterface
@@ -39,8 +63,10 @@ class AccountingController extends Controller
      */
     public function dashboard()
     {
+        $company_id = Session::get('selectedCompanyId');
+
         $business_id = request()->session()->get('user.business_id');
-        
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_accounting_dashboard = auth()->user()->can('accounting.accounting_dashboard');
         if (!($is_admin || $can_accounting_dashboard)) {
@@ -49,85 +75,97 @@ class AccountingController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        $start_date = request()->get('start_date', session()->get('financial_year.start')); 
-        $end_date = request()->get('end_date', session()->get('financial_year.end')); 
+
+        $start_date = request()->get('start_date', session()->get('financial_year.start'));
+        $end_date = request()->get('end_date', session()->get('financial_year.end'));
         $balance_formula = $this->accountingUtil->balanceFormula();
 
-        $coa_overview = AccountingAccount::leftjoin('accounting_accounts_transactions as AAT', 
-                                    'AAT.accounting_account_id', '=', 'accounting_accounts.id')
-                                ->where('business_id', $business_id)
-                                ->whereDate('AAT.operation_date', '>=', $start_date)
-                                ->whereDate('AAT.operation_date', '<=', $end_date)
-                                ->select(
-                                    DB::raw($balance_formula),
-                                    'accounting_accounts.account_primary_type'
-                                )
-                                ->groupBy('accounting_accounts.account_primary_type')
-                                ->get();
+        $coa_overview = AccountingAccount::leftjoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->whereDate('AAT.operation_date', '>=', $start_date)
+            ->whereDate('AAT.operation_date', '<=', $end_date)
+            ->select(
+                DB::raw($balance_formula),
+                'accounting_accounts.account_primary_type'
+            )
+            ->groupBy('accounting_accounts.account_primary_type')
+            ->get();
 
         $account_types = AccountingAccountType::accounting_primary_type();
 
         $labels = [];
         $values = [];
 
-        foreach($account_types as $k =>  $v){
+        foreach ($account_types as $k =>  $v) {
             $value = 0;
 
-            foreach($coa_overview as $overview) {
-                if($overview->account_primary_type==$k && !empty($overview->balance)) {
-                    $value= (float)$overview->balance;
+            foreach ($coa_overview as $overview) {
+                if ($overview->account_primary_type == $k && !empty($overview->balance)) {
+                    $value = (float)$overview->balance;
                 }
             }
             $values[] = abs($value);
 
             //Suffix CR/DR as per value
             $tmp = $v['label'];
-            if($value < 0){
+            if ($value < 0) {
                 $tmp .= (in_array($v['label'], ['Asset', 'Expenses']) ? ' (CR)' : ' (DR)');
             }
             $labels[] = $tmp;
         }
 
-        $colors = ['#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',  
-        '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-        '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'];
+        $colors = [
+            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
+            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
+            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+        ];
         $coa_overview_chart = new CommonChart;
         $coa_overview_chart->labels($labels)
-                    ->options($this->__chartOptions())
-                    ->dataset(__('accounting::lang.current_balance'), 'pie', $values)
-                    ->color($colors);
+            ->options($this->__chartOptions())
+            ->dataset(__('accounting::lang.current_balance'), 'pie', $values)
+            ->color($colors);
 
         $all_charts = [];
-        foreach($account_types as $k =>  $v){
+        foreach ($account_types as $k =>  $v) {
             $sub_types = AccountingAccountType::where('account_primary_type', $k)
-                                        ->where(function($q) use($business_id){
-                                            $q->whereNull('business_id')
-                                                ->orWhere('business_id', $business_id);
-                                        })
-                                        ->get();
+                ->where(function ($q) use ($business_id) {
+                    $q->whereNull('business_id')
+                        ->orWhere('business_id', $business_id);
+                })
+                ->get();
 
-            $balances = AccountingAccount::leftjoin('accounting_accounts_transactions as AAT', 
-                                        'AAT.accounting_account_id', '=', 'accounting_accounts.id')
-                                ->where('business_id', $business_id)
-                                ->whereDate('AAT.operation_date', '>=', $start_date)
-                                ->whereDate('AAT.operation_date', '<=', $end_date)
-                                ->select(
-                                    DB::raw($balance_formula),
-                                    'accounting_accounts.account_sub_type_id'
-                                )
-                                ->groupBy('accounting_accounts.account_sub_type_id')
-                                ->get();
+            $balances = AccountingAccount::leftjoin(
+                'accounting_accounts_transactions as AAT',
+                'AAT.accounting_account_id',
+                '=',
+                'accounting_accounts.id'
+            )
+                ->where('business_id', $business_id)
+                ->whereDate('AAT.operation_date', '>=', $start_date)
+                ->whereDate('AAT.operation_date', '<=', $end_date)
+                ->select(
+                    DB::raw($balance_formula),
+                    'accounting_accounts.account_sub_type_id'
+                )
+                ->groupBy('accounting_accounts.account_sub_type_id')
+                ->get();
 
             $labels = [];
             $values = [];
-    
-            foreach($sub_types as $st){
+
+            foreach ($sub_types as $st) {
                 $labels[] = $st->account_type_name;
                 $value = 0;
-    
-                foreach($balances as $bal) {
-                    if($bal->account_sub_type_id==$st->id && !empty($bal->balance)) {
-                        $value= (float)$bal->balance;
+
+                foreach ($balances as $bal) {
+                    if ($bal->account_sub_type_id == $st->id && !empty($bal->balance)) {
+                        $value = (float)$bal->balance;
                     }
                 }
                 $values[] = $value;
@@ -135,13 +173,19 @@ class AccountingController extends Controller
             $chart = new CommonChart;
             $chart->labels($labels)
                 ->options($this->__chartOptions())
-                 ->dataset(__('accounting::lang.current_balance'), 'pie', $values)
-                 ->color($colors);
+                ->dataset(__('accounting::lang.current_balance'), 'pie', $values)
+                ->color($colors);
 
             $all_charts[$k] = $chart;
         }
-        return view('accounting::accounting.dashboard')->with(compact('coa_overview_chart', 
-                'all_charts', 'coa_overview', 'account_types', 'end_date', 'start_date'));
+        return view('accounting::accounting.dashboard')->with(compact(
+            'coa_overview_chart',
+            'all_charts',
+            'coa_overview',
+            'account_types',
+            'end_date',
+            'start_date'
+        ));
     }
 
     private function __chartOptions()
@@ -164,17 +208,18 @@ class AccountingController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
             $q = request()->input('q', '');
-            $accounts = AccountingAccount::forDropdown($business_id, true, $q);
+            $accounts = AccountingAccount::forDropdown($business_id, $company_id, true, $q);
 
             $accounts_array = [];
-            foreach($accounts as $account) {
+            foreach ($accounts as $account) {
                 $accounts_array[] = [
                     'id' => $account->id,
                     'text' => $account->name . ' - <small class="text-muted">' . $account->account_primary_type . ' - ' .
-                                $account->sub_type . '</small>',
+                        $account->sub_type . '</small>',
                     'html' => $account->name . ' - <small class="text-muted">' . $account->account_primary_type . ' - ' .
-                                $account->sub_type . '</small>'
+                        $account->sub_type . '</small>'
                 ];
             }
 

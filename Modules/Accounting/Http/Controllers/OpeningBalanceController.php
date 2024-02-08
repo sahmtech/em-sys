@@ -14,6 +14,7 @@ use Modules\Accounting\Entities\CostCenter;
 use Modules\Accounting\Entities\OpeningBalance;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\Session;
 
 class OpeningBalanceController extends Controller
 {
@@ -27,8 +28,10 @@ class OpeningBalanceController extends Controller
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_opening_balances= auth()->user()->can('accounting.opening_balances');
+        $can_opening_balances = auth()->user()->can('accounting.opening_balances');
         if (!($is_admin || $can_opening_balances)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -40,6 +43,10 @@ class OpeningBalanceController extends Controller
             ->where(function ($q) use ($business_id) {
                 $q->whereNull('business_id')
                     ->orWhere('business_id', $business_id);
+            })
+            ->where(function ($q) use ($company_id) {
+                $q->whereNull('company_id')
+                    ->orWhere('company_id', $company_id);
             })
             ->get();
         foreach ($sub_types_obj as $st) {
@@ -102,6 +109,7 @@ class OpeningBalanceController extends Controller
 
     protected function store(Request $request)
     {
+        $company_id = Session::get('selectedCompanyId');
         $rules = [
             // 'year' => 'required|String',
             'accounting_account_id' => 'required|String|exists:accounting_accounts,id',
@@ -127,6 +135,7 @@ class OpeningBalanceController extends Controller
             $validated = $validator->validated();
             $validated['created_by'] = auth()->user()->id;
             $validated['business_id'] = $request->session()->get('user.business_id');
+            $validated['company_id'] = $company_id;
             $transaction = AccountingAccountsTransaction::query()->create([
                 'accounting_account_id' => $validated['accounting_account_id'],
                 'amount' => $validated['value'],
@@ -137,6 +146,7 @@ class OpeningBalanceController extends Controller
             OpeningBalance::query()->create([
                 'year' => date('Y-m-d'),
                 'business_id' => $validated['business_id'],
+                'company_id' => $validated['company_id'],
                 'type' => $validated['type'],
                 'accounts_account_transaction_id' => $validated['accounts_account_transaction_id']
             ]);
@@ -210,6 +220,7 @@ class OpeningBalanceController extends Controller
     protected function calcEquation()
     {
         $business_id = \request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
         $credit = AccountingAccountsTransaction::query()->where('sub_type', 'opening_balance')->where('type', 'credit')->sum('amount');
         $debt = AccountingAccountsTransaction::query()->where('sub_type', 'opening_balance')->where('type', 'debit')->sum('amount');
         return response()->json(['credit' => $credit, 'debt' => $debt]);

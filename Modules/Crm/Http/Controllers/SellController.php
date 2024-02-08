@@ -45,7 +45,7 @@ class SellController extends Controller
         $payment_types = $this->transactionUtil->payment_types(null, true);
         $with = [];
         if ($request->ajax()) {
-            $sells = $this->transactionUtil->getListSells($business_id);
+            $sells = $this->transactionUtil->getListSells($business_id,'sell');
 
             $sells->where('contacts.id', auth()->user()->crm_contact_id);
 

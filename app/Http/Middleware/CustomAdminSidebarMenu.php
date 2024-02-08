@@ -48,6 +48,8 @@ class CustomAdminSidebarMenu
             $this->houseMovementsMenu();
         } elseif (Str::startsWith($currentPath, ['international', 'ir'])) {
             $this->getIRMenu();
+        } elseif (Str::startsWith($currentPath, ['all-accounting',])) {
+            $this->allAccountingMenu();
         } elseif (Str::startsWith($currentPath, ['accounting', 'sells'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
@@ -1573,8 +1575,8 @@ class CustomAdminSidebarMenu
                     action([\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'index']),
 
                     __('housingmovements::lang.import_rooms'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && 
-                    request()->segment(2) == 'import_rooms']
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' &&
+                        request()->segment(2) == 'import_rooms']
                 );
             }
 
@@ -1596,7 +1598,23 @@ class CustomAdminSidebarMenu
             }
         });
     }
-
+    public function allAccountingMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fa fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+        });
+    }
     public function accountingMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {

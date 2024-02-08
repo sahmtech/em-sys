@@ -5,6 +5,7 @@ namespace Modules\Accounting\Utils;
 use App\Utils\Util;
 use DB;
 use App\Business;
+use App\Company;
 use App\Transaction;
 use Carbon\Carbon;
 // use CarbonCarbon;
@@ -26,20 +27,22 @@ class AccountingUtil extends Util
             amount, -1*amount)) as balance";
     }
 
-    public function getAccountingSettings($business_id)
+    public function getAccountingSettings($business_id, $company_id = null)
     {
-        $accounting_settings = Business::where('id', $business_id)
-            ->value('accounting_settings');
+        // $accounting_settings = Business::where('id', $business_id)
+        //     ->value('accounting_settings');
 
+        $accounting_settings = Company::where('id', $company_id)
+            ->value('accounting_settings');
         $accounting_settings = !empty($accounting_settings) ? json_decode($accounting_settings, true) : [];
 
         return $accounting_settings;
     }
 
-    public function getAgeingReport($business_id, $type, $group_by, $location_id = null)
+    public function getAgeingReport($business_id, $type,$company_id = null, $group_by, $location_id = null)
     {
         $today = Carbon::now()->format('Y-m-d');
-        $query = Transaction::where('transactions.business_id', $business_id);
+        $query = Transaction::where('transactions.business_id', $business_id)->where('transactions.company_id', $company_id);
 
         if ($type == 'sell') {
             $query->where('transactions.type', 'sell')
@@ -111,13 +114,13 @@ class AccountingUtil extends Util
     }
 
 
-    public static function next_GLC($parent_account_id, $business_id)
+    public static function next_GLC($parent_account_id, $business_id,$company_id=null)
     {
 
 
 
         // parent_account_id
-        $last_parent_account = AccountingAccount::where([['parent_account_id', '=', $parent_account_id], ['business_id', '=', $business_id]])->latest()->first();
+        $last_parent_account = AccountingAccount::where([['parent_account_id', '=', $parent_account_id], ['company_id', '=', $company_id], ['business_id', '=', $business_id]])->latest()->first();
 
 
         if ($last_parent_account) {
@@ -140,13 +143,16 @@ class AccountingUtil extends Util
     }
 
 
-    public static function  Default_Accounts($business_id, $user_id)
+    public static function  Default_Accounts($business_id, $user_id,$company_id=null)
     {
         return   array(
             0 =>
             array(
                 'name' => 'Accounts Payable (A/P)',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
+                
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 5,
                 'detail_type_id' => 57,
@@ -160,6 +166,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Credit Card',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 6,
                 'detail_type_id' => 58,
@@ -173,6 +181,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Wage expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 139,
@@ -186,6 +196,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Utilities',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 148,
@@ -199,6 +211,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Unrealised loss on securities, net of tax',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 11,
                 'detail_type_id' => 112,
@@ -212,6 +226,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Undeposited Funds',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => 28,
@@ -225,6 +241,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Uncategorised Income',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => 102,
@@ -238,6 +256,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Uncategorised Expense',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 137,
@@ -251,6 +271,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Uncategorised Asset',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => 25,
@@ -264,6 +286,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Unapplied Cash Payment Income',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => 104,
@@ -277,6 +301,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Travel expenses - selling expense',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => '146',
@@ -290,6 +316,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Travel expenses - general and admin expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => '145',
@@ -303,6 +331,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Supplies',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 144,
@@ -316,6 +346,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Subcontractors - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -329,6 +361,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Stationery and printing',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => '136',
@@ -342,6 +376,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Short-term debit',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 7,
                 'detail_type_id' => 68,
@@ -355,6 +391,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Shipping and delivery expense',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 142,
@@ -368,6 +406,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Sales of Product Income',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => 102,
@@ -381,6 +421,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Sales - wholesale',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => '101',
@@ -394,6 +436,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Sales - retail',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => '100',
@@ -407,6 +451,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Sales',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => 102,
@@ -420,6 +466,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Revenue - General',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => '99',
@@ -433,6 +481,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Repair and maintenance',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 141,
@@ -446,6 +496,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Rent or lease payments',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 140,
@@ -459,6 +511,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Reconciliation Discrepancies',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 14,
                 'detail_type_id' => 152,
@@ -472,6 +526,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Purchases',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 143,
@@ -485,6 +541,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Property, plant and equipment',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 3,
                 'detail_type_id' => 41,
@@ -498,6 +556,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Prepaid Expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => 26,
@@ -511,6 +571,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Payroll liabilities',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 7,
                 'detail_type_id' => 70,
@@ -524,6 +586,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Payroll Expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 139,
@@ -537,6 +601,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Payroll Clearing',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 7,
                 'detail_type_id' => 69,
@@ -550,6 +616,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Overhead - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -563,6 +631,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Other Types of Expenses-Advertising Expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => '118',
@@ -576,6 +646,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Other selling expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 138,
@@ -589,6 +661,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Other operating income (expenses)',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 11,
                 'detail_type_id' => 110,
@@ -602,6 +676,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Other general and administrative expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => '136',
@@ -615,6 +691,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Other - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -628,6 +706,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Office expenses',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => '136',
@@ -641,6 +721,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Meals and entertainment',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 136,
@@ -654,6 +736,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Materials - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -667,6 +751,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Management compensation',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 134,
@@ -680,6 +766,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Loss on disposal of assets',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 11,
                 'detail_type_id' => 107,
@@ -693,6 +781,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Loss on discontinued operations, net of tax',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 133,
@@ -706,6 +796,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Long-term investments',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 4,
                 'detail_type_id' => 53,
@@ -719,6 +811,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Long-term debt',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 8,
                 'detail_type_id' => 77,
@@ -732,6 +826,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Liabilities related to assets held for sale',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 8,
                 'detail_type_id' => 76,
@@ -745,6 +841,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Legal and professional fees',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 132,
@@ -758,6 +856,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Inventory Asset',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => 20,
@@ -771,6 +871,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Inventory',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => 20,
@@ -784,6 +886,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Interest income',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 11,
                 'detail_type_id' => 106,
@@ -797,6 +901,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Interest expense',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 131,
@@ -810,6 +916,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Intangibles',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 4,
                 'detail_type_id' => 50,
@@ -823,6 +931,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Insurance - Liability',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 130,
@@ -836,6 +946,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Insurance - General',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 130,
@@ -849,6 +961,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Insurance - Disability',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 130,
@@ -862,6 +976,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Income tax payable',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 7,
                 'detail_type_id' => 64,
@@ -875,6 +991,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Income tax expense',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 129,
@@ -888,6 +1006,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Goodwill',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 4,
                 'detail_type_id' => 49,
@@ -901,6 +1021,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Freight and delivery - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -914,6 +1036,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Equipment rental',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 127,
@@ -927,6 +1051,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Dues and Subscriptions',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 126,
@@ -940,6 +1066,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Dividends payable',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 7,
                 'detail_type_id' => 63,
@@ -953,6 +1081,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Dividend income',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 11,
                 'detail_type_id' => 105,
@@ -966,6 +1096,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Discounts given - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -979,6 +1111,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Direct labour - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -992,6 +1126,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Deferred tax assets',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 4,
                 'detail_type_id' => 48,
@@ -1005,6 +1141,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Cost of sales',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '117',
@@ -1018,6 +1156,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Commissions and fees',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 124,
@@ -1031,6 +1171,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Change in inventory - COS',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 12,
                 'detail_type_id' => '113',
@@ -1044,6 +1186,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Cash and cash equivalents',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 2,
                 'detail_type_id' => 30,
@@ -1057,6 +1201,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Billable Expense Income',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'income',
                 'account_sub_type_id' => 10,
                 'detail_type_id' => 102,
@@ -1070,6 +1216,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Bank charges',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 122,
@@ -1083,6 +1231,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Bad debts',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 121,
@@ -1096,6 +1246,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Available for sale assets (short-term)',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => 17,
@@ -1109,6 +1261,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Assets held for sale',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 4,
                 'detail_type_id' => 47,
@@ -1122,6 +1276,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Amortisation expense',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'expenses',
                 'account_sub_type_id' => 13,
                 'detail_type_id' => 119,
@@ -1135,6 +1291,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Allowance for bad debts',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => 16,
@@ -1148,6 +1306,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Accumulated depreciation on property, plant and equipment',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 3,
                 'detail_type_id' => 37,
@@ -1161,6 +1321,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Accrued non-current liabilities',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 8,
                 'detail_type_id' => 75,
@@ -1174,6 +1336,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Accrued liabilities',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 7,
                 'detail_type_id' => 59,
@@ -1187,6 +1351,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Accrued holiday payable',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 8,
                 'detail_type_id' => 74,
@@ -1200,6 +1366,8 @@ class AccountingUtil extends Util
             array(
                 'name' => 'Accounts Receivable (A/R)',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
+
                 'account_primary_type' => 'asset',
                 'account_sub_type_id' => 1,
                 'detail_type_id' => '15',

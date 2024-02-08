@@ -5,6 +5,7 @@ namespace App\Utils;
 use App\Barcode;
 use App\Business;
 use App\BusinessLocation;
+use App\Company;
 use App\Contact;
 use App\Currency;
 use App\InvoiceLayout;
@@ -244,9 +245,14 @@ class BusinessUtil extends Util
      *
      * @return array
      */
-    public function getCurrentFinancialYear($business_id)
+    public function getCurrentFinancialYear($business_id,$company_id=null)
     {
         $business = Business::where('id', $business_id)->first();
+
+        if($company_id){
+            $business = Company::where('id', $company_id)->first();
+
+        }
      
         $start_month = $business->fy_start_month;
         $end_month = $start_month - 1;

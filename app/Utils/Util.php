@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Business;
 use App\BusinessLocation;
+use App\Company;
 use App\Contact;
 use App\Product;
 use App\ReferenceCount;
@@ -13,6 +14,7 @@ use App\TransactionSellLine;
 use App\Unit;
 use App\User;
 use App\VariationLocationDetails;
+use Carbon\Carbon;
 use Config;
 use DB;
 use GuzzleHttp\Client;
@@ -139,21 +141,28 @@ class Util
      *
      * @return array
      */
-    public function payment_types($location = null, $show_advance = false, $business_id = null)
+    public function payment_types($location = null, $show_advance = false, $business_id = null, $company_id = null)
     {
         if (!empty($location)) {
             $location = is_object($location) ? $location : BusinessLocation::find($location);
 
             //Get custom label from business settings
-            $custom_labels = Business::find($location->business_id)->custom_labels;
+            // $custom_labels = Business::find($location->business_id)->custom_labels;
+            $custom_labels = Company::find($location->compay_id)->custom_labels;
             $custom_labels = json_decode($custom_labels, true);
         } else {
-            if (!empty($business_id)) {
-                $custom_labels = Business::find($business_id)->custom_labels;
+            if (!empty($company_id)) {
+                $custom_labels = Company::find($company_id)->custom_labels;
                 $custom_labels = json_decode($custom_labels, true);
             } else {
                 $custom_labels = [];
             }
+            // if (!empty($business_id)) {
+            //     $custom_labels = Business::find($business_id)->custom_labels;
+            //     $custom_labels = json_decode($custom_labels, true);
+            // } else {
+            //     $custom_labels = [];
+            // }
         }
 
         $payment_types = ['cash' => __('lang_v1.cash'), 'card' => __('lang_v1.card'), 'cheque' => __('lang_v1.cheque'), 'bank_transfer' => __('lang_v1.bank_transfer'), 'other' => __('lang_v1.other')];
@@ -308,13 +317,14 @@ class Util
      * @param  int  $business_id
      * @return int
      */
-    public function setAndGetReferenceCount($type, $business_id = null)
+    public function setAndGetReferenceCount($type, $business_id = null, $company_id = null)
     {
         if (empty($business_id)) {
             $business_id = request()->session()->get('user.business_id');
         }
 
         $ref = ReferenceCount::where('ref_type', $type)
+            ->where('company_id', $company_id)
             ->where('business_id', $business_id)
             ->first();
         if (!empty($ref)) {
@@ -326,6 +336,7 @@ class Util
             $new_ref = ReferenceCount::create([
                 'ref_type' => $type,
                 'business_id' => $business_id,
+                'company_id' => $company_id,
                 'ref_count' => 1,
             ]);
 
@@ -340,19 +351,23 @@ class Util
      * @param  int  $business_id
      * @return int
      */
-    public function generateReferenceNumber($type, $ref_count, $business_id = null, $default_prefix = null)
+    public function generateReferenceNumber($type, $ref_count, $business_id = null, $company_id = null, $default_prefix = null)
     {
         $prefix = '';
 
         if (session()->has('business') && !empty(request()->session()->get('business.ref_no_prefixes')[$type])) {
             $prefix = request()->session()->get('business.ref_no_prefixes')[$type];
         }
-        if (!empty($business_id)) {
-            $business = Business::find($business_id);
+        // if (!empty($business_id)) {
+        //     $business = Business::find($business_id);
+        //     $prefixes = $business->ref_no_prefixes;
+        //     $prefix = !empty($prefixes[$type]) ? $prefixes[$type] : '';
+        // }
+        if (!empty($companyId)) {
+            $business = Company::find($company_id);
             $prefixes = $business->ref_no_prefixes;
             $prefix = !empty($prefixes[$type]) ? $prefixes[$type] : '';
         }
-
         if (!empty($default_prefix)) {
             $prefix = $default_prefix;
         }
@@ -360,7 +375,7 @@ class Util
         $ref_digits = str_pad($ref_count, 4, 0, STR_PAD_LEFT);
 
         if (!in_array($type, ['contacts', 'business_location', 'username'])) {
-            $ref_year = \Carbon::now()->year;
+            $ref_year = Carbon::now()->year;
             $ref_number = $prefix . $ref_year . '/' . $ref_digits;
         } else {
             $ref_number = $prefix . $ref_digits;

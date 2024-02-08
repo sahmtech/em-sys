@@ -15,12 +15,15 @@ use Modules\Accounting\Entities\AccountingAccTransMapping;
 use App\Utils\Util;
 use Illuminate\Support\Facades\DB;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Utils\AccountingUtil;
 use Yajra\DataTables\Facades\DataTables;
 
 class JournalEntryController extends Controller
 {
     protected $util;
+    protected $moduleUtil;
+    protected $accountingUtil;
 
     public function __construct(Util $util, ModuleUtil $moduleUtil, AccountingUtil $accountingUtil)
     {
@@ -32,26 +35,30 @@ class JournalEntryController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        
+        $company_id = Session::get('selectedCompanyId');
+
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_journal_entry= auth()->user()->can('accounting.journal_entry');
+        $can_journal_entry = auth()->user()->can('accounting.journal_entry');
         if (!($is_admin || $can_journal_entry)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        
-        $can_view_journal =auth()->user()->can('accounting.view_journal');
-        $can_edit_journal =auth()->user()->can('accounting.edit_journal');
-        $can_delete_journal =auth()->user()->can('accounting.delete_journal');
 
-        
+        $can_view_journal = auth()->user()->can('accounting.view_journal');
+        $can_edit_journal = auth()->user()->can('accounting.edit_journal');
+        $can_delete_journal = auth()->user()->can('accounting.delete_journal');
+
+
         if (request()->ajax()) {
             $journal = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
+                ->where('accounting_acc_trans_mappings.company_id', $company_id)
                 ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
                 ->where('type', 'journal_entry')
-                ->select(['accounting_acc_trans_mappings.id', 'ref_no', 'operation_date', 'note',
+                ->select([
+                    'accounting_acc_trans_mappings.id', 'ref_no', 'operation_date', 'note',
                     DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                 ]);
 
@@ -63,43 +70,45 @@ class JournalEntryController extends Controller
             }
             return Datatables::of($journal)
                 ->addColumn(
-                    'action', function ($row) use($is_admin,$can_view_journal,$can_edit_journal ,$can_delete_journal  ) {
-                    $html = '<div class="btn-group">
+                    'action',
+                    function ($row) use ($is_admin, $can_view_journal, $can_edit_journal, $can_delete_journal) {
+                        $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
-                        __("messages.actions") .
-                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                            __("messages.actions") .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-                    if ($is_admin || $can_view_journal  ) {
-                        $html .= '<li>
-                                <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@show', [$row->id]).'">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>'.__("messages.view").'
+                        if ($is_admin || $can_view_journal) {
+                            $html .= '<li>
+                                <a href="#" data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@show', [$row->id]) . '">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>' . __("messages.view") . '
                                 </a>
                                 </li>';
-                    }
+                        }
 
-                    if ($is_admin ||$can_edit_journal  ) {
-                        $html .= '<li>
+                        if ($is_admin || $can_edit_journal) {
+                            $html .= '<li>
                                     <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@edit', [$row->id]) . '">
                                         <i class="fas fa-edit"></i>' . __("messages.edit") . '
                                     </a>
                                 </li>';
-                    }
+                        }
 
-                    if ( $is_admin ||$can_delete_journal ) {
-                        $html .= '<li>
-                                    <a href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@destroy', [$row->id]) . '" class="delete_journal_button">
+                        if ($is_admin || $can_delete_journal) {
+                            $html .= '<li>
+                                    <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@destroy', [$row->id]) . '" class="delete_journal_button">
                                         <i class="fas fa-trash" aria-hidden="true"></i>' . __("messages.delete") . '
                                     </a>
                                     </li>';
+                        }
+
+                        $html .= '</ul></div>';
+
+                        return $html;
                     }
-
-                    $html .= '</ul></div>';
-
-                    return $html;
-                })
+                )
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -110,8 +119,10 @@ class JournalEntryController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
- 
+
+
 
         return view('accounting::journal_entry.create');
     }
@@ -119,10 +130,12 @@ class JournalEntryController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
 
-       
-      
+
+
+
         try {
             DB::beginTransaction();
 
@@ -133,8 +146,8 @@ class JournalEntryController extends Controller
             $debits = $request->get('debit');
             $journal_date = $request->get('journal_date');
 
-            $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
-          
+            $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
+
 
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
@@ -152,11 +165,13 @@ class JournalEntryController extends Controller
                     $accounting_settings['journal_entry_prefix'] : '';
 
                 //Generate reference number
-                $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
+                $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
             }
 
             $acc_trans_mapping = new AccountingAccTransMapping();
             $acc_trans_mapping->business_id = $business_id;
+            $acc_trans_mapping->company_id = $company_id;
+
             $acc_trans_mapping->ref_no = $ref_no;
             $acc_trans_mapping->note = $request->get('note');
             $acc_trans_mapping->type = 'journal_entry';
@@ -194,15 +209,16 @@ class JournalEntryController extends Controller
 
             DB::commit();
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('lang_v1.added_success')
             ];
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong')
             ];
         }
@@ -213,8 +229,10 @@ class JournalEntryController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
- 
+
+
 
 
         return view('accounting::journal_entry.show');
@@ -223,10 +241,13 @@ class JournalEntryController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
         $journal = AccountingAccTransMapping::where('business_id', $business_id)
+            ->where('company_id', $company_id)
             ->where('type', 'journal_entry')
             ->where('id', $id)
             ->firstOrFail();
@@ -241,6 +262,8 @@ class JournalEntryController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -256,6 +279,7 @@ class JournalEntryController extends Controller
             $journal_date = $request->get('journal_date');
 
             $acc_trans_mapping = AccountingAccTransMapping::where('business_id', $business_id)
+                ->where('company_id', $company_id)
                 ->where('type', 'journal_entry')
                 ->where('id', $id)
                 ->firstOrFail();
@@ -299,7 +323,8 @@ class JournalEntryController extends Controller
                 }
             }
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('lang_v1.updated_success')
             ];
 
@@ -310,7 +335,8 @@ class JournalEntryController extends Controller
             exit;
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong')
             ];
         }
@@ -321,19 +347,22 @@ class JournalEntryController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
         $user_id = request()->session()->get('user.id');
 
         $acc_trans_mapping = AccountingAccTransMapping::where('id', $id)
-            ->where('business_id', $business_id)->firstOrFail();
+            ->where('business_id', $business_id)->where('company_id', $company_id)->firstOrFail();
 
         if (!empty($acc_trans_mapping)) {
             $acc_trans_mapping->delete();
             AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)->delete();
         }
 
-        return ['success' => 1,
+        return [
+            'success' => 1,
             'msg' => __('lang_v1.deleted_success')
         ];
     }
@@ -341,6 +370,8 @@ class JournalEntryController extends Controller
     public function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -350,7 +381,7 @@ class JournalEntryController extends Controller
             $id = $request->get('id');
 
             if ($type == 'sell') {
-                $transaction = Transaction::where('id', $id)->where('business_id', $business_id)
+                $transaction = Transaction::where('id', $id)->where('business_id', $business_id)->where('company_id', $company_id)
                     ->firstorFail();
 
                 //setting defaults
@@ -364,13 +395,13 @@ class JournalEntryController extends Controller
                 $existing_payment_deposit = AccountingAccountsTransaction::where('transaction_id', $id)
                     ->whereIn('map_type', ['payment_account', 'deposit_to'])
                     ->get();
-//                $default_payment_account = !empty($existing_payment) ? AccountingAccount::find($existing_payment->accounting_account_id) : null;
-//                $default_deposit_to = !empty($existing_deposit) ? AccountingAccount::find($existing_deposit->accounting_account_id) : null;
+                //                $default_payment_account = !empty($existing_payment) ? AccountingAccount::find($existing_payment->accounting_account_id) : null;
+                //                $default_deposit_to = !empty($existing_deposit) ? AccountingAccount::find($existing_deposit->accounting_account_id) : null;
 
                 return view('accounting::journal_entry.map')
                     ->with(compact('transaction', 'type', 'existing_payment_deposit'));
             } elseif (in_array($type, ['purchase_payment', 'sell_payment'])) {
-                $transaction_payment = TransactionPayment::where('id', $id)->where('business_id', $business_id)
+                $transaction_payment = TransactionPayment::where('id', $id)->where('business_id', $business_id)->where('company_id', $company_id)
                     ->firstorFail();
 
                 $existing_payment = AccountingAccountsTransaction::where('transaction_payment_id', $id)
@@ -385,7 +416,7 @@ class JournalEntryController extends Controller
                 return view('accounting::journal_entry.map')
                     ->with(compact('transaction_payment', 'type', 'default_payment_account', 'default_deposit_to'));
             } elseif ($type == 'purchase') {
-                $transaction = Transaction::where('id', $id)->where('business_id', $business_id)
+                $transaction = Transaction::where('id', $id)->where('business_id', $business_id)->where('company_id', $company_id)
                     ->firstorFail();
 
                 //setting defaults
@@ -414,6 +445,8 @@ class JournalEntryController extends Controller
     public function saveMap(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -425,14 +458,15 @@ class JournalEntryController extends Controller
             $account_ids = $request->get('account_id');
             $credits = $request->get('credit');
             $debits = $request->get('debit');
-            $transaction = Transaction::where('business_id', $business_id)->where('id', $request->id)->firstorFail();
+            $transaction = Transaction::where('business_id', $business_id)->where('company_id', $company_id)->where('id', $request->id)->firstorFail();
             if (array_sum($credits) != $transaction->final_total || array_sum($debits) != $transaction->final_total) {
-                $output = ['success' => 0,
+                $output = [
+                    'success' => 0,
                     'msg' => __('messages.total_debit_credit') . ' ' . $transaction->final_total . ' ريال سعودي '
                 ];
                 return $output;
             }
-            $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
+            $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
             if (empty($ref_no)) {
@@ -440,10 +474,11 @@ class JournalEntryController extends Controller
                     $accounting_settings['journal_entry_prefix'] : '';
 
                 //Generate reference number
-                $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
+                $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
             }
             $acc_trans_mapping = new AccountingAccTransMapping();
             $acc_trans_mapping->business_id = $business_id;
+            $acc_trans_mapping->company_id = $company_id;
             $acc_trans_mapping->ref_no = $ref_no;
             $acc_trans_mapping->note = $request->get('note');
             $acc_trans_mapping->type = $request->type;
@@ -474,9 +509,10 @@ class JournalEntryController extends Controller
                     $transaction_row['sub_type'] = $request->type;
                     $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
 
-//                    $accounts_transactions = new AccountingAccountsTransaction();
+                    //                    $accounts_transactions = new AccountingAccountsTransaction();
                     AccountingAccountsTransaction::query()->updateOrCreate(
-                        ['transaction_id' => $transaction_row['transaction_id'],
+                        [
+                            'transaction_id' => $transaction_row['transaction_id'],
                             'map_type' => $transaction_row['map_type'],
                             'transaction_payment_id' => $transaction_row['transaction_payment_id'],
                             'accounting_account_id' => $transaction_row['accounting_account_id']
@@ -489,22 +525,23 @@ class JournalEntryController extends Controller
                             'operation_date' => $transaction_row['operation_date']
                         ]
                     );
-//                    $accounts_transactions->fill($transaction_row);
-//                    $accounts_transactions->save();
+                    //                    $accounts_transactions->fill($transaction_row);
+                    //                    $accounts_transactions->save();
                 }
             }
 
             DB::commit();
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('lang_v1.added_success')
             ];
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong')
             ];
         }
