@@ -208,7 +208,7 @@ class BuildingController extends Controller
 
 
         try {
-            $input = $request->only(['name', 'city', 'address', 'guard', 'supervisor', 'cleaner']);
+            $input = $request->only(['name', 'city', 'address', 'guard', 'supervisor', 'cleaner','building_end_date']);
 
 
             $input2['name'] = $input['name'];
@@ -218,7 +218,8 @@ class BuildingController extends Controller
             $input2['guard_id'] = $input['guard'];
             $input2['supervisor_id'] = $input['supervisor'];
             $input2['cleaner_id'] = $input['cleaner'];
-
+            $input2['building_contract_end_date'] = $input['building_end_date'];
+            
             DB::table('htr_buildings')->where('id', $buildingId)->update($input2);
             $output = [
                 'success' => true,

@@ -19,7 +19,8 @@
 
                 <div class="form-group col-md-6">
                     {!! Form::label('address', __('housingmovements::lang.address') . ':') !!}
-                    {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.address'),'required']) !!}
+                    {!! Form::text('address', null, ['class' => 'form-control',
+                     'placeholder' => __('housingmovements::lang.address'),]) !!}
                 </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('city', __('housingmovements::lang.city') . ':*') !!}

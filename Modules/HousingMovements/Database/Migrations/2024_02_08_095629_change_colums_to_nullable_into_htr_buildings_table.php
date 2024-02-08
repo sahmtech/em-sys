@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('guard_id')->nullable()->change();
             $table->unsignedBigInteger('supervisor_id')->nullable()->change();
             $table->unsignedBigInteger('cleaner_id')->nullable()->change();
+            $table->string('address')->nullable()->change();
         });
     }
 
