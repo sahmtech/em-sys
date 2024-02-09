@@ -397,7 +397,7 @@ class FollowUpWorkerController extends Controller
                 $worker->save();
 
 
-                $history = new WorkerProjectsHistory;
+                $history = new WorkerProjectsHistory();
 
                 $history->worker_id = $worker->id ?? null;
 

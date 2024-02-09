@@ -28,6 +28,8 @@ return new class extends Migration
             $table->foreign('new_project_id')->references('id')->on('sales_projects')->onDelete('set null');
 
             $table->date('canceled_date')->nullable();
+            $table->date('adding_date')->nullable();
+
             $table->text('notes')->nullable();
             $table->timestamps();
         });

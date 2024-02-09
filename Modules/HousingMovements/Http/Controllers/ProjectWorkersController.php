@@ -27,6 +27,7 @@ use App\Contact;
 use App\ContactLocation;
 use App\User;
 use App\Company;
+use App\WorkerProjectsHistory;
 use Carbon\Carbon;
 
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
@@ -336,6 +337,58 @@ class ProjectWorkersController extends Controller
         }
 
         return view('housingmovements::projects_workers.available_shopping')->with(compact('contacts', 'nationalities', 'ContactsLocation'));
+    }
+
+
+    public function addProject(Request $request){
+
+     try {
+            $selectedRowsData = json_decode($request->input('selectedRowsData'));
+
+            foreach ($selectedRowsData as $row) {
+                $worker = User::find($row->id);
+
+               
+
+                if (!$worker) {
+
+                    continue;
+                }
+
+                $worker->assigned_to  = $request->project;
+                $worker->save();
+
+
+                $history = new WorkerProjectsHistory();
+
+                $history->worker_id = $worker->id ?? null;
+
+                $history->type = 'add_project';
+
+                $history->new_project_id = $request->project ?? null;
+
+                $history->adding_date = $request->adding_date ?? null;
+
+                $history->notes = $request->notes ?? null;
+
+                $history->save();
+            }
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
     }
 
     public function reserved_shopping()
