@@ -382,7 +382,16 @@ class FollowUpWorkerController extends Controller
 
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
+           
 
+            if(!$selectedRowsData){
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.please_select_rows'),
+                ];
+                return $output;
+    
+            }
             foreach ($selectedRowsData as $row) {
                 $worker = User::find($row->id);
 

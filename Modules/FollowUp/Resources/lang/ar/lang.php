@@ -337,6 +337,7 @@ return [
    'cancle_worker_project'=>'إلغاء الإسناد لمشروع',
    'canceled_date'=>'تاريخ الإلغاء',
    'notes'=>'ملاحظات',
+   'please_select_rows'=>'الرجاء اختيار عمالة',
    
 
     //''=>''

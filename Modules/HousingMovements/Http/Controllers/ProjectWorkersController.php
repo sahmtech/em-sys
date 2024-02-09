@@ -343,8 +343,25 @@ class ProjectWorkersController extends Controller
     public function addProject(Request $request){
 
      try {
-            $selectedRowsData = json_decode($request->input('selectedRowsData'));
+        if(!$request->project){
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please_select_project'),
+            ];
+            return $output;
 
+        }
+        $selectedRowsData = json_decode($request->input('selectedRowsData'));
+
+        if(!$selectedRowsData){
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please_select_rows'),
+            ];
+            return $output;
+
+        }
+          
             foreach ($selectedRowsData as $row) {
                 $worker = User::find($row->id);
 

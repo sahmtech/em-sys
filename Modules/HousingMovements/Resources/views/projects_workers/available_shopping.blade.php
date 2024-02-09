@@ -104,9 +104,9 @@
                                 <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        {!! Form::label('project', __('housingmovements::lang.project') . ':') !!}
+                                        {!! Form::label('project', __('housingmovements::lang.project') . ':*') !!}
                                         {!! Form::select('project', $contacts, null, [
-                                            'class' => 'form-control select2',
+                                            'class' => 'form-control select2','required',
                                             'style' => 'width:100%;padding:2px;',
                                             'placeholder' => __('housingmovements::lang.select_project'),
                                         ]) !!}
