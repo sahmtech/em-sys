@@ -109,7 +109,7 @@ class RoomController extends Controller
         }
 
 
-        $workers = User::whereIn('users.id', $userIds)->where('user_type', 'worker')->select(
+        $workers = User::whereIn('users.id', $userIds)->where('user_type', 'worker')->whereNot('status', 'inactive')->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
              ' - ',COALESCE(id_proof_number,'')) as full_name")

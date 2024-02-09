@@ -82,7 +82,7 @@ class ProjectWorkersController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')->whereNot('status', 'inactive')
             ->with(['htrRoomsWorkersHistory'])
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -248,7 +248,7 @@ class ProjectWorkersController extends Controller
         HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
         $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
         $users = User::whereIn('users.id', $userIds)->with(['rooms'])
-            ->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
+            ->where('user_type', 'worker')->whereNot('status', 'inactive')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
 
 
 
@@ -421,7 +421,7 @@ class ProjectWorkersController extends Controller
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('status', 'inactive')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
