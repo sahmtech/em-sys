@@ -63,8 +63,8 @@ class FollowUpWorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
-
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
+        $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -72,7 +72,8 @@ class FollowUpWorkerController extends Controller
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('id', $userIds)->whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
-            $contacts_fillter = SalesProject::whereIn('id', $followupUserAccessProject)->pluck('name', 'id');
+            $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
+            $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
         }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -103,8 +104,13 @@ class FollowUpWorkerController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+                if(request()->input('project_name')=='undefined'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+               
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {

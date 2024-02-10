@@ -70,8 +70,10 @@ class ProjectWorkersController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
-
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
+        $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
+        
+        
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -98,9 +100,16 @@ class ProjectWorkersController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+       
+                if(request()->input('project_name')=='undefined'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+                
             }
+            
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
