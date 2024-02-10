@@ -18,6 +18,7 @@ use App\Utils\ModuleUtil;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Illuminate\Support\Facades\Session;
+use Modules\Accounting\Entities\AccountingUserAccessCompany;
 
 class AccountingController extends Controller
 {
@@ -38,7 +39,18 @@ class AccountingController extends Controller
     public function landing()
     {
         $companies = Company::all();
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_accounting_view_companies = auth()->user()->can('accounting.view_companies') ? true : false;
 
+        if (!($is_admin || $can_accounting_view_companies)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        if (!$is_admin) {
+            $companies = Company::whereIn('id', $this->accountingUtil->allowedCompanies())->get();
+        }
         $cardsOfCompanies = [];
         foreach ($companies as $company) {
             $cardsOfCompanies[] = [
@@ -69,7 +81,9 @@ class AccountingController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_accounting_dashboard = auth()->user()->can('accounting.accounting_dashboard');
-        if (!($is_admin || $can_accounting_dashboard)) {
+        $allowed_companies_ids = $this->accountingUtil->allowedCompanies();
+        $can_access_company = in_array($company_id, $allowed_companies_ids);
+        if (!($is_admin || ($can_accounting_dashboard &&  $can_access_company))) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),

@@ -10,7 +10,7 @@ class CostCenter extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
     protected $table ="accounting_cost_centers";
     protected function getTransNameAttribute(){
         $name = app()->getLocale().'_name';

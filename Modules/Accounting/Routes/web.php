@@ -21,13 +21,17 @@ use Modules\Accounting\Http\Controllers\SettingsController;
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'all-accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
     Route::get('/', [\Modules\Accounting\Http\Controllers\AccountingController::class, 'landing'])->name('accountingLanding');
     Route::get('/setSession', [\Modules\Accounting\Http\Controllers\AccountingController::class, 'setSession'])->name('setSession');
+    Route::get('/companies_access_permissions', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'index'])->name('companies_access_permissions');
+    Route::get('/getUserCompaniesPermissions/{userId}', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'getUserCompaniesPermissions'])->name('getUserCompaniesPermissions');
+    Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
+ 
+
 });
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
 
 
     Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
-
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
 
     Route::get('open-create-dialog/{id}', 'CoaController@open_create_dialog')->name('open_create_dialog');
