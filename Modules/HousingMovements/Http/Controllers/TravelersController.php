@@ -521,7 +521,8 @@ class TravelersController extends Controller
                     ]);
                     $worker->update(['arrival_status' => 1]);
                 }
-                $proposalWorkersCount = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)->count();
+                if( $worker->transaction_sell_line_id){
+                    $proposalWorkersCount = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)->count();
                 $proposalWorkersWithArrivalStatus1Count = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)
                     ->where('arrival_status', 1)
                     ->count();
@@ -533,6 +534,8 @@ class TravelersController extends Controller
                 }
                 else{  $orderOperation = $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation;
                     $orderOperation->update(['status' => 'under_process']);}
+                }
+              
             }
           
 
