@@ -139,6 +139,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'housingmovements.add_worker_project',
+                        'label' => __('housingmovements::lang.add_worker_project'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'housingmovements.all_workers',
                         'label' => __('housingmovements::lang.all_workers_view'),
                         'default' => false,
