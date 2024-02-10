@@ -76,8 +76,9 @@ class DelegationController extends Controller
                     $allowancesHtml = '<ul>';
                     foreach (json_decode($delegation->transactionSellLine->additional_allwances) as $allowance) {
                         if (is_object($allowance) && property_exists($allowance, 'salaryType') && property_exists($allowance, 'amount')) {
+                           if($allowance->salaryType){
                             $allowancesHtml .= '<li>' . __('sales::lang.' . $allowance->salaryType) . ': ' . $allowance->amount . '</li>';
-                        }
+                        }}
                     }
                     $allowancesHtml .= '</ul>';
                     return $allowancesHtml;
@@ -96,7 +97,7 @@ class DelegationController extends Controller
                                 <a href="' . route('createProposed_labor', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
                                     . trans("internationalrelations::lang.addWorker") .
                                 '</a>
-                              </button>&nbsp;';
+                              </button> &nbsp;';
                 }
                 if ($is_admin || $can_import_proposed_workers) {
                     $html .= '<button class="btn btn-xs btn-success">

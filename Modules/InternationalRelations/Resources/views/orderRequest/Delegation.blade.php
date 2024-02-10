@@ -87,14 +87,18 @@
                                             <ul>
                                                 @foreach (json_decode($sell_line->additional_allwances) as $allwance)
                                                     @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
-                                                        <li>
-                                                            {{ __('sales::lang.' . $allwance->salaryType) }}:
-                                                            @if ($allwance->amount == 0)
-                                                                {{ __('sales::lang.insured_by_the_other') }}
-                                                            @else
-                                                                {{ $allwance->amount }}
-                                                            @endif
-                                                        </li>
+                                                        @if ($allwance->salaryType)
+                                                            <li>
+
+                                                                {{ __('sales::lang.' . $allwance->salaryType) }}:
+                                                                @if ($allwance->amount == 0)
+                                                                    {{ __('sales::lang.insured_by_the_other') }}
+                                                                @else
+                                                                    {{ $allwance->amount }}
+                                                                @endif
+
+                                                            </li>
+                                                        @endif
                                                     @endif
                                                 @endforeach
                                             </ul>

@@ -50,7 +50,7 @@ class BuildingController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $query = User::whereIn('users.id', $userIds);
+        $query = User::whereIn('users.id', $userIds)->whereNot('status', 'inactive');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $cities = EssentialsCity::forDropdown();
@@ -134,7 +134,7 @@ class BuildingController extends Controller
                 ->make(true);
         }
 
-        $query = User::whereIn('users.id', $userIds)->whereIn('user_type', ['worker', 'employee']);
+        $query = User::whereIn('users.id', $userIds)->whereIn('user_type', ['worker', 'employee'])->whereNot('status', 'inactive');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users2 = $all_users->pluck('full_name', 'id');
 

@@ -11,6 +11,7 @@ use App\Utils\Util;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
@@ -136,36 +137,46 @@ class DriverCarController extends Controller
      */
     public function create()
     {
-        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
-        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-        $driver_ids = DriverCar::whereIn('user_id', $userIds)->pluck('user_id');
+        
+            $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+          
+            $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+       
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+          
+            $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+            if (!$is_admin) {
+                $userIds = [];
+                $userIds = $this->moduleUtil->applyAccessRole();
+            }
+            $driver_ids = DriverCar::whereIn('user_id', $userIds)->pluck('user_id');
+    
+            
+    
+            $workers = User::where('user_type', 'worker')
+                ->whereIn('id', $essentials_employee_appointmets_ids)
+                ->whereNotIn('id', $driver_ids)->get();
 
-
-
-        $workers = User::where('user_type', 'worker')
-            ->whereIn('id', $essentials_employee_appointmets_ids)
-            ->whereNotIn('id', $driver_ids)->get();
-        if (count($workers) == 0) {
-            $message = 'notFountAvilableWorkers';
-            return view('essentials::movementMangment.driverCar.message', compact('message'));
-        }
-        $carDriver_ids = DriverCar::all()->pluck('car_id');
-
-        $cars = Car::whereNotIn('id', $carDriver_ids)->get();
-        if (count($cars) == 0) {
-            $message = 'notFountAvilableCars';
-            return view('essentials::movementMangment.driverCar.message', compact('message'));
-        }
-
-
-
-        return view('essentials::movementMangment.driverCar.create', compact('workers', 'cars'));
+            
+            if (count($workers) == 0) {
+                
+                $message = 'notFountAvilableWorkers';
+                return view('essentials::movementMangment.driverCar.message', compact('message'));
+            }
+            $carDriver_ids = DriverCar::all()->pluck('car_id');
+         
+            $cars = Car::whereNotIn('id', $carDriver_ids)->get();
+       
+            if (count($cars) == 0) {
+                $message = 'notFountAvilableCars';
+                return view('essentials::movementMangment.driverCar.message', compact('message'));
+            }
+    
+    
+    
+            return view('essentials::movementMangment.driverCar.create', compact('workers', 'cars'));
+        
+      
     }
 
     /**
@@ -224,8 +235,8 @@ class DriverCarController extends Controller
      */
     public function edit($id)
     {
-        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
-        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+        $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
         $driver = DriverCar::find($id);
         $driver_ids = DriverCar::all()->pluck('user_id');
 

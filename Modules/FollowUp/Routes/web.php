@@ -107,5 +107,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/documents-delivery-store', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'store'])->name('documents-delivery-store');
         Route::put('/documents-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'update'])->name('documents-delivery-update');
         Route::delete('/documents-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'destroy'])->name('documents-delivery-delete');
+       
+        Route::post('/cancleProject', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'cancleProject'])->name('cancleProject');
+       
+    
     });
 });

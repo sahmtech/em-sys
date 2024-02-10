@@ -10,14 +10,12 @@
 </section>
 
     <section class="content">
-        {!! Form::open(['route' => 'storeProposed_labor', 'enctype' => 'multipart/form-data', 'id' => 'user_add_form']) !!}
+        {!! Form::open(['route' => 'storeWorkerWithoutProject', 'enctype' => 'multipart/form-data', 'id' => 'user_add_form']) !!}
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget')
                 
-                <input type="hidden" name="delegation_id" value="{{ $delegation_id }}">
-                <input type="hidden" name="agency_id" value="{{ $agency_id }}">
-                <input type="hidden" name="transaction_sell_line_id" value="{{ $transaction_sell_line_id }}">
+               
                     <div class="form-group col-md-3">
                             {!! Form::label('first_name', __('business.first_name') . ':*') !!}
                             {!! Form::text('first_name', null, [

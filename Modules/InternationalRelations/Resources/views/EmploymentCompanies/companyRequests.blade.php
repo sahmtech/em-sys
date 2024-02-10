@@ -51,11 +51,13 @@
                             <ul>
                                 @foreach (json_decode($delegation->transactionSellLine->additional_allwances) as $allwance)
                                     @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
-                                        <li>
+                                    @if($allwance->salaryType)    
+                                    <li>
                                             {{ __('sales::lang.' . $allwance->salaryType) }}:
                                             {{ $allwance->amount }}
 
                                         </li>
+                                    @endif
                                     @endif
                                 @endforeach
                             </ul>

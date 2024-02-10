@@ -8,8 +8,7 @@ use App\Category;
 use App\AccessRole;
 use App\AccessRoleProject;
 
-use App\Contact;
-use App\ContactLocation;
+use App\WorkerProjectsHistory;
 use App\User;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -49,7 +48,7 @@ class FollowUpWorkerController extends Controller
     public function index()
     {
 
-        
+
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_followup_crud_workers = auth()->user()->can('followup.crud_workers');
@@ -64,8 +63,8 @@ class FollowUpWorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
-
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
+        $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -73,7 +72,8 @@ class FollowUpWorkerController extends Controller
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('id', $userIds)->whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
-            $contacts_fillter = SalesProject::whereIn('id',$followupUserAccessProject)->pluck('name', 'id');
+            $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
+            $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
         }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -100,12 +100,17 @@ class FollowUpWorkerController extends Controller
         )->orderBy('users.id', 'desc')
             ->groupBy('users.id');
 
-            
-            
+
+
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+                if(request()->input('project_name')=='undefined'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+               
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
@@ -378,9 +383,65 @@ class FollowUpWorkerController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function cancleProject(Request $request)
     {
-        //
+
+        try {
+            $selectedRowsData = json_decode($request->input('selectedRowsData'));
+           
+
+            if(!$selectedRowsData){
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.please_select_rows'),
+                ];
+                return $output;
+    
+            }
+            foreach ($selectedRowsData as $row) {
+                $worker = User::find($row->id);
+
+                $old_project = $worker->assigned_to;
+
+                if (!$worker) {
+
+                    continue;
+                }
+
+                $worker->assigned_to = null;
+                $worker->save();
+
+
+                $history = new WorkerProjectsHistory();
+
+                $history->worker_id = $worker->id ?? null;
+
+                $history->type = 'cancle_project';
+
+                $history->old_project_id = $old_project ?? null;
+
+                $history->canceled_date = $request->canceled_date ?? null;
+
+                $history->notes = $request->notes ?? null;
+
+                $history->save();
+            }
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
     }
 
     /**

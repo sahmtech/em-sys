@@ -80,6 +80,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/create_project_workers', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'create'])->name('create_project_workers');
         Route::post('/store_project_worker', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'storeProjectWorker'])->name('store_project_worker');
 
+        Route::post('/addProject', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'addProject'])->name('addProject');
 
 
         Route::get('/get-room-numbers/{buildingId}',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');

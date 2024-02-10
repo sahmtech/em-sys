@@ -261,6 +261,14 @@ return [
 
 
     'department_employees' => 'موظفي الإدارة',
+    'adding_date'=>'تاريخ الإسناد',
+    'select_project'=>'اختر مشروع',
+    'notes'=>'الملاحظات',
+    'add_worker_project'=>'إسناد عمالة لمشروع',
+    'please_select_project'=>'الرجاء اختيار مشروع',
+    'please_select_rows'=>'الرجاء اختيار عمالة',
+
+
 
 
 

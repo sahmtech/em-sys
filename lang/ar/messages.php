@@ -38,4 +38,5 @@ return [
     'go_back' => 'رجوع',
     'added_success' => 'تم الحفظ بنجاح',
     'unauthorized' => 'ليس لديك الصلاحية المناسبة',
+    'undefined'=>'غير معرف'
 ];

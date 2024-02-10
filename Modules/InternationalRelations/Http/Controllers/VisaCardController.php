@@ -37,13 +37,13 @@ class VisaCardController extends Controller
      */
     public function index(Request $request)
     {
-        
+
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_visa_card = auth()->user()->can('internationalrelations.crud_visa_cards');
         if (!($is_admin || $can_crud_visa_card)) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $visaCards = IrVisaCard::with(
             'operationOrder.contact',
@@ -179,15 +179,15 @@ class VisaCardController extends Controller
 
     public function store(Request $request)
     {
-        
-    
+
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_visa_card = auth()->user()->can('internationalrelations.store_visa_card');
         if (!($is_admin || $can_store_visa_card)) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
-    
+
         try {
             DB::transaction(function () use ($request) {
                 foreach ($request->input('visa_number') as $nationalityId => $visaNumber) {
@@ -205,13 +205,13 @@ class VisaCardController extends Controller
                         'operation_order_id' => $request->input('id'),
                         'transaction_sell_line_id' => $sellLines->id,
                     ];
-    
+
                     DB::table('ir_visa_cards')->insert($visaDetails);
                 }
-    
+
                 SalesOrdersOperation::where('id', $request->input('id'))->update(['has_visa' => '1']);
             });
-    
+
             $output = [
                 'success' => 1,
                 'msg' => __('sales::lang.operationOrder_added_success'),
@@ -219,16 +219,16 @@ class VisaCardController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage(),
             ];
         }
-    
+
         return redirect()->route('order_request')->with($output);
     }
-    
+
 
     /**
      * Show the specified resource.
@@ -238,13 +238,13 @@ class VisaCardController extends Controller
     public function viewVisaWorkers($visaId)
     {
 
-        
+
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_visa_workers = auth()->user()->can('internationalrelations.view_visa_workers');
         if (!($is_admin || $can_view_visa_workers)) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -267,18 +267,26 @@ class VisaCardController extends Controller
                 return Datatables::of($workers)
 
                     ->addColumn('profession_id', function ($row) use ($professions) {
-                        $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
-
+                        $item = '';
+                        if ($row->transactionSellLine) {
+                            $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
+                        }
                         return $item;
                     })
                     ->addColumn('nationality_id', function ($row) use ($nationalities) {
-                        $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
-
+                        $item = '';
+                        if ($row->transactionSellLine) {
+                            $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
+                        }
                         return $item;
                     })
                     ->editColumn('agency_id', function ($row) use ($agencys) {
 
-                        return $agencys[$row->agency_id];
+                        if ($row->agency_id) {
+                            return $agencys[$row->agency_id];
+                        } else {
+                            return '';
+                        }
                     })
                     ->editColumn('medical_examination', function ($row) {
                         $text = $row->medical_examination == 1
@@ -312,7 +320,14 @@ class VisaCardController extends Controller
             }
             $visaCards = IrVisaCard::where('id', $visaId)->with('operationOrder.salesContract.transaction.sell_lines')->first();
             $sellLineIds = $visaCards->operationOrder->salesContract->transaction->sell_lines->pluck('id')->toArray();
-            $workers = IrProposedLabor::whereIn('transaction_sell_line_id', $sellLineIds)->where('visa_id', Null)->where('is_accepted_by_worker', 1)->get();
+            //    $workers = IrProposedLabor::whereIn('transaction_sell_line_id', $sellLineIds)->where('visa_id', Null)->where('is_accepted_by_worker', 1)->get();
+            $workers = IrProposedLabor::where(function ($query) use ($sellLineIds) {
+                $query->whereNull('transaction_sell_line_id')
+                    ->orWhereIn('transaction_sell_line_id', $sellLineIds);
+            })
+                ->whereNull('visa_id')
+                ->where('is_accepted_by_worker', 1)
+                ->get();
 
 
             $workersOptions = $workers->map(function ($worker) {

@@ -26,7 +26,7 @@ use Modules\InternationalRelations\Entities\IrDelegation;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use App\TransactionSellLine;
-
+use Modules\InternationalRelations\Entities\IrVisaCard;
 
 class WorkerController extends Controller
 {
@@ -63,8 +63,8 @@ class WorkerController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
-       
-        if (!($is_admin )) {
+
+        if (!($is_admin)) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -155,10 +155,10 @@ class WorkerController extends Controller
                 //     return $html;
                 // })
 
-                ->addColumn('action', function ($row) use ($is_admin,$can_view_worker_profile){
+                ->addColumn('action', function ($row) use ($is_admin, $can_view_worker_profile) {
                     $html = '';
                     if ($is_admin || $can_view_worker_profile) {
-                    $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
+                        $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     }
                     return $html;
                 })
@@ -246,24 +246,35 @@ class WorkerController extends Controller
 
 
                 ->addColumn('profession_id', function ($row) use ($professions) {
-                    $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
+
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
+                    }
 
                     return $item;
                 })
                 ->addColumn('specialization_id', function ($row) use ($specializations) {
-                    $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
-
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
+                    }
                     return $item;
                 })
 
                 ->addColumn('nationality_id', function ($row) use ($nationalities) {
-                    $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
-
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
+                    }
                     return $item;
                 })
                 ->editColumn('agency_id', function ($row) use ($agencys) {
-
-                    return $agencys[$row->agency_id];
+                    if ($row->agency_id) {
+                        return $agencys[$row->agency_id];
+                    } else {
+                        return '';
+                    }
                 })
                 ->editColumn('is_price_offer_sent', function ($row) {
                     $text = $row->is_price_offer_sent;
@@ -274,11 +285,10 @@ class WorkerController extends Controller
                     return  $text;
                 })
 
-                ->addColumn('action', function ($row) use ($is_admin,$can_view_worker_profile) {
+                ->addColumn('action', function ($row) use ($is_admin, $can_view_worker_profile) {
                     $html = '';
                     if ($is_admin || $can_view_worker_profile) {
-                    $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
-
+                        $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     }
                     return $html;
                 })
@@ -308,7 +318,7 @@ class WorkerController extends Controller
         }
 
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
-     
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
@@ -332,6 +342,7 @@ class WorkerController extends Controller
         ]);
 
         if (!empty($request->input('specialization'))) {
+            
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('specialization_id', $request->input('specialization'));
             });
@@ -354,24 +365,35 @@ class WorkerController extends Controller
 
 
                 ->addColumn('profession_id', function ($row) use ($professions) {
+                    $item='';
+                    if($row->transactionSellLine){
                     $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
-
+                    }
                     return $item;
                 })
                 ->addColumn('specialization_id', function ($row) use ($specializations) {
+                    $item='';
+                    if($row->transactionSellLine){
                     $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
-
+                    }
                     return $item;
                 })
 
                 ->addColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item='';
+                    if($row->transactionSellLine){
                     $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
-
+                    }
                     return $item;
                 })
                 ->editColumn('agency_id', function ($row) use ($agencys) {
-
-                    return $agencys[$row->agency_id];
+                    if($row->agency_id){
+                         return $agencys[$row->agency_id];
+                    }
+                    else{
+                        return '';
+                    }
+                   
                 })
                 ->editColumn('interviewStatus', function ($row) {
                     $status = __('internationalrelations::lang.' . $row->interviewStatus);
@@ -387,11 +409,10 @@ class WorkerController extends Controller
 
                     return $status;
                 })
-                ->addColumn('action', function ($row) use ($is_admin,$can_view_worker_profile) {
+                ->addColumn('action', function ($row) use ($is_admin, $can_view_worker_profile) {
                     $html = '';
                     if ($is_admin || $can_view_worker_profile) {
-                    $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
-
+                        $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     }
                     return $html;
                 })
@@ -468,24 +489,35 @@ class WorkerController extends Controller
 
 
                 ->addColumn('profession_id', function ($row) use ($professions) {
+                    $item='';
+                    if($row->transactionSellLine){
                     $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
-
+                    }
                     return $item;
                 })
                 ->addColumn('specialization_id', function ($row) use ($specializations) {
+                    $item='';
+                    if($row->transactionSellLine){
                     $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
-
+                    }
                     return $item;
                 })
 
                 ->addColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item='';
+                    if($row->transactionSellLine){
                     $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
-
+                    }
                     return $item;
                 })
                 ->editColumn('agency_id', function ($row) use ($agencys) {
-
-                    return $agencys[$row->agency_id];
+                    if($row->agency_id){
+                         return $agencys[$row->agency_id];
+                    }
+                    else{
+                        return '';
+                    }
+                   
                 })
                 ->addColumn('interviewStatus', function ($row) {
                     if ($row->interviewStatus === null) {
@@ -509,10 +541,10 @@ class WorkerController extends Controller
                     return $html;
                 })
 
-                ->addColumn('action', function ($row)  use ($is_admin,$can_view_worker_profile){
+                ->addColumn('action', function ($row)  use ($is_admin, $can_view_worker_profile) {
                     $html = '';
                     if ($is_admin || $can_view_worker_profile) {
-                    $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
+                        $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     }
                     return $html;
                 })
@@ -842,6 +874,45 @@ class WorkerController extends Controller
             ));
     }
 
+    public function create_worker_without_project()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
+        if (!($is_admin || $can_store_proposed_labor)) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
+
+        $blood_types = [
+            'A+' => 'A positive (A+).',
+            'A-' => 'A negative (A-).',
+            'B+' => 'B positive (B+)',
+            'B-' => 'B negative (B-).',
+            'AB+' => 'AB positive (AB+).',
+            'AB-' => 'AB negative (AB-).',
+            'O+' => 'O positive (O+).',
+            'O-' => 'O positive (O-).',
+        ];
+
+        $resident_doc = null;
+        $user = null;
+        return view('internationalrelations::worker.create_worker_without_project')
+            ->with(compact(
+                'nationalities',
+                'blood_types',
+                'contacts',
+                "specializations",
+                'professions',
+                'resident_doc',
+                'user',
+
+            ));
+    }
     public function storeProposed_labor(Request $request)
     {
 
@@ -890,7 +961,47 @@ class WorkerController extends Controller
 
         return redirect()->route('delegations')->with('status', $output);
     }
+    public function storeWorkerWithoutProject(Request $request)
+    {
 
+        try {
+            $input = $request->only([
+                'first_name', 'mid_name', 'last_name',
+                'email', 'dob', 'gender',
+                'marital_status', 'blood_group', 'age',
+                'contact_number', 'alt_number', 'family_number', 'permanent_address',
+                'current_address',  'profile_picture', 'passport_number'
+            ]);
+
+            $passport_number = IrProposedLabor::where('passport_number', $request->input('passport_number'))->first();
+            if ($passport_number) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('lang_v1.the_passport_number_already_exists'),
+                ];
+                return redirect()->route('create_worker_without_project')->with('status', $output);
+            }
+            if ($request->hasFile('profile_picture')) {
+                $input['profile_image'] = $request->file('profile_picture')->store('/proposedLaborPicture');
+            }
+
+            IrProposedLabor::create($input);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log(print_r('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->route('delegations')->with('status', $output);
+    }
     public function changeStatus(Request $request)
     {
         $user = auth()->user();
