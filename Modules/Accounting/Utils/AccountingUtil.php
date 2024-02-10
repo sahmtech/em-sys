@@ -10,9 +10,18 @@ use App\Transaction;
 use Carbon\Carbon;
 // use CarbonCarbon;
 use Modules\Accounting\Entities\AccountingAccount;
+use Modules\Accounting\Entities\AccountingUserAccessCompany;
 
 class AccountingUtil extends Util
 {
+
+    public function allowedCompanies()
+    {
+        $user_id = auth()->user()->id;
+        $companies_ids = AccountingUserAccessCompany::where('user_id', $user_id)->pluck('company_id')->unique()->toArray();
+        return  array_unique($companies_ids);
+    }
+
     public function balanceFormula(
         $accounting_accounts_alias = 'accounting_accounts',
         $accounting_account_transaction_alias = 'AAT'
@@ -39,7 +48,7 @@ class AccountingUtil extends Util
         return $accounting_settings;
     }
 
-    public function getAgeingReport($business_id, $type,$company_id = null, $group_by, $location_id = null)
+    public function getAgeingReport($business_id, $type, $company_id = null, $group_by, $location_id = null)
     {
         $today = Carbon::now()->format('Y-m-d');
         $query = Transaction::where('transactions.business_id', $business_id)->where('transactions.company_id', $company_id);
@@ -114,7 +123,7 @@ class AccountingUtil extends Util
     }
 
 
-    public static function next_GLC($parent_account_id, $business_id,$company_id=null)
+    public static function next_GLC($parent_account_id, $business_id, $company_id = null)
     {
 
 
@@ -143,7 +152,7 @@ class AccountingUtil extends Util
     }
 
 
-    public static function  Default_Accounts($business_id, $user_id,$company_id=null)
+    public static function  Default_Accounts($business_id, $user_id, $company_id = null)
     {
         return   array(
             0 =>
@@ -152,7 +161,7 @@ class AccountingUtil extends Util
                 'business_id' => $business_id,
                 'company_id' => $company_id,
 
-                
+
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 5,
                 'detail_type_id' => 57,

@@ -1334,11 +1334,13 @@ class CustomAdminSidebarMenu
             );
 
 
-            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') 
-            || auth()->user()->can('sales.view_qualified_contacts') 
-            || auth()->user()->can('sales.view_unqualified_contacts') 
-            || auth()->user()->can('sales.view_converted_contacts') 
-            || auth()->user()->can('sales.view_draft_contacts')) {
+            if (
+                $is_admin || auth()->user()->can('sales.view_lead_contacts')
+                || auth()->user()->can('sales.view_qualified_contacts')
+                || auth()->user()->can('sales.view_unqualified_contacts')
+                || auth()->user()->can('sales.view_converted_contacts')
+                || auth()->user()->can('sales.view_draft_contacts')
+            ) {
 
 
                 $menu->url(
@@ -1613,6 +1615,28 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            if ($is_admin || auth()->user()->can('accounting.view_companies')) {
+                $menu->url(
+                    route('accountingLanding'),
+                    __('accounting::lang.companies'),       
+                    [
+                        'icon' => 'fa fas fa-building',
+                        'active' => request()->segment(2) == ''
+                    ],
+
+                );
+            }
+            if ($is_admin || auth()->user()->can('accounting.companies_access_permissions')) {
+                $menu->url(
+                    route('companies_access_permissions'),
+                    __('accounting::lang.companies_access_permissions'),
+                    [
+                        'icon' => 'fa fas fa-key',
+                        'active' => request()->segment(2) == 'companies_access_permissions'
+                    ],
+
+                );
+            }
         });
     }
     public function accountingMenu()
