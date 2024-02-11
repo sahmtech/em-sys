@@ -24,15 +24,15 @@
         @endif
     @endcomponent
     @component('components.widget', ['class' => 'box-primary',])
-        @can('direct_sell.access')
+        {{-- @can('direct_sell.access') --}}
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary" href="{{action([\App\Http\Controllers\SellController::class, 'create'])}}">
                     <i class="fa fa-plus"></i> @lang('messages.add')</a>
                 </div>
             @endslot
-        @endcan
-        @if(auth()->user()->can('direct_sell.view') ||  auth()->user()->can('view_own_sell_only') ||  auth()->user()->can('view_commission_agent_sell'))
+        {{-- @endcan --}}
+        {{-- @if(auth()->user()->can('direct_sell.view') ||  auth()->user()->can('view_own_sell_only') ||  auth()->user()->can('view_commission_agent_sell')) --}}
         @php
             $custom_labels = json_decode(session('business.custom_labels'), true);
          @endphp
@@ -83,7 +83,7 @@
                     </tr>
                 </tfoot>
             </table>
-        @endif
+        {{-- @endif --}}
     @endcomponent
 </section>
 <!-- /.content -->
