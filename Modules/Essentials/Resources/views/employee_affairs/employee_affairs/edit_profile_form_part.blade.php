@@ -354,11 +354,10 @@
         <div class="clearfix"></div>
         <br>
         <div class="form-group col-md-3">
-            <button type="button" class="btn btn-success align-self-center qualification_attachements_btn"
-                id="qualificationFileLink">
+            <button type="button" class="btn btn-success align-self-center qualification_attachements_btn" id="qualificationFileLink">
                 {{ __('essentials::lang.qualification_attachements') }}
             </button>
-
+            
         </div>
         @if (empty($qualification))
             <div class="col-md-4">
@@ -447,16 +446,7 @@
             ]) !!}
         </div>
 
-        <div class="clearfix"></div>
-        <br>
-        <div class="form-group col-md-3">
-            <button type="button" class="btn btn-success align-self-center iban_attachements_btn" id="ibanFileLink">
-                {{ __('essentials::lang.Iban_file') }}
-            </button>
-
-        </div>
-
-        {{-- <div class="form-group col-md-4">
+        <div class="form-group col-md-4">
             {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':') !!}
             {!! Form::file('Iban_file', [
                 'class' => 'form-control',
@@ -464,7 +454,7 @@
             
                 'style' => 'height:40px',
             ]) !!}
-        </div> --}}
+        </div>
 
 
         {{--
@@ -611,9 +601,8 @@
         }
 
 
-        if (document.getElementById('border_no')) {
-            document.getElementById('border_no').addEventListener('input', validateBorderNumber);
-        }
+
+        document.getElementById('border_no').addEventListener('input', validateBorderNumber);
     </script>
 
 

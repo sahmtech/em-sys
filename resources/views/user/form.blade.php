@@ -19,13 +19,10 @@
         <h4>@lang('essentials::lang.personal_info'):</h4>
         <div class="form-group col-md-3">
             {!! Form::label('user_hijri_dob', __('lang_v1.hijri_dob') . ':') !!}
-            {!! Form::text('hijrii_date', !empty($user->hijrii_date) ? $user->hijrii_date : null, [
-                'class' => 'form-control hijri-date-picker',
-                'style' => 'height:40px',
-                'placeholder' => __('lang_v1.hijri_dob'),
-                'readonly',
-                'id' => 'user_hijri_dob',
-            ]) !!}
+            <input type="text" id="calender" placement="bottom" style="height:40px"
+                placeholder="{{ __('lang_v1.hijri_dob') }}" class="form-control" readonly>
+            <datepicker-hijri reference="calender" date-format="iYYYY/iMM/iDD"
+                selected-date="1441/02/01"></datepicker-hijri>
         </div>
 
         <div class="form-group col-md-3">
@@ -97,7 +94,7 @@
                 'rows' => 3,
             ]) !!}
         </div>
-        
+
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
             <select id="id_proof_name" style="height:40px" required name="id_proof_name" class="form-control"
@@ -148,64 +145,64 @@
 
         <div class="clearfix"></div>
 
-       @if(empty($user)) 
-        <div class="row">
-            <div class="col-md-5">
-                <div class="form-group">
-                    <table id="documentsTable" class="table">
-                        <thead>
-                            <tr>
-                                <th>{!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}</th>
-                                <th>{!! Form::label('document_file', __('essentials::lang.file') . ':') !!}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <!-- Document Type Select -->
-                                    {!! Form::select(
-                                        'document_type[]',
-                                        [
-                                            'national_id' => __('essentials::lang.national_id'),
-                                            'passport' => __('essentials::lang.passport'),
-                                            'residence_permit' => __('essentials::lang.residence_permit'),
-                                            'drivers_license' => __('essentials::lang.drivers_license'),
-                                            'car_registration' => __('essentials::lang.car_registration'),
-                                            'international_certificate' => __('essentials::lang.international_certificate'),
-                                        ],
-                                        null,
-                                        [
+        @if (empty($user))
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <table id="documentsTable" class="table">
+                            <thead>
+                                <tr>
+                                    <th>{!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}</th>
+                                    <th>{!! Form::label('document_file', __('essentials::lang.file') . ':') !!}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <!-- Document Type Select -->
+                                        {!! Form::select(
+                                            'document_type[]',
+                                            [
+                                                'national_id' => __('essentials::lang.national_id'),
+                                                'passport' => __('essentials::lang.passport'),
+                                                'residence_permit' => __('essentials::lang.residence_permit'),
+                                                'drivers_license' => __('essentials::lang.drivers_license'),
+                                                'car_registration' => __('essentials::lang.car_registration'),
+                                                'international_certificate' => __('essentials::lang.international_certificate'),
+                                            ],
+                                            null,
+                                            [
+                                                'class' => 'form-control',
+                                                'style' => 'height:40px',
+                                                'placeholder' => __('essentials::lang.select_type'),
+                                            ],
+                                        ) !!}
+                                    </td>
+                                    <td>
+                                        <!-- File Input -->
+                                        {!! Form::file('document_file[]', [
                                             'class' => 'form-control',
                                             'style' => 'height:40px',
-                                            'placeholder' => __('essentials::lang.select_type'),
-                                        ],
-                                    ) !!}
-                                </td>
-                                <td>
-                                    <!-- File Input -->
-                                    {!! Form::file('document_file[]', [
-                                        'class' => 'form-control',
-                                        'style' => 'height:40px',
-                                    ]) !!}
-                                </td>
-                                <td>
-                                    {{-- <button type="button" id="remove-row"
+                                        ]) !!}
+                                    </td>
+                                    <td>
+                                        {{-- <button type="button" id="remove-row"
                                         class="btn btn-danger remove-row">{{ __('messages.delete') }}
                                     </button> --}}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex justify-content-center">
+
+                    <button type="button" class="btn btn-success align-self-center" onclick="addRow()">
+                        {{ __('essentials::lang.add_file') }}
+                    </button>
                 </div>
             </div>
-            <div class="col-md-4 d-flex justify-content-center">
-
-                <button type="button" class="btn btn-success align-self-center" onclick="addRow()">
-                    {{ __('essentials::lang.add_file') }}
-                </button>
-            </div>
-        </div>
-    @endif
+        @endif
         <input type="hidden" id="DocumentTypes" name="DocumentTypes" value="">
     </div>
 
@@ -263,7 +260,6 @@
                         'class' => 'form-control',
                         'style' => 'height:40px',
                         'id' => 'specializationSelect',
-                    
                     ],
                 ) !!}
             </div>
@@ -342,17 +338,17 @@
                 ]) !!}
             </div>
         </div>
-        @if(empty($qualification) )
-        <div class="col-md-4">
-            <div class="form-group">
-                {!! Form::label('essentials::lang.qualification_file', __('essentials::lang.qualification_file') . ':') !!}
-                {!! Form::file('qualification_file', [
-                    'class' => 'form-control',
-                    'style' => 'height:40px',
-                ]) !!}
+        @if (empty($qualification))
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('essentials::lang.qualification_file', __('essentials::lang.qualification_file') . ':') !!}
+                    {!! Form::file('qualification_file', [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                    ]) !!}
+                </div>
+
             </div>
-    
-        </div>
         @endif
     </div>
 
@@ -452,7 +448,8 @@
 
     </div>
 
-
+    <script src="https://cdn.jsdelivr.net/gh/abublihi/datepicker-hijri@v1.1/build/datepicker-hijri.js"></script>
+    <script src="{{ asset('hijri/build/datepicker-hijri.js') }}"></script>
 
     <script>
         $(document).ready(function() {
@@ -538,7 +535,7 @@
             $('select[name^="document_type"]').each(function(index) {
                 var document_type = $(this).val();
                 var document_file = $('input[name^="document_file"]').eq(index)
-            .val(); // Get the file input based on the index
+                    .val(); // Get the file input based on the index
                 if (document_type && document_file) { // Check if both values are not empty
                     DocumentTypes.push({
                         document_type: document_type,
@@ -616,30 +613,29 @@
 
 
     <script>
-     
-            let validationLength = 10;
+        let validationLength = 10;
 
-            function validateBankCode(input) {
-                const bankCode = input.value;
+        function validateBankCode(input) {
+            const bankCode = input.value;
 
-                if (bankCode.length === 24 && bankCode.startsWith('SA')) {
-                    document.getElementById('bankCodeError').innerText = '';
-                } else {
-                    if (bankCode.length !== 24) {
-                        document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يحتوي على 24 رقم';
-                    } else if (!bankCode.startsWith('SA')) {
-                        document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يبدأ بـ SA';
-                    }
+            if (bankCode.length === 24 && bankCode.startsWith('SA')) {
+                document.getElementById('bankCodeError').innerText = '';
+            } else {
+                if (bankCode.length !== 24) {
+                    document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يحتوي على 24 رقم';
+                } else if (!bankCode.startsWith('SA')) {
+                    document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يبدأ بـ SA';
+                }
 
 
-                    if (bankCode.length > 24) {
-                        input.value = bankCode.substr(0, 24);
-                    }
+                if (bankCode.length > 24) {
+                    input.value = bankCode.substr(0, 24);
                 }
             }
+        }
 
 
-            $(document).ready(function() {
+        $(document).ready(function() {
 
             var nationalities = @json($nationalities);
             var selectedNationalityId = {{ $user->nationality_id ?? 'null' }};
