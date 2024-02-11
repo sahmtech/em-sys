@@ -111,7 +111,9 @@ class EssentialsCancelContractsController extends Controller
             'status' => 'inactive',
             'allow_login' => '0'
         ]);
-
+        $userRequest->update([
+            'is_done' => '1'
+        ]);
         $output = [
             'success' => true,
             'msg' => __('lang_v1.finished_success'),
