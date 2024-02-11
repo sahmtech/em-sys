@@ -49,6 +49,7 @@ class OpeningBalanceController extends Controller
                     ->orWhere('company_id', $company_id);
             })
             ->get();
+        $sub_types = [];
         foreach ($sub_types_obj as $st) {
             $sub_types[] = [
                 'id' => $st->id,
