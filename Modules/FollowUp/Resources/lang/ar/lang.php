@@ -332,8 +332,14 @@ return [
     'edit_project' => 'تعديل المشاريع',
     'followup_view_department_employees'=>'عرض صفحة موظفي إدارة المتابعة',
     'department_employees' => 'موظفي الإدارة',
+  'assetRequest'=>'طلب عُهدة',
 
+   'cancle_worker_project'=>'إلغاء الإسناد لمشروع',
+   'canceled_date'=>'تاريخ الإلغاء',
+   'notes'=>'ملاحظات',
+   'please_select_rows'=>'الرجاء اختيار عمالة',
    
-    //  ''=>'',
+
+    //''=>''
 
 ];

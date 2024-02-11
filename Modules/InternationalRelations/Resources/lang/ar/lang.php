@@ -154,7 +154,8 @@ return [
 'show_ir_request'=>'عرض معلومات الطلب',
 
 
-'view_all_salary_requests'=>'استعراض طلبات الرواتب'
+'view_all_salary_requests'=>'استعراض طلبات الرواتب',
+'addWorkerWithoutProject'=>'إضافة عامل غير تابع لمشروع'
 
 
 

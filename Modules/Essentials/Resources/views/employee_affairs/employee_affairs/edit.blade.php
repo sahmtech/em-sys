@@ -127,8 +127,9 @@
                                             <td>
                                                 <div class="col-md-12">
                                                     <div class="col-md-3">
+                                                        {!! Form::hidden('offical_documents_type[]', null, []) !!}
                                                         {!! Form::select(
-                                                            'offical_documents_type[]',
+                                                            'offical_documents_type_select[]',
                                                             [
                                                                 'national_id' => __('essentials::lang.national_id'),
                                                                 'passport' => __('essentials::lang.passport'),
@@ -136,6 +137,7 @@
                                                                 'drivers_license' => __('essentials::lang.drivers_license'),
                                                                 'car_registration' => __('essentials::lang.car_registration'),
                                                                 'international_certificate' => __('essentials::lang.international_certificate'),
+                                                                // 'visa' => _('essentials::lang.visa'),
                                                             ],
                                                             null,
                                                             [
@@ -178,26 +180,7 @@
                             </div>
                         </div>
 
-                        {{-- <div class="row">
-                            {!! Form::hidden('delete_file', '0', ['id' => 'delete_file_input']) !!}
-                            {!! Form::hidden('doc_id', null, ['id' => 'doc_id']) !!}
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="col-md-2 d-flex align-items-center" style="height:36px">
-                                        {!! Form::label('file', __('essentials::lang.file') . ':') !!}
-                                    </div>
-                                    <div class="col-md-6 row">
-                                        {!! Form::file('file', [
-                                            'class' => 'form-control ',
-                                            'style' => 'height:36px',
-                                        ]) !!}
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button type="button" style="height:36px" class="btn btn-danger deleteFile">@lang('messages.delete')</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
+
                     </div>
                     <div class="modal-footer">
 
@@ -211,6 +194,99 @@
             </div>
         </div>
 
+        <div class="modal fade"
+            data-file-path="{{ !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? '' : '' }}"
+            id="ibanFilePopupModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+
+                    <input type="hidden" name="delete_iban_file" value="0" id="delete_iban_file_input">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.Iban_file')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row" id="ibanFilePreviewRow" style="display: none;">
+                            <div class="form-group col-md-12">
+                                <iframe src="" id="popupIbanFilePreview" style="width: 100%; height: 400px;"
+                                    frameborder="0"></iframe>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    {!! Form::file('Iban_file', [
+                                        'class' => 'form-control',
+                                        'style' => 'height:36px; ',
+                                        'accept' => '.*',
+                                    ]) !!}
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-danger deleteIbanFile">@lang('messages.delete')</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
+                    </div>
+                 
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" data-file-path="{{ $qualification->file_path ?? '' }}" id="filePopupModal" tabindex="-1"
+            role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+
+                    <input type="hidden" name="delete_qualification_file" value="0"
+                        id="delete_qualification_file_input">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.qualification_attachements')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row" id="filePreviewRow" style="display: none;">
+                            <div class="form-group col-md-12">
+                                <iframe src="" id="popupFilePreview" style="width: 100%; height: 400px;"
+                                    frameborder="0"></iframe>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    {!! Form::file('qualification_file', [
+                                        'class' => 'form-control',
+                                        'style' => 'height:36px; ',
+                                        'accept' => '.pdf,.doc,.docx',
+                                    ]) !!}
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-danger deleteFile">@lang('messages.delete')</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
 
 
 
@@ -220,6 +296,144 @@
     @stop
     @section('javascript')
         <script type="text/javascript">
+            $(document).ready(function() {
+                let ibanFileChanged = false;
+
+                $('#ibanFileLink').on('click', function(e) {
+                    e.preventDefault();
+                    openIbanFilePopup();
+                });
+
+                $('input[type="file"]').on('change', function(event) {
+                    previewIbanFile(event);
+                    ibanFileChanged = true;
+                    $('#delete_iban_file_input').val('0');
+                    enableSaveButton();
+                });
+
+
+                $('#update_iban_file_form').submit(function(e) {
+                    if (!ibanFileChanged) {
+                        e.preventDefault(); // Prevent form submission if no changes made
+                    }
+                });
+
+                function openIbanFilePopup() {
+                    const modal = $('#ibanFilePopupModal');
+                    const filePath = modal.data('file-path');
+                    const filePreviewIframe = $('#popupIbanFilePreview');
+                    const filePreviewRow = $('#ibanFilePreviewRow');
+
+                    if (filePath) {
+                        filePreviewIframe.attr('src', '/uploads/' + filePath);
+                        filePreviewRow.show(); // Show the preview row
+                    } else {
+                        filePreviewIframe.attr('src', '');
+                        filePreviewRow.hide(); // Hide the preview row if there's no file
+                    }
+
+                    modal.modal('show');
+                }
+
+                function enableSaveButton() {
+                    $('.saveFile').prop('disabled', !fileChanged);
+                }
+
+                function previewIbanFile(event) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var output = document.getElementById('popupIbanFilePreview');
+                        output.src = e.target.result;
+                        document.getElementById('ibanFilePreviewRow').style.display =
+                            ''; // Show the row by clearing the display style
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+
+                $('.deleteIbanFile').on('click', function() {
+                    $('#popupIbanFilePreview').attr('src', ''); // Remove iframe source
+                    $('input[type="file"]').val(''); // Clear file input
+                    $('#delete_iban_file_input').val('1'); // Indicate that the file should be deleted
+                    ibanFileChanged = true;
+                    enableSaveButton();
+                    document.getElementById('ibanFilePreviewRow').style.display =
+                        'none'; // Hide the row by setting display to none
+                });
+            });
+
+
+
+
+
+            $(document).ready(function() {
+                let fileChanged = false;
+
+                $('#qualificationFileLink').on('click', function(e) {
+                    e.preventDefault();
+                    openFilePopup();
+                });
+
+                $('input[type="file"]').on('change', function(event) {
+                    previewFile(event);
+                    fileChanged = true;
+                    $('#delete_qualification_file_input').val('0');
+                    enableSaveButton();
+                });
+
+                function enableSaveButton() {
+                    $('.saveFile').prop('disabled', !fileChanged);
+                }
+
+                $('#update_qualification_file_form').submit(function(e) {
+                    if (!fileChanged) {
+                        e.preventDefault(); // Prevent form submission if no changes made
+                    }
+                });
+
+                function openFilePopup() {
+                    const modal = $('#filePopupModal');
+                    const filePath = modal.data('file-path');
+                    const filePreviewIframe = $('#popupFilePreview');
+                    const filePreviewRow = $('#filePreviewRow');
+
+                    if (filePath) {
+                        filePreviewIframe.attr('src', '/uploads/' + filePath);
+                        filePreviewRow.show(); // Show the preview row
+                    } else {
+                        filePreviewIframe.attr('src', '');
+                        filePreviewRow.hide(); // Hide the preview row if there's no file
+                    }
+
+                    modal.modal('show');
+                }
+
+                function previewFile(event) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var output = document.getElementById('popupFilePreview');
+                        output.src = e.target.result;
+                        document.getElementById('filePreviewRow').style.display =
+                            ''; // Show the row by clearing the display style
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+
+                $('.deleteFile').on('click', function() {
+                    $('#popupFilePreview').attr('src', ''); // Remove iframe source
+                    $('input[type="file"]').val(''); // Clear file input
+                    $('#delete_qualification_file_input').val('1'); // Indicate that the file should be deleted
+                    fileChanged = true;
+                    enableSaveButton();
+                    document.getElementById('filePreviewRow').style.display =
+                        'none'; // Hide the row by setting display to none
+                });
+            });
+
+
+
+
+
+
             $(document).ready(function() {
                 $('.add_new_document').on('click', function() {
                     var newRow = $('.template-row').first().clone();
@@ -269,8 +483,9 @@
                 documents.forEach(function(doc) {
                     var newRow = $('.template-row').first().clone();
                     newRow.show();
-                    newRow.find('select[name="offical_documents_type[]"]').val(doc.type);
-                    newRow.find('select[name="offical_documents_type[]"]').prop('disabled', true);
+                    newRow.find('select[name="offical_documents_type_select[]"]').val(doc.type);
+                    newRow.find('select[name="offical_documents_type_select[]"]').prop('disabled', true);
+                    newRow.find('input[name="offical_documents_type[]"]').val(doc.type);
 
                     var viewButton = newRow.find('.view_document');
 
@@ -282,7 +497,7 @@
 
                         viewButton.removeAttr('href');
                         viewButton.css('pointer-events', 'none');
-                        viewButton.css('opacity', '0.5');
+                        viewButton.removeClass('btn-info').addClass('btn-secondary');
 
                         viewButton.on('click', function(e) {
                             e.preventDefault(); // Prevent the link from being followed
@@ -299,11 +514,15 @@
                     var fileName = $(this).val().split('\\').pop();
                     $(this).closest('tr').find('input[name="offical_documents_choosen_files[]"]').val(fileName);
                 });
+                $('#id_documents_table').on('change', 'select[name="offical_documents_type_select[]"]', function() {
+                    var parentRow = $(this).closest('tr');
+                    var hiddenInput = parentRow.find('input[name="offical_documents_type[]"]');
+                    hiddenInput.val($(this).val());
+                });
+            });
 
 
-
-
-
+            $(document).ready(function() {
                 __page_leave_confirmation('#user_edit_form');
 
                 $('#selected_contacts').on('ifChecked', function(event) {

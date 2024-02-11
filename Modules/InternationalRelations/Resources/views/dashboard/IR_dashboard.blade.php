@@ -157,7 +157,7 @@
                                     <th>@lang('followup::lang.request_date')</th>
                                     <th>@lang('followup::lang.status')</th>
                                     <th>@lang('followup::lang.note')</th>
-                                    {{-- <th>@lang('followup::lang.action')</th> --}}
+                                   
 
 
                                 </tr>
@@ -205,7 +205,7 @@
                     //     data: 'assigned_to'
                     // },
                     {
-                        data: 'type',
+                        data: 'request_type_id',
                         render: function(data, type, row) {
                             if (data === 'exitRequest') {
                                 return '@lang('followup::lang.exitRequest')';

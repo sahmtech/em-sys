@@ -1,4 +1,11 @@
 <?php return array (
+  'alkoumi/laravel-hijri-date' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Alkoumi\\LaravelHijriDate\\LaravelHijriDateServiceProvider',
+    ),
+  ),
   'aloha/twilio' => 
   array (
     'providers' => 

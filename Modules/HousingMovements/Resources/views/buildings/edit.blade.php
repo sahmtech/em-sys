@@ -19,7 +19,8 @@
 
                 <div class="form-group col-md-6">
                     {!! Form::label('address', __('housingmovements::lang.address') . ':') !!}
-                    {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.address'),'required']) !!}
+                    {!! Form::text('address', null, ['class' => 'form-control',
+                     'placeholder' => __('housingmovements::lang.address'),]) !!}
                 </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('city', __('housingmovements::lang.city') . ':*') !!}
@@ -27,18 +28,33 @@
                          'placeholder' => __('housingmovements::lang.city'), 'required']) !!}
                 </div>
 
-               
+                <div class="clearfix"></div>
                 <div class="form-group col-md-6">
-                    {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':*') !!}
-                    {!! Form::select('guard', $users2, null, ['class' => 'form-control select2','style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_guard'), 'required']) !!}
+                    {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':') !!}
+                    {!! Form::select('guard[]', $users2, null, ['class' => 'form-control select2',  'multiple' => 'multiple',
+                    'style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_guard'), ]) !!}
                 </div>
                 <div class="form-group col-md-6">
-                    {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':*') !!}
-                    {!! Form::select('supervisor', $users2, null, ['class' => 'form-control select2','style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_supervisor'), 'required']) !!}
+                    {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':') !!}
+                    {!! Form::select('supervisor[]', $users2, null, ['class' => 'form-control select2',  'multiple' => 'multiple',
+                    'style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_supervisor'), ]) !!}
                 </div>
                 <div class="form-group col-md-6">
-                    {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':*') !!}
-                    {!! Form::select('cleaner', $users2, null, ['class' => 'form-control select2','style'=>'height:40px; width:100%', 'placeholder' => __('housingmovements::lang.building_cleaner'), 'required']) !!}
+                    {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':') !!}
+                    {!! Form::select('cleaner[]', $users2, null,
+                     ['class' => 'form-control select2',
+                     'style'=>'height:40px; width:100%',
+                     'multiple' => 'multiple',
+                     'placeholder' => __('housingmovements::lang.building_cleaner'), ]) !!}
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    {!! Form::label('building_end_date', __('housingmovements::lang.building_end_date') . ':') !!}
+                    {!! Form::date('building_end_date', null,
+                     ['class' => 'form-control ',
+                       'style'=>'width:100%;height:36px;',
+                       'placeholder' => __('housingmovements::lang.building_end_date'), ]) !!}
                 </div>
                
             </div>

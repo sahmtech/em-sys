@@ -215,7 +215,7 @@ class PurchaseController extends Controller
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id);
-        $suppliers = Contact::suppliersDropdown($business_id, false);
+        $suppliers = Contact::suppliersDropdown($business_id, false,true);
         $orderStatuses = $this->productUtil->orderStatuses();
 
         return view('purchase.index')
@@ -274,7 +274,7 @@ class PurchaseController extends Controller
         $payment_types = $this->productUtil->payment_types(null, true, $business_id);
 
         //Accounts
-        $accounts = $this->moduleUtil->accountsDropdown($business_id, true);
+        $accounts = $this->moduleUtil->accountsDropdown($business_id, true,false,false);
 
         $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 

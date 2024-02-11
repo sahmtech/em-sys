@@ -40,7 +40,8 @@
                         {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
 
                         {!! Form::select('nationality', $nationalities, null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control select2',
+                            'id' => 'nationalitySearch',
                             'required',
                             'style' => 'height:40px',
                             'placeholder' => __('sales::lang.nationality'),

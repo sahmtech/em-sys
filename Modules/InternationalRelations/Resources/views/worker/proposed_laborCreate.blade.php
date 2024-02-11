@@ -30,7 +30,7 @@
                             {!! Form::label('mid_name', __('business.mid_name') . ':') !!}
                             {!! Form::text('mid_name', null, [
                                 'class' => 'form-control',
-                                'required',
+                        
                                 'placeholder' => __('business.mid_name'),
                             ]) !!}
                     </div>
@@ -54,7 +54,7 @@
                         {!! Form::date('dob', null, ['class' => 'form-control', 'style' => 'height:40px']); !!}
                     </div>
                     <div class="form-group col-md-3">
-                        {!! Form::label('gender', __( 'lang_v1.gender' ) . ':') !!}
+                        {!! Form::label('gender', __( 'lang_v1.gender' ) . ':*') !!}
                         {!! Form::select('gender', ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')], !empty($user->gender) ? $user->gender : null, ['class' => 'form-control','style'=>'height:40px','required', 'id' => 'gender', 'placeholder' => __( 'messages.please_select') ]); !!}
                     </div>
                     <div class="form-group col-md-3">
@@ -68,7 +68,7 @@
                     </div>
               
                     <div class="form-group col-md-3">
-                        {!! Form::label('age', __('lang_v1.age') . ':') !!}
+                        {!! Form::label('age', __('lang_v1.age') . ':*') !!}
                         {!! Form::number('age', null, ['class' => 'form-control','required', 'placeholder' => __('lang_v1.age')]) !!}
                     </div>
                 

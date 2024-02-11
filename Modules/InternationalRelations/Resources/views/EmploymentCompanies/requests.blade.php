@@ -13,6 +13,7 @@
 
 <!-- Main content -->
 <section class="content">
+
     @component('components.filters', ['title' => __('report.filters')])
 
     <div class="col-md-3">
@@ -30,8 +31,22 @@
 @endcomponent
     @component('components.widget', ['class' => 'box-primary'])
 
-  
- 
+    @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.add_proposed_worker'))
+    @slot('tool')
+    <div class="box-tools">
+    <button class="btn btn-xs btn-primary" style="height: 40px;" >
+        <a href="{{ route('create_worker_without_project') }}" style="color: white; text-decoration: none;">
+            {{ trans("internationalrelations::lang.addWorkerWithoutProject") }}
+        </a>
+    </button>
+    </div>
+    @endslot
+    @endif
+   
+       
+
+
+
            
     <div class="table-responsive">
         <table class="table table-bordered table-striped" id="EmpCompany_table">

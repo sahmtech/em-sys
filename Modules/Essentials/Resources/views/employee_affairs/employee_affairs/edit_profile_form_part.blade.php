@@ -156,7 +156,7 @@
 
 
 
-        
+
         @if (empty($user))
             <div class="row">
                 <div class="col-md-5">
@@ -349,6 +349,15 @@
                     'readonly',
                 ]) !!}
             </div>
+        </div>
+
+        <div class="clearfix"></div>
+        <br>
+        <div class="form-group col-md-3">
+            <button type="button" class="btn btn-success align-self-center qualification_attachements_btn" id="qualificationFileLink">
+                {{ __('essentials::lang.qualification_attachements') }}
+            </button>
+            
         </div>
         @if (empty($qualification))
             <div class="col-md-4">

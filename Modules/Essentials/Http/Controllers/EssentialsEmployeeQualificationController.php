@@ -41,17 +41,17 @@ class EssentialsEmployeeQualificationController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
         $sub_spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $spacializations = EssentialsProfession::where('type','academic')->pluck('name', 'id');
-   
+        $spacializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
+
         $countries = EssentialsCountry::forDropdown();
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $employees_qualifications = EssentialsEmployeesQualification::join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
-        ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
+            ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employees_qualifications.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -63,7 +63,7 @@ class EssentialsEmployeeQualificationController extends Controller
                 'essentials_employees_qualifications.graduation_country',
                 'essentials_employees_qualifications.degree',
                 'essentials_employees_qualifications.great_degree',
-                'essentials_employees_qualifications.marksName',  
+                'essentials_employees_qualifications.marksName',
 
             ]);
 
@@ -127,6 +127,38 @@ class EssentialsEmployeeQualificationController extends Controller
             ->with(compact('users', 'countries', 'spacializations'));
     }
 
+    public function updateEmployeeQualificationAttachement(Request $request, $user_id)
+    {
+        try {
+            $user = User::find($id);
+            if (!$user) {
+                throw new \Exception("User not found");
+            }
+            if ($request->hasFile('profile_picture')) {
+                // Handle file upload
+                $image = $request->file('profile_picture');
+                $profile = $image->store('/profile_images');
+                $user->update(['profile_image' => $profile]);
+                error_log($profile);
+            } elseif ($request->input('delete_image') == '1') {
+                $oldImage = $user->profile_image;
+                if ($oldImage) {
+                    Storage::delete($oldImage);
+                }
+                $user->update(['profile_image' => null]);
+                // Make sure to reset the delete_image flag in case of future updates
+                $request->request->remove('delete_image');
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
 
     public function store(Request $request)
     {
@@ -137,7 +169,7 @@ class EssentialsEmployeeQualificationController extends Controller
 
 
         try {
-            $input = $request->only(['employee','general_specialization','sub_specialization', 'qualification_type', 'graduation_year', 'graduation_institution', 'graduation_country', 'degree','marksName','great_degree']);
+            $input = $request->only(['employee', 'general_specialization', 'sub_specialization', 'qualification_type', 'graduation_year', 'graduation_institution', 'graduation_country', 'degree', 'marksName', 'great_degree']);
 
 
             $input2['qualification_type'] = $input['qualification_type'];
@@ -211,7 +243,7 @@ class EssentialsEmployeeQualificationController extends Controller
                     'great_degree' => $qualification->great_degree,
 
                 ],
-              
+
                 'msg' => __('lang_v1.fetched_success'),
             ];
         } catch (\Exception $e) {

@@ -43,14 +43,18 @@ class EssentialsProfessionController extends Controller
             
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin, $can_delete_profession) {
+                function ($row) use ($is_admin, $can_delete_profession ,$can_edit_profession) {
                     $html = '';
-                    if ($is_admin|| $can_delete_profession) {
-                        // $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                        // &nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_profession_button" data-href="' . route('profession.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    if($can_edit_profession || $is_admin)
+                    {
+                        $html .= '<button class="btn btn-xs btn-primary open-professions-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                     }
-        
+
+                    if ($is_admin|| $can_delete_profession) {
+                        
+                        $html .= '<button class="btn btn-xs btn-danger delete_profession_button" data-href="' . route('profession.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    
+                    }
                     return $html;
                 }
             )
@@ -200,9 +204,11 @@ class EssentialsProfessionController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit($professionId)
     {
-        return view('essentials::edit');
+      
+        $profession = EssentialsProfession::find($professionId);
+        return response()->json(['data' => compact('profession')]);
     }
 
     /**
@@ -211,9 +217,29 @@ class EssentialsProfessionController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $professionId)
     {
-        //
+        try 
+        {
+            $input = $request->only(['name', 'en_name',]);
+          
+            $input2['name'] = $input['name'];
+            $input2['en_name'] = $input['en_name'];
+            EssentialsProfession::where('id', $professionId)
+            ->update($input2);
+            
+            $output = ['success' => true,'msg' => __('lang_v1.updated_success'), ];
+           
+        } 
+        catch (\Exception $e) {
+           
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false,'msg' => __('messages.something_went_wrong'),];
+            
+        }
+
+        return response()->json($output);
+ 
     }
 
     /**

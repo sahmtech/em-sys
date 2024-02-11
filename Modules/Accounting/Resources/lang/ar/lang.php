@@ -479,11 +479,11 @@ return [
     'first_journal' => 'القيد الاول',
     'second_journal' => 'القيد الثاني',
     'third_journal' => 'القيد الثالث',
-    'return_the_request'=>'إرجاع الطلب',
-    'show_request'=>'عرض طلب',
-    'add_request'=>'إضافة طلب',
-    'change_status'=>'تغيير حالة الطلب',
-    'view_accounting_requests'=>'عرض طلبات المحاسبة',
+    'return_the_request' => 'إرجاع الطلب',
+    'show_request' => 'عرض طلب',
+    'add_request' => 'إضافة طلب',
+    'change_status' => 'تغيير حالة الطلب',
+    'view_accounting_requests' => 'عرض طلبات المحاسبة',
 
 
     'autoMigration' => [
@@ -612,7 +612,14 @@ return [
     'cost_center_edit' => 'تعديل مراكز التكلفة',
     'cost_center_delete' => 'حذف مراكز التكلفة',
     'opening_balances_delete' => 'حذف الارصدة الافتتاحية',
-
+    'companies_access_permissions' => 'صلاحيات الشركات',
+    'edit_company' => 'تعديل صلاحية الشركات',
+    'emp_name' => 'الاسم الكامل',
+    'emp_id_proof_number' => 'رقم الإثبات',
+    'appointment' => 'التعيين',
+    'add_user_company_access_permissions' => 'إضافة صلاحية وصول لشركات',
+    'view_companies' => 'استعراض الشركات',
+    'companies' => 'الشركات',
 
 
 ];

@@ -5,6 +5,7 @@ namespace Modules\Connector\Http\Controllers\Api;
 use App\Business;
 use App\Notification;
 use App\User;
+use App\Request as UserRequest;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\ToDo;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
+
 
 /**
  * @group Taxonomy management
@@ -59,26 +60,25 @@ class HomeController extends ApiController
             $business_id = $user->business_id;
             $business = Business::where('id', $business_id)->first();
             $shift = EssentialsUserShift::where('user_id', $user->id)->first()?->shift ?? null;
-            error_log($user->id);
-            error_log($shift);
-            $lastRequest = FollowupWorkerRequest::select([
-                'followup_worker_requests.request_no',
-                'followup_worker_requests.id',
-                'followup_worker_requests.type as type',
+       
+            $lastRequest = UserRequest::select([
+                'request_no',
+                'requests.id',
+                'requests.request_type_id as type',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'followup_worker_requests.created_at',
-                'followup_worker_requests_process.status',
-                'followup_worker_requests_process.status_note as note',
-                'followup_worker_requests.reason',
-                'essentials_wk_procedures.department_id as department_id',
+                'requests.created_at',
+                'request_processes.status',
+                'request_processes.note as note',
+                'requests.reason',
+                'wk_procedures.department_id as department_id',
                 'users.id_proof_number',
 
 
             ])
-                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->where('users.id', $user->id)->latest('followup_worker_requests.created_at')
+                ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+                ->where('users.id', $user->id)->latest('requests.created_at')
 
                 ->first();
 

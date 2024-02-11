@@ -229,7 +229,7 @@ class PurchaseOrderController extends Controller
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id);
-        $suppliers = Contact::suppliersDropdown($business_id, false);
+        $suppliers = Contact::suppliersDropdown($business_id, false,true);
         $purchaseOrderStatuses = [];
         foreach ($this->purchaseOrderStatuses as $key => $value) {
             $purchaseOrderStatuses[$key] = $value['label'];

@@ -112,57 +112,57 @@ class SellController extends Controller
             }
 
             $partial_permissions = ['view_own_sell_only', 'view_commission_agent_sell', 'access_own_shipping', 'access_commission_agent_shipping'];
-            if (! auth()->user()->can('direct_sell.view')) {
+            // if (! auth()->user()->can('direct_sell.view')) {
                 $sells->where(function ($q) {
-                    if (auth()->user()->hasAnyPermission(['view_own_sell_only', 'access_own_shipping'])) {
+                    // if (auth()->user()->hasAnyPermission(['view_own_sell_only', 'access_own_shipping'])) {
                         $q->where('transactions.created_by', request()->session()->get('user.id'));
-                    }
+                    // }
 
                     //if user is commission agent display only assigned sells
-                    if (auth()->user()->hasAnyPermission(['view_commission_agent_sell', 'access_commission_agent_shipping'])) {
+                    // if (auth()->user()->hasAnyPermission(['view_commission_agent_sell', 'access_commission_agent_shipping'])) {
                         $q->orWhere('transactions.commission_agent', request()->session()->get('user.id'));
-                    }
+                    // }
                 });
-            }
+            // }
 
             $only_shipments = request()->only_shipments == 'true' ? true : false;
             if ($only_shipments) {
                 $sells->whereNotNull('transactions.shipping_status');
 
-                if (auth()->user()->hasAnyPermission(['access_pending_shipments_only'])) {
+                // if (auth()->user()->hasAnyPermission(['access_pending_shipments_only'])) {
                     $sells->where('transactions.shipping_status', '!=', 'delivered');
-                }
+                // }
             }
 
             if (! $is_admin && ! $only_shipments && $sale_type != 'sales_order') {
                 $payment_status_arr = [];
-                if (auth()->user()->can('view_paid_sells_only')) {
+                // if (auth()->user()->can('view_paid_sells_only')) {
                     $payment_status_arr[] = 'paid';
-                }
+                // }
 
-                if (auth()->user()->can('view_due_sells_only')) {
+                // if (auth()->user()->can('view_due_sells_only')) {
                     $payment_status_arr[] = 'due';
-                }
+                // }
 
-                if (auth()->user()->can('view_partial_sells_only')) {
+                // if (auth()->user()->can('view_partial_sells_only')) {
                     $payment_status_arr[] = 'partial';
-                }
+                // }
 
                 if (empty($payment_status_arr)) {
-                    if (auth()->user()->can('view_overdue_sells_only')) {
+                    // if (auth()->user()->can('view_overdue_sells_only')) {
                         $sells->OverDue();
-                    }
+                    // }
                 } else {
-                    if (auth()->user()->can('view_overdue_sells_only')) {
+                    // if (auth()->user()->can('view_overdue_sells_only')) {
                         $sells->where(function ($q) use ($payment_status_arr) {
                             $q->whereIn('transactions.payment_status', $payment_status_arr)
                             ->orWhere(function ($qr) {
                                 $qr->OverDue();
                             });
                         });
-                    } else {
-                        $sells->whereIn('transactions.payment_status', $payment_status_arr);
-                    }
+                    // } else {
+                    //     $sells->whereIn('transactions.payment_status', $payment_status_arr);
+                    // }
                 }
             }
 
@@ -287,9 +287,9 @@ class SellController extends Controller
             }
 
             if ($sale_type == 'sales_order') {
-                if (! auth()->user()->can('so.view_all') && auth()->user()->can('so.view_own')) {
+                // if (! auth()->user()->can('so.view_all') && auth()->user()->can('so.view_own')) {
                     $sells->where('transactions.created_by', request()->session()->get('user.id'));
-                }
+                // }
             }
 
             if (! empty(request()->input('delivery_person'))) {
@@ -347,42 +347,42 @@ class SellController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
-                        if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view') || auth()->user()->can('view_own_sell_only')) {
+                        // if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view') || auth()->user()->can('view_own_sell_only')) {
                             $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> '.__('messages.view').'</a></li>';
-                        }
+                        // }
                         
                         if (! $only_shipments) {
                             if ($row->is_direct_sale == 0) {
-                                if (auth()->user()->can('sell.update')) {
+                                // if (auth()->user()->can('sell.update')) {
                                     $html .= '<li><a target="_blank" href="'.action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]).'"><i class="fas fa-edit"></i> '.__('messages.edit').'</a></li>';
-                                }
+                                // }
                             } elseif ($row->type == 'sales_order') {
-                                if (auth()->user()->can('so.update')) {
+                                // if (auth()->user()->can('so.update')) {
                                     $html .= '<li><a target="_blank" href="'.action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]).'"><i class="fas fa-edit"></i> '.__('messages.edit').'</a></li>';
-                                }
+                                // }
                             } else {
-                                if (auth()->user()->can('direct_sell.update')) {
+                                // if (auth()->user()->can('direct_sell.update')) {
                                     $html .= '<li><a target="_blank" href="'.action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]).'"><i class="fas fa-edit"></i> '.__('messages.edit').'</a></li>';
-                                }
+                                // }
                             }
 
                             $delete_link = '<li><a href="'.action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]).'" class="delete-sale"><i class="fas fa-trash"></i> '.__('messages.delete').'</a></li>';
                             if ($row->is_direct_sale == 0) {
-                                if (auth()->user()->can('sell.delete')) {
+                                // if (auth()->user()->can('sell.delete')) {
                                     $html .= $delete_link;
-                                }
+                                // }
                             } elseif ($row->type == 'sales_order') {
-                                if (auth()->user()->can('so.delete')) {
+                                // if (auth()->user()->can('so.delete')) {
                                     $html .= $delete_link;
-                                }
+                                // }
                             } else {
-                                if (auth()->user()->can('direct_sell.delete')) {
+                                // if (auth()->user()->can('direct_sell.delete')) {
                                     $html .= $delete_link;
-                                }
+                                // }
                             }
                         }
-
-                        if (config('constants.enable_download_pdf') && auth()->user()->can('print_invoice') && $sale_type != 'sales_order') {
+            //  if (config('constants.enable_download_pdf') && auth()->user()->can('print_invoice') && $sale_type != 'sales_order') {
+                        if (config('constants.enable_download_pdf')  && $sale_type != 'sales_order') {
                             $html .= '<li><a href="'.route('sell.downloadPdf', [$row->id]).'" target="_blank"><i class="fas fa-print" aria-hidden="true"></i> '.__('lang_v1.download_pdf').'</a></li>';
 
                             if (! empty($row->shipping_status)) {
@@ -390,7 +390,7 @@ class SellController extends Controller
                             }
                         }
 
-                        if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.access')) {
+                        // if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.access')) {
                             if (! empty($row->document)) {
                                 $document_name = ! empty(explode('_', $row->document, 2)[1]) ? explode('_', $row->document, 2)[1] : $row->document;
                                 $html .= '<li><a href="'.url('uploads/documents/'.$row->document).'" download="'.$document_name.'"><i class="fas fa-download" aria-hidden="true"></i>'.__('purchase.download_document').'</a></li>';
@@ -398,45 +398,46 @@ class SellController extends Controller
                                     $html .= '<li><a href="#" data-href="'.url('uploads/documents/'.$row->document).'" class="view_uploaded_document"><i class="fas fa-image" aria-hidden="true"></i>'.__('lang_v1.view_document').'</a></li>';
                                 }
                             }
-                        }
+                        // }
 
-                        if ($is_admin || auth()->user()->hasAnyPermission(['access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
+                        // if ($is_admin || auth()->user()->hasAnyPermission(['access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
                             $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-truck" aria-hidden="true"></i>'.__('lang_v1.edit_shipping').'</a></li>';
-                        }
+                        // }
 
                         if ($row->type == 'sell') {
-                            if (auth()->user()->can('print_invoice')) {
+                            // if (auth()->user()->can('print_invoice')) {
                                 $html .= '<li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i> '.__('lang_v1.print_invoice').'</a></li>
                                     <li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'?package_slip=true"><i class="fas fa-file-alt" aria-hidden="true"></i> '.__('lang_v1.packing_slip').'</a></li>';
 
                                 $html .= '<li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'?delivery_note=true"><i class="fas fa-file-alt" aria-hidden="true"></i> '.__('lang_v1.delivery_note').'</a></li>';
-                            }
+                            // }
                             $html .= '<li class="divider"></li>';
                             if (! $only_shipments) {
-                                if ($row->is_direct_sale == 0 && ! auth()->user()->can('sell.update') &&
-                                auth()->user()->can('edit_pos_payment')) {
+                                // if ($row->is_direct_sale == 0 && ! auth()->user()->can('sell.update') &&
+                                // auth()->user()->can('edit_pos_payment')) { 
+                                if ($row->is_direct_sale == 0 ) {
                                     $html .= '<li><a href="'.route('edit-pos-payment', [$row->id]).'" 
                                     ><i class="fas fa-money-bill-alt"></i> '.__('lang_v1.add_edit_payment').
                                     '</a></li>';
                                 }
 
-                                if (auth()->user()->can('sell.payments') ||
-                                    auth()->user()->can('edit_sell_payment') ||
-                                    auth()->user()->can('delete_sell_payment')) {
+                                // if (auth()->user()->can('sell.payments') ||
+                                //     auth()->user()->can('edit_sell_payment') ||
+                                //     auth()->user()->can('delete_sell_payment')) {
                                     if ($row->payment_status != 'paid') {
                                         $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]).'" class="add_payment_modal"><i class="fas fa-money-bill-alt"></i> '.__('purchase.add_payment').'</a></li>';
                                     }
 
                                     $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]).'" class="view_payment_modal"><i class="fas fa-money-bill-alt"></i> '.__('purchase.view_payments').'</a></li>';
-                                }
+                                // }
 
-                                if (auth()->user()->can('sell.create') || auth()->user()->can('direct_sell.access')) {
+                                // if (auth()->user()->can('sell.create') || auth()->user()->can('direct_sell.access')) {
                                     // $html .= '<li><a href="' . action([\App\Http\Controllers\SellController::class, 'duplicateSell'], [$row->id]) . '"><i class="fas fa-copy"></i> ' . __("lang_v1.duplicate_sell") . '</a></li>';
 
                                     $html .= '<li><a href="'.action([\App\Http\Controllers\SellReturnController::class, 'add'], [$row->id]).'"><i class="fas fa-undo"></i> '.__('lang_v1.sell_return').'</a></li>
 
                                     <li><a href="'.action([\App\Http\Controllers\SellPosController::class, 'showInvoiceUrl'], [$row->id]).'" class="view_invoice_url"><i class="fas fa-eye"></i> '.__('lang_v1.view_invoice_url').'</a></li>';
-                                }
+                                // }
                             }
 
                             $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\NotificationController::class, 'getTemplate'], ['transaction_id' => $row->id, 'template_for' => 'new_sale']).'" class="btn-modal" data-container=".view_modal"><i class="fa fa-envelope" aria-hidden="true"></i>'.__('lang_v1.new_sale_notification').'</a></li>';
@@ -576,11 +577,11 @@ class SellController extends Controller
                 ->editColumn('so_qty_remaining', '{{@format_quantity($so_qty_remaining)}}')
                 ->setRowAttr([
                     'data-href' => function ($row) {
-                        if (auth()->user()->can('sell.view') || auth()->user()->can('view_own_sell_only')) {
+                        // if (auth()->user()->can('sell.view') || auth()->user()->can('view_own_sell_only')) {
                             return  action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
-                        } else {
-                            return '';
-                        }
+                        // } else {
+                        //     return '';
+                        // }
                     }, ]);
 
             $rawColumns = ['final_total', 'action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
@@ -669,15 +670,15 @@ class SellController extends Controller
         }
 
         $types = [];
-        if (auth()->user()->can('supplier.create')) {
+        // if (auth()->user()->can('supplier.create')) {
             $types['supplier'] = __('report.supplier');
-        }
-        if (auth()->user()->can('customer.create')) {
+        // }
+        // if (auth()->user()->can('customer.create')) {
             $types['customer'] = __('report.customer');
-        }
-        if (auth()->user()->can('supplier.create') && auth()->user()->can('customer.create')) {
+        // }
+        // if (auth()->user()->can('supplier.create') && auth()->user()->can('customer.create')) {
             $types['both'] = __('lang_v1.both_supplier_customer');
-        }
+        // }
         $customer_groups = CustomerGroup::forDropdown($business_id);
 
         $payment_line = $this->dummyPaymentLine;
@@ -709,7 +710,7 @@ class SellController extends Controller
         //Accounts
         $accounts = [];
         if ($this->moduleUtil->isModuleEnabled('account')) {
-            $accounts = Account::forDropdown($business_id, true, false);
+            $accounts = Account::forDropdown($business_id, true, false,false);
         }
 
         $status = request()->get('status', '');
@@ -1115,7 +1116,7 @@ class SellController extends Controller
         //Accounts
         $accounts = [];
         if ($this->moduleUtil->isModuleEnabled('account')) {
-            $accounts = Account::forDropdown($business_id, true, false);
+            $accounts = Account::forDropdown($business_id, true, false,false);
         }
 
         $shipping_statuses = $this->transactionUtil->shipping_statuses();

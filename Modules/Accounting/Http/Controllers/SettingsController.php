@@ -14,12 +14,14 @@ use Modules\Accounting\Entities\AccountingMappingSetting;
 use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\ModuleUtil;
 use App\Business;
+use App\Company;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
 class SettingsController extends Controller
 {
     protected $accountingUtil;
-
+    protected $moduleUtil;
     /**
      * Constructor
      *
@@ -38,6 +40,7 @@ class SettingsController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_settings = auth()->user()->can('accounting.settings');
@@ -53,11 +56,15 @@ class SettingsController extends Controller
                 $q->whereNull('business_id')
                     ->orWhere('business_id', $business_id);
             })
+            ->where(function ($q) use ($company_id) {
+                $q->whereNull('company_id')
+                    ->orWhere('company_id', $company_id);
+            })
             ->get();
 
         $account_types = AccountingAccountType::accounting_primary_type();
 
-        $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
+        $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
 
         return view('accounting::settings.index')->with(compact('account_sub_types', 'account_types', 'accounting_settings'));
     }
@@ -65,6 +72,7 @@ class SettingsController extends Controller
     public function resetData()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -76,18 +84,19 @@ class SettingsController extends Controller
         //reset logic
         AccountingBudget::join('accounting_accounts', 'accounting_budgets.accounting_account_id', '=', 'accounting_accounts.id')
             ->where('accounting_accounts.business_id', $business_id)
+            ->where('accounting_accounts.company_id', $company_id)
             ->delete();
 
-        AccountingAccountType::where('business_id', $business_id)
+        AccountingAccountType::where('business_id', $business_id)->where('company_id', $company_id)
             ->delete();
 
-        AccountingAccTransMapping::where('business_id', $business_id)->delete();
+        AccountingAccTransMapping::where('business_id', $business_id)->where('company_id', $company_id)->delete();
 
         AccountingAccountsTransaction::join('accounting_accounts', 'accounting_accounts_transactions.accounting_account_id', '=', 'accounting_accounts.id')
-            ->where('business_id', $business_id)->delete();
+            ->where('business_id', $business_id)->where('company_id', $company_id)->delete();
 
 
-        AccountingAccount::where('business_id', $business_id)->delete();
+        AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)->delete();
 
         return back();
     }
@@ -109,6 +118,8 @@ class SettingsController extends Controller
     public function saveSettings(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
         try {
@@ -116,7 +127,8 @@ class SettingsController extends Controller
 
             Business::where('id', $business_id)
                 ->update(['accounting_settings' => json_encode($input)]);
-
+            Company::where('id', $company_id)
+                ->update(['accounting_settings' => json_encode($input)]);
             $output = [
                 'success' => true,
                 'msg' => __("lang_v1.updated_success")
@@ -245,6 +257,8 @@ class SettingsController extends Controller
     protected function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 

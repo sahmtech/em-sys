@@ -22,14 +22,14 @@ class Account extends Model
         'account_details' => 'array',
     ];
 
-    public static function forDropdown($business_id, $prepend_none, $closed = false, $show_balance = false)
+    public static function forDropdown($business_id,$company_id=null, $prepend_none, $closed = false, $show_balance = false)
     {
-        $query = Account::where('business_id', $business_id);
+        $query = Account::where('business_id', $business_id)->where('company_id', $company_id);
 
         $permitted_locations = auth()->user()->permitted_locations();
         $account_ids = [];
         if ($permitted_locations != 'all') {
-            $locations = BusinessLocation::where('business_id', $business_id)
+            $locations = BusinessLocation::where('business_id', $business_id)->where('company_id', $company_id)
                             ->whereIn('id', $permitted_locations)
                             ->get();
 

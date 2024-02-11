@@ -288,7 +288,7 @@
                             </div>
                         </div>
                     @endif
-                    @can('edit_invoice_number')
+                    {{-- @can('edit_invoice_number') --}}
                         <div class="col-sm-3">
                             <div class="form-group">
                                 {!! Form::label(
@@ -302,7 +302,7 @@
                                 <p class="help-block">@lang('lang_v1.keep_blank_to_autogenerate')</p>
                             </div>
                         </div>
-                    @endcan
+                    {{-- @endcan --}}
 
                     @php
                         $custom_field_1_label = !empty($custom_labels['sell']['custom_field_1']) ? $custom_labels['sell']['custom_field_1'] : '';
@@ -1064,7 +1064,7 @@
         @if (
             (empty($status) || !in_array($status, ['quotation', 'draft']) || $is_enabled_download_pdf) &&
                 $sale_type != 'sales_order')
-            @can('sell.payments')
+            {{-- @can('sell.payments') --}}
                 @component('components.widget', [
                     'class' => 'box-solid',
                     'id' => $payment_body_id,
@@ -1198,7 +1198,7 @@
                         </div>
                     @endif
                 @endcomponent
-            @endcan
+            {{-- @endcan --}}
         @endif
 
         <div class="row">

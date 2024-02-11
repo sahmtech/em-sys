@@ -3,6 +3,8 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\User;
+use App\Request as UserRequest;
+use Modules\CEOManagment\Entities\RequestsType;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
@@ -20,14 +22,11 @@ class EssentialsCancelContractsController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
-      
     }
     public function index()
     {
 
-        $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -38,29 +37,24 @@ class EssentialsCancelContractsController extends Controller
         $main_reasons = DB::table('essentails_reason_wishes')->pluck('reason', 'id');
         $sub_reasons = DB::table('essentails_reason_wishes')->pluck('sub_reason', 'id');
 
-     
-
         $requestsProcess = null;
 
-        $requestsProcess = FollowupWorkerRequest::select([
-            'followup_worker_requests.request_no',
-            'followup_worker_requests.id',
-            'followup_worker_requests.status as status',
-            'followup_worker_requests.type as type',
-            'followup_worker_requests.created_at',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-            'followup_worker_requests.contract_main_reason_id as main_reason',
-            'followup_worker_requests.note as note',
-            'users.id_proof_number',
-            'followup_worker_requests.contract_sub_reason_id as sub_reason',
-            'users.status as userStatus','essentials_employees_contracts.contract_end_date as contract_end_date'
-            
+        $types = RequestsType::where('type', 'cancleContractRequest')->pluck('id')->toArray();
+        $requestsProcess = UserRequest::select([
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.status',
+
+            'requests.contract_main_reason_id as main_reason',  'requests.note as note', 'requests.contract_sub_reason_id as sub_reason',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+
+            'users.status as userStatus', 'essentials_employees_contracts.contract_end_date as contract_end_date'
+
         ])
-           
-            ->where('type','cancleContractRequest')->where('followup_worker_requests.status','approved')
-            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+
+            ->whereIn('requests.request_type_id', $types)->where('requests.status', 'approved')
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
             ->leftJoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', '=', 'users.id')
-            ->whereIn('followup_worker_requests.worker_id', $userIds);
+            ->whereIn('requests.related_to', $userIds);
 
 
 
@@ -70,13 +64,21 @@ class EssentialsCancelContractsController extends Controller
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at);
                 })
-                ->editColumn('main_reason', function ($row) use($main_reasons) {
-                    return $main_reasons[$row->main_reason];
+                ->editColumn('main_reason', function ($row) use ($main_reasons) {
+                    if ($row->main_reason) {
+                        return $main_reasons[$row->main_reason];
+                    } else {
+                        return '';
+                    }
                 })
-                ->editColumn('sub_reason', function ($row) use($sub_reasons) {
-                    return $sub_reasons[$row->sub_reason];
+                ->editColumn('sub_reason', function ($row) use ($sub_reasons) {
+                    if ($row->sub_reason) {
+                        return $sub_reasons[$row->sub_reason];
+                    } else {
+                        return '';
+                    }
                 })
-                ->rawColumns(['sub_reason','main_reason'])
+                ->rawColumns(['sub_reason', 'main_reason'])
                 ->make(true);
         }
 
@@ -97,37 +99,39 @@ class EssentialsCancelContractsController extends Controller
      * @param Request $request
      * @return Renderable
      */
-  
+
 
     public function finish_contract_procedure($id)
-{
-    try {
-        $followupWorkerRequest = FollowupWorkerRequest::find($id);
-        if (!$followupWorkerRequest) {
-            return ['success' => false, 'msg' => __('messages.not_found')];
+    {
+        try {
+            $userRequest = UserRequest::find($id);
+            if (!$userRequest) {
+                return ['success' => false, 'msg' => __('messages.not_found')];
+            }
+
+            $user = User::find($userRequest->related_to);
+            if (!$user) {
+                return ['success' => false, 'msg' => __('messages.user_not_found')];
+            }
+
+            $user->update([
+                'status' => 'inactive',
+                'allow_login' => '0'
+            ]);
+            $userRequest->update([
+                'is_done' => '1'
+            ]);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.finished_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
         }
 
-        $user = User::find($followupWorkerRequest->worker_id);
-        if (!$user) {
-            return ['success' => false, 'msg' => __('messages.user_not_found')];
-        }
-        error_log($user);
-        $user->update([
-            'status' => 'inactive',
-            'allow_login' => '0'
-        ]);
-
-        $output = [
-            'success' => true,
-            'msg' => __('lang_v1.finished_success'),
-        ];
-    } catch (\Exception $e) {
-        \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-        $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
+        return $output;
     }
-
-    return $output;
-}
 
     /**
      * Show the specified resource.

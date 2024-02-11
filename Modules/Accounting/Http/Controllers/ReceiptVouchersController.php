@@ -13,6 +13,7 @@ use App\Utils\TransactionUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReceiptVouchersController extends Controller
@@ -30,6 +31,7 @@ class ReceiptVouchersController extends Controller
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_receipt_vouchers= auth()->user()->can('accounting.receipt_vouchers');
@@ -48,8 +50,8 @@ class ReceiptVouchersController extends Controller
         $contacts = Contact::whereNot('id', 1)->where('type', 'customer')->get();
         $transactionUtil = new TransactionUtil();
         $moduleUtil = new ModuleUtil();
-        $accounts = $moduleUtil->accountsDropdown($business_id, true, false, true);
-        $payment_types = $transactionUtil->payment_types(null, true, $business_id);
+        $accounts = $moduleUtil->accountsDropdown($business_id,$company_id, true, false, true);
+        $payment_types = $transactionUtil->payment_types(null, true, $business_id,$company_id);
 
         if (request()->ajax()) {
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
@@ -108,7 +110,9 @@ class ReceiptVouchersController extends Controller
         if ($transaction_id) {
             try {
                 $business_id = $request->session()->get('user.business_id');
-                $transaction = Transaction::where('business_id', $business_id)->with(['contact'])->findOrFail($transaction_id);
+                $company_id = Session::get('selectedCompanyId');
+
+                $transaction = Transaction::where('business_id', $business_id)->where('company_id', $company_id)->with(['contact'])->findOrFail($transaction_id);
 
                 $transaction_before = $transaction->replicate();
 
@@ -146,6 +150,8 @@ class ReceiptVouchersController extends Controller
                     $inputs['payment_ref_no'] = $this->transactionUtil->generateReferenceNumber($prefix_type, $ref_count);
 
                     $inputs['business_id'] = $request->session()->get('business.id');
+                    $inputs['company_id'] = $company_id;
+
                     $inputs['document'] = $this->transactionUtil->uploadFile($request, 'document', 'documents');
 
                     //Pay from advance balance
@@ -198,7 +204,9 @@ class ReceiptVouchersController extends Controller
                 DB::beginTransaction();
 
                 $business_id = request()->session()->get('business.id');
-                $tp = $this->transactionUtil->payContact($request);
+                $company_id = Session::get('selectedCompanyId');
+
+                $tp = $this->transactionUtil->payContact($request,true,$company_id);
                 $pos_settings = ! empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
                 $enable_cash_denomination_for_payment_methods = ! empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];
                 //add cash denomination
@@ -209,6 +217,8 @@ class ReceiptVouchersController extends Controller
                         if (! empty($value)) {
                             $denominations[] = [
                                 'business_id' => $business_id,
+                                'company_id' => $company_id,
+
                                 'amount' => $key,
                                 'total_count' => $value,
                             ];

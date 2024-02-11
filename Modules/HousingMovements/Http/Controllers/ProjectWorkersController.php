@@ -27,6 +27,7 @@ use App\Contact;
 use App\ContactLocation;
 use App\User;
 use App\Company;
+use App\WorkerProjectsHistory;
 use Carbon\Carbon;
 
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
@@ -69,8 +70,10 @@ class ProjectWorkersController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
-
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
+        $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
+        
+        
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -81,7 +84,7 @@ class ProjectWorkersController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')->whereNot('status', 'inactive')
             ->with(['htrRoomsWorkersHistory'])
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -97,9 +100,16 @@ class ProjectWorkersController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+       
+                if(request()->input('project_name')=='undefined'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+                
             }
+            
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
@@ -247,7 +257,7 @@ class ProjectWorkersController extends Controller
         HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
         $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
         $users = User::whereIn('users.id', $userIds)->with(['rooms'])
-            ->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
+            ->where('user_type', 'worker')->whereNot('status', 'inactive')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
 
 
 
@@ -338,6 +348,75 @@ class ProjectWorkersController extends Controller
         return view('housingmovements::projects_workers.available_shopping')->with(compact('contacts', 'nationalities', 'ContactsLocation'));
     }
 
+
+    public function addProject(Request $request){
+
+     try {
+        if(!$request->project){
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please_select_project'),
+            ];
+            return $output;
+
+        }
+        $selectedRowsData = json_decode($request->input('selectedRowsData'));
+
+        if(!$selectedRowsData){
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please_select_rows'),
+            ];
+            return $output;
+
+        }
+          
+            foreach ($selectedRowsData as $row) {
+                $worker = User::find($row->id);
+
+               
+
+                if (!$worker) {
+
+                    continue;
+                }
+
+                $worker->assigned_to  = $request->project;
+                $worker->save();
+
+
+                $history = new WorkerProjectsHistory();
+
+                $history->worker_id = $worker->id ?? null;
+
+                $history->type = 'add_project';
+
+                $history->new_project_id = $request->project ?? null;
+
+                $history->adding_date = $request->adding_date ?? null;
+
+                $history->notes = $request->notes ?? null;
+
+                $history->save();
+            }
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
+
     public function reserved_shopping()
     {
 
@@ -351,7 +430,7 @@ class ProjectWorkersController extends Controller
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('status', 'inactive')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

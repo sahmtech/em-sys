@@ -368,6 +368,9 @@
                 endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
             }
 
+            // Subtract 1 day
+            endDateObj.setDate(endDateObj.getDate() - 1);
+
             return endDateObj.toISOString().split('T')[0];
         }
 

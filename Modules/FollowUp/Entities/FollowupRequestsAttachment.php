@@ -5,6 +5,7 @@ namespace Modules\FollowUp\Entities;
 
 
 use Illuminate\Database\Eloquent\Model;
+use App\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 
@@ -15,9 +16,9 @@ class FollowupRequestsAttachment extends Model
     protected $guarded = ['id'];
 
 
-    public function followupWorkerRequest()
+    public function request()
     {
-        return $this->belongsTo(FollowupWorkerRequest::class, 'request_id');
+        return $this->belongsTo(Request::class, 'request_id');
     }
 
 }
