@@ -38,7 +38,7 @@ class RoomController extends Controller
             ]);
         }
 
-        
+
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
@@ -49,10 +49,10 @@ class RoomController extends Controller
         $can_room_edit = auth()->user()->can('room.edit');
         $can_room_delete = auth()->user()->can('room.delete');
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
-        
+
         $rooms = DB::table('htr_rooms')
-        ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents','total_beds'])
-        ->orderBy('id','desc');
+            ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents', 'total_beds'])
+            ->orderBy('id', 'desc');
         if (request()->ajax()) {
 
 
@@ -193,7 +193,8 @@ class RoomController extends Controller
             ->get();
 
         $userIds = $roomWorkersHistory->pluck('worker_id');
-
+        $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
+        $availableRooms = HtrRoom::where('beds_count', '>', 0)->pluck('room_number', 'id');
         $users = User::whereIn('id', $userIds)
             ->with([
                 'country',
@@ -206,14 +207,141 @@ class RoomController extends Controller
             ])
             ->get();
 
-        return view('housingmovements::room_workers.index', ['users' => $users, 'roomWorkersHistory' => $roomWorkersHistory]);
+        return view('housingmovements::room_workers.index', ['users' => $users, 'buildings' => $buildings, 'availableRooms' => $availableRooms, 'roomWorkersHistory' => $roomWorkersHistory]);
     }
 
 
 
-    public function postRoomsData(Request $request)
+    public function leaveRoom(Request $request)
     {
+        try {
+            $selectedRows = $request->input('selectedRows');
+            if (!$selectedRows) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('housingmovements::lang.please_select_rows'),
+                ];
+                return $output;
+            }
+            foreach ($selectedRows as $row) {
+                $userId = $row['id'];
+                error_log($userId);
+                $carbon_now = \Carbon::now();
+                HtrRoomsWorkersHistory::where('worker_id', $userId)->update([
+                    'still_housed' => '0',
+                    'leave_date' => $carbon_now
+                ]);
+                $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)->pluck('room_id');
+
+                $room = HtrRoom::where('id', $roomId)->first();
+
+
+                if ($room) {
+                    $room->beds_count += 1;
+                    $room->save();
+                }
+            }
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
     }
+
+    public function getRooms($id)
+    {
+
+        $rooms = HtrRoom::where('htr_building_id', $id)
+            ->where('beds_count', '>', 0)
+            ->get(['id', 'room_number', 'beds_count']);
+
+        $roomsData = $rooms->mapWithKeys(function ($item) {
+            return [$item->id => ['name' => $item->room_number, 'beds_count' => $item->beds_count]];
+        });
+
+        return response()->json($roomsData);
+    }
+
+    public function transfer_from_room(Request $request){
+        try {
+     
+            
+            $selectedRowsData = json_decode($request->input('selectedRowsData'), true);
+        
+            if (empty($selectedRowsData)) {
+                return [
+                    'success' => false,
+                    'msg' => __('housingmovements::lang.please_select_rows'),
+                ];
+                
+            }
+        
+            foreach ($selectedRowsData as $row) {
+              
+           
+                $userId = $row['id'];
+             
+                $carbon_now = \Carbon::now();
+               
+             
+                HtrRoomsWorkersHistory::where('worker_id', $userId)->update([
+                    'still_housed' => '0',
+                    'leave_date' => $carbon_now
+                ]);
+                $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)->pluck('room_id');
+              
+                $room = HtrRoom::where('id', $roomId)->first();
+               
+                if ($room) {
+                    $room->beds_count += 1;
+                    $room->save();
+                }
+              
+                $newRoom= new HtrRoomsWorkersHistory();
+                $newRoom->worker_id=$userId;
+                $newRoom->room_id=$request->room;
+                $newRoom->still_housed=1;
+                $newRoom->housed_date=$carbon_now;
+                $newRoom->save();
+
+                $room = HtrRoom::where('id', $request->room)->first();
+                if ($room) {
+                    $room->beds_count -= 1;
+                    $room->save();
+                }
+
+
+            }
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
+    
+
     public function getSelectedroomsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');
@@ -404,13 +532,14 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
+        
         try {
             $input = $request->only(['room_number', 'htr_building', 'area', 'beds_count', 'contents']);
-          
+
             $existingRoom = DB::table('htr_rooms')
                 ->where('room_number', $input['room_number'])
                 ->exists();
-    
+
             if ($existingRoom) {
                 $output = [
                     'success' => false,
@@ -423,9 +552,9 @@ class RoomController extends Controller
                 $input2['beds_count'] = $input['beds_count'];
                 $input2['total_beds'] = $input['beds_count'];
                 $input2['contents'] = $input['contents'];
-    
+
                 DB::table('htr_rooms')->insert($input2);
-    
+
                 $output = [
                     'success' => true,
                     'msg' => __('lang_v1.added_success'),
@@ -433,18 +562,18 @@ class RoomController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = [
                 'success' => false,
                 'msg' => __('messages.somthing_wrong'),
             ];
         }
-    
+
         // Return JSON response
         return response()->json($output);
     }
-    
-    
+
+
 
     /**
      * Show the specified resource.
