@@ -6,6 +6,8 @@
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
+    Route::get('/hijriToGregorian', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'hijriToGregorian'])->name('hijriToGregorian');
+    Route::get('/gregorianToHijri', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'gregorianToHijri'])->name('gregorianToHijri');
 
 
     Route::prefix('essentials')->group(function () {
@@ -322,13 +324,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/professions', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'index'])->name('professions');
         Route::post('/storeProfession', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'store'])->name('storeProfession');
-       
+
         Route::delete('/professions/{id}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'destroy'])->name('profession.destroy');
         Route::get('/professions/edit/{professionId}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'edit'])->name('professions.edit');
         Route::post('/updateprofession/{professionId}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'update'])->name('professions.update');
-        
-        
-        
+
+
+
         Route::post('/storeAcademicSpecializations', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'storeAcademicSpecializations'])->name('storeAcademicSpecializations');
         Route::get('/academic_specializations', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'academic_specializations'])->name('academic_specializations');
         Route::delete('/academic_specializations/{id}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'destroy'])->name('academic_specializations.destroy');
