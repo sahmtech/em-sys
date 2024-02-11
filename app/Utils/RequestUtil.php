@@ -163,7 +163,7 @@ class RequestUtil extends Util
                     }
                     return $status;
                 })
-                ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment) {
+                ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request,$departmentIds, $departmentIdsForGeneralManagment) {
                     $buttonsHtml = '';
                     if ($departmentIdsForGeneralManagment) {
                         if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
@@ -172,7 +172,7 @@ class RequestUtil extends Util
                             }
                         }
                     } else {
-                        if ($row->can_return == 1 && $row->status == 'pending') {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) ) {
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
                             }
