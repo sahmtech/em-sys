@@ -30,9 +30,11 @@ return [
     'add_room' => 'إضافة غرفة',
     'room_number' => 'رقم الغرفة',
     'htr_building' => 'السكن',
+    'htr_building_id'=>'رقم السكن (الايدي)',
     'area' => 'المساحة',
     'beds_count' => 'عدد الاسرة ',
     'contents' => 'المحتويات',
+    'contents_example'=>'دولاب',
     'bordar_arrival' => 'إضافة أرقام الحدود',
     'carTypes' => 'أنواع المركبات',
     'carType' => 'نوع المركبة',
@@ -241,5 +243,33 @@ return [
     'total_beds'=>'عدد الأسرة الاجمالي',
     'no_project'=>'بلا مشروع',
     'add_request'=>'إضافة طلب',
+
+    'view_import_rooms'=>'عرض استيراد الغرف',
+    'import_rooms'=>'استيراد الغرف',
+    'select_operation'=>'اختر العملية',
+    'add_new_data'=>'إضافة بيانات جديدة ',
+    'update_existing_data'=>'تحديث بيانات',
+    'submit_import_rooms'=>'إرسال ملف استيراد الغرف',
+     'room_number_required'=>'رقم الغرفة  مطلوب في السطر رقم  ',
+     'building_id_required'=>'ايدي البناء مطلوب في السطر رقم  ',
+     'htr_building_id_not_found'=>'رقم البناء غير موجود في السطر رقم ',
+     'area_should_be_numeric'=>'المساحة يجب أن تكون رقم في السطر  ',
+     'beds_count_required'=>'عدد الأسرة مطلوب في السطر رقم ',
+     'building_end_date'=>'تاريخ انتهاء عقد سكن ',
+     'room_number_already_exists'=>'رقم الغرفة موجود سابقا ً',
+     'id'=>'الرقم',
+
+
+    'department_employees' => 'موظفي الإدارة',
+    'adding_date'=>'تاريخ الإسناد',
+    'select_project'=>'اختر مشروع',
+    'notes'=>'الملاحظات',
+    'add_worker_project'=>'إسناد عمالة لمشروع',
+    'please_select_project'=>'الرجاء اختيار مشروع',
+    'please_select_rows'=>'الرجاء اختيار عمالة',
+
+
+
+
 
 ];

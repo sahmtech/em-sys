@@ -13,6 +13,7 @@ use App\Utils\Util;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Utils\AccountingUtil;
 
 class TransferController extends Controller
@@ -46,8 +47,10 @@ class TransferController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_transfer=auth()->user()->can('accounting.transfer');
+        $can_transfer = auth()->user()->can('accounting.transfer');
         if (!($is_admin || $can_transfer)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -62,7 +65,7 @@ class TransferController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         if (request()->ajax()) {
-            $transfers = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
+            $transfers = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)->where('accounting_acc_trans_mappings.company_id', $company_id)
                 ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
                 ->join('accounting_accounts_transactions as from_transaction', function ($join) {
                     $join->on('from_transaction.acc_trans_mapping_id', '=', 'accounting_acc_trans_mappings.id')
@@ -170,6 +173,8 @@ class TransferController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -186,6 +191,7 @@ class TransferController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -199,7 +205,7 @@ class TransferController extends Controller
             $amount = $request->get('amount');
             $date = $this->util->uf_date($request->get('operation_date'), true);
 
-            $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
+            $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
 
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('accounting_transfer');
@@ -208,11 +214,12 @@ class TransferController extends Controller
                     $accounting_settings['transfer_prefix'] : '';
 
                 //Generate reference number
-                $ref_no = $this->util->generateReferenceNumber('accounting_transfer', $ref_count, $business_id, $prefix);
+                $ref_no = $this->util->generateReferenceNumber('accounting_transfer', $ref_count, $business_id, $company_id, $prefix);
             }
 
             $acc_trans_mapping = new AccountingAccTransMapping();
             $acc_trans_mapping->business_id = $business_id;
+            $acc_trans_mapping->company_id = $company_id;
             $acc_trans_mapping->ref_no = $ref_no;
             $acc_trans_mapping->note = $request->get('note');
             $acc_trans_mapping->type = 'transfer';
@@ -274,11 +281,13 @@ class TransferController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
         if (request()->ajax()) {
             $mapping_transaction = AccountingAccTransMapping::where('id', $id)
+                ->where('company_id', $company_id)
                 ->where('business_id', $business_id)->firstOrFail();
 
             $debit_tansaction = AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)
@@ -304,11 +313,12 @@ class TransferController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
         try {
-            $mapping_transaction = AccountingAccTransMapping::where('id', $id)
+            $mapping_transaction = AccountingAccTransMapping::where('id', $id)->where('company_id', $company_id)
                 ->where('business_id', $business_id)->firstOrFail();
 
             $debit_tansaction = AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)
@@ -373,12 +383,13 @@ class TransferController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
         $user_id = request()->session()->get('user.id');
 
-        $acc_trans_mapping = AccountingAccTransMapping::where('id', $id)
+        $acc_trans_mapping = AccountingAccTransMapping::where('id', $id)->where('company_id', $company_id)
             ->where('business_id', $business_id)->firstOrFail();
 
         if (!empty($acc_trans_mapping)) {

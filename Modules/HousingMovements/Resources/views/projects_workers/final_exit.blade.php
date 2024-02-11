@@ -12,31 +12,10 @@
 
 
     <section class="content">
-        {{-- <div class="row">
+        <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $contacts, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
-
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('nationality_filter', __('followup::lang.nationality') . ':') !!}
-                            {!! Form::select('nationality_filter', $nationalities, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
-
-                        </div>
-                    </div>
+                   
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
@@ -49,7 +28,7 @@
                     </div>
                 @endcomponent
             </div>
-        </div> --}}
+        </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="workers_table">
@@ -92,12 +71,7 @@
                 ajax: {
                     url: "{{ route('workers.final_exit') }}",
                     data: function(d) {
-                        if ($('#project_name_filter').val()) {
-                            d.project_name = $('#project_name_filter').val();
-                        }
-                        if ($('#nationality_filter').val()) {
-                            d.nationality = $('#nationality_filter').val();
-                        }
+                      
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate
                                 .format('YYYY-MM-DD');
@@ -166,9 +140,7 @@
                 date_filter = null;
                 reloadDataTable();
             });
-            $('#project_name_filter, #nationality_filter').on('change', function() {
-                workers_table.ajax.reload();
-            });
+           
             $('#doc_filter_date_range').on('change', function() {
                 date_filter = 1;
                 workers_table.ajax.reload();

@@ -14,7 +14,7 @@
     </div>
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':') !!}
+            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':*') !!}
             <div class="form-group">
                 {!! Form::select(
                     'essentials_department_id',
@@ -23,7 +23,7 @@
                     [
                         'class' => 'form-control select2',
                         'style' => 'height:40px',
-                
+                        'required',
                         'style' => 'width: 100%;',
                         'placeholder' => __('messages.please_select'),
                     ],
@@ -137,18 +137,18 @@
         ) !!}
     </div>
 
-@if(empty($contract))
-    <div class="col-md-3">
-        <div class="form-group">
-            {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
-            {!! Form::file('contract_file', [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-            ]) !!}
-        </div>
+    @if (empty($contract))
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
+                {!! Form::file('contract_file', [
+                    'class' => 'form-control',
+                    'style' => 'height:40px',
+                ]) !!}
+            </div>
 
-    </div>
-@endif
+        </div>
+    @endif
 
 </div>
 
@@ -269,7 +269,7 @@
     <h4>@lang('essentials::lang.features'):</h4>
 
     <div>
-       
+
         <div class="form-group col-md-3">
             {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
             <select id="can_add_category" name="can_add_category" class="form-control" style="height:40px">
@@ -392,6 +392,9 @@
             } else if (unit === 'months') {
                 endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
             }
+
+            // Subtract 1 day
+            endDateObj.setDate(endDateObj.getDate() - 1);
 
             return endDateObj.toISOString().split('T')[0];
         }
@@ -564,8 +567,8 @@
         $('#salary-table-body').append(newRow);
     });
 
- 
-  
+
+
 
     function updateSelectedData() {
         selectedData = [];
@@ -588,7 +591,7 @@
 
     function updateAmount(element) {
         var salaryType = $(element).val();
-       
+
 
         $.ajax({
             url: '/hrm/get-amount/' + salaryType,
@@ -605,8 +608,4 @@
             }
         });
     }
-
-
-
-   
 </script>

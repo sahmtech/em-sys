@@ -15,10 +15,13 @@ use Modules\Accounting\Utils\AccountingUtil;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\Session;
 
 class CoaController extends Controller
 {
     protected $accountingUtil;
+    protected $moduleUtil;
+
 
     /**
      * Constructor
@@ -35,9 +38,10 @@ class CoaController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
-    
- 
+
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_chart_of_accounts = auth()->user()->can('accounting.chart_of_accounts');
         if (!($is_admin || $can_chart_of_accounts)) {
@@ -57,7 +61,7 @@ class CoaController extends Controller
         if (request()->ajax()) {
             $balance_formula = $this->accountingUtil->balanceFormula('AA');
 
-            $query = AccountingAccount::where('business_id', $business_id)
+            $query = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
                 ->whereNull('parent_account_id')
                 ->with([
                     'child_accounts' => function ($query) use ($balance_formula) {
@@ -90,7 +94,7 @@ class CoaController extends Controller
 
             $accounts = $query->get();
 
-            $account_exist = AccountingAccount::where('business_id', $business_id)->exists();
+            $account_exist = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)->exists();
 
 
             if (request()->input('view_type') == 'table') {
@@ -101,6 +105,9 @@ class CoaController extends Controller
                     ->where(function ($q) use ($business_id) {
                         $q->whereNull('business_id')
                             ->orWhere('business_id', $business_id);
+                    })->where(function ($q) use ($company_id) {
+                        $q->whereNull('company_id')
+                            ->orWhere('company_id', $company_id);
                     })
                     ->get();
 
@@ -119,7 +126,9 @@ class CoaController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
- 
+        $company_id = Session::get('selectedCompanyId');
+
+
 
         if (request()->ajax()) {
             $account_types = AccountingAccountType::accounting_primary_type();
@@ -136,15 +145,16 @@ class CoaController extends Controller
     {
         //check no accounts
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
-   
+
 
         $user_id = request()->session()->get('user.id');
 
-        $default_accounts = AccountingUtil::Default_Accounts($business_id,$user_id);
-       
+        $default_accounts = AccountingUtil::Default_Accounts($business_id, $user_id, $company_id);
 
-        if (AccountingAccount::where('business_id', $business_id)->doesntExist()) {
+
+        if (AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)->doesntExist()) {
             AccountingAccount::insert($default_accounts);
         }
 
@@ -160,7 +170,8 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-    
+        $company_id = Session::get('selectedCompanyId');
+
 
         if (request()->ajax()) {
             $account_type_id = request()->input('account_type_id');
@@ -169,10 +180,14 @@ class CoaController extends Controller
                     $q->whereNull('business_id')
                         ->orWhere('business_id', $business_id);
                 })
+                ->where(function ($q) use ($company_id) {
+                    $q->whereNull('company_id')
+                        ->orWhere('company_id', $company_id);
+                })
                 ->where('account_type', 'detail_type')
                 ->get();
 
-            $parent_accounts = AccountingAccount::where('business_id', $business_id)
+            $parent_accounts = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
                 ->where('account_sub_type_id', $account_type_id)
                 ->whereNull('parent_account_id')
                 ->select('name as text', 'id')
@@ -208,11 +223,17 @@ class CoaController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
+
             $account_primary_type = request()->input('account_primary_type');
             $sub_types_obj = AccountingAccountType::where('account_primary_type', $account_primary_type)
                 ->where(function ($q) use ($business_id) {
                     $q->whereNull('business_id')
                         ->orWhere('business_id', $business_id);
+                })
+                ->where(function ($q) use ($company_id) {
+                    $q->whereNull('company_id')
+                        ->orWhere('company_id', $company_id);
                 })
                 ->where('account_type', 'sub_type')
                 ->get();
@@ -245,7 +266,9 @@ class CoaController extends Controller
     public function store_old(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
- 
+        $company_id = Session::get('selectedCompanyId');
+
+
 
         try {
             DB::beginTransaction();
@@ -261,6 +284,8 @@ class CoaController extends Controller
                 && $input['parent_account_id'] !== 'null' ? $input['parent_account_id'] : null;
             $input['created_by'] = auth()->user()->id;
             $input['business_id'] = $request->session()->get('user.business_id');
+            $input['company_id'] = $company_id;
+
             $input['status'] = 'active';
 
             $account = AccountingAccount::create($input);
@@ -284,6 +309,8 @@ class CoaController extends Controller
                     'accounts_account_transaction_id' => $trans->id,
                     'type' => $data['type'] == 'debit' ? 'debit' : 'credit',
                     'business_id' => $business_id,
+                    'company_id' => $company_id,
+
                     'year' => Carbon::today()->format('Y')
                 ];
                 OpeningBalance::query()->create($opBalance);
@@ -309,6 +336,7 @@ class CoaController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
 
+        $company_id = Session::get('selectedCompanyId');
 
         try {
             DB::beginTransaction();
@@ -327,8 +355,10 @@ class CoaController extends Controller
             $input['detail_type_id'] = $account_account->detail_type_id;
             $input['created_by'] = auth()->user()->id;
             $input['business_id'] = $request->session()->get('user.business_id');
+            $input['company_id'] = $company_id;
+
             $input['status'] = 'active';
-            $input['gl_code'] = AccountingUtil::next_GLC($input['parent_account_id'],$business_id);
+            $input['gl_code'] = AccountingUtil::next_GLC($input['parent_account_id'], $business_id, $company_id);
             $account_type = AccountingAccountType::find($input['account_sub_type_id']);
             $account = AccountingAccount::create($input);
             // return $input;
@@ -351,6 +381,8 @@ class CoaController extends Controller
                     'accounts_account_transaction_id' => $trans->id,
                     'type' => $data['type'] == 'debit' ? 'debit' : 'credit',
                     'business_id' => $business_id,
+                    'company_id' => $company_id,
+
                     'year' => Carbon::today()->format('Y')
                 ];
                 OpeningBalance::query()->create($opBalance);
@@ -383,11 +415,13 @@ class CoaController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
 
 
 
         if (request()->ajax()) {
-            $account = AccountingAccount::where('business_id', $business_id)
+            $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
                 ->with(['detail_type'])
                 ->find($id);
 
@@ -398,6 +432,10 @@ class CoaController extends Controller
                     $q->whereNull('business_id')
                         ->orWhere('business_id', $business_id);
                 })
+                ->where(function ($q) use ($company_id) {
+                    $q->whereNull('company_id')
+                        ->orWhere('company_id', $company_id);
+                })
                 ->get();
             $account_detail_types = AccountingAccountType::where('parent_id', $account->account_sub_type_id)
                 ->where('account_type', 'detail_type')
@@ -405,9 +443,13 @@ class CoaController extends Controller
                     $q->whereNull('business_id')
                         ->orWhere('business_id', $business_id);
                 })
+                ->where(function ($q) use ($company_id) {
+                    $q->whereNull('company_id')
+                        ->orWhere('company_id', $company_id);
+                })
                 ->get();
 
-            $parent_accounts = AccountingAccount::where('business_id', $business_id)
+            $parent_accounts = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
                 ->where('account_sub_type_id', $account->account_sub_type_id)
                 ->whereNull('parent_account_id')
                 ->get();
@@ -431,7 +473,8 @@ class CoaController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-  
+        $company_id = Session::get('selectedCompanyId');
+
 
         try {
             DB::beginTransaction();
@@ -469,10 +512,12 @@ class CoaController extends Controller
     public function activateDeactivate($id)
     {
         $business_id = request()->session()->get('user.business_id');
-   
+        $company_id = Session::get('selectedCompanyId');
+
+
 
         if (request()->ajax()) {
-            $account = AccountingAccount::where('business_id', $business_id)
+            $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
                 ->find($id);
 
             $account->status = $account->status == 'active' ? 'inactive' : 'active';
@@ -497,10 +542,11 @@ class CoaController extends Controller
     public function ledger($account_id)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
-  
 
-        $account = AccountingAccount::where('business_id', $business_id)
+
+        $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
             ->with(['account_sub_type', 'detail_type'])
             ->findorFail($account_id);
 
@@ -599,7 +645,7 @@ class CoaController extends Controller
             '=',
             'accounting_accounts.id'
         )
-            ->where('business_id', $business_id)
+            ->where('business_id', $business_id)->where('company_id', $company_id)
             ->where('accounting_accounts.id', $account->id)
             ->select([DB::raw($this->accountingUtil->balanceFormula())]);
         $current_bal = $current_bal->first()->balance;

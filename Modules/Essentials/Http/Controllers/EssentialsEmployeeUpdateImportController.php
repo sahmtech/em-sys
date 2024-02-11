@@ -32,6 +32,7 @@ use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsEmployeeImport;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Sales\Entities\SalesProject;
+use Modules\Essentials\Entities\EssentialsContractType;
 
 
 
@@ -90,6 +91,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 {
                     $row_no = $key + 1;
                     $emp_array = [];  
+                    $emp_array['emp_number'] = $value[0]; 
 
                     $emp_array['first_name'] = $value[1];                      
                     $emp_array['mid_name'] = $value[2];
@@ -235,7 +237,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                       {
                       
                           $is_valid = false;
-                          $error_msg = __('essentials::lang.contact_not_found').$row_no;
+                          $error_msg = __('essentials::lang.contact_not_found').$row_no+1;
                           break;
                       }
                   }
@@ -249,6 +251,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                   
                   $emp_array['essentials_department_id'] = $value[28];
+                 
                   if ($emp_array['essentials_department_id'] !== null)
                   {
               
@@ -257,7 +260,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                       {
                       
                           $is_valid = false;
-                          $error_msg = __('essentials::lang.dep_not_found' ) .$row_no;
+                          $error_msg = __('essentials::lang.dep_not_found' ) .$row_no+1;
                           break;
                       }
                   } else
@@ -301,7 +304,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                          if (!$specialization) {
                          
                              $is_valid = false;
-                             $error_msg = __('essentials::lang.prof_not_found') .$row_no;
+                             $error_msg = __('essentials::lang.prof_not_found') .$row_no+1;
                              break;
                          }
                      } else {
@@ -321,7 +324,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                          if (!$nationality_id) {
                          
                              $is_valid = false;
-                             $error_msg =  __('essentials::lang.nationality_not_found') .$row_no;
+                             $error_msg =  __('essentials::lang.nationality_not_found') .$row_no+1;
                              break;
                          }
                      } else {
@@ -387,7 +390,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             if(!is_numeric( $emp_array['contract_duration']))
                             {
                                 $is_valid = false;
-                                $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no;
+                                $error_msg =  __('essentials::lang.contract_duration_should_be_is_numeric') .$row_no+1;
                                 break;
                             }
                         } 
@@ -401,7 +404,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             if(!is_numeric( $emp_array['probation_period']))
                             {
                                 $is_valid = false;
-                                $error_msg =  __('essentials::lang.probation_period_should_be_is_numeric') .$row_no;
+                                $error_msg =  __('essentials::lang.probation_period_should_be_is_numeric') .$row_no+1;
                                 break;
                             }
                         } 
@@ -415,43 +418,59 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             $emp_array['is_renewable'] = $value[39];
                         } 
                         else{   $emp_array['is_renewable'] = null;}
+
+                       
+                        $emp_array['contract_type_id']=$value[40];
+                        if (!empty($value[40]))
+                        {
+                            $contract_type = EssentialsContractType::find($value[40]);
+                            if (!$contract_type) {
+                           
+                                $is_valid = false;
+                                $error_msg = __('essentials::lang.contract_type_id_not_found') .$row_no+1;
+                                break;
+                            }
+                           
+                        } 
+                        else{   $emp_array['contract_type_id'] = null;}
+                        
                             
-                        $emp_array['essentials_salary'] = $value[40];
+                        $emp_array['essentials_salary'] = $value[41];
 
                         
 
-                        if ($value[41] !== null)
+                        if ($value[42] !== null)
                         {
                                
-                           $housing_allowance_id = EssentialsAllowanceAndDeduction::find($value[41]);
+                           $housing_allowance_id = EssentialsAllowanceAndDeduction::find($value[42]);
                          
                            if (!$housing_allowance_id) {
                            
                                $is_valid = false;
-                               $error_msg = __('essentials::lang.housing_allowance_id_not_found') .$row_no;
+                               $error_msg = __('essentials::lang.housing_allowance_id_not_found') .$row_no+1;
                                break;
                            }
                         } 
                       
-                       if ($value[43] !== null) {
+                       if ($value[44] !== null) {
                                
-                           $trans_allowance_id = EssentialsAllowanceAndDeduction::find($value[43]);
+                           $trans_allowance_id = EssentialsAllowanceAndDeduction::find($value[44]);
                          
                            if (!$trans_allowance_id) {
                            
                                $is_valid = false;
-                               $error_msg = __('essentials::lang.trans_allowance_id_not_found') .$row_no;
+                               $error_msg = __('essentials::lang.trans_allowance_id_not_found') .$row_no+1;
                                break;
                            }
                        } 
-                       if ($value[45] !== null) {
+                       if ($value[46] !== null) {
                                
-                           $other_allowance_id = EssentialsAllowanceAndDeduction::find($value[45]);
+                           $other_allowance_id = EssentialsAllowanceAndDeduction::find($value[46]);
                          
                            if (!$other_allowance_id) {
                            
                                $is_valid = false;
-                               $error_msg = __('essentials::lang.other_allowance_id_not_found') .$row_no;
+                               $error_msg = __('essentials::lang.other_allowance_id_not_found') .$row_no+1;
                                break;
                            }
                        } 
@@ -460,13 +479,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
                        
                        $emp_array['allowance_data'] =
                         [
-                           'housing_allowance' => json_encode(['salaryType' => $value[41], 'amount' => $value[42]]),
-                           'transportation_allowance' => json_encode(['salaryType' => $value[43], 'amount' => $value[44]]),
-                           'other' => json_encode(['salaryType' => $value[45], 'amount' => $value[46]]),
+                           'housing_allowance' => json_encode(['salaryType' => $value[42], 'amount' => $value[43]]),
+                           'transportation_allowance' => json_encode(['salaryType' => $value[44], 'amount' => $value[45]]),
+                           'other' => json_encode(['salaryType' => $value[46], 'amount' => $value[47]]),
                         ];
                                
                        
-                       $emp_array['total_salary'] = $value[47]; 
+                       $emp_array['total_salary'] = $value[48]; 
+                       $emp_array['company_id'] = $value[49]; 
                        $formated_data[] = $emp_array;
 
                                         
@@ -498,7 +518,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                        
                             $emp_data['business_id'] = $emp_data['business_id'];
                             $emp_data['created_by'] = $user_id;
-                            $emp_data['contract_type_id'] = null;
+                           // $emp_data['contract_type_id'] = null;
                             $emp_data['essentials_pay_period'] = 'month';
                            
                             $existingEmployee = User::where('id_proof_number',$emp_data['id_proof_number'])
@@ -506,7 +526,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                             ->first();
     
                             
-                       
+                      
                             if ($existingEmployee)
                             {
                               
@@ -536,6 +556,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                        'business_id',
                                        'nationality_id',
                                        'bank_details',
+                                       'company_id',
+                                       'emp_number'
                                       
                                 ];
     
@@ -667,14 +689,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                
                           
                                 $final_contract_start_date=null;
-                             
+                              
                                 if($emp_data['contract_start_date'] != null  ||  $emp_data['contract_end_date'] != null )
                                 {
                                     $previous_contract = EssentialsEmployeesContract::where('employee_id',  $existingEmployee->id)
                                     ->where('is_active',1)
                                     ->latest('created_at')
                                     ->first();
-                                  ;
+                                  
                                    
                                     if( $previous_contract )
                                     {
@@ -754,13 +776,15 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                 }  
                                 
                                 
-                               
+                               // dd( $emp_data['essentials_department_id']);
     
                                 if($emp_data['essentials_department_id'] != null )
                                 {
+                                   
                                     $appointmentData=[];
                                     if( $existingEmployee->user_type == 'worker')
                                         {
+                                           
                                             $appointmentData =
                                             [
                                                 'employee_id'=> $existingEmployee->id,
@@ -775,6 +799,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                    
                                      else
                                         {
+                                            
                                             $appointmentData =
                                             [
                                                 'employee_id'=> $existingEmployee->id,
@@ -805,8 +830,9 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                             $previous_appointment->save();
                                           
                                         }
+                                       
                                         $new_appointement=EssentialsEmployeeAppointmet::Create($filteredAppointmentData);
-                                        $existingEmployee->essentials_department_id =$filteredAppointmentData['essentials_department_id'];
+                                        $existingEmployee->essentials_department_id =$filteredAppointmentData['department_id'];
                                         $existingEmployee->save();
                                         
                                     }

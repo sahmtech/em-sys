@@ -435,6 +435,36 @@
             });
 
 
+            $('body').on('submit', '#createRoomModal form', function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+            var url = $(this).attr('action');
+
+            
+            $.ajax({
+                method: "post",
+                url: url,
+                data: formData, 
+                dataType: "json",
+                success: function(result) {
+                    if (result.success == true) {
+                        toastr.success(result.msg);
+                        rooms_table.ajax.reload();
+                        $('#createRoomModal').modal('hide');
+                    } else {
+                        toastr.error(result.msg);
+                        $('#createRoomModal').modal('hide');
+                    }
+                },
+                error: function (error) {
+                    console.error('Error submitting form:', error);
+                    toastr.error('An error occurred while submitting the form.', 'Error');
+                },
+            });
+        });
+
+
+
 
 
             $('body').on('click', '.open-edit-modal', function() {

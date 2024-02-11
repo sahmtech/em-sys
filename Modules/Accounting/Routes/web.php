@@ -18,9 +18,20 @@ use Modules\Accounting\Http\Controllers\ReceiptVouchersController;
 
 use Modules\Accounting\Http\Controllers\SettingsController;
 
-Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
-    Route::get('dashboard', 'AccountingController@dashboard');
+Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'all-accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
+    Route::get('/', [\Modules\Accounting\Http\Controllers\AccountingController::class, 'landing'])->name('accountingLanding');
+    Route::get('/setSession', [\Modules\Accounting\Http\Controllers\AccountingController::class, 'setSession'])->name('setSession');
+    Route::get('/companies_access_permissions', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'index'])->name('companies_access_permissions');
+    Route::get('/getUserCompaniesPermissions/{userId}', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'getUserCompaniesPermissions'])->name('getUserCompaniesPermissions');
+    Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
+ 
 
+});
+
+Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
+
+
+    Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
 
     Route::get('open-create-dialog/{id}', 'CoaController@open_create_dialog')->name('open_create_dialog');
@@ -51,13 +62,13 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('automated-migration-active-toggle/{id}', 'AutomatedMigrationController@active_toggle');
     Route::get('automated-migration-delete-acc-trans-mapping/{id}', 'AutomatedMigrationController@destroy_acc_trans_mapping_setting');
 
-    
-       //requests 
-    Route::get('/accounting.requests', [ \Modules\Accounting\Http\Controllers\RequestController::class, 'index'])->name('accounting.requests');
+
+    //requests 
+    Route::get('/accounting.requests', [\Modules\Accounting\Http\Controllers\RequestController::class, 'index'])->name('accounting.requests');
     Route::post('/accounting.returnReq', [\Modules\Accounting\Http\Controllers\RequestController::class, 'returnReq'])->name('accounting.returnReq');
     Route::post('/accounting.returnReq.store', [\Modules\Accounting\Http\Controllers\RequestController::class, 'store'])->name('accounting.returnReq.store');
     Route::get('/viewAccountingRequest/{requestId}', [\Modules\Accounting\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewAccountingRequest');
-    
+
     Route::resource('transfer', 'TransferController')->except(['show']);
 
     Route::resource('budget', 'BudgetController')->except(['show', 'edit', 'update', 'destroy']);
@@ -85,7 +96,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('/accounting/receipt_vouchers/load/data', [ReceiptVouchersController::class, 'loadNeededData'])->name('receipt_vouchers.load');
     Route::resource('payment_vouchers', 'PaymentVouchersController');
     Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
-    Route::get('/accounting/payment_vouchers', [PaymentVouchersController::class,'index'])->name('index-payment_vouchers');
+    Route::get('/accounting/payment_vouchers', [PaymentVouchersController::class, 'index'])->name('index-payment_vouchers');
 
 
     Route::get('transactions', 'TransactionController@index')->name('getTransaction');

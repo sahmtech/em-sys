@@ -63,6 +63,17 @@ class DataController extends Controller
                     ],
 
                     [
+                        'value' => 'housingmovements.view_import_rooms',
+                        'label' => __('housingmovements::lang.view_import_rooms'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.submit_import_rooms',
+                        'label' => __('housingmovements::lang.submit_import_rooms'),
+                        'default' => false,
+                    ],
+
+                    [
                         'value' => 'room.workers',
                         'label' => __('housingmovements::lang._room_workers'),
                         'default' => false,
@@ -128,6 +139,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'housingmovements.add_worker_project',
+                        'label' => __('housingmovements::lang.add_worker_project'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'housingmovements.all_workers',
                         'label' => __('housingmovements::lang.all_workers_view'),
                         'default' => false,
@@ -158,6 +174,11 @@ class DataController extends Controller
                     [
                         'value' => 'worker_housed',
                         'label' => __('housingmovements::lang.worker_housed'),
+                        'default' => false,
+                    ],
+                     [
+                        'value' => 'housingmovements.housingmovements_view_department_employees',
+                        'label' => __('housingmovements::lang.department_employees'),
                         'default' => false,
                     ],
 

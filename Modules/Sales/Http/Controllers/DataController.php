@@ -47,6 +47,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'sales.view_draft_contacts',
+                        'label' => __('sales::lang.view_draft_contacts'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'sales.view_qualified_contacts',
                         'label' => __('sales::lang.view_qualified_contacts'),
                         'default' => false,
@@ -62,8 +67,8 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.add_lead_contact',
-                        'label' => __('sales::lang.add_lead_contact'),
+                        'value' => 'sales.add_draft_contact',
+                        'label' => __('sales::lang.add_draft_contact'),
                         'default' => false,
                     ],
                     [

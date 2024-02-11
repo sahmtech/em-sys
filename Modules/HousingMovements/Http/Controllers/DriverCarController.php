@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
@@ -114,8 +115,9 @@ class DriverCarController extends Controller
      */
     public function create()
     {
-        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
-        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+        
+        $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
         $driver_ids = DriverCar::all()->pluck('user_id');
 
         $workers = User::where('user_type', 'worker')
@@ -195,12 +197,12 @@ class DriverCarController extends Controller
      */
     public function edit($id)
     {
-        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
-        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+        $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
         $driver = DriverCar::find($id);
         $driver_ids = DriverCar::all()->pluck('user_id');
 
-        $workers = User::where('user_type', 'worker')
+        $workers = User::where('user_type', 'worker')->whereNot('status', 'inactive')
             ->whereIn('id', $essentials_employee_appointmets_ids)
             ->whereNotIn('id', $driver_ids)
             ->orwhere('id', $driver->user_id)

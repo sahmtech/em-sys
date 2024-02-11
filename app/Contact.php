@@ -173,11 +173,16 @@ class Contact extends Authenticatable
      * @param $prepend_none = true (boolean)
      * @return array users
      */
-    public static function suppliersDropdown($business_id, $prepend_none = true, $append_id = true)
+    public static function suppliersDropdown($business_id, $prepend_none = true, $append_id = true, $company_id = null)
     {
         $all_contacts = Contact::where('contacts.business_id', $business_id)
             ->whereIn('contacts.type', ['supplier', 'both'])
             ->active();
+        if ($company_id) {
+            $all_contacts = Contact::where('contacts.business_id', $business_id)->where('company_id', $company_id)
+                ->whereIn('contacts.type', ['supplier', 'both'])
+                ->active();
+        }
 
         if ($append_id) {
             $all_contacts->select(

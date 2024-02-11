@@ -61,6 +61,16 @@ class DataController extends Controller
                         'label' => __('accounting::lang.accounting_dashboard'),
                         'default' => false
                     ],
+                    [
+                        'value' => 'accounting.view_companies',
+                        'label' => __('accounting::lang.view_companies'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.companies_access_permissions',
+                        'label' => __('accounting::lang.companies_access_permissions'),
+                        'default' => false
+                    ],
 
                     [
                         'value' => 'accounting.chart_of_accounts',
@@ -242,7 +252,7 @@ class DataController extends Controller
                         'label' => __('accounting::lang.show_request'),
                         'default' => false,
                     ],
-                   
+
                     [
                         'value' => 'accounting.add_request',
                         'label' => __('accounting::lang.add_request'),

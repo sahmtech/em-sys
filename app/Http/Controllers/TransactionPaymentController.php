@@ -522,7 +522,7 @@ class TransactionPaymentController extends Controller
             $payment_types = $this->transactionUtil->payment_types(null, false, $business_id);
 
             //Accounts
-            $accounts = $this->moduleUtil->accountsDropdown($business_id, true);
+            $accounts = $this->moduleUtil->accountsDropdown($business_id, true,false,false);
 
             return view('transaction_payment.pay_supplier_due_modal')
                         ->with(compact('contact_details', 'payment_types', 'payment_line', 'due_payment_type', 'ob_due', 'amount_formated', 'accounts'));
@@ -545,7 +545,7 @@ class TransactionPaymentController extends Controller
             DB::beginTransaction();
 
             $business_id = request()->session()->get('business.id');
-            $tp = $this->transactionUtil->payContact($request);
+            $tp = $this->transactionUtil->payContact($request,true,$company_id);
 
             $pos_settings = ! empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
             $enable_cash_denomination_for_payment_methods = ! empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];

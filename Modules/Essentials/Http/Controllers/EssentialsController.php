@@ -5,29 +5,22 @@ namespace Modules\Essentials\Http\Controllers;
 use App\Charts\CommonChart;
 use App\Utils\ModuleUtil;
 use App\User;
-use App\ContactLocation;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsLeaveType;
-use Modules\Sales\Entities\SalesProject;
-use App\AccessRole;
-use App\AccessRoleBusiness;
-use App\AccessRoleCompany;
-use App\AccessRoleProject;
-use App\Business;
-use App\Company;
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
-
+use App\Request as UserRequest;
+use App\RequestProcess;
 use DB;
 use Illuminate\Support\Carbon;
+use Modules\CEOManagment\Entities\RequestsType;
 use Yajra\DataTables\Facades\DataTables;
+use Alkoumi\LaravelHijriDate\Hijri;
+
 
 class EssentialsController extends Controller
 {
@@ -82,6 +75,44 @@ class EssentialsController extends Controller
             ->color($colors);
 
         return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
+    }
+
+    public function hijriToGregorian(Request $request)
+    {
+        $hijriDate = explode('/', $request->input('hijriDate')); // Assuming the date format is YYYY/MM/DD
+        if (count($hijriDate) == 3) {
+            list($year, $month, $day) = $hijriDate;
+            $gregorianDate = Hijri::DateToGregorianFromDMY($day, $month, $year);
+            $date = Carbon::createFromFormat('Y/m/d', $gregorianDate);
+
+            // Format the date to the desired format
+            $gregorianDate = $date->format('d/m/Y');
+        } else {
+            $gregorianDate = 'Invalid date format';
+        }
+        error_log($gregorianDate);
+        return response()->json([
+            'gregorianDate' => $gregorianDate,
+        ]);
+    }
+    public function gregorianToHijri(Request $request)
+    {
+        error_log($request->input('gregorian'));
+        $gregorianDate =  explode('/', $request->input('gregorian'));
+        if (count($gregorianDate) == 3) {
+            list($day, $month, $year) = $gregorianDate;
+            error_log($year);
+            error_log($month);
+            error_log($day);
+            $hijriDate = Hijri::DateFromGregorianDMY( $month,$day, $year);
+            error_log($hijriDate);
+        } else {
+            $hijriDate = 'Invalid date format';
+        }
+
+
+
+        return response()->json(['hijriDate' => $hijriDate]);
     }
 
     public function hr_department_employees()
@@ -344,98 +375,109 @@ class EssentialsController extends Controller
 
         $all_ended_residency_date = EssentialsOfficialDocument::whereIn('employee_id', $userIds)->with(['employee'])->where('type', 'residence_permit')
             ->whereDate('expiration_date', '<=',  $today)->count();
+        $escapeRequest = 0;
+        $type = RequestsType::where('type', 'escapeRequest')->where('for', 'worker')->first();
+        if ($type) {
+            $escapeRequest = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->where('request_type_id', $type->id)
+                ->whereHas('related_to_user', function ($query) {
+                    $query->where('user_type', 'worker');
+                })
+                ->where('end_date', '<=', $sixtyday)
+                ->count();
+        }
+        $vacationrequest = 0;
+        $type2 = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'worker')->first();
+        if ($type2) {
+            $vacationrequest = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->where('request_type_id', $type2->id)
+                ->whereHas('related_to_user', function ($query) {
+                    $query->where('user_type', 'worker');
+                })->count();
+        }
 
-        $escapeRequest = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with('user')->where('type', 'escapeRequest')
-            ->whereHas('user', function ($query) {
-                $query->where('user_type', 'worker');
-            })
-            ->where('end_date', '<=', $sixtyday)
-            ->count();
-
-
-        $vacationrequest = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with('user')->where('type', 'leavesAndDepartures')
-            ->whereHas('user', function ($query) {
-                $query->where('user_type', 'worker');
-            })
-            ->count();
 
         $final_visa = EssentailsEmployeeOperation::whereIn('employee_id', $userIds)->where('operation_type', 'final_visa')
             ->whereHas('user', function ($query) {
                 $query->where('user_type', 'worker');
             })
             ->count();
-
-
-        $late_vacation = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with(['user'])
-            ->where('type', 'leavesAndDepartures')
-            ->where('type', 'returnRequest')
-            ->whereHas('user', function ($query) {
-
-                $query->where('status', 'vecation');
-            })
-            ->where('end_date', '<', now())
-            ->count();
-
-
+        $late_vacation = 0;
+        $type = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first();
+        if ($type) {
+            $late_vacation = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->where('request_type_id', $type->id)
+                ->whereHas('related_to_user', function ($query) {
+                    $query->where('status', 'vecation');
+                })
+                ->where('end_date', '<', now())
+                ->count();
+        }
 
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%حكومية%')
             ->pluck('id')->toArray();
 
-        $requestsProcess = null;
-
-        if (!empty($departmentIds)) {
-
-
-            $requestsProcess = FollowupWorkerRequest::select([
-                'followup_worker_requests.request_no',
-                'followup_worker_requests_process.id as process_id',
-                'followup_worker_requests.id',
-                'followup_worker_requests.type as type',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'followup_worker_requests.created_at',
-                'followup_worker_requests_process.status',
-                'followup_worker_requests_process.status_note as note',
-                'followup_worker_requests.reason',
-                'essentials_wk_procedures.department_id as department_id',
-                'users.id_proof_number',
-                'essentials_wk_procedures.can_return',
-                'users.assigned_to'
-
-            ])
-                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('users.id', $userIds)
-                ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_governmental_dep'),
+            ];
+            return redirect()->back()->with('status', $output);
         }
+
+        $requestsProcess = null;
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
+            ->groupBy('request_id');
+
+        $requestsProcess = UserRequest::select([
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+
+            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+
+            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+
+        ])
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('requests.id', '=', 'latest_process.request_id');
+            })
+            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+            // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+            ->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('process.superior_department_id', $departmentIds);
+            })
+
+
+            ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
+            ->where('users.status', '!=', 'inactive');
+
 
         if (request()->ajax()) {
 
-
-
             return DataTables::of($requestsProcess ?? [])
-
                 ->editColumn('created_at', function ($row) {
-
-
                     return Carbon::parse($row->created_at);
                 })
-
+                ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                    return $allRequestTypes[$row->request_type_id];
+                })
                 ->editColumn('status', function ($row) {
-
-                    $status = trans('followup::lang.' . $row->status) ?? '';
-
+                    $status = trans('request.' . $row->status);
 
                     return $status;
                 })
 
-                ->rawColumns(['status'])
+                ->rawColumns(['status', 'request_type_id'])
 
 
                 ->make(true);
         }
-
 
 
 
@@ -481,43 +523,53 @@ class EssentialsController extends Controller
             ->where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
 
-        $requestsProcess = null;
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
+            ->groupBy('request_id');
 
-        if (!empty($departmentIds)) {
+        $requestsProcess = UserRequest::select([
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
-            $requestsProcess = FollowupWorkerRequest::select([
-                'followup_worker_requests.request_no', 'followup_worker_requests.type',
-                'followup_worker_requests.id',
-                'followup_worker_requests.worker_id',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'followup_worker_requests.start_date',
-                'followup_worker_requests_process.status', 'followup_worker_requests_process.worker_request_id',
-                'followup_worker_requests_process.procedure_id',   'followup_worker_requests_process.sub_status',
+            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
 
-            ])
-                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('department_id', $departmentIds)
-                ->where('followup_worker_requests_process.sub_status', null)
-                ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests.type', 'leavesAndDepartures');
-        }
+            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+
+        ])
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('requests.id', '=', 'latest_process.request_id');
+            })
+            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+            // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+            ->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('process.superior_department_id', $departmentIds);
+            })
+
+
+            ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
+            ->where('users.status', '!=', 'inactive');
+
 
         if (request()->ajax()) {
 
-
             return DataTables::of($requestsProcess ?? [])
-
                 ->editColumn('created_at', function ($row) {
-
                     return Carbon::parse($row->created_at);
                 })
-
+                ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                    return $allRequestTypes[$row->request_type_id];
+                })
                 ->editColumn('status', function ($row) {
-                    return trans('followup::lang.' . $row->status) ?? '';
+                    $status = trans('request.' . $row->status);
+
+                    return $status;
                 })
 
-                ->rawColumns(['status'])
+                ->rawColumns(['status', 'request_type_id'])
 
 
                 ->make(true);
@@ -533,11 +585,15 @@ class EssentialsController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $rawLeaveStatusData = FollowupWorkerRequest::whereIn('worker_id', $userIds)->where('type', 'leavesAndDepartures')
-            ->select(DB::raw('status, COUNT(*) as count'))
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+        $rawLeaveStatusData = 0;
+        $type = RequestsType::where('type', 'leavesAndDepartures')->pluck('id')->toArray();
+        if ($type) {
+            $rawLeaveStatusData = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->whereIn('request_type_id', $type)->select(DB::raw('status, COUNT(*) as count'))
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+        }
 
 
         $leaveStatusData = [];

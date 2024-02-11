@@ -104,7 +104,9 @@
                             <th>@lang('followup::lang.nationality')</th>
                             <th>@lang('followup::lang.eqama_end_date')</th>
                             <th>@lang('followup::lang.contract_end_date')</th> --}}
-
+                            <th>
+                                <input type="checkbox" id="select-all">
+                            </th>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
@@ -134,6 +136,61 @@
                         </tr>
                     </thead>
                 </table>
+                <div style="margin-bottom: 10px;">
+ 
+                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('followup.cancle_worker_project'))
+                    <button type="button" class="btn btn-warning btn-sm custom-btn" id="cancle-project-selected">
+                        @lang('followup::lang.cancle_worker_project')
+                    </button>
+                    @endif
+                </div>
+            </div>
+            <div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        {!! Form::open([
+                            'url' => action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'cancleProject']),
+                            'method' => 'post',
+                            'id' => 'cancle_project_form',
+                        ]) !!}
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('followup::lang.cancle_worker_project')</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            
+                                <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('canceled_date', __('followup::lang.canceled_date') . ':') !!}
+                                    {!! Form::date('canceled_date', null, [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('followup::lang.canceled_date'),
+                                      
+                                    ]) !!}
+                                </div>
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('notes', __('followup::lang.notes') . ':') !!}
+                                {!! Form::textarea('notes', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('followup::lang.note'),
+                                    'rows' => 2,
+                                ]) !!}
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="submitsBtn">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+
+                        {!! Form::close() !!}
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
             </div>
         @endcomponent
 
@@ -153,7 +210,8 @@
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
                 serverSide: true,
-
+               
+                info: false,
                 ajax: {
 
                     url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']) }}",
@@ -180,7 +238,17 @@
                     }
                 },
 
-                columns: [{
+                columns: [
+                
+                {
+                        data: null,
+                        render: function(data, type, row, meta) {
+                            return '<input type="checkbox" class="select-row" data-id="' + row.id + '">';
+                        },
+                        orderable: false,
+                        searchable: false,
+                    },
+                {
                         data: 'worker',
                         render: function(data, type, row) {
                             var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
@@ -321,7 +389,56 @@
                 function() {
                     workers_table.ajax.reload();
                 });
-        });
+        
+            $('#select-all').change(function() {
+                $('.select-row').prop('checked', $(this).prop('checked'));
+            });
+
+            $('#workers_table').on('change', '.select-row', function() {
+                $('#select-all').prop('checked', $('.select-row:checked').length === workers_table.rows()
+                    .count());
+            });
+
+            $('#cancle-project-selected').click(function() {
+                var selectedRows = $('.select-row:checked').map(function() {
+                    return {
+                        id: $(this).data('id'),
+                    };
+                }).get();
+
+                $('#selectedRowsData').val(JSON.stringify(selectedRows));
+                $('#changeStatusModal').modal('show');
+            });
+            $('#submitsBtn').click(function() {
+                var formData = new FormData($('#cancle_project_form')[0]);
+                console.log('1111111111111');
+                $.ajax({
+                    type: 'POST',
+                    url: $('#cancle_project_form').attr('action'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        console.log(result);
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            workers_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function(error) {
+
+                    }
+                });
+
+                $('#changeStatusModal').modal('hide');
+            });
+
+            
+            });
+
+
         chooseFields = function() {
             var selectedOptions = $('#choose_fields_select').val();
 

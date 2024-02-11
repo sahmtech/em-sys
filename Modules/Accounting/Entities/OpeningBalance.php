@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OpeningBalance extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $guarded = ['id'];
     protected $table ="accounting_opening_balances";
     public function transaction(){
         return $this->hasOne(AccountingAccountsTransaction::class, 'id','accounts_account_transaction_id');

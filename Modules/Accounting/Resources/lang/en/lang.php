@@ -535,6 +535,13 @@ return [
    'cost_center_edit' => 'Edit cost center ',
    'cost_center_delete' => 'Delete cost center ',
    'opening_balances_delete' => 'Delete opening balances',
-
+   'companies_access_permissions' => 'Companies Access Permissions',
+   'edit_company' => 'Edit Companies Permissions',
+   'emp_name' => 'Full Name',
+   'emp_id_proof_number' => 'Identification',
+   'appointment' => 'Appointment',
+   'add_user_company_access_permissions' => 'Add Companies Access Permission',
+   'view_companies' => 'View Companies',
+   'companies' => 'Companies',
 
 ];
