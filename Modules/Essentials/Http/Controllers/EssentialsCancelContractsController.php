@@ -4,7 +4,7 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\User;
 use App\Request as UserRequest;
-Use Modules\CEOManagment\Entities\RequestsType;
+use Modules\CEOManagment\Entities\RequestsType;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
@@ -22,7 +22,6 @@ class EssentialsCancelContractsController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
-      
     }
     public function index()
     {
@@ -40,19 +39,19 @@ class EssentialsCancelContractsController extends Controller
 
         $requestsProcess = null;
 
-        $types =RequestsType::where('type','cancleContractRequest')->pluck('id')->toArray();
+        $types = RequestsType::where('type', 'cancleContractRequest')->pluck('id')->toArray();
         $requestsProcess = UserRequest::select([
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.status', 
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.status',
 
-            'requests.contract_main_reason_id as main_reason',  'requests.note as note','requests.contract_sub_reason_id as sub_reason',
+            'requests.contract_main_reason_id as main_reason',  'requests.note as note', 'requests.contract_sub_reason_id as sub_reason',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),'users.id_proof_number',
-           
-            'users.status as userStatus','essentials_employees_contracts.contract_end_date as contract_end_date'
-            
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+
+            'users.status as userStatus', 'essentials_employees_contracts.contract_end_date as contract_end_date'
+
         ])
-           
-            ->whereIn('requests.request_type_id',$types)->where('requests.status','approved')
+
+            ->whereIn('requests.request_type_id', $types)->where('requests.status', 'approved')
             ->leftJoin('users', 'users.id', '=', 'requests.related_to')
             ->leftJoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', '=', 'users.id')
             ->whereIn('requests.related_to', $userIds);
@@ -65,13 +64,21 @@ class EssentialsCancelContractsController extends Controller
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at);
                 })
-                ->editColumn('main_reason', function ($row) use($main_reasons) {
-                    return $main_reasons[$row->main_reason];
+                ->editColumn('main_reason', function ($row) use ($main_reasons) {
+                    if ($row->main_reason) {
+                        return $main_reasons[$row->main_reason];
+                    } else {
+                        return '';
+                    }
                 })
-                ->editColumn('sub_reason', function ($row) use($sub_reasons) {
-                    return $sub_reasons[$row->sub_reason];
+                ->editColumn('sub_reason', function ($row) use ($sub_reasons) {
+                    if ($row->sub_reason) {
+                        return $sub_reasons[$row->sub_reason];
+                    } else {
+                        return '';
+                    }
                 })
-                ->rawColumns(['sub_reason','main_reason'])
+                ->rawColumns(['sub_reason', 'main_reason'])
                 ->make(true);
         }
 
@@ -92,39 +99,39 @@ class EssentialsCancelContractsController extends Controller
      * @param Request $request
      * @return Renderable
      */
-  
+
 
     public function finish_contract_procedure($id)
-{
-    try {
-        $userRequest = UserRequest::find($id);
-        if (!$userRequest) {
-            return ['success' => false, 'msg' => __('messages.not_found')];
+    {
+        try {
+            $userRequest = UserRequest::find($id);
+            if (!$userRequest) {
+                return ['success' => false, 'msg' => __('messages.not_found')];
+            }
+
+            $user = User::find($userRequest->related_to);
+            if (!$user) {
+                return ['success' => false, 'msg' => __('messages.user_not_found')];
+            }
+
+            $user->update([
+                'status' => 'inactive',
+                'allow_login' => '0'
+            ]);
+            $userRequest->update([
+                'is_done' => '1'
+            ]);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.finished_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
         }
 
-        $user = User::find($userRequest->related_to);
-        if (!$user) {
-            return ['success' => false, 'msg' => __('messages.user_not_found')];
-        }
-     
-        $user->update([
-            'status' => 'inactive',
-            'allow_login' => '0'
-        ]);
-        $userRequest->update([
-            'is_done' => '1'
-        ]);
-        $output = [
-            'success' => true,
-            'msg' => __('lang_v1.finished_success'),
-        ];
-    } catch (\Exception $e) {
-        \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-        $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
+        return $output;
     }
-
-    return $output;
-}
 
     /**
      * Show the specified resource.
