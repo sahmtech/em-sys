@@ -96,7 +96,7 @@ class EssentialsEmployeeImportController extends Controller
     
         
         foreach ($imported_data as $key => $value) {
-            $proofNumber = $value[0]; 
+            $proofNumber = $value[15]; 
     
             
             $exists = User::where('id_proof_number', $proofNumber)->exists();
@@ -116,7 +116,7 @@ class EssentialsEmployeeImportController extends Controller
         
         $headers = [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="non_existing_proof_numbers.xlsx"',
+            'Content-Disposition' => 'attachment; filename="nonexisting_proof_numbers.xlsx"',
         ];
     
         
@@ -171,7 +171,7 @@ class EssentialsEmployeeImportController extends Controller
                 }
 
                 $emp_array['mid_name'] = $value[1];
-                
+                $emp_array['last_name'] = $value[2];
                 if (!empty($value[2])) 
                 {
                     $emp_array['last_name'] = $value[2];
