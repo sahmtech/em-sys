@@ -453,6 +453,39 @@
 
     <script>
         $(document).ready(function() {
+            $('#calender').change(function() {
+                var hijriDate = $(this).val(); // Use jQuery to get the value
+
+                $.get('{{ route('hijriToGregorian') }}', {
+                    hijriDate: hijriDate
+                }, function(data) {
+                    $('#user_dob').val(data
+                        .gregorianDate); // Update the Gregorian date input with the converted date
+                });
+            });
+            $('#user_dob').change(function() {
+                var gregorian = $(this).val(); // Use jQuery to get the value
+
+                $.ajax({
+                    url: '{{ route('gregorianToHijri') }}',
+                    type: 'GET',
+                    data: {
+                        gregorian: gregorian
+                    },
+                    success: function(data) {
+                        $('#calender').val(data
+                        .hijriDate); // Update the Hijri date input with the converted date
+                    },
+                    // error: function(xhr, status, error) {
+                    //     // Handle error
+                    //     console.error("Error occurred: " + error);
+                    //     alert("Failed to convert date. Please try again.");
+                    // }
+                });
+            });
+
+        });
+        $(document).ready(function() {
 
             toggleBorderNoVisibility();
 

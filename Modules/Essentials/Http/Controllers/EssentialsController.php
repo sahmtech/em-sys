@@ -19,6 +19,8 @@ use DB;
 use Illuminate\Support\Carbon;
 use Modules\CEOManagment\Entities\RequestsType;
 use Yajra\DataTables\Facades\DataTables;
+use Alkoumi\LaravelHijriDate\Hijri;
+
 
 class EssentialsController extends Controller
 {
@@ -73,6 +75,44 @@ class EssentialsController extends Controller
             ->color($colors);
 
         return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
+    }
+
+    public function hijriToGregorian(Request $request)
+    {
+        $hijriDate = explode('/', $request->input('hijriDate')); // Assuming the date format is YYYY/MM/DD
+        if (count($hijriDate) == 3) {
+            list($year, $month, $day) = $hijriDate;
+            $gregorianDate = Hijri::DateToGregorianFromDMY($day, $month, $year);
+            $date = Carbon::createFromFormat('Y/m/d', $gregorianDate);
+
+            // Format the date to the desired format
+            $gregorianDate = $date->format('d/m/Y');
+        } else {
+            $gregorianDate = 'Invalid date format';
+        }
+        error_log($gregorianDate);
+        return response()->json([
+            'gregorianDate' => $gregorianDate,
+        ]);
+    }
+    public function gregorianToHijri(Request $request)
+    {
+        error_log($request->input('gregorian'));
+        $gregorianDate =  explode('/', $request->input('gregorian'));
+        if (count($gregorianDate) == 3) {
+            list($day, $month, $year) = $gregorianDate;
+            error_log($year);
+            error_log($month);
+            error_log($day);
+            $hijriDate = Hijri::DateFromGregorianDMY( $month,$day, $year);
+            error_log($hijriDate);
+        } else {
+            $hijriDate = 'Invalid date format';
+        }
+
+
+
+        return response()->json(['hijriDate' => $hijriDate]);
     }
 
     public function hr_department_employees()
@@ -345,35 +385,35 @@ class EssentialsController extends Controller
                 })
                 ->where('end_date', '<=', $sixtyday)
                 ->count();
-        } 
-        $vacationrequest=0;
+        }
+        $vacationrequest = 0;
         $type2 = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'worker')->first();
         if ($type2) {
-        $vacationrequest = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
-            ->where('request_type_id', $type2->id)
-            ->whereHas('related_to_user', function ($query) {
-                $query->where('user_type', 'worker');
-            })->count();
+            $vacationrequest = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->where('request_type_id', $type2->id)
+                ->whereHas('related_to_user', function ($query) {
+                    $query->where('user_type', 'worker');
+                })->count();
         }
-        
+
 
         $final_visa = EssentailsEmployeeOperation::whereIn('employee_id', $userIds)->where('operation_type', 'final_visa')
             ->whereHas('user', function ($query) {
                 $query->where('user_type', 'worker');
             })
             ->count();
- $late_vacation= 0;
+        $late_vacation = 0;
         $type = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first();
         if ($type) {
-        $late_vacation = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
-            ->where('request_type_id', $type->id)
-            ->whereHas('related_to_user', function ($query) {
-                $query->where('status', 'vecation');
-            })
-            ->where('end_date', '<', now())
-            ->count();
+            $late_vacation = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->where('request_type_id', $type->id)
+                ->whereHas('related_to_user', function ($query) {
+                    $query->where('status', 'vecation');
+                })
+                ->where('end_date', '<', now())
+                ->count();
         }
-        
+
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%حكومية%')
             ->pluck('id')->toArray();
@@ -544,17 +584,17 @@ class EssentialsController extends Controller
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
-        } 
-        $rawLeaveStatusData=0;
+        }
+        $rawLeaveStatusData = 0;
         $type = RequestsType::where('type', 'leavesAndDepartures')->pluck('id')->toArray();
         if ($type) {
-        $rawLeaveStatusData = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
-            ->whereIn('request_type_id', $type)->select(DB::raw('status, COUNT(*) as count'))
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+            $rawLeaveStatusData = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                ->whereIn('request_type_id', $type)->select(DB::raw('status, COUNT(*) as count'))
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
         }
-        
+
 
         $leaveStatusData = [];
         foreach ($rawLeaveStatusData as $status => $count) {
