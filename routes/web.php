@@ -84,11 +84,11 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 include_once 'install_r.php';
 
-Route::get('/testcomposer', function () {
-    $output = "";
-    exec('composer update --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
-    return $output;
-});
+// Route::get('/testcomposer', function () {
+//     $output = "";
+//     exec('composer update --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
+//     return $output;
+// });
 
 // Route::get(
 //     '/insurance_xlsx',
@@ -159,7 +159,32 @@ Route::get('/testcomposer', function () {
 //     }
 
 // );
+Route::get(
+    '/xlsx',
+    function () {
+        $reader = new Xlsx();
+        $filePath = public_path('xlsx.xlsx'); // Make sure this is your source file path
+        $spreadsheet = $reader->load($filePath);
+        $worksheet = $spreadsheet->getActiveSheet();
+    
+        $highestRow = $worksheet->getHighestRow(); // Get the highest row number
+    
+        for ($row = 195; $row >= 3; $row--) { // Start from the last row to avoid messing up row numbers after deletion
+            $idProofNumber = $worksheet->getCell('D' . $row)->getValue();
+    
+            // Check if ID Proof Number exists in users table
+            if (User::where('id_proof_number', $idProofNumber)->exists()) {
+                // If exists, delete the row from the worksheet
+                $worksheet->removeRow($row);
+            }
+        }
+    
+        // Save the modified spreadsheet back to the file
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+        $writer->save(public_path('modified_result.xlsx')); // This will save the modified file under a new name
+    }
 
+);
 // Route::get('/db_fix', function () {
 //     $businesses = Business::all();
 //     $numbersArray = $businesses->mapWithKeys(function ($business) {
