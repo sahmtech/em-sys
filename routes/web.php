@@ -84,11 +84,11 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 include_once 'install_r.php';
 
-Route::get('/testcomposer', function () {
-    $output = "";
-    exec('composer update --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
-    return $output;
-});
+// Route::get('/testcomposer', function () {
+//     $output = "";
+//     exec('composer update --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
+//     return $output;
+// });
 
 // Route::get(
 //     '/insurance_xlsx',
