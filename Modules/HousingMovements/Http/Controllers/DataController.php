@@ -176,6 +176,17 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.worker_housed'),
                         'default' => false,
                     ],
+                    
+                    [
+                        'value' => 'housingmovements.leave_room',
+                        'label' => __('housingmovements::lang.leave_room'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.transfer_from_room',
+                        'label' => __('housingmovements::lang.transfer_from_room'),
+                        'default' => false,
+                    ],
                      [
                         'value' => 'housingmovements.housingmovements_view_department_employees',
                         'label' => __('housingmovements::lang.department_employees'),
