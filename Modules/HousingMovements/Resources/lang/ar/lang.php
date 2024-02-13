@@ -272,9 +272,12 @@ return [
     'building'=>'السكن',
     'select_building'=>'اختر سكن',
     'room'=>'الغرفة',
+    'workers_housed'=>'تسكين العمالة',
+    'beds_available' => 'عدد الأسرة المتاحة',
+    'please_select_row' => 'الرجاء تحديد غرفة واحدة على الأقل',
 
-
-
+    'add_workers'=>'إضافة عمال',
+    'assigned_to_multiple_rooms'=>'مسند إلى عدة غرف'
 
 
 

@@ -54,7 +54,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/leaveRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'leaveRoom'])->name('leaveRoom');
         Route::post('/transfer_from_room', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'transfer_from_room'])->name('transfer_from_room');
-     
+        Route::post('/workers_housed', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'workers_housed'])->name('workers_housed');
+        Route::post('/get-room-numbers', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'getRoomNumbers'])->name('rooms.numbers');
+        Route::post('assign-workers', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'assignWorkers'])->name('assignWorkers');
+
+
         Route::get('/import_rooms', [\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'index'])
         ->name('import_rooms');
         Route::post('/send_import_rooms', [\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'sendImportRooms'])

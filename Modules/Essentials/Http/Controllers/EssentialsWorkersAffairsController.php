@@ -69,7 +69,8 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
 
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -119,8 +120,14 @@ class EssentialsWorkersAffairsController extends Controller
             $users =  $users->where('users.company_id', request()->input('company'));
         }
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-            $users = $users->where('users.assigned_to', request()->input('project_name'));
+       
+            if(request()->input('project_name')=='none'){
+                $users = $users->whereNull('users.assigned_to');
+            }
+            else{
+                $users = $users->where('users.assigned_to', request()->input('project_name'));
+            }
+            
         }
 
         if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
