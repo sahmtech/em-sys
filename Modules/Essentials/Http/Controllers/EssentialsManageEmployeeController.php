@@ -119,6 +119,7 @@ class EssentialsManageEmployeeController extends Controller
         $EssentialsProfession = EssentialsProfession::all()->pluck('name', 'id');
         $EssentialsSpecialization = EssentialsSpecialization::all()->pluck('name', 'id');
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
@@ -198,10 +199,11 @@ class EssentialsManageEmployeeController extends Controller
             $users->where('users.status', $request->input('status'));
         }
         if (!empty($request->input('department')) && $request->input('department') != 'all') {
+            error_log($request->input('department'));
             $users->where('users.essentials_department_id', $request->input('department'));
         }
-        if (!empty($request->input('contract_type')) && $request->input('company') != 'all') {
-            //contract_type
+        if (!empty($request->input('contract_type')) && $request->input('contract_type') != 'all') {
+            error_log($request->input('contract_type'));
             $users->where('essentials_employees_contracts.contract_type_id', $request->input('contract_type'));
         }
 
@@ -213,7 +215,7 @@ class EssentialsManageEmployeeController extends Controller
         if (!empty($request->input('nationality')) && $request->input('nationality') != 'all') {
 
             $users->where('users.nationality_id', $request->input('nationality'));
-            error_log("111");
+          
         }
         if (request()->ajax()) {
 
