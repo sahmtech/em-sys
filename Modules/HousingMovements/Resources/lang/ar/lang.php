@@ -275,6 +275,7 @@ return [
     'workers_housed'=>'تسكين العمالة',
     'beds_available' => 'عدد الأسرة المتاحة',
     'please_select_row' => 'الرجاء تحديد غرفة واحدة على الأقل',
+    'please_select_rows_has_beds'=>'الرجاء اختيار غرف تحتوي أسرة شاغرة',
 
     'add_workers'=>'إضافة عمال',
     'assigned_to_multiple_rooms'=>'مسند إلى عدة غرف'
