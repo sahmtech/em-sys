@@ -27,6 +27,7 @@
                 <table class="table table-bordered table-striped" id="contract_types_table">
                     <thead>
                         <tr>
+                            <th>@lang('essentials::lang.id')</th>
                             <th>@lang('essentials::lang.type')</th>
                             <th>@lang('essentials::lang.details')</th>
                             <th>@lang('essentials::lang.is_active')</th>
@@ -93,7 +94,7 @@
             serverSide: true,
             ajax: '{{ route("contract_types") }}', 
             columns: [
-             
+                { data: 'id'},
                 { data: 'type'},
                 { data: 'details' },
                 { 

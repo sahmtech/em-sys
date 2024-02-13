@@ -85,45 +85,59 @@ class EssentialsEmployeeImportController extends Controller
        
     }
 
-    public function processUpload(Request $request)
-    {
-        $file = $request->file('employee_csv');
-        $parsed_array = Excel::toArray([], $file);
-        $imported_data = array_splice($parsed_array[0], 1);
-            
-        $existingProofNumbers = [];
-        $nonExistingProofNumbers = [];
-    
+        public function processUpload(Request $request)
+        {
+            $file = $request->file('employee_csv');
+            $parsed_array = Excel::toArray([], $file);
+            $imported_data = array_splice($parsed_array[0], 1);
+                
+            $existingProofNumbers = [];
+            $nonExistingProofNumbers = [];
         
-        foreach ($imported_data as $key => $value) {
-            $proofNumber = $value[15]; 
-    
             
-            $exists = User::where('id_proof_number', $proofNumber)->exists();
-    
-            
-            if ($exists) {
-                $existingProofNumbers[] = $value;
-            } else {
-                $nonExistingProofNumbers[] = $value;
+            foreach ($imported_data as $key => $value) {
+                $proofNumber = $value[15]; 
+                    // Extracting the name
+                $name = $value[0]; // Assuming the name is in the first column
+                
+                // Splitting the name into words
+                $words = explode(' ', $name);
+                
+                // Assigning values to cells
+                $first_word = $words[0];
+                $last_word = end($words);
+                $middle_words = implode(' ', array_slice($words, 1, -1));
+                
+                // Updating the value array
+                $value[0] = $first_word; // First cell
+                $value[1] = $middle_words; // Second cell
+                $value[2] = $last_word; // Third cell
+                
+                $exists = User::where('id_proof_number', $proofNumber)->exists();
+        
+                
+                if ($exists) {
+                    $existingProofNumbers[] = $value;
+                } else {
+                    $nonExistingProofNumbers[] = $value;
+                }
             }
+        
+            
+            $existingExcel = Excel::raw(new ProofNumbersExport($existingProofNumbers), \Maatwebsite\Excel\Excel::XLSX);
+            $nonExistingExcel = Excel::raw(new ProofNumbersExport($nonExistingProofNumbers), \Maatwebsite\Excel\Excel::XLSX);
+        
+            
+            $headers = [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment; filename="الموجودين فقط.xlsx"',
+            ];
+        
+            
+            return response()->stream(function () use ($existingExcel) {
+                echo $existingExcel;
+            }, 200, $headers)->send();
         }
-    
-        
-        $existingExcel = Excel::raw(new ProofNumbersExport($existingProofNumbers), \Maatwebsite\Excel\Excel::XLSX);
-        $nonExistingExcel = Excel::raw(new ProofNumbersExport($nonExistingProofNumbers), \Maatwebsite\Excel\Excel::XLSX);
-    
-        
-        $headers = [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="nonexisting_proof_numbers.xlsx"',
-        ];
-    
-        
-        return response()->stream(function () use ($nonExistingExcel) {
-            echo $nonExistingExcel;
-        }, 200, $headers)->send();
-    }
     
     public function postImportEmployee(Request $request)
     {
@@ -178,7 +192,7 @@ class EssentialsEmployeeImportController extends Controller
                 } 
                 $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
               
-               
+               //dd($value[3]);
                 if (!empty($value[3])) 
                 {
                     $emp_array['user_type'] = $value[3];
@@ -611,9 +625,11 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_data['essentials_pay_period'] = 'month';
                     
                     
-                    if (in_array($emp_data['id_proof_number'], $processedIdProofNumbers))
-                    {
-                            throw new \Exception(__('essentials::lang.duplicate_id_proof_number', ['id_proof_number' => $emp_data['id_proof_number']]));
+                    if (in_array($emp_data['id_proof_number'], $processedIdProofNumbers)) {
+                        // Add the duplicated number to the array
+                        $duplicatedIdProofNumbers[] = $emp_data['id_proof_number'];
+                        // Throw an exception if the number is duplicated
+                        throw new \Exception(__('essentials::lang.duplicate_id_proof_number', ['id_proof_number' => $emp_data['id_proof_number']]));
                     }
                     $processedIdProofNumbers[] = $emp_data['id_proof_number'];             
                     

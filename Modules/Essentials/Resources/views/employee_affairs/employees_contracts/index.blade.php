@@ -13,7 +13,8 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
-                        {!! Form::text('doc_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+                        {!! Form::text('doc_filter_date_range', null,
+                         ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
                     </div>
                 </div>
             <div class="col-md-3">

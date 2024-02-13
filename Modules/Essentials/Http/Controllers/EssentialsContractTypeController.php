@@ -37,7 +37,8 @@ class EssentialsContractTypeController extends Controller
    
 
         if (request()->ajax()) {
-            $contract_types = DB::table('essentials_contract_types')->select(['id','type', 'details', 'is_active']);
+            $contract_types = DB::table('essentials_contract_types')
+            ->select(['id','type', 'details', 'is_active']);
                        
 
             return Datatables::of($contract_types)
@@ -62,7 +63,7 @@ class EssentialsContractTypeController extends Controller
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             })
-            ->removeColumn('id')
+           
             ->rawColumns(['action'])
             ->make(true);
         

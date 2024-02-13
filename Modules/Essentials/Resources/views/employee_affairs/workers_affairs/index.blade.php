@@ -124,9 +124,11 @@
                     <thead>
                         <tr>
 
-
+                            <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.employee_number')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
 
@@ -209,7 +211,25 @@
                     }
                 },
 
-                columns: [{
+                columns: [
+                    {
+                        "data": "profile_image",
+                        "render": function(data, type, row) {
+                            if (data) {
+
+                                var imageUrl = '/uploads/' + data;
+                                return '<img src="' + imageUrl +
+                                    '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                            } else {
+                                return '@lang('essentials::lang.no_image')';
+                            }
+                        }
+                    },
+                    {
+                        "data": "emp_number"
+                    },
+                    
+                    {
                         data: 'worker',
                         render: function(data, type, row) {
                             var link = '<a href="' +
