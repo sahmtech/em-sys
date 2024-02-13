@@ -259,7 +259,8 @@ return [
      'room_number_already_exists'=>'رقم الغرفة موجود سابقا ً',
      'id'=>'الرقم',
 
-
+     'worker_assigned_to_multiple_rooms' => 'العامل صاحب الرقم :id مكرر في الغرف المحددة',
+     'no_enough_rooms'=>' الغرفة رقم :id لاتحتوي أسرة كافية لعدد العمالة المحددة',
     'department_employees' => 'موظفي الإدارة',
     'adding_date'=>'تاريخ الإسناد',
     'select_project'=>'اختر مشروع',
