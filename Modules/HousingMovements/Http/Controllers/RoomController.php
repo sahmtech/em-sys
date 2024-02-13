@@ -538,9 +538,16 @@ class RoomController extends Controller
 
     public function workers_housed(Request $request)
     {
+        
         try {
             $selectedRooms = json_decode($request->input('selectedRooms'), true);
-    
+            if (empty($selectedRooms)) {
+                return [
+                    'success' => false,
+                    'msg' => __('housingmovements::lang.please_select_rows_has_beds'),
+                ];
+            }
+
             $workerAssignments = [];
     
             foreach ($selectedRooms as $room) {
