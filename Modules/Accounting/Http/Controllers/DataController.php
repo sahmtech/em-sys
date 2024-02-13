@@ -110,6 +110,14 @@ class DataController extends Controller
                     ],
 
                     [
+                        'value' => 'accouning.import_opeining_balances',
+                        'label' => __('accounting::lang.importe_openingBalance'),
+                        'default' => false
+                    ],
+
+                    
+
+                    [
                         'value' => 'accounting.receipt_vouchers',
                         'label' => __('accounting::lang.receipt_vouchers'),
                         'default' => false

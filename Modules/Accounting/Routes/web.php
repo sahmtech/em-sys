@@ -89,9 +89,11 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::resource('cost_centers', 'CostCenterController');
     Route::put('cost-center-update', 'CostCenterController@update')->name('cost_center_update');
     Route::post('cost-center-store', 'CostCenterController@store')->name('cost_center_store');
-
+    
     Route::resource('opening_balances', 'OpeningBalanceController');
     Route::get('/accounting/opening_balance/equation', [OpeningBalanceController::class, 'calcEquation'])->name('opening_balance.calc');
+    Route::get('/opening-balance/importe', [OpeningBalanceController::class, 'viewImporte_openingBalance'])->name('viewImporte_openingBalance');
+    Route::post('/opening-balance/save-importe', [OpeningBalanceController::class, 'importe_openingBalance'])->name('save-importe_openingBalance');
     Route::resource('receipt_vouchers', 'ReceiptVouchersController');
     Route::get('/accounting/receipt_vouchers/load/data', [ReceiptVouchersController::class, 'loadNeededData'])->name('receipt_vouchers.load');
     Route::resource('payment_vouchers', 'PaymentVouchersController');

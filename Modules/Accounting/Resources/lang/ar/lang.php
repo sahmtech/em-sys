@@ -299,7 +299,7 @@ return [
     'parent_account' => 'الحساب الاصلي',
     'as_of' => 'As of',
     'gl_code_help' => 'All General Ledger accounts have a 6-digit number. 1xxxxxx = Assets, 2xxxxx = Liabilities, 3xxxxx = Net Assets, 4xxxxx = Revenue, 5xxxxx = Revenue, 8xxxxx = Allocations',
-    'gl_code' => 'General Ledger (GL) Code',
+    'gl_code' => 'رمز دفتر الأستاذ العام (GL).',
     'primary_balance' => 'Primary Balance',
     'bank_balance' => 'Bank Balance',
     'active' => 'نشط',
@@ -620,6 +620,7 @@ return [
     'add_user_company_access_permissions' => 'إضافة صلاحية وصول لشركات',
     'view_companies' => 'استعراض الشركات',
     'companies' => 'الشركات',
+    'importe_openingBalance' => 'استيراد إرصدة افتتاحية',
 
 
 ];
