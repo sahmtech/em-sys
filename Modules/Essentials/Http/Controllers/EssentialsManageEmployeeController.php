@@ -846,7 +846,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
-        $countries = $countries = EssentialsCountry::forDropdown();
+        $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
         $companies = Company::all()->pluck('name', 'id');
         $user = null;
@@ -926,7 +926,9 @@ class EssentialsManageEmployeeController extends Controller
         } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
         }
-
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
+        $countries = EssentialsCountry::forDropdown();
         $roles = $this->getRolesArray($business_id);
         $username_ext = $this->moduleUtil->getUsernameExtension();
         $locations = BusinessLocation::where('business_id', $business_id)
@@ -956,8 +958,8 @@ class EssentialsManageEmployeeController extends Controller
             ->with(compact(
                 'roles',
                 'nationalities',
-                'username_ext',
-                'blood_types',
+                'username_ext','countries',
+                'blood_types','spacializations','professions',
                 'contact',
                 'locations',
                 'banks',
