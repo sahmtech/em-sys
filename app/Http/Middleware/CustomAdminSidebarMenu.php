@@ -29,6 +29,8 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
         $currentPath = $request->path();
+        
+      
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles', 'get-all-users'])) {
             $this->userManagementMenu();
@@ -99,7 +101,7 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
-        } elseif (Str::startsWith($currentPath, 'ceomanagment')) {
+        } elseif (Str::startsWith($currentPath, ['ceomanagment', 'templates'])) {
             $this->ceoMenu();
         } elseif (Str::startsWith($currentPath, 'toDo')) {
             $this->toDoMenu();
@@ -338,6 +340,11 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
+            $menu->url(
+                route('templates.index'),
+                'Templates',
+                ['icon' => 'fas fa-chart-line', 'active' =>  request()->segment(2) == 'templates']
+            );
         });
     }
     public function agnetMenu()
@@ -1451,14 +1458,14 @@ class CustomAdminSidebarMenu
                         }
 
 
-                        // if ($is_admin || auth()->user()->can('sales.crud_sales_templates')) {
+                        if ($is_admin || auth()->user()->can('sales.crud_sales_templates')) {
 
-                        //     $sub->url(
-                        //         action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
-                        //         __('sales::lang.sales_templates'),
-                        //         ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'first_choice_offer_price_template']
-                        //     );
-                        // }
+                            $sub->url(
+                                action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
+                                __('sales::lang.sales_templates'),
+                                ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'first_choice_offer_price_template']
+                            );
+                        }
                         if ($is_admin || auth()->user()->can('sales.view_sales_costs')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SalesCostController::class, 'index']),
@@ -1618,7 +1625,7 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('accounting.view_companies')) {
                 $menu->url(
                     route('accountingLanding'),
-                    __('accounting::lang.companies'),       
+                    __('accounting::lang.companies'),
                     [
                         'icon' => 'fa fas fa-building',
                         'active' => request()->segment(2) == ''
