@@ -19,6 +19,9 @@
                             data-target="#create_opening_balance_modal">
                             <i class="fas fa-plus"></i> @lang('messages.add')
                         </a>
+                        <a class="btn btn-block btn-primary  " href="{{ route('viewImporte_openingBalance') }}">
+                            <i class="fa fa-download"></i> @lang('accounting::lang.importe_openingBalance')
+                        </a>
                     </div>
                 @endslot
             @endcan
