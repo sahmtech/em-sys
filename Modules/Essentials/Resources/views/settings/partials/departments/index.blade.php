@@ -68,7 +68,7 @@
                                         {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
                                         {!! Form::select('profession', $professions, null, [
                                             'class' => 'form-control profession-select',
-                                            'required',
+                                            'required','id'=>'appointment_profession_selector',
                                             'placeholder' => __('essentials::lang.job_title'),
                                         ]) !!}
 
@@ -124,7 +124,7 @@
                                     {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
                                     {!! Form::select('profession', $professions, null, [
                                         'class' => 'form-control profession-select',
-                                        'required',
+                                        'required','id'=>'deputy_profession_selector',
                                         'placeholder' => __('essentials::lang.job_title'),
                                     ]) !!}
 
@@ -181,7 +181,7 @@
                                         {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
                                         {!! Form::select('profession', $professions, null, [
                                             'class' => 'form-control profession-select',
-                                            'required',
+                                            'required','id'=>'delegating_profession_selector',
                                             'placeholder' => __('essentials::lang.job_title'),
                                         ]) !!}
 
@@ -803,6 +803,28 @@
                 });
 
                 });
+
+            $('#addDeputyModal').on('shown.bs.modal', function(e) {
+                $('#deputy_profession_selector').select2({
+                    dropdownParent: $(
+                        '#addDeputyModal'),
+                    width: '100%',
+                });
+            });
+            $('#addAppointmentModal').on('shown.bs.modal', function(e) {
+                $('#appointment_profession_selector').select2({
+                    dropdownParent: $(
+                        '#addAppointmentModal'),
+                    width: '100%',
+                });
+            });
+            $('#addDelegatingModal').on('shown.bs.modal', function(e) {
+                $('#delegating_profession_selector').select2({
+                    dropdownParent: $(
+                        '#addDelegatingModal'),
+                    width: '100%',
+                });
+            });
         });
     </script>
 @endsection
