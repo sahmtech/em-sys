@@ -50,6 +50,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/getSelectedroomsData', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'getSelectedroomsData'])->name('getSelectedroomsData');
         Route::post('/room_data', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'room_data'])->name('room_data');
         Route::get('/show_rooms/workers/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'show_room_workers'])->name('show_room_workers');
+        Route::get('/getRooms/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'getRooms'])->name('getRooms');
+
+        Route::post('/leaveRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'leaveRoom'])->name('leaveRoom');
+        Route::post('/transfer_from_room', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'transfer_from_room'])->name('transfer_from_room');
+        Route::post('/workers_housed', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'workers_housed'])->name('workers_housed');
+        Route::post('/get-room-numbers', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'getRoomNumbers'])->name('rooms.numbers');
+        Route::post('assign-workers', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'assignWorkers'])->name('assignWorkers');
+
 
         Route::get('/import_rooms', [\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'index'])
         ->name('import_rooms');

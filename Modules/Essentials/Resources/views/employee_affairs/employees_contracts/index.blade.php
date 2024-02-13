@@ -294,7 +294,9 @@
                         
                         d.status=$('#status_filter').val();
                        
-                        if ($('#doc_filter_date_range').val()) {
+                        console.log($('#doc_filter_date_range').val());
+                       
+                        if ($('#doc_filter_date_range').val() ) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
                             var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
                             d.contract_start_date = start;
@@ -346,12 +348,12 @@
                         {
                             data: 'is_renewable',
                             render: function (data, type, row) {
-                                if (data === 'is_renewable') {
+                                if (data === 1) {
                                     return  '@lang('essentials::lang.is_renewable')';
-                                } else if (data === null) {
-                                    return  ' ';
+                                } else if (data === 0) {
+                                    return '@lang('essentials::lang.is_unrenewable')';
                                 }
-                                else{ return '@lang('essentials::lang.is_unrenewable')'}
+                                else{return " ";}
                             }
                         },
                         { data: 'action' },

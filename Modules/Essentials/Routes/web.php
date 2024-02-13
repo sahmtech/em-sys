@@ -142,7 +142,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'])->name('updateWorker');
 
         Route::get('/import-employees', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index'])->name('import-employees');
-        Route::post('/send-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee'])->name('send-employee-file');
+        Route::post('/send-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'processUpload'])->name('send-employee-file');
         Route::post('/send-update-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee'])->name('send-update-employee-file');
 
 

@@ -56,7 +56,9 @@ class EssentialsWorkCardsWorkerController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+        
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -83,9 +85,16 @@ class EssentialsWorkCardsWorkerController extends Controller
             ->groupBy('users.id');
 
         if (request()->ajax()) {
+       
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+       
+                if(request()->input('project_name')=='none'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+                
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
