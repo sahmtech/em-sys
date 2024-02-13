@@ -438,7 +438,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $emp_array['essentials_salary'] = $value[41];
 
                         
-
+                    
                         if ($value[42] !== null)
                         {
                                
@@ -493,7 +493,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     }
               
                       
-                                   
+                           
 
                 $defaultContractData = 
                 [
