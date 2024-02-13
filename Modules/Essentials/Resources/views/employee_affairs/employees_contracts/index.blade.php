@@ -13,8 +13,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
-                        {!! Form::text('doc_filter_date_range', null,
-                         ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+                        {!! Form::text('doc_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
                     </div>
                 </div>
             <div class="col-md-3">
@@ -295,6 +294,7 @@
                         
                         d.status=$('#status_filter').val();
                        
+                        console.log($('#doc_filter_date_range').val());
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
                             var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
@@ -347,12 +347,12 @@
                         {
                             data: 'is_renewable',
                             render: function (data, type, row) {
-                                if (data === 'is_renewable') {
+                                if (data === 1) {
                                     return  '@lang('essentials::lang.is_renewable')';
-                                } else if (data === null) {
-                                    return  ' ';
+                                } else if (data === 0) {
+                                    return '@lang('essentials::lang.is_unrenewable')';
                                 }
-                                else{ return '@lang('essentials::lang.is_unrenewable')'}
+                                else{return " ";}
                             }
                         },
                         { data: 'action' },
