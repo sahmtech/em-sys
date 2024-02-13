@@ -60,6 +60,7 @@ class EssentialsAdmissionToWorkController extends Controller
             )->where('is_active',1);
 
             
+            
             if (!empty(request()->input('admissions_status')) && request()->input('admissions_status') !== 'all') {
                 $admissionToWork->where('essentials_admission_to_works.admissions_status', request()->input('admissions_status'));
             }
