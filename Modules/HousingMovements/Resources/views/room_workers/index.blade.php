@@ -172,7 +172,7 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('room', __('housingmovements::lang.room') . ':') !!}
                                 {!! Form::select('room', $availableRooms, null, [
-                                    'class' => 'form-control',
+                                    'class' => 'form-control select2',
                                     'required',
                                     'placeholder' => __('housingmovements::lang.room'),
                                     'id' => 'roomSelector',
@@ -274,8 +274,7 @@
                     };
 
                   
-                    console.log(beds_count);
-                    console.log(selectedRows);
+                
 
                     if (selectedRows > beds_count) {
                         alert(messages.bed_count_exceeded);
@@ -341,22 +340,16 @@
                     var selectedOption = $(this).find('option:selected');
                     var beds_count = selectedOption.data('beds_count');
                     $('#bedCountMessage').text("Selected room has " + beds_count + " beds.");
-                    // var selectedRows = $('.select-row:checked').length; 
-                    // var messages = {
-                    //     bed_count_exceeded: "{{ __('messages.bed_count_exceeded') }}",
-                    // };
-
-
-
-                    // if(selectedRows  > beds_count) {
-                    //     // $('#errorMessage').text("Something is wrong. Selected rows exceed the bed count.");
-                    //     alert(messages.bed_count_exceeded);
-                    // } else {
-                    //     $('#errorMessage').text(''); 
-                    // }
+                 
                 });
 
-
+                $('#changeStatusModal').on('shown.bs.modal', function(e) {
+                $('#roomSelector').select2({
+                    dropdownParent: $(
+                        '#changeStatusModal'),
+                    width: '100%',
+                });
+            });
             });
         </script>
 
