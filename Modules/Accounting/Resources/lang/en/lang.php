@@ -543,5 +543,6 @@ return [
    'add_user_company_access_permissions' => 'Add Companies Access Permission',
    'view_companies' => 'View Companies',
    'companies' => 'Companies',
+   'importe_openingBalance' => 'Import opening balance',
 
 ];
