@@ -109,11 +109,12 @@ class RoomController extends Controller
         }
 
 
-        $workers = User::whereIn('users.id', $userIds)->where('user_type', 'worker')->whereNot('status', 'inactive')->select(
+        $workers = User::whereIn('users.id', $userIds)->whereNull('room_id')->where('user_type', 'worker')->whereNot('status', 'inactive')->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
              ' - ',COALESCE(id_proof_number,'')) as full_name")
         )->pluck('full_name', 'id');
+    
 
         $roomStatusOptions = [
             'busy' => __('housingmovements::lang.busy_rooms'),
@@ -210,7 +211,18 @@ class RoomController extends Controller
         return view('housingmovements::room_workers.index', ['users' => $users, 'buildings' => $buildings, 'availableRooms' => $availableRooms, 'roomWorkersHistory' => $roomWorkersHistory]);
     }
 
+    public function getRoomNumbers(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        $rooms = HtrRoom::whereIn('id', $ids)->where('beds_count', '>', 0)
+            ->get(['id', 'room_number', 'beds_count']);
 
+        $roomsData = $rooms->mapWithKeys(function ($room) {
+            return [$room->id => ['room_number' => $room->room_number, 'beds_count' => $room->beds_count]];
+        });
+
+        return response()->json($roomsData);
+    }
 
     public function leaveRoom(Request $request)
     {
@@ -240,6 +252,9 @@ class RoomController extends Controller
                     $room->beds_count += 1;
                     $room->save();
                 }
+
+                $user = User::find($userId);
+                $user->update(['room_id' => null]);
             }
 
             $output = [
@@ -261,67 +276,71 @@ class RoomController extends Controller
 
     public function getRooms($id)
     {
-
         $rooms = HtrRoom::where('htr_building_id', $id)
             ->where('beds_count', '>', 0)
             ->get(['id', 'room_number', 'beds_count']);
 
         $roomsData = $rooms->mapWithKeys(function ($item) {
-            return [$item->id => ['name' => $item->room_number, 'beds_count' => $item->beds_count]];
+            return [$item->id => ['id' => $item->id, 'name' => $item->room_number, 'beds_count' => $item->beds_count]];
         });
 
         return response()->json($roomsData);
     }
 
-    public function transfer_from_room(Request $request){
+    public function transfer_from_room(Request $request)
+    {
         try {
-     
-            
+
+
             $selectedRowsData = json_decode($request->input('selectedRowsData'), true);
-        
+
             if (empty($selectedRowsData)) {
                 return [
                     'success' => false,
                     'msg' => __('housingmovements::lang.please_select_rows'),
                 ];
-                
             }
-        
+
             foreach ($selectedRowsData as $row) {
-              
-           
+
+
                 $userId = $row['id'];
-             
+
                 $carbon_now = \Carbon::now();
-               
-             
+
+
                 HtrRoomsWorkersHistory::where('worker_id', $userId)->update([
                     'still_housed' => '0',
                     'leave_date' => $carbon_now
                 ]);
+           
+
                 $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)->pluck('room_id');
-              
+
                 $room = HtrRoom::where('id', $roomId)->first();
-               
+
                 if ($room) {
                     $room->beds_count += 1;
                     $room->save();
                 }
-              
-                $newRoom= new HtrRoomsWorkersHistory();
-                $newRoom->worker_id=$userId;
-                $newRoom->room_id=$request->room;
-                $newRoom->still_housed=1;
-                $newRoom->housed_date=$carbon_now;
+                $user = User::find($userId);
+                $user->update(['room_id' => null]);
+
+                $newRoom = new HtrRoomsWorkersHistory();
+                $newRoom->worker_id = $userId;
+                $newRoom->room_id = $request->room;
+                $newRoom->still_housed = 1;
+                $newRoom->housed_date = $carbon_now;
                 $newRoom->save();
+
+                $user = User::find($userId);
+                $user->update(['room_id' => $request->room]);
 
                 $room = HtrRoom::where('id', $request->room)->first();
                 if ($room) {
                     $room->beds_count -= 1;
                     $room->save();
                 }
-
-
             }
 
             $output = [
@@ -340,7 +359,7 @@ class RoomController extends Controller
 
         return $output;
     }
-    
+
 
     public function getSelectedroomsData(Request $request)
     {
@@ -410,7 +429,6 @@ class RoomController extends Controller
 
         return response()->json($data);
     }
-
 
 
 
@@ -512,18 +530,76 @@ class RoomController extends Controller
     }
 
 
-
-
-
-
     /**
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    
+
+    public function workers_housed(Request $request)
     {
-        return view('housingmovements::create');
+        try {
+            $selectedRooms = json_decode($request->input('selectedRooms'), true);
+    
+            $workerAssignments = [];
+    
+            foreach ($selectedRooms as $room) {
+                foreach ($room['workers'] as $workerId) {
+                    if (isset($workerAssignments[$workerId])) {
+                        $worker = User::where('id', $workerId)->first(['id_proof_number']);
+                        return [
+                            'success' => false,
+                            'msg' => __("Worker with ID proof number :id_proof_number is assigned to multiple rooms.", ['id_proof_number' => $worker->id_proof_number])
+                        ];
+                    }
+                    $workerAssignments[$workerId] = $room['room_id'];
+                }
+            }
+    
+            // If no duplicates, proceed to assign rooms and create history
+            foreach ($selectedRooms as $room) {
+                $roomDetails = HtrRoom::find($room['room_id']);
+                if ($roomDetails && $roomDetails->beds_count >= count($room['workers'])) {
+                    foreach ($room['workers'] as $workerId) {
+                        $carbon_now = \Carbon::now();
+    
+                        $htrroom_history = new HtrRoomsWorkersHistory();
+                        $htrroom_history->room_id = $room['room_id'];
+                        $htrroom_history->worker_id = $workerId;
+                        $htrroom_history->still_housed = 1;
+                        $htrroom_history->housed_date = $carbon_now;
+                        $htrroom_history->save();
+    
+                        $user = User::find($workerId);
+                        $user->update(['room_id' => $room['room_id']]);
+    
+                        $roomDetails->decrement('beds_count');
+                    }
+                } else {
+                    return [
+                        'success' => false,
+                        'msg' => "Not enough beds in room {$roomDetails->room_number}."
+                    ];
+                }
+            }
+    
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+    
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+    
+        return $output;
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -532,7 +608,7 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         try {
             $input = $request->only(['room_number', 'htr_building', 'area', 'beds_count', 'contents']);
 
