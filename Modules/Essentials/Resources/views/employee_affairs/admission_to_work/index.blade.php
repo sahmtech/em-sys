@@ -298,11 +298,11 @@
 
 
             //----------------------------------------
-          // Initialize the date range picker with no initial date selected
-$('#doc_filter_date_range').daterangepicker(dateRangeSettings);
+         
+            $('#doc_filter_date_range').daterangepicker(dateRangeSettings);
 
-// Clear the input field when the page is loaded or DataTable is initialized
-$('#doc_filter_date_range').val('');
+            
+            $('#doc_filter_date_range').val('');
 
             $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
                 $('#doc_filter_date_range').val('');
