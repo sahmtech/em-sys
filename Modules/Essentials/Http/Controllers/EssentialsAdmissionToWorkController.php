@@ -57,12 +57,10 @@ class EssentialsAdmissionToWorkController extends Controller
                 'admissions_date as admissions_date',
                 'is_active as is_active',
 
-            );
+            )->where('is_active',1);
 
-        if (request()->ajax()) {
-
-
-
+            
+            
             if (!empty(request()->input('admissions_status')) && request()->input('admissions_status') !== 'all') {
                 $admissionToWork->where('essentials_admission_to_works.admissions_status', request()->input('admissions_status'));
             }
@@ -71,12 +69,20 @@ class EssentialsAdmissionToWorkController extends Controller
                 $admissionToWork->where('essentials_admission_to_works.admissions_type', request()->input('admissions_type'));
             }
 
+          
+
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end = request()->end_date;
                 $admissionToWork->whereDate('essentials_admission_to_works.admissions_date', '>=', $start)
-                    ->whereDate('essentials_admission_to_works.admissions_date', '<=', $end);
+                ->whereDate('essentials_admission_to_works.admissions_date', '<=', $end);
             }
+    
+
+        if (request()->ajax()) {
+
+
+
 
             return Datatables::of($admissionToWork)
 
@@ -119,9 +125,9 @@ class EssentialsAdmissionToWorkController extends Controller
                 ->filterColumn('admissions_status', function ($query, $keyword) {
                     $query->where('essentials_admission_to_works.admissions_status', 'like', "%$keyword%");
                 })
-                ->filterColumn('admissions_date', function ($query, $keyword) {
-                    $query->whereDate('essentials_admission_to_works.admissions_date', '=', $keyword);
-                })
+                // ->filterColumn('admissions_date', function ($query, $keyword) {
+                //     $query->whereDate('essentials_admission_to_works.admissions_date', '=', $keyword);
+                // })
                 ->rawColumns(['action'])
                 ->make(true);
         }

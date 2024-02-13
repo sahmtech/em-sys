@@ -295,7 +295,8 @@
                         d.status=$('#status_filter').val();
                        
                         console.log($('#doc_filter_date_range').val());
-                        if ($('#doc_filter_date_range').val()) {
+                       
+                        if ($('#doc_filter_date_range').val() ) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
                             var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
                             d.contract_start_date = start;
