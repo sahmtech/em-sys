@@ -94,7 +94,7 @@
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                             aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title">@lang('housingmovements::lang.workers_housed')</h4>
+                                    <h4 class="modal-title">@lang('housingmovements::lang.housed')</h4>
                                 </div>
 
                                 <div class="modal-body">
@@ -147,7 +147,7 @@
                 room: "@lang('housingmovements::lang.room')",
                 available_beds: "@lang('housingmovements::lang.beds_available')",
                 please_select_row: "@lang('housingmovements::lang.please_select_row')",
-                add_workers: "@lang('housingmovements::lang.add_workers')",
+                add_workers: "@lang('housingmovements::lang.select')",
             };
             rooms_table = $('#rooms_table').DataTable({
                 processing: true,

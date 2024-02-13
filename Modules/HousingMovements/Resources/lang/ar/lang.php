@@ -7,7 +7,7 @@ return [
     'buildings' => 'السكنات',
     'facilities' => 'المرافق',
     'room_workers' => 'عمال الغرفة',
-    'show_room_workers' => 'عرض عمال الغرفة ',
+    'show_rooms_residents' => 'عرض سكان الغرفة ',
     'still_housed' => 'لايزال ساكن',
     'yes' => 'نعم',
     'no' => 'لا',
@@ -268,17 +268,18 @@ return [
     'please_select_project'=>'الرجاء اختيار مشروع',
     'please_select_rows'=>'الرجاء اختيار عمالة',
     'leave_room'=>'مغادرة الغرفة',
-    'transfer_from_room'=>'نقل العمالة إلى غرفة أخرى',
+    'transfer_from_room'=>'نقل إلى غرفة أخرى',
     'building'=>'السكن',
     'select_building'=>'اختر سكن',
     'room'=>'الغرفة',
-    'workers_housed'=>'تسكين العمالة',
+    'housed'=>'تسكين',
+    'select'=>'انقر للاختيار',
     'beds_available' => 'عدد الأسرة المتاحة',
     'please_select_row' => 'الرجاء تحديد غرفة واحدة على الأقل',
     'please_select_rows_has_beds'=>'الرجاء اختيار غرف تحتوي أسرة شاغرة',
 
-    'add_workers'=>'إضافة عمال',
-    'assigned_to_multiple_rooms'=>'مسند إلى عدة غرف'
+    'assigned_to_multiple_rooms'=>'مسند إلى عدة غرف',
+    'residents_details'=>'تفاصيل السكان'
 
 
 
