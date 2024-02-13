@@ -101,9 +101,20 @@ class TravelersController extends Controller
      
         
             if (!empty($request->input('project_name_filter'))) {
-                $workers->whereHas('transactionSellLine.transaction.salesContract.projectt', function ($query) use ($request) {
-                    $query->where('id', '=', $request->input('project_name_filter'));
-                });
+               
+                
+            }
+            if (!empty(request()->input('project_name_filter')) && request()->input('project_name_filter') !== 'all') {
+       
+                if(request()->input('project_name_filter')=='none'){
+                    $workers->whereNull('transaction_sell_line_id');
+                }
+                else{
+                    $workers->whereHas('transactionSellLine.transaction.salesContract.project', function ($query) use ($request) {
+                        $query->where('id', '=', $request->input('project_name_filter'));
+                    });
+                }
+                
             }
 
             if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
@@ -162,7 +173,9 @@ class TravelersController extends Controller
             }
             
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
-        $salesProjects = SalesProject::all()->pluck('name', 'id');
+     
+        $salesProjects = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+
         $roomStatusOptions = [
             'busy' => __('housingmovements::lang.busy_rooms'),
             'available' => __('housingmovements::lang.available_rooms'),

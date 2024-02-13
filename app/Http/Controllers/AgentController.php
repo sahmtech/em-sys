@@ -330,7 +330,8 @@ class AgentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
-        $contacts_fillter = SalesProject::where('contact_id', $contact_id)->pluck('name', 'id');
+   
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::where('contact_id', $contact_id)->all()->pluck('name', 'id')->toArray();
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -360,8 +361,14 @@ class AgentController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+       
+                if(request()->input('project_name')=='none'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+                
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
