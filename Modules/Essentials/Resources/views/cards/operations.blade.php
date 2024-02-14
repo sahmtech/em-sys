@@ -306,20 +306,20 @@
 
             });
 
-            $('#employees tbody').on('click', 'tr', function(e) {
-                var cellIndex = $(e.target).closest('td').index();
-                var lastIndex = $(this).children('td').length - 1;
+            // $('#employees tbody').on('click', 'tr', function(e) {
+            //     var cellIndex = $(e.target).closest('td').index();
+            //     var lastIndex = $(this).children('td').length - 1;
 
-                if (cellIndex !== lastIndex) {
-                    var data = users_table.row(this).data();
-                    console.log(data);
-                    if (data) {
-                        window.location = '{{ route('operations_show_employee', ['id' => ':id']) }}'.replace(':id', data
-                            .id);
-                    }
-                }
+            //     if (cellIndex !== lastIndex) {
+            //         var data = users_table.row(this).data();
+            //         console.log(data);
+            //         if (data) {
+            //             window.location = '{{ route('operations_show_employee', ['id' => ':id']) }}'.replace(':id', data
+            //                 .id);
+            //         }
+            //     }
 
-            });
+            // });
 
 
     $('#employees').on('change', '.tblChk', function() {
