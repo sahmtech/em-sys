@@ -938,7 +938,7 @@ class EssentialsCardsController extends Controller
 
             if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
-
+               
                 DB::beginTransaction();
 
                 foreach ($selectedData as $data) {
@@ -950,7 +950,11 @@ class EssentialsCardsController extends Controller
                     ]);
 
                     $user=User::where('id', $data['employee_id'])->first();
-                    $user->update(['status' ,'inactive']);
+                   
+                    //$user->update(['status' ,'inactive']);
+                    $user->status='inactive';
+                    $user->save();
+
                 }
 
 
@@ -967,7 +971,7 @@ class EssentialsCardsController extends Controller
         }
 
         // return  $requestData;
-        return response()->json($output);
+        return response()->json( $output );
     }
 
     public function post_absent_report_data(Request $request)
@@ -1006,7 +1010,8 @@ class EssentialsCardsController extends Controller
                         'end_date' =>  $data['end_date'],
                     ]);
                     $user=user::where('id', $data['employee_id'])->first();
-                    $user->update(['status' ,'inactive']);
+                    $user->status='inactive';
+                    $user->save();
                 }
 
                 DB::commit();
@@ -1354,6 +1359,7 @@ class EssentialsCardsController extends Controller
                 ->orWhere('users.id_proof_name', 'eqama');
         })
             ->where('users.user_type', 'worker')
+           
             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
         ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 

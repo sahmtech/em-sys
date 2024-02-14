@@ -631,7 +631,10 @@ class EssentialsEmployeeImportController extends Controller
                         // Throw an exception if the number is duplicated
                         throw new \Exception(__('essentials::lang.duplicate_id_proof_number', ['id_proof_number' => $emp_data['id_proof_number']]));
                     }
-                    $processedIdProofNumbers[] = $emp_data['id_proof_number'];             
+                    if($emp_data['id_proof_number'] != null){
+                        $processedIdProofNumbers[] = $emp_data['id_proof_number'];
+                        }
+                            
                     
                     
                     if($emp_data['emp_number'] == null)

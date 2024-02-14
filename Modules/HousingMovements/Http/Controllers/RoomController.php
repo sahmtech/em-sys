@@ -556,8 +556,9 @@ class RoomController extends Controller
                         $worker = User::where('id', $workerId)->first(['id_proof_number']);
                         return [
                             'success' => false,
-                            'msg' => __("Worker with ID proof number :id_proof_number is assigned to multiple rooms.", ['id_proof_number' => $worker->id_proof_number])
+                            'msg' => __("housingmovements::lang.worker_assigned_to_multiple_rooms", ['id' => $worker->id_proof_number]),
                         ];
+                        
                     }
                     $workerAssignments[$workerId] = $room['room_id'];
                 }
@@ -585,8 +586,9 @@ class RoomController extends Controller
                 } else {
                     return [
                         'success' => false,
-                        'msg' => "Not enough beds in room {$roomDetails->room_number}."
+                        'msg' => __("housingmovements::lang.no_enough_rooms", ['id' => $roomDetails->room_number]),
                     ];
+                    
                 }
             }
     
