@@ -1358,7 +1358,7 @@ class EssentialsCardsController extends Controller
             $query->whereNotNull('users.border_no')
                 ->orWhere('users.id_proof_name', 'eqama');
         })
-            ->where('users.user_type', 'worker')
+            ->whereIn('users.user_type', ['worker', 'employee'])
             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
         ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 
