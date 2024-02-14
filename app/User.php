@@ -522,4 +522,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(FollowupUserAccessProject::class, 'user_id');
     }
+
+    public function htrRoomsWorkersHistories()
+    {
+        return $this->hasMany(HtrRoomsWorkersHistory::class, 'worker_id', 'id');
+    }
 }

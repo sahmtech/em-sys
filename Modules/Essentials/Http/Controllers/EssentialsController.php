@@ -296,9 +296,19 @@ class EssentialsController extends Controller
             })
             ->pluck('id')->toArray();
 
+        $contract_type_id=DB::table('essentials_contract_types')->where('type', 'LIKE', '%بعد%')->first();
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
             $query->whereIn('department_id', $departmentIds)->where('is_active', 1);
-        })->select([
+        })
+        ->whereHas('contract', function ($query) use ($userIds, $contract_type_id) {
+            $query->whereIn('employee_id', $userIds)
+                  ->where(function($query) use ($contract_type_id) {
+                      $query->where('contract_type_id', '!=', $contract_type_id->id)
+                            ->orWhereNull('contract_type_id');
+                  });
+        })
+        
+        ->select([
             'users.*',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),
             'users.id_proof_number',
