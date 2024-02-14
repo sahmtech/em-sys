@@ -233,7 +233,13 @@
                     },
 
                     {
-                        "data": "full_name"
+                        "data": "full_name",
+                        "render": function(data, type, row) {
+                            if (data) {
+                                data = '<a href="/operations_show_employee/' + row.id + '">' + data + '</a>';
+                            }
+                            return data;
+                        }
                     },
             
                     {
