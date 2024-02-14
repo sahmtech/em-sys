@@ -264,25 +264,29 @@ class OpeningBalanceController extends Controller
                 $opeining_balance_csv = array_splice($parsed_array[0], 1);
                 DB::beginTransaction();
                 foreach ($opeining_balance_csv as  $value) {
-
-                    $accountsAccount = AccountingAccount::where('name', $value[0])->orWhere('gl_code', $value[0])->first();
-                    if (!$accountsAccount) {
+                    // dd($value[1]);
+                    if (!$value[0] || !$value[1] || !$value[2]) {
                         continue;
                     } else {
-                        $transaction = AccountingAccountsTransaction::query()->create([
-                            'accounting_account_id' => $accountsAccount->id, //accounting_account_id
-                            'amount' => $value[2],  //value
-                            'type' => $value[1] == 'credit' ? 'credit' : 'debit', //type
-                            'sub_type' => 'opening_balance'
-                        ]);
+                        $accountsAccount = AccountingAccount::where('name', $value[0])->orWhere('gl_code', $value[0])->first();
+                        if (!$accountsAccount) {
+                            continue;
+                        } else {
+                            $transaction = AccountingAccountsTransaction::query()->create([
+                                'accounting_account_id' => $accountsAccount->id, //accounting_account_id
+                                'amount' => $value[2],  //value
+                                'type' => $value[1] == 'credit' ? 'credit' : 'debit', //type
+                                'sub_type' => 'opening_balance'
+                            ]);
 
-                        OpeningBalance::query()->create([
-                            'year' => date('Y-m-d'),
-                            'business_id' => $business_id,
-                            'company_id' => $company_id,
-                            'type' => $value[1],
-                            'accounts_account_transaction_id' => $transaction->id
-                        ]);
+                            OpeningBalance::query()->create([
+                                'year' => date('Y-m-d'),
+                                'business_id' => $business_id,
+                                'company_id' => $company_id,
+                                'type' => $value[1],
+                                'accounts_account_transaction_id' => $transaction->id
+                            ]);
+                        }
                     }
                 }
             }

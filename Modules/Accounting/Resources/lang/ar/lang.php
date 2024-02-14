@@ -620,7 +620,7 @@ return [
     'add_user_company_access_permissions' => 'إضافة صلاحية وصول لشركات',
     'view_companies' => 'استعراض الشركات',
     'companies' => 'الشركات',
-    'importe_openingBalance' => 'استيراد إرصدة افتتاحية',
+    'importe_openingBalance' => 'استيراد أرصدة افتتاحية',
 
 
 ];
