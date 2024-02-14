@@ -439,7 +439,9 @@
                         console.log(result);
                         if (result.success === true) {
                             toastr.success(result.msg);
-                            rooms_table.ajax.reload();
+                          //  rooms_table.ajax.reload();
+                            window.location.reload();
+
                             $('#changeStatusModal').modal('hide');
                           
                         } else {
