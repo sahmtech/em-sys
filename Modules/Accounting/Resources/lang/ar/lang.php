@@ -299,7 +299,10 @@ return [
     'parent_account' => 'الحساب الاصلي',
     'as_of' => 'As of',
     'gl_code_help' => 'All General Ledger accounts have a 6-digit number. 1xxxxxx = Assets, 2xxxxx = Liabilities, 3xxxxx = Net Assets, 4xxxxx = Revenue, 5xxxxx = Revenue, 8xxxxx = Allocations',
-    'gl_code' => 'General Ledger (GL) Code',
+    'gl_code' => 'رمز دفتر الأستاذ العام (GL).',
+    'gl_code_mainaccount' => 'المستوى الثاني من الحسابات (اسم الحساب الاب باللغة الانكليزية)',
+    'gl_code_mainaccount_nots' => "يجب ان تكون قيمة هذا الحقل هي اسم الحساب باللغة الانكليزية من المستوى الثاني الثي ينمتي اليه الحساب , ويتم اختيار هذه القيمة من العمود الاول .",
+
     'primary_balance' => 'Primary Balance',
     'bank_balance' => 'Bank Balance',
     'active' => 'نشط',
@@ -620,6 +623,12 @@ return [
     'add_user_company_access_permissions' => 'إضافة صلاحية وصول لشركات',
     'view_companies' => 'استعراض الشركات',
     'companies' => 'الشركات',
+    'importe_openingBalance' => 'استيراد أرصدة افتتاحية',
+    'importe_accounts' => 'استيراد دليل حسابات',
+    'account_primary_type' => 'النوع الأساسي للحساب',
+    'account_sub_type_id' => 'النوع الفرعي للحساب',
+    'account_name_ar' => 'اسم الحساب باللغة العربية',
+    'account_name_en' => 'اسم الحساب باللغة الانكليزية',
 
 
 ];

@@ -298,13 +298,12 @@
 
 
             //----------------------------------------
-            $('#doc_filter_date_range').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
-                        moment_date_format));
-                }
-            );
+         
+            $('#doc_filter_date_range').daterangepicker(dateRangeSettings);
+
+            
+            $('#doc_filter_date_range').val('');
+
             $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
                 $('#doc_filter_date_range').val('');
                 reloadDataTable();

@@ -69,6 +69,7 @@ class EssentialsEmployeeContractController extends Controller
                 'essentials_employees_contracts.probation_period',
                 'essentials_employees_contracts.contract_type_id',
                 'essentials_employees_contracts.is_renewable',
+                'essentials_employees_contracts.is_active',
                 'essentials_employees_contracts.file_path',
                 DB::raw("
                 CASE 
@@ -79,9 +80,10 @@ class EssentialsEmployeeContractController extends Controller
                     ELSE 'Null'
                 END as status
             "),
-            ])->orderby('id', 'desc');
+            ])->where( 'essentials_employees_contracts.is_active', 1)
+            ->orderby('id', 'desc');
 
-
+       // dd( $employees_contracts->where('employee_id',5385)->get());
         if (!empty(request()->input('contract_type')) && request()->input('contract_type') !== 'all') {
             $employees_contracts->where('essentials_employees_contracts.contract_type_id', request()->input('contract_type'));
         }

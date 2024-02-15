@@ -61,7 +61,8 @@ class FollowUpReportsController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+
 
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
@@ -98,8 +99,14 @@ class FollowUpReportsController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+       
+                if(request()->input('project_name')=='none'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+                
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
@@ -225,7 +232,8 @@ class FollowUpReportsController extends Controller
 
             ]);
         $salesProjects = SalesProject::with(['contact']);
-        $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
@@ -236,8 +244,14 @@ class FollowUpReportsController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $salesProjects = $salesProjects->where('contact_id', request()->input('project_name'));
+       
+                if(request()->input('project_name')=='none'){
+                    $users = $users->whereNull('users.assigned_to');
+                }
+                else{
+                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                }
+                
             }
 
             return Datatables::of($salesProjects)

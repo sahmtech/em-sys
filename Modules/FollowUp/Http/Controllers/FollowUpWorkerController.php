@@ -63,8 +63,8 @@ class FollowUpWorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
-        $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -72,10 +72,10 @@ class FollowUpWorkerController extends Controller
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('id', $userIds)->whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
-            $contacts_fillter = SalesProject::all()->pluck('name', 'id')->toArray();
-            $contacts_fillter = array_merge(['undefined' => __('messages.undefined')], $contacts_fillter);
-        }
+            $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
 
+        }
+    
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -104,7 +104,7 @@ class FollowUpWorkerController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                if(request()->input('project_name')=='undefined'){
+                if(request()->input('project_name')=='none'){
                     $users = $users->whereNull('users.assigned_to');
                 }
                 else{

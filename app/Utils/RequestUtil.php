@@ -96,7 +96,7 @@ class RequestUtil extends Util
 
             'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+            'wk_procedures.department_id as department_id', 'wk_procedures.can_return','wk_procedures.start as start',
 
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
 
@@ -166,13 +166,15 @@ class RequestUtil extends Util
                 ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request,$departmentIds, $departmentIdsForGeneralManagment) {
                     $buttonsHtml = '';
                     if ($departmentIdsForGeneralManagment) {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment) && $row->start !='1') {
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
                             }
                         }
                     } else {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) ) {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) && $row->start !='1' ) {
+                         
+
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
                             }

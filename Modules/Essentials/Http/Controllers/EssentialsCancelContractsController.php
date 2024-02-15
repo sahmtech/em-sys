@@ -11,7 +11,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Yajra\DataTables\Facades\DataTables;
 
 class EssentialsCancelContractsController extends Controller
@@ -118,6 +119,18 @@ class EssentialsCancelContractsController extends Controller
                 'status' => 'inactive',
                 'allow_login' => '0'
             ]);
+
+            $appointment= EssentialsEmployeeAppointmet::where('employee_id',$userRequest->related_to)->where('is_active','1')->first();
+            $appointment->update([
+                'is_active' => '0'
+            ]);
+
+            $appointment= EssentialsAdmissionToWork::where('employee_id',$userRequest->related_to)->where('is_active','1')->first();
+            $appointment->update([
+                'is_active' => '0'
+            ]);
+
+
             $userRequest->update([
                 'is_done' => '1'
             ]);
