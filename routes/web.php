@@ -252,7 +252,7 @@ Route::middleware(['setData'])->group(function () {
     Auth::routes();
     //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
 
-  
+
 
 
 
@@ -707,6 +707,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('/{id}', [TemplateController::class, 'show'])->name('templates.show');
 
         Route::get('/{id}/print', [TemplateController::class, 'print'])->name('templates.print');
+
+        Route::get('/{id}/delete', [TemplateController::class, 'destroy'])->name('templates.delete');
     });
 });
 

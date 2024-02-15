@@ -45,7 +45,7 @@ return [
     'custs' => 'العملاء',
     'all_your_customers' => 'جميع العملاء',
     'add_contact' => 'إضافة عميل محتمل',
-    'change_to_lead'=>'تحويل إلى عميل محتمل',
+    'change_to_lead' => 'تحويل إلى عميل محتمل',
     'contact_number' => ' معرف العميل',
     'contact_name_ar' => 'الاسم  بالعربية ',
     'contact_name_en' => 'الاسم  بالانجليزية ',
@@ -244,7 +244,7 @@ return [
     'remaning_quantity' => 'الكمية المتبقية',
     'operation_available_contracts' => 'العقود المتاحة للتشغيل',
     'offer_price_number' => 'رقم عرض السعر',
-    'contacts'=>'العملاء',
+    'contacts' => 'العملاء',
     'lead_contacts' => 'العملاء المحتملين',
     'draft_contacts' => 'العملاء المبدئيين',
     'qualified_contacts' => 'العملاء المؤهلين',
@@ -438,6 +438,8 @@ return [
 
     'sales_view_department_employees' => 'عرض صفحة موظفي إدارة المبيعات',
     'department_employees' => 'موظفي الإدارة',
+    'templates_settings' => 'إعدادات القوالب',
+    'template_name' => 'اسم القالب',
 
 ];
 

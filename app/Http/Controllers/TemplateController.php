@@ -21,13 +21,16 @@ class TemplateController extends Controller
                     function ($row) {
                         $html = '';
 
+                        if(){
+                            
+                        }
                         $html .= '<a href="' . route('templates.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                             &nbsp;';
 
                         $html .= '<a href="' . route('templates.show', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="fas fa-eye"></i> ' . __('messages.view') . '</a>
                             &nbsp;';
 
-                        // $html .= '<button class="btn btn-xs btn-danger delete_region_button" data-href="' . route('region.print', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        $html .= '<button class="btn btn-xs btn-danger delete_template_button" data-href="' . route('templates.delete', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
 
                         return $html;
@@ -37,14 +40,14 @@ class TemplateController extends Controller
         }
         return view('templates.index');
     }
-    // Display form to create a new template
+
     public function create()
     {
         // Return the view to create a new template
         return view('templates.create');
     }
 
-    // Store a new template
+
     public function store(Request $request)
     {
         try {
@@ -108,14 +111,14 @@ class TemplateController extends Controller
             ->with('status', $output);
     }
 
-    // Display form to edit an existing template
+
     public function edit($id)
     {
         $template = Template::with('sections')->findOrFail($id);
         return view('templates.edit')->with(compact('template'));
     }
 
-    // Update an existing template
+
     public function update(Request $request, $id)
     {
         try {
@@ -178,7 +181,7 @@ class TemplateController extends Controller
             ->with('status', $output);
     }
 
-    // Display a template
+
     public function show($id)
     {
         $template = Template::with('sections')->findOrFail($id);
@@ -189,7 +192,7 @@ class TemplateController extends Controller
         return view('templates.show', compact('template', 'sections'));
     }
 
-    // Print a template
+
     public function print($id)
     {
         $template = Template::with('sections')->findOrFail($id);
@@ -198,5 +201,23 @@ class TemplateController extends Controller
         $sections = $template->sections->sortBy('order');
 
         return view('templates.print', compact('template', 'sections'));
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $template = Template::findOrFail($id);
+            TemplateSection::where('template_id', $template->id)->delete();
+            $template->delete();
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+        return redirect()->route('templates.index')
+            ->with('status', $output);
     }
 }

@@ -1468,11 +1468,13 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_costs']
                             );
                         }
-                        $menu->url(
-                            route('templates.index'),
-                            'Templates',
-                            ['icon' => 'fas fa-chart-line', 'active' =>  request()->segment(2) == 'templates']
-                        );
+                        if ($is_admin || auth()->user()->can('sales.view_templates')) {
+                            $sub->url(
+                                route('templates.index'),
+                                __('sales::lang.templates_settings'),
+                                ['icon' => 'fas fa-chart-line', 'active' =>  request()->segment(2) == 'templates']
+                            );
+                        }
                     },
                     ['icon' => 'fa fas fa-plus-circle'],
 
