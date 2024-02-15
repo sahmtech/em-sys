@@ -13,25 +13,28 @@ class TemplateController extends Controller
 
     public function index()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_edit_templates = auth()->user()->can('sales.edit_templates') ? true : false;
+        $can_delete_templates = auth()->user()->can('sales.delete_templates') ? true : false;
         $templates = Template::orderBy('id', 'desc');
         if (request()->ajax()) {
             return Datatables::of($templates)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin, $can_edit_templates, $can_delete_templates) {
                         $html = '';
-
-                        if(){
-                            
-                        }
-                        $html .= '<a href="' . route('templates.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
-                            &nbsp;';
-
                         $html .= '<a href="' . route('templates.show', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="fas fa-eye"></i> ' . __('messages.view') . '</a>
                             &nbsp;';
 
-                        $html .= '<button class="btn btn-xs btn-danger delete_template_button" data-href="' . route('templates.delete', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        if ($is_admin || $can_edit_templates) {
+                            $html .= '<a href="' . route('templates.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                            &nbsp;';
+                        }
 
+
+                        if ($is_admin || $can_delete_templates) {
+                            $html .= '<button class="btn btn-xs btn-danger delete_template_button" data-href="' . route('templates.delete', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
 
                         return $html;
                     }
@@ -114,6 +117,14 @@ class TemplateController extends Controller
 
     public function edit($id)
     {
+        $can_edit_templates = auth()->user()->can('sales.edit_templates') ? true : false;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || $can_edit_templates)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $template = Template::with('sections')->findOrFail($id);
         return view('templates.edit')->with(compact('template'));
     }
@@ -205,6 +216,14 @@ class TemplateController extends Controller
 
     public function destroy($id)
     {
+        $can_delete_templates = auth()->user()->can('sales.delete_templates') ? true : false;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || $can_delete_templates)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         try {
             $template = Template::findOrFail($id);
             TemplateSection::where('template_id', $template->id)->delete();
