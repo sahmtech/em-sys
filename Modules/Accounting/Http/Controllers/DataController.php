@@ -82,6 +82,11 @@ class DataController extends Controller
                         'label' => __('accounting::lang.account_edit'),
                         'default' => false
                     ],
+                    [
+                        'value' => 'accouning.import_accounts',
+                        'label' => __('accounting::lang.importe_accounts'),
+                        'default' => false
+                    ],
 
                     [
                         'value' => 'accounting.cost_center',
@@ -115,7 +120,7 @@ class DataController extends Controller
                         'default' => false
                     ],
 
-                    
+
 
                     [
                         'value' => 'accounting.receipt_vouchers',

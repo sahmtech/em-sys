@@ -24,8 +24,6 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('/companies_access_permissions', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'index'])->name('companies_access_permissions');
     Route::get('/getUserCompaniesPermissions/{userId}', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'getUserCompaniesPermissions'])->name('getUserCompaniesPermissions');
     Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
- 
-
 });
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
@@ -39,8 +37,13 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('get-account-details-types', 'CoaController@getAccountDetailsType');
     Route::resource('chart-of-accounts', 'CoaController');
     Route::get('ledger/{id}', 'CoaController@ledger')->name('accounting.ledger');
+    Route::get('importe-accounts', 'CoaController@viewImporte_accounts')->name('accounting.viewImporte_accounts');
+    Route::post('save-importe-accounts', 'CoaController@importe_accounts')->name('accounting.saveImporte_accounts');
     Route::get('activate-deactivate/{id}', 'CoaController@activateDeactivate');
     Route::get('create-default-accounts', 'CoaController@createDefaultAccounts')->name('accounting.create-default-accounts');
+
+
+
 
     Route::resource('journal-entry', 'JournalEntryController');
     Route::get('journal-entry/map/show', 'JournalEntryController@map');
@@ -89,7 +92,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::resource('cost_centers', 'CostCenterController');
     Route::put('cost-center-update', 'CostCenterController@update')->name('cost_center_update');
     Route::post('cost-center-store', 'CostCenterController@store')->name('cost_center_store');
-    
+
     Route::resource('opening_balances', 'OpeningBalanceController');
     Route::get('/accounting/opening_balance/equation', [OpeningBalanceController::class, 'calcEquation'])->name('opening_balance.calc');
     Route::get('/opening-balance/importe', [OpeningBalanceController::class, 'viewImporte_openingBalance'])->name('viewImporte_openingBalance');

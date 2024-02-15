@@ -160,8 +160,6 @@ class AccountingUtil extends Util
                 'name' => 'Accounts Payable (A/P)',
                 'business_id' => $business_id,
                 'company_id' => $company_id,
-
-
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 5,
                 'detail_type_id' => 57,
@@ -176,7 +174,6 @@ class AccountingUtil extends Util
                 'name' => 'Credit Card',
                 'business_id' => $business_id,
                 'company_id' => $company_id,
-
                 'account_primary_type' => 'liability',
                 'account_sub_type_id' => 6,
                 'detail_type_id' => 58,
