@@ -44,7 +44,7 @@
                     <label for="contract_type_filter">@lang('essentials::lang.contract_type'):</label>
                     {!! Form::select('contract_type_filter', $contract_types, null, [
                         'class' => 'form-control select2',
-                        'id' => 'select_department_id',
+                        'id' => 'contract_type_filter',
                         'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
                     ]) !!}
@@ -707,6 +707,7 @@
                         console.log('Nationality selected: ' + $('#nationalities_select').val());
                         console.log('Status selected: ' + $('#status_filter').val());
                         console.log('loc selected: ' + $('#select_company_id').val());
+                        console.log('contract_type_filter selected: ' + $('#contract_type_filter').val());
                         users_table.ajax.reload();
 
                     });
