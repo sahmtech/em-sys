@@ -183,9 +183,13 @@ class EssentialsCardsController extends Controller
                                 $names .= ', ';
                             }
                         }
-                        return $names;
+
+                        if($names)
+                        { return $names; }
+                        else{return __('essentials::lang.management');}
                     }
-                    else{  return __('essentials::lang.management');}
+                    
+               
                 
                     
                 })
