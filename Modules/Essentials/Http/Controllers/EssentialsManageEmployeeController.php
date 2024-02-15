@@ -16,6 +16,7 @@ use App\Transaction;
 use App\Contact;
 use Modules\Sales\Entities\salesContractItem;
 use DB;
+use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Models\Permission;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
@@ -38,7 +39,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
-use Modules\Sales\Entities\SalesProject;
+
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use App\Request as UserRequest;
 use App\RequestProcess;
@@ -913,7 +914,7 @@ class EssentialsManageEmployeeController extends Controller
 
     public function createWorker($id)
     {
-
+        $contact = SalesProject::find($id);
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -940,7 +941,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $contact = Contact::find($id);
+      
 
         $blood_types = [
             'A+' => 'A positive (A+).',
