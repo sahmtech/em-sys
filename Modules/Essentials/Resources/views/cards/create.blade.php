@@ -292,7 +292,7 @@ function getResponsibleData(employeeId) {
                
                 $('#responsible_client').select2();
             } 
-            else 
+            else if(data.responsible_client.length == 0 && data.all_responsible_users.length == 0 )
             {
                 $('#responsible_client').empty();
                 $('#responsible_client').append($('<option>', {
@@ -300,6 +300,16 @@ function getResponsibleData(employeeId) {
                     text: translations['management'],
                     selected: true
                 }));
+
+                $('#responsible_users').empty();
+                $('#responsible_users').append($('<option>', {
+                    value: null,
+                    text: translations['management'],
+                    selected: true
+                }));
+            }
+            else{
+                $('#responsible_client').empty();
             }
                
 

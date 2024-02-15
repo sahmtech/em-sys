@@ -1286,10 +1286,7 @@ class EssentialsCardsController extends Controller
             }
            
             return response()->json([
-                'all_responsible_users' => [
-                    'id' => null,
-                    'name' => trans('essentials::lang.management'),
-                ],
+                'all_responsible_users' =>[],
                 'responsible_client' => [],
                    
                 
