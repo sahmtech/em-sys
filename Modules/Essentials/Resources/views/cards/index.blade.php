@@ -71,12 +71,13 @@
                             <th>@lang('essentials::lang.project')</th>
                             <th>@lang('essentials::lang.responsible_client')</th>
 
-
+                            <th>@lang('essentials::lang.workcard_duration')</th>
+                            <th>@lang('essentials::lang.fees')</th>
                             <th>@lang('essentials::lang.pay_number')</th>
                             <th>@lang('essentials::lang.fixed')</th>
-                            <th>@lang('essentials::lang.fees')</th>
+                        
 
-                            <th>@lang('messages.action')</th>
+                           
                         </tr>
                     </thead>
 
@@ -206,6 +207,15 @@
                         data: 'responsible_client',
                         name: 'responsible_client'
                     },
+                    { data: 'workcard_duration', name: 'workcard_duration',
+                        render: function(data) {
+                            return data +  " " +translations['months'];
+                        }
+                    },
+                    {
+                        data: 'fees',
+                        name: 'fees'
+                    },
 
                     {
                         data: 'Payment_number',
@@ -215,17 +225,9 @@
                         data: 'fixnumber',
                         name: 'fixnumber'
                     },
-                    {
-                        data: 'fees',
-                        name: 'fees'
-                    },
+                    
 
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
+                   
 
                 ]
 
@@ -296,6 +298,7 @@
 
                         success: function(response) {
                             var data = response.data;
+                           
                             var durationOptions = response.durationOptions;
                             console.log(durationOptions);
 
@@ -308,7 +311,14 @@
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: left; padding-left: 0;',
+                                style: 'height: 40px; width:140px; text-align: center; padding-left: 0px; ',
+                                text: '{{ __('essentials::lang.renew_duration') }}'
+                            }));
+
+
+                            labelsRow.append($('<label>', {
+                                class: inputClasses + 'col-md-2',
+                                style: 'height: 40px; width:140px; text-align: left; padding-left: 20;',
                                 text: '{{ __('essentials::lang.Residency_no') }}'
                             }));
 
@@ -318,11 +328,7 @@
                                 text: '{{ __('essentials::lang.Residency_end_date') }}'
                             }));
 
-                            labelsRow.append($('<label>', {
-                                class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; ',
-                                text: '{{ __('essentials::lang.renew_duration') }}'
-                            }));
+                           
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
@@ -362,7 +368,7 @@
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.id') }}',
-                                    required: true,
+                                   
                                     value: row.id
                                 });
                                 rowDiv.append(rowIDInput);
@@ -374,7 +380,7 @@
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.id') }}',
-                                    required: true,
+                                   
                                     value: row.employee_id
                                 });
                                 rowDiv.append(workerIDInput);
@@ -385,72 +391,55 @@
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.Residency_no') }}',
-                                    required: true,
+                                  
                                     value: row.number
                                 });
 
                                 rowDiv.append(numberInput);
                                 var expiration_dateInput = $('<input>', {
-                                    type: 'text',
+                                    type: 'date',
                                     name: 'expiration_date[]',
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.expiration_date') }}',
-                                    required: true,
+                                   
                                     value: row.expiration_date
                                 });
                                 rowDiv.append(expiration_dateInput);
+                               
                                 var renewDurationInput = $('<select>', {
                                     id: 'renew_durationId_' + index,
                                     name: 'renew_duration[]',
-                                    class: 'form-control ' + inputClasses +
-                                        'col-md-2',
+                                    class: 'form-control select2' + inputClasses + ' col-md-2',
                                     style: 'height: 40px; width: 150px',
-                                    required: true,
                                 });
-
 
                                 Object.keys(durationOptions).forEach(function(value) {
                                     var option = $('<option>', {
                                         value: value,
-                                        text: durationOptions[value],
+                                        text: durationOptions[value]
                                     });
 
                                     renewDurationInput.append(option);
                                 });
+                              
 
-
+                                
+                                 
                                 renewDurationInput.val(row.workcard_duration);
 
+                              
 
                                 rowDiv.append(renewDurationInput);
-
-
-                                $('#renew_durationId_' + index).select2({
-                                    dropdownParent: $('#renewModal'),
-                                });
-
-
-                                $('#renew_durationId_' + index).val(row
-                                    .workcard_duration).trigger('change');
-
-                                renewDurationInput.on('change', function() {
-                                    var selectedValue = $(this).val();
-                                    var feesInput = $(this).closest('.row')
-                                        .find('input[name="fees[]"]');
-                                    var fees = calculateFees(selectedValue);
-                                    feesInput.val(fees);
-                                });
-
-
-
+                               
+                              
                                 var feesInput = $('<input>', {
                                     type: 'text',
                                     name: 'fees[]',
                                     class: inputClasses + 'col-md-2 fees-input',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.fees') }}',
-                                    required: true,
+                                  
                                     value: row.fees
                                 });
 
@@ -463,7 +452,7 @@
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.pay_number') }}',
-                                    required: true,
+                                   
                                     value: row.Payment_number
                                 });
                                 rowDiv.append(pay_numberInput);
@@ -473,7 +462,7 @@
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.fixed') }}',
-                                    required: true,
+                                  
                                     value: row.fixnumber
                                 });
 
@@ -481,8 +470,36 @@
 
 
                                 $('.modal-body').append(rowDiv);
+                                
+                                renewDurationInput.select2({
+                                        dropdownParent: $('#renewModal'),
+                                });
+
+                                $('#renew_durationId_' + index).val(row.workcard_duration).trigger('change');
+
+                                   
+                                $('#renew_durationId_' + index).on('change', function() {
+                                    console.log("Change event triggered");
+                                    var selectedValue = $(this).val();
+                                    console.log("Selected value:", selectedValue);
+                                    var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
+                                    console.log("Fees input found:", feesInput);
+                                    var fees = calculateFees(selectedValue);
+                                    console.log("Calculated fees:", fees);
+                                    feesInput.val(fees);
+                                });
+
+                              
+
                             });
-                        }
+                        },
+                        error: function(error) {
+                                console.error('Error submitting form:', error);
+
+                                toastr.error(
+                                    'An error occurred while submitting the form.',
+                                    'Error');
+                            },
                     });
 
 

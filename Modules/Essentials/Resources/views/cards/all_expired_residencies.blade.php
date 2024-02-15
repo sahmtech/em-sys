@@ -55,7 +55,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{ route('expired.residencies') }}",
+                        url: "{{ route('all.expired.residencies') }}",
 
                     },
 
