@@ -32,15 +32,16 @@
     <div class="row">
         <div class="col-md-12">
             @component('components.widget', ['class' => 'box-solid'])
-                {{-- @slot('tool')
-                <div class="box-tools">
-                    <a class="btn btn-primary pull-right m-5 btn-modal" 
-                    href="{{action('\Modules\Accounting\Http\Controllers\CoaController@create')}}" 
-                    data-href="{{action('\Modules\Accounting\Http\Controllers\CoaController@create')}}" 
-                    data-container="#create_account_modal">
-                    <i class="fas fa-plus"></i> @lang( 'messages.add' )</a>
-                </div>
-            @endslot --}}
+                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accouning.import_accounts'))
+                    @slot('tool')
+                        <div class="box-tools">
+                            <a class="btn btn-primary pull-right m-5 "
+                                href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@viewImporte_accounts') }}">
+                                <i class="fa fa-download"></i> @lang('accounting::lang.importe_accounts')</a>
+                        </div>
+                    @endslot
+                @endif
+
                 <div id="accounts_tree"></div>
                 <div id="tabular_view" class="hide">
                     <div class="row">
