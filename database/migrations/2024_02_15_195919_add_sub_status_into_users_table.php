@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
            
-            $table->enum('sub_status', ['final_visa', 'absent_report'])->nullable()->after('status');
+            $table->string('sub_status')->nullable()->after('status');
         });
     }
 
