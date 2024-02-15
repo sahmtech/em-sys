@@ -225,7 +225,7 @@ Route::middleware(['setData'])->group(function () {
 
     Auth::routes();
     //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
-  
+
 
     Route::get('/business/register', [BusinessController::class, 'getRegister'])->name('business.getRegister');
     Route::post('/business/register', [BusinessController::class, 'postRegister'])->name('business.postRegister');
@@ -447,12 +447,12 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('business-location/activate-deactivate/{location_id}', [BusinessLocationController::class, 'activateDeactivateLocation']);
     Route::post('/changeRequestStatus', [\App\Utils\RequestUtil::class, 'changeRequestStatus'])->name('changeRequestStatus');
-    Route::get('/viewUserRequest/{requestId}',[\App\Utils\RequestUtil::class, 'viewRequest'])->name('viewUserRequest');
+    Route::get('/viewUserRequest/{requestId}', [\App\Utils\RequestUtil::class, 'viewRequest'])->name('viewUserRequest');
     Route::post('/returnRequest', [\App\Utils\RequestUtil::class, 'returnRequest'])->name('returnRequest');
-    Route::get('/get-request-type/{selectedId}',[\App\Utils\RequestUtil::class, 'getTypeById'])->name('get-request-type');
+    Route::get('/get-request-type/{selectedId}', [\App\Utils\RequestUtil::class, 'getTypeById'])->name('get-request-type');
     Route::post('/get-sub-reasons', [\App\Utils\RequestUtil::class, 'getSubReasons'])->name('getSubReasons');
     Route::post('/save-attachment/{requestId}',  [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
-    
+
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
         Route::get('settings', [LocationSettingsController::class, 'index'])->name('settings');
@@ -481,6 +481,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/payments/show-child-payments/{payment_id}', [TransactionPaymentController::class, 'showChildPayments']);
     Route::get('/payments/view-payment/{payment_id}', [TransactionPaymentController::class, 'viewPayment']);
     Route::get('/payments/add_payment/{transaction_id}', [TransactionPaymentController::class, 'addPayment']);
+    Route::get('/payments/view-payment-vouchers/{payment_id}', [TransactionPaymentController::class, 'view_payment_vouchers']);
+    Route::get('/payments/view-receipt-vouchers/{payment_id}', [TransactionPaymentController::class, 'view_receipt_vouchers']);
+
     Route::get('/payments/pay-contact-due/{contact_id}', [TransactionPaymentController::class, 'getPayContactDue']);
     Route::post('/payments/pay-contact-due', [TransactionPaymentController::class, 'postPayContactDue']);
     Route::resource('payments', TransactionPaymentController::class);
@@ -575,7 +578,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     });
 
     Route::resource('account-types', AccountTypeController::class);
-   
+
     //Restaurant module
     Route::prefix('modules')->group(function () {
         Route::resource('tables', Restaurant\TableController::class);
