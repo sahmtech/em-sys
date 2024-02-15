@@ -562,7 +562,7 @@ return [
   'official_documents' => 'الوثائق الرسمية',
   'add_official_documents' => 'إضافة وثيقة موظف ',
   'edit_official_documents' => 'تعديل وثيقة موظف ',
-  'fixed' => 'رقم 700',
+  'fixed' => ' الرقم الموحد',
   'percent' => 'نسبة',
   'crud_Organizational_Chart' => 'عرض الهيكل التنظيمي',
 
@@ -1007,6 +1007,7 @@ return [
   'mobile_no' => 'رقم الموبايل يجب أن يكون 10 أرقام ويبدأ ب 05',
   'view_work_cards' => 'إظهار كروت العمل',
   'work_cards' => 'العلاقات الحكومية',
+  'choose_card_owner'=>'اختر صاحب كرت العمل',
   'leave_duration' => 'المدة',
   'Urgent' => 'اضطرارية',
   'Annual' => 'سنوية',
