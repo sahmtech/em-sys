@@ -450,5 +450,7 @@ return [
     'file_contract_appendices' => 'Attached contract appendices',
     'templates_settings' => 'Templates Settings',
     'template_name' => 'Template Name',
+    'edit_templates' => 'Edit Template',
+    'delete_templates' => 'Delete Template',
 
 ];

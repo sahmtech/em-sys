@@ -440,6 +440,8 @@ return [
     'department_employees' => 'موظفي الإدارة',
     'templates_settings' => 'إعدادات القوالب',
     'template_name' => 'اسم القالب',
+    'edit_templates' => 'تعديل قالب',
+    'delete_templates' => 'حذف قالب',
 
 ];
 
