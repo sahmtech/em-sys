@@ -247,7 +247,10 @@ class RoomController extends Controller
                     'still_housed' => '0',
                     'leave_date' => $carbon_now
                 ]);
-                $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)->pluck('room_id');
+                $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)
+                ->latest()
+                ->pluck('room_id')
+                ->first();
 
                 $room = HtrRoom::where('id', $roomId)->first();
 
