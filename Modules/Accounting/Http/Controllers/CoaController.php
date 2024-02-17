@@ -15,7 +15,10 @@ use Modules\Accounting\Utils\AccountingUtil;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CoaController extends Controller
 {
@@ -652,5 +655,102 @@ class CoaController extends Controller
 
         return view('accounting::chart_of_accounts.ledger')
             ->with(compact('account', 'current_bal'));
+    }
+
+
+    public function viewImporte_accounts()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_import_accountss = auth()->user()->can('accouning.import_accounts');
+
+        if (!($is_admin || $can_import_accountss)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        return view('accounting::chart_of_accounts.import_accounts');
+    }
+
+
+    public function importe_accounts(Request $request)
+    {
+        // $existingContent = File::getRequire(base_path() . '\Modules\Accounting\Resources\lang\ar\lang.php');
+        // $newContent ="'account_name_en' => 'اسم الحساب amen الانكليزية'";
+        // $combinedContent = $existingContent . $newContent;
+        // file_put_contents($existingContent, $combinedContent);
+
+
+
+        // // return $a = File::getRequire(base_path() . '\Modules\Accounting\Resources\lang\ar\lang.php');
+        // // $a[0] = "'account_name_en' => 'اسم الحساب amen الانكليزية'";
+        // return $existingContent;
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_import_accountss = auth()->user()->can('accouning.import_accounts');
+
+        if (!($is_admin || $can_import_accountss)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        // try {
+        $company_id = Session::get('selectedCompanyId');
+
+        if ($request->hasFile('accounts_csv')) {
+            $file = $request->file('accounts_csv');
+            $parsed_array = Excel::toArray([], $file);
+            $accounts_csv = array_splice($parsed_array[0], 1);
+            DB::beginTransaction();
+            foreach ($accounts_csv as  $value) {
+
+                $business_id = request()->session()->get('user.business_id');
+                $company_id = Session::get('selectedCompanyId');
+                $user_id = request()->session()->get('user.id');
+
+                if (!$value[0] || !$value[1] || !$value[2]  || !$value[3] || !$value[4]) {
+                    continue;
+                } else {
+                    $accountingAccountType = AccountingAccountType::where('name', $value[4])->first();
+                    if (!$accountingAccountType || AccountingAccount::where('gl_code', $value[3])->first()) {
+                        continue;
+                    } else {
+
+                        AccountingAccount::create([
+                            'name' => $value[0],
+                            'business_id' => $business_id,
+                            'company_id' => $company_id,
+                            'account_primary_type' => $value[2],
+                            'account_sub_type_id' => $accountingAccountType->id,
+                            'detail_type_id' =>  $accountingAccountType->account_type == 'sub_type' ? null : AccountingAccountType::find($accountingAccountType->parent_id)->id,
+                            'gl_code' => $value[3],
+                            'status' => 'active',
+                            'created_by' => $user_id,
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]);
+                    }
+                }
+            }
+        }
+        DB::commit();
+
+
+
+        return redirect()->back()
+            ->with('status', [
+                'success' => 1,
+                'msg' => __('lang_v1.added_success')
+            ]);
+
+        // } catch (\Exception $e) {
+        //     return redirect()->back()
+        //         ->with('status', [
+        //             'success' => 0,
+        //             'msg' => __('messages.something_went_wrong'),
+        //         ]);
+        // }
     }
 }

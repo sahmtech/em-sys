@@ -31,7 +31,7 @@
                             {!! Form::label('mid_name', __('business.mid_name') . ':') !!}
                             {!! Form::text('mid_name', null, [
                                 'class' => 'form-control',
-                                'required',
+                            
                                 'placeholder' => __('business.mid_name'),
                             ]) !!}
                         </div>

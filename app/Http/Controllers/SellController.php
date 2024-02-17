@@ -640,11 +640,11 @@ class SellController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not, then check for users quota
-        if (! $this->moduleUtil->isSubscribed($business_id)) {
-            return $this->moduleUtil->expiredResponse();
-        } elseif (! $this->moduleUtil->isQuotaAvailable('invoices', $business_id)) {
-            return $this->moduleUtil->quotaExpiredResponse('invoices', $business_id, action([\App\Http\Controllers\SellController::class, 'index']));
-        }
+        // if (! $this->moduleUtil->isSubscribed($business_id)) {
+        //     return $this->moduleUtil->expiredResponse();
+        // } elseif (! $this->moduleUtil->isQuotaAvailable('invoices', $business_id)) {
+        //     return $this->moduleUtil->quotaExpiredResponse('invoices', $business_id, action([\App\Http\Controllers\SellController::class, 'index']));
+        // }
 
         $walk_in_customer = $this->contactUtil->getWalkInCustomer($business_id);
 

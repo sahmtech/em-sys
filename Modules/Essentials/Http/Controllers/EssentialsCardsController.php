@@ -797,19 +797,22 @@ class EssentialsCardsController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $type=RequestsType::where('type','leavesAndDepartures')->where('for','employee')->first();
-        $late_vacation = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
-            ->where('type',$type->id)
-            ->whereHas('related_to_user', function ($query) {
-                $query->where('status', 'vecation');
-            })
-            ->where('end_date', '<', now())
-            ->select('end_date');
+  
+      
+        $late_vacation=[];
+        $type = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first();
+            if ($type) {
+                $late_vacation = UserRequest::with(['related_to_user'])->whereIn('related_to', $userIds)
+                    ->where('request_type_id', $type->id)
+                    ->whereHas('related_to_user', function ($query) {
+                        $query->where('status', 'vecation');
+                    })
+                    ->where('end_date', '<', now())
+                    ->select('end_date')->count();
+            }
 
 
 
-
-        
 
         if (request()->ajax()) {
 
@@ -841,20 +844,19 @@ class EssentialsCardsController extends Controller
                 )
                 ->addColumn(
                     'action',
-                    ''
-                    
-                    
-                    
-                    
-                    
+                    function ($row) {
+                       $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
-                    
-                    
+                        return $html;
+                   }
                 )
 
 
                 ->removeColumn('id')
-                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->rawColumns(['worker_name', 'project', 'end_date','customer_name', 'action'])
                 ->make(true);
         }
 
