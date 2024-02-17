@@ -81,7 +81,7 @@
 
         
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="employees">
+                    <table class="table table-bordered table-striped" id="operation_table">
                         <thead>
                             <tr>
                             <th>
@@ -204,7 +204,7 @@
     <script type="text/javascript">
         
         $(document).ready(function() {
-            var users_table = $('#employees').DataTable({
+            var operation_table = $('#operation_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -325,108 +325,44 @@
 
             });
 
-            // $('#employees tbody').on('click', 'tr', function(e) {
-            //     var cellIndex = $(e.target).closest('td').index();
-            //     var lastIndex = $(this).children('td').length - 1;
+            $('#employees').on('change', '.tblChk', function() {
 
-            //     if (cellIndex !== lastIndex) {
-            //         var data = users_table.row(this).data();
-            //         console.log(data);
-            //         if (data) {
-            //             window.location = '{{ route('operations_show_employee', ['id' => ':id']) }}'.replace(':id', data
-            //                 .id);
-            //         }
-            //     }
-
-            // });
-
-
-    $('#employees').on('change', '.tblChk', function() {
-
-    if ($('.tblChk:checked').length == $('.tblChk').length) {
-        $('#chkAll').prop('checked', true);
-    } else {
-        $('#chkAll').prop('checked', false);
-    }
-    getCheckRecords();
-    });
-
-
-
-$("#chkAll").change(function() {
-
-if ($(this).prop('checked')) {
-    $('.tblChk').prop('checked', true);
-} else {
-    $('.tblChk').prop('checked', false);
-}
-getCheckRecords();
-});
-
-$('#final_visa_selected').on('click', function(e) {
-                e.preventDefault();
-
-                var selectedRows = getCheckRecords();
-                console.log(selectedRows);
-
-                if (selectedRows.length > 0) {
-
-                    $('#finalVisaModal').modal('show');
-
-                    $('#bulk_final_edit_form').find('input[name="worker_id[]"]').remove();
-
-                    $.each(selectedRows, function(index, workerId) {
-                        var workerIdInput = $('<input>', {
-                            type: 'hidden',
-                            name: 'worker_id[]',
-                            value: workerId
-                        });
-
-
-                        $('#bulk_final_edit_form').append(workerIdInput);
-                    });
-                } 
-                
-                else {
-                    $('input#selected_rows').val('');
-                    swal('@lang('lang_v1.no_row_selected')');
+                if ($('.tblChk:checked').length == $('.tblChk').length) {
+                    $('#chkAll').prop('checked', true);
+                } else {
+                    $('#chkAll').prop('checked', false);
                 }
+                getCheckRecords();
             });
 
+            $("#chkAll").change(function() {
 
-            $('#absent_report_selected').on('click', function(e) {
-                e.preventDefault();
-
-                var selectedRows = getCheckRecords();
-                console.log(selectedRows);
-
-                if (selectedRows.length > 0) {
-
-                    $('#absentreportModal').modal('show');
-
-                    $('#bulk_absent_edit_form').find('input[name="worker_id[]"]').remove();
-
-                    $.each(selectedRows, function(index, workerId) {
-                        var workerIdInput = $('<input>', {
-                            type: 'hidden',
-                            name: 'worker_id[]',
-                            value: workerId
-                        });
-
-
-                        $('#bulk_absent_edit_form').append(workerIdInput);
-                    });
-                } 
-                
-                else {
-                    $('input#selected_rows').val('');
-                    swal('@lang('lang_v1.no_row_selected')');
+                if ($(this).prop('checked')) {
+                    $('.tblChk').prop('checked', true);
+                } else {
+                    $('.tblChk').prop('checked', false);
                 }
+                getCheckRecords();
             });
 
+            
+
+           
 
 
-$('#return_visa_selected').on('click', function(e) {
+            
+
+
+   
+
+
+
+
+
+
+
+
+            $('#return_visa_selected').on('click', function(e) {
                 e.preventDefault();
 
                 var selectedRows = getCheckRecords();
@@ -457,134 +393,163 @@ $('#return_visa_selected').on('click', function(e) {
             });
 
 
+            $('#bulk_edit_form').submit(function(e) {
+
+                e.preventDefault();
+
+                var formData = $(this).serializeArray();
+                console.log(formData);
+                console.log($(this).attr('action'));
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'post',
+                    data: formData,
+                    success: function (response) {
+                            if (response.success) {
+                                console.log(response);
+                                toastr.success(response.msg);
+                                operation_table.ajax.reload();
+                                $('#returnVisaModal').modal('hide');
+                            } else {
+                                toastr.error(response.msg);
+                                console.log(response);
+                            }
+                        },
+                        error: function (error) {
+                            console.error('Error submitting form:', error);
+                            
+                            toastr.error('An error occurred while submitting the form.', 'Error');
+                        },
+                });
+            });
 
 
-$('#bulk_edit_form').submit(function(e) {
-
-e.preventDefault();
-
-
-var formData = $(this).serializeArray();
-console.log(formData);
-console.log($(this).attr('action'));
-$.ajax({
-    url: $(this).attr('action'),
-    type: 'post',
-    data: formData,
-    success: function (response) {
-            if (response.success) {
-                console.log(response);
-                toastr.success(response.msg);
-                users_table.ajax.reload();
-                $('#returnVisaModal').modal('hide');
-            } else {
-                toastr.error(response.msg);
-                console.log(response);
-            }
-        },
-        error: function (error) {
-            console.error('Error submitting form:', error);
             
-            toastr.error('An error occurred while submitting the form.', 'Error');
-        },
-});
-});
+            $('#bulk_final_edit_form').submit(function(e) {
+
+                    e.preventDefault();
 
 
-$('#bulk_final_edit_form').submit(function(e) {
+                    var formData = $(this).serializeArray();
+                    console.log(formData);
+                    console.log($(this).attr('action'));
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'post',
+                        data: formData,
+                        success: function (response) {
+                                if (response.success) {
+                                    console.log(response);
+                                    toastr.success(response.msg);
+                                    operation_table.ajax.reload();
+                                    $('#finalVisaModal').modal('hide');
+                                } else {
+                                    toastr.error(response.msg);
+                                    console.log(response);
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error submitting form:', error);
+                                
+                                toastr.error('An error occurred while submitting the form.', 'Error');
+                            },
+                    });
+            });
 
-e.preventDefault();
-
-
-var formData = $(this).serializeArray();
-console.log(formData);
-console.log($(this).attr('action'));
-$.ajax({
-    url: $(this).attr('action'),
-    type: 'post',
-    data: formData,
-    success: function (response) {
-            if (response.success) {
-                console.log(response);
-                toastr.success(response.msg);
-                users_table.ajax.reload();
-                $('#finalVisaModal').modal('hide');
-            } else {
-                toastr.error(response.msg);
-                console.log(response);
-            }
-        },
-        error: function (error) {
-            console.error('Error submitting form:', error);
             
-            toastr.error('An error occurred while submitting the form.', 'Error');
-        },
-});
-});
 
+            $('#bulk_absent_edit_form').submit(function(e) {
 
-$('#bulk_absent_edit_form').submit(function(e) {
+                    e.preventDefault();
+                    var formData = $(this).serializeArray();
+                    console.log(formData);
+                    console.log($(this).attr('action'));
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'post',
+                        data: formData,
+                        success: function (response) {
+                                if (response.success) {
+                                    console.log(response);
+                                    toastr.success(response.msg);
+                                    operation_table.ajax.reload();
+                                    $('#absentreportModal').modal('hide');
+                                } else {
+                                    toastr.error(response.msg);
+                                    console.log(response);
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error submitting form:', error);
+                                
+                                toastr.error('An error occurred while submitting the form.', 'Error');
+                            },
+                    });
+            });
 
-e.preventDefault();
-
-
-var formData = $(this).serializeArray();
-console.log(formData);
-console.log($(this).attr('action'));
-$.ajax({
-    url: $(this).attr('action'),
-    type: 'post',
-    data: formData,
-    success: function (response) {
-            if (response.success) {
-                console.log(response);
-                toastr.success(response.msg);
-                users_table.ajax.reload();
-                $('#absentreportModal').modal('hide');
-            } else {
-                toastr.error(response.msg);
-                console.log(response);
-            }
-        },
-        error: function (error) {
-            console.error('Error submitting form:', error);
             
-            toastr.error('An error occurred while submitting the form.', 'Error');
-        },
-});
-});
-
-
             $('#nationalities_select, #status-select, #select_business_id').change(
                 function() {
                  
                     console.log('Nationality selected: ' + $('#nationalities_select').val());
                     console.log('Status selected: ' + $('#status_filter').val());
                     console.log('loc selected: ' + $('#select_business_id').val());
-                    users_table.ajax.reload();
+                    operation_table.ajax.reload();
 
-                });
+            });
+
+
+            function getCheckRecords()
+            
+            {
+                    var selectedRows = [];
+                    $(".selectedDiv").html("");
+                    $('.tblChk:checked').each(function() {
+                        if ($(this).prop('checked')) {
+                            const rec = "<strong>" + $(this).attr("data-id") + " </strong>";
+                            $(".selectedDiv").append(rec);
+                            selectedRows.push($(this).attr("data-id"));
+
+                        }
+
+                    });
+
+            return selectedRows;
+           }
+
+           function calculateFees(selectedValue) {
+                switch (selectedValue) {
+                    case '3':
+                        return 2425;
+                    case '6':
+                        return 4850;
+                    case '9':
+                        return 7275;
+                    case '12':
+                        return 9700;
+                    default:
+                        return 0;
+                }
+            }
+ 
+
+
+
+
+
+
+
+
+
 
 
 
       
          
          
-    function getCheckRecords() {
-            var selectedRows = [];
-            $(".selectedDiv").html("");
-            $('.tblChk:checked').each(function() {
-                if ($(this).prop('checked')) {
-                    const rec = "<strong>" + $(this).attr("data-id") + " </strong>";
-                    $(".selectedDiv").append(rec);
-                    selectedRows.push($(this).attr("data-id"));
+   
 
-                }
-
-            });
-
-            return selectedRows;
-        }
+        
 
 
 

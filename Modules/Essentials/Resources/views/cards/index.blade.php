@@ -610,38 +610,40 @@
                         $('#renewModal').on('hidden.bs.modal', function () {
                             location.reload();
                         });
+                });
+
+
+    
+    
+                $('body').on('submit', '#renew_form', function (e) {
+                    e.preventDefault();
+                    var urlWithId = $(this).attr('action');
+                    $.ajax({
+                        url: urlWithId,
+                        type: 'POST',
+                        data: new FormData(this),
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            console.log(response); 
+                            if (response.success) {
+                                console.log(response);
+                                // Assuming buildings_table is defined elsewhere
+                                card_table.ajax.reload();
+                                toastr.success(response.msg);
+                                $('#renewModal').modal('hide');
+                            } else {
+                                toastr.error(response.msg);
+                                $('#renewModal').modal('hide');
+                                console.log(response);
+                            }
+                        },
+                        error: function (error) {
+                            console.error('Error submitting form:', error);
+                            toastr.error('An error occurred while submitting the form.', 'Error');
+                        },
                     });
-
-
-    $('body').on('submit', '#renew_form', function (e) {
-    e.preventDefault();
-    var urlWithId = $(this).attr('action');
-    $.ajax({
-        url: urlWithId,
-        type: 'POST',
-        data: new FormData(this),
-        contentType: false,
-        processData: false,
-        success: function (response) {
-            console.log(response); 
-            if (response.success) {
-                console.log(response);
-                // Assuming buildings_table is defined elsewhere
-                card_table.ajax.reload();
-                toastr.success(response.msg);
-                $('#renewModal').modal('hide');
-            } else {
-                toastr.error(response.msg);
-                $('#renewModal').modal('hide');
-                console.log(response);
-            }
-        },
-        error: function (error) {
-            console.error('Error submitting form:', error);
-            toastr.error('An error occurred while submitting the form.', 'Error');
-        },
-    });
-});
+               });
 
 
                     // $('#renewModal form').click(function() {
