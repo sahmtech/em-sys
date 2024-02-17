@@ -109,7 +109,7 @@ class EssentialsWorkersAffairsController extends Controller
 
         $users->select(
             'users.*',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )
             ->orderBy('users.id', 'desc')
