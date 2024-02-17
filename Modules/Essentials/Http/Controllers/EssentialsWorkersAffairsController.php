@@ -108,7 +108,7 @@ class EssentialsWorkersAffairsController extends Controller
             ->with(['country', 'contract', 'OfficialDocument']);
 
         $users->select(
-            'users.*',
+            'users.*','users.id as worker_id',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )
