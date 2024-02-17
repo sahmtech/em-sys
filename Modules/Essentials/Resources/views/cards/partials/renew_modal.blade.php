@@ -10,7 +10,8 @@
             </div>
 
 
-            {!! Form::open(['url' => action( [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data']), 'method' => 'post', 'id' => 'renew_form' ]) !!}
+            {!! Form::open(['url' => route('postRenewData'),
+             'method' => 'post', 'id' => 'renew_form' ]) !!}
                 <div class="modal-body">
                 <input name="building_htr" id="building_htr" type="hidden" value="300" />
                         

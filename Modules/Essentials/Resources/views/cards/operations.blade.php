@@ -137,6 +137,17 @@
                                             <i class="fa fa-warning"></i>{{ __('essentials::lang.absent_report') }}
                                         </button>
                                     @endif
+                                    &nbsp;
+
+
+                                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_renew_residency'))
+                                    <button type="submit" class="btn btn-xs btn-primary" id="renew-selected">
+                                        <i class="fa fa-warning"></i>{{ __('essentials::lang.renewal_residence') }}
+                                    </button>
+
+                                    @endif
+
+
                                     </div>
                                 </td>
                             </tr>
@@ -156,8 +167,10 @@
 @include('essentials::cards.partials.final_visa_modal') 
    
 @include('essentials::cards.partials.absent_report_modal') 
+
+@include('essentials::cards.partials.renew_modal')
     </section>
-    <!-- /.content -->
+  
 @stop
 @section('javascript')
     <script type="text/javascript">
