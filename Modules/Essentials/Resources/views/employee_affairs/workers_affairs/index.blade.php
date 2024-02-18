@@ -123,11 +123,12 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-
+                            <td>#</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.employee_number')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
                             
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
@@ -213,6 +214,9 @@
 
                 columns: [
                     {
+                        "data": "worker_id"
+                    },
+                    {
                         "data": "profile_image",
                         "render": function(data, type, row) {
                             if (data) {
@@ -240,6 +244,9 @@
                     },
                     {
                         data: 'id_proof_number'
+                    },
+                    {
+                        data: 'border_no'
                     },
                     {
                         data: 'contact_name'
