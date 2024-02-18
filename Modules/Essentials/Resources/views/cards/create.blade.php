@@ -18,7 +18,7 @@
     {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'store']), 
     'method' => 'post','id' => 'workCardForm']) !!}       
           
-    <div class="col-md-9">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('employees', __('essentials::lang.choose_card_owner') . ':*') !!}
         <div class="input-group">
