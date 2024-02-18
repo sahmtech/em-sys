@@ -56,7 +56,7 @@ class BusinessLocation extends Model
         }
 
         $result = $query->get();
-
+     
         $locations = $result->pluck('name', 'id');
 
         $price_groups = SellingPriceGroup::forDropdown($business_id);

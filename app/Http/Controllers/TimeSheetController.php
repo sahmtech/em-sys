@@ -73,18 +73,311 @@ class TimeSheetController extends Controller
 
 
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
+        $business_id = request()->session()->get('user.business_id');
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
+        $projects = SalesProject::where('contact_id', $contact_id)->pluck('name', 'id');
+
+        $can_view_all_payroll = auth()->user()->can('essentials.view_all_payroll');
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+
+        // if (!$is_admin) {
+        //     $userProjects = [];
+        //     $userBusinesses = [];
+        //     $roles = auth()->user()->roles;
+        //     foreach ($roles as $role) {
+
+        //         $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+        //         if ($accessRole) {
+        //             $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+        //             $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+        //         }
+        //     }
+        //     $user_businesses_ids = array_unique($userBusinesses);
+        // }
+
+        if (request()->ajax()) {
+            $payrolls = $this->essentialsUtil->getPayrollQuery($user_businesses_ids);
+            error_log(($payrolls->count()));
+
+            if (!empty(request()->input('user_id'))) {
+                $payrolls->where('transactions.expense_for', request()->input('user_id'));
+            }
+
+            if (!empty(request()->input('designation_id'))) {
+                $payrolls->where('dsgn.id', request()->input('designation_id'));
+            }
+
+            if (!empty(request()->input('department_id'))) {
+                $payrolls->where('dept.id', request()->input('department_id'));
+            }
+
+
+            // if (!$can_view_all_payroll) {
+            //     $payrolls->where('transactions.expense_for', auth()->user()->id);
+            // }
+
+            if (!empty(request()->input('location_id'))) {
+                $payrolls->where('u.location_id', request()->input('location_id'));
+            }
+
+            // $permitted_locations = auth()->user()->permitted_locations();
+            // if ($permitted_locations != 'all') {
+            //     $payrolls->where(function ($q) use ($permitted_locations) {
+            //         $q->whereIn('epg.location_id', $permitted_locations)
+            //             ->orWhereNull('epg.location_id');
+            //     });
+            // }
+
+            if (!empty(request()->month_year)) {
+                $month_year_arr = explode('/', request()->month_year);
+                if (count($month_year_arr) == 2) {
+                    $month = $month_year_arr[0];
+                    $year = $month_year_arr[1];
+
+                    $payrolls->whereDate('transaction_date', $year . '-' . $month . '-01');
+                }
+            }
+
+            return Datatables::of($payrolls)
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin, $can_view_all_payroll) {
+
+                        $html = '<div class="btn-group">
+                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                        data-toggle="dropdown" aria-expanded="false">' .
+                            __('messages.actions') .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+                        $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'show'], [$row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+                        // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
+
+                        if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
+                            $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
+                        }
+
+                        $html .= '</ul></div>';
+
+                        return $html;
+                    }
+                )
+                ->addColumn('transaction_date', function ($row) {
+                    $transaction_date = \Carbon::parse($row->transaction_date);
+
+                    return $transaction_date->format('F Y');
+                })
+                ->editColumn('final_total', '<span class="display_currency" data-currency_symbol="true">{{$final_total}}</span>')
+                ->filterColumn('user', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->editColumn(
+                    'payment_status',
+                    '<a href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'show\'], [$id])}}" class="view_payment_modal payment-status-label no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label @payment_status($payment_status)">{{__(\'lang_v1.\' . $payment_status)}}
+                        </span></a>
+                        <span class="print_section">{{__(\'lang_v1.\' . $payment_status)}}</span>
+                        '
+                )
+                ->removeColumn('id')
+                ->rawColumns(['action', 'final_total', 'payment_status'])
+                ->make(true);
+        }
+
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+        $workers =  User::where('user_type', 'worker')
+            ->whereIn('users.assigned_to', $projectsIds)
+            ->select(
+                'users.*',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            )->pluck('worker', 'id')->toArray();
+
+
+        $departments = Category::forDropdown($business_id, 'hrm_department');
+        $designations = Category::forDropdown($business_id, 'hrm_designation');
+        // $locations =    BusinessLocation::pluck('name', 'id');
+
+
+        return view('custom_views.agents.agent_time_sheet.index')->with(compact('workers', 'departments', 'designations', 'projects'));
+    }
+
+
+    public function payrollGroupDatatable(Request $request)
+    {
+        try {
+            $business_id = request()->session()->get('user.business_id');
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+
+            // if (!$is_admin) {
+            //     $userProjects = [];
+            //     $userBusinesses = [];
+            //     $roles = auth()->user()->roles;
+            //     foreach ($roles as $role) {
+
+            //         $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+            //         if ($accessRole) {
+            //             $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+            //             $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+            //         }
+            //     }
+            //     $user_businesses_ids = array_unique($userBusinesses);
+            // }
+            if ($request->ajax()) {
+                $payroll_groups = PayrollGroup::whereIn('essentials_payroll_groups.business_id', $user_businesses_ids)
+                    ->leftjoin('users as u', 'u.id', '=', 'essentials_payroll_groups.created_by')
+                    ->leftJoin('business_locations as BL', 'essentials_payroll_groups.location_id', '=', 'BL.id')
+                    ->select(
+                        'essentials_payroll_groups.id as id',
+                        'essentials_payroll_groups.name as name',
+                        'essentials_payroll_groups.status as status',
+                        'essentials_payroll_groups.created_at as created_at',
+                        DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as added_by"),
+                        'essentials_payroll_groups.payment_status as payment_status',
+                        'essentials_payroll_groups.gross_total as gross_total',
+                        'BL.name as location_name'
+                    );
+
+                // $permitted_locations = auth()->user()->permitted_locations();
+                // if ($permitted_locations != 'all') {
+                //     $payroll_groups->where(function ($q) use ($permitted_locations) {
+                //         $q->whereIn('essentials_payroll_groups.location_id', $permitted_locations)
+                //             ->orWhereNull('essentials_payroll_groups.location_id');
+                //     });
+                // }
+
+                return Datatables::of($payroll_groups)
+                    ->addColumn(
+                        'action',
+                        function ($row) {
+                            $html = '<div class="btn-group">
+                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                        data-toggle="dropdown" aria-expanded="false">' .
+                                __('messages.actions') .
+                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+
+                            $html .= '<li>
+                                    <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'viewPayrollGroup'], [$row->id]) . '" target="_blank">
+                                            <i class="fa fa-eye" aria-hidden="true"></i> '
+                                . __('messages.view') .
+                                '</a>
+                                </li>';
+
+
+                            $html .= '<li>
+                                        <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'getEditPayrollGroup'], [$row->id]) . '" target="_blank">
+                                                <i class="fas fa-edit" aria-hidden="true"></i> '
+                                . __('messages.edit') .
+                                '</a>
+                                    </li>';
+
+
+
+                            $html .= '<li><a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'destroy'], [$row->id]) . '" class="delete-payroll"><i class="fa fa-trash" aria-hidden="true"></i> ' . __('messages.delete') . '</a></li>';
+
+
+
+
+                            if ($row->status == 'final' && $row->payment_status != 'paid') {
+                                $html .= '<li>
+                                    <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'addPayment'], [$row->id]) . '" target="_blank">
+                                            <i class="fas fa-money-check" aria-hidden="true"></i> '
+                                    . __('purchase.add_payment') .
+                                    '</a>
+                                </li>';
+                            }
+
+
+                            $html .= '</ul></div>';
+
+                            return $html;
+                        }
+                    )
+                    ->editColumn('status', '
+                    @lang("sale.".$status)
+                ')
+                    ->editColumn('created_at', '
+                    {{@format_datetime($created_at)}}
+                ')
+                    ->editColumn('gross_total', '
+                    @format_currency($gross_total)
+                ')
+                    ->editColumn('location_name', '
+                    @if(!empty($location_name))
+                        {{$location_name}}
+                    @else
+                        {{__("report.all_locations")}}
+                    @endif
+                ')
+                    ->editColumn(
+                        'payment_status',
+                        '<span class="label @payment_status($payment_status)">{{__(\'lang_v1.\' . $payment_status)}}
+                        </span>
+                        '
+                    )
+                    ->filterColumn('added_by', function ($query, $keyword) {
+                        $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    })
+                    ->removeColumn('id')
+                    ->rawColumns(['action', 'added_by', 'created_at', 'status', 'gross_total', 'payment_status', 'location_name'])
+                    ->make(true);
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
+    }
+
+    public function getWorkersBasedOnProject(Request $request)
+    {
+        $workers = [];
+        if ($request->project_id == 'all') {
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $workers =  User::where('user_type', 'worker')
+                ->whereIn('users.assigned_to', $projectsIds)
+                ->select(
+                    'users.*',
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                )->pluck('worker', 'id')->toArray();
+        } else {
+            $workers =  User::where('user_type', 'worker')
+                ->where('users.assigned_to', $request->project_id)
+                ->select(
+                    'users.*',
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                )->pluck('worker', 'id')->toArray();
+        }
+
+        return [
+            'success' => true,
+            'msg' => __('lang_v1.success'),
+            'workers' => $workers,
+        ];
+    }
+
+    public function getPayrollGroup()
+    {
+        $employee_ids = request()->input('employee_ids');
         $workers = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
-            ->whereIn('assigned_to', $projectsIds)
+            ->whereIn('users.id',  $employee_ids)
             ->select(
                 'users.*',
                 'users.id as user_id',
@@ -93,39 +386,16 @@ class TimeSheetController extends Controller
                 'users.essentials_pay_period',
                 'users.essentials_salary as monthly_cost',
                 'users.essentials_pay_period as wd',
-                // 'as actual_work_days',
-                // 'as daily_work_hours',
-                // 'as absence_day',
-                // 'as absence_amount',
-                // 'as over_time_h',
-                // 'as over_time',
-                // 'transactions.essentials_allowances as other_deduction',
-                // 'transactions.essentials_deductions as other_addition',
-                // 'users.essentials_salary as cost2',
-                // 'transactions.total_before_tax as invoice_value',
-                // 'transactions.tax_amount as vat',
-                // 'transactions.final_total as total',
-                // 'transactions.business_id as sponser',
-                // 'transactions.essentials_amount_per_unit_duration as basic',
-                // 'as housing',
-                // 'as transport',
-                // 'as other_allowances',
-                // 'transactions.total_before_tax as total_salary',
-                // 'transactions.essentials_deductions as deductions',
-                // 'transactions.essentials_allowances as additions',
-                // 'transactions.final_total as final_salary',
             );
 
         $businesses = Business::pluck('name', 'id',);
+        $projects = SalesProject::pluck('name', 'id');
         $currentDateTime = Carbon::now('Asia/Riyadh');
         $month = $currentDateTime->month;
         $year = $currentDateTime->year;
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
-        // $temp=$workers->first()->userAllowancesAndDeductions;
-        // foreach($temp as $t){
-        //     return json_decode(json_encode($t))->essentials_allowance_and_deduction;
-        // }
+
         if (request()->ajax()) {
 
             return Datatables::of($workers)
@@ -135,9 +405,9 @@ class TimeSheetController extends Controller
                 ->addColumn('eqama_number', function ($row) {
                     return $row->eqama_number ?? '';
                 })
-                ->addColumn('location', function ($row) use ($businesses) {
-                    if ($row->business_id) {
-                        return $businesses[$row->business_id] ?? '';
+                ->addColumn('project', function ($row) use ($projects) {
+                    if ($row->assigned_to) {
+                        return $projects[$row->assigned_to] ?? '';
                     } else {
                         return '';
                     }
@@ -569,19 +839,20 @@ class TimeSheetController extends Controller
                 ->addColumn('final_salary', function ($row) use ($month, $year) {
                     return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->final_salary ?? '';
                 })->addColumn('action', function ($row) use ($month, $year) {
-                    $trans = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first();
-                    if ($trans) {
-                        if ($trans->payment_status == 'paid') {
-                            return 'paid';
-                        }
-                        return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("agent.edit_time_sheet") . '</a>';
-                    } else {
-                        return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-success">' . __("agent.add_time_sheet") . '</a>';
-                    }
+                    // $trans = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first();
+                    // if ($trans) {
+                    //     if ($trans->payment_status == 'paid') {
+                    //         return 'paid';
+                    //     }
+                    //     return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("agent.edit_time_sheet") . '</a>';
+                    // } else {
+                    //     return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-success">' . __("agent.add_time_sheet") . '</a>';
+                    // }
+                    return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("agent.edit_time_sheet") . '</a>';
                 })->rawColumns([
                     'name',
                     'eqama_number',
-                    'location',
+                    'project',
                     'nationality',
                     'monthly_cost',
                     'wd',
@@ -609,9 +880,575 @@ class TimeSheetController extends Controller
                     'action'
                 ])->make(true);
         }
-
-        return view('custom_views.agents.agent_time_sheet.index');
     }
+
+    public function create()
+    {
+
+
+
+        $employee_ids = request()->input('employee_ids');
+        // $month_year_arr = explode('/', request()->input('month_year'));
+        // $month = $month_year_arr[0];
+        // $year = $month_year_arr[1];
+
+        // $transaction_date = $year . '-' . $month . '-01';
+
+        $date = (Carbon::createFromFormat('m/Y', request()->input('month_year')))->format('F Y');
+
+
+        return view('custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids','date'));
+
+        // } else {
+        //     return redirect()->action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])
+        //         ->with(
+        //             'status',
+        //             [
+        //                 'success' => true,
+        //                 'msg' => __('essentials::lang.payroll_already_added_for_given_user'),
+        //             ]
+        //         );
+        // }
+    }
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    // public function index()
+    // {
+    //     $user = User::where('id', auth()->user()->id)->first();
+    //     $contact_id =  $user->crm_contact_id;
+    //     $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+    //     $workers = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
+    //         ->whereIn('assigned_to', $projectsIds)
+    //         ->select(
+    //             'users.*',
+    //             'users.id as user_id',
+    //             DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
+    //             'users.id_proof_number as eqama_number',
+    //             'users.essentials_pay_period',
+    //             'users.essentials_salary as monthly_cost',
+    //             'users.essentials_pay_period as wd',
+    //             // 'as actual_work_days',
+    //             // 'as daily_work_hours',
+    //             // 'as absence_day',
+    //             // 'as absence_amount',
+    //             // 'as over_time_h',
+    //             // 'as over_time',
+    //             // 'transactions.essentials_allowances as other_deduction',
+    //             // 'transactions.essentials_deductions as other_addition',
+    //             // 'users.essentials_salary as cost2',
+    //             // 'transactions.total_before_tax as invoice_value',
+    //             // 'transactions.tax_amount as vat',
+    //             // 'transactions.final_total as total',
+    //             // 'transactions.business_id as sponser',
+    //             // 'transactions.essentials_amount_per_unit_duration as basic',
+    //             // 'as housing',
+    //             // 'as transport',
+    //             // 'as other_allowances',
+    //             // 'transactions.total_before_tax as total_salary',
+    //             // 'transactions.essentials_deductions as deductions',
+    //             // 'transactions.essentials_allowances as additions',
+    //             // 'transactions.final_total as final_salary',
+    //         );
+
+    //     $businesses = Business::pluck('name', 'id',);
+    //     $currentDateTime = Carbon::now('Asia/Riyadh');
+    //     $month = $currentDateTime->month;
+    //     $year = $currentDateTime->year;
+    //     $start_of_month = $currentDateTime->copy()->startOfMonth();
+    //     $end_of_month = $currentDateTime->copy()->endOfMonth();
+    //     // $temp=$workers->first()->userAllowancesAndDeductions;
+    //     // foreach($temp as $t){
+    //     //     return json_decode(json_encode($t))->essentials_allowance_and_deduction;
+    //     // }
+    //     if (request()->ajax()) {
+
+    //         return Datatables::of($workers)
+    //             ->addColumn('name', function ($row) {
+    //                 return $row->name ?? '';
+    //             })
+    //             ->addColumn('eqama_number', function ($row) {
+    //                 return $row->eqama_number ?? '';
+    //             })
+    //             ->addColumn('location', function ($row) use ($businesses) {
+    //                 if ($row->business_id) {
+    //                     return $businesses[$row->business_id] ?? '';
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('nationality', function ($row) {
+    //                 return  User::find($row->id)->country?->nationality ?? '';
+    //             })
+    //             ->addColumn('monthly_cost', function ($row) {
+    //                 return number_format($row->calculateTotalSalary(), 0, '.', '');
+    //             })
+    //             ->addColumn('wd', function ($row) {
+    //                 //essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                 if ($row->essentials_pay_period) {
+    //                     if ($row->essentials_pay_period == 'month') {
+    //                         return Carbon::now()->daysInMonth;
+    //                     }
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('actual_work_days', function ($row) {
+    //                 $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                 if ($userShift) {
+    //                     $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+    //                     $holidays = [];
+    //                     $holidayCounts = 0;
+    //                     foreach ($holidays_temp as $holiday_temp) {
+    //                         $holidays[] = strtolower($holiday_temp);
+    //                     }
+    //                     $start = Carbon::now()->startOfMonth();
+    //                     $end = Carbon::now()->endOfMonth();
+    //                     while ($start->lte($end)) {
+    //                         $dayName = strtolower($start->englishDayOfWeek);
+
+    //                         if (in_array($dayName, $holidays)) {
+    //                             $holidayCounts++;
+    //                         }
+    //                         $start->addDay();
+    //                     }
+    //                     if ($row->essentials_pay_period) {
+    //                         if ($row->essentials_pay_period == 'month') {
+    //                             return Carbon::now()->daysInMonth - $holidayCounts;
+    //                         } else {
+    //                             return '';
+    //                         }
+    //                     }
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('daily_work_hours', function ($row) {
+    //                 $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                 if ($userShift) {
+    //                     $shift = $userShift->shift;
+    //                     $start = Carbon::parse($shift->start_time);
+    //                     $end = Carbon::parse($shift->end_time);
+    //                     $hoursDifference = $end->diffInHours($start);
+    //                     // $result = $hoursDifference . ' ' . __('worker.hours');
+    //                     return $hoursDifference;
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('absence_day', function ($row) use ($month, $year) {
+
+    //                 if ($row->wd) {
+    //                     if ($row->wd == 'month') {
+    //                         $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                         if ($userShift) {
+    //                             $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+    //                                 ->whereYear('created_at', '=', $year)->get();
+    //                             $actual_work_days = 0;
+    //                             foreach ($attendances as $attendance) {
+    //                                 if ($attendance->status_id == 1) {
+    //                                     $actual_work_days++;
+    //                                 }
+    //                             }
+    //                             $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+    //                             $holidays = [];
+    //                             $holidayCounts = 0;
+    //                             foreach ($holidays_temp as $holiday_temp) {
+    //                                 $holidays[] = strtolower($holiday_temp);
+    //                             }
+    //                             $start = Carbon::now()->startOfMonth();
+    //                             $end = Carbon::now();
+    //                             while ($start->lte($end)) {
+    //                                 $dayName = strtolower($start->englishDayOfWeek);
+
+    //                                 if (in_array($dayName, $holidays)) {
+    //                                     $holidayCounts++;
+    //                                 }
+    //                                 $start->addDay();
+    //                             }
+    //                             return Carbon::now()->day - $holidayCounts - $actual_work_days;
+    //                         } else {
+    //                             return  '';
+    //                         }
+    //                     } else {
+    //                         return '';
+    //                     }
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('basic', function ($row)  use ($month, $year) {
+    //                 $basic =  $row->monthly_cost;
+    //                 if ($basic) {
+    //                     return number_format($basic, 0, '.', '');
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('absence_amount', function ($row) use ($month, $year) {
+
+    //                 if ($row->wd && $row->essentials_pay_period) {
+    //                     if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+    //                         $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                         if ($userShift) {
+    //                             $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+    //                                 ->whereYear('created_at', '=', $year)->get();
+    //                             $actual_work_days = 0;
+    //                             foreach ($attendances as $attendance) {
+    //                                 if ($attendance->status_id == 1) {
+    //                                     $actual_work_days++;
+    //                                 }
+    //                             }
+    //                             $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+    //                             $holidays = [];
+    //                             $holidayCounts = 0;
+    //                             foreach ($holidays_temp as $holiday_temp) {
+    //                                 $holidays[] = strtolower($holiday_temp);
+    //                             }
+    //                             $start = Carbon::now()->startOfMonth();
+    //                             $end = Carbon::now();
+    //                             while ($start->lte($end)) {
+    //                                 $dayName = strtolower($start->englishDayOfWeek);
+
+    //                                 if (in_array($dayName, $holidays)) {
+    //                                     $holidayCounts++;
+    //                                 }
+    //                                 $start->addDay();
+    //                             }
+    //                             $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+    //                             $basic =  $row->monthly_cost;
+    //                             $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+    //                             return ceil($dayPay * $absenceDays);
+    //                         } else {
+    //                             return  '';
+    //                         }
+    //                     } else {
+    //                         return '';
+    //                     }
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('cost2', function ($row) use ($month, $year) {
+    //                 $total_before_absent_days = number_format($row->calculateTotalSalary(), 0, '.', '');
+    //                 if ($row->wd && $row->essentials_pay_period) {
+    //                     if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+    //                         $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                         if ($userShift) {
+    //                             $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+    //                                 ->whereYear('created_at', '=', $year)->get();
+    //                             $actual_work_days = 0;
+    //                             foreach ($attendances as $attendance) {
+    //                                 if ($attendance->status_id == 1) {
+    //                                     $actual_work_days++;
+    //                                 }
+    //                             }
+    //                             $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+    //                             $holidays = [];
+    //                             $holidayCounts = 0;
+    //                             foreach ($holidays_temp as $holiday_temp) {
+    //                                 $holidays[] = strtolower($holiday_temp);
+    //                             }
+    //                             $start = Carbon::now()->startOfMonth();
+    //                             $end = Carbon::now();
+    //                             while ($start->lte($end)) {
+    //                                 $dayName = strtolower($start->englishDayOfWeek);
+
+    //                                 if (in_array($dayName, $holidays)) {
+    //                                     $holidayCounts++;
+    //                                 }
+    //                                 $start->addDay();
+    //                             }
+    //                             $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+    //                             $basic =  $row->monthly_cost;
+    //                             $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+    //                             return $total_before_absent_days - ceil($dayPay * $absenceDays);
+    //                         } else {
+    //                             return  '';
+    //                         }
+    //                     } else {
+    //                         return '';
+    //                     }
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('over_time_h', function ($row) {
+    //                 return $row->over_time_h ?? '';
+    //             })
+    //             ->addColumn('over_time', function ($row) {
+    //                 return $row->over_time ?? '';
+    //             })
+    //             ->addColumn('other_deduction', function ($row) use ($month, $year) {
+    //                 $other_deductions = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->essentials_deductions;
+    //                 if ($other_deductions) {
+    //                     $deductions = json_decode($other_deductions);
+
+    //                     $html = '<ul>';
+    //                     foreach ($deductions->deduction_names as $key => $deduction) {
+    //                         $html .= '<li>' . $deduction . ' : ' . $deductions->deduction_amounts[$key] . '</li>';
+    //                     }
+    //                     $html .= '</ul>';
+    //                     return   $html;
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('other_addition', function ($row) use ($month, $year) {
+    //                 $other_addition = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->essentials_allowances;
+    //                 if ($other_addition) {
+    //                     $additions = json_decode($other_addition);
+
+    //                     $html = '<ul>';
+    //                     foreach ($additions->allowance_names as $key => $allowance) {
+    //                         $html .= '<li>' . $allowance . ' : ' . $additions->allowance_amounts[$key] . '</li>';
+    //                     }
+    //                     $html .= '</ul>';
+    //                     return   $html;
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+
+    //             ->addColumn('invoice_value', function ($row) use ($month, $year) {
+    //                 // $total_before_absent_days = number_format($row->calculateTotalSalary(), 0, '.', '');
+    //                 // if ($row->wd && $row->essentials_pay_period) {
+    //                 //     if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+    //                 //         $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                 //         if ($userShift) {
+    //                 //             $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+    //                 //                 ->whereYear('created_at', '=', $year)->get();
+    //                 //             $actual_work_days = 0;
+    //                 //             foreach ($attendances as $attendance) {
+    //                 //                 if ($attendance->status_id == 1) {
+    //                 //                     $actual_work_days++;
+    //                 //                 }
+    //                 //             }
+    //                 //             $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+    //                 //             $holidays = [];
+    //                 //             $holidayCounts = 0;
+    //                 //             foreach ($holidays_temp as $holiday_temp) {
+    //                 //                 $holidays[] = strtolower($holiday_temp);
+    //                 //             }
+    //                 //             $start = Carbon::now()->startOfMonth();
+    //                 //             $end = Carbon::now();
+    //                 //             while ($start->lte($end)) {
+    //                 //                 $dayName = strtolower($start->englishDayOfWeek);
+
+    //                 //                 if (in_array($dayName, $holidays)) {
+    //                 //                     $holidayCounts++;
+    //                 //                 }
+    //                 //                 $start->addDay();
+    //                 //             }
+    //                 //             $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+    //                 //             $basic =  $row->monthly_cost;
+    //                 //             $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+    //                 //             return $total_before_absent_days - ceil($dayPay * $absenceDays);
+    //                 //         } else {
+    //                 //             return  '';
+    //                 //         }
+    //                 //     } else {
+    //                 //         return '';
+    //                 //     }
+    //                 // } else {
+    //                 //     return '';
+    //                 // }
+    //                 $total_before_tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->total_before_tax;
+    //                 if ($total_before_tax) {
+    //                     return number_format($total_before_tax, 0, '.', '');
+    //                 } else {
+    //                     $total_before_absent_days = number_format($row->calculateTotalSalary(), 0, '.', '');
+    //                     if ($row->wd && $row->essentials_pay_period) {
+    //                         if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+    //                             $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+    //                             if ($userShift) {
+    //                                 $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+    //                                     ->whereYear('created_at', '=', $year)->get();
+    //                                 $actual_work_days = 0;
+    //                                 foreach ($attendances as $attendance) {
+    //                                     if ($attendance->status_id == 1) {
+    //                                         $actual_work_days++;
+    //                                     }
+    //                                 }
+    //                                 $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+    //                                 $holidays = [];
+    //                                 $holidayCounts = 0;
+    //                                 foreach ($holidays_temp as $holiday_temp) {
+    //                                     $holidays[] = strtolower($holiday_temp);
+    //                                 }
+    //                                 $start = Carbon::now()->startOfMonth();
+    //                                 $end = Carbon::now();
+    //                                 while ($start->lte($end)) {
+    //                                     $dayName = strtolower($start->englishDayOfWeek);
+
+    //                                     if (in_array($dayName, $holidays)) {
+    //                                         $holidayCounts++;
+    //                                     }
+    //                                     $start->addDay();
+    //                                 }
+    //                                 $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+    //                                 $basic =  $row->monthly_cost;
+    //                                 $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+    //                                 return $total_before_absent_days - ceil($dayPay * $absenceDays);
+    //                             } else {
+    //                                 return  '';
+    //                             }
+    //                         } else {
+    //                             return '';
+    //                         }
+    //                     } else {
+    //                         return '';
+    //                     }
+    //                 }
+    //             })
+    //             ->addColumn('vat', function ($row) use ($month, $year) {
+    //                 $tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->tax_amount;
+    //                 if ($tax) {
+    //                     return number_format($tax, 0, '.', '');
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('total', function ($row)  use ($month, $year) {
+    //                 $total = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->final_total;
+    //                 if ($total) {
+    //                     return number_format($total, 0, '.', '');
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+
+
+
+    //             ->addColumn('sponser', function ($row)  use ($month, $year, $businesses) {
+    //                 $business_id = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->business_id;
+    //                 if ($business_id) {
+    //                     return  $businesses[$business_id] ?? '';
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+
+    //             // ->addColumn('housing', function ($row) {
+    //             //     return $row->housing ?? '';
+    //             // })
+    //             // ->addColumn('transport', function ($row) {
+    //             //     return $row->transport ?? '';
+    //             // })
+    //             ->addColumn('other_allowances', function ($row) {
+    //                 return $row->other_allowances ?? '';
+    //             })
+    //             ->addColumn('total_salary', function ($row)  use ($month, $year) {
+    //                 return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->total_salary ?? '';
+    //             })
+
+
+
+    //             ->addColumn('deductions', function ($row) {
+    //                 $userAllowancesAndDeductions = $row->userAllowancesAndDeductions;
+    //                 if ($userAllowancesAndDeductions) {
+    //                     $deduction_arr = [];
+    //                     foreach ($userAllowancesAndDeductions as $userAllowancesAndDeduction) {
+    //                         $deduction = json_decode(json_encode($userAllowancesAndDeduction));
+    //                         if ($deduction->essentials_allowance_and_deduction->type == 'deduction') {
+    //                             $deduction_arr[] = $deduction;
+    //                         }
+    //                     }
+    //                     $deductions = collect($deduction_arr);
+    //                     if (!empty($deductions)) {
+    //                         $html = '<ul>';
+    //                         foreach ($deductions as $deduction) {
+    //                             $html .= '<li>' . $deduction->essentials_allowance_and_deduction->description . ' : ' . number_format($deduction->amount, 0, '.', '') . '</li>';
+    //                         }
+    //                         $html .= '</ul>';
+    //                         return $html;
+    //                     } else {
+    //                         return '';
+    //                     }
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+    //             ->addColumn('additions', function ($row) {
+    //                 $userAllowancesAndDeductions = $row->userAllowancesAndDeductions;
+    //                 if ($userAllowancesAndDeductions) {
+    //                     $addition_arr = [];
+    //                     foreach ($userAllowancesAndDeductions as $userAllowancesAndDeduction) {
+    //                         $addition = json_decode(json_encode($userAllowancesAndDeduction));
+    //                         if ($addition->essentials_allowance_and_deduction->type == 'allowance') {
+    //                             $addition_arr[] = $addition;
+    //                         }
+    //                     }
+    //                     $additions = collect($addition_arr);
+    //                     if (!empty($additions)) {
+    //                         $html = '<ul>';
+    //                         foreach ($additions as $addition) {
+    //                             $html .= '<li>' . $addition->essentials_allowance_and_deduction->description . ' : ' . number_format($addition->amount, 0, '.', '') . '</li>';
+    //                         }
+    //                         $html .= '</ul>';
+    //                         return $html;
+    //                     } else {
+    //                         return '';
+    //                     }
+    //                 } else {
+    //                     return '';
+    //                 }
+    //             })
+
+
+
+    //             ->addColumn('final_salary', function ($row) use ($month, $year) {
+    //                 return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->final_salary ?? '';
+    //             })->addColumn('action', function ($row) use ($month, $year) {
+    //                 $trans = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first();
+    //                 if ($trans) {
+    //                     if ($trans->payment_status == 'paid') {
+    //                         return 'paid';
+    //                     }
+    //                     return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("agent.edit_time_sheet") . '</a>';
+    //                 } else {
+    //                     return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-success">' . __("agent.add_time_sheet") . '</a>';
+    //                 }
+    //             })->rawColumns([
+    //                 'name',
+    //                 'eqama_number',
+    //                 'location',
+    //                 'nationality',
+    //                 'monthly_cost',
+    //                 'wd',
+    //                 'actual_work_days',
+    //                 'daily_work_hours',
+    //                 'absence_day',
+    //                 'absence_amount',
+    //                 'over_time_h',
+    //                 'over_time',
+    //                 'other_deduction',
+    //                 'other_addition',
+    //                 'cost2',
+    //                 'invoice_value',
+    //                 'vat',
+    //                 'total',
+    //                 'sponser',
+    //                 'basic',
+    //                 'housing',
+    //                 'transport',
+    //                 'other_allowances',
+    //                 'total_salary',
+    //                 'deductions',
+    //                 'additions',
+    //                 'final_salary',
+    //                 'action'
+    //             ])->make(true);
+    //     }
+
+    //     return view('custom_views.agents.agent_time_sheet.index');
+    // }
 
 
 
@@ -628,10 +1465,10 @@ class TimeSheetController extends Controller
         $year = $currentDateTime->year;
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
-        $leavesTypes= RequestsType::where('type','leavesAndDepartures')->where('for','worker')->pluck('id')->toArray();
-       
+        $leavesTypes = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'worker')->pluck('id')->toArray();
+
         $leaves = UserRequest::where('related_to', $id)
-            ->whereIn('request_type_id',$leavesTypes)
+            ->whereIn('request_type_id', $leavesTypes)
             ->whereDate('start_date', '>=', $start_of_month)
             ->whereDate('end_date', '<=', $end_of_month)->where('status', 'approved')->get();
 

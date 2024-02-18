@@ -331,7 +331,7 @@ class AgentController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
    
-        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::where('contact_id', $contact_id)->all()->pluck('name', 'id')->toArray();
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::where('contact_id', $contact_id)->pluck('name', 'id')->toArray();
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');

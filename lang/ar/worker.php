@@ -38,5 +38,6 @@ return [
     "deductions" => "الخصومات",
     "additions" => "الإضافات",
     "final_salary" => "الراتب النهائي",
-    'hours'=>'ساعات'
+    'hours' => 'ساعات',
+    'project' => 'المشروع',
 ];
