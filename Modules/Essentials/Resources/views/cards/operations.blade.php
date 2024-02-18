@@ -509,37 +509,9 @@
                     });
             });
 
-            
-            $('#nationalities_select, #status-select, #select_business_id').change(
-                function() {
-                 
-                    console.log('Nationality selected: ' + $('#nationalities_select').val());
-                    console.log('Status selected: ' + $('#status_filter').val());
-                    console.log('loc selected: ' + $('#select_business_id').val());
-                    operation_table.ajax.reload();
-
-            });
 
 
-            function getCheckRecords()
-            
-            {
-                    var selectedRows = [];
-                    $(".selectedDiv").html("");
-                    $('.tblChk:checked').each(function() {
-                        if ($(this).prop('checked')) {
-                            const rec = "<strong>" + $(this).attr("data-id") + " </strong>";
-                            $(".selectedDiv").append(rec);
-                            selectedRows.push($(this).attr("data-id"));
-
-                        }
-
-                    });
-
-            return selectedRows;
-           }
-
-           function calculateFees(selectedValue) {
+            function calculateFees(selectedValue) {
                 switch (selectedValue) {
                     case '3':
                         return 2425;
@@ -574,8 +546,7 @@
                             var data = response.data;
                            
                             var durationOptions = response.durationOptions;
-                            console.log(durationOptions);
-
+                           
                             $('.modal-body').empty();
 
                             var inputClasses = 'form-group';
@@ -742,7 +713,7 @@
                                 rowDiv.append(renew_DurationInput_);
                                
                               
-                                var feesInput = $('<input>', {
+                                var feesInput_ = $('<input>', {
                                     type: 'text',
                                     name: 'fees[]',
                                     class:  inputClasses2 + ' input-with-padding'+' fees-input',
@@ -752,7 +723,7 @@
                                     value: row.fees
                                 });
 
-                                rowDiv.append(feesInput);
+                                rowDiv.append(feesInput_);
 
 
                                 var pay_numberInput = $('<input>', {
@@ -775,17 +746,17 @@
                                     dropdownParent: $('#renewOperationModal'),
                                 });
                                
-                                $('#renew_operation_durationId_' + index).val(row.workcard_duration).trigger('change');
-
+                                $('#renew_operation_durationId_' + index).trigger('change');
+                              
                                 $('#renew_operation_durationId_' + index).on('change', function() {
                                     console.log("Change event triggered");
                                     var selectedValue = $(this).val();
                                     console.log("Selected value:", selectedValue);
-                                    var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
-                                    console.log("Fees input found:", feesInput);
+                                    var feesInput_ = $(this).closest('.row').find('input[name="fees[]"]');
+                                    console.log("Fees input found:", feesInput_);
                                     var fees = calculateFees(selectedValue);
                                     console.log("Calculated fees:", fees);
-                                    feesInput.val(fees);
+                                    feesInput_.val(fees);
                                 });
 
                               
@@ -838,17 +809,40 @@
                 });
 
 
+            
+            $('#nationalities_select, #status-select, #select_business_id').change(
+                function() {
+                 
+                    console.log('Nationality selected: ' + $('#nationalities_select').val());
+                    console.log('Status selected: ' + $('#status_filter').val());
+                    console.log('loc selected: ' + $('#select_business_id').val());
+                    operation_table.ajax.reload();
 
-        //     $(document).ready(function(){
-        //                 $('#renewOperationModal').on('hidden.bs.modal', function () {
-        //                     location.reload();
-        //      });
-                   
- 
+            });
+
+
+            function getCheckRecords()
+            
+            {
+                    var selectedRows = [];
+                    $(".selectedDiv").html("");
+                    $('.tblChk:checked').each(function() {
+                        if ($(this).prop('checked')) {
+                            const rec = "<strong>" + $(this).attr("data-id") + " </strong>";
+                            $(".selectedDiv").append(rec);
+                            selectedRows.push($(this).attr("data-id"));
+
+                        }
+
+                    });
+
+            return selectedRows;
+           }
+
+       
 
 
 
-        // });
     });
     </script>
 
