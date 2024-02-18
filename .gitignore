@@ -35,6 +35,8 @@ yarn-error.log
 
 # Laravel 4 specific
 bootstrap/compiled.php
+bootstrap/cache/*
+bootstrap/cache
 bootstrap/cache/config.php
 app/storage/
 
