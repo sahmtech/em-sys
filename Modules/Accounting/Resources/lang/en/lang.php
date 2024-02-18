@@ -544,5 +544,13 @@ return [
    'view_companies' => 'View Companies',
    'companies' => 'Companies',
    'importe_openingBalance' => 'Import opening balance',
-
+   'gl_code' => 'GLC',
+   'gl_code_mainaccount' => 'The second level of computers (the name of the father’s account in English)',
+   'gl_code_mainaccount_nots' => "The value of this field must be the name of the account in English from the second level to which the account belongs, and this value is chosen from the first column.",
+   'importe_openingBalance' => 'Import opening credits',
+   'importe_accounts' => 'Import a chart of accounts',
+   'account_primary_type' => 'Basic account type',
+   'account_sub_type_id' => 'Account subtype',
+   'account_name_ar' => 'Account name in Arabic',
+   'account_name_en' => 'Account name in English',
 ];

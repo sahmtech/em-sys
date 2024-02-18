@@ -102,7 +102,7 @@ class PaymentVouchersController extends Controller
                     'action',
                     function ($row) {
                         return '<button type="button" class="btn btn-primary btn-xs view_payment" style="width:100%"
-                data-href="' . action([\App\Http\Controllers\TransactionPaymentController::class, "viewPayment"], [$row->id]) . '"><i class="fa fa-print" style="padding-left: 4px;padding-right: 4px;"></i>طباعة
+                data-href="' . action([\App\Http\Controllers\TransactionPaymentController::class, "view_payment_vouchers"], [$row->id]) . '"><i class="fa fa-print" style="padding-left: 4px;padding-right: 4px;"></i>طباعة
                     </button>';
                     }
                 )->addColumn(

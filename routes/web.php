@@ -252,7 +252,7 @@ Route::middleware(['setData'])->group(function () {
     Auth::routes();
     //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
 
-  
+
 
 
 
@@ -511,6 +511,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/payments/show-child-payments/{payment_id}', [TransactionPaymentController::class, 'showChildPayments']);
     Route::get('/payments/view-payment/{payment_id}', [TransactionPaymentController::class, 'viewPayment']);
     Route::get('/payments/add_payment/{transaction_id}', [TransactionPaymentController::class, 'addPayment']);
+    Route::get('/payments/view-payment-vouchers/{payment_id}', [TransactionPaymentController::class, 'view_payment_vouchers']);
+    Route::get('/payments/view-receipt-vouchers/{payment_id}', [TransactionPaymentController::class, 'view_receipt_vouchers']);
+
     Route::get('/payments/pay-contact-due/{contact_id}', [TransactionPaymentController::class, 'getPayContactDue']);
     Route::post('/payments/pay-contact-due', [TransactionPaymentController::class, 'postPayContactDue']);
     Route::resource('payments', TransactionPaymentController::class);
