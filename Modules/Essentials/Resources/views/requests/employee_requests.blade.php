@@ -111,7 +111,7 @@
     <section class="content">
 
         @component('components.widget', ['class' => 'box-primary'])
-            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_HR_requests'))
+          
                 @slot('tool')
                     <div class="box-tools">
 
@@ -121,7 +121,7 @@
                         </button>
                     </div>
                 @endslot
-            @endif
+          
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
