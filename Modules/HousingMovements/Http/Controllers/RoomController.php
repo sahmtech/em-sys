@@ -85,7 +85,7 @@ class RoomController extends Controller
                     function ($row) use ($is_admin, $can_room_workers, $can_room_edit, $can_room_delete) {
                         $html = '';
                         if ($is_admin  || $can_room_workers) {
-                            $html .= '<a href="' . route('show_room_workers', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-eye"></i> ' . __('housingmovements::lang.show_room_workers') . '</a>
+                            $html .= '<a href="' . route('show_room_workers', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-eye"></i> ' . __('housingmovements::lang.show_rooms_residents') . '</a>
 
                         &nbsp;';
                         }
@@ -108,14 +108,18 @@ class RoomController extends Controller
                 ->make(true);
         }
 
+        $workers = User::whereIn('users.id', $userIds)
+        ->whereNot('status', 'inactive')
+        ->whereDoesntHave('htrRoomsWorkersHistories', function($query) {
+            $query->where('still_housed', '=', 1);
+        })
+        ->select(
+            'users.id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''), ' - ',COALESCE(users.id_proof_number,'')) as full_name")
+        )
+        ->pluck('full_name', 'users.id');
 
-        $workers = User::whereIn('users.id', $userIds)->whereNull('room_id')->where('user_type', 'worker')->whereNot('status', 'inactive')->select(
-            'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-             ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )->pluck('full_name', 'id');
     
-
         $roomStatusOptions = [
             'busy' => __('housingmovements::lang.busy_rooms'),
             'available' => __('housingmovements::lang.available_rooms'),
@@ -243,7 +247,10 @@ class RoomController extends Controller
                     'still_housed' => '0',
                     'leave_date' => $carbon_now
                 ]);
-                $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)->pluck('room_id');
+                $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)
+                ->latest()
+                ->pluck('room_id')
+                ->first();
 
                 $room = HtrRoom::where('id', $roomId)->first();
 
@@ -556,8 +563,9 @@ class RoomController extends Controller
                         $worker = User::where('id', $workerId)->first(['id_proof_number']);
                         return [
                             'success' => false,
-                            'msg' => __("Worker with ID proof number :id_proof_number is assigned to multiple rooms.", ['id_proof_number' => $worker->id_proof_number])
+                            'msg' => __("housingmovements::lang.worker_assigned_to_multiple_rooms", ['id' => $worker->id_proof_number]),
                         ];
+                        
                     }
                     $workerAssignments[$workerId] = $room['room_id'];
                 }
@@ -585,8 +593,9 @@ class RoomController extends Controller
                 } else {
                     return [
                         'success' => false,
-                        'msg' => "Not enough beds in room {$roomDetails->room_number}."
+                        'msg' => __("housingmovements::lang.no_enough_rooms", ['id' => $roomDetails->room_number]),
                     ];
+                    
                 }
             }
     

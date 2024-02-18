@@ -50,7 +50,7 @@
             </div>
 
             <div class="add-new-data">
-                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'processUpload']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
+                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="col-sm-8">

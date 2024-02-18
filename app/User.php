@@ -72,7 +72,7 @@ class User extends Authenticatable
 
     public function appointment()
     {
-        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id')->where('is_active', 1);;
+        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id')->where('is_active', 1);
     }
     public function business()
     {
@@ -521,5 +521,10 @@ class User extends Authenticatable
     public function followupUserAccessProjects()
     {
         return $this->hasMany(FollowupUserAccessProject::class, 'user_id');
+    }
+
+    public function htrRoomsWorkersHistories()
+    {
+        return $this->hasMany(HtrRoomsWorkersHistory::class, 'worker_id', 'id');
     }
 }

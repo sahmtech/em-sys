@@ -16,6 +16,7 @@ use App\Transaction;
 use App\Contact;
 use Modules\Sales\Entities\salesContractItem;
 use DB;
+use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Models\Permission;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
@@ -38,7 +39,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
-use Modules\Sales\Entities\SalesProject;
+
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use App\Request as UserRequest;
 use App\RequestProcess;
@@ -119,6 +120,7 @@ class EssentialsManageEmployeeController extends Controller
         $EssentialsProfession = EssentialsProfession::all()->pluck('name', 'id');
         $EssentialsSpecialization = EssentialsSpecialization::all()->pluck('name', 'id');
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
@@ -148,13 +150,10 @@ class EssentialsManageEmployeeController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->with([
                 'userAllowancesAndDeductions',
-                'appointment' => function ($query) {
-                    $query->where('is_active', 1);
-                }
+                'appointment'
             ])
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
-            // ->where('users.status', '!=', 'inactive')
             ->where('essentials_employees_contracts.is_active', 1)
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
@@ -198,10 +197,11 @@ class EssentialsManageEmployeeController extends Controller
             $users->where('users.status', $request->input('status'));
         }
         if (!empty($request->input('department')) && $request->input('department') != 'all') {
+            error_log($request->input('department'));
             $users->where('users.essentials_department_id', $request->input('department'));
         }
-        if (!empty($request->input('contract_type')) && $request->input('company') != 'all') {
-            //contract_type
+        if (!empty($request->input('contract_type')) && $request->input('contract_type') != 'all') {
+            error_log($request->input('contract_type'));
             $users->where('essentials_employees_contracts.contract_type_id', $request->input('contract_type'));
         }
 
@@ -213,7 +213,7 @@ class EssentialsManageEmployeeController extends Controller
         if (!empty($request->input('nationality')) && $request->input('nationality') != 'all') {
 
             $users->where('users.nationality_id', $request->input('nationality'));
-            error_log("111");
+          
         }
         if (request()->ajax()) {
 
@@ -844,7 +844,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
-        $countries = $countries = EssentialsCountry::forDropdown();
+        $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
         $companies = Company::all()->pluck('name', 'id');
         $user = null;
@@ -911,7 +911,7 @@ class EssentialsManageEmployeeController extends Controller
 
     public function createWorker($id)
     {
-
+        $contact = SalesProject::find($id);
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -924,7 +924,9 @@ class EssentialsManageEmployeeController extends Controller
         } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
         }
-
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
+        $countries = EssentialsCountry::forDropdown();
         $roles = $this->getRolesArray($business_id);
         $username_ext = $this->moduleUtil->getUsernameExtension();
         $locations = BusinessLocation::where('business_id', $business_id)
@@ -936,7 +938,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $contact = Contact::find($id);
+      
 
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -954,8 +956,8 @@ class EssentialsManageEmployeeController extends Controller
             ->with(compact(
                 'roles',
                 'nationalities',
-                'username_ext',
-                'blood_types',
+                'username_ext','countries',
+                'blood_types','spacializations','professions',
                 'contact',
                 'locations',
                 'banks',
