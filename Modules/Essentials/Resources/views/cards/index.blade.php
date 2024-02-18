@@ -10,10 +10,14 @@
 
     <head>
         <style>
-     
-.input-with-padding {
-    padding-right: 15px !important;
-}
+                
+            .input-with-padding {
+                padding-right: 15px !important;
+            }
+
+            .renew-row {
+                margin-bottom: 10px; 
+            }
         </style>
     </head>
 
@@ -438,7 +442,7 @@
                             $.each(data, function(index, row) {
 
                                 var rowDiv = $('<div>', {
-                                    class: 'row'
+                                    class: 'row renew-row'
                                 });
 
 
@@ -515,6 +519,7 @@
                                     name: 'renew_duration[]',
                                     class: 'form-control select2' +  inputClasses2 + ' input-with-padding', 
                                     style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
+                                    required: true
                                 });
 
                                 Object.keys(durationOptions).forEach(function(value) {
@@ -643,7 +648,7 @@
                             toastr.error('An error occurred while submitting the form.', 'Error');
                         },
                     });
-               });
+                });
 
 
                     // $('#renewModal form').click(function() {
