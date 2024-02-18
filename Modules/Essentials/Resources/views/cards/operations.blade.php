@@ -510,6 +510,9 @@
             });
 
 
+          
+           
+
 
             function calculateFees(selectedValue) {
                 switch (selectedValue) {
@@ -675,7 +678,7 @@
                                     var month = date.getMonth() + 1;
                                     var year = date.getFullYear();
 
-                                    // Pad day and month with leading zeros if needed
+                                    
                                     if (day < 10) {
                                         day = '0' + day;
                                     }
@@ -705,13 +708,13 @@
                               
 
                                 
-                                 
-                                renew_DurationInput_.val(row.workcard_duration);
-
-                              
+                                
+                                renew_DurationInput_.val(3);
 
                                 rowDiv.append(renew_DurationInput_);
+
                                
+                             
                               
                                 var feesInput_ = $('<input>', {
                                     type: 'text',
@@ -741,22 +744,34 @@
 
                                 $('.modal-body').append(rowDiv);
                                 
-                                
-                                renew_DurationInput_.select2({
-                                    dropdownParent: $('#renewOperationModal'),
+                                $(document).ready(function() {
+                                    
+                                    var defaultDuration = $('select[name="renew_duration[]"]').val();
+                                    
+                                    
+                                    var feesInput = $('select[name="renew_duration[]"]').closest('.row').find('.fees-input');
+                                    
+                                    
+                                    var calculatedFees = calculateFees(defaultDuration);
+                                    
+                                    
+                                    feesInput.val(calculatedFees);
                                 });
                                
-                                $('#renew_operation_durationId_' + index).trigger('change');
-                              
-                                $('#renew_operation_durationId_' + index).on('change', function() {
-                                    console.log("Change event triggered");
-                                    var selectedValue = $(this).val();
-                                    console.log("Selected value:", selectedValue);
-                                    var feesInput_ = $(this).closest('.row').find('input[name="fees[]"]');
-                                    console.log("Fees input found:", feesInput_);
-                                    var fees = calculateFees(selectedValue);
-                                    console.log("Calculated fees:", fees);
-                                    feesInput_.val(fees);
+                                $(document).on('change', 'select[name="renew_duration[]"]', function() {
+                                    console.log("option");
+                
+                                    
+                                    var selectedDuration = $(this).val();
+                                    
+                                    
+                                    var feesInput = $(this).closest('.row').find('.fees-input');
+                                    
+                                    
+                                    var calculatedFees = calculateFees(selectedDuration);
+                                    
+                                    
+                                    feesInput.val(calculatedFees);
                                 });
 
                               

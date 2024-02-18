@@ -1314,7 +1314,8 @@ class EssentialsCardsController extends Controller
 
                    
 
-                   
+                   if( $data['number'] != null &&  $data['expiration_date'] !=null)
+                   {
                     $existingDocument = EssentialsOfficialDocument::where('type', 'residence_permit')
                     ->where('employee_id', $data['employee_id'])
                     ->where('is_active', 1)
@@ -1330,8 +1331,6 @@ class EssentialsCardsController extends Controller
     
                     
                     $newDocument = new EssentialsOfficialDocument();
-                    
-                    
                     $newDocument->type = 'residence_permit';
                     $newDocument->employee_id = $data['employee_id'];
                     $newDocument->number = $data['number'];
@@ -1340,6 +1339,8 @@ class EssentialsCardsController extends Controller
                     $newDocument->is_active = 1;
                     $newDocument->save();
            
+                   
+                   }
                    
                    
                 }
@@ -1437,8 +1438,16 @@ class EssentialsCardsController extends Controller
                
                 $selectedData = json_decode($jsonData, true);
               
-              //  DB::beginTransaction();
+             
                 foreach ($selectedData as $data) {
+
+                    $user = User::find($data['id']);
+                    if ($user && is_null($user->border_no) && is_null($data['number']) && is_null($data['expiration_date'])) {
+                        return [
+                            'success' => false,
+                            'msg' => __('essentials::lang.user_info_eqama_not_completed'),
+                        ];
+                    }
 
                     $exist_card = EssentialsWorkCard::where('employee_id',$data['id'])
                     ->where('is_active',1)
@@ -1481,7 +1490,8 @@ class EssentialsCardsController extends Controller
                     $new_card->save();
 
                    
-
+                    if( $data['number'] != null &&  $data['expiration_date'] !=null)
+                    {
                    
                     $existingDocument = EssentialsOfficialDocument::where('type', 'residence_permit')
                     ->where('employee_id', $data['id'])
@@ -1507,10 +1517,10 @@ class EssentialsCardsController extends Controller
                     $newDocument->is_active = 1;
                     $newDocument->save();
            
-                   
+                }
                    
                 }
-                //DB::commit();
+              
                 $output = ['success' => 1, 'msg' => __('essentials::lang.card_renew_sucessfully')];
             } else
              {
@@ -1592,20 +1602,23 @@ class EssentialsCardsController extends Controller
             $projectName = $assignedProject->name ?? '';
             $projectId = $assignedProject->id ?? '';
 
-            $all_responsible_users = [
+            if ( $assignedProject != null)
+            {
+                 $all_responsible_users = [
                 'id' => $projectId,
                 'name' => $projectName,
             ];
 
-            if (!$all_responsible_users) {
-                return response()->json(['error' => 'No responsible users found for the given employee ID']);
             }
-
+            else {$all_responsible_users = [ ];
+               
+           }
+           
             $query = User::where('users.user_type', 'employee');
             $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
             $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-
-            $userIds = json_decode($projects->assignedTo->assigned_to, true);
+           
+            $userIds = json_decode($projects->assignedTo?->assigned_to, true);
             $assignedresponibleClient = [];
 
             if ($userIds) {

@@ -15,7 +15,7 @@
                     <div class="col-md-12 col-sm-12">
 
                         
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('employees', __('essentials::lang.choose_card_owner') . ':*') !!}
                             <div class="input-group">
@@ -36,7 +36,7 @@
 
 
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('all_responsible_users', __('essentials::lang.select_responsible_users') . ':') !!}
                             <div class="input-group">
@@ -53,7 +53,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('responsible_client', __('essentials::lang.responsible_client') . ':') !!}
                             <div class="input-group">
@@ -89,7 +89,7 @@
                     </div>
 
                     <div class="clearfix"></div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('Residency_no', __('essentials::lang.Residency_no') . ':') !!}
                             <div class="input-group">
@@ -107,7 +107,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6 border_no">
+                    <div class="col-md-4 border_no">
                         <div class="form-group">
                             {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
                             <div class="input-group">
@@ -125,7 +125,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6" id="Residency_end_date_id">
+                    <div class="col-md-4" id="Residency_end_date_id">
                         <div class="form-group">
                             {!! Form::label('Residency_end_date', __('essentials::lang.Residency_end_date') . ':') !!}
                             <div class="input-group">
@@ -143,7 +143,7 @@
                     </div>
 
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('business', __('essentials::lang.business') . ':') !!}
                             <div class="input-group">
@@ -162,7 +162,7 @@
                     </div>		
 
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('workcard_duration', __('essentials::lang.work_card_duration') . ':*') !!}
                             <div class="input-group">
@@ -177,7 +177,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('fees', __('essentials::lang.fees') . ':*') !!}
                             <div class="input-group">
@@ -191,7 +191,7 @@
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group" >
                             {!! Form::label('pay_number', __('essentials::lang.pay_number') . ':') !!}
                             <div class="input-group">

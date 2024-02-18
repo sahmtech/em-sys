@@ -51,16 +51,21 @@
                         @foreach ($users as $user)
                             <tr>
                                 <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                               
                                 <td>{{ optional(optional($user->appointment)->location)->name }}</td>
+                                
                                 <td>{{ optional($user->country)->nationality ?? ' ' }}</td>
                                 <td>{{ $user->id_proof_number }}</td>
+                                
                                 <td>
-                                    @foreach ($user->OfficialDocument as $off)
+                                    @foreach ($user->OfficialDocument->reverse() as $off)
                                         @if ($off->type == 'residence_permit')
                                             {{ $off->expiration_date }}
+                                            @break 
                                         @endif
                                     @endforeach
                                 </td>
+
                                 <td>{{ optional($user->workCard)->id ?? ' ' }}</td>
                                 <td>
                                     @if ($user->has_insurance === null)
@@ -73,16 +78,18 @@
                                 </td>
                                 <td>{{ optional($user->contract)->contract_end_date ?? ' ' }}</td>
                                 <td>
-                                    @foreach ($user->OfficialDocument as $off)
+                                    @foreach ($user->OfficialDocument->reverse() as $off)
                                         @if ($off->type == 'passport')
                                             {{ $off->number }}
+                                            @break 
                                         @endif
                                     @endforeach
                                 </td>
                                 <td>
-                                    @foreach ($user->OfficialDocument as $off)
+                                    @foreach ($user->OfficialDocument->reverse() as $off)
                                         @if ($off->type == 'passport')
                                             {{ $off->expiration_date }}
+                                            @break 
                                         @endif
                                     @endforeach
                                 </td>

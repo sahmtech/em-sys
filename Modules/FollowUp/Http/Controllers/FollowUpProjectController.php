@@ -178,22 +178,32 @@ class FollowUpProjectController extends Controller
     {
 
         $users = User::where('assigned_to', $id)
+        ->with([
+            'country',
+            'appointment' => function ($query) {
+                $query->where('is_active', 1)->latest('created_at');
+            },
+            'appointment.profession',
+            'userAllowancesAndDeductions',
+            
+            'appointment.location',
+            'contract' => function ($query) {
+                $query->where('is_active', 1)->latest('created_at');
+            },
+            'OfficialDocument' => function ($query) {
+                $query->where('is_active', 1)->latest('created_at');
+            },
+            'workCard'
+        ])
+        ->get();
 
+     
+    
 
-            ->with([
-                'country',
-                'appointment.profession',
-                'userAllowancesAndDeductions',
-                'appointment.location',
-
-                'contract',
-                'OfficialDocument',
-                'workCard'
-            ])
-            ->get();
-
-
-        return view('followup::projects.show', compact('users', 'id'));
+        
+    
+        return view('followup::projects.show',
+         compact('users', 'id'));
     }
 
 
