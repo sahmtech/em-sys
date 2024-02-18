@@ -105,7 +105,7 @@ class WkProcedureController extends Controller
                     }
                     return $html;
                 })
-                ->rawColumns(['steps', 'escalations', 'action'])
+                ->rawColumns(['steps', 'action'])
                 ->make(true);
         }
 
@@ -191,7 +191,7 @@ class WkProcedureController extends Controller
                     }
                     return $html;
                 })
-                ->rawColumns(['steps', 'escalations', 'action'])
+                ->rawColumns(['steps', 'action'])
                 ->make(true);
         }
 
@@ -462,15 +462,15 @@ class WkProcedureController extends Controller
                     }
                     $previousStepIds = [];
                     $previousStepIds[] = $workflowStep->id;
-                    if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
-                        foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
-                            EssentialsProceduresEscalation::create([
-                                'procedure_id' => $workflowStep->id,
-                                'escalates_to' => $escalationDept,
-                                'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
-                            ]);
-                        }
-                    }
+                    // if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+                    //     foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+                    //         EssentialsProceduresEscalation::create([
+                    //             'procedure_id' => $workflowStep->id,
+                    //             'escalates_to' => $escalationDept,
+                    //             'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+                    //         ]);
+                    //     }
+                    // }
                 }
             }
 
@@ -486,7 +486,7 @@ class WkProcedureController extends Controller
     }
      public function updateEmployeeProcedure(Request $request, $id)
     {
-
+     
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
             $requests = UserRequest::where('request_type_id', $type)->get();
@@ -497,9 +497,10 @@ class WkProcedureController extends Controller
                 ];
                 return redirect()->back()->with(['status' => $output]);
             }
-            $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
+         
 
-            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
+            $procedures = WkProcedure::where('request_type_id', $type)->get();
+           
             if ($procedures) {
                 foreach ($procedures as $procedure) {
                  //   EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
@@ -507,9 +508,7 @@ class WkProcedureController extends Controller
                 }
             }
 
-          //  $type = $request->input('type');
             $steps = $request->input('step');
-
 
             $check_repeated = [];
             foreach ($steps  as $index => $step) {
@@ -521,12 +520,13 @@ class WkProcedureController extends Controller
 
             $previousStepIds = [];
             if($steps){
-
-                foreach ($steps  as $index => $step) {
+                $index=0;
+                foreach ($steps  as $step) {
+                    error_log($index);
                     $start_dep = $step['edit_modal_department_id_steps'][0];
                     $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = WkProcedure::create([
-                        'request_type_id' => $procedureType,
+                        'request_type_id' => $type,
                         'request_owner_type' => 'employee',
                         'department_id' => $start_dep,
                         'business_id' => $business_id,
@@ -550,6 +550,7 @@ class WkProcedureController extends Controller
                     //         ]);
                     //     }
                     // }
+                    $index ++;
                 }
             }
           
