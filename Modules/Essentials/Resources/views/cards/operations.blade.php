@@ -774,8 +774,7 @@
                                 renew_DurationInput_.select2({
                                     dropdownParent: $('#renewOperationModal'),
                                 });
-                                console.log($('#renew_operation_durationId_' + index).val());
-
+                               
                                 $('#renew_operation_durationId_' + index).val(row.workcard_duration).trigger('change');
 
                                 $('#renew_operation_durationId_' + index).on('change', function() {

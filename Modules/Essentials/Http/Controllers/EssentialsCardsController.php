@@ -371,12 +371,27 @@ class EssentialsCardsController extends Controller
         }
 
        
-        $users = User::whereIn('users.id', $userIds)->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
+        $users = User::whereIn('users.id', $userIds)->where('users.is_cmmsn_agnt', 0)
+            ->where('users.nationality_id', '!=', 5)
+            ->where('users.status','active')
            
-            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
-            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+            ->leftJoin('essentials_employee_appointmets', function($join) {
+                $join->on('essentials_employee_appointmets.employee_id', '=', 'users.id')
+                     ->where('essentials_employee_appointmets.is_active', 1);
+            })
+
+            ->leftJoin('essentials_admission_to_works', function($join) {
+                $join->on('essentials_admission_to_works.employee_id', '=', 'users.id')
+                     ->where('essentials_admission_to_works.is_active', 1);
+            })
+
+            ->leftJoin('essentials_employees_contracts', function($join) {
+                $join->on('essentials_employees_contracts.employee_id', '=', 'users.id')
+                     ->where('essentials_employees_contracts.is_active', 1);
+            })
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+            
+            
             ->select([
                 'users.id as id',
                 'users.emp_number',
@@ -384,9 +399,9 @@ class EssentialsCardsController extends Controller
                 'users.username',
                 'users.business_id',
                 'users.user_type',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
-                'users.id_proof_number',
-                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+                    'users.id_proof_number',
+                    DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
 
                 'essentials_admission_to_works.admissions_date as admissions_date',
                 'essentials_employees_contracts.contract_end_date as contract_end_date',
@@ -400,30 +415,28 @@ class EssentialsCardsController extends Controller
                 'essentials_employee_appointmets.profession_id as profession_id'
             ])
 
-            ->where('users.nationality_id', '!=', 5)
-            ->where('users.status','active')
-            ->where('essentials_employee_appointmets.is_active',1)
-            ->where('essentials_admission_to_works.is_active',1)
-            ->where('essentials_employees_contracts.is_active',1)
+        
             ->orderby('id', 'desc');
 
+
+      //dd( $users->whereIn('users.id', [5939])->get());
             if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
                
-                $users->whereIn('users.id', $request->input('proof_numbers'));
+                $users->whereIn('users.id', $request->input('proof_numbers'))->first();
             }
         
         if (!empty($request->input('status-select'))) {
-            $users->where('users.status', $request->input('status'));
+            $users->where('users.status', $request->input('status'))->first();
         }
 
         if (!empty($request->input('business'))) {
 
-            $users->where('users.business_id', $request->input('business'));
+            $users->where('users.business_id', $request->input('business'))->first();
         }
 
         if (!empty($request->input('nationality'))) {
 
-            $users->where('users.nationality_id', $request->input('nationality'));
+            $users->where('users.nationality_id', $request->input('nationality'))->first();
             error_log("111");
         }
         if (request()->ajax()) {
