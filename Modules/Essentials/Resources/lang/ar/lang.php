@@ -943,6 +943,7 @@ return [
   'other' => 'غير ذلك',
   'male' => 'ذكر',
   'female' => 'أنثى',
+  'both'=>'كلاهما',
   'age' => 'العمر',
   'gender' => 'الجنس',
   'add_family' => 'إضافة مرافق',
@@ -1009,6 +1010,7 @@ return [
   'work_cards' => 'العلاقات الحكومية',
   'choose_card_owner'=>'اختر صاحب كرت العمل',
   'leave_duration' => 'المدة',
+  'total_leave_duration' => 'المدة الإجمالية (منفصلة أو متصلة)',
   'Urgent' => 'اضطرارية',
   'Annual' => 'سنوية',
   'select_leave_type' => 'اختر نوع الإجازة',
@@ -1728,4 +1730,10 @@ return [
 
   'contract_type_id_not_found'=>'رقم نوع العقد غير موجود في السطر رقم ',
   'edit_professions'=>'تعديل المسمى الوظيفي',
+  'due_date'=>'تاريخ الاستحقاق',
+  'due_categorie'=>'الفئة المستحقة',
+  'include_salary_percent'=>'متضمنة الراتب بنسبة',
+  'extendable'=>'قابلة للتمديد',
+  'number of months after adminssion date'=>'عدد الأشهر من تاريخ مباشرة العمل',
+  'Leave the input empty to take the value "undefined"'=>'اترك الحقل فارغاً في حال كانت العدد الأقصى غير محدد',
 ];
