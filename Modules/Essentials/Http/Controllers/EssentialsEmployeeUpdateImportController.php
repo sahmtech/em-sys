@@ -690,7 +690,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                           
                                 $final_contract_start_date=null;
                               
-                                if($emp_data['contract_start_date'] != null  ||  $emp_data['contract_end_date'] != null )
+                                if($emp_data['contract_start_date'] != null  ||  $emp_data['contract_end_date'] != null  )
                                 {
                                     $previous_contract = EssentialsEmployeesContract::where('employee_id',  $existingEmployee->id)
                                     ->where('is_active',1)
@@ -773,7 +773,22 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                     $contract->status = "valid";
                                     $contract->save();
             
-                                }  
+                                }
+                                else if( $emp_data['contract_start_date'] == null  &&  $emp_data['contract_end_date'] == null && $emp_data['contract_type_id'] != null ){
+                                    $previous_contract = EssentialsEmployeesContract::where('employee_id',  $existingEmployee->id)
+                                    ->where('is_active',1)
+                                    ->latest('created_at')
+                                    ->first();
+                                  
+                                   
+                                    if( $previous_contract )
+                                    {
+                                        $previous_contract->contract_type_id=  $emp_data["contract_type_id"];;
+                                        $previous_contract->contract_duration=null;
+                                        $previous_contract->save();
+                                      
+                                    }
+                                }
                                 
                                 
                                // dd( $emp_data['essentials_department_id']);

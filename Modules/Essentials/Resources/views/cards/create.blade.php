@@ -15,11 +15,12 @@
 <div class="row">
 		<div class="col-md-12 col-sm-12">
 			@component('components.widget', ['class' => 'box-solid'])
-    {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'store']), 'method' => 'post','id' => 'workCardForm']) !!}       
+    {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'store']), 
+    'method' => 'post','id' => 'workCardForm']) !!}       
           
-    <div class="col-md-9">
+<div class="col-md-9">
     <div class="form-group">
-        {!! Form::label('employees', __('followup::lang.choose_worker') . ':*') !!}
+        {!! Form::label('employees', __('essentials::lang.choose_card_owner') . ':*') !!}
         <div class="input-group">
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
@@ -40,7 +41,7 @@
 
 <div class="col-md-9">
     <div class="form-group">
-        {!! Form::label('all_responsible_users', __('essentials::lang.select_responsible_users') . ':*') !!}
+        {!! Form::label('all_responsible_users', __('essentials::lang.select_responsible_users') . ':') !!}
         <div class="input-group">
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
@@ -57,13 +58,16 @@
 
 <div class="col-md-9">
     <div class="form-group">
-        {!! Form::label('responsible_client', __('essentials::lang.responsible_client') . ':*') !!}
+        {!! Form::label('responsible_client', __('essentials::lang.responsible_client') . ':') !!}
         <div class="input-group">
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('responsible_client', [], null,
-                 ['class' => 'form-control','style'=>'height:40px', 'id' => 'responsible_client']) !!}
+            {!! Form::select('responsible_client[]', [], null,
+                 ['class' => 'form-control select2',
+                  'style' => 'height:40px',
+                   'id' => 'responsible_client',
+                    'multiple' => 'multiple']) !!}
         </div>
     </div>
 </div>
@@ -87,7 +91,7 @@
 
 <div class="col-md-9">
     <div class="form-group">
-        {!! Form::label('Residency_no', __('essentials::lang.Residency_no') . ':*') !!}
+        {!! Form::label('Residency_no', __('essentials::lang.Residency_no') . ':') !!}
         <div class="input-group">
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
@@ -105,7 +109,7 @@
 
 <div class="col-md-9 border_no">
     <div class="form-group">
-        {!! Form::label('border_no', __('essentials::lang.border_number') . ':*') !!}
+        {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
         <div class="input-group">
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
@@ -146,7 +150,8 @@
             <span class="input-group-addon">
                 <i class="fa fa-building"></i>
             </span>
-            {!! Form::select('business', $business, null, [
+            {!! Form::select('business', 
+                $companies, null, [
                 'class' => 'form-control',
                 'style' => 'height:40px',
                 'placeholder' => __('essentials::lang.business'),
@@ -174,18 +179,6 @@
 
 <div class="col-md-9">
     <div class="form-group">
-        {!! Form::label('pay_number', __('essentials::lang.pay_number') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-id-badge"></i>
-            </span>
-            {!! Form::text('Payment_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.pay_number')]); !!}
-        </div>
-    </div>
-</div>
-
-<div class="col-md-9">
-    <div class="form-group">
         {!! Form::label('fees', __('essentials::lang.fees') . ':') !!}
         <div class="input-group">
             <span class="input-group-addon">
@@ -197,6 +190,20 @@
         </div>
     </div>
 </div>
+
+<div class="col-md-9">
+    <div class="form-group">
+        {!! Form::label('pay_number', __('essentials::lang.pay_number') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-id-badge"></i>
+            </span>
+            {!! Form::text('Payment_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.pay_number')]); !!}
+        </div>
+    </div>
+</div>
+
+
 		
 @endcomponent
 
@@ -247,9 +254,17 @@
     }
 </script>
 
+<script>
+   var translations = {
+    management: @json(__('essentials::lang.management'))
+
+};
+</script>
 
 <script>
+    
 function getResponsibleData(employeeId) {
+  
     $.ajax({
         url: "{{ route('get_responsible_data') }}",
         type: 'GET',
@@ -264,22 +279,46 @@ function getResponsibleData(employeeId) {
                 text: data.all_responsible_users.name
             }));
 
-        
-            $('#responsible_client').empty();
-            $.each(data.responsible_client, function (index, item) {
-                $('#responsible_client').append($('<option>', {
-                    value: item.id,
-                    text: item.name
-                }));
-            });
+            if (data.responsible_client.length > 0) {
+                $('#responsible_client').empty();
+                $.each(data.responsible_client, function (index, item) {
+                    $('#responsible_client').append($('<option>', {
+                        value: item.id,
+                        text: item.name,
+                        selected: true 
+                    }));
+                });
 
-            $('#business').empty();
-            $.each(data.business, function (index, item) {
-                $('#business').append($('<option>', {
-                    value: item.id,
-                    text: item.name
+               
+                $('#responsible_client').select2();
+            } 
+            else if(data.responsible_client.length == 0 && data.all_responsible_users.length == 0 )
+            {
+                $('#responsible_client').empty();
+                $('#responsible_client').append($('<option>', {
+                    value: null,
+                    text: translations['management'],
+                    selected: true
                 }));
-            });
+
+                $('#responsible_users').empty();
+                $('#responsible_users').append($('<option>', {
+                    value: null,
+                    text: translations['management'],
+                    selected: true
+                }));
+            }
+            else{
+                $('#responsible_client').empty();
+            }
+               
+
+          
+            $('#business').empty();
+            $('#business').append($('<option>', {
+                value: data.company.id,
+                text: data.company.name
+            }));
 
            
         },

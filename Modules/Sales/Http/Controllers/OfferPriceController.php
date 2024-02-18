@@ -22,12 +22,13 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Account;
 use App\Business;
 use App\InvoiceScheme;
+use App\Template;
 use App\TransactionSellLine;
 use App\TypesOfService;
 use Carbon\Carbon;
 use Modules\Sales\Entities\salesOfferPricesCost;
 use PhpOffice\PhpWord\PhpWord;
-
+use DOMDocument;
 
 class OfferPriceController extends Controller
 {
@@ -143,7 +144,7 @@ class OfferPriceController extends Controller
                     function ($row)  use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
                             <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
                             </a>';
                         }
@@ -216,14 +217,14 @@ class OfferPriceController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin,$can_print_offer_price) {
+                    function ($row) use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                        $html = '<div class="btn-group">
+                            $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                __('messages.actions') .
+                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -233,8 +234,8 @@ class OfferPriceController extends Controller
                                     </a>
                                     </li>';
 
-                        $html .= '</ul></div>';
-                    }
+                            $html .= '</ul></div>';
+                        }
 
                         return $html;
                     }
@@ -303,14 +304,14 @@ class OfferPriceController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin,$can_print_offer_price) {
+                    function ($row) use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                        $html = '<div class="btn-group">
+                            $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                __('messages.actions') .
+                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -323,7 +324,7 @@ class OfferPriceController extends Controller
 
 
 
-                        $html .= '</ul></div>';
+                            $html .= '</ul></div>';
                         }
                         return $html;
                     }
@@ -476,7 +477,7 @@ class OfferPriceController extends Controller
         //Accounts
         $accounts = [];
         if ($this->moduleUtil->isModuleEnabled('account')) {
-            $accounts = Account::forDropdown($business_id, true, false,false);
+            $accounts = Account::forDropdown($business_id, true, false, false);
         }
 
         $status = request()->get('status', 'quotation');
@@ -628,7 +629,7 @@ class OfferPriceController extends Controller
         //Accounts
         $accounts = [];
         if ($this->moduleUtil->isModuleEnabled('account')) {
-            $accounts = Account::forDropdown($business_id, true, false,false);
+            $accounts = Account::forDropdown($business_id, true, false, false);
         }
 
         $status = request()->get('status', 'quotation');
@@ -808,6 +809,129 @@ class OfferPriceController extends Controller
 
 
             if ($query->contract_form == 'monthly_cost') {
+                $template = Template::with('sections')->where('id', 1)->first();
+                $sections = $template->sections->sortBy('order');
+
+                $replacements = [
+                    // '${R}' => $query->sell_lines->count(),
+                    '${DATE}' => Carbon::parse($query->transaction_date)->format('Y-m-d'),
+                    '${DATE_EN}' => Carbon::parse($query->transaction_date)->format('d-m-Y'),
+                    '${CONTACTS}' => $query->contact->supplier_business_name ?? '',
+                    '${CONTACTS_EN}' => $query->contact->english_name ?? '',
+                    '${PRE_PAY}' => $query->down_payment ?? '',
+                    '${PRE_PAY_EN}' => $query->down_payment ?? '',
+                    '${BANK_GURANTEE}' => '' ?? '',
+                    '${BANK_GURANTEE_EN}' => '' ?? '',
+                    '${CREATED_BY}' => $query->sales_person->first_name ?? '',
+                    '${CREATED_BY_EN}' => $query->sales_person->english_name ?? '',
+                ];
+
+                foreach ($replacements as $placeholder => $value) {
+                    $template->primary_header = str_replace($placeholder, $value,  $template->primary_header);
+                    $template->primary_footer = str_replace($placeholder, $value,  $template->primary_footer);
+                    foreach ($sections as  $section) {
+                        $section->header_left = str_replace($placeholder, $value,   $section->header_left);
+                        $section->header_right = str_replace($placeholder, $value, $section->header_right);
+                        if ($section->content) {
+                            $section->content = str_replace($placeholder, $value,  $section->content);
+                        } else {
+                            $section->content_left = str_replace($placeholder, $value, $section->content_left);
+                            $section->content_right =  str_replace($placeholder, $value, $section->content_right);
+                        }
+                    }
+                }
+
+
+                foreach ($sections as  $section) {
+                    if ($section->content) {
+                        $htmlString = $section->content;
+
+                        $firstStartPos = strpos($htmlString, '<tr');
+                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5; // Include length of '</tr>'
+                        $startPos = strpos($htmlString, '<tr', $firstEndPos);
+                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
+                        $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
+                        $columnCount =  substr_count($firstRowHtml, '<td');
+                     
+                       
+                        if ($columnCount > 8) {
+                            $clone =  $firstRowHtml;
+                            $i = 1;
+                            foreach ($query->sell_lines as $sell_line) {
+                               
+                                $food = 0;
+                                $housing = 0;
+                                $transportaions = 0;
+                                $others = 0;
+                                $uniform = 0;
+                                $recruit = 0;
+                                foreach (json_decode($sell_line->additional_allwances) as $allwance) {
+                             
+                                    if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
+                                        if ($allwance->salaryType == 'food_allowance') {
+                                            $food = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'housing_allowance') {
+                                            $housing = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'transportation_allowance') {
+                                            $transportaions = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'other_allowances') {
+                                            $others = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'uniform_allowance') {
+                                            $uniform = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'recruit_allowance') {
+                                            $recruit = $allwance->amount;
+                                        }
+                                    }
+                                }
+
+                                $replacements2 = [
+                                    '${R}' => $i,
+                                    '${A}' => $sell_line['service']['profession']['name'] ?? '',
+                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''),
+                                    '${C}' => $food,
+                                    '${D}' => $transportaions,
+                                    '${E}' => $housing,
+                                    '${F}' => $others,
+                                    '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
+                                    '${H}' => $sell_line->quantity ?? 0,
+                                    '${I}' => number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''),
+                                    '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
+                                    '${K}' => $query->contract_duration ?? 0,
+                                    '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
+                                    '${M}' => ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '',
+                                    '${N}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0,
+
+
+                                ];
+
+
+
+                                foreach ($replacements2 as $placeholder => $value) {
+                                    $clone = str_replace($placeholder, $value,   $clone);
+                                    // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
+                                    // $endPos += strlen($clone);
+                                }
+
+                                $i++;
+                            }
+                            $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
+                            $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
+                            $section->content = $htmlString;
+
+                        }
+
+
+                    }
+                }
+
+
+
+                return view('sales::price_offer.print')->with(compact('template', 'sections'));
                 $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path('word_templates/cost_plus.docx'));
                 $templateProcessor->cloneRow('R', $query->sell_lines->count());
                 $templateProcessor->setValue('DATE', Carbon::parse($query->transaction_date)->format('Y-m-d'));

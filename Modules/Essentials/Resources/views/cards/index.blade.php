@@ -8,6 +8,19 @@
         </h1>
     </section>
 
+    <head>
+        <style>
+                
+            .input-with-padding {
+                padding-right: 15px !important;
+            }
+
+            .renew-row {
+                margin-bottom: 10px; 
+            }
+        </style>
+    </head>
+
 
     <!-- Main content -->
     <section class="content">
@@ -44,7 +57,7 @@
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary"
-                        href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'create']) }}">
+                        href="#" data-toggle="modal" data-target="#createWorkCardModal">
                         <i class="fa fa-plus"></i> @lang('essentials::lang.create_work_cards')</a>
                 </div>
             @endslot
@@ -54,7 +67,7 @@
             <div class="col-md-8 selectedDiv" style="display:none;"> </div>
 
             <div class="table-responsive">
-                <table class="table table-bordered table-striped ajax_view" id="operation_table">
+                <table class="table table-bordered table-striped ajax_view" id="card_table">
                     <thead>
 
 
@@ -66,17 +79,18 @@
 
                             <th>@lang('essentials::lang.employee_name')</th>
                             <th>@lang('essentials::lang.nationality')</th>
-                            <th>@lang('essentials::lang.Residency_no')</th>
+                            <th>@lang('essentials::lang.proof_number_card')</th>
                             <th>@lang('essentials::lang.Residency_end_date')</th>
                             <th>@lang('essentials::lang.project')</th>
                             <th>@lang('essentials::lang.responsible_client')</th>
 
-
+                            <th>@lang('essentials::lang.workcard_duration')</th>
+                            <th>@lang('essentials::lang.fees')</th>
                             <th>@lang('essentials::lang.pay_number')</th>
                             <th>@lang('essentials::lang.fixed')</th>
-                            <th>@lang('essentials::lang.fees')</th>
+                        
 
-                            <th>@lang('messages.action')</th>
+                           
                         </tr>
                     </thead>
 
@@ -113,14 +127,40 @@
 
 
     </section>
-
-
+ 
+@include('essentials::cards.create_workcard_modal')
 @endsection
 
+
 @section('javascript')
+
+
+<script>
+    $(document).ready(function() {
+        $('#workcard_duration_input').on('change', function() {
+            var selectedDuration = $(this).find(':selected').attr('value');
+             console.log(selectedDuration);
+            var feesInput = $('#fees_input');
+            console.log(feesInput);
+            
+            var feesMapping = {
+                '3': 2425,
+                '6': 4850,
+                '9': 7275,
+                '12': 9700,
+            };
+            console.log(feesMapping[selectedDuration]);
+
+            $('#fees_input').val(feesMapping[selectedDuration]);
+        });
+    });
+</script>
+
     <script type="text/javascript">
         var translations = {
-            months: @json(__('essentials::lang.months'))
+            months: @json(__('essentials::lang.months')),
+            management: @json(__('essentials::lang.management'))
+    
 
         };
 
@@ -128,7 +168,11 @@
 
         $(document).ready(function() {
 
-            var customers_table = $('#operation_table').DataTable({
+            $('#createWorkCardModal').find('.select2').select2({
+				dropdownParent : $('#createWorkCardModal')
+			});
+
+            var card_table = $('#card_table').DataTable({
 
                 processing: true,
                 serverSide: true,
@@ -195,8 +239,8 @@
                         name: 'proof_number'
                     },
                     {
-                        data: 'expiration_date',
-                        name: 'expiration_date'
+                        data: 'r_expiration_date',
+                        name: 'r_expiration_date'
                     },
                     {
                         data: 'project',
@@ -205,6 +249,20 @@
                     {
                         data: 'responsible_client',
                         name: 'responsible_client'
+                    },
+                    { data: 'workcard_duration', name: 'workcard_duration',
+                        render: function(data) {
+                            if(data != null)
+                            {   return data +  " " +translations['months']; }
+                            else{
+                                return " ";
+                            }
+                          
+                        }
+                    },
+                    {
+                        data: 'fees',
+                        name: 'fees'
                     },
 
                     {
@@ -215,35 +273,61 @@
                         data: 'fixnumber',
                         name: 'fixnumber'
                     },
-                    {
-                        data: 'fees',
-                        name: 'fees'
-                    },
+                    
 
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
+                   
 
                 ]
 
             });
 
+          
+                  
+          
+        
+ $('body').on('submit', '#workCardForm', function (e) {
+    e.preventDefault();
+    var urlWithId = $(this).attr('action');
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log(response); 
+            if (response.success) {
+                console.log(response);
+                // Assuming buildings_table is defined elsewhere
+                card_table.ajax.reload();
+                toastr.success(response.msg);
+                $('#createWorkCardModal').modal('hide');
+            } else {
+                toastr.error(response.msg);
+                $('#createWorkCardModal').modal('hide');
+                console.log(response);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
+});
+          
 
             $('#contact-select').on('change', function() {
 
 
-                customers_table.ajax.reload();
+                card_table.ajax.reload();
             });
 
             $('#proof_numbers_select').on('change', function() {
                 console.log($('#proof_numbers_select').val());
-                customers_table.ajax.reload();
+                card_table.ajax.reload();
             });
 
-            $('#operation_table').on('change', '.tblChk', function() {
+            $('#card_table').on('change', '.tblChk', function() {
 
                 if ($('.tblChk:checked').length == $('.tblChk').length) {
                     $('#chkAll').prop('checked', true);
@@ -296,19 +380,26 @@
 
                         success: function(response) {
                             var data = response.data;
+                           
                             var durationOptions = response.durationOptions;
                             console.log(durationOptions);
 
                             $('.modal-body').empty();
 
                             var inputClasses = 'form-group';
+                            var inputClasses2 = 'form-group col-md-3';
+
+                           
                             var labelsRow = $('<div>', {
                                 class: 'row'
                             });
 
+                          
+
+
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: left; padding-left: 0;',
+                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
                                 text: '{{ __('essentials::lang.Residency_no') }}'
                             }));
 
@@ -320,10 +411,11 @@
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; ',
-                                text: '{{ __('essentials::lang.renew_duration') }}'
+                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                text: '{{ __('essentials::lang.choose_renew_duration') }}'
                             }));
 
+                           
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
                                 style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
@@ -350,7 +442,7 @@
                             $.each(data, function(index, row) {
 
                                 var rowDiv = $('<div>', {
-                                    class: 'row'
+                                    class: 'row renew-row'
                                 });
 
 
@@ -362,7 +454,7 @@
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.id') }}',
-                                    required: true,
+                                   
                                     value: row.id
                                 });
                                 rowDiv.append(rowIDInput);
@@ -371,86 +463,91 @@
                                 var workerIDInput = $('<input>', {
                                     type: 'hidden',
                                     name: 'employee_id[]',
-                                    class: inputClasses + 'col-md-2',
+                                    class:  inputClasses2 + ' input-with-padding', 
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.id') }}',
-                                    required: true,
                                     value: row.employee_id
                                 });
                                 rowDiv.append(workerIDInput);
 
+
                                 var numberInput = $('<input>', {
                                     type: 'text',
                                     name: 'number[]',
-                                    class: inputClasses + 'col-md-2',
-                                    style: 'height: 40px',
+                                    class: inputClasses2 + ' input-with-padding', 
+                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right: 20px; !important',
                                     placeholder: '{{ __('essentials::lang.Residency_no') }}',
-                                    required: true,
-                                    value: row.number
+                                    value: row.number,
+                                    readonly: true 
+                                   
                                 });
 
                                 rowDiv.append(numberInput);
+                                
+                                var expiration_date = row.expiration_date ? formatDate(row.expiration_date) : '';
+                                console.log(expiration_date);
                                 var expiration_dateInput = $('<input>', {
                                     type: 'text',
                                     name: 'expiration_date[]',
-                                    class: inputClasses + 'col-md-2',
-                                    style: 'height: 40px',
+                                    class: inputClasses2 + ' input-with-padding', 
+                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.expiration_date') }}',
-                                    required: true,
-                                    value: row.expiration_date
+                                    value: expiration_date
                                 });
+
                                 rowDiv.append(expiration_dateInput);
+
+                                function formatDate(dateString) {
+                                    var date = new Date(dateString);
+                                    var day = date.getDate();
+                                    var month = date.getMonth() + 1;
+                                    var year = date.getFullYear();
+
+                                    // Pad day and month with leading zeros if needed
+                                    if (day < 10) {
+                                        day = '0' + day;
+                                    }
+                                    if (month < 10) {
+                                        month = '0' + month;
+                                    }
+
+                                    return year + '-' + month + '-' + day;
+                                }
+
                                 var renewDurationInput = $('<select>', {
                                     id: 'renew_durationId_' + index,
                                     name: 'renew_duration[]',
-                                    class: 'form-control ' + inputClasses +
-                                        'col-md-2',
-                                    style: 'height: 40px; width: 150px',
-                                    required: true,
+                                    class: 'form-control select2' +  inputClasses2 + ' input-with-padding', 
+                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
+                                    required: true
                                 });
-
 
                                 Object.keys(durationOptions).forEach(function(value) {
                                     var option = $('<option>', {
                                         value: value,
-                                        text: durationOptions[value],
+                                        text: durationOptions[value]
                                     });
 
                                     renewDurationInput.append(option);
                                 });
+                              
 
-
+                                
+                                 
                                 renewDurationInput.val(row.workcard_duration);
 
+                              
 
                                 rowDiv.append(renewDurationInput);
-
-
-                                $('#renew_durationId_' + index).select2({
-                                    dropdownParent: $('#renewModal'),
-                                });
-
-
-                                $('#renew_durationId_' + index).val(row
-                                    .workcard_duration).trigger('change');
-
-                                renewDurationInput.on('change', function() {
-                                    var selectedValue = $(this).val();
-                                    var feesInput = $(this).closest('.row')
-                                        .find('input[name="fees[]"]');
-                                    var fees = calculateFees(selectedValue);
-                                    feesInput.val(fees);
-                                });
-
-
-
+                               
+                              
                                 var feesInput = $('<input>', {
                                     type: 'text',
                                     name: 'fees[]',
-                                    class: inputClasses + 'col-md-2 fees-input',
-                                    style: 'height: 40px',
+                                    class:  inputClasses2 + ' input-with-padding'+' fees-input',
+                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.fees') }}',
-                                    required: true,
+                                  
                                     value: row.fees
                                 });
 
@@ -460,61 +557,128 @@
                                 var pay_numberInput = $('<input>', {
                                     type: 'number',
                                     name: 'Payment_number[]',
-                                    class: inputClasses + 'col-md-2',
-                                    style: 'height: 40px',
+                                    class:  inputClasses2 + ' input-with-padding', 
+                                    style: 'height: 40px; width:140px; text-align: center; padding-right: 20px; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.pay_number') }}',
-                                    required: true,
+                                   
                                     value: row.Payment_number
                                 });
                                 rowDiv.append(pay_numberInput);
                                 var fixnumberInput = $('<input>', {
                                     type: 'text',
                                     name: 'fixnumber[]',
-                                    class: inputClasses + 'col-md-2',
-                                    style: 'height: 40px',
+                                    class:  inputClasses2 + ' input-with-padding', 
+                                    style: 'height: 40px; width:140px; text-align: center; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.fixed') }}',
-                                    required: true,
-                                    value: row.fixnumber
+                                  
+                                    value: row.fixnumber,
+                                    disabled: true
                                 });
 
                                 rowDiv.append(fixnumberInput);
 
 
                                 $('.modal-body').append(rowDiv);
+                                
+                                renewDurationInput.select2({
+                                        dropdownParent: $('#renewModal'),
+                                });
+
+                                $('#renew_durationId_' + index).val(row.workcard_duration).trigger('change');
+
+                                   
+                                $('#renew_durationId_' + index).on('change', function() {
+                                    console.log("Change event triggered");
+                                    var selectedValue = $(this).val();
+                                    console.log("Selected value:", selectedValue);
+                                    var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
+                                    console.log("Fees input found:", feesInput);
+                                    var fees = calculateFees(selectedValue);
+                                    console.log("Calculated fees:", fees);
+                                    feesInput.val(fees);
+                                });
+
+                              
+
                             });
-                        }
-                    });
-
-
-
-                    $('#submitArrived').click(function() {
-
-                        $.ajax({
-                            url: $('#renew_form').attr('action'),
-                            type: 'post',
-                            data: $('#renew_form').serialize(),
-                            success: function(response) {
-                                if (response.success) {
-
-                                    toastr.success(response.msg, 'Success');
-
-                                    $('#renew_form').modal('hide');
-                                    reloadDataTable();
-
-                                } else {
-                                    toastr.error(response.msg);
-                                    console.log(response);
-                                }
-                            },
-                            error: function(error) {
+                        },
+                        error: function(error) {
                                 console.error('Error submitting form:', error);
 
                                 toastr.error(
                                     'An error occurred while submitting the form.',
                                     'Error');
                             },
-                        });
                     });
+
+                    $(document).ready(function(){
+                        $('#renewModal').on('hidden.bs.modal', function () {
+                            location.reload();
+                        });
+                });
+
+
+    
+    
+                $('body').on('submit', '#renew_form', function (e) {
+                    e.preventDefault();
+                    var urlWithId = $(this).attr('action');
+                    $.ajax({
+                        url: urlWithId,
+                        type: 'POST',
+                        data: new FormData(this),
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            console.log(response); 
+                            if (response.success) {
+                                console.log(response);
+                                // Assuming buildings_table is defined elsewhere
+                                card_table.ajax.reload();
+                                toastr.success(response.msg);
+                                $('#renewModal').modal('hide');
+                            } else {
+                                toastr.error(response.msg);
+                                $('#renewModal').modal('hide');
+                                console.log(response);
+                            }
+                        },
+                        error: function (error) {
+                            console.error('Error submitting form:', error);
+                            toastr.error('An error occurred while submitting the form.', 'Error');
+                        },
+                    });
+                });
+
+
+                    // $('#renewModal form').click(function() {
+                    //     console.log($('#renew_form').attr('action'));
+                    //     $.ajax({
+                    //         url: $('#renew_form').attr('action'),
+                    //         type: 'post',
+                    //         data: $('#renew_form').serialize(),
+                    //         success: function(response) {
+                    //             if (response.success) {
+                    //                 console.log(response);
+                    //                 toastr.success(response.msg, 'Success');
+
+                    //                 $('#renew_form').modal('hide');
+                    //                 reloadDataTable();
+
+                    //             } else {
+                    //                 toastr.error(response.msg);
+                    //                 console.log(response);
+                    //             }
+                    //         },
+                    //         error: function(error) {
+                    //             console.error('Error submitting form:', error);
+
+                    //             toastr.error(
+                    //                 'An error occurred while submitting the form.',
+                    //                 'Error');
+                    //         },
+                    //     });
+                    // });
 
 
 
@@ -550,10 +714,137 @@
                 return selectedRows;
             }
         });
+
+
+
+
+
+       
     </script>
 
 
 
+
+<script>
+function getData(employeeId) {
+    getResponsibleData(employeeId);
+    getResidencyData(employeeId);
+}
+</script>
+
+
+
+<script>
+
+function getResponsibleData(employeeId) {
+
+$.ajax({
+    url: "{{ route('get_responsible_data') }}",
+    type: 'GET',
+    data: { employeeId: employeeId },
+    success: function (data) {
+        console.log(data);
+
+      
+        $('#responsible_users').empty();
+        $('#responsible_users').append($('<option>', {
+            value: data.all_responsible_users.id,
+            text: data.all_responsible_users.name
+        }));
+
+        if (data.responsible_client.length > 0) {
+            $('#responsible_client').empty();
+            $.each(data.responsible_client, function (index, item) {
+                $('#responsible_client').append($('<option>', {
+                    value: item.id,
+                    text: item.name,
+                    selected: true 
+                }));
+            });
+
+           
+            $('#responsible_client').select2();
+        } 
+        else if(data.responsible_client.length == 0 && data.all_responsible_users.length == 0 )
+        {
+            $('#responsible_client').empty();
+            $('#responsible_client').append($('<option>', {
+                value: null,
+                text: translations['management'],
+                selected: true
+            }));
+
+            $('#responsible_users').empty();
+            $('#responsible_users').append($('<option>', {
+                value: null,
+                text: translations['management'],
+                selected: true
+            }));
+        }
+        else{
+            $('#responsible_client').empty();
+        }
+           
+
+      
+        $('#business').empty();
+        $('#business').append($('<option>', {
+            value: data.company.id,
+            text: data.company.name
+        }));
+
+       
+    },
+    error: function (xhr, status, error) {
+        console.error(error);
+    }
+});
+}
+</script>
+
+
+<script>
+function getResidencyData(employeeId) {
+
+    $.ajax({
+        url: '{{ route("getResidencyData") }}',
+        type: 'GET',
+        data: { employee_id: employeeId },
+        success: function(response) {
+           
+            $('#Residency_no').val(response.residency_no);
+            $('#border_no').val(response.border_no);
+            $('#Residency_end_date').val(response.residency_end_date);
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+</script>
+
+
+<script  type="text/javascript">
+$(document).ready(function () {
+$('#employees').on('change', function () {
+    var employeeId = $(this).val();
+    $('#employee_id').val(employeeId);
+    console.log(employeeId);
+});
+});
+
+
+$(document).ready(function () {
+$('#all_responsible_users').on('change', function () {
+    var employee = $(this).val();
+    $('#responsible_user_id').val(employee);
+    console.log(employee);
+});
+});
+
+
+
+</script>
 
 
 @endsection

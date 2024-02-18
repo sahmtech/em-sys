@@ -57,6 +57,7 @@ use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockTransferController;
 use App\Http\Controllers\TaxonomyController;
 use App\Http\Controllers\TaxRateController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\TimeSheetController;
 use App\Http\Controllers\TransactionPaymentController;
 use App\Http\Controllers\TypesOfServiceController;
@@ -159,7 +160,32 @@ include_once 'install_r.php';
 //     }
 
 // );
+Route::get(
+    '/xlsx',
+    function () {
+        $reader = new Xlsx();
+        $filePath = public_path('xlsx.xlsx'); // Make sure this is your source file path
+        $spreadsheet = $reader->load($filePath);
+        $worksheet = $spreadsheet->getActiveSheet();
 
+        $highestRow = $worksheet->getHighestRow(); // Get the highest row number
+
+        for ($row = 195; $row >= 3; $row--) { // Start from the last row to avoid messing up row numbers after deletion
+            $idProofNumber = $worksheet->getCell('D' . $row)->getValue();
+
+            // Check if ID Proof Number exists in users table
+            if (User::where('id_proof_number', $idProofNumber)->exists()) {
+                // If exists, delete the row from the worksheet
+                $worksheet->removeRow($row);
+            }
+        }
+
+        // Save the modified spreadsheet back to the file
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+        $writer->save(public_path('modified_result.xlsx')); // This will save the modified file under a new name
+    }
+
+);
 // Route::get('/db_fix', function () {
 //     $businesses = Business::all();
 //     $numbersArray = $businesses->mapWithKeys(function ($business) {
@@ -225,6 +251,10 @@ Route::middleware(['setData'])->group(function () {
 
     Auth::routes();
     //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
+
+
+
+
 
 
     Route::get('/business/register', [BusinessController::class, 'getRegister'])->name('business.getRegister');
@@ -666,7 +696,21 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
 
 
-    //
+    Route::prefix('templates')->group(function () {
+        Route::get('/create', [TemplateController::class, 'create'])->name('templates.create');
+
+        Route::post('/', [TemplateController::class, 'store'])->name('templates.store');
+
+        Route::get('/{id}/edit', [TemplateController::class, 'edit'])->name('templates.edit');
+
+        Route::get('/', [TemplateController::class, 'index'])->name('templates.index');
+
+        Route::post('/{id}', [TemplateController::class, 'update'])->name('templates.update');
+
+        Route::get('/{id}', [TemplateController::class, 'show'])->name('templates.show');
+
+        Route::get('/{id}/print', [TemplateController::class, 'print'])->name('templates.print');
+    });
 });
 
 // Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {

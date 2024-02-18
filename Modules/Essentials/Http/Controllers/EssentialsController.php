@@ -296,9 +296,19 @@ class EssentialsController extends Controller
             })
             ->pluck('id')->toArray();
 
+        $contract_type_id=DB::table('essentials_contract_types')->where('type', 'LIKE', '%بعد%')->first();
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
             $query->whereIn('department_id', $departmentIds)->where('is_active', 1);
-        })->select([
+        })
+        ->whereHas('contract', function ($query) use ($userIds, $contract_type_id) {
+            $query->whereIn('employee_id', $userIds)
+                  ->where(function($query) use ($contract_type_id) {
+                      $query->where('contract_type_id', '!=', $contract_type_id->id)
+                            ->orWhereNull('contract_type_id');
+                  });
+        })
+        
+        ->select([
             'users.*',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),
             'users.id_proof_number',
@@ -366,15 +376,16 @@ class EssentialsController extends Controller
         $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
         $sixtyday = Carbon::now()->addDays(60)->toDateString();
 
-        $last15_expire_date_residence = EssentialsOfficialDocument::whereIn('employee_id', $userIds)->where('type', 'residence_permit')
-            ->where('expiration_date', '<=', $expiryDateThreshold)
-            ->count();
+        $last15_expire_date_residence = EssentialsOfficialDocument::where('type', 'residence_permit')
+        ->whereBetween('expiration_date', [now(), now()->addDays(15)->endOfDay()])
+        ->count();
 
-        $today = Carbon::now()->toDateString();
+        $today = today()->format('Y-m-d');
+        $all_ended_residency_date = EssentialsOfficialDocument::with(['employee'])
+        ->where('type', 'residence_permit')
+        ->whereDate('expiration_date', '<', $today)
+        ->count();
 
-
-        $all_ended_residency_date = EssentialsOfficialDocument::whereIn('employee_id', $userIds)->with(['employee'])->where('type', 'residence_permit')
-            ->whereDate('expiration_date', '<=',  $today)->count();
         $escapeRequest = 0;
         $type = RequestsType::where('type', 'escapeRequest')->where('for', 'worker')->first();
         if ($type) {

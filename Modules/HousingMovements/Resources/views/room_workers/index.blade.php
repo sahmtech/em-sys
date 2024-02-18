@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('housingmovements::lang.room_workers'))
+@section('title', __('housingmovements::lang.residents_details'))
 
 @section('content')
 
     <section class="content-header">
         <h1>
-            <span>@lang('followup::lang.workers_details')</span>
+            <span>@lang('housingmovements::lang.residents_details')</span>
             - {{ __('housingmovements::lang.room_number') }} {{ $roomWorkersHistory->first()->room?->room_number ?? '' }}
         </h1>
     </section>

@@ -465,6 +465,7 @@
                                 if (result.success == true) {
                                     toastr.success(result.msg);
                                     procedures_table.ajax.reload();
+                                    window.location.reload();
                                 } else {
                                     toastr.error(result.msg);
                                 }
