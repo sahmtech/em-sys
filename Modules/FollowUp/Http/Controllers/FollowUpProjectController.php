@@ -185,6 +185,7 @@ class FollowUpProjectController extends Controller
             },
             'appointment.profession',
             'userAllowancesAndDeductions',
+            
             'appointment.location',
             'contract' => function ($query) {
                 $query->where('is_active', 1)->latest('created_at');
