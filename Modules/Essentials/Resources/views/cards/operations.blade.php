@@ -588,39 +588,39 @@
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:170px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                style: 'height: 40px; width:170px; text-align: center; padding: 0 10px;',
                                 text: '{{ __('essentials::lang.full_name') }}'
                             }));
 
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                style: 'height: 40px; width:140px; text-align: center; padding: 0 10px;',
                                 text: '{{ __('essentials::lang.Residency_no') }}'
                             }));
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                style: 'height: 40px; width:140px; text-align: center; padding: 0 10px;',
                                 text: '{{ __('essentials::lang.Residency_end_date') }}'
                             }));
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                style: 'height: 40px; width:140px; text-align: center; padding: 0 10px;',
                                 text: '{{ __('essentials::lang.choose_renew_duration') }}'
                             }));
 
                            
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                style: 'height: 40px; width:140px; text-align: center;padding: 0 10px;',
                                 text: '{{ __('essentials::lang.fees') }}'
                             }));
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                style: 'height: 40px; width:140px; text-align: center;padding: 0 10px;',
                                 text: '{{ __('essentials::lang.pay_number') }}'
                             }));
 
@@ -663,7 +663,7 @@
                                     type: 'text',
                                     name: 'full_name[]',
                                     class: inputClasses2 + ' input-with-padding', 
-                                    style: 'height: 40px; width:170px; text-align: center;padding-right: 20px; padding-right: 20px; !important',
+                                    style: 'height: 40px; width:170px; text-align: center;padding: 0 10px; !important',
                                     placeholder: '{{ __('essentials::lang.full_name') }}',
                                     value: row.name,
                                     readonly: true 
@@ -676,7 +676,7 @@
                                     type: 'text',
                                     name: 'number[]',
                                     class: inputClasses2 + ' input-with-padding', 
-                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right: 20px; !important',
+                                    style: 'height: 40px; width:140px; text-align: center;padding: 0 10px; !important',
                                     placeholder: '{{ __('essentials::lang.Residency_no') }}',
                                     value: row.number,
                                     readonly: true 
@@ -691,7 +691,7 @@
                                     type: 'text',
                                     name: 'expiration_date[]',
                                     class: inputClasses2 + ' input-with-padding', 
-                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
+                                    style: 'height: 40px; width:140px; text-align: center;padding: 0 10px; !important',
                                     placeholder: '{{ __('essentials::lang.expiration_date') }}',
                                     value: expiration_date
                                 });
@@ -719,7 +719,7 @@
                                     id: 'renew_operation_durationId_' + index,
                                     name: 'renew_duration[]',
                                     class: 'form-control select2' +  inputClasses2 + ' input-with-padding', 
-                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
+                                    style: 'height: 40px; width:140px; text-align: center;padding: 0 10px; !important',
                                     required: true
                                 });
 
@@ -746,7 +746,7 @@
                                     type: 'text',
                                     name: 'fees[]',
                                     class:  inputClasses2 + ' input-with-padding'+' fees-input',
-                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
+                                    style: 'height: 40px; width:140px; text-align: center;padding: 0 10px; !important',
                                     placeholder: '{{ __('essentials::lang.fees') }}',
                                     
                                     value: row.fees
@@ -759,7 +759,7 @@
                                     type: 'number',
                                     name: 'Payment_number[]',
                                     class:  inputClasses2 + ' input-with-padding', 
-                                    style: 'height: 40px; width:140px; text-align: center; padding-right: 20px; padding-right:20px; !important',
+                                    style: 'height: 40px; width:140px; text-align: center; padding: 0 10px; !important',
                                     placeholder: '{{ __('essentials::lang.pay_number') }}',
                                    
                                     value: row.Payment_number
