@@ -1441,6 +1441,14 @@ class EssentialsCardsController extends Controller
              
                 foreach ($selectedData as $data) {
 
+                    $user = User::find($data['id']);
+                    if ($user && is_null($user->border_no) && is_null($data['number']) && is_null($data['expiration_date'])) {
+                        return [
+                            'success' => false,
+                            'msg' => __('essentials::lang.user_info_eqama_not_completed'),
+                        ];
+                    }
+
                     $exist_card = EssentialsWorkCard::where('employee_id',$data['id'])
                     ->where('is_active',1)
                     ->first();
@@ -1482,7 +1490,8 @@ class EssentialsCardsController extends Controller
                     $new_card->save();
 
                    
-
+                    if( $data['number'] != null &&  $data['expiration_date'] !=null)
+                    {
                    
                     $existingDocument = EssentialsOfficialDocument::where('type', 'residence_permit')
                     ->where('employee_id', $data['id'])
@@ -1508,7 +1517,7 @@ class EssentialsCardsController extends Controller
                     $newDocument->is_active = 1;
                     $newDocument->save();
            
-                   
+                }
                    
                 }
               
