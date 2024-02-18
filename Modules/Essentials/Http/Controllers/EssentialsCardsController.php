@@ -1331,7 +1331,6 @@ class EssentialsCardsController extends Controller
                     
                     $newDocument = new EssentialsOfficialDocument();
                     
-                    
                     $newDocument->type = 'residence_permit';
                     $newDocument->employee_id = $data['employee_id'];
                     $newDocument->number = $data['number'];
@@ -1437,7 +1436,7 @@ class EssentialsCardsController extends Controller
                
                 $selectedData = json_decode($jsonData, true);
               
-              //  DB::beginTransaction();
+             
                 foreach ($selectedData as $data) {
 
                     $exist_card = EssentialsWorkCard::where('employee_id',$data['id'])
@@ -1510,7 +1509,7 @@ class EssentialsCardsController extends Controller
                    
                    
                 }
-                //DB::commit();
+              
                 $output = ['success' => 1, 'msg' => __('essentials::lang.card_renew_sucessfully')];
             } else
              {
@@ -1605,7 +1604,7 @@ class EssentialsCardsController extends Controller
             $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
             $name_in_charge_choices = $all_users->pluck('full_name', 'id');
 
-            $userIds = json_decode($projects->assignedTo->assigned_to, true);
+            $userIds = json_decode($projects->assignedTo?->assigned_to, true);
             $assignedresponibleClient = [];
 
             if ($userIds) {
