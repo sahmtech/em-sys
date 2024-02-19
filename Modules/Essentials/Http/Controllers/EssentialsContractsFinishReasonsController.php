@@ -192,7 +192,7 @@ class EssentialsContractsFinishReasonsController extends Controller
             EssentailsReasonWish::where('id', $id)
                 ->delete();
 
-            $output = ['success' => false,
+            $output = ['success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
 
