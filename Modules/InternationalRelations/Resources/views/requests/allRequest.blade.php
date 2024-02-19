@@ -158,16 +158,7 @@
 
                     <div class="modal-body">
                         <div class="row">
-                            <div class="form-group col-md-6">
-                                {!! Form::label('user_id', __('essentials::lang.name') . ':*') !!}
-                                {!! Form::select('user_id[]', $users, null, [
-                                    'class' => 'form-control select2',
-                                    'multiple',
-                                    'required',
-                                    'id' => 'worker',
-                                    'style' => 'height: 60px; width: 250px;',
-                                ]) !!}
-                            </div>
+                           
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
@@ -177,6 +168,16 @@
                                     'style' => 'height: 40px',
                                     'placeholder' => __('essentials::lang.select_type'),
                                     'id' => 'requestType',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('user_id', __('essentials::lang.name') . ':*') !!}
+                                {!! Form::select('user_id[]', $users, null, [
+                                    'class' => 'form-control select2',
+                                    'multiple',
+                                    'required',
+                                    'id' => 'worker',
+                                    'style' => 'height: 60px; width: 250px;',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="leaveType" style="display: none;">
@@ -576,6 +577,8 @@
                                 return '@lang('request.cancleContractRequest')';
                             } else if (data === 'WarningRequest') {
                                 return '@lang('request.WarningRequest')';
+                            } else if (data === 'passportRenewal') {
+                                return '@lang('request.passportRenewal')';
                             } else {
                                 return data;
                             }
@@ -832,10 +835,44 @@
 
 <script>
     $(document).ready(function() {
+        var users = @json($users);
         var mainReasonSelect = $('#mainReasonSelect');
         var subReasonContainer = $('#sub_reason_container');
         var subReasonSelect = $('#subReasonSelect');
-       
+
+        function fetchUsersWithSaudiNationality() {
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+
+
+            $.ajax({
+                url: '/get-non-saudi-users',
+                type: 'POST',
+                data: {
+                    _token: csrfToken,
+                    users: @json($users)
+                },
+                success: function(data) {
+                    console.log(data.users);
+                    var userSelect = $('#worker');
+                    userSelect.empty();
+
+                    $.each(data.users, function(key, value) {
+                        userSelect.append($('<option>', {
+                            value: key,
+                            text: value
+                        }));
+                    });
+
+                  
+                    userSelect.trigger('change');
+                },
+                error: function(xhr) {
+          
+                    console.log('Error:', xhr.responseText);
+                }
+            });
+        }
         mainReasonSelect.on('change', function() {
             var selectedMainReason = $(this).val();
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -866,8 +903,9 @@
             });
 
         });
-      
+
         $('#requestType').change(handleTypeChange);
+
         function handleTypeChange() {
             var selectedId = $('#requestType').val();
 
@@ -876,8 +914,6 @@
                 type: 'GET',
                 success: function(response) {
                     var selectedType = response.type;
-
-                    console.log(selectedType);
 
                     if (selectedType === 'leavesAndDepartures') {
                         $('#start_date').show();
@@ -894,6 +930,7 @@
                     if (selectedType === 'returnRequest') {
                         $('#exit_date').show();
                         $('#return_date').show();
+                        fetchUsersWithSaudiNationality();
 
                     } else {
                         $('#exit_date').hide();
@@ -915,7 +952,7 @@
                     if (selectedType === 'escapeRequest') {
                         $('#escape_time').show();
                         $('#escape_date').show();
-
+                        fetchUsersWithSaudiNationality();
                     } else {
                         $('#escape_time').hide();
                         $('#escape_date').hide();
@@ -932,6 +969,7 @@
                     }
                     if (selectedType === 'residenceEditRequest') {
                         $('#resEditType').show();
+                        fetchUsersWithSaudiNationality();
 
 
                     } else {
@@ -978,11 +1016,20 @@
                         $('#atmType').hide();
 
                     }
+                    if (selectedType === 'exitRequest') {
+                        fetchUsersWithSaudiNationality();
+
+                    } 
+                   
+                    if (selectedType === 'passportRenewal') {
+                        fetchUsersWithSaudiNationality();
+
+                    } 
 
 
                 },
                 error: function(xhr) {
-                    // Handle error
+                   
                     console.log('Error:', xhr.responseText);
                 }
             });
@@ -996,6 +1043,11 @@
             });
 
         });
+
+
+      
+
+
     });
 </script>
 
