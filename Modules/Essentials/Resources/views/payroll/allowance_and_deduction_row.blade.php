@@ -37,7 +37,7 @@
         @if(!empty($add_button) )
             <button type="button" class="btn btn-primary btn-xs @if($type == 'allowance') add_allowance @elseif($type == 'deduction') add_deduction @endif">
             <i class="fa fa-plus"></i>
-        @elseif 
+        @else
             <button type="button" class="btn btn-danger btn-xs remove_tr"><i class="fa fa-minus"></i></button>
         @endif
     </button></td>

@@ -29,8 +29,8 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
         $currentPath = $request->path();
-        
-      
+
+
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles', 'get-all-users'])) {
             $this->userManagementMenu();
@@ -44,7 +44,7 @@ class CustomAdminSidebarMenu
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
             $this->assetManagementMenu();
-        } elseif (Str::startsWith($currentPath, ['sale'])) {
+        } elseif (Str::startsWith($currentPath, ['sale', 'templates'])) {
             $this->CUS_salesMenu();
         } elseif (Str::startsWith($currentPath, 'housingmovements')) {
             $this->houseMovementsMenu();
@@ -101,7 +101,7 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
-        } elseif (Str::startsWith($currentPath, ['ceomanagment', 'templates'])) {
+        } elseif (Str::startsWith($currentPath, ['ceomanagment',])) {
             $this->ceoMenu();
         } elseif (Str::startsWith($currentPath, 'toDo')) {
             $this->toDoMenu();
@@ -340,11 +340,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
-            $menu->url(
-                route('templates.index'),
-                'Templates',
-                ['icon' => 'fas fa-chart-line', 'active' =>  request()->segment(2) == 'templates']
-            );
         });
     }
     public function agnetMenu()
@@ -1471,6 +1466,13 @@ class CustomAdminSidebarMenu
                                 action([\Modules\Sales\Http\Controllers\SalesCostController::class, 'index']),
                                 __('sales::lang.sales_costs'),
                                 ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_costs']
+                            );
+                        }
+                        if ($is_admin || auth()->user()->can('sales.view_templates')) {
+                            $sub->url(
+                                route('templates.index'),
+                                __('sales::lang.templates_settings'),
+                                ['icon' => 'fas fa-chart-line', 'active' =>  request()->segment(2) == 'templates']
                             );
                         }
                     },

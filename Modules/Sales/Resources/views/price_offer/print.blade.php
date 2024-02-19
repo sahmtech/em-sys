@@ -1,32 +1,3 @@
-<head>
-    <!-- Other head content like title, meta tags, etc. -->
-    <style>
-        @media print {
-            .no-print {
-                display: none;
-            }
-            body, html {
-                width: 100%;
-            }
-            .modal-dialog {
-                width: 100%;
-                max-width: none; /* May help with modals that use max-width */
-            }
-            .modal-content {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
-            .modal-header, .modal-footer {
-                display: none; /* Hide elements you don't want to print */
-            }
-            /* Ensure modal body content is allowed to break across pages */
-            .modal-body, .template-section {
-                page-break-inside: auto;
-            }
-        }
-    </style>
-</head>
-
 <div class="modal-dialog modal-lg">
     <div class="modal-content">
         <!-- Modal Header -->
@@ -40,7 +11,7 @@
         </div>
 
         <!-- Modal Body -->
-        <div class="modal-body">
+        <div class="modal-body" id ="modal_body">
             <div class="row">
 
                 <div class="col-md-12">
@@ -100,16 +71,16 @@
             </div>
 
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary no-print" aria-label="Print"
-                onclick="$(this).closest('div.modal').printThis();">
-                <i class="fa fa-print"></i> @lang('messages.print')
-            </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-            </div>
+
             {{-- {!! Form::close() !!} --}}
         </div>
-
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary no-print" aria-label="Print"
+                onclick="$('#modal_body').printThis();">
+                <i class="fa fa-print"></i> @lang('messages.print')
+            </button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+        </div>
 
 
     </div>

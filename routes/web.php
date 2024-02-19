@@ -689,7 +689,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::prefix('time_sheet')->group(function () {
             Route::get('/index', [TimeSheetController::class, 'index'])->name('agentTimeSheet.index');
-            Route::get('/{id}', [TimeSheetController::class, 'timeSheet'])->name('agentTimeSheet.timeSheet');
+            Route::get('/payroll-group-datatable', [TimeSheetController::class, 'payrollGroupDatatable'])->name('agentTimeSheet.payrollGroupDatatable');
+            // Route::get('/create', [TimeSheetController::class, 'create'])->name('agentTimeSheet.create');
+            Route::get('/getPayrollGroup', [TimeSheetController::class, 'getPayrollGroup'])->name('agentTimeSheet.getPayrollGroup');
+            Route::get('/getWorkersBasedOnProject', [TimeSheetController::class, 'getWorkersBasedOnProject'])->name('agentTimeSheet.getWorkersBasedOnProject');
+            // Route::get('/get_sheet/{id}', [TimeSheetController::class, 'timeSheet'])->name('agentTimeSheet.timeSheet');
+            Route::get('/timeSheet', [TimeSheetController::class, 'timeSheet'])->name('agentTimeSheet.timeSheet');
+            Route::post('/submitTmeSheet', [TimeSheetController::class, 'submitTmeSheet'])->name('agentTimeSheet.submitTmeSheet');
             Route::post('/store', [TimeSheetController::class, 'storeTimeSheet'])->name('agentTimeSheet.store');
         });
     });
@@ -711,6 +717,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('/{id}', [TemplateController::class, 'show'])->name('templates.show');
 
         Route::get('/{id}/print', [TemplateController::class, 'print'])->name('templates.print');
+
+        Route::get('/{id}/delete', [TemplateController::class, 'destroy'])->name('templates.delete');
     });
 });
 
