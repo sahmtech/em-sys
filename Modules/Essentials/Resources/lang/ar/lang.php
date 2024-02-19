@@ -670,13 +670,14 @@ return [
   'superior' => 'الرئيس المباشر',
 
   'renew_duration' => 'مدة التجديد',
+  'card_renew_sucessfully'=>'تم تجديد كرت العمل بنجاح',
   'register_number' => 'رقم السجل',
   'renew_start_date' => 'تاريخ بداية التجديد',
   'renew_end_date' => 'تاريخ نهاية التجديد',
   'capital' => 'راس المال',
   'national_address' => 'العنوان الوطني',
 
-  'renew_duration' => 'مدة التجديد',
+  'choose_renew_duration' => 'اختر مدة التجديد',
   'renew_start_date' => 'تاريخ بداية التجديد',
   'renew_end_date' => 'تاريخ نهاية التجديد',
 
@@ -1087,7 +1088,7 @@ return [
   'personal_info' => 'المعلومات الشخصية ',
   'hrm_details' => 'التعيين',
   'hrm_details_create_edit' => 'التعيين',
-  'renewal_residence' => 'تجديد الإقامات ',
+  'renewal_residence' => 'تجديد كروت العمل والاقامات ',
   'activity' => 'النشاط',
   'add_procedure' => 'إضافة طلب',
   'procedure_type' => 'نوع الطلب',
@@ -1108,9 +1109,10 @@ return [
   'expired_contracts' => 'العقود المنتهية',
   'remaining_contracts' => 'العقود انتهت فترة التجربة',
   'escape_date' => 'تاريخ الهروب',
-
+'user_info_eqama_not_completed'=>'معلومات الاقامة لصاحب الكرت غير موجودة  قم باكملها ',
+'card_added_sucessfully'=>'تم إضافة كرت العمل بنجاح',
   'years' => 'سنة',
-  'months' => 'شهر',
+  'months' => 'أشهر',
   'workcard_duration' => 'مدة كرت العمل',
   'management' => 'إدارة',
   'select_company' => 'اختر شركة ',
@@ -1499,7 +1501,7 @@ return [
   'weak' => 'ضعيف',
   'bad' => 'سيئ',
   'fail' => 'راسب',
-
+'proof_number_card'=>'رقم اثبات الهوية ',
   'view_essentials_affairs_workers' => 'عرض العمال',
   'view_worker' => 'عرض العامل',
   'salary_per_month' => 'الراتب الأساسي لكل شهر',

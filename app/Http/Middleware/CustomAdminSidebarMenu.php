@@ -780,13 +780,13 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                 );
             }
-            if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
-                    __('essentials::lang.residencyreports'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
-                );
-            }
+            // if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
+            //     $menu->url(
+            //         action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
+            //         __('essentials::lang.residencyreports'),
+            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
+            //     );
+            // }
 
             if ($is_admin || auth()->user()->can('essentials.facilities_management')) {
                 $menu->url(

@@ -108,7 +108,40 @@ class EssentialsCardsController extends Controller
                 }
             }
         }
-        $card = EssentialsWorkCard::whereIn('employee_id',$userIds)->with([
+
+
+
+        $all_users = User::whereIn('id',$userIds)
+                ->where(function ($query) {
+                $query->whereNotNull('users.border_no')
+                    ->orWhere('users.id_proof_name', 'eqama');
+            })
+            ->whereIn('users.user_type', ['worker' ,'employee'])
+            ->where('nationality_id','!=',5)
+                
+            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+            ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')
+
+            ->whereNotIn('users.id', function ($query) {
+                $query->select('employee_id')->from('essentials_work_cards');
+            })
+            
+            ->get();
+
+        $employees = $all_users->pluck('full_name', 'id');
+            
+
+
+        $durationOptions = [
+                '3' => __('essentials::lang.3_months'),
+                '6' => __('essentials::lang.6_months'),
+                '9' => __('essentials::lang.9_months'),
+                '12' => __('essentials::lang.12_months'),
+            ];
+        $companies = Company::pluck('name', 'id');
+        $card = EssentialsWorkCard::whereIn('employee_id',$userIds)
+        ->where('is_active',1)
+        ->with([
             'user',
             'user.OfficialDocument'
         ])
@@ -116,7 +149,7 @@ class EssentialsCardsController extends Controller
              'employee_id',
              'workcard_duration',
              'work_card_no as card_no', 'fees as fees',
-              'Payment_number as Payment_number');
+             'Payment_number as Payment_number');
 
 
         if (!empty($request->input('project'))) {
@@ -138,9 +171,6 @@ class EssentialsCardsController extends Controller
 
         if (request()->ajax()) {
 
-
-
-
             return Datatables::of($card)
 
 
@@ -153,7 +183,6 @@ class EssentialsCardsController extends Controller
                 ->editColumn('company_name', function ($row) {
                     return $row->user->company?->name ?? '';
                 })
-
 
 
                 ->editColumn('fixnumber', function ($row) {
@@ -169,7 +198,7 @@ class EssentialsCardsController extends Controller
                 })
 
                 ->addColumn('responsible_client', function ($row) use ($name_in_charge_choices) {
-                    $names = "";
+                    $names = null;
                 
                     $userIds = json_decode($row->user->assignedTo?->assigned_to, true) ?? [];
                 
@@ -184,10 +213,14 @@ class EssentialsCardsController extends Controller
                             }
                         }
 
-                        if($names)
-                        { return $names; }
-                        else{return __('essentials::lang.management');}
                     }
+                  
+                    
+                    if ($names === null && $row->user->assignedTo === null ) {
+                        $names =  __('essentials::lang.management') ;
+                    }
+
+                    return $names;
                     
                
                 
@@ -196,17 +229,25 @@ class EssentialsCardsController extends Controller
           
 
                 ->editColumn('proof_number', function ($row) {
-                    $residencePermitDocument = $row->user->OfficialDocument
-                        ->where('type', 'residence_permit')
-                        ->first();
-
-                    return $residencePermitDocument ? $residencePermitDocument->number : '';
+                            $residencePermitDocument = $row->user->OfficialDocument
+                            ->where('type', 'residence_permit')
+                            ->first();
+                    
+                        if ($residencePermitDocument) {
+                            return $residencePermitDocument->number;
+                        } elseif ($row->user->border_no) {
+                            return $row->user->border_no;
+                        } else {
+                            return '';
+                        }
                 })
 
-                ->editColumn('expiration_date', function ($row) {
-                    $residencePermitDocument = $row->user->OfficialDocument
-                        ->where('type', 'residence_permit')
-                        ->first();
+                ->addColumn('r_expiration_date', function ($row) {
+                    $residencePermitDocument = $row->user->OfficialDocument()
+                    ->where('type', 'residence_permit')
+                    ->where('is_active', 1)
+                    ->latest('created_at')
+                    ->first();
 
                     return $residencePermitDocument ? $residencePermitDocument->expiration_date : '';
                 })
@@ -222,8 +263,6 @@ class EssentialsCardsController extends Controller
                     }
                 })
 
-
-
                 ->rawColumns(['action', 'profession', 'nationality', 'checkbox'])
                 ->make(true);
         }
@@ -236,7 +275,10 @@ class EssentialsCardsController extends Controller
         ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 
 
-        return view('essentials::cards.index')->with(compact('sales_projects', 'proof_numbers'));
+        return view('essentials::cards.index')
+        ->with(compact('sales_projects', 'proof_numbers' , 'employees',
+        'companies',
+        'durationOptions'));
     }
 
 
@@ -329,13 +371,27 @@ class EssentialsCardsController extends Controller
         }
 
        
-        $users = User::whereIn('users.id', $userIds)->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
+        $users = User::whereIn('users.id', $userIds)->where('users.is_cmmsn_agnt', 0)
             ->where('users.nationality_id', '!=', 5)
             ->where('users.status','active')
-            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
-            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+           
+            ->leftJoin('essentials_employee_appointmets', function($join) {
+                $join->on('essentials_employee_appointmets.employee_id', '=', 'users.id')
+                     ->where('essentials_employee_appointmets.is_active', 1);
+            })
+
+            ->leftJoin('essentials_admission_to_works', function($join) {
+                $join->on('essentials_admission_to_works.employee_id', '=', 'users.id')
+                     ->where('essentials_admission_to_works.is_active', 1);
+            })
+
+            ->leftJoin('essentials_employees_contracts', function($join) {
+                $join->on('essentials_employees_contracts.employee_id', '=', 'users.id')
+                     ->where('essentials_employees_contracts.is_active', 1);
+            })
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+            
+            
             ->select([
                 'users.id as id',
                 'users.emp_number',
@@ -343,9 +399,9 @@ class EssentialsCardsController extends Controller
                 'users.username',
                 'users.business_id',
                 'users.user_type',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
-                'users.id_proof_number',
-                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+                    'users.id_proof_number',
+                    DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
 
                 'essentials_admission_to_works.admissions_date as admissions_date',
                 'essentials_employees_contracts.contract_end_date as contract_end_date',
@@ -359,22 +415,28 @@ class EssentialsCardsController extends Controller
                 'essentials_employee_appointmets.profession_id as profession_id'
             ])
 
+        
             ->orderby('id', 'desc');
 
 
+      //dd( $users->whereIn('users.id', [5939])->get());
+            if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
+               
+                $users->whereIn('users.id', $request->input('proof_numbers'))->first();
+            }
         
         if (!empty($request->input('status-select'))) {
-            $users->where('users.status', $request->input('status'));
+            $users->where('users.status', $request->input('status'))->first();
         }
 
         if (!empty($request->input('business'))) {
 
-            $users->where('users.business_id', $request->input('business'));
+            $users->where('users.business_id', $request->input('business'))->first();
         }
 
         if (!empty($request->input('nationality'))) {
 
-            $users->where('users.nationality_id', $request->input('nationality'));
+            $users->where('users.nationality_id', $request->input('nationality'))->first();
             error_log("111");
         }
         if (request()->ajax()) {
@@ -463,8 +525,25 @@ class EssentialsCardsController extends Controller
         $items = salesContractItem::pluck('name_of_item', 'id');
 
 
+
+        $durationOptions = [
+                '3' => __('essentials::lang.3_months'),
+                '6' => __('essentials::lang.6_months'),
+                '9' => __('essentials::lang.9_months'),
+                '12' => __('essentials::lang.12_months'),
+            ];
+        $companies = Company::pluck('name', 'id');
+
+        
+        $proof_numbers = User::whereIn('users.id',$userIds)->where('users.nationality_id', '!=', 5)
+        ->where('users.status','active')
+            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+        ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
+
+
         return view('essentials::cards.operations')
             ->with(compact(
+                'durationOptions','companies','proof_numbers',
                 'contract_types',
                 'nationalities',        
                 'professions',           
@@ -1100,108 +1179,12 @@ class EssentialsCardsController extends Controller
 
 
 
-    public function postRenewData(Request $request)
-    {
-        try {
-            $requestData = $request->only([
-                'id',
-                'employee_id',
-                'number',
-                'expiration_date',
-                'renew_duration',
-                'fees',
-                'Payment_number',
-
-            ]);
-
-            $jsonData = [];
-
-            foreach ($requestData['id'] as $index => $workerId) {
-                $jsonObject = [
-                    'id' => $requestData['id'][$index],
-                    'employee_id' => $requestData['employee_id'][$index],
-                    'number' => $requestData['number'][$index],
-                    'expiration_date' => $requestData['expiration_date'][$index],
-                    'renew_duration' => $requestData['renew_duration'][$index],
-                    'fees' => $requestData['fees'][$index],
-                    'Payment_number' => $requestData['Payment_number'][$index],
-                ];
-
-                $jsonData[] = $jsonObject;
-            }
-
-            $jsonData = json_encode($jsonData);
-
-            if (!empty($jsonData)) {
-                $business_id = $request->session()->get('user.business_id');
-                $selectedData = json_decode($jsonData, true);
-
-                DB::beginTransaction();
-                foreach ($selectedData as $data) {
-
-                    $card = EssentialsWorkCard::with(['user.OfficialDocument'])->find($data['id']);
-
-                    $renewStartDate = Carbon::parse($data['expiration_date']);
-                    $renewEndDate = $renewStartDate->addMonths($data['renew_duration']);
-
-
-                    if ($card) {
-
-                        EssentialsResidencyHistory::create([
-                            'worker_id' => $data['employee_id'],
-                            'renew_start_date' => $data['expiration_date'],
-                            'residency_number' => $data['number'],
-                            'duration' => $data['renew_duration'],
-                            'renew_end_date' => $renewEndDate,
-                        ]);
-
-                    
-                    $fees = $this->calculateFees( $card->workcard_duration + $data['renew_duration']);
-
-                    
-                    $card->update([
-                        'workcard_duration' => $card->workcard_duration + $data['renew_duration'],
-                        'fees' => $fees,
-                        'Payment_number' => $data['Payment_number']
-                    ]);
-
-                    
-                    $document = EssentialsOfficialDocument::where('type', 'residence_permit')
-                        ->where('employee_id', $data['employee_id'])
-                        ->first();
-
-                    if($document)
-                    {
-                        $document->update(['expiration_date' => $renewEndDate]);
-                    }
-
-                   
-                    }
-                }
-
-
-                DB::commit();
-
-                $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
-            } else {
-                $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
-            }
-        } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            $output = ['success' => 0, 'msg' => $e->getMessage()];
-        }
-
-        return redirect()->route('cards')->with($output);
-        
-    }
+   
   
 
     public function getSelectedRowsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');
-
-
         $data = EssentialsWorkCard::whereIn('id', $selectedRows)
             ->with([
                 'user',
@@ -1216,7 +1199,7 @@ class EssentialsCardsController extends Controller
                 'fees as fees',
                 'workcard_duration',
                 'Payment_number as Payment_number',
-                'fixnumber as fixnumber'
+                
             )->get();
 
        
@@ -1228,20 +1211,330 @@ class EssentialsCardsController extends Controller
 
         ];
 
-
         foreach ($data as $row) {
-            $doc = $row->user->OfficialDocument
-                ->where('type', 'residence_permit')
-                ->first();
-        
-            $fixnumber = $row->user->company?->documents?->where('licence_type', 'COMMERCIALREGISTER')->first();
-            
+            $doc = $row->user->OfficialDocument()
+            ->where('type', 'residence_permit')
+            ->where('is_active', 1)
+            ->latest('created_at')
+            ->first();
+
             $row->expiration_date = $doc ? $doc->expiration_date : null;
             $row->number = $doc ? $doc->number : null;
-            $row->fixnumber = $fixnumber ? $fixnumber->unified_number : null;
+              
+        
+            $uni_number = $row->user->company?->documents?->where('licence_type', 'COMMERCIALREGISTER')->first();
+            $row->fixnumber = $uni_number ? $uni_number->unified_number : null;
+            
+        }
+       
+      
+        return response()->json(['data' => $data,
+         'durationOptions' => $durationOptions]);
+    }
+
+
+    public function postRenewData(Request $request)
+    {
+        try {
+            $requestData = $request->only([
+                'id',
+                'employee_id',
+                'number',
+                'expiration_date',
+                'renew_duration',
+                'fees',
+                'Payment_number',
+
+            ]);
+
+          
+
+            $jsonData = [];
+           
+            foreach ($requestData['id'] as $index => $workerId) {
+              
+        
+                $jsonObject = [
+                    'id' => $requestData['id'][$index],
+                    'employee_id' => $requestData['employee_id'][$index],
+                    'number' => $requestData['number'][$index],
+                    'expiration_date' => $requestData['expiration_date'][$index],
+                    'renew_duration' => $requestData['renew_duration'][$index],
+                    'fees' => $requestData['fees'][$index],
+                    'Payment_number' => $requestData['Payment_number'][$index],
+                ];
+              
+
+                $jsonData[] = $jsonObject;
+              
+            }
+
+            $jsonData = json_encode($jsonData);
+           
+            if (!empty($jsonData)) {
+               
+                $selectedData = json_decode($jsonData, true);
+              
+              //  DB::beginTransaction();
+                foreach ($selectedData as $data) {
+
+                    $exist_card = EssentialsWorkCard::where('is_active',1)
+                    ->find($data['id']);
+                  
+                    $renewStartDate = Carbon::parse($data['expiration_date']);
+                    $renewEndDate = $renewStartDate->addMonths($data['renew_duration']);
+                    $new_fees = $this->calculateFees($data['renew_duration']);
+                    
+                    if($exist_card)
+                    {
+                        $exist_card->is_active=0;
+                        $exist_card->save();
+                    }
+
+                    $new_card= new EssentialsWorkCard();
+                    $lastrecord = EssentialsWorkCard::where('is_active', 1)->orderBy('work_card_no', 'desc')->first();
+        
+                    if ($lastrecord) {
+        
+                        $lastEmpNumber = (int)substr($lastrecord->work_card_no, 3);
+                        $nextNumericPart = $lastEmpNumber + 1;
+                        $new_card['work_card_no'] = 'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                    } else {
+        
+                        $new_card['work_card_no'] = 'WC' . '000';
+                    }
+                    $new_card->is_active=1;
+                    $new_card->fees=$new_fees;
+                    $new_card->Payment_number=$data['Payment_number'];
+                    $new_card->workcard_duration=$data['renew_duration'] + $exist_card['workcard_duration'];
+                    $new_card->employee_id =$data['employee_id'];
+                    $new_card->start_date =$data['expiration_date'];
+                    $new_card->end_date = $renewEndDate;
+                    $new_card->save();
+
+                   
+
+                   if( $data['number'] != null &&  $data['expiration_date'] !=null)
+                   {
+                    $existingDocument = EssentialsOfficialDocument::where('type', 'residence_permit')
+                    ->where('employee_id', $data['employee_id'])
+                    ->where('is_active', 1)
+                    ->latest('created_at')
+                    ->first();
+
+
+                    if ($existingDocument) 
+                    {
+                        $existingDocument->is_active =0;
+                        $existingDocument->save();
+                    }
+    
+                    
+                    $newDocument = new EssentialsOfficialDocument();
+                    $newDocument->type = 'residence_permit';
+                    $newDocument->employee_id = $data['employee_id'];
+                    $newDocument->number = $data['number'];
+                    $newDocument->expiration_date = $renewEndDate;
+                    $newDocument->issue_date = now(); 
+                    $newDocument->is_active = 1;
+                    $newDocument->save();
+           
+                   
+                   }
+                   
+                   
+                }
+                //DB::commit();
+                $output = ['success' => 1, 'msg' => __('essentials::lang.card_renew_sucessfully')];
+            } else
+             {
+                $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
 
-        return response()->json(['data' => $data, 'durationOptions' => $durationOptions]);
+       return   $output ;
+    
+        
+    }
+
+
+
+    public function getOperationSelectedworkcardData(Request $request)
+    {
+        $selectedRows = $request->input('selectedRows');
+        $data= User::whereIn('id', $selectedRows)->select('*')
+        ->orderby('id','desc')
+        ->get();
+
+        foreach ($data as $row) {
+            $doc = $row->OfficialDocument()
+            ->where('type', 'residence_permit')
+            ->where('is_active', 1)
+            ->latest('created_at')
+            ->first();
+
+            $row->expiration_date = $doc ? $doc->expiration_date : null;
+            $row->number = $doc ? $doc->number : null;
+              
+            $row->name=$row->first_name . ' ' .$row->last_name;
+            $uni_number = $row->company?->documents?->where('licence_type', 'COMMERCIALREGISTER')->first();
+            $row->fixnumber = $uni_number ? $uni_number->unified_number : null;
+            
+        }
+       
+        $durationOptions = [
+            '3' => __('essentials::lang.3_months'),
+            '6' => __('essentials::lang.6_months'),
+            '9' => __('essentials::lang.9_months'),
+            '12' => __('essentials::lang.12_months'),
+
+        ];
+
+        return response()->json(['data' => $data,
+        'durationOptions' => $durationOptions]);
+    }
+   
+
+    public function postOperationRenewData(Request $request)
+    {
+        try {
+            $requestData = $request->only([
+                'id',
+                'number',
+                'expiration_date',
+                'renew_duration',
+                'fees',
+                'Payment_number',
+
+            ]);
+         
+
+            $jsonData = [];
+           
+            foreach ($requestData['id'] as $index => $workerId) {
+              
+        
+                $jsonObject = [
+                    'id' => $requestData['id'][$index],
+                    'number' => $requestData['number'][$index],
+                    'expiration_date' => $requestData['expiration_date'][$index],
+                    'renew_duration' => $requestData['renew_duration'][$index],
+                    'fees' => $requestData['fees'][$index],
+                    'Payment_number' => $requestData['Payment_number'][$index],
+                ];
+              
+
+                $jsonData[] = $jsonObject;
+              
+            }
+
+            $jsonData = json_encode($jsonData);
+           
+            if (!empty($jsonData)) {
+               
+                $selectedData = json_decode($jsonData, true);
+              
+             
+                foreach ($selectedData as $data) {
+
+                    $user = User::find($data['id']);
+                    if ($user && is_null($user->border_no) && is_null($data['number']) && is_null($data['expiration_date'])) {
+                        return [
+                            'success' => false,
+                            'msg' => __('essentials::lang.user_info_eqama_not_completed'),
+                        ];
+                    }
+
+                    $exist_card = EssentialsWorkCard::where('employee_id',$data['id'])
+                    ->where('is_active',1)
+                    ->first();
+                  
+                    $renewStartDate = Carbon::parse($data['expiration_date']);
+                    $renewEndDate = $renewStartDate->addMonths($data['renew_duration']);
+                    $new_fees = $this->calculateFees($data['renew_duration']);
+                    $new_duration=null;
+                    if($exist_card)
+                    {
+                        $exist_card->is_active=0;
+                        $exist_card->save();
+
+                        $new_duration=$data['renew_duration'] + $exist_card['workcard_duration'];
+                    }
+                    else
+                    { $new_duration=$data['renew_duration'] ;}
+
+                    $new_card= new EssentialsWorkCard();
+                    $lastrecord = EssentialsWorkCard::where('is_active', 1)->orderBy('work_card_no', 'desc')->first();
+        
+                    if ($lastrecord) {
+        
+                        $lastEmpNumber = (int)substr($lastrecord->work_card_no, 3);
+                        $nextNumericPart = $lastEmpNumber + 1;
+                        $new_card['work_card_no'] = 'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                    } else {
+        
+                        $new_card['work_card_no'] = 'WC' . '000';
+                    }
+                  
+                    $new_card->is_active=1;
+                    $new_card->fees=$new_fees;
+                    $new_card->Payment_number=$data['Payment_number'];
+                    $new_card->workcard_duration=  $new_duration;
+                    $new_card->employee_id =$data['id'];
+                    $new_card->start_date =$data['expiration_date'];
+                    $new_card->end_date = $renewEndDate;
+                    $new_card->save();
+
+                   
+                    if( $data['number'] != null &&  $data['expiration_date'] !=null)
+                    {
+                   
+                    $existingDocument = EssentialsOfficialDocument::where('type', 'residence_permit')
+                    ->where('employee_id', $data['id'])
+                    ->where('is_active', 1)
+                    ->latest('created_at')
+                    ->first();
+
+
+                    if ($existingDocument) 
+                    {
+                        $existingDocument->is_active =0;
+                        $existingDocument->save();
+                    }
+    
+                    
+                    
+                    $newDocument = new EssentialsOfficialDocument();
+                    $newDocument->type = 'residence_permit';
+                    $newDocument->employee_id = $data['id'];
+                    $newDocument->number = $data['number'];
+                    $newDocument->expiration_date = $renewEndDate;
+                    $newDocument->issue_date = now(); 
+                    $newDocument->is_active = 1;
+                    $newDocument->save();
+           
+                }
+                   
+                }
+              
+                $output = ['success' => 1, 'msg' => __('essentials::lang.card_renew_sucessfully')];
+            } else
+             {
+                $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
+        }
+
+       return   $output;
+      
+        
     }
 
 
@@ -1267,7 +1560,7 @@ class EssentialsCardsController extends Controller
     public function get_responsible_data(Request $request)
     {
         $employeeId = $request->get('employeeId');
-        $business_id = request()->session()->get('user.business_id');
+       
         $userType = User::where('id', $employeeId)->value('user_type');
 
         if ($userType !== 'worker') 
@@ -1309,20 +1602,23 @@ class EssentialsCardsController extends Controller
             $projectName = $assignedProject->name ?? '';
             $projectId = $assignedProject->id ?? '';
 
-            $all_responsible_users = [
+            if ( $assignedProject != null)
+            {
+                 $all_responsible_users = [
                 'id' => $projectId,
                 'name' => $projectName,
             ];
 
-            if (!$all_responsible_users) {
-                return response()->json(['error' => 'No responsible users found for the given employee ID']);
             }
-
+            else {$all_responsible_users = [ ];
+               
+           }
+           
             $query = User::where('users.user_type', 'employee');
             $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
             $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-
-            $userIds = json_decode($projects->assignedTo->assigned_to, true);
+           
+            $userIds = json_decode($projects->assignedTo?->assigned_to, true);
             $assignedresponibleClient = [];
 
             if ($userIds) {
@@ -1367,55 +1663,6 @@ class EssentialsCardsController extends Controller
     public function create(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-     
-        $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-
-            $companies_ids = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
-                }
-            }
-        }
-        $all_users = User::whereIn('id',$userIds)
-           ->where(function ($query) {
-            $query->whereNotNull('users.border_no')
-                ->orWhere('users.id_proof_name', 'eqama');
-        })
-            ->whereIn('users.user_type', ['worker' ,'employee'])
-            ->where('nationality_id','!=',5)
-           
-            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
-        ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
-
-        $employees = $all_users->pluck('full_name', 'id');
-        
-
-
-        $durationOptions = [
-            '3' => __('essentials::lang.3_months'),
-            '6' => __('essentials::lang.6_months'),
-            '9' => __('essentials::lang.9_months'),
-            '12' => __('essentials::lang.12_months'),
-        ];
-        $companies = Company::pluck('name', 'id');
-
-        return view('essentials::cards.create')
-            ->with(compact(
-                'employees',
-                'companies',
-                'durationOptions'
-            ));
     }
 
     /**
@@ -1429,58 +1676,54 @@ class EssentialsCardsController extends Controller
         
         
         try {
+
             $data = $request->only([
-
                 'Residency_no',
-
-                'project',
-                'workcard_duration',
+                'workcard_duration_input',
                 'Payment_number',
-                'fees',
-                'company_name',
+                'fees_input',
                 'employee_id',
-
 
             ]);
 
 
+            if ($request->input('Residency_no') == null && $request->input('Residency_end_date') == null  && $request->input('border_no') == null) {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('essentials::lang.user_info_eqama_not_completed'),
+                ];
+            } 
+            else
+            {
+                $data['employee_id'] = (int)$request->input('employee_id');
+                $data['fees'] = $request->input('fees_input');
+                $data['workcard_duration'] = (int)$request->input('workcard_duration_input');
+                $data['is_active'] =1;
+    
+    
+                $lastrecord = EssentialsWorkCard::orderBy('work_card_no', 'desc')->first();
+    
+                if ($lastrecord) {
+    
+                    $lastEmpNumber = (int)substr($lastrecord->work_card_no, 3);
+                    $nextNumericPart = $lastEmpNumber + 1;
+                    $data['work_card_no'] = 'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                } else {
+    
+                    $data['work_card_no'] = 'WC' . '000';
+                }
+    
 
-            $business_id = request()->session()->get('user.business_id');
-
-            $data['employee_id'] = (int)$request->input('employee_id');
-
-
-
-
-            $lastrecord = EssentialsWorkCard::orderBy('work_card_no', 'desc')->first();
-
-            if ($lastrecord) {
-
-                $lastEmpNumber = (int)substr($lastrecord->work_card_no, 3);
-
-
-
-                $nextNumericPart = $lastEmpNumber + 1;
-
-                $data['work_card_no'] = 'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
-            } else {
-
-                $data['work_card_no'] = 'WC' . '000';
+               EssentialsWorkCard::create($data);
+    
+               $output = [
+                    'success' => 1,
+                    'msg' => __('essentials::lang.card_added_sucessfully'),
+                ];
+    
+    
             }
-
-
-            $data['fixnumber'] = 700646447;
-
-            $workcard = EssentialsWorkCard::create($data);
-
-
-
-
-
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
+           
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
@@ -1491,8 +1734,8 @@ class EssentialsCardsController extends Controller
             ];
         }
 
-
-        return redirect()->route('cards');
+    return $output;
+       
     }
 
   
