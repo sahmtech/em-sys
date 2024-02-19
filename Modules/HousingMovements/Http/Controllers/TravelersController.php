@@ -370,7 +370,15 @@ class TravelersController extends Controller
 
                 $carbon_now = \Carbon::now();
 
-                $userId = User::where('proposal_worker_id', $id)->first()->id;
+                $user = User::where('proposal_worker_id', $id)->first();
+                if ($user) {
+                    $userId = User::where('proposal_worker_id', $id)->first()->id;
+                } else {
+                    return [
+                        'success' => false,
+                        'msg' => __('housingmovements::lang.this user does not exist'),
+                    ];
+                }
 
                 $newRoom = new HtrRoomsWorkersHistory();
                 $newRoom->worker_id = $userId;

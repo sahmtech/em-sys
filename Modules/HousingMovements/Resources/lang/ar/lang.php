@@ -281,6 +281,7 @@ return [
 
     'assigned_to_multiple_rooms' => 'مسند إلى عدة غرف',
     'residents_details' => 'تفاصيل السكان',
+    'this user does not exist' => 'هذا المستخدم غير موجود',
     'the number of users is more the number of available beds in this room' => 'عدد العمالة المحددة أكبر من عدد الأسرة المتاحة في الغرفة المحددة'
 
 
