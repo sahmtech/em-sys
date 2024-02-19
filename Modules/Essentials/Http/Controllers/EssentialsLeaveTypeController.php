@@ -110,16 +110,15 @@ class EssentialsLeaveTypeController extends Controller
      */
     public function store(Request $request)
     {
+    
         $business_id = $request->session()->get('user.business_id');
-
-
 
         if (! auth()->user()->can('essentials.crud_leave_type')) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
-            $input = $request->only(['leave_type','duration','allowance','Deportable', 'max_leave_count', 'leave_count_interval']);
+            $input = $request->only(['leave_type','duration','allowance','Deportable','due_date', 'include_salary','max_leave_count','gender', 'extendable','leave_count_interval']);
 
             $input['business_id'] = $business_id;
 
@@ -177,6 +176,7 @@ class EssentialsLeaveTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
+     
         $business_id = $request->session()->get('user.business_id');
 
 
@@ -185,11 +185,11 @@ class EssentialsLeaveTypeController extends Controller
         }
 
         try {
-            $input = $request->only(['leave_type', 'max_leave_count',
-                'leave_count_interval', ]);
 
+            $input = $request->only(['leave_type','duration','allowance','Deportable','due_date', 'include_salary','max_leave_count','gender', 'extendable']);
             $input['business_id'] = $business_id;
-
+            $input['extendable'] = $request->input('extendable', 0);
+            
             EssentialsLeaveType::where('business_id', $business_id)
                             ->where('id', $id)
                             ->update($input);
