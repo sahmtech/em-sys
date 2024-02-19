@@ -44,7 +44,7 @@
                 <div class="modal-content">
 
                     {!! Form::open([
-                        'url' => route('agentTimeSheet.create'),
+                        'url' => route('agentTimeSheet.timeSheet'),
                         'method' => 'get',
                         'id' => 'add_payroll_step1',
                     ]) !!}

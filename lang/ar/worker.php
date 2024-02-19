@@ -40,4 +40,7 @@ return [
     "final_salary" => "الراتب النهائي",
     'hours' => 'ساعات',
     'project' => 'المشروع',
+    'total_salary' => 'إجمالي الراتب',
+    'edit' => 'تحرير',
+    'submit' => 'إصدار',
 ];

@@ -26,179 +26,181 @@
     <!-- Main content -->
     <section class="content">
         {!! Form::open(['url' => route('agentTimeSheet.store'), 'method' => 'post']) !!}
-        {!! Form::hidden('total', $user->total_salary) !!}
-        {!! Form::hidden('transaction_date', $transaction_date) !!}
-        {!! Form::hidden('user', json_encode($user)) !!}
-        {!! Form::hidden('attendance', json_encode($attendance)) !!}
-        {!! Form::hidden('allowances_and_deductions', json_encode($allowances_and_deductions)) !!}
-        <input type=hidden name='total_salary' id='total_salary'>
-        <div class="row">
-            <div class="col-md-12">
+        @foreach ($users as $user)
+            {!! Form::hidden('total', $user->total_salary) !!}
+            {!! Form::hidden('transaction_date', $transaction_date) !!}
+            {!! Form::hidden('user', json_encode($user)) !!}
+            {{-- {!! Form::hidden('attendance', json_encode($attendance)) !!} --}}
+            {{-- {!! Form::hidden('allowances_and_deductions', json_encode($allowances_and_deductions)) !!} --}}
+            <input type=hidden name='total_salary' id='total_salary'>
+            <div class="row">
+                <div class="col-md-12">
 
-                <div class="col-md-4 ">
-                    <div class="custom_box box box-success">
-                        <div class="col-md-12">
-                            <h4> @lang('agent.worker_info') </h4>
-                        </div>
-                        <div class="clearfix"></div>
-                        <hr>
-                        <div class="col-md-12">
+                    <div class="col-md-4 ">
+                        <div class="custom_box box box-success">
                             <div class="col-md-12">
-                                <p>@lang('worker.full_name'): {{ $user->first_name }} {{ $user->last_name }}</p>
+                                <h4> @lang('agent.worker_info') </h4>
                             </div>
+                            <div class="clearfix"></div>
+                            <hr>
                             <div class="col-md-12">
-                                <p>@lang('worker.nationality'): {{ $user->country->nationality }}</p>
-                            </div>
-                            <div class="col-md-12">
-                                <p>@lang('worker.residency'): {{ $user->id_proof_number }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 ">
-                    <div class="custom_box box box-success">
-                        <div class="col-md-12">
-                            <h4> @lang('agent.work_days_details') </h4>
-                        </div>
-                        <div class="clearfix"></div>
-                        <hr>
-                        <div class="col-md-12">
-                            <div class="col-md-6">
-                                <p>@lang('worker.work_days'): {{ $attendance->work_days }} </p>
-                            </div>
-
-                            <div class="col-md-6">
-                                <p>@lang('worker.actual_work_days'): {{ $attendance->actual_work_days }}</p>
-                            </div>
-
-                            <div class="col-md-6">
-                                <p>@lang('worker.late_days'): {{ $attendance->late_days }}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p>@lang('worker.out_of_site_days'): {{ $attendance->out_of_site_days }}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p>@lang('worker.absence_days'): {{ $attendance->absence_days }}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p>@lang('worker.leave_days'): {{ $attendance->leave_days }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 ">
-                    <div class="custom_box box box-success">
-
-                        <div class="col-md-9">
-                            <h4> @lang('agent.payroll_details')</h4>
-                        </div>
-
-                        <div class="clearfix"></div>
-                        <hr>
-                        <div class="col-md-12">
-                            <div class="col-md-6">
-
-                                <p>@lang('agent.basic_salary'): {{ number_format($user->essentials_salary ?? 0, 0) }} </p>
-                            </div>
-                            <div class="col-md-6">
-                                <p>@lang('agent.absence_deductions'): {{ number_format($absence_deductions ?? 0, 0) }} </p>
-                            </div>
-                            @foreach ($allowances_and_deductions->allowances as $key => $allowance)
-                                <div class="col-md-6">
-                                    <p>{{ $allowance->essentialsAllowanceAndDeduction->description }}:
-                                        {{ number_format($allowance->amount ?? 0, 0) }} </p>
+                                <div class="col-md-12">
+                                    <p>@lang('worker.full_name'): {{ $user->first_name }} {{ $user->last_name }}</p>
                                 </div>
-                            @endforeach
-
-                        </div>
-                        <div class="col-md-12">
-                            <h4 style="float: left">@lang('agent.total'): {{ number_format($cost2 ?? 0) }}
-                            </h4>
+                                <div class="col-md-12">
+                                    <p>@lang('worker.nationality'): {{ $user->country->nationality }}</p>
+                                </div>
+                                <div class="col-md-12">
+                                    <p>@lang('worker.residency'): {{ $user->id_proof_number }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="col-md-4 ">
-                    <div class="custom_box box box-success">
+                    <div class="col-md-4 ">
+                        <div class="custom_box box box-success">
+                            <div class="col-md-12">
+                                <h4> @lang('agent.work_days_details') </h4>
+                            </div>
+                            <div class="clearfix"></div>
+                            <hr>
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <p>@lang('worker.work_days'): {{ $attendance->work_days }} </p>
+                                </div>
 
-                        <div class="col-md-10">
-                            <h4> @lang('agent.additional_allowances')</h4>
+                                <div class="col-md-6">
+                                    <p>@lang('worker.actual_work_days'): {{ $attendance->actual_work_days }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <p>@lang('worker.late_days'): {{ $attendance->late_days }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>@lang('worker.out_of_site_days'): {{ $attendance->out_of_site_days }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>@lang('worker.absence_days'): {{ $attendance->absence_days }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>@lang('worker.leave_days'): {{ $attendance->leave_days }}</p>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="col-md-1 button_container">
-                            <h4>
-                                <button type="button" id="essentialsAllowanceAddRow" class="btn btn-primary">
-                                    @lang('messages.add')
-                                </button>
-                            </h4>
-                        </div>
-                        <div class="clearfix"></div>
-                        <hr>
-                        <div class="form-group">
-                            <table class="table">
-
-                                <tbody id="essentialsAllowanceTable">
-                                </tbody>
-                            </table>
-                        </div>
-
-
-
                     </div>
-                </div>
+                    <div class="col-md-4 ">
+                        <div class="custom_box box box-success">
 
+                            <div class="col-md-9">
+                                <h4> @lang('agent.payroll_details')</h4>
+                            </div>
 
-                <div class="col-md-4 ">
-                    <div class="custom_box box box-success">
+                            <div class="clearfix"></div>
+                            <hr>
+                            <div class="col-md-12">
+                                <div class="col-md-6">
 
-                        <div class="col-md-10">
-                            <h4> @lang('agent.deductions')</h4>
-                        </div>
+                                    <p>@lang('agent.basic_salary'): {{ number_format($user->essentials_salary ?? 0, 0) }} </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>@lang('agent.absence_deductions'): {{ number_format($absence_deductions ?? 0, 0) }} </p>
+                                </div>
+                                @foreach ($allowances_and_deductions->allowances as $key => $allowance)
+                                    <div class="col-md-6">
+                                        <p>{{ $allowance->essentialsAllowanceAndDeduction->description }}:
+                                            {{ number_format($allowance->amount ?? 0, 0) }} </p>
+                                    </div>
+                                @endforeach
 
-                        <div class="col-md-1 button_container">
-                            <h4>
-                                <button type="button" id="essentialsDeductionAddRow" class="btn btn-primary">
-                                    @lang('messages.add')
-                                </button>
-                            </h4>
-                        </div>
-                        <div class="clearfix"></div>
-                        <hr>
-                        <div class="form-group">
-                            <table class="table">
-
-                                <tbody id="essentialsDeductionTable">
-                                </tbody>
-                            </table>
-                        </div>
-
-
-
-                    </div>
-                </div>
-
-
-
-                <div class="col-md-4 ">
-                    <div class="custom_box box box-success custom_container">
-                        <h3>@lang('agent.total_salary')</h3>
-                        <h3 id="total_salary_h3"></h3>
-                        <div class="row custom_submit">
-                            <div class="col-md-1">
-                                <button type="submit" class="btn btn-primary" id="submit_user_button">
-                                    {{ $submit_btn_text }}
-                                </button>
-
+                            </div>
+                            <div class="col-md-12">
+                                <h4 style="float: left">@lang('agent.total'): {{ number_format($cost2 ?? 0) }}
+                                </h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-4 ">
+                        <div class="custom_box box box-success">
 
-        </div>
+                            <div class="col-md-10">
+                                <h4> @lang('agent.additional_allowances')</h4>
+                            </div>
+
+                            <div class="col-md-1 button_container">
+                                <h4>
+                                    <button type="button" id="essentialsAllowanceAddRow" class="btn btn-primary">
+                                        @lang('messages.add')
+                                    </button>
+                                </h4>
+                            </div>
+                            <div class="clearfix"></div>
+                            <hr>
+                            <div class="form-group">
+                                <table class="table">
+
+                                    <tbody id="essentialsAllowanceTable">
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4 ">
+                        <div class="custom_box box box-success">
+
+                            <div class="col-md-10">
+                                <h4> @lang('agent.deductions')</h4>
+                            </div>
+
+                            <div class="col-md-1 button_container">
+                                <h4>
+                                    <button type="button" id="essentialsDeductionAddRow" class="btn btn-primary">
+                                        @lang('messages.add')
+                                    </button>
+                                </h4>
+                            </div>
+                            <div class="clearfix"></div>
+                            <hr>
+                            <div class="form-group">
+                                <table class="table">
+
+                                    <tbody id="essentialsDeductionTable">
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-4 ">
+                        <div class="custom_box box box-success custom_container">
+                            <h3>@lang('agent.total_salary')</h3>
+                            <h3 id="total_salary_h3"></h3>
+                            <div class="row custom_submit">
+                                <div class="col-md-1">
+                                    <button type="submit" class="btn btn-primary" id="submit_user_button">
+                                        {{ $submit_btn_text }}
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        @endforeach
         {!! Form::close() !!}
 
     @stop

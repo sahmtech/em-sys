@@ -5,8 +5,8 @@
 
 
     <section class="content-header">
-        <h1> 
-            <span>@lang('agent.time_sheet_for')</span> {{$date}}
+        <h1>
+            <span>@lang('agent.time_sheet_for')</span> {{ $date }}
         </h1>
     </section>
 
@@ -14,85 +14,55 @@
     <section class="content">
         <div class="row">
             <div class="col-md-12">
-                {{-- @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $contacts_fillter, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
-
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('nationality_filter', __('followup::lang.nationality') . ':') !!}
-                            {!! Form::select('nationality_filter', $nationalities, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
-
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('status_label', __('followup::lang.status') . ':') !!}
-
-                            <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
-                                <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($status_filltetr as $key => $value)
-                                    <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
-                            {!! Form::text('doc_filter_date_range', null, [
-                                'placeholder' => __('lang_v1.select_a_date_range'),
-                                'class' => 'form-control ',
-                                'readonly',
-                            ]) !!}
-                        </div>
-                    </div>
-                @endcomponent --}}
             </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
+                <div style="margin-bottom: 10px;">
+                    <div class="col-md-12">
+                        <div class="col-md-1">
+                            <form action="{{ route('agentTimeSheet.timeSheet') }}" method="POST">
+                                @csrf <!-- Laravel CSRF token for security -->
+                                <input type="hidden" name="editWorkerIds" id='editWorkerIds'>
+                                <input type="hidden" name="month_year" value="{{ $month_year }}">
+                                <!-- Example hidden input -->
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-edit"></i>
+                                    @lang('worker.edit')
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-1">
+                            <form action="{{ route('agentTimeSheet.submitTmeSheet') }}" method="POST" id="submitForm">
+                                @csrf <!-- Laravel CSRF token for security -->
+                                <input type="hidden" name="totals" id="totals">
+                                <input type="hidden" name="ids" id="ids"> <!-- Example hidden input -->
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-check"></i>
+                                    @lang('worker.submit')
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br>
+                </div>
                 <table class="table table-bordered table-striped" id="workers_table_timesheet"
                     style="table-layout: fixed !important;">
                     <thead>
                         <tr>
+                            <td style="width: 10px;">
+                                <input type="checkbox" id="select-all">
+                            </td>
+                            <td style="width: 10px;">
+                                #
+                            </td>
                             <td style="width: 100px;">@lang('worker.name')</td>
                             <td style="width: 100px;">@lang('worker.eqama_number')</td>
                             <td style="width: 100px;">@lang('worker.project')</td>
                             <td style="width: 100px;">@lang('worker.nationality')</td>
-                           {{--  <td style="width: 100px;">@lang('worker.sponser')</td>
-                            <td style="width: 100px;">@lang('worker.basic')</td>
-                            <td style="width: 130px;">@lang('worker.additions')</td>
-                            <td style="width: 130px;">@lang('worker.deductions')</td>
-                            <td style="width: 100px;">@lang('worker.monthly_cost')</td>
-                            <td style="width: 100px;">@lang('worker.wd')</td>
-                            <td style="width: 100px;">@lang('worker.actual_work_days')</td>
-                            <td style="width: 100px;">@lang('worker.daily_work_hours')</td>
-                            <td style="width: 100px;">@lang('worker.absence_day')</td>
-                            <td style="width: 100px;">@lang('worker.absence_amount')</td>
-                            <td style="width: 100px;">@lang('worker.cost2')</td>
-                            <td style="width: 100px;">@lang('worker.over_time_h')</td>
-                            <td style="width: 100px;">@lang('worker.over_time')</td>
-                            <td style="width: 130px;">@lang('worker.other_addition')</td>
-                            <td style="width: 130px;">@lang('worker.other_deduction')</td>
-                            <td style="width: 100px;">@lang('worker.invoice_value')</td>
-                            <td style="width: 100px;">@lang('worker.vat')</td> --}}
-                            <td style="width: 100px;">@lang('worker.total')</td>
-                            <td style="width: 100px;">@lang('messages.action')</td>
-
+                            <td style="width: 100px;">@lang('worker.total_salary')</td>
                         </tr>
                     </thead>
                 </table>
@@ -112,7 +82,8 @@
         $(document).ready(function() {
 
             var employee_ids = @json($employee_ids);
-          
+            var month_year = @json($month_year);
+
             var workers_table_timesheet = $('#workers_table_timesheet').DataTable({
                 processing: true,
                 serverSide: true,
@@ -120,46 +91,40 @@
                 ajax: {
                     url: "{{ route('agentTimeSheet.getPayrollGroup') }}",
                     data: {
-                       
+
                         'employee_ids': employee_ids // Passing the variable here
                     },
-                    // data: function(d) {
-                    //     if ($('#project_name_filter').val()) {
-                    //         d.project_name = $('#project_name_filter').val();
-                    //     }
-                    //     if ($('#nationality_filter').val()) {
-                    //         d.nationality = $('#nationality_filter').val();
-                    //     }
-                    //     if ($('#status_fillter').val()) {
-                    //         d.status_fillter = $('#status_fillter').val();
-                    //     }
-                    //     if ($('#doc_filter_date_range').val()) {
-                    //         var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                    //             .format('YYYY-MM-DD');
-                    //         var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                    //             .format('YYYY-MM-DD');
-                    //         d.start_date = start;
-                    //         d.end_date = end;
-                    //     }
-                    // }
+
                     dataSrc: function(json) {
-                        // Do something on success here
-                        console.log("Ajax request successful");
-                        console.log(json); // This logs the returned data from the server
-
-                        // For example, you can check the length of the data
-                        if (json.data.length > 0) {
-                            console.log("Data retrieved successfully");
-                        } else {
-                            console.log("No data found");
-                        }
-
-                        // Return the data to populate the table
+                        var data = json.data;
+                        let totals = '';
+                        let ids = '';
+                        data.forEach(element => {
+                            totals += element.total + ',';
+                            ids += element.id + ',';
+                        });
+                        totals = totals.replace(/,$/, "");
+                        ids = ids.replace(/,$/, "");
+                        $('#totals').val(totals);
+                        $('#ids').val(ids);
                         return json.data;
                     }
                 },
 
                 columns: [{
+                        data: null,
+                        render: function(data, type, row, meta) {
+                            return '<input type="checkbox" class="select-row" data-id="' + row.id +
+                                '">';
+                        },
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {
+                        data: 'id',
+                        name: 'id',
+                    },
+                    {
                         data: 'name'
                     },
                     {
@@ -171,67 +136,42 @@
                     {
                         data: 'nationality'
                     },
-                    // {
-                    //     data: 'sponser'
-                    // },
-                    // {
-                    //     data: 'basic'
-                    // },
-                    // {
-                    //     data: 'additions'
-                    // },
-                    // {
-                    //     data: 'deductions'
-                    // },
-                    // {
-                    //     data: 'monthly_cost'
-                    // },
-                    // {
-                    //     data: 'wd'
-                    // },
-                    // {
-                    //     data: 'actual_work_days'
-                    // },
-                    // {
-                    //     data: 'daily_work_hours'
-                    // },
-                    // {
-                    //     data: 'absence_day'
-                    // },
-                    // {
-                    //     data: 'absence_amount'
-                    // },
-                    // {
-                    //     data: 'cost2'
-                    // },
-                    // {
-                    //     data: 'over_time_h'
-                    // },
-                    // {
-                    //     data: 'over_time'
-                    // },
-                    // {
-                    //     data: 'other_addition'
-                    // },
-                    // {
-                    //     data: 'other_deduction'
-                    // },
-
-                    // {
-                    //     data: 'invoice_value'
-                    // },
-                    // {
-                    //     data: 'vat'
-                    // },
                     {
-                        data: 'total'
+                        data: 'total',
+                        name: 'total',
                     },
-                    {
-                        data: 'action'
-                    },
-
                 ]
             });
+            $('#select-all').change(function() {
+                $('.select-row').prop('checked', $(this).prop('checked'));
+            });
+
+            $('#workers_table_timesheet').on('change', '.select-row', function() {
+                $('#select-all').prop('checked', $('.select-row:checked').length === users_table.rows()
+                    .count());
+            });
+
+            function updateSelectedRowIds() {
+                selectedIds = []; // Reset the array to ensure it's up to date
+                $('.select-row:checked').each(function() {
+                    selectedIds.push($(this).data('id'));
+                });
+                // Convert the array into a JSON string and set it as the value of the hidden input
+                $('#editWorkerIds').val(JSON.stringify(selectedIds));
+            }
+            $('#allWorkerIds').val(employee_ids);
+            // Event listener for checkbox changes
+            $(document).on('change', '.select-row', function() {
+                updateSelectedRowIds();
+            });
+
+            // Optionally, handle "select all" checkbox changes
+            $('#select-all').change(function() {
+                var isChecked = $(this).is(':checked');
+                $('.select-row').prop('checked', isChecked);
+                updateSelectedRowIds();
+            });
+
 
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,

@@ -21,7 +21,9 @@ return [
   'edit_time_sheet' => 'تعديل',
   'add_time_sheet' => 'إصدار',
   'absence_deductions' => 'خصم الغياب',
-  'time_sheet_for'=>'تايم شييت لـ',
+  'time_sheet_for' => 'تايم شييت لـ',
+  'total_payrolls' => 'الإجمالي الكلي',
+  'details' => 'التفاصيل',
 ];
 
   //  ''=>'',
