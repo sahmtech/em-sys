@@ -19,10 +19,7 @@
             <div class="col-md-9">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs nav-justified">
-                        <li class="active">
-                            <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user"
-                                    aria-hidden="true"></i> @lang('essentials::lang.employee_info')</a>
-                        </li>
+                       
                         <li>
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-money-check" aria-hidden="true"></i>
