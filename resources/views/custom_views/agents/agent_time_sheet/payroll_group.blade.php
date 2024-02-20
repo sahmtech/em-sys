@@ -54,6 +54,8 @@
                             {!! Form::hidden('total_payrolls', null, [
                                 'id' => 'total_payrolls',
                             ]) !!}
+                            {!! Form::hidden('transaction_date', $date) !!}
+
                         </div>
                     </div>
                     <div class="clearfix"></div>
