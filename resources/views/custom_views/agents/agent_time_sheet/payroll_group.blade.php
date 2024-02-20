@@ -51,6 +51,9 @@
                         </div>
                         <div class="col-md-4">
                             <h4 style="  color: red;" class="total_payrolls"></h4>
+                            {!! Form::hidden('total_payrolls', null, [
+                                'id' => 'total_payrolls',
+                            ]) !!}
                         </div>
                     </div>
                     <div class="clearfix"></div>
@@ -371,6 +374,7 @@
                 total_payrolls += parseFloat($(this).val()) || 0;
             });
             $('.total_payrolls').text('@lang('agent.total_payrolls'): ' + formatter.format(total_payrolls));
+            $('#total_payrolls').val(total_payrolls);
         }
 
         function initializeCalculations() {
