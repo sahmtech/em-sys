@@ -65,41 +65,65 @@ class EmploymentCompaniesController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_employment_company_delegation_requests = auth()->user()->can('internationalrelations.view_employment_company_delegation_requests');
-
-
+        $can_edit_employee_company = auth()->user()->can('internationalrelations.edit_employment_company');
         if (!($is_admin || $can_view_employment_company_delegation_requests)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
-
-
-
 
         $countries = EssentialsCountry::forDropdown();
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
         $contacts = DB::table('contacts')
             ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
+            ->leftJoin('ir_delegations', 'contacts.id', '=', 'ir_delegations.agency_id')
             ->select([
                 'contacts.id',
                 'contacts.supplier_business_name',
                 'essentials_countries.name as country',
-                'essentials_countries.nationality as nationality',
+                'contacts.multi_nationalities',
                 'contacts.name',
                 'contacts.mobile',
                 'contacts.email',
                 'contacts.evaluation',
                 'contacts.landline'
 
-            ])->where('business_id', $business_id)
-            ->where('type', 'recruitment');
-        //  dd($contacts);
+            ])
+
+            ->where('type', 'recruitment')
+            ->orderBy('id', 'desc');
+
 
         if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-            $contacts->where('essentials_countries.id', request()->input('nationality'));
+            $nationalityId = request()->input('nationality');
+            $contacts->where(function ($query) use ($nationalityId) {
+                $query->WhereJsonContains('contacts.multi_nationalities', $nationalityId);
+            });
         }
         if (!empty(request()->input('country')) && request()->input('country') !== 'all') {
             $contacts->where('essentials_countries.id', request()->input('country'));
         }
+        if (!empty($request->input('evaluation_filter')) && $request->input('evaluation_filter') !== 'all') {
+            $evaluationFilter = $request->input('evaluation_filter');
+            $contacts->where('contacts.evaluation', $evaluationFilter);
+        }
+
+        if (!empty($request->input('company_requests_filter'))) {
+
+            if ($request->input('company_requests_filter') === 'has_agency_requests') {
+
+                $contacts->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('ir_delegations')
+                        ->whereRaw('ir_delegations.agency_id = contacts.id');
+                });
+            } elseif ($request->input('company_requests_filter') === 'has_not_agency_requests') {
+                $contacts->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('ir_delegations')
+                        ->whereRaw('ir_delegations.agency_id = contacts.id');
+                });
+            }
+        }
+
         if (request()->ajax()) {
 
 
@@ -113,21 +137,61 @@ class EmploymentCompaniesController extends Controller
                     }
                 )
 
+                ->addColumn('nationalities', function ($contact) {
+                    $nationalities = json_decode($contact->multi_nationalities, true);
 
-                ->addColumn('action', function ($row) use ($can_view_employment_company_delegation_requests, $is_admin) {
-                    if ($is_admin || $can_view_employment_company_delegation_requests) {
-                        $html =  '<a href="' . route('companyRequests', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('internationalrelations::lang.company_requests') . '</a>';
-                        return $html;
+                    if ($nationalities !== null) {
+                        $nationalityNames = [];
+
+                        foreach ($nationalities as $nationalityId) {
+                            $nationality = EssentialsCountry::where('id', $nationalityId)->value('nationality');
+                            if ($nationality) {
+                                $nationalityNames[] = $nationality;
+                            }
+                        }
+
+
+                        $nationalityList = implode(" - ", $nationalityNames);
+                        return $nationalityList;
+                    } else {
+                        return '';
                     }
                 })
 
 
 
-                ->rawColumns(['action'])
+                ->addColumn('comp_evaluation', function ($contact) {
+
+                    $translatedEvaluation = ($contact->evaluation == 'good') ? __('essentials::lang.good') : __('essentials::lang.bad');
+                    if (!$translatedEvaluation) {
+                        return '';
+                    }
+                    return $translatedEvaluation;
+                })
+
+
+                ->addColumn('action', function ($row) use ($can_view_employment_company_delegation_requests, $is_admin, $can_edit_employee_company) {
+                    $html = '';
+
+
+                    if ($is_admin || $can_view_employment_company_delegation_requests) {
+                        $html .= '<a href="' . route('companyRequests', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('internationalrelations::lang.company_requests') . '</a>&nbsp;';
+                    }
+
+                    if ($is_admin || $can_edit_employee_company) {
+                        $html .= '<button class="btn btn-xs btn-success  open-edition-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-eye-edit"></i> ' . __('internationalrelations::lang.edit') . '</button>';
+                    }
+
+                    return $html;
+                })
+
+
+                ->rawColumns(['action', 'nationality'])
                 ->make(true);
         }
 
-        return view('internationalrelations::EmploymentCompanies.index')->with(compact('countries', 'nationalities'));
+        return view('internationalrelations::EmploymentCompanies.index')
+            ->with(compact('countries', 'nationalities'));
     }
 
 
@@ -141,12 +205,9 @@ class EmploymentCompaniesController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_company_requests = auth()->user()->can('internationalrelations.view_company_requests');
         if (!($is_admin || $can_view_company_requests)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         $irDelegations = IrDelegation::where('agency_id', $id)->with(['transactionSellLine.service'])->get();
-
-
 
         return view('internationalrelations::EmploymentCompanies.companyRequests')->with(compact('irDelegations'));
     }
@@ -163,7 +224,6 @@ class EmploymentCompaniesController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_emoloyment_company = auth()->user()->can('internationalrelations.store_emoloyment_company');
         if (!($is_admin || $can_store_emoloyment_company)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -174,9 +234,9 @@ class EmploymentCompaniesController extends Controller
             }
 
             $input = $request->only([
-                'supplier_business_name',
+
                 'country',
-                'nationality',
+                'nationalities',
                 'name',
                 'mobile',
                 'email',
@@ -189,7 +249,7 @@ class EmploymentCompaniesController extends Controller
             $input['supplier_business_name'] = $request->input('Office_name');
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
-            // dd($input);
+            $input['multi_nationalities'] = json_encode($input['nationalities']);
 
             DB::beginTransaction();
             $output = $this->contactUtil->createNewContact($input);
@@ -212,7 +272,6 @@ class EmploymentCompaniesController extends Controller
             ];
         }
         return redirect()->route('international-Relations.EmploymentCompanies');
-        //return $output;
     }
 
     /**
@@ -222,7 +281,7 @@ class EmploymentCompaniesController extends Controller
      */
     public function show($id)
     {
-        return view('internationalrelations::show');
+        return view('internationalrelations::EmploymentCompanies.employment_company_profile');
     }
 
     /**
@@ -230,9 +289,27 @@ class EmploymentCompaniesController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit($empCompanyId)
     {
-        return view('internationalrelations::edit');
+
+        $employment_companies = Contact::where('type', 'recruitment')
+            ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
+            ->select([
+                'contacts.id',
+                'contacts.supplier_business_name',
+                'essentials_countries.id as country',
+                'contacts.multi_nationalities',
+                'contacts.name',
+                'contacts.mobile',
+                'contacts.email',
+                'contacts.evaluation',
+                'contacts.landline'
+
+            ])
+            ->find($empCompanyId);
+
+
+        return response()->json(['data' => compact('employment_companies',)]);
     }
 
     /**
@@ -241,9 +318,49 @@ class EmploymentCompaniesController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $empCompanyId)
     {
-        //
+        try {
+            $input = $request->only([
+                'Office_name',
+                'country',
+                'nationalities',
+                'name',
+                'mobile',
+                'email',
+                'evaluation',
+                'landline'
+            ]);
+
+            $multi_nationalitiesData = $request->input('nationalities');
+
+            $input2['supplier_business_name'] = $input['Office_name'];
+            $input2['name'] = $input['name'];
+            $input2['country'] = $input['country'];
+            $input2['mobile'] = $input['mobile'];
+            $input2['evaluation'] = $input['evaluation'];
+            $input2['landline'] = $input['landline'];
+            $input2['multi_nationalities'] =  json_encode($multi_nationalitiesData);
+
+
+            Contact::where('id', $empCompanyId)
+                ->update($input2);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+
+        return response()->json($output);
     }
 
     /**
@@ -253,6 +370,5 @@ class EmploymentCompaniesController extends Controller
      */
     public function destroy($id)
     {
-        //
     }
 }

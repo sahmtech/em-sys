@@ -23,6 +23,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('store/Airlines', [Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'store'])->name('store.Airlines');
         Route::get('/getCitiesByCountry/{country_id}', [Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'getCitiesByCountry']);
         Route::post('store/EmploymentCompanies', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'store'])->name('store.EmploymentCompanies');
+        Route::post('update/EmploymentCompanies/{empCompanyId}', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'update'])->name('update.EmploymentCompanies');
+        Route::get('edit/EmploymentCompanies/{empCompanyId}', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'edit'])->name('edit.EmploymentCompanies');
+        Route::get('show/EmploymentCompanies/{id}', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'show'])->name('show_employment_company_profile');
+
         Route::get('companyRequests/{id}', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'companyRequests'])->name('companyRequests');
         Route::get('delegations', [Modules\InternationalRelations\Http\Controllers\DelegationController::class, 'index'])->name('delegations');
 

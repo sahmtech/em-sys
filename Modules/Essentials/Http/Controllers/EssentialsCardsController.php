@@ -83,7 +83,7 @@ class EssentialsCardsController extends Controller
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')
             ->toArray();
-        if (! $is_admin) {
+        if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
 
@@ -145,7 +145,7 @@ class EssentialsCardsController extends Controller
                 'Payment_number as Payment_number'
             );
 
-        if (! empty($request->input('project'))) {
+        if (!empty($request->input('project'))) {
             $card->whereHas('user.assignedTo', function ($query) use (
                 $request
             ) {
@@ -154,7 +154,7 @@ class EssentialsCardsController extends Controller
         }
 
         if (
-            ! empty($request->input('proof_numbers')) &&
+            !empty($request->input('proof_numbers')) &&
             $request->input('proof_numbers') != 'all'
         ) {
             $card->whereHas('user', function ($query) use ($request) {
@@ -177,8 +177,8 @@ class EssentialsCardsController extends Controller
             return Datatables::of($card)
 
                 ->addColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="'.
-                        $row->id.
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' .
+                        $row->id .
                         '" />';
                 })
 
@@ -193,10 +193,10 @@ class EssentialsCardsController extends Controller
                 })
 
                 ->editColumn('user', function ($row) {
-                    return $row->user->first_name.
-                        ' '.
-                        $row->user->mid_name.
-                        ' '.
+                    return $row->user->first_name .
+                        ' ' .
+                        $row->user->mid_name .
+                        ' ' .
                         $row->user->last_name ??
                         '';
                 })
@@ -204,7 +204,7 @@ class EssentialsCardsController extends Controller
                 ->editColumn('project', function ($row) {
                     return $row->user->assignedTo
                         ? $row->user->assignedTo->name ??
-                                __('essentials::lang.management')
+                        __('essentials::lang.management')
                         : __('essentials::lang.management');
                 })
 
@@ -272,7 +272,7 @@ class EssentialsCardsController extends Controller
                 })
 
                 ->filter(function ($query) use ($request) {
-                    if (! empty($request->input('full_name'))) {
+                    if (!empty($request->input('full_name'))) {
                         $query->whereRaw(
                             "CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?",
                             ["%{$request->input('full_name')}%"]
@@ -390,7 +390,7 @@ class EssentialsCardsController extends Controller
             ->can('essentials.show_employee_profile');
         $permissionName = 'essentials.view_profile_picture';
 
-        if (! Permission::where('name', $permissionName)->exists()) {
+        if (!Permission::where('name', $permissionName)->exists()) {
             $permission = new Permission(['name' => $permissionName]);
             $permission->save();
         } else {
@@ -419,7 +419,7 @@ class EssentialsCardsController extends Controller
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')
             ->toArray();
-        if (! $is_admin) {
+        if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
 
@@ -510,7 +510,7 @@ class EssentialsCardsController extends Controller
             ->orderby('id', 'desc');
 
         if (
-            ! empty($request->input('proof_numbers')) &&
+            !empty($request->input('proof_numbers')) &&
             $request->input('proof_numbers') != 'all'
         ) {
             $users
@@ -518,17 +518,17 @@ class EssentialsCardsController extends Controller
                 ->first();
         }
 
-        if (! empty($request->input('status-select'))) {
+        if (!empty($request->input('status-select'))) {
             $users->where('users.status', $request->input('status'))->first();
         }
 
-        if (! empty($request->input('business'))) {
+        if (!empty($request->input('business'))) {
             $users
                 ->where('users.business_id', $request->input('business'))
                 ->first();
         }
 
-        if (! empty($request->input('nationality'))) {
+        if (!empty($request->input('nationality'))) {
             $users
                 ->where('users.nationality_id', $request->input('nationality'))
                 ->first();
@@ -538,8 +538,8 @@ class EssentialsCardsController extends Controller
             return Datatables::of($users)
 
                 ->addColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="'.
-                        $row->id.
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' .
+                        $row->id .
                         '" />';
                 })
 
@@ -573,12 +573,12 @@ class EssentialsCardsController extends Controller
                     $html = '';
                     if ($is_admin || $can_show_employee_profile) {
                         $html =
-                            '<a href="'.
+                            '<a href="' .
                             route('operations_show_employee', [
                                 'id' => $row->id,
-                            ]).
-                            '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> '.
-                            __('messages.view').
+                            ]) .
+                            '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' .
+                            __('messages.view') .
                             '</a>';
                     }
 
@@ -617,7 +617,7 @@ class EssentialsCardsController extends Controller
                     $query->whereHas('appointment.profession', function (
                         $subQuery
                     ) use ($keyword) {
-                        $subQuery->where('name', 'like', '%'.$keyword.'%');
+                        $subQuery->where('name', 'like', '%' . $keyword . '%');
                     });
                 })
 
@@ -711,7 +711,7 @@ class EssentialsCardsController extends Controller
             ->get('user.business_id');
         $documents = null;
 
-        if (! ($is_admin || $can_show_employee)) {
+        if (!($is_admin || $can_show_employee)) {
             return redirect()
                 ->route('home')
                 ->with('status', [
@@ -724,12 +724,12 @@ class EssentialsCardsController extends Controller
             ->pluck('id')
             ->toArray();
 
-        if (! $is_admin) {
+        if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        if (! in_array($id, $userIds)) {
+        if (!in_array($id, $userIds)) {
             return redirect()
                 ->back()
                 ->with('status', [
@@ -753,7 +753,7 @@ class EssentialsCardsController extends Controller
         if ($user->user_type == 'employee') {
             $documents = $user->OfficialDocument;
         } elseif ($user->user_type == 'worker') {
-            if (! empty($user->proposal_worker_id)) {
+            if (!empty($user->proposal_worker_id)) {
                 $officialDocuments = $user->OfficialDocument;
                 $workerDocuments = $user->proposal_worker?->worker_documents;
 
@@ -764,7 +764,7 @@ class EssentialsCardsController extends Controller
         }
 
         $dataArray = [];
-        if (! empty($user->bank_details)) {
+        if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
         }
 
@@ -827,7 +827,7 @@ class EssentialsCardsController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $nationality_id = $user->nationality_id;
         $nationality = '';
-        if (! empty($nationality_id)) {
+        if (!empty($nationality_id)) {
             $nationality = EssentialsCountry::select('nationality')
                 ->where('id', '=', $nationality_id)
                 ->first();
@@ -867,8 +867,8 @@ class EssentialsCardsController extends Controller
         if (request()->ajax()) {
             return DataTables::of($residencies)
                 ->addColumn('worker_name', function ($row) {
-                    return $row->employee->first_name.
-                        ' '.
+                    return $row->employee->first_name .
+                        ' ' .
                         $row->employee->last_name;
                 })
                 ->addColumn('residency', function ($row) {
@@ -913,8 +913,8 @@ class EssentialsCardsController extends Controller
         if (request()->ajax()) {
             return DataTables::of($residencies)
                 ->addColumn('worker_name', function ($row) {
-                    return $row->employee?->first_name.
-                        ' '.
+                    return $row->employee?->first_name .
+                        ' ' .
                         $row->employee?->last_name;
                 })
                 ->addColumn('residency', function ($row) {
@@ -957,7 +957,7 @@ class EssentialsCardsController extends Controller
             ->hasRole('Admin#1')
             ? true
             : false;
-        if (! $is_admin) {
+        if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
@@ -981,7 +981,7 @@ class EssentialsCardsController extends Controller
         if (request()->ajax()) {
             return DataTables::of($late_vacation)
                 ->addColumn('worker_name', function ($row) {
-                    return $row->user->first_name.' '.$row->user->last_name;
+                    return $row->user->first_name . ' ' . $row->user->last_name;
                 })
 
                 ->addColumn('project', function ($row) {
@@ -1027,8 +1027,8 @@ class EssentialsCardsController extends Controller
         if (request()->ajax()) {
             return DataTables::of($final_visa)
                 ->addColumn('worker_name', function ($row) {
-                    return $row->user?->first_name.
-                        ' '.
+                    return $row->user?->first_name .
+                        ' ' .
                         $row->user?->last_name ??
                         '';
                 })
@@ -1085,9 +1085,9 @@ class EssentialsCardsController extends Controller
 
             $jsonData = json_encode($jsonData);
 
-            \Log::info('JSON Data: '.$jsonData);
+            \Log::info('JSON Data: ' . $jsonData);
 
-            if (! empty($jsonData)) {
+            if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
 
                 DB::beginTransaction();
@@ -1117,11 +1117,11 @@ class EssentialsCardsController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency(
-                'File:'.
-                    $e->getFile().
-                    'Line:'.
-                    $e->getLine().
-                    'Message:'.
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
                     $e->getMessage()
             );
 
@@ -1152,9 +1152,9 @@ class EssentialsCardsController extends Controller
 
             $jsonData = json_encode($jsonData);
 
-            \Log::info('JSON Data: '.$jsonData);
+            \Log::info('JSON Data: ' . $jsonData);
 
-            if (! empty($jsonData)) {
+            if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
 
                 DB::beginTransaction();
@@ -1189,11 +1189,11 @@ class EssentialsCardsController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency(
-                'File:'.
-                    $e->getFile().
-                    'Line:'.
-                    $e->getLine().
-                    'Message:'.
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
                     $e->getMessage()
             );
 
@@ -1224,9 +1224,9 @@ class EssentialsCardsController extends Controller
 
             $jsonData = json_encode($jsonData);
 
-            \Log::info('JSON Data: '.$jsonData);
+            \Log::info('JSON Data: ' . $jsonData);
 
-            if (! empty($jsonData)) {
+            if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
 
                 DB::beginTransaction();
@@ -1259,11 +1259,11 @@ class EssentialsCardsController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency(
-                'File:'.
-                    $e->getFile().
-                    'Line:'.
-                    $e->getLine().
-                    'Message:'.
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
                     $e->getMessage()
             );
 
@@ -1324,7 +1324,7 @@ class EssentialsCardsController extends Controller
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')
             ->toArray();
-        if (! $is_admin) {
+        if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
@@ -1341,7 +1341,7 @@ class EssentialsCardsController extends Controller
             ->with(['worker'])
             ->select('*');
         if (
-            ! empty($request->input('proof_numbers')) &&
+            !empty($request->input('proof_numbers')) &&
             $request->input('proof_numbers') != 'all'
         ) {
             $report->whereHas('worker', function ($query) use ($request) {
@@ -1351,10 +1351,10 @@ class EssentialsCardsController extends Controller
         if ($request->ajax()) {
             return Datatables::of($report)
                 ->editColumn('user', function ($row) {
-                    return $row->worker->first_name.
-                        ' '.
-                        $row->worker->mid_name.
-                        ' '.
+                    return $row->worker->first_name .
+                        ' ' .
+                        $row->worker->mid_name .
+                        ' ' .
                         $row->worker->last_name ??
                         '';
                 })
@@ -1443,7 +1443,7 @@ class EssentialsCardsController extends Controller
 
             $jsonData = json_encode($jsonData);
 
-            if (! empty($jsonData)) {
+            if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
 
                 foreach ($selectedData as $data) {
@@ -1475,10 +1475,10 @@ class EssentialsCardsController extends Controller
                         );
                         $nextNumericPart = $lastEmpNumber + 1;
                         $new_card['work_card_no'] =
-                            'WC'.
+                            'WC' .
                             str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
                     } else {
-                        $new_card['work_card_no'] = 'WC'.'000';
+                        $new_card['work_card_no'] = 'WC' . '000';
                     }
                     $new_card->is_active = 1;
                     $new_card->fees = $new_fees;
@@ -1532,11 +1532,11 @@ class EssentialsCardsController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency(
-                'File:'.
-                    $e->getFile().
-                    'Line:'.
-                    $e->getLine().
-                    'Message:'.
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
                     $e->getMessage()
             );
 
@@ -1565,7 +1565,7 @@ class EssentialsCardsController extends Controller
             $row->expiration_date = $doc ? $doc->expiration_date : null;
             $row->number = $doc ? $doc->number : null;
 
-            $row->name = $row->first_name.' '.$row->last_name;
+            $row->name = $row->first_name . ' ' . $row->last_name;
             $uni_number = $row->company?->documents
                 ?->where('licence_type', 'COMMERCIALREGISTER')
                 ->first();
@@ -1614,7 +1614,7 @@ class EssentialsCardsController extends Controller
 
             $jsonData = json_encode($jsonData);
 
-            if (! empty($jsonData)) {
+            if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
 
                 foreach ($selectedData as $data) {
@@ -1669,10 +1669,10 @@ class EssentialsCardsController extends Controller
                         );
                         $nextNumericPart = $lastEmpNumber + 1;
                         $new_card['work_card_no'] =
-                            'WC'.
+                            'WC' .
                             str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
                     } else {
-                        $new_card['work_card_no'] = 'WC'.'000';
+                        $new_card['work_card_no'] = 'WC' . '000';
                     }
 
                     $new_card->is_active = 1;
@@ -1725,11 +1725,11 @@ class EssentialsCardsController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency(
-                'File:'.
-                    $e->getFile().
-                    'Line:'.
-                    $e->getLine().
-                    'Message:'.
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
                     $e->getMessage()
             );
 
@@ -1905,9 +1905,9 @@ class EssentialsCardsController extends Controller
                     $lastEmpNumber = (int) substr($lastrecord->work_card_no, 3);
                     $nextNumericPart = $lastEmpNumber + 1;
                     $data['work_card_no'] =
-                        'WC'.str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                        'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
                 } else {
-                    $data['work_card_no'] = 'WC'.'000';
+                    $data['work_card_no'] = 'WC' . '000';
                 }
 
                 EssentialsWorkCard::create($data);
@@ -1919,20 +1919,20 @@ class EssentialsCardsController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency(
-                'File:'.
-                    $e->getFile().
-                    'Line:'.
-                    $e->getLine().
-                    'Message:'.
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
                     $e->getMessage()
             );
 
             error_log(
-                'File:'.
-                    $e->getFile().
-                    'Line:'.
-                    $e->getLine().
-                    'Message:'.
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
                     $e->getMessage()
             );
             $output = [
