@@ -317,7 +317,11 @@ class DataController extends Controller
                         'label' => __('sales::lang.sales_view_department_employees'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'sales.view_templates',
+                        'label' => __('sales::lang.templates_settings'),
+                        'default' => false,
+                    ],
                 ]
 
             ],

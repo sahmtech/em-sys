@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\CEOManagment\Entities\WkProcedure;
 use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\ToDo;
 
+use Modules\Essentials\Notifications\NewTaskNotification;
 
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -388,6 +390,7 @@ class RequestUtil extends Util
         }
 
         if ($success) {
+            $this->makeToDo($Request, $business_id);
             $output = [
                 'success' => 1,
                 'msg' => __('messages.added_success'),
@@ -433,7 +436,41 @@ class RequestUtil extends Util
         // return redirect()->back()->with('success', trans('messages.saved_successfully'));
     }
 
+    public function makeToDo($request, $business_id)
+    {
+        error_log('111111111111111');
 
+        $created_by = $request->created_by;
+
+        $request_type = RequestsType::where('id', $request->request_type_id)->first()->type;
+        $input['business_id'] = $business_id;
+        $input['company_id'] = $business_id;
+        $input['created_by'] = $created_by;
+        $input['task'] = "طلب جديد";
+        $input['date'] = Carbon::now();
+        $input['priority'] = 'high';
+        $input['description'] = $request_type;
+        $input['status'] = !empty($input['status']) ? $input['status'] : 'new';
+
+        $process = RequestProcess::where('request_id', $request->id)->latest()->first();
+        $users = [];
+        if ($process->superior_department_id) {
+            $users = User::where('essentials_department_id', $process->superior_department_id)->pluck('id')->toArray();
+        } else {
+            $procedure = $process->procedure_id;
+            $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
+
+            $users = User::where('essentials_department_id', $department_id)->pluck('id')->toArray();
+        }
+
+
+        $input['task_id'] = $request->request_no;
+
+        $to_dos = ToDo::create($input);
+
+        $to_dos->users()->sync($users);
+        \Notification::send($users, new NewTaskNotification($to_dos));
+    }
     ////// change request status /////////////////// 
     public function changeRequestStatus(Request $request)
     {
@@ -498,6 +535,10 @@ class RequestUtil extends Util
                         $newRequestProcess->status = 'pending';
                         $newRequestProcess->save();
                     }
+                    $business_id = request()->session()->get('user.business_id');
+                    //  error_log($requestProcess->request->id);
+                    $userRequest = UserRequest::where('id', $requestProcess->request_id)->first();
+                    $this->makeToDo($userRequest, $business_id);
                 }
             }
             if ($request->status  == 'rejected') {
@@ -573,6 +614,10 @@ class RequestUtil extends Util
                         $process->request->save();
                     }
                 }
+                $business_id = request()->session()->get('user.business_id');
+
+                $userRequest = UserRequest::where('id',  $process->request_id)->first();
+                $this->makeToDo($userRequest, $business_id);
             }
 
 
@@ -1050,11 +1095,10 @@ class RequestUtil extends Util
 
     public function getNonSaudiUsers(Request $request)
     {
-     
+
         $workerIds = array_keys($request->input('users', []));
-        
-        $saudiUsers = User::whereNot('id_proof_name','national_id')->whereIn('id', $workerIds)->
-        select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+
+        $saudiUsers = User::whereNot('id_proof_name', 'national_id')->whereIn('id', $workerIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
 
         return response()->json(['users' => $saudiUsers]);
     }
