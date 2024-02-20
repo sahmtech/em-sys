@@ -6,7 +6,7 @@
 
     <section class="content-header">
         <h1>
-            <span>@lang('sales::lang.lead_contacts')</span>
+            <span>@lang('sales::lang.draft_contacts')</span>
         </h1>
     </section>
 

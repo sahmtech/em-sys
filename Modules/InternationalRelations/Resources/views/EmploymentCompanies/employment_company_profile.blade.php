@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', __('followup::lang.show_employment_company_profile'))
+@section('title', __('internationalrelations::lang.show_employment_company_profile'))
 
 @section('content')
     <!-- Main content -->
     <section class="content">
         <div class="row">
             <div class="col-md-4">
-                <h3>@lang('followup::lang.show_employment_company_profile')</h3>
+                <h3>@lang('internationalrelations::lang.show_employment_company_profile')</h3>
             </div>
             
         </div>
@@ -27,7 +27,7 @@
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-money-check" aria-hidden="true"></i>
 
-                                @lang('followup::lang.salaries')</a>
+                                @lang('internationalrelations::lang.company_main_info')</a>
                         </li>
 
                         <li>
@@ -35,7 +35,7 @@
                                 <i class="fas fa-clock" aria-hidden="true"></i>
 
 
-                                @lang('followup::lang.timesheet')</a>
+                                @lang('internationalrelations::lang.employment_comp_requests')</a>
                         </li>
 
                       
