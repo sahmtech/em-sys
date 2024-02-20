@@ -68,7 +68,7 @@
 
     @endcomponent
 
-    <div class="modal fade" id="addfinishReason" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+<div class="modal fade" id="addfinishReason" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
         {!! Form::open(['route' => 'store_finish_reasons', 'enctype' => 'multipart/form-data']) !!}
@@ -82,7 +82,7 @@
                     <div class="form-group col-md-6">
                     <label for="employee_type_filter">@lang('essentials::lang.employee_type'):</label>
                         <select class="form-control select2" name="employee_type" required id="employee_type_filter" style="width: 100%;">
-                          
+                            <option value="all">@lang('essentials::lang.all')</option>
                             <option value="employee">@lang('essentials::lang.employee')</option>
                             <option value="manager">@lang('essentials::lang.manager')</option>
                             <option value="worker">@lang('essentials::lang.worker')</option>

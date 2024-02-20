@@ -25,13 +25,13 @@ class DataController extends Controller
         return [
             [
                 'group_name' => __('internationalrelations::lang.International'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
                         'value' => 'internationalrelations.internationalrelations_dashboard',
                         'label' => __('internationalrelations::lang.internationalrelations_dashboard'),
                         'default' => false,
                     ],
-                    
+
                     [
                         'value' => 'internationalrelations.view_operation_orders',
                         'label' => __('internationalrelations::lang.view_operation_orders'),
@@ -66,11 +66,25 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.add_employment_company'),
                         'default' => false,
                     ],
+
+                    [
+                        'value' => 'internationalrelations.edit_employment_company',
+                        'label' => __('internationalrelations::lang.edit_employment_company'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.show_employment_company_profile',
+                        'label' => __('internationalrelations::lang.show_employment_company_profile'),
+                        'default' => false,
+                    ],
+
                     [
                         'value' => 'internationalrelations.view_employment_company_delegation_requests',
                         'label' => __('internationalrelations::lang.view_employment_company_delegation_requests'),
                         'default' => false,
                     ],
+
+
 
 
                     [
@@ -191,7 +205,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                 
+
                     [
                         'value' => 'internationalrelations.view_ir_requests',
                         'label' => __('internationalrelations::lang.view_ir_requests'),
@@ -217,7 +231,7 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.show_ir_request'),
                         'default' => false,
                     ],
-               
+
                     [
                         'value' => 'internationalrelations.crud_all_reports',
                         'label' => __('internationalrelations::lang.crud_all_reports'),
@@ -227,20 +241,18 @@ class DataController extends Controller
                         'value' => 'internationalrelations.view_all_salary_requests',
                         'label' => __('internationalrelations::lang.view_all_salary_requests'),
                         'default' => false,
-                    ],  
-                  
-                    
-                
-                 
-                
-                 
-                    
+                    ],
+
+
+
+
+
+
+
                 ]
-                
+
             ],
         ];
-      
-        
     }
 
     /**

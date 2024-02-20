@@ -148,7 +148,7 @@ return [
     'carMaintenancesReport' => 'تقرير صيانة السيارات',
     'carsChangeOilReport' => 'تقرير تغيير الزيت',
     'report' => 'التقارير',
-    'available_shopping' => 'المتاحين للتسوق',
+    'available_shopping' => 'المتاحين للتسويق',
     'reserved_shopping' => 'المحجوزين',
     'final_exit' => 'الخروج النهائي',
     'all_workers' => 'العمال',
