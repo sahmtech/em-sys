@@ -16,6 +16,7 @@ use Modules\CEOManagment\Entities\WkProcedure;
 use Modules\CEOManagment\Entities\RequestsType;
 use Modules\Essentials\Entities\ToDo;
 
+use Modules\Essentials\Notifications\NewTaskNotification;
 
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -468,6 +469,7 @@ class RequestUtil extends Util
         $to_dos = ToDo::create($input);
 
         $to_dos->users()->sync($users);
+        \Notification::send($users, new NewTaskNotification($to_dos));
     }
     ////// change request status /////////////////// 
     public function changeRequestStatus(Request $request)
