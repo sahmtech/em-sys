@@ -212,8 +212,77 @@ class TimeSheetController extends Controller
 
     public function submitTmeSheet(Request $request)
     {
+        return  $request->all();
+        $business_id = 1;
+        try {
+            $transaction_date = $request->input('transaction_date');
+            $payrolls = $request->input('payrolls');
+            $notify_employee = !empty($request->input('notify_employee')) ? 1 : 0;
+            $payroll_group['business_id'] = $business_id;
+            $payroll_group['name'] = $request->input('payroll_group_name');
+            $payroll_group['status'] = $request->input('payroll_group_status');
+            $payroll_group['gross_total'] = $this->transactionUtil->num_uf($request->input('total_gross_amount'));
+            $payroll_group['location_id'] = $request->input('location_id');
+            $payroll_group['created_by'] = auth()->user()->id;
 
-        return $request->all();
+            DB::beginTransaction();
+
+            $payroll_group = PayrollGroup::create($payroll_group);
+            $transaction_ids = [];
+            foreach ($payrolls as $key => $payroll) {
+                $payroll['transaction_date'] = $transaction_date;
+                $payroll['business_id'] = $business_id;
+                $payroll['created_by'] = auth()->user()->id;
+                $payroll['type'] = 'payroll';
+                $payroll['payment_status'] = 'due';
+                $payroll['status'] = 'final';
+                $payroll['total_before_tax'] = $payroll['final_total'];
+                $payroll['essentials_amount_per_unit_duration'] = $this->moduleUtil->num_uf($payroll['essentials_amount_per_unit_duration']);
+
+                $allowances_and_deductions = $this->getAllowanceAndDeductionJson($payroll);
+                $payroll['essentials_allowances'] = $allowances_and_deductions['essentials_allowances'];
+                $payroll['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
+
+                //Update reference count
+                $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
+
+                //Generate reference number
+                if (empty($payroll['ref_no'])) {
+                    $settings = request()->session()->get('business.essentials_settings');
+                    $settings = !empty($settings) ? json_decode($settings, true) : [];
+                    $prefix = !empty($settings['payroll_ref_no_prefix']) ? $settings['payroll_ref_no_prefix'] : '';
+                    $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
+                }
+                unset($payroll['allowance_names'], $payroll['allowance_types'], $payroll['allowance_percent'], $payroll['allowance_amounts'], $payroll['deduction_names'], $payroll['deduction_types'], $payroll['deduction_percent'], $payroll['deduction_amounts'], $payroll['total']);
+
+                $transaction = Transaction::create($payroll);
+                $transaction_ids[] = $transaction->id;
+
+                if ($notify_employee && $payroll_group->status == 'final') {
+                    $transaction->action = 'created';
+                    $transaction->transaction_for->notify(new PayrollNotification($transaction));
+                }
+            }
+
+            $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
+
+            DB::commit();
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->route('agentTimeSheet.index')->with('status', $output);
     }
 
 
