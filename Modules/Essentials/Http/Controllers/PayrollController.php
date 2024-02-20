@@ -91,7 +91,7 @@ class PayrollController extends Controller
 
         if (request()->ajax()) {
             $payrolls = $this->essentialsUtil->getPayrollQuery($user_businesses_ids);
-         
+
             if ($can_view_all_payroll) {
                 if (!empty(request()->input('user_id'))) {
                     $payrolls->where('transactions.expense_for', request()->input('user_id'));
@@ -135,18 +135,18 @@ class PayrollController extends Controller
             return Datatables::of($payrolls)
                 ->addColumn(
                     'action',
-                    function ($row) use( $is_admin ,$can_view_all_payroll) {
-                        if($is_admin  || $can_view_all_payroll){
-                        $html = '<div class="btn-group">
+                    function ($row) use ($is_admin, $can_view_all_payroll) {
+                        if ($is_admin  || $can_view_all_payroll) {
+                            $html = '<div class="btn-group">
                                     <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                         data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                __('messages.actions') .
+                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                         </span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
-                        $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'show'], [$row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+                            $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'show'], [$row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
                         }
                         // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
 
@@ -328,6 +328,7 @@ class PayrollController extends Controller
      */
     public function store(Request $request)
     {
+        return  $request->all();
         $business_id = request()->session()->get('user.business_id');
         try {
             $transaction_date = $request->input('transaction_date');
@@ -747,11 +748,11 @@ class PayrollController extends Controller
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
                         if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.show_payroll')) {
-                        $html .= '<li>
+                            $html .= '<li>
                                     <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'viewPayrollGroup'], [$row->id]) . '" target="_blank">
                                             <i class="fa fa-eye" aria-hidden="true"></i> '
-                            . __('messages.view') .
-                            '</a>
+                                . __('messages.view') .
+                                '</a>
                                 </li>';
                         }
                         if (auth()->user()->hasRole("Admin#1")  || auth()->user()->can('essentials.update_payroll')) {
@@ -767,7 +768,7 @@ class PayrollController extends Controller
                             $html .= '<li><a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'destroy'], [$row->id]) . '" class="delete-payroll"><i class="fa fa-trash" aria-hidden="true"></i> ' . __('messages.delete') . '</a></li>';
                         }
 
-                    
+
 
                         if ($row->status == 'final' && $row->payment_status != 'paid') {
                             $html .= '<li>
@@ -777,7 +778,7 @@ class PayrollController extends Controller
                                 '</a>
                                 </li>';
                         }
-                    
+
 
                         $html .= '</ul></div>';
 
@@ -973,18 +974,18 @@ class PayrollController extends Controller
 
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-    
+
             if (!$is_admin) {
                 $userProjects = [];
                 $userBusinesses = [];
                 $roles = auth()->user()->roles;
                 foreach ($roles as $role) {
-    
+
                     $accessRole = AccessRole::where('role_id', $role->id)->first();
-    
+
                     if ($accessRole) {
                         $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-    
+
                         $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                     }
                 }
@@ -1105,20 +1106,20 @@ class PayrollController extends Controller
         try {
             $payments = $request->input('payments');
             $payroll_group_id = $request->input('payroll_group_id');
-      
+
             $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-    
+
             if (!$is_admin) {
                 $userProjects = [];
                 $userBusinesses = [];
                 $roles = auth()->user()->roles;
                 foreach ($roles as $role) {
-    
+
                     $accessRole = AccessRole::where('role_id', $role->id)->first();
-    
+
                     if ($accessRole) {
                         $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-    
+
                         $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                     }
                 }
