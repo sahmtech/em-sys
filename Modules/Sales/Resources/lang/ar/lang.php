@@ -441,7 +441,8 @@ return [
     'vacation_salary' => 'بدل الإجازة',
     'end_of_service' => 'بدل نهاية الخدمة',
     'administrative_fees' => 'رسوم إدارية',
-
+    'totalwithworkers' => 'الاجمالي مع عدد العمالة',
+    'monthly_costs' => 'التكاليف الشهرية',
 
 ];
 
