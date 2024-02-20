@@ -690,7 +690,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::prefix('time_sheet')->group(function () {
             Route::get('/index', [TimeSheetController::class, 'index'])->name('agentTimeSheet.index');
             Route::get('/payroll-group-datatable', [TimeSheetController::class, 'payrollGroupDatatable'])->name('agentTimeSheet.payrollGroupDatatable');
-            // Route::get('/create', [TimeSheetController::class, 'create'])->name('agentTimeSheet.create');
+            Route::get('/create', [TimeSheetController::class, 'create'])->name('agentTimeSheet.create');
             Route::get('/getPayrollGroup', [TimeSheetController::class, 'getPayrollGroup'])->name('agentTimeSheet.getPayrollGroup');
             Route::get('/getWorkersBasedOnProject', [TimeSheetController::class, 'getWorkersBasedOnProject'])->name('agentTimeSheet.getWorkersBasedOnProject');
             // Route::get('/get_sheet/{id}', [TimeSheetController::class, 'timeSheet'])->name('agentTimeSheet.timeSheet');

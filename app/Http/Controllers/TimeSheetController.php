@@ -900,21 +900,62 @@ class TimeSheetController extends Controller
 
     public function create()
     {
-
-
-
         $employee_ids = request()->input('employee_ids');
         $month_year = request()->input('month_year');
-        // $month_year_arr = explode('/', request()->input('month_year'));
-        // $month = $month_year_arr[0];
-        // $year = $month_year_arr[1];
+        $workers = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
+            ->whereIn('users.id',  $employee_ids)
+            ->select(
+                'users.*',
+                'users.id as user_id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
+                'users.id_proof_number as eqama_number',
+                'users.essentials_pay_period',
+                'users.essentials_salary as monthly_cost',
+                'users.essentials_pay_period as wd',
+            )->get();
 
-        // $transaction_date = $year . '-' . $month . '-01';
+        $businesses = Business::pluck('name', 'id',);
+        $projects = SalesProject::pluck('name', 'id');
+        $currentDateTime = Carbon::now('Asia/Riyadh');
+        $month = $currentDateTime->month;
+        $year = $currentDateTime->year;
+        $start_of_month = $currentDateTime->copy()->startOfMonth();
+        $end_of_month = $currentDateTime->copy()->endOfMonth();
+        $payrolls = [];
+        foreach ($workers as $worker) {
+            $payrolls[] = [
+                'id' => $worker->user_id,
+                'name' => $worker->name ?? '',
+                'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'residency' => $worker->eqama_number ?? '',
+                'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
+                'wd' => '30',
+                'absence_day' => 0,
+                'absence_amount' => '',
+                'over_time_h' => 0,
+                'over_time' => '',
+                'other_deduction' => 0,
+                'other_addition' => 0,
+                'cost2' => '',
+                'invoice_value' => '',
+                'vat' => '',
+                'total' => '',
+                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
+                'housing' => 0,
+                'transport' => 0,
+                'other_allowances' => 0,
+                'total_salary' => '',
+                'deductions' => '',
+                'additions' => '',
+                'final_salary' => '',
+            ];
+        }
 
         $date = (Carbon::createFromFormat('m/Y', request()->input('month_year')))->format('F Y');
 
 
-        return view('custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'date', 'month_year'));
+        return view('custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'date', 'month_year', 'payrolls'));
 
         // } else {
         //     return redirect()->action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])

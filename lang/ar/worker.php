@@ -37,7 +37,7 @@ return [
     "total_salary" => "إجمالي الراتب",
     "deductions" => "الخصومات",
     "additions" => "الإضافات",
-    "final_salary" => "الراتب النهائي",
+    "final_salary" => "صافي الراتب",
     'hours' => 'ساعات',
     'project' => 'المشروع',
     'total_salary' => 'إجمالي الراتب',
