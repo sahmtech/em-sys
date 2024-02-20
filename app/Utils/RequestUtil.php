@@ -96,7 +96,7 @@ class RequestUtil extends Util
 
             'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.department_id as department_id', 'wk_procedures.can_return','wk_procedures.start as start',
+            'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
 
@@ -163,17 +163,17 @@ class RequestUtil extends Util
                     }
                     return $status;
                 })
-                ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request,$departmentIds, $departmentIdsForGeneralManagment) {
+                ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request, $departmentIds, $departmentIdsForGeneralManagment) {
                     $buttonsHtml = '';
                     if ($departmentIdsForGeneralManagment) {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment) && $row->start !='1') {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment) && $row->start != '1') {
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
                             }
                         }
                     } else {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) && $row->start !='1' ) {
-                         
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) && $row->start != '1') {
+
 
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
@@ -657,9 +657,9 @@ class RequestUtil extends Util
         $isDone = UserRequest::where('id', $request->id)->first()->is_done;
         $workflow[] = [
             'id' => null,
-            'status' => $isDone?'approved':'',
+            'status' => $isDone ? 'approved' : '',
             'department' => $isDone ? trans('request.done') : trans('request.not_yet_done'),
-       
+
         ];
 
         $attachments = null;
@@ -780,8 +780,8 @@ class RequestUtil extends Util
                 ->where('department_id', $firstProcedure->next_department_id)
                 ->first();
         }
-       
-       
+
+
 
         if ($firstProcedure && $firstProcedure->end == 1) {
             $workflow[] = [
@@ -795,9 +795,9 @@ class RequestUtil extends Util
         $isDone = UserRequest::where('id', $request->id)->first()->is_done;
         $workflow[] = [
             'id' => null,
-            'status' => $isDone?'approved':'',
+            'status' => $isDone ? 'approved' : '',
             'department' => $isDone ? trans('request.done') : trans('request.not_yet_done'),
-       
+
         ];
 
         $attachments = null;
@@ -1046,5 +1046,16 @@ class RequestUtil extends Util
             ->select('id', 'sub_reason as name')
             ->get();
         return response()->json(['sub_reasons' => $subReasons]);
+    }
+
+    public function getNonSaudiUsers(Request $request)
+    {
+     
+        $workerIds = array_keys($request->input('users', []));
+        
+        $saudiUsers = User::whereNot('id_proof_name','national_id')->whereIn('id', $workerIds)->
+        select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+
+        return response()->json(['users' => $saudiUsers]);
     }
 }

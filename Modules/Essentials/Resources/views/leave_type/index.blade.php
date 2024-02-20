@@ -9,7 +9,7 @@
 </section>
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-solid', 'title' => __( 'essentials::lang.all_leave_types' )])
+    @component('components.widget', ['class' => 'box-solid'])
         @slot('tool')
             <div class="box-tools">
                 <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#add_leave_type_modal">
