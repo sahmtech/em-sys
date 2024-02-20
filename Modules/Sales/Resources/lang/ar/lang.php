@@ -434,14 +434,18 @@ return [
     'delete_sale_cost' => 'حذف تكلفة ثابتة',
 
 
-
-
     'sales_view_department_employees' => 'عرض صفحة موظفي إدارة المبيعات',
     'department_employees' => 'موظفي الإدارة',
     'templates_settings' => 'إعدادات القوالب',
     'template_name' => 'اسم القالب',
     'edit_templates' => 'تعديل قالب',
     'delete_templates' => 'حذف قالب',
+
+    'GOSI' => 'التأمينات الاجتماعية',
+    'vacation_salary' => 'بدل الإجازة',
+    'end_of_service' => 'بدل نهاية الخدمة',
+    'administrative_fees' => 'رسوم إدارية',
+
 
 ];
 

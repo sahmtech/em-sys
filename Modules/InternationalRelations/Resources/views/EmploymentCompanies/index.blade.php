@@ -17,11 +17,23 @@
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('evaluation_filter', __('internationalrelations::lang.Evaluation') . ':') !!}
-                    <select class="form-control select2" name="evaluation_filter" required id="evaluation_filter"
-                        style="width: 100%;">
+                    <select class="form-control select2" name="evaluation_filter"  id="evaluation_filter"
+                        style="height:40px;">
                         <option value="all">@lang('lang_v1.all')</option>
                         <option value="good">@lang('internationalrelations::lang.good')</option>
                         <option value="bad">@lang('internationalrelations::lang.bad')</option>
+                    </select>
+                </div>
+            </div>
+
+             <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('company_requests_filter', __('internationalrelations::lang.company_requests') . ':') !!}
+                    <select class="form-control select2" name="company_requests_filter"  id="company_requests_filter"
+                        style="height:40px">
+                        <option value="all">@lang('lang_v1.all')</option>
+                        <option value="has_agency_requests">@lang('internationalrelations::lang.has_agency_requests')</option>
+                        <option value="has_not_agency_requests">@lang('internationalrelations::lang.has_not_agency_requests')</option>
                     </select>
                 </div>
             </div>
@@ -31,10 +43,10 @@
                     {!! Form::label('nationality', __('internationalrelations::lang.nationality') . ':') !!}
                     {!! Form::select('nationality_filter', $nationalities, null, [
                         'id' => 'nationality_filter',
-                        'style' => 'height:40px',
+                        'style' => 'height:36px',
                         'class' => 'form-control',
                         'placeholder' => __('internationalrelations::lang.nationality'),
-                        'required',
+                        
                     ]) !!}
 
                 </div>
@@ -45,10 +57,10 @@
                     {!! Form::label('country', __('internationalrelations::lang.country') . ':') !!}
                     {!! Form::select('country_filter', $countries, null, [
                         'id' => 'country_filter',
-                        'style' => 'height:40px',
+                        'style' => 'height:36px',
                         'class' => 'form-control',
                         'placeholder' => __('internationalrelations::lang.country'),
-                        'required',
+                       
                     ]) !!}
 
                 </div>
@@ -82,7 +94,7 @@
                             <th>@lang('internationalrelations::lang.mobile')</th>
                             <th>@lang('internationalrelations::lang.email')</th>
                             <th>@lang('internationalrelations::lang.Evaluation')</th>
-                            <th>@lang('messages.action')</th>
+                            <th style="width: 150px">@lang('messages.action')</th>
 
                         </tr>
                     </thead>
@@ -148,7 +160,7 @@
                                         <span class="input-group-addon">
                                             <i class="fa fa-briefcase"></i>
                                         </span>
-                                        {!! Form::select('nationality', $nationalities, null, [
+                                        {!! Form::select('nationalities[]', $nationalities, null, [
                                             'id' => 'country',
                                             'multiple',
                                             'style' => 'width: 230px; height: 40px;',
@@ -253,91 +265,122 @@
             </div>
         </div>
     </section>
-    <!-- /.content -->
 
+@include('internationalrelations::EmploymentCompanies.edit_modal')
 @endsection
 
 @section('javascript')
-    <script type="text/javascript">
-        // Countries table
-        $(document).ready(function() {
-            $('#nationality_filter').select2();
-            $('#country_filter').select2();
-            var company_table;
+<script type="text/javascript">
+    $(document).ready(function() {
+        var company_table = $('#EmpCompany_table').DataTable({
+            ajax: {
+                url: "{{ route('international-Relations.EmploymentCompanies') }}",
+                data: function(d) {
+                    d.nationality = $('#nationality_filter').val();
+                    d.country = $('#country_filter').val();
+                    d.evaluation_filter = $('#evaluation_filter').val();
+                    d.company_requests_filter = $('#company_requests_filter').val();  
+                }
+            },
+            processing: true,
+            serverSide: true,
+            columns: [
+                { data: 'supplier_business_name',  render: function(data, type, row) {
+                           
+                            @can('internationalrelations.show_employment_company_profile')
+                                var link = '<a href="' +
+                                    '{{ route('show_employment_company_profile', ['id' => ':id']) }}'
+                                    .replace(':id', row.id) + '">' + data + '</a>';
+                                return link;
+                            @else
+                                return data;
+                            @endcan
+                        } 
+                },
+                { data: 'country_nameAr', name: 'country_nameAr' },
+                { data: 'nationalities', name: 'nationalities' },
+                { data: 'name', name: 'name' },
+                { data: 'mobile', name: 'mobile' },
+                { data: 'email', name: 'email' },
+                { data: 'comp_evaluation', name: 'comp_evaluation' },
+                { data: 'action', name: 'action' },
+            ]
+        });
 
-            function reloadDataTable() {
-                company_table.ajax.reload();
-            }
-            company_table = $('#EmpCompany_table').DataTable({
-                ajax: {
-                    url: "{{ route('international-Relations.EmploymentCompanies') }}",
-                    data: function(d) {
+        
+        $('#nationality_filter, #country_filter, #evaluation_filter, #company_requests_filter').on('change', function() {
+        company_table.ajax.reload(); 
+         });
+       
 
-                        d.nationality = $('#nationality_filter').val();
-                        d.country = $('#country_filter').val();
+    $('body').on('click', '.open-edition-modal', function() {
+    var empCompanyId = $(this).data('id'); 
+    $('#empCompanyIdInput').val(empCompanyId);
 
+    var editUrl = '{{ route("edit.EmploymentCompanies", ":empCompanyId") }}'
+    editUrl = editUrl.replace(':empCompanyId', empCompanyId);
+    console.log(editUrl);
+
+    $.ajax({
+        url: editUrl,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var data = response.data;
+
+            $('#editEmpCompanyModal input[name="Office_name"]').val(data.employment_companies.supplier_business_name);
+            $('#editEmpCompanyModal input[name="name"]').val(data.employment_companies.name);
+            $('#editEmpCompanyModal input[name="mobile"]').val(data.employment_companies.mobile);
+            $('#editEmpCompanyModal input[name="email"]').val(data.employment_companies.email);
+            $('#editEmpCompanyModal input[name="landline"]').val(data.employment_companies.landline);
+            
+           
+           $('#editEmpCompanyModal select[name="nationalities[]"]').val(JSON.parse(data.employment_companies.multi_nationalities)).trigger('change');
+           $('#editEmpCompanyModal select[name="country"]').val(data.employment_companies.country).trigger('change');
+          
+        $('#editEmpCompanyModal select[name="evaluation"]').val(data.employment_companies.evaluation).trigger('change');
+                   
+            $('#editEmpCompanyModal').modal('show');
+        },
+
+        error: function(error) {
+            console.error('Error fetching building data:', error);
+        }
+    });
+
+     $('body').on('submit', '#editEmpCompanyModal form', function (e) {
+            e.preventDefault();
+
+            var empCompanyId = $('#empCompanyIdInput').val();
+
+            var urlWithId = '{{ route("update.EmploymentCompanies", ":empCompanyId") }}';
+            urlWithId = urlWithId.replace(':empCompanyId', empCompanyId);
+
+            $.ajax({
+                url: urlWithId,
+                type: 'POST',
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        company_table.ajax.reload();
+                        toastr.success(response.msg);
+                        $('#editEmpCompanyModal').modal('hide');
+                    } else {
+                        toastr.error(response.msg);
                     }
                 },
-                processing: true,
-                serverSide: true,
-
-
-                columns: [
-
-                    {
-                        data: 'supplier_business_name',
-                        name: 'supplier_business_name'
-                    },
-                    {
-                        data: 'country_nameAr',
-                        name: 'country_nameAr'
-                    },
-                    {
-                        data: 'nationality',
-                        name: 'nationality'
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'mobile',
-                        name: 'mobile'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'evaluation',
-                        name: 'evaluation'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-                ]
+                error: function (error) {
+                    console.error('Error submitting form:', error);
+                    toastr.error('An error occurred while submitting the form.', 'Error');
+                },
             });
-
-
-            $('#evaluation_filter').on('change', function() {
-                var evaluationFilter = $(this).val();
-                company_table.column('evaluation:name').search(evaluationFilter).draw();
-            });
-
-
-
-
-            $('#nationality_filter, #country_filter').on('change', function() {
-                reloadDataTable();
-            });
-
-
         });
-    </script>
-
+});
+ });
+</script>
 
 
 @endsection
+

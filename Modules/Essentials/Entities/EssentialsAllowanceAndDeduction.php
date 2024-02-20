@@ -43,12 +43,11 @@ class EssentialsAllowanceAndDeduction extends Model
                 $amount .= '%';
             }
 
-            $pay_components[$ad->id] = $ad->description . ' (' . $amount . ' ' . __('essentials::lang.' . $ad->type) . ')';
+            $pay_components[$ad->id] = $ad->description.' ('.$amount.' '.__('essentials::lang.'.$ad->type).')';
         }
 
         return $pay_components;
     }
-
 
     public function essentialsUserAllowanceAndDeductions()
     {
