@@ -27,7 +27,7 @@ class RequestController extends Controller
 
     protected $statuses;
     protected $statuses2;
-    public function __construct(ModuleUtil $moduleUtil,RequestUtil $requestUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
         $this->moduleUtil = $moduleUtil;
         $this->requestUtil = $requestUtil;
@@ -57,9 +57,6 @@ class RequestController extends Controller
                 'class' => 'bg-yellow',
             ],
         ];
-     
-      
-   
     }
     public function index()
     {
@@ -73,23 +70,22 @@ class RequestController extends Controller
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
 
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
-        ->where(function ($query) {
-            $query->where('name', 'like', '%تنفيذ%');
-        })
-        ->pluck('id')->toArray();
+            ->where(function ($query) {
+                $query->where('name', 'like', '%تنفيذ%');
+            })
+            ->pluck('id')->toArray();
 
-        $ownerTypes=['employee','manager','worker'];
+        $ownerTypes = ['employee', 'manager', 'worker'];
 
-        return $this->requestUtil->getRequests( $departmentIds, $ownerTypes, 'ceomanagment::requests.allRequest' , $can_change_status, $can_return_request, $can_show_request,$departmentIdsForGeneralManagment);
-
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'ceomanagment::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment);
     }
-    
+
     public function escalateRequests()
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -105,7 +101,7 @@ class RequestController extends Controller
                 }
             }
         }
-        $escalatedRequests = FollowupWorkerRequest::where('sub_status', 'escalateRequest')->select([
+        $escalatedRequests = FollowupWorkerRequest::where('followup_worker_requests_process.sub_status', 'escalateRequest')->select([
             'followup_worker_requests.request_no',
             'followup_worker_requests_process.id as process_id',
             'followup_worker_requests.id',
@@ -160,7 +156,4 @@ class RequestController extends Controller
         $statuses = $this->statuses;
         return view('ceomanagment::requests.escalate_requests')->with(compact('statuses'));
     }
-
-
-
 }

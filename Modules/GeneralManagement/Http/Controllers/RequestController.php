@@ -21,51 +21,48 @@ use Carbon\Carbon;
 
 class RequestController extends Controller
 {
-   
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
 
-     protected $moduleUtil;
-     protected $requestUtil;
- 
-     protected $statuses;
-     protected $statuses2;
-     public function __construct(ModuleUtil $moduleUtil,RequestUtil $requestUtil)
-     {
-         $this->moduleUtil = $moduleUtil;
-         $this->requestUtil = $requestUtil;
- 
-         $this->statuses = [
-             'approved' => [
-                 'name' => __('followup::lang.approved'),
-                 'class' => 'bg-green',
-             ],
-             'rejected' => [
-                 'name' => __('followup::lang.rejected'),
-                 'class' => 'bg-red',
-             ],
-             'pending' => [
-                 'name' => __('followup::lang.pending'),
-                 'class' => 'bg-yellow',
-             ],
-         ];
-         $this->statuses2 = [
-             'approved' => [
-                 'name' => __('followup::lang.approved'),
-                 'class' => 'bg-green',
-             ],
- 
-             'pending' => [
-                 'name' => __('followup::lang.pending'),
-                 'class' => 'bg-yellow',
-             ],
-         ];
-      
-       
-    
-     }
+    protected $moduleUtil;
+    protected $requestUtil;
+
+    protected $statuses;
+    protected $statuses2;
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+        $this->requestUtil = $requestUtil;
+
+        $this->statuses = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+            'rejected' => [
+                'name' => __('followup::lang.rejected'),
+                'class' => 'bg-red',
+            ],
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+        $this->statuses2 = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+    }
     public function index()
     {
 
@@ -77,16 +74,16 @@ class RequestController extends Controller
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
 
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
-        ->where(function ($query) {
-            $query->Where('name', 'like', '%مجلس%')
-                ->orWhere('name', 'like', '%عليا%');
-        })
-        ->pluck('id')->toArray();
-       
-        $ownerTypes=['employee','manager','worker'];
-        return $this->requestUtil->getRequests( $departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest' , $can_change_status, $can_return_request, $can_show_request,$departmentIdsForGeneralManagment);
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مجلس%')
+                    ->orWhere('name', 'like', '%عليا%');
+            })
+            ->pluck('id')->toArray();
+
+        $ownerTypes = ['employee', 'manager', 'worker'];
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment);
     }
-    
+
     public function escalateRequests()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -109,14 +106,14 @@ class RequestController extends Controller
             }
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-        ->where(function ($query) {
-            $query->Where('name', 'like', '%مجلس%')
-                ->orWhere('name', 'like', '%عليا%');
-        })
-        ->pluck('id')->toArray();
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مجلس%')
+                    ->orWhere('name', 'like', '%عليا%');
+            })
+            ->pluck('id')->toArray();
 
 
-        $escalatedRequests = FollowupWorkerRequest::where('sub_status', 'escalateRequest')->select([
+        $escalatedRequests = FollowupWorkerRequest::where('followup_worker_requests_process.sub_status', 'escalateRequest')->select([
             'followup_worker_requests.request_no',
             'followup_worker_requests_process.id as process_id',
             'followup_worker_requests.id',
@@ -136,10 +133,10 @@ class RequestController extends Controller
             ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
             ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->join('essentials_procedure_escalations', 'essentials_procedure_escalations.procedure_id', '=', 'essentials_wk_procedures.id')
-            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('essentials_procedure_escalations.escalates_to',$departmentIds)
+            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('essentials_procedure_escalations.escalates_to', $departmentIds)
             ->where('followup_worker_requests_process.status', 'pending')->where('users.status', '!=', 'inactive')->whereIn('users.id', $userIds);
 
-         
+
         if (request()->ajax()) {
 
 
