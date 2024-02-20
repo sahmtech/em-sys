@@ -14213,5 +14213,7 @@
         "php": "^8.0"
     },
     "platform-dev": [],
+
     "plugin-api-version": "2.6.0"
 }
+
