@@ -1,4 +1,15 @@
 <?php return array (
+  'alkoumi/laravel-arabic-numbers' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Alkoumi\\LaravelArabicNumbers\\LaravelArabicNumbersServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Numbers' => 'Alkoumi\\LaravelArabicNumbers\\Numbers',
+    ),
+  ),
   'alkoumi/laravel-hijri-date' => 
   array (
     'providers' => 

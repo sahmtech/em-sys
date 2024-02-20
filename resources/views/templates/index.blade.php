@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Templates')
+@section('title', __('sales::lang.templates_settings'))
 
 @section('content')
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>Templates
+        <h1>@lang('sales::lang.templates_settings')
             {{-- <small>@lang('user.manage_users')</small> --}}
         </h1>
         {{-- <div class="row">
@@ -32,10 +32,10 @@
 
     <!-- Main content -->
     <section class="content">
-        @component('components.widget', ['class' => 'box-primary',])
+        @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
                 <div class="box-tools">
-                    <a class="btn btn-block btn-primary" href=" {{route('templates.create')}}">
+                    <a class="btn btn-block btn-primary" href=" {{ route('templates.create') }}">
                         <i class="fa fa-plus"></i> @lang('messages.add')</a>
                 </div>
             @endslot
@@ -45,7 +45,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Template Name</th>
+                            <th>@lang('sales::lang.template_name')</th>
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
@@ -83,35 +83,35 @@
                 ]
             });
 
-           
-            // $(document).on('click', 'button.delete_user_button', function() {
-            //     swal({
-            //         title: LANG.sure,
-            //         text: LANG.confirm_delete_user,
-            //         icon: "warning",
-            //         buttons: true,
-            //         dangerMode: true,
-            //     }).then((willDelete) => {
-            //         if (willDelete) {
-            //             var href = $(this).data('href');
-            //             var data = $(this).serialize();
-            //             $.ajax({
-            //                 method: "DELETE",
-            //                 url: href,
-            //                 dataType: "json",
-            //                 data: data,
-            //                 success: function(result) {
-            //                     if (result.success == true) {
-            //                         toastr.success(result.msg);
-            //                         users_table.ajax.reload();
-            //                     } else {
-            //                         toastr.error(result.msg);
-            //                     }
-            //                 }
-            //             });
-            //         }
-            //     });
-            // });
+
+            $(document).on('click', 'button.delete_template_button', function() {
+                swal({
+                    title: LANG.sure,
+                    text: LANG.confirm_delete_user,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        var href = $(this).data('href');
+                        var data = $(this).serialize();
+                        $.ajax({
+                            method: "DELETE",
+                            url: href,
+                            dataType: "json",
+                            data: data,
+                            success: function(result) {
+                                if (result.success == true) {
+                                    toastr.success(result.msg);
+                                    users_table.ajax.reload();
+                                } else {
+                                    toastr.error(result.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
 
         });
     </script>

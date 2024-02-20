@@ -61,6 +61,8 @@ public/uploads/lead_files/
 public/uploads/*
 public/uploads/*/*
 public/uploads/tickets_attachments/
+bootstrap/cache/*
+bootstrap/cache/
 .env
 Homestead.yaml
 Homestead.json

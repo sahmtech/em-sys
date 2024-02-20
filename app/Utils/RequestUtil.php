@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\CEOManagment\Entities\WkProcedure;
 use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\ToDo;
 
 
 use Modules\Essentials\Entities\EssentialsDepartment;
@@ -96,7 +97,7 @@ class RequestUtil extends Util
 
             'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.department_id as department_id', 'wk_procedures.can_return','wk_procedures.start as start',
+            'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
 
@@ -163,17 +164,17 @@ class RequestUtil extends Util
                     }
                     return $status;
                 })
-                ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request,$departmentIds, $departmentIdsForGeneralManagment) {
+                ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request, $departmentIds, $departmentIdsForGeneralManagment) {
                     $buttonsHtml = '';
                     if ($departmentIdsForGeneralManagment) {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment) && $row->start !='1') {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment) && $row->start != '1') {
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
                             }
                         }
                     } else {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) && $row->start !='1' ) {
-                         
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) && $row->start != '1') {
+
 
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
@@ -388,6 +389,7 @@ class RequestUtil extends Util
         }
 
         if ($success) {
+            $this->makeToDo($Request, $business_id);
             $output = [
                 'success' => 1,
                 'msg' => __('messages.added_success'),
@@ -433,7 +435,40 @@ class RequestUtil extends Util
         // return redirect()->back()->with('success', trans('messages.saved_successfully'));
     }
 
+    public function makeToDo($request, $business_id)
+    {
+        error_log('111111111111111');
 
+        $created_by = $request->created_by;
+
+        $request_type = RequestsType::where('id', $request->request_type_id)->first()->type;
+        $input['business_id'] = $business_id;
+        $input['company_id'] = $business_id;
+        $input['created_by'] = $created_by;
+        $input['task'] = "طلب جديد";
+        $input['date'] = Carbon::now();
+        $input['priority'] = 'high';
+        $input['description'] = $request_type;
+        $input['status'] = !empty($input['status']) ? $input['status'] : 'new';
+
+        $process = RequestProcess::where('request_id', $request->id)->latest()->first();
+        $users = [];
+        if ($process->superior_department_id) {
+            $users = User::where('essentials_department_id', $process->superior_department_id)->pluck('id')->toArray();
+        } else {
+            $procedure = $process->procedure_id;
+            $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
+
+            $users = User::where('essentials_department_id', $department_id)->pluck('id')->toArray();
+        }
+
+
+        $input['task_id'] = $request->request_no;
+
+        $to_dos = ToDo::create($input);
+
+        $to_dos->users()->sync($users);
+    }
     ////// change request status /////////////////// 
     public function changeRequestStatus(Request $request)
     {
@@ -498,6 +533,10 @@ class RequestUtil extends Util
                         $newRequestProcess->status = 'pending';
                         $newRequestProcess->save();
                     }
+                    $business_id = request()->session()->get('user.business_id');
+                    //  error_log($requestProcess->request->id);
+                    $userRequest = UserRequest::where('id', $requestProcess->request_id)->first();
+                    $this->makeToDo($userRequest, $business_id);
                 }
             }
             if ($request->status  == 'rejected') {
@@ -573,6 +612,10 @@ class RequestUtil extends Util
                         $process->request->save();
                     }
                 }
+                $business_id = request()->session()->get('user.business_id');
+
+                $userRequest = UserRequest::where('id',  $process->request_id)->first();
+                $this->makeToDo($userRequest, $business_id);
             }
 
 
@@ -657,9 +700,9 @@ class RequestUtil extends Util
         $isDone = UserRequest::where('id', $request->id)->first()->is_done;
         $workflow[] = [
             'id' => null,
-            'status' => $isDone?'approved':'',
+            'status' => $isDone ? 'approved' : '',
             'department' => $isDone ? trans('request.done') : trans('request.not_yet_done'),
-       
+
         ];
 
         $attachments = null;
@@ -780,8 +823,8 @@ class RequestUtil extends Util
                 ->where('department_id', $firstProcedure->next_department_id)
                 ->first();
         }
-       
-       
+
+
 
         if ($firstProcedure && $firstProcedure->end == 1) {
             $workflow[] = [
@@ -795,9 +838,9 @@ class RequestUtil extends Util
         $isDone = UserRequest::where('id', $request->id)->first()->is_done;
         $workflow[] = [
             'id' => null,
-            'status' => $isDone?'approved':'',
+            'status' => $isDone ? 'approved' : '',
             'department' => $isDone ? trans('request.done') : trans('request.not_yet_done'),
-       
+
         ];
 
         $attachments = null;
@@ -1046,5 +1089,15 @@ class RequestUtil extends Util
             ->select('id', 'sub_reason as name')
             ->get();
         return response()->json(['sub_reasons' => $subReasons]);
+    }
+
+    public function getNonSaudiUsers(Request $request)
+    {
+
+        $workerIds = array_keys($request->input('users', []));
+
+        $saudiUsers = User::whereNot('id_proof_name', 'national_id')->whereIn('id', $workerIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+
+        return response()->json(['users' => $saudiUsers]);
     }
 }

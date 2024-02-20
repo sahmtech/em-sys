@@ -91,7 +91,7 @@ class PayrollController extends Controller
 
         if (request()->ajax()) {
             $payrolls = $this->essentialsUtil->getPayrollQuery($user_businesses_ids);
-            error_log(($payrolls->count()));
+         
             if ($can_view_all_payroll) {
                 if (!empty(request()->input('user_id'))) {
                     $payrolls->where('transactions.expense_for', request()->input('user_id'));

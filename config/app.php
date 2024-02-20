@@ -55,7 +55,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    
+
     'GOOGLE_MAP_KEY' => 'AIzaSyDR0MGyuJhRhzPTe65zy-WymhBirnmVTd4',
 
     /*
@@ -182,6 +182,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Unicodeveloper\Paystack\PaystackServiceProvider::class,
+        Alkoumi\LaravelArabicNumbers\LaravelArabicNumbersServiceProvider::class,
 
         /*
          * Package Service Providers...

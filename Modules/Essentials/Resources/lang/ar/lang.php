@@ -670,13 +670,14 @@ return [
   'superior' => 'الرئيس المباشر',
 
   'renew_duration' => 'مدة التجديد',
+  'card_renew_sucessfully'=>'تم تجديد كرت العمل بنجاح',
   'register_number' => 'رقم السجل',
   'renew_start_date' => 'تاريخ بداية التجديد',
   'renew_end_date' => 'تاريخ نهاية التجديد',
   'capital' => 'راس المال',
   'national_address' => 'العنوان الوطني',
 
-  'renew_duration' => 'مدة التجديد',
+  'choose_renew_duration' => 'اختر مدة التجديد',
   'renew_start_date' => 'تاريخ بداية التجديد',
   'renew_end_date' => 'تاريخ نهاية التجديد',
 
@@ -943,6 +944,7 @@ return [
   'other' => 'غير ذلك',
   'male' => 'ذكر',
   'female' => 'أنثى',
+  'both'=>'كلاهما',
   'age' => 'العمر',
   'gender' => 'الجنس',
   'add_family' => 'إضافة مرافق',
@@ -1009,6 +1011,7 @@ return [
   'work_cards' => 'العلاقات الحكومية',
   'choose_card_owner'=>'اختر صاحب كرت العمل',
   'leave_duration' => 'المدة',
+  'total_leave_duration' => 'المدة الإجمالية (منفصلة أو متصلة)',
   'Urgent' => 'اضطرارية',
   'Annual' => 'سنوية',
   'select_leave_type' => 'اختر نوع الإجازة',
@@ -1085,7 +1088,7 @@ return [
   'personal_info' => 'المعلومات الشخصية ',
   'hrm_details' => 'التعيين',
   'hrm_details_create_edit' => 'التعيين',
-  'renewal_residence' => 'تجديد الإقامات ',
+  'renewal_residence' => 'تجديد كروت العمل والاقامات ',
   'activity' => 'النشاط',
   'add_procedure' => 'إضافة طلب',
   'procedure_type' => 'نوع الطلب',
@@ -1106,9 +1109,10 @@ return [
   'expired_contracts' => 'العقود المنتهية',
   'remaining_contracts' => 'العقود انتهت فترة التجربة',
   'escape_date' => 'تاريخ الهروب',
-
+'user_info_eqama_not_completed'=>'معلومات الاقامة لصاحب الكرت غير موجودة  قم باكملها ',
+'card_added_sucessfully'=>'تم إضافة كرت العمل بنجاح',
   'years' => 'سنة',
-  'months' => 'شهر',
+  'months' => 'أشهر',
   'workcard_duration' => 'مدة كرت العمل',
   'management' => 'إدارة',
   'select_company' => 'اختر شركة ',
@@ -1497,7 +1501,7 @@ return [
   'weak' => 'ضعيف',
   'bad' => 'سيئ',
   'fail' => 'راسب',
-
+'proof_number_card'=>'رقم اثبات الهوية ',
   'view_essentials_affairs_workers' => 'عرض العمال',
   'view_worker' => 'عرض العامل',
   'salary_per_month' => 'الراتب الأساسي لكل شهر',
@@ -1728,4 +1732,10 @@ return [
 
   'contract_type_id_not_found'=>'رقم نوع العقد غير موجود في السطر رقم ',
   'edit_professions'=>'تعديل المسمى الوظيفي',
+  'due_date'=>'تاريخ الاستحقاق',
+  'due_categorie'=>'الفئة المستحقة',
+  'include_salary_percent'=>'متضمنة الراتب بنسبة',
+  'extendable'=>'قابلة للتمديد',
+  'number of months after adminssion date'=>'عدد الأشهر من تاريخ مباشرة العمل',
+  'Leave the input empty to take the value "undefined"'=>'اترك الحقل فارغاً في حال كانت العدد الأقصى غير محدد',
 ];
