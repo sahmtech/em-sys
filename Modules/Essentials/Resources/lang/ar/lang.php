@@ -1730,6 +1730,13 @@ return [
   'edit_qualification_attachements' => 'تعديل مرفقات المؤهلات العلمية',
   'visa' => 'تأشيرة دخول',
 
-    'contract_type_id_not_found' => 'رقم نوع العقد غير موجود في السطر رقم ',
-    'edit_professions' => 'تعديل المسمى الوظيفي',
+
+  'contract_type_id_not_found'=>'رقم نوع العقد غير موجود في السطر رقم ',
+  'edit_professions'=>'تعديل المسمى الوظيفي',
+  'due_date'=>'تاريخ الاستحقاق',
+  'due_categorie'=>'الفئة المستحقة',
+  'include_salary_percent'=>'متضمنة الراتب بنسبة',
+  'extendable'=>'قابلة للتمديد',
+  'number of months after adminssion date'=>'عدد الأشهر من تاريخ مباشرة العمل',
+  'Leave the input empty to take the value "undefined"'=>'اترك الحقل فارغاً في حال كانت العدد الأقصى غير محدد',
 ];
