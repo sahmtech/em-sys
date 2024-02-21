@@ -426,6 +426,8 @@
                                 return '@lang('request.assetRequest')';
                             } else if (data === 'passportRenewal') {
                                 return '@lang('request.passportRenewal')';
+                            } else if (data === 'AjirAsked') {
+                                return '@lang('request.AjirAsked')';
                             } else {
                                 return data;
                             }
@@ -461,7 +463,7 @@
                             success: function(result) {
                                 if (result.success == true) {
                                     toastr.success(result.msg);
-                                  //  procedures_table.ajax.reload();
+                                    //  procedures_table.ajax.reload();
                                     window.location.reload();
                                 } else {
                                     toastr.error(result.msg);
@@ -607,7 +609,7 @@
                     $(this).attr('name', newName);
                 });
                 newStep.css('display', 'block');
-                
+
                 newStep.find('.edit_modal_remove_step_btn').css('display', 'block');
                 escalationCountInput = newStep.find(
                     'input[name^="escalation_count"]').val(1);
@@ -745,7 +747,7 @@
                     }
 
                     $(stepSelector).find('.select2').select2();
-                    edit_modal_steps_count ++; 
+                    edit_modal_steps_count++;
                 }
 
 
@@ -769,7 +771,7 @@
                     stepTemplate.css('display', 'block');
                     stepTemplate.find('.edit_modal_remove_step_btn').css('display', 'block');
                     $('#workflow-step_edit_modal').append(stepTemplate);
-         
+
                 }
 
             });
