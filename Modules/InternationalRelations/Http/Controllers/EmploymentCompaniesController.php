@@ -281,7 +281,44 @@ class EmploymentCompaniesController extends Controller
      */
     public function show($id)
     {
-        return view('internationalrelations::EmploymentCompanies.employment_company_profile');
+        $employment_companies = Contact::where('type', 'recruitment')
+            ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
+            ->select([
+                'contacts.id',
+                'contacts.supplier_business_name',
+                'essentials_countries.id as country',
+                'contacts.multi_nationalities',
+                'contacts.name',
+                'contacts.mobile',
+                'contacts.email',
+                'contacts.evaluation',
+                'contacts.landline'
+
+            ])
+            ->find($id);
+
+        $comp_country_name = null;
+        if (!empty($employment_companies->country)) {
+            $country = EssentialsCountry::findOrFail($employment_companies->country);
+            $nameJson = $country->name;
+            $nameArray = json_decode($nameJson, true);
+            $comp_country_name = $nameArray['ar'];
+        }
+
+        $nationalities = null;
+
+        if ($employment_companies->multi_nationalities != null) {
+            $nationalityIds = json_decode($employment_companies->multi_nationalities);
+            $nationalities = EssentialsCountry::whereIn('id', $nationalityIds)
+                ->pluck('nationality', 'id');
+        }
+
+
+
+
+
+        return view('internationalrelations::EmploymentCompanies.employment_company_profile')
+            ->with(compact('employment_companies', 'comp_country_name', 'nationalities'));
     }
 
     /**

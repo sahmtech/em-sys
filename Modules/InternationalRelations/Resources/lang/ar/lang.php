@@ -127,6 +127,7 @@ return [
   'show_employment_company_profile' => 'عرض بروفايل شركة التوظيف',
   'company_main_info' => 'المعلومات الاساسية',
   'employment_comp_requests' => 'طلبات شركة التوظيف',
+  'adderss' => 'العنوان',
 
   'view_all_delegation_requests' => 'استعراض جميع طلبات التفويض',
   'import_proposed_workers' => 'استيراد اكسل العمال المقترحة',
