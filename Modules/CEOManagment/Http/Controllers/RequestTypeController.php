@@ -47,6 +47,7 @@ class RequestTypeController extends Controller
             'assetRequest',
             'passportRenewal',
             'AjirAsked',
+            'AlternativeWorker',
         ];
 
         $typesWithBoth = RequestsType::whereExists(function ($query) {
@@ -222,7 +223,8 @@ class RequestTypeController extends Controller
             'WarningRequest' => 'WrReq_',
             'assetRequest' => 'AssetReq_',
             'passportRenewal' => 'PasRenew_',
-            'AjirAsked' => 'Asked_'
+            'AjirAsked' => 'Asked_',
+            'AlternativeWorker' => 'AlterWorker_'
         ];
 
         return $typePrefixMap[$type];

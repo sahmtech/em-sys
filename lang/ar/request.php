@@ -25,6 +25,8 @@ return [
   'mofaRequest' => ' طلبات تصديق وزارة الخارجية',
   'chamberRequest' => ' طلبات تصديق غرفة تجارية',
   'AjirAsked' => 'طلب أجير',
+  'AlternativeWorker' => 'طلب عامل بديل',
+
 
   'this_department_cant_reject_this_request' => 'لا يمكن لهذه الإدارة رفض هذا الطلب',
   'returned_successfully' => 'تم الإرجاع بنجاح',

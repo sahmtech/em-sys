@@ -64,12 +64,14 @@ return [
     'assetRequest' => 'طلب عُهدة',
     'AjirAsked' => 'طلب أجير',
     'passportRenewal' => 'طلب تجديد جواز سفر',
+    'AlternativeWorker' => 'طلب عامل بديل',
     'cant_delete,delete_the_procedure_first' => 'لا يمكن حذف هذا النوع، قم بحذف الإجراء المرتبط به أولاً',
     'this_type_is_already_exists' => 'هذا النوع  من الطلبات موجود مسبقا',
 
     'repeated_managements_please_re_check' => 'يوجد إدارات مكررة، يرجى إعادة إدخال الإجراء',
     'cant_delete_procedure_it_have_requests' => 'لا يمكن حذف الإجراء، يوجد طلبات متعلقة بهذا الإجراء',
     'cant_edit_procedure_it_have_requests' => 'لا يمكن تعديل الإجراء، يوجد طلبات متعلقة بهذا الإجراء',
+
 
 
 

@@ -214,6 +214,13 @@
                                     'id' => 'endDateField',
                                 ]) !!}
                             </div>
+                            {{-- <div class="form-group col-md-6" id="project" style="display: none;">
+                                {!! Form::label('project', __('essentials::lang.project') . ':*') !!}
+                                {!! Form::text('project', null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 60px; width: 250px;',
+                                ]) !!}
+                            </div> --}}
                             <div class="form-group col-md-6" id="escape_time" style="display: none;">
                                 {!! Form::label('escape_time', __('request.escape_time') . ':*') !!}
                                 {!! Form::time('escape_time', null, [
@@ -581,6 +588,8 @@
                                 return '@lang('request.passportRenewal')';
                             } else if (data === 'AjirAsked') {
                                 return '@lang('request.AjirAsked')';
+                            } else if (data === 'AlternativeWorker') {
+                                return '@lang('request.AlternativeWorker')';
                             } else {
                                 return data;
                             }
@@ -933,6 +942,11 @@
                         } else {
                             $('#end_date').hide();
                         }
+                        // if (selectedType === 'AlternativeWorker') {
+                        //     $('#project').show();
+                        // } else {
+                        //     $('#project').hide();
+                        // }
                         if (selectedType === 'returnRequest') {
                             $('#exit_date').show();
                             $('#return_date').show();

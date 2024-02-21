@@ -194,7 +194,7 @@ class RequestUtil extends Util
 
                 ->make(true);
         }
-        return view($view)->with(compact('users', 'requestTypes', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+        return view($view)->with(compact('users', 'requestTypes', 'statuses', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes'));
     }
 
 
@@ -455,12 +455,12 @@ class RequestUtil extends Util
         $process = RequestProcess::where('request_id', $request->id)->latest()->first();
         $users = [];
         if ($process->superior_department_id) {
-            $users = User::where('essentials_department_id', $process->superior_department_id)->pluck('id')->toArray();
+            $users = User::where('essentials_department_id', $process->superior_department_id)->get();
         } else {
             $procedure = $process->procedure_id;
             $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
 
-            $users = User::where('essentials_department_id', $department_id)->pluck('id')->toArray();
+            $users = User::where('essentials_department_id', $department_id)->get();
         }
 
 
@@ -469,7 +469,8 @@ class RequestUtil extends Util
         $to_dos = ToDo::create($input);
 
         $to_dos->users()->sync($users);
-        if ($users) {
+        if ($users->isNotEmpty()) {
+
             \Notification::send($users, new NewTaskNotification($to_dos));
         }
     }
