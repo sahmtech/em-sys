@@ -462,16 +462,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.299.1",
+            "version": "3.300.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "a0f87b8e8bfb9afd0ffd702fcda556b465eee457"
+                "reference": "67a0c22a70bdcc99ca41028b78be3d5496481c14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a0f87b8e8bfb9afd0ffd702fcda556b465eee457",
-                "reference": "a0f87b8e8bfb9afd0ffd702fcda556b465eee457",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/67a0c22a70bdcc99ca41028b78be3d5496481c14",
+                "reference": "67a0c22a70bdcc99ca41028b78be3d5496481c14",
                 "shasum": ""
             },
             "require": {
@@ -551,9 +551,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.299.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.300.0"
             },
-            "time": "2024-02-16T19:08:34+00:00"
+            "time": "2024-02-19T19:08:33+00:00"
         },
         {
             "name": "balping/json-raw-encoder",
@@ -4007,16 +4007,16 @@
         },
         {
             "name": "maatwebsite/excel",
-            "version": "3.1.54",
+            "version": "3.1.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SpartnerNL/Laravel-Excel.git",
-                "reference": "c35a38e7f478d48edac8c16a99d1e5b7073010ac"
+                "reference": "6d9d791dcdb01a9b6fd6f48d46f0d5fff86e6260"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SpartnerNL/Laravel-Excel/zipball/c35a38e7f478d48edac8c16a99d1e5b7073010ac",
-                "reference": "c35a38e7f478d48edac8c16a99d1e5b7073010ac",
+                "url": "https://api.github.com/repos/SpartnerNL/Laravel-Excel/zipball/6d9d791dcdb01a9b6fd6f48d46f0d5fff86e6260",
+                "reference": "6d9d791dcdb01a9b6fd6f48d46f0d5fff86e6260",
                 "shasum": ""
             },
             "require": {
@@ -4072,7 +4072,7 @@
             ],
             "support": {
                 "issues": "https://github.com/SpartnerNL/Laravel-Excel/issues",
-                "source": "https://github.com/SpartnerNL/Laravel-Excel/tree/3.1.54"
+                "source": "https://github.com/SpartnerNL/Laravel-Excel/tree/3.1.55"
             },
             "funding": [
                 {
@@ -4084,7 +4084,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-02-19T11:00:33+00:00"
+            "time": "2024-02-20T08:27:10+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -11653,16 +11653,16 @@
         },
         {
             "name": "knuckleswtf/scribe",
-            "version": "4.30.1",
+            "version": "4.32.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/knuckleswtf/scribe.git",
-                "reference": "0900c0d44965b0a13c480a8ea6dbc27e4698bcd9"
+                "reference": "d1d96fb1805a8e600a3c2a33abdb391510a4c22a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/knuckleswtf/scribe/zipball/0900c0d44965b0a13c480a8ea6dbc27e4698bcd9",
-                "reference": "0900c0d44965b0a13c480a8ea6dbc27e4698bcd9",
+                "url": "https://api.github.com/repos/knuckleswtf/scribe/zipball/d1d96fb1805a8e600a3c2a33abdb391510a4c22a",
+                "reference": "d1d96fb1805a8e600a3c2a33abdb391510a4c22a",
                 "shasum": ""
             },
             "require": {
@@ -11676,12 +11676,12 @@
                 "illuminate/support": "^8.0|^9.0|^10.0",
                 "league/flysystem": "^1.1.4|^2.1.1|^3.0",
                 "mpociot/reflection-docblock": "^1.0.1",
-                "nikic/php-parser": "^4.10|^5.0",
+                "nikic/php-parser": "^5.0",
                 "nunomaduro/collision": "^5.10|^6.0|^7.0|^8.0",
                 "php": ">=8.0",
                 "ramsey/uuid": "^4.2.2",
                 "shalvah/clara": "^3.1.0",
-                "shalvah/upgrader": "^0.4.0",
+                "shalvah/upgrader": ">=0.6.0",
                 "spatie/data-transfer-object": "^2.6|^3.0",
                 "symfony/var-exporter": "^5.4|^6.0|^7.0",
                 "symfony/yaml": "^5.4|^6.0|^7.0"
@@ -11736,7 +11736,7 @@
             ],
             "support": {
                 "issues": "https://github.com/knuckleswtf/scribe/issues",
-                "source": "https://github.com/knuckleswtf/scribe/tree/4.30.1"
+                "source": "https://github.com/knuckleswtf/scribe/tree/4.32.0"
             },
             "funding": [
                 {
@@ -11744,7 +11744,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-02-18T14:19:49+00:00"
+            "time": "2024-02-20T12:11:29+00:00"
         },
         {
             "name": "maximebf/debugbar",
@@ -13582,21 +13582,21 @@
         },
         {
             "name": "shalvah/upgrader",
-            "version": "0.4.0",
+            "version": "0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shalvah/upgrader.git",
-                "reference": "b9c5dcccf226ff29b5e6f9a53dfe3b96a30acf7a"
+                "reference": "d95ed17fe9f5e1ee7d47ad835595f1af080a867f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shalvah/upgrader/zipball/b9c5dcccf226ff29b5e6f9a53dfe3b96a30acf7a",
-                "reference": "b9c5dcccf226ff29b5e6f9a53dfe3b96a30acf7a",
+                "url": "https://api.github.com/repos/shalvah/upgrader/zipball/d95ed17fe9f5e1ee7d47ad835595f1af080a867f",
+                "reference": "d95ed17fe9f5e1ee7d47ad835595f1af080a867f",
                 "shasum": ""
             },
             "require": {
                 "illuminate/support": ">=8.0",
-                "nikic/php-parser": "^4.13|^5.0",
+                "nikic/php-parser": "^5.0",
                 "php": ">=8.0"
             },
             "require-dev": {
@@ -13628,7 +13628,7 @@
             ],
             "support": {
                 "issues": "https://github.com/shalvah/upgrader/issues",
-                "source": "https://github.com/shalvah/upgrader/tree/0.4.0"
+                "source": "https://github.com/shalvah/upgrader/tree/0.6.0"
             },
             "funding": [
                 {
@@ -13636,7 +13636,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-02-14T23:57:54+00:00"
+            "time": "2024-02-20T11:51:46+00:00"
         },
         {
             "name": "spatie/backtrace",
@@ -14213,5 +14213,7 @@
         "php": "^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+
+    "plugin-api-version": "2.6.0"
 }
+
