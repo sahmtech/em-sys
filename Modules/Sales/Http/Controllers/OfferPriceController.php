@@ -933,6 +933,80 @@ class OfferPriceController extends Controller
             } else if ($query->contract_form == 'operating_fees') {
                 $template = Template::with('sections')->where('id', 2)->first();
                 $sections = $template->sections->sortBy('order');
+                $food = 0;
+                $housing = 0;
+                $transportaions = 0;
+                $others = 0;
+                $uniform = 0;
+                $recruit = 0;
+                foreach ($sections as  $section) {
+                    if ($section->content) {
+                        $htmlString = $section->content;
+                        $firstStartPos = strpos($htmlString, '<tr');
+                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5; // Include length of '</tr>'
+                        $startPos = strpos($htmlString, '<tr', $firstEndPos);
+                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
+                        $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
+                        $columnCount =  substr_count($firstRowHtml, '<td');
+                        if ($columnCount > 8) {
+                            $original_clone =  $firstRowHtml;
+                            $i = 1;
+                            $final_rows = '';
+                            foreach ($query->sell_lines as $sell_line) {
+                                $clone =   $original_clone;
+                                foreach (json_decode($sell_line->additional_allwances) as $allwance) {
+                                    if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
+                                        if ($allwance->salaryType == 'food_allowance') {
+                                            $food = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'housing_allowance') {
+                                            $housing = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'transportation_allowance') {
+                                            $transportaions = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'other_allowances') {
+                                            $others = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'uniform_allowance') {
+                                            $uniform = $allwance->amount;
+                                        }
+                                        if ($allwance->salaryType == 'recruit_allowance') {
+                                            $recruit = $allwance->amount;
+                                        }
+                                    }
+                                }
+                                $replacements2 = [
+                                    '${R}' => $i,
+                                    '${A}' => $sell_line['service']['profession']['name'] ?? '',
+                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''),
+                                    '${C}' => $food,
+                                    '${D}' => $transportaions,
+                                    '${E}' => $housing,
+                                    '${F}' => $others,
+                                    '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
+                                    '${H}' => $sell_line->quantity ?? 0,
+                                    '${I}' => number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''),
+                                    '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
+                                    '${K}' => $query->contract_duration ?? 0,
+                                    '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
+                                    '${M}' => ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '',
+                                    '${N}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0,
+                                ];
+                                foreach ($replacements2 as $placeholder => $value) {
+                                    $clone = str_replace($placeholder, $value,   $clone);
+                                    // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
+                                    // $endPos += strlen($clone);
+                                }
+                                $final_rows .= $clone;
+                                $i++;
+                            }
+                            $htmlString = substr_replace($htmlString,      $final_rows, $endPos, 0);
+                            $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
+                            $section->content = $htmlString;
+                        }
+                    }
+                }
 
                 $replacements = [
                     // '${R}' => $query->sell_lines->count(),
@@ -940,6 +1014,10 @@ class OfferPriceController extends Controller
                     '${DATE_EN}' => Carbon::parse($query->transaction_date)->format('d-m-Y'),
                     '${CONTACTS}' => $query->contact->supplier_business_name ?? '',
                     '${CONTACTS_EN}' => $query->contact->english_name ?? '',
+                    '${FOOD_ALLOW}' => $food == 0 ? "no" : "yes",
+                    '${ACCO_TRANS}' => ($transportaions == 0 && $housing == 0) ? "no" : "yes",
+                    '${UNIFORM}' => $uniform == 0 ? "no" : "yes",
+                    '${RECRUIT}' => $recruit == 0 ? "no" : "yes",
                     '${PRE_PAY}' => $query->down_payment ?? '',
                     '${PRE_PAY_EN}' => $query->down_payment ?? '',
                     '${BANK_GURANTEE}' => '' ?? '',
@@ -962,207 +1040,8 @@ class OfferPriceController extends Controller
                         }
                     }
                 }
-
-
-                foreach ($sections as  $section) {
-                    if ($section->content) {
-                        $htmlString = $section->content;
-
-                        $firstStartPos = strpos($htmlString, '<tr');
-                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5; // Include length of '</tr>'
-                        $startPos = strpos($htmlString, '<tr', $firstEndPos);
-                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
-                        $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
-                        $columnCount =  substr_count($firstRowHtml, '<td');
-
-
-                        if ($columnCount > 8) {
-                            $original_clone =  $firstRowHtml;
-                            $i = 1;
-                            $final_rows = '';
-                            foreach ($query->sell_lines as $sell_line) {
-                                $clone =   $original_clone;
-                                $food = 0;
-                                $housing = 0;
-                                $transportaions = 0;
-                                $others = 0;
-                                $uniform = 0;
-                                $recruit = 0;
-                                foreach (json_decode($sell_line->additional_allwances) as $allwance) {
-
-                                    if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
-                                        if ($allwance->salaryType == 'food_allowance') {
-                                            $food = $allwance->amount;
-                                        }
-                                        if ($allwance->salaryType == 'housing_allowance') {
-                                            $housing = $allwance->amount;
-                                        }
-                                        if ($allwance->salaryType == 'transportation_allowance') {
-                                            $transportaions = $allwance->amount;
-                                        }
-                                        if ($allwance->salaryType == 'other_allowances') {
-                                            $others = $allwance->amount;
-                                        }
-                                        if ($allwance->salaryType == 'uniform_allowance') {
-                                            $uniform = $allwance->amount;
-                                        }
-                                        if ($allwance->salaryType == 'recruit_allowance') {
-                                            $recruit = $allwance->amount;
-                                        }
-                                    }
-                                }
-
-                                $replacements2 = [
-                                    '${R}' => $i,
-                                    '${A}' => $sell_line['service']['profession']['name'] ?? '',
-                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''),
-                                    '${C}' => $food,
-                                    '${D}' => $transportaions,
-                                    '${E}' => $housing,
-                                    '${F}' => $others,
-                                    '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
-                                    '${H}' => $sell_line->quantity ?? 0,
-                                    '${I}' => number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''),
-                                    '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
-                                    '${K}' => $query->contract_duration ?? 0,
-                                    '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
-                                    '${M}' => ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '',
-                                    '${N}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0,
-
-
-                                ];
-
-
-
-                                foreach ($replacements2 as $placeholder => $value) {
-                                    $clone = str_replace($placeholder, $value,   $clone);
-                                    // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
-                                    // $endPos += strlen($clone);
-                                }
-                                $final_rows .= $clone;
-                                $i++;
-                            }
-                            $htmlString = substr_replace($htmlString,      $final_rows, $endPos, 0);
-                            $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
-                            $section->content = $htmlString;
-                        }
-                    }
-                }
-
-
-
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
-            } else if ($query->contract_form == 'operating_fees') {
-
-
-                $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path('word_templates/fixed_cost.docx'));
-                $templateProcessor->cloneRow('R', $query->sell_lines->count());
-                $templateProcessor->setValue('DATE', Carbon::parse($query->transaction_date)->format('Y-m-d'));
-                $templateProcessor->setValue('DATE_EN', Carbon::parse($query->transaction_date)->format('d-m-Y'));
-                $templateProcessor->setValue('CONTACTS',    $query->contact->supplier_business_name ?? '');
-                $templateProcessor->setValue('CONTACTS_EN',  $query->contact->english_name ?? '');
-                $i = 1;
-                $food = 0;
-                $housing = 0;
-                $transportaions = 0;
-                $others = 0;
-                $uniform = 0;
-                $recruit = 0;
-
-                foreach ($query->sell_lines as $sell_line) {
-                    $templateProcessor->setValue('R#' . $i, $i);
-                    $templateProcessor->setValue('A#' . $i, $sell_line['service']['profession']['name'] ?? '');
-                    $templateProcessor->setValue('B#' . $i,   number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''));
-
-                    foreach (json_decode($sell_line->additional_allwances) as $allwance) {
-                        if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
-                            if ($allwance->salaryType == 'food_allowance') {
-                                $food = $allwance->amount;
-                            }
-                            if ($allwance->salaryType == 'housing_allowance') {
-                                $housing = $allwance->amount;
-                            }
-                            if ($allwance->salaryType == 'transportation_allowance') {
-                                $transportaions = $allwance->amount;
-                            }
-                            if ($allwance->salaryType == 'other_allowances') {
-                                $others = $allwance->amount;
-                            }
-                            if ($allwance->salaryType == 'uniform_allowance') {
-                                $uniform = $allwance->amount;
-                            }
-                            if ($allwance->salaryType == 'recruit_allowance') {
-                                $recruit = $allwance->amount;
-                            }
-                        }
-                    }
-                    $templateProcessor->setValue('C#' . $i, $food);
-                    $templateProcessor->setValue('D#' . $i,  $transportaions);
-                    $templateProcessor->setValue('E#' . $i, $housing);
-                    $templateProcessor->setValue('F#' . $i, $others);
-                    $templateProcessor->setValue('G#' . $i, __('sales::lang.' . $sell_line['service']['gender']) ?? '');
-                    $templateProcessor->setValue('H#' . $i, $sell_line->quantity ?? 0);
-                    $templateProcessor->setValue('I#' . $i, number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''));
-                    $templateProcessor->setValue('J#' . $i, $sell_line['service']['nationality']['nationality'] ?? '');
-                    $templateProcessor->setValue('K#' . $i,  $query->contract_duration ?? 0);
-                    $templateProcessor->setValue('L#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity);
-                    $templateProcessor->setValue('M#' . $i, ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '');
-                    $templateProcessor->setValue('N#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0);
-
-                    $i++;
-                }
-
-                $templateProcessor->setValue('FOOD_ALLOW', $food == 0 ? "no" : "yes");
-
-
-                $templateProcessor->setValue('ACCO_TRANS', ($transportaions == 0 && $housing == 0) ? "no" : "yes");
-                $templateProcessor->setValue('UNIFORM', $uniform == 0 ? "no" : "yes");
-                $templateProcessor->setValue('RECRUIT', $recruit == 0 ? "no" : "yes");
-
-
-                $templateProcessor->setValue('PRE_PAY', $query->down_payment ?? '');
-                $templateProcessor->setValue('PRE_PAY_EN', $query->down_payment ?? '');
-                $templateProcessor->setValue('BANK_GURANTEE', '' ?? '');
-                $templateProcessor->setValue('BANK_GURANTEE_EN', '' ?? '');
-
-                $templateProcessor->setValue('CREATED_BY', $query->sales_person->first_name ?? '');
-                $templateProcessor->setValue('CREATED_BY_EN', $query->sales_person->english_name ?? '');
-                $outputPath = public_path('uploads/offer_prices/' . $query->ref_no . '.docx');
-                $templateProcessor->saveAs($outputPath);
-
-                $headers = [
-                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    'Content-Disposition' => 'attachment; filename="' . $query->ref_no . '.docx"',
-                ];
-
-                // Return the response with the file content
-                return response()->download($outputPath, $query->ref_no . '.docx', $headers);
             }
-            //   return response()->download($outputPath);
-            // \PhpOffice\PhpWord\Settings::setPdfRendererPath(public_path());
-            // \PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
-            // $Content = \PhpOffice\PhpWord\IOFactory::load($outputPath);
-            // $PDFWriter = \PhpOffice\PhpWord\IOFactory::createWriter($Content, 'PDF');
-
-            // $pdfFileName = $query->ref_no . '.pdf';
-            // $PDFWriter->save(public_path($pdfFileName));
-
-            // return response()->download(public_path($pdfFileName));
-
-            // // Convert the Word document to PDF using Dompdf
-            // $phpWord = IOFactory::load($outputPath);
-            // $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-            // $htmlPath = public_path('generated_document.html');
-            // $htmlWriter->save($htmlPath);
-
-            // // Convert HTML to PDF using Dompdf
-            // $pdf = PDF::loadFile($htmlPath);
-            // $pdfPath = public_path($query->ref_no . '.pdf');
-            // $pdf->saveAs($pdfPath);
-
-            // Return the PDF as a response or download it
-            //return response()->download($pdfPath, $query->ref_no . '.pdf');
-
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
