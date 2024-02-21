@@ -301,15 +301,18 @@
                                         <th class="text-center">
                                             @lang('sales::lang.gender')
                                         </th>
-                                        <th class="text-center">
+                                        {{-- <th class="text-center">
                                             @lang('sales::lang.monthly_cost')
-                                        </th>
+                                        </th> --}}
                                         <th class="text-center">
                                             @lang('sales::lang.number_of_clients')
                                         </th>
 
                                         <th class="text-center">
-                                            @lang('sales::lang.total')
+                                            @lang('sales::lang.monthly_cost')
+                                        </th>
+                                        <th class="text-center">
+                                            @lang('sales::lang.totalwithworkers')
                                         </th>
 
                                         <th class="text-center"><i class="fas fa-times" aria-hidden="true"></i></th>
@@ -326,7 +329,7 @@
                                             <b>@lang('sale.item'):</b>
                                             <span class="total_quantity">0</span>
                                             &nbsp;&nbsp;&nbsp;&nbsp;
-                                            <b>@lang('sale.total'): </b>
+                                            <b>@lang('sales::lang.monthly_costs'): </b>
                                             <span class="price_total">0</span>
                                         </div>
                                     </td>
