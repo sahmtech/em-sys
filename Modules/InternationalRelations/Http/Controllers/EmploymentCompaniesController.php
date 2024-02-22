@@ -72,9 +72,7 @@ class EmploymentCompaniesController extends Controller
         $countries = EssentialsCountry::forDropdown();
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $contacts = DB::table('contacts')
-            ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
-            ->leftJoin('ir_delegations', 'contacts.id', '=', 'ir_delegations.agency_id')
+        $contacts = Contact::leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
             ->select([
                 'contacts.id',
                 'contacts.supplier_business_name',
@@ -84,12 +82,12 @@ class EmploymentCompaniesController extends Controller
                 'contacts.mobile',
                 'contacts.email',
                 'contacts.evaluation',
-                'contacts.landline'
+                'contacts.landline',
 
             ])
 
             ->where('type', 'recruitment')
-            ->orderBy('id', 'desc');
+            ->orderBy('contacts.id', 'desc');
 
 
         if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
@@ -106,7 +104,7 @@ class EmploymentCompaniesController extends Controller
             $contacts->where('contacts.evaluation', $evaluationFilter);
         }
 
-        if (!empty($request->input('company_requests_filter'))) {
+        if (!empty($request->input('company_requests_filter')) && $request->input('company_requests_filter') !== 'all') {
 
             if ($request->input('company_requests_filter') === 'has_agency_requests') {
 
@@ -313,7 +311,9 @@ class EmploymentCompaniesController extends Controller
                 ->pluck('nationality', 'id');
         }
 
-        $company_requests = IrDelegation::where('agency_id', $id)->with(['transactionSellLine.service', 'visaCard'])->get();
+        $company_requests = IrDelegation::with(['transactionSellLine.service', 'visaCard'])
+            ->where('agency_id', $id)->get();
+        //   dd($company_requests[0]->lastArrivalproposedLabors($company_requests[0]->agency_id)->first()->arrival_date);
 
 
         return view('internationalrelations::EmploymentCompanies.employment_company_profile')

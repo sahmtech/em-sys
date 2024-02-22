@@ -565,8 +565,7 @@ class TravelersController extends Controller
                 DB::beginTransaction();
                 foreach ($selectedData as $data) {
 
-                    $worker = IrProposedLabor::find($data['worker_id']);
-                    //dd($worker->transactionSellLine?->transaction?->salesContract->project->id);
+                    $worker = IrProposedLabor::with('visa')->find($data['worker_id']);
 
                     if ($worker) {
                         User::create([
@@ -593,6 +592,20 @@ class TravelersController extends Controller
 
                         ]);
                         $worker->update(['arrival_status' => 1]);
+
+                        // Check if all workers for the same visa_id have arrival_status = 1
+                        $allWorkersArrived = IrProposedLabor::where('visa_id', $worker->visa_id)
+                            ->where('arrival_status', 1)
+                            ->count() == IrProposedLabor::where('visa_id', $worker->visa_id)
+                            ->count();
+
+                        if ($allWorkersArrived) {
+                            // Update the status of associated visa to final
+                            $visa = $worker->visa;
+                            if ($visa) {
+                                $visa->update(['status' => 1]);
+                            }
+                        }
                     }
                     if ($worker->transaction_sell_line_id) {
                         $proposalWorkersCount = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)->count();

@@ -3,6 +3,7 @@
         <tr>
             <th>@lang('internationalrelations::lang.visa_number')</th>
             <th>@lang('internationalrelations::lang.provided_workers_nationality')</th>
+            <th>@lang('internationalrelations::lang.targeted_workers_number')</th>
             <th>@lang('internationalrelations::lang.provided_workers_number')</th>
             <th>@lang('internationalrelations::lang.company_request_start_date')</th>
             <th>@lang('internationalrelations::lang.company_request_end_date')</th>
@@ -13,17 +14,30 @@
                 <td>{{$request->visaCard?->visa_number ?? " "}}</td>
                 <td> {{ __('internationalrelations::lang.p_worker') }} {{$request->transactionSellLine?->service?->nationality?->nationality?? " "}}</td>
                 <td>{{$request->targeted_quantity ?? " "}}</td>
+                <td>{{$request->proposed_labors_quantity ?? " "}}</td>
                 <td>{{$request->start_date ?? " "}}</td>
-                <td>{{$request->lastArrivalproposedLabors($request->agency_id)->first()->arrival_date ?? " "}}</td>
-                <td>
-                    @php
-                        // Calculate duration between start date and end date
-                        $startDate = \Carbon\Carbon::parse($request->start_date);
-                        $endDate = \Carbon\Carbon::parse($request->lastArrivalproposedLabors($request->agency_id)->first()->arrival_date);
-                        $duration = $startDate->diffInDays($endDate);
-                    @endphp
-                    {{$duration}}  {{ __('internationalrelations::lang.day') }}
-                </td>
+               
+             <td>
+                @if( $request->proposed_labors_quantity == $request->targeted_quantity)
+                    {{$request->lastArrivalproposedLabors()->first()->arrival_date}}
+                @else
+                 
+                @endif
+            </td>
+
+             <td>
+                @if( $request->proposed_labors_quantity == $request->targeted_quantity)
+                {{
+                    $request->start_date && $request->lastArrivalproposedLabors($request->agency_id)->first()->arrival_date 
+                        ? \Carbon\Carbon::parse($request->start_date)->diffInDays(\Carbon\Carbon::parse($request->lastArrivalproposedLabors($request->agency_id)->first()->arrival_date)) . ' ' . __('internationalrelations::lang.day')
+                        : ' '
+                }}
+                 @else
+                 
+                @endif
+            </td>
+
+
             </tr>
         @empty
             <tr>

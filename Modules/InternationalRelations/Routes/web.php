@@ -62,6 +62,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeVisa', [Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'store'])->name('storeVisa');
         Route::get('/ir/viewVisaWorkers/{id}', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'viewVisaWorkers'])->name('viewVisaWorkers');
         Route::post('/change_arrival_date', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'changeArrivalDate'])->name('change_arrival_date');
+        Route::get('/get-visa-report', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'getVisaReport'])->name('get-visa-report');
 
 
         Route::post('/medical_examination', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'medical_examination'])->name('medical_examination');
@@ -70,6 +71,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeVisaWorker', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeVisaWorker'])->name('storeVisaWorker');
         Route::post('/cancel_proposal_worker', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'cancelVisaWorker'])->name('cancel_proposal_worker');
         Route::get('/ir_showWorker/{id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'])->name('ir_showWorker');
+
 
         Route::get('/allIrRequests', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index'])->name('allIrRequests');
         Route::post('/ir_change-status', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeStatus'])->name('ir_changeStatus');

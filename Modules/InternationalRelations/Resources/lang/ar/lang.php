@@ -181,6 +181,14 @@ return [
   'international_reports' => 'عرض التقارير',
   'reports' => 'التقارير',
   'visa_reports' => 'ملخص التاشيرات',
+  'visa_start_date' => 'تاريخ بداية التاشيرة',
+  'visa_end_date' => 'تاريخ نهاية التاشيرة ',
+  'visa_status' => 'حالة التاشيرة',
+  'existing_visa' => 'تاشيرة قائمة ',
+  'final_visa' => 'تاشيرة منتهية ',
   'view_visa_reports' => 'عرض ملخص التاشيرات',
+  'targeted_workers_number' => 'عدد العمالة المطلوب',
+  'number_of_added_workers_more_than_target' => 'عدد العمالة المضافة للتاشيرة أكبر من العدد المطلوب',
+  'can_not_add_more_workers' => 'لا يمكن إضافة  عمال أكثر من العدد المطلوب',
 
 ];

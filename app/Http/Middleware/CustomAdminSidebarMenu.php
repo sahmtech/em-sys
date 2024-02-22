@@ -1899,7 +1899,7 @@ class CustomAdminSidebarMenu
                     function ($sub) {
                         if (auth()->user()->can('internationalrelations::lang.view_visa_reports')) {
                             $sub->url(
-                                action([\Modules\Connector\Http\Controllers\ClientController::class, 'index']),
+                                action([\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'getVisaReport']),
                                 __('internationalrelations::lang.visa_reports'),
                                 [
 

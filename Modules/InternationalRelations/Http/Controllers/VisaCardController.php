@@ -16,6 +16,8 @@ use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\InternationalRelations\Entities\IrVisaCard;
+
+use Modules\InternationalRelations\Entities\IrDelegation;
 use DB;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 
@@ -117,6 +119,15 @@ class VisaCardController extends Controller
         return view('internationalrelations::visa.index')->with(compact('orders'));
     }
 
+
+    public function getVisaReport()
+    {
+        $visaCards = IrVisaCard::with(['delegation'])->get();
+
+        return view('internationalrelations::visa.visa_report')
+            ->with(compact('visaCards'));
+    }
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -202,6 +213,7 @@ class VisaCardController extends Controller
                     $visaDetails = [
                         'visa_number' => $visaNumber,
                         'file' => $filePath,
+                        'start_date' => \Carbon::now(),
                         'operation_order_id' => $request->input('id'),
                         'transaction_sell_line_id' => $sellLines->id,
                     ];
@@ -336,7 +348,8 @@ class VisaCardController extends Controller
             }
             $visaCards = IrVisaCard::where('id', $visaId)->with('operationOrder.salesContract.transaction.sell_lines')->first();
             $sellLineIds = $visaCards->operationOrder->salesContract->transaction->sell_lines->pluck('id')->toArray();
-            //    $workers = IrProposedLabor::whereIn('transaction_sell_line_id', $sellLineIds)->where('visa_id', Null)->where('is_accepted_by_worker', 1)->get();
+            // dd($sellLineIds);
+
             $workers = IrProposedLabor::where(function ($query) use ($sellLineIds) {
                 $query->whereNull('transaction_sell_line_id')
                     ->orWhereIn('transaction_sell_line_id', $sellLineIds);
@@ -344,6 +357,10 @@ class VisaCardController extends Controller
                 ->whereNull('visa_id')
                 ->where('is_accepted_by_worker', 1)
                 ->get();
+
+
+
+
 
 
             $workersOptions = $workers->map(function ($worker) {
@@ -358,11 +375,11 @@ class VisaCardController extends Controller
                 ];
             })->pluck('full_name', 'id')->toArray();
 
-            return response()->view('internationalrelations::visa.show', compact('visaId', 'workersOptions'));
 
 
+            return response()->view('internationalrelations::visa.show', compact('visaId', 'workersOptions',));
 
-            return response()->view('internationalrelations::visa.show', compact('visaId', 'workers'));
+            return response()->view('internationalrelations::visa.show', compact('visaId', 'workers',));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -389,6 +406,8 @@ class VisaCardController extends Controller
             return response()->json($output);
         }
     }
+
+
 
 
     /**

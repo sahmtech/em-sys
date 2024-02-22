@@ -21,6 +21,7 @@
 
         @component('components.widget', ['class' => 'box-primary'])
         @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("internationalrelations.add_worker_to_visa"))
+       
             @slot('tool')
                 <div class="box-tools">
 
@@ -29,6 +30,7 @@
                     </button>
                 </div>
             @endslot
+        
         @endif
             <div class="table-responsive">
 
@@ -123,45 +125,41 @@
             </div>
         @endcomponent
 
-        <div class="modal fade" id="addWorker" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-
-                    {!! Form::open(['route' => 'storeVisaWorker']) !!}
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('internationalrelations::lang.addWorker')</h4>
-                    </div>
-
-                    <div class="modal-body">
-
-                        <div class="row">
-                            <input type="hidden" value={{ $visaId }} name=visaId>
-                            <div class="row">
-                                <div class="form-group col-md-12">
-                                    {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                                    {!! Form::select('worker_id[]', $workersOptions, null, [
-                                        'class' => 'form-control select2',
-                                        'multiple',
-                                        'required',
-                                        'style' => 'height: 60px; width: 250px;',
-                                    ]) !!}
-                                </div>
-
-
-                            </div>
+<div class="modal fade" id="addWorker" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {!! Form::open(['route' => 'storeVisaWorker', 'id' => 'addWorkerForm']) !!}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">@lang('internationalrelations::lang.addWorker')</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="hidden" value="{{ $visaId }}" name="visaId">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
+                            {!! Form::select('worker_id[]', $workersOptions, null, [
+                                'class' => 'form-control select2',
+                                'multiple',
+                                'required',
+                                'style' => 'height: 60px; width: 250px;',
+                            ]) !!}
                         </div>
-
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                            <button type="button" class="btn btn-default"
-                                data-dismiss="modal">@lang('messages.close')</button>
-                        </div>
-                        {!! Form::close() !!}
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" >@lang('messages.save')</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
+
 
 
     </section>
@@ -269,6 +267,31 @@
                 });
             });
 
+            $('#addWorkerForm').submit(function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: $(this).serialize(),
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            users_table.ajax.reload();
+                            $('#addWorker').modal('hide');
+
+                            
+                        
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function(error) {
+
+                    }
+                });
+            });
+
 
 
 
@@ -324,6 +347,7 @@
                     type: 'POST',
                     url: '{{ route('cancel_proposal_worker') }}',
                     data: {
+                        visaId: visaId,
                         selectedRows: selectedRows,
                         _token: '{{ csrf_token() }}'
                     },
@@ -444,10 +468,10 @@
                         if (result.success == true) {
                             toastr.success(result.msg);
                             users_table.ajax.reload();
-                            $('#passportModal').modal('hide');
+                            $('#changeArrivalDateModal').modal('hide');
                         } else {
                             toastr.error(result.msg);
-                              $('#passportModal').modal('hide');
+                              $('#changeArrivalDateModal').modal('hide');
                         }
                     },
                     error: function(error) {
