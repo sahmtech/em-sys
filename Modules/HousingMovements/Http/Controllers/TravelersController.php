@@ -593,14 +593,14 @@ class TravelersController extends Controller
                         ]);
                         $worker->update(['arrival_status' => 1]);
 
-                        // Check if all workers for the same visa_id have arrival_status = 1
+
                         $allWorkersArrived = IrProposedLabor::where('visa_id', $worker->visa_id)
                             ->where('arrival_status', 1)
                             ->count() == IrProposedLabor::where('visa_id', $worker->visa_id)
                             ->count();
 
                         if ($allWorkersArrived) {
-                            // Update the status of associated visa to final
+
                             $visa = $worker->visa;
                             if ($visa) {
                                 $visa->update(['status' => 1]);
