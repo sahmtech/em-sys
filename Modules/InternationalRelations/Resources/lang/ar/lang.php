@@ -163,8 +163,24 @@ return [
 
 
   'view_all_salary_requests' => 'استعراض طلبات الرواتب',
-  'addWorkerWithoutProject' => 'إضافة عامل غير تابع لمشروع'
-
-
+  'addWorkerWithoutProject' => 'إضافة عامل غير تابع لمشروع',
+  'provided_workers_nationality' => 'جنسية العمالة المقدمة ',
+  'provided_workers_number' => 'عدد العمالة المقدمة ',
+  'company_request_start_date' => 'تاريخ بداية التفويض',
+  'company_request_end_date' => 'تاريخ نهاية التفويض',
+  'company_request_duration' => ' مدة الطلب',
+  'day' => 'يوم',
+  'p_worker' => 'عمالة',
+  'change_arrival_date' => 'تغير تاريخ الوصول',
+  'cancel_proposal_worker' => "الغاء العامل",
+  'success_update_arriavl_date' => 'تم تحديث تاريخ الوصول بنجاح',
+  'change_arrival_date' => 'تغير تاريخ الوصول',
+  'cancel_proposal_worker' => 'الغاء عامل مقترح',
+  'cancel_visaworker_incomplete' => 'لا يمكن الغاء العامل قبل الوصول لمرحلة ختم الجواز',
+  'worker_canceled' => 'تم الغاء العامل من التأشيرة',
+  'international_reports' => 'عرض التقارير',
+  'reports' => 'التقارير',
+  'visa_reports' => 'ملخص التاشيرات',
+  'view_visa_reports' => 'عرض ملخص التاشيرات',
 
 ];

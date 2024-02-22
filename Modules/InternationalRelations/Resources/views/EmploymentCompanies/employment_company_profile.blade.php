@@ -98,6 +98,11 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="employment_requests_tab">
+                             <div class="row">
+                                <div class="col-md-12">
+                                    @include('internationalrelations::EmploymentCompanies.employment_requests_tab')
+                                </div>
+                            </div>
                             
                         </div>
                     </div>

@@ -1834,13 +1834,6 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($is_admin || auth()->user()->can('internationalrelations.view_employment_companies')) {
-                $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
-                    __('internationalrelations::lang.EmploymentCompanies'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
-                );
-            }
 
 
             // if ($is_admin || auth()->user()->can('essentials.view_facilities_management') ) {
@@ -1883,6 +1876,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'visa_cards'],
                 );
             }
+
+            if ($is_admin || auth()->user()->can('internationalrelations.view_employment_companies')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
+                    __('internationalrelations::lang.EmploymentCompanies'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
+                );
+            }
             if ($is_admin || auth()->user()->can('internationalrelations.view_Airlines')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
@@ -1890,6 +1891,29 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 );
             }
+            if (
+                $is_admin || auth()->user()->can('internationalrelations.international_reports')
+            ) {
+                $menu->dropdown(
+                    __('internationalrelations::lang.reports'),
+                    function ($sub) {
+                        if (auth()->user()->can('internationalrelations::lang.view_visa_reports')) {
+                            $sub->url(
+                                action([\Modules\Connector\Http\Controllers\ClientController::class, 'index']),
+                                __('internationalrelations::lang.visa_reports'),
+                                [
+
+                                    'active' => request()->segment(1) == 'internationalrelations' && request()->segment(2) == 'visa_reports'
+                                ]
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-plus-circle',]
+                );
+            }
+
+
+
             if ($is_admin || auth()->user()->can('internationalrelations.view_ir_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),

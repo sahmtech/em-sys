@@ -42,6 +42,7 @@
                             <th>@lang('internationalrelations::lang.agency_name')</th>
                             <th>@lang('essentials::lang.contry_nationality')</th>
                             <th>@lang('essentials::lang.profession')</th>
+                            <th>@lang('internationalrelations::lang.arrival_date')</th>
                             <th>@lang('internationalrelations::lang.passport_number')</th>
                             <th>@lang('internationalrelations::lang.date_of_offer')</th>
                             <th>@lang('internationalrelations::lang.medical_examination')</th>
@@ -66,6 +67,12 @@
                     @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.passport_stamped'))
                     <button type="button" class="btn btn-danger btn-sm custom-btn" id="passport_stamped-selected">
                         @lang('internationalrelations::lang.passport_stamped')
+                    </button>   
+                    @endif
+
+                     @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.cancel_proposal_worker'))
+                    <button type="button" class="btn btn-primary btn-sm custom-btn" id="cancel_proposal_worker_selected">
+                        @lang('internationalrelations::lang.cancel_proposal_worker')
                     </button>   
                     @endif
 
@@ -159,6 +166,8 @@
 
     </section>
 
+    @include('internationalrelations::visa.changeArrivalDateModal')
+
 @stop
 @section('javascript')
 
@@ -204,6 +213,10 @@
                         "data": "profession_id",
 
                     },
+                     {
+                        "data": "change_arrival_date",
+
+                    },
                     {
                         "data": "passport_number",
 
@@ -239,6 +252,25 @@
                 ],
 
             });
+            
+            $(document).ready(function() {
+                
+                $(document).on('click', '.change-arrival-date', function() {
+                    var arrivalDate = $(this).attr('data-arrival-date'); 
+                    var workerId = $(this).attr('data-worker-id'); 
+                    var modal = $('#changeArrivalDateModal');
+
+                    
+                    modal.find('#arrivalDate').val(arrivalDate);
+                    modal.find('#workerId').val(workerId);
+
+                    
+                    modal.modal('show');
+                });
+            });
+
+
+
 
             $('#specializations-select, #professions-select, #agency_filter').change(
                 function() {
@@ -258,11 +290,39 @@
             $('#medical_examination-selected').click(function() {
                 var selectedRows = $('.select-row:checked').map(function() {
                     return $(this).data('id');
-                }).get(); // Convert the jQuery object to a regular array
+                }).get(); 
 
                 $.ajax({
                     type: 'POST',
                     url: '{{ route('medical_examination') }}',
+                    data: {
+                        selectedRows: selectedRows,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            users_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function(error) {
+
+                    }
+                });
+            });
+
+
+
+            $('#cancel_proposal_worker_selected').click(function() {
+                var selectedRows = $('.select-row:checked').map(function() {
+                    return $(this).data('id');
+                }).get(); 
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('cancel_proposal_worker') }}',
                     data: {
                         selectedRows: selectedRows,
                         _token: '{{ csrf_token() }}'
@@ -351,15 +411,55 @@
                         }
                     },
                     error: function(error) {
-                        // Handle error
+                        
                     }
                 });
 
                 $('#passportModal').modal('hide');
             });
 
+             $('.change-arrival-date').click(function() {
+            
+            var workerId = $(this).data('worker-id');
+            
+            $('#workerId').val(workerId);
+        });
+
+        
+        $('#saveArrivalDate').click(function() {
+            
+            var arrivalDate = $('#arrivalDate').val();
+            
+            var workerId = $('#workerId').val();
+            
+            $.ajax({
+                url: '{{ route("change_arrival_date") }}',
+                method: 'POST',
+                data: {
+                    arrival_date: arrivalDate,
+                    worker_id: workerId,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            users_table.ajax.reload();
+                            $('#passportModal').modal('hide');
+                        } else {
+                            toastr.error(result.msg);
+                              $('#passportModal').modal('hide');
+                        }
+                    },
+                    error: function(error) {
+                        
+                    }
+            });
+        });
+
 
         });
+
+       
     </script>
 
 

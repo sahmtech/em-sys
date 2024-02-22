@@ -313,12 +313,16 @@ class EmploymentCompaniesController extends Controller
                 ->pluck('nationality', 'id');
         }
 
-
-
+        $company_requests = IrDelegation::where('agency_id', $id)->with(['transactionSellLine.service', 'visaCard'])->get();
 
 
         return view('internationalrelations::EmploymentCompanies.employment_company_profile')
-            ->with(compact('employment_companies', 'comp_country_name', 'nationalities'));
+            ->with(compact(
+                'employment_companies',
+                'comp_country_name',
+                'nationalities',
+                'company_requests'
+            ));
     }
 
     /**
