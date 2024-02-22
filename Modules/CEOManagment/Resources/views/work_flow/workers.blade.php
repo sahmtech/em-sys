@@ -429,6 +429,10 @@
                                 return '@lang('request.assetRequest')';
                             } else if (data === 'passportRenewal') {
                                 return '@lang('request.passportRenewal')';
+                            } else if (data === 'AjirAsked') {
+                                return '@lang('request.AjirAsked')';
+                            } else if (data === 'AlternativeWorker') {
+                                return '@lang('request.AlternativeWorker')';
                             } else {
                                 return data;
                             }

@@ -11,8 +11,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
-                    @if (auth()->user()->hasRole('Admin#1') ||
-                            auth()->user()->can('ceomanagment.add_requests_type'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('ceomanagment.add_requests_type'))
                         @slot('tool')
                             <div class="box-tools">
 
@@ -68,7 +67,7 @@
                                             'id' => 'type_select',
                                             'placeholder' => __('ceomanagment::lang.request_type'),
                                             'required',
-                                                'style' => 'height:37px',
+                                            'style' => 'height:37px',
                                         ],
                                     ) !!}
                                 </div>
@@ -235,6 +234,10 @@
                                     return '@lang('ceomanagment::lang.assetRequest')';
                                 case 'passportRenewal':
                                     return '@lang('ceomanagment::lang.passportRenewal')';
+                                case 'AjirAsked':
+                                    return '@lang('ceomanagment::lang.AjirAsked')';
+                                case 'AlternativeWorker':
+                                    return '@lang('ceomanagment::lang.AlternativeWorker')';
                                 default:
                                     return data;
                             }
@@ -296,9 +299,10 @@
         });
     </script>
     <script>
-
-        var typeTranslations = {@foreach ($missingTypes as $type)
-            '{{ $type }}': '@lang("ceomanagment::lang." . $type)',@endforeach
+        var typeTranslations = {
+            @foreach ($missingTypes as $type)
+                '{{ $type }}': '@lang('ceomanagment::lang.' . $type)',
+            @endforeach
         };
 
         $(document).on('click', '.edit-item', function() {
@@ -312,7 +316,7 @@
             editModal.find('select[name="type2"] option').each(function() {
                 if ($(this).text() === typeTranslations[requestType]) {
                     $(this).parent().val($(this).val()).trigger('change');
-                    return false; 
+                    return false;
                 }
             });
 

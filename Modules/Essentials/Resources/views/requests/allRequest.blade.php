@@ -161,7 +161,7 @@
 
                     <div class="modal-body">
                         <div class="row">
-                            
+
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('request.type') . ':*') !!}
@@ -585,11 +585,13 @@
                                 return '@lang('request.WarningRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('request.cancleContractRequest')';
-                            }
-                            else if (data === 'passportRenewal') {
+                            } else if (data === 'passportRenewal') {
                                 return '@lang('request.passportRenewal')';
-                            } 
-                            else {
+                            } else if (data === 'AjirAsked') {
+                                return '@lang('request.AjirAsked')';
+                            } else if (data === 'AlternativeWorker') {
+                                return '@lang('request.AlternativeWorker')';
+                            } else {
                                 return data;
                             }
                         }
@@ -893,11 +895,11 @@
                             }));
                         });
 
-                      
+
                         userSelect.trigger('change');
                     },
                     error: function(xhr) {
-              
+
                         console.log('Error:', xhr.responseText);
                     }
                 });
@@ -1048,17 +1050,17 @@
                         if (selectedType === 'exitRequest') {
                             fetchUsersWithSaudiNationality();
 
-                        } 
-                       
+                        }
+
                         if (selectedType === 'passportRenewal') {
                             fetchUsersWithSaudiNationality();
 
-                        } 
+                        }
 
 
                     },
                     error: function(xhr) {
-                       
+
                         console.log('Error:', xhr.responseText);
                     }
                 });
@@ -1074,7 +1076,7 @@
             });
 
 
-          
+
 
 
         });

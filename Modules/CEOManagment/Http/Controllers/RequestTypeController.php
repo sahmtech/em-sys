@@ -45,7 +45,9 @@ class RequestTypeController extends Controller
             'cancleContractRequest',
             'WarningRequest',
             'assetRequest',
-            'passportRenewal'
+            'passportRenewal',
+            'AjirAsked',
+            'AlternativeWorker',
         ];
 
         $typesWithBoth = RequestsType::whereExists(function ($query) {
@@ -59,7 +61,7 @@ class RequestTypeController extends Controller
             ->pluck('type')->toArray();
 
         $missingTypes = array_diff($allRequestsTypes, $typesWithBoth);
-  
+
         $requestsTypes = RequestsType::all();
 
         if (request()->ajax()) {
@@ -100,15 +102,15 @@ class RequestTypeController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $exist=RequestsType::where([['type',$request->type],['for',$request->for]])->first();
-        if($exist){
+        $exist = RequestsType::where([['type', $request->type], ['for', $request->for]])->first();
+        if ($exist) {
             $output = [
                 'success' => false,
                 'msg' => __('ceomanagment::lang.this_type_is_already_exists'),
             ];
             return redirect()->back()->with(['status' => $output]);
         }
-       
+
 
         try {
             $input = $request->only(['type', 'for']);
@@ -118,13 +120,13 @@ class RequestTypeController extends Controller
             }
             if ($input['for'] === 'both') {
                 $existingFor = RequestsType::where('type', $input['type'])->value('for');
-        
+
                 $forValues = ['worker', 'employee'];
-            
+
                 if ($existingFor) {
                     $forValues = array_diff($forValues, [$existingFor]);
                 }
-            
+
                 foreach ($forValues as $forValue) {
                     $input['for'] = $forValue;
                     RequestsType::create($input);
@@ -147,7 +149,7 @@ class RequestTypeController extends Controller
 
         return redirect()->back()->with(['status' => $output]);
     }
-    
+
 
 
 
@@ -157,15 +159,15 @@ class RequestTypeController extends Controller
 
         try {
 
-            $exist=RequestsType::where('id','!=',$request->request_type_id)->where([['type2',$request->type],['for2',$request->for]])->first();
-            if($exist){
+            $exist = RequestsType::where('id', '!=', $request->request_type_id)->where([['type2', $request->type], ['for2', $request->for]])->first();
+            if ($exist) {
                 $output = [
                     'success' => false,
                     'msg' => __('ceomanagment::lang.this_type_is_already_exists'),
                 ];
                 return redirect()->back()->with($output);
             }
-            $input = $request->only(['type2', 'request_type_id','for2']);
+            $input = $request->only(['type2', 'request_type_id', 'for2']);
             $requestType = RequestsType::findOrFail($input['request_type_id']);
             $requestType->type = $input['type2'];
 
@@ -204,13 +206,13 @@ class RequestTypeController extends Controller
 
             'exitRequest' => 'ExReq_',
             'returnRequest' => 'RtnReq_',
-            'leavesAndDepartures' =>'LvDepReq_',
+            'leavesAndDepartures' => 'LvDepReq_',
             'residenceRenewal' => 'ResRenew_',
             'escapeRequest' => 'EscReq_',
             'advanceSalary' => 'AdvSal_',
-            'atmCard' =>'ATMReq_',
+            'atmCard' => 'ATMReq_',
             'residenceCard' => 'ResCard_',
-            'workerTransfer' =>'WrkTrans_',
+            'workerTransfer' => 'WrkTrans_',
             'workInjuriesRequest' => 'InjReq_',
             'residenceEditRequest' => 'ResEdit_',
             'baladyCardRequest' => 'BalCard_',
@@ -219,8 +221,10 @@ class RequestTypeController extends Controller
             'chamberRequest' => 'ChamReq_',
             'cancleContractRequest' => 'ConReq_',
             'WarningRequest' => 'WrReq_',
-            'assetRequest'=>'AssetReq_',
-            'passportRenewal'=>'PasRenew_',
+            'assetRequest' => 'AssetReq_',
+            'passportRenewal' => 'PasRenew_',
+            'AjirAsked' => 'Asked_',
+            'AlternativeWorker' => 'AlterWorker_'
         ];
 
         return $typePrefixMap[$type];
