@@ -11,6 +11,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <p><strong>@lang('lang_v1.username'):</strong> {{ $user->full_name ?? '' }}</p>
+                    
                     <p><strong>@lang('lang_v1.dob'):</strong> @if(optional($user->dob)->format_date) @endif</p>
                     <p><strong>@lang('lang_v1.gender'):</strong> @if($user->gender) @lang('lang_v1.' . $user->gender) @endif</p>
                     <p><strong>@lang('lang_v1.marital_status'):</strong> @if($user->marital_status) @lang('lang_v1.' . $user->marital_status) @endif</p>

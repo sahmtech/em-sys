@@ -342,7 +342,7 @@ class WorkerController extends Controller
         ]);
 
         if (!empty($request->input('specialization'))) {
-            
+
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('specialization_id', $request->input('specialization'));
             });
@@ -365,35 +365,33 @@ class WorkerController extends Controller
 
 
                 ->addColumn('profession_id', function ($row) use ($professions) {
-                    $item='';
-                    if($row->transactionSellLine){
-                    $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
                     }
                     return $item;
                 })
                 ->addColumn('specialization_id', function ($row) use ($specializations) {
-                    $item='';
-                    if($row->transactionSellLine){
-                    $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
                     }
                     return $item;
                 })
 
                 ->addColumn('nationality_id', function ($row) use ($nationalities) {
-                    $item='';
-                    if($row->transactionSellLine){
-                    $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
                     }
                     return $item;
                 })
                 ->editColumn('agency_id', function ($row) use ($agencys) {
-                    if($row->agency_id){
-                         return $agencys[$row->agency_id];
-                    }
-                    else{
+                    if ($row->agency_id) {
+                        return $agencys[$row->agency_id];
+                    } else {
                         return '';
                     }
-                   
                 })
                 ->editColumn('interviewStatus', function ($row) {
                     $status = __('internationalrelations::lang.' . $row->interviewStatus);
@@ -489,35 +487,33 @@ class WorkerController extends Controller
 
 
                 ->addColumn('profession_id', function ($row) use ($professions) {
-                    $item='';
-                    if($row->transactionSellLine){
-                    $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
                     }
                     return $item;
                 })
                 ->addColumn('specialization_id', function ($row) use ($specializations) {
-                    $item='';
-                    if($row->transactionSellLine){
-                    $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
                     }
                     return $item;
                 })
 
                 ->addColumn('nationality_id', function ($row) use ($nationalities) {
-                    $item='';
-                    if($row->transactionSellLine){
-                    $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
+                    $item = '';
+                    if ($row->transactionSellLine) {
+                        $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
                     }
                     return $item;
                 })
                 ->editColumn('agency_id', function ($row) use ($agencys) {
-                    if($row->agency_id){
-                         return $agencys[$row->agency_id];
-                    }
-                    else{
+                    if ($row->agency_id) {
+                        return $agencys[$row->agency_id];
+                    } else {
                         return '';
                     }
-                   
                 })
                 ->addColumn('interviewStatus', function ($row) {
                     if ($row->interviewStatus === null) {
@@ -795,24 +791,49 @@ class WorkerController extends Controller
     {
 
 
-        $business_id = request()->session()->get('user.business_id');
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_visa_worker = auth()->user()->can('internationalrelations.store_visa_worker');
+        $visa_id = $request->visaId;
         if (!($is_admin || $can_store_visa_worker)) {
             //temp  abort(403, 'Unauthorized action.');
         }
         try {
-            foreach ($request->worker_id as $workerId) {
-                if ($workerId !== null) {
-                    IrProposedLabor::where('id', $workerId)->update(['visa_id' => $request->visaId]);
+            $selectedWorkersCount = count($request->worker_id);
+            $visaCard = IrVisaCard::where('id', $visa_id)->with('operationOrder.salesContract.transaction.sell_lines')->first();
+            $orderQuantity = $visaCard->operationOrder->orderQuantity;
+            $proposed_workers_number = $visaCard->proposed_workers_number;
+
+
+
+            if ($selectedWorkersCount > $orderQuantity) {
+
+                $output = [
+                    'success' => false,
+                    'msg' => __('internationalrelations::lang.number_of_added_workers_more_than_target'),
+                ];
+            } else if ($proposed_workers_number < $orderQuantity) {
+
+                foreach ($request->worker_id as $workerId) {
+                    if ($workerId !== null) {
+                        IrProposedLabor::where('id', $workerId)
+                            ->update(['visa_id' => $request->visaId]);
+
+                        IrVisaCard::where('id', $visa_id)->increment('proposed_workers_number');
+                    }
                 }
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.added_success'),
+
+                ];
+            } else {
+                $output = [
+                    'success' => false,
+                    'msg' => __('internationalrelations::lang.can_not_add_more_workers'),
+
+                ];
             }
-
-
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.accepted_success'),
-            ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
@@ -821,8 +842,69 @@ class WorkerController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
+        return response()->json($output);
+        //return redirect()->route('viewVisaWorkers', ['id' => $visa_id])->with($output);
+    }
+
+
+
+    public function cancelVisaWorker(Request $request)
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_cancel_proposal_worker = auth()->user()->can('internationalrelations.cancel_proposal_worker');
         $visa_id = $request->visaId;
-        return redirect()->route('viewVisaWorkers', ['id' => $visa_id])->withErrors([$output['msg']]);
+        if (!($is_admin || $can_cancel_proposal_worker)) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $selectedRows = $request->input('selectedRows');
+
+            $incompleteWorkers = IrProposedLabor::whereIn('id', $selectedRows)
+                ->where(function ($query) {
+                    $query->where('medical_examination', '=', 0)
+                        ->orWhereNull('medical_examination')
+                        ->orWhere('fingerprinting', '=', 0)
+                        ->orWhereNull('fingerprinting');
+                })
+                ->get();
+
+            if ($incompleteWorkers->isNotEmpty()) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('internationalrelations::lang.cancel_visaworker_incomplete'),
+                ];
+            } else {
+                // Update visa_id to null for selected workers
+                IrProposedLabor::whereIn('id', $selectedRows)
+                    ->update(['visa_id' => null]);
+
+                // Decrement proposal_quantity by 1 for each selected worker's agency_id
+                foreach ($selectedRows as $workerId) {
+                    $agencyId = IrProposedLabor::where('id', $workerId)->value('agency_id');
+                    if ($agencyId) {
+                        IrDelegation::where('agency_id', $agencyId)
+                            ->decrement('proposed_labors_quantity');
+                    }
+
+                    IrVisaCard::where('id', $visa_id)->decrement('proposed_workers_number');
+                }
+
+                $output = [
+                    'success' => true,
+                    'msg' => __('internationalrelations::lang.worker_canceled'),
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
     }
 
 
@@ -833,6 +915,7 @@ class WorkerController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
+
         if (!($is_admin || $can_store_proposed_labor)) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -1006,10 +1089,6 @@ class WorkerController extends Controller
     {
         $user = auth()->user();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $businessId = $request->session()->get('user.business_id');
-
-
-
 
         $canChangeWorkerStatus = $user->can('internationalrelations.change_worker_status');
         if (!($is_admin || $canChangeWorkerStatus)) {

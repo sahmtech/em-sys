@@ -16,6 +16,8 @@ use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\InternationalRelations\Entities\IrVisaCard;
+
+use Modules\InternationalRelations\Entities\IrDelegation;
 use DB;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 
@@ -117,6 +119,15 @@ class VisaCardController extends Controller
         return view('internationalrelations::visa.index')->with(compact('orders'));
     }
 
+
+    public function getVisaReport()
+    {
+        $visaCards = IrVisaCard::with(['delegation'])->get();
+
+        return view('internationalrelations::visa.visa_report')
+            ->with(compact('visaCards'));
+    }
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -202,6 +213,7 @@ class VisaCardController extends Controller
                     $visaDetails = [
                         'visa_number' => $visaNumber,
                         'file' => $filePath,
+                        'start_date' => \Carbon::now(),
                         'operation_order_id' => $request->input('id'),
                         'transaction_sell_line_id' => $sellLines->id,
                     ];
@@ -243,6 +255,7 @@ class VisaCardController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_visa_workers = auth()->user()->can('internationalrelations.view_visa_workers');
+        $can_change_arrival_date = auth()->user()->can('internationalrelations.change_arrival_date');
         if (!($is_admin || $can_view_visa_workers)) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -258,7 +271,7 @@ class VisaCardController extends Controller
                 'is_price_offer_sent',
                 'is_accepted_by_worker',
                 'medical_examination', 'fingerprinting', 'is_passport_stamped', 'passport_number', 'date_of_offer',
-                'agency_id', 'transaction_sell_line_id'
+                'agency_id', 'transaction_sell_line_id', 'arrival_date'
             ]);
 
 
@@ -279,6 +292,21 @@ class VisaCardController extends Controller
                             $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
                         }
                         return $item;
+                    })
+                    ->addColumn('change_arrival_date', function ($row) use ($is_admin, $can_change_arrival_date) {
+                        if ($is_admin || $can_change_arrival_date) {
+                            if (!empty($row->arrival_date)) {
+                                return '<button type="button" class="btn btn-success change-arrival-date" 
+                                    data-worker-id="' . $row->id . '" 
+                                    data-arrival-date="' . $row->arrival_date . '" 
+                                    data-toggle="modal" 
+                                    data-target="#changeArrivalDateModal">' . $row->arrival_date . '</button>';
+                            } else {
+                                return " ";
+                            }
+                        } else {
+                            return  $row->arrival_date;
+                        }
                     })
                     ->editColumn('agency_id', function ($row) use ($agencys) {
 
@@ -314,13 +342,14 @@ class VisaCardController extends Controller
                         $text = $row->is_passport_stamped;
                         return  $text;
                     })
-                    ->rawColumns(['is_passport_stamped', 'fingerprinting', 'medical_examination'])
+                    ->rawColumns(['is_passport_stamped', 'fingerprinting', 'medical_examination', 'change_arrival_date'])
 
                     ->make(true);
             }
             $visaCards = IrVisaCard::where('id', $visaId)->with('operationOrder.salesContract.transaction.sell_lines')->first();
             $sellLineIds = $visaCards->operationOrder->salesContract->transaction->sell_lines->pluck('id')->toArray();
-            //    $workers = IrProposedLabor::whereIn('transaction_sell_line_id', $sellLineIds)->where('visa_id', Null)->where('is_accepted_by_worker', 1)->get();
+            // dd($sellLineIds);
+
             $workers = IrProposedLabor::where(function ($query) use ($sellLineIds) {
                 $query->whereNull('transaction_sell_line_id')
                     ->orWhereIn('transaction_sell_line_id', $sellLineIds);
@@ -328,6 +357,10 @@ class VisaCardController extends Controller
                 ->whereNull('visa_id')
                 ->where('is_accepted_by_worker', 1)
                 ->get();
+
+
+
+
 
 
             $workersOptions = $workers->map(function ($worker) {
@@ -342,15 +375,40 @@ class VisaCardController extends Controller
                 ];
             })->pluck('full_name', 'id')->toArray();
 
-            return response()->view('internationalrelations::visa.show', compact('visaId', 'workersOptions'));
 
 
+            return response()->view('internationalrelations::visa.show', compact('visaId', 'workersOptions',));
 
-            return response()->view('internationalrelations::visa.show', compact('visaId', 'workers'));
+            return response()->view('internationalrelations::visa.show', compact('visaId', 'workers',));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    public function changeArrivalDate(Request $request)
+    {
+        try {
+            $proposal_worker_id = $request->input('worker_id');
+            $new_arrival_date = $request->input('arrival_date');
+
+            IrProposedLabor::where('id', $proposal_worker_id)
+                ->update(['arrival_date' => $new_arrival_date]);
+
+            $output = [
+                'success' => true,
+                'msg' => __('internationalrelations::lang.success_update_arriavl_date'),
+            ];
+            return response()->json($output);
+        } catch (\Exception $e) {
+            $output = [
+                'success' => false,
+                'msg' => __('messages.somthing_went_wrong'),
+            ];
+            return response()->json($output);
+        }
+    }
+
+
+
 
     /**
      * Show the form for editing the specified resource.

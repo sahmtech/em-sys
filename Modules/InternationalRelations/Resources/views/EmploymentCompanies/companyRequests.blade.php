@@ -41,13 +41,13 @@
                     <td>{{ $delegation->agency->supplier_business_name }}</td>
                     <td>{{ $delegation->targeted_quantity }}</td>
                     <td>{{ $delegation->proposed_labors_quantity }}</td>
-                    <td>{{ $delegation->transactionSellLine->service->profession->name }}</td>
-                    <td>{{ $delegation->transactionSellLine->service->specialization->name }}</td>
-                    <td> {{ __('sales::lang.' . $delegation->transactionSellLine->service->gender) }}</td>
-                    <td>{{ $delegation->transactionSellLine->service->service_price }}</td>
+                    <td>{{ $delegation->transactionSellLine?->service?->profession->name ?? " "}}</td>
+                    <td>{{ $delegation->transactionSellLine?->service?->specialization->name ?? ""}}</td>
+                    <td> {{ __('sales::lang.' . $delegation->transactionSellLine?->service?->gender ??"") }}</td>
+                    <td>{{ $delegation->transactionSellLine?->service?->service_price ??" "}}</td>
                     
                     <td>
-                        @if (!empty($delegation->transactionSellLine->additional_allwances))
+                        @if (!empty($delegation->transactionSellLine?->additional_allwances))
                             <ul>
                                 @foreach (json_decode($delegation->transactionSellLine->additional_allwances) as $allwance)
                                     @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
@@ -66,11 +66,11 @@
 
 
                     </td>
-                    <td>{{ $delegation->transactionSellLine->service->monthly_cost_for_one }}</td>
+                    <td>{{ $delegation->transactionSellLine?->service?->monthly_cost_for_one ?? "" }}</td>
                     <td>
                         @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.add_proposed_worker'))
                             <button class="btn btn-xs btn-primary">
-                                <a href="{{ route('createProposed_labor', ['delegation_id'=>$delegation,'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) }}" style="color: white; text-decoration: none;">
+                                <a href="{{ route('createProposed_labor', ['delegation_id'=>$delegation,'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine?->id]) }}" style="color: white; text-decoration: none;">
                                     @lang('internationalrelations::lang.add_roposed_labor')
                                 </a>
                             </button>
