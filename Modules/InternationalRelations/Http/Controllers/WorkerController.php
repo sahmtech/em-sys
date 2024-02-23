@@ -812,12 +812,15 @@ class WorkerController extends Controller
                     'success' => false,
                     'msg' => __('internationalrelations::lang.number_of_added_workers_more_than_target'),
                 ];
-            } else if ($proposed_workers_number < $orderQuantity) {
+            } else if ($proposed_workers_number + $selectedWorkersCount <=  $orderQuantity) {
 
                 foreach ($request->worker_id as $workerId) {
                     if ($workerId !== null) {
                         IrProposedLabor::where('id', $workerId)
-                            ->update(['visa_id' => $request->visaId]);
+                            ->update([
+                                'visa_id' => $request->visaId,
+
+                            ]);
 
                         IrVisaCard::where('id', $visa_id)->increment('proposed_workers_number');
                     }
@@ -865,27 +868,45 @@ class WorkerController extends Controller
                     $query->where('medical_examination', '=', 0)
                         ->orWhereNull('medical_examination')
                         ->orWhere('fingerprinting', '=', 0)
-                        ->orWhereNull('fingerprinting');
+                        ->orWhereNull('fingerprinting')
+                        ->orWhere('arrival_status', '=', 1);
                 })
                 ->get();
 
+
             if ($incompleteWorkers->isNotEmpty()) {
-                $output = [
-                    'success' => false,
-                    'msg' => __('internationalrelations::lang.cancel_visaworker_incomplete'),
-                ];
+                // Check if any incomplete worker has arrival_status = 0
+                $hasArrivalStatusZero = $incompleteWorkers->contains('arrival_status', 1);
+
+                if ($hasArrivalStatusZero) {
+                    $output = [
+                        'success' => false,
+                        'msg' => __('internationalrelations::lang.cancel_visaworker_arrival_status_zero'),
+                    ];
+                } else {
+                    $output = [
+                        'success' => false,
+                        'msg' => __('internationalrelations::lang.cancel_visaworker_incomplete'),
+                    ];
+                }
             } else {
                 // Update visa_id to null for selected workers
                 IrProposedLabor::whereIn('id', $selectedRows)
-                    ->update(['visa_id' => null]);
+                    ->update([
+                        'visa_id' => null,
+                        'medical_examination' => 0,
+                        'fingerprinting' => 0,
+                        'is_passport_stamped' => 0,
+                        'arrival_date' => null
+                    ]);
 
-                // Decrement proposal_quantity by 1 for each selected worker's agency_id
+
                 foreach ($selectedRows as $workerId) {
-                    $agencyId = IrProposedLabor::where('id', $workerId)->value('agency_id');
-                    if ($agencyId) {
-                        IrDelegation::where('agency_id', $agencyId)
-                            ->decrement('proposed_labors_quantity');
-                    }
+                    // $agencyId = IrProposedLabor::where('id', $workerId)->value('agency_id');
+                    // if ($agencyId) {
+                    //     IrDelegation::where('agency_id', $agencyId)
+                    //         ->decrement('proposed_labors_quantity');
+                    // }
 
                     IrVisaCard::where('id', $visa_id)->decrement('proposed_workers_number');
                 }
