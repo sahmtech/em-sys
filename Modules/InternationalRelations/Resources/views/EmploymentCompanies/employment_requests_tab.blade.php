@@ -18,23 +18,19 @@
                 <td>{{$request->start_date ?? " "}}</td>
                
              <td>
-                @if( $request->proposed_labors_quantity == $request->targeted_quantity)
-                    {{$request->lastArrivalproposedLabors()->first()->arrival_date}}
-                @else
-                 
-                @endif
+               
+                    {{$request->lastArrivalproposedLabors($request->agency_id)->first()->arrival_date}}
+                
             </td>
 
              <td>
-                @if( $request->proposed_labors_quantity == $request->targeted_quantity)
+              
                 {{
                     $request->start_date && $request->lastArrivalproposedLabors($request->agency_id)->first()->arrival_date 
                         ? \Carbon\Carbon::parse($request->start_date)->diffInDays(\Carbon\Carbon::parse($request->lastArrivalproposedLabors($request->agency_id)->first()->arrival_date)) . ' ' . __('internationalrelations::lang.day')
                         : ' '
                 }}
-                 @else
-                 
-                @endif
+                
             </td>
 
 

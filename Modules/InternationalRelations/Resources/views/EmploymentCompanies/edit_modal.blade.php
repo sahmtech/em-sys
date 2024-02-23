@@ -62,7 +62,7 @@
                                             'style' => 'width: 230px; height: 40px;',
                                             'class' => 'form-control select2',
                                             'placeholder' => __('internationalrelations::lang.nationality'),
-                                            'required',
+                                           
                                         ]) !!}
                                     </div>
                                 </div>

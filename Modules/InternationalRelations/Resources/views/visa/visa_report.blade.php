@@ -34,7 +34,7 @@
 
                     <td>{{ $visaCard->visa_number ?? ""}}</td>
                     <td>{{ $visaCard->start_date ?? ""}}</td>
-                    <td>{{ $visaCard->delegation->lastArrivalproposedLabors()->first()->arrival_date ?? ""}}</td>
+                    <td>{{ $visaCard->delegation->lastArrivalproposedLaborsForVisaCard($visaCard->id)->first()->arrival_date ?? ""}}</td>
                    <td>
                         @if(isset($visaCard->status))
                             @if($visaCard->status == 0)

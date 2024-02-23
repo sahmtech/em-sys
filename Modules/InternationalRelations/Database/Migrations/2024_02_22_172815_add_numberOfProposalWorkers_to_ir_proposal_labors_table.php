@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('ir_visa_cards', function (Blueprint $table) {
-            $table->integer('proposed_workers_number')->nullable()->after('status')->defult(0);
+            $table->integer('proposed_workers_number')->after('status')->defult(0);
         });
     }
 

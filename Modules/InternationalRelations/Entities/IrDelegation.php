@@ -28,10 +28,19 @@ class IrDelegation extends Model
         return $this->hasOne(IrVisaCard::class, 'transaction_sell_line_id', 'transaction_sell_line_id');
     }
 
-    public function lastArrivalproposedLabors()
+    public function lastArrivalproposedLabors($agencyId)
     {
         return $this->hasMany(IrProposedLabor::class, 'transaction_sell_line_id', 'transaction_sell_line_id')
-            ->where('agency_id', $this->agency_id)
+            ->where('agency_id', $agencyId)
+            ->where('is_accepted_by_worker', 1)
+            ->where('interviewStatus', 'acceptable')
+            ->orderByDesc('arrival_date');
+    }
+
+    public function lastArrivalproposedLaborsForVisaCard($visaId)
+    {
+        return $this->hasMany(IrProposedLabor::class, 'transaction_sell_line_id', 'transaction_sell_line_id')
+            ->where('visa_id', $visaId)
             ->where('is_accepted_by_worker', 1)
             ->where('interviewStatus', 'acceptable')
             ->orderByDesc('arrival_date');
