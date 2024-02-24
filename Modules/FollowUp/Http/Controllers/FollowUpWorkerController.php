@@ -153,6 +153,7 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
+
                 ->addColumn('admissions_date', function ($user) {
                     // return $this->getDocumentnumber($user, 'admissions_date');
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
