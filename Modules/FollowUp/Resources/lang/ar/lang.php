@@ -16,6 +16,8 @@ return [
     'contract_end_date' => 'تاريخ انتهاء العقد',
     'passport' => 'رقم جواز السفر',
     'gender' => 'الجنس',
+    'id' => 'الرقم',
+    'company' => 'الكفيل',
     'salary' => 'الراتب',
     'salaries' => 'الرواتب',
     'timesheet' => 'مواعيد الدوام',
@@ -330,15 +332,15 @@ return [
     'appointment' => 'التعيين',
     'add_user_project_access_permissions' => 'إضافة صلاحية وصول للمشاريع',
     'edit_project' => 'تعديل المشاريع',
-    'followup_view_department_employees'=>'عرض صفحة موظفي إدارة المتابعة',
+    'followup_view_department_employees' => 'عرض صفحة موظفي إدارة المتابعة',
     'department_employees' => 'موظفي الإدارة',
-  'assetRequest'=>'طلب عُهدة',
+    'assetRequest' => 'طلب عُهدة',
 
-   'cancle_worker_project'=>'إلغاء الإسناد لمشروع',
-   'canceled_date'=>'تاريخ الإلغاء',
-   'notes'=>'ملاحظات',
-   'please_select_rows'=>'الرجاء اختيار عمالة',
-   
+    'cancle_worker_project' => 'إلغاء الإسناد لمشروع',
+    'canceled_date' => 'تاريخ الإلغاء',
+    'notes' => 'ملاحظات',
+    'please_select_rows' => 'الرجاء اختيار عمالة',
+
 
     //''=>''
 
