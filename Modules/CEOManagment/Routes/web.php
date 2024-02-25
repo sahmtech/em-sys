@@ -27,6 +27,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('storeRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'store'])->name('storeRequestType');
         Route::DELETE('deleteRequestType/{id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'destroy'])->name('deleteRequestType');
         Route::post('updateRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'update'])->name('updateRequestType');
+        Route::get('/get-tasks-for-type', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'getTasksForType'])->name('get-tasks-for-type');
 
         Route::get('/departments', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index'])->name('departments');
         Route::get('/createDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'create'])->name('createDepartment');
@@ -51,12 +52,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/storeEmployeeProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeEmployeeProcedure'])->name('storeEmployeeProcedure');
         Route::post('/storeWorkerProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeWorkerProcedure'])->name('storeWorkerProcedure');
-        
-      
+
+
         Route::put('/updateProcedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'update'])->name('updateProcedure');
         Route::put('/updateEmployeeProcedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'updateEmployeeProcedure'])->name('updateEmployeeProcedure');
-        
-        
+
+
         Route::delete('/procedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'destroy'])->name('procedure.destroy');
         Route::get('/getProcedure/{procedure_id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'getProcedure'])->name('getProcedure');
     });

@@ -119,7 +119,7 @@
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.eqama_number')</th>
-                 
+
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
                             <th>@lang('request.status')</th>
@@ -264,7 +264,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                    
+
                     {
                         data: 'request_type_id',
                         render: function(data, type, row) {
@@ -319,7 +319,7 @@
                         data: 'note'
                     },
                     {
-                   
+
                         render: function(data, type, row) {
                             var buttonsHtml = '';
 
@@ -414,8 +414,9 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'
+                            .replace(
+                                ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
                             console.log(response);
@@ -481,45 +482,44 @@
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
-                                // if (j === 0) {
-                                //     activity += '<p>' +
-                                //         '{{ __('essentials::lang.created_department_name') }}' + ': ' +
-                                //         response.followup_processes[j].department.name + '</p>';
-                                // } else {
-                                 
-                                    activity += '<p>' +
-                                        '{{ __('essentials::lang.department_name') }}' + ': ' +
-                                        response.followup_processes[j].department.name;
+                                activity += '<p>' +
+                                    '{{ __('request.created_department_name') }}' +
+                                    ': ' +
+                                    response.request_info.started_depatment.name + '</p>';
 
-                                    activity +=
-                                        '<p class="{{ __('essentials::lang.status') }} ' +
-                                        response.followup_processes[j].status.toLowerCase() +
-                                        '">' +
-                                        '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
-                                        response.followup_processes[j].status + '</p>';
+                                activity += '<p>' +
+                                    '{{ __('essentials::lang.department_name') }}' + ': ' +
+                                    response.followup_processes[j].department.name;
 
-                                    activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].reason) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .reason + '</strong>';
-                                    } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
-                                    }
-                                    activity += '<p>' + '{{ __('essentials::lang.note') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].status_note) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .status_note + '</strong>';
-                                    } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
-                                    }
-                                    activity += '</p>';
-                                    activity += '<p style="color: green;">' +
-                                        '{{ __('essentials::lang.updated_by') }}' + ': ' + (
-                                            response.followup_processes[j].updated_by ||
-                                            '{{ __('essentials::lang.not_exist') }}') + '</p>';
-                                
+                                activity +=
+                                    '<p class="{{ __('essentials::lang.status') }} ' +
+                                    response.followup_processes[j].status.toLowerCase() +
+                                    '">' +
+                                    '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
+                                    response.followup_processes[j].status + '</p>';
+
+                                activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].reason) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .reason + '</strong>';
+                                } else {
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
+                                }
+                                activity += '<p>' + '{{ __('essentials::lang.note') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].status_note) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .status_note + '</strong>';
+                                } else {
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
+                                }
+                                activity += '</p>';
+                                activity += '<p style="color: green;">' +
+                                    '{{ __('essentials::lang.updated_by') }}' + ': ' + (
+                                        response.followup_processes[j].updated_by ||
+                                        '{{ __('essentials::lang.not_exist') }}') + '</p>';
+
 
                                 activity += '</li>';
                                 activitiesList.append(activity);

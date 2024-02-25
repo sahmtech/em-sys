@@ -112,8 +112,6 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
-          
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -121,12 +119,12 @@
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.eqama_number')</th>
-                
+
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
                             <th>@lang('request.status')</th>
                             <th>@lang('request.note')</th>
-                  
+
 
 
                         </tr>
@@ -136,7 +134,7 @@
         @endcomponent
 
 
-     
+
     </section>
     <!-- /.content -->
 
@@ -175,7 +173,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                  
+
                     {
                         data: 'request_type_id',
                         render: function(data, type, row) {
@@ -212,9 +210,9 @@
                                 return '@lang('request.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('request.cancleContractRequest')';
-                            }  else if (data === 'WarningRequest') {
+                            } else if (data === 'WarningRequest') {
                                 return '@lang('request.WarningRequest')';
-                            }else {
+                            } else {
                                 return data;
                             }
                         }
@@ -233,7 +231,7 @@
                 ],
             });
 
-         
+
 
             $(document).on('click', '.btn-view-request', function() {
                 var requestId = $(this).data('request-id');
@@ -241,18 +239,19 @@
                 // var data = requests_table.row(this).data();
                 // var requestId = data.id;
 
-            
+
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'
+                            .replace(
+                                ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
                             console.log(response);
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
+                            var attachmentsList = $('#attachments-list');
                             var workerList = $('#worker-list');
 
                             workflowContainer.html('');
@@ -310,7 +309,10 @@
 
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
-
+                                activity += '<p>' +
+                                    '{{ __('request.created_department_name') }}' +
+                                    ': ' +
+                                    response.request_info.started_depatment.name + '</p>';
                                 activity += '<p>' +
                                     '{{ __('request.department_name') }}' + ': ' +
                                     response.followup_processes[j].department.name;
@@ -348,11 +350,15 @@
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
-                                    attachment += '<p>';
-                                   
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("request.attach") }} ' + (j + 1) + '</a>';
-                               
-                                 attachment += '</p>';
+                                attachment += '<p>';
+
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('request.attach') }} ' + (j + 1) + '</a>';
+
+                                attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
@@ -381,16 +387,16 @@
     </script>
 
 
-    
 
-<script>
-    $('#addRequestModal').on('shown.bs.modal', function(e) {
-        $('#worker').select2({
-            dropdownParent: $(
-                '#addRequestModal'),
-            width: '100%',
+
+    <script>
+        $('#addRequestModal').on('shown.bs.modal', function(e) {
+            $('#worker').select2({
+                dropdownParent: $(
+                    '#addRequestModal'),
+                width: '100%',
+            });
+
         });
-
-        });
-</script>
+    </script>
 @endsection

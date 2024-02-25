@@ -483,6 +483,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/get-sub-reasons', [\App\Utils\RequestUtil::class, 'getSubReasons'])->name('getSubReasons');
     Route::post('/save-attachment/{requestId}',  [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
     Route::post('/get-non-saudi-users', [\App\Utils\RequestUtil::class, 'getNonSaudiUsers'])->name('getNonSaudiUsers');
+    Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');
+    Route::post('/update-task-status', [\App\Utils\RequestUtil::class, 'updateStatus'])->name('tasks.updateStatus');
 
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
