@@ -165,6 +165,7 @@ return [
     'view_contract' => 'عرض ملف العقد',
     'no_contract_available' => 'لا يوجد  ملف للعقد',
     'contract_file' => 'وثيقة العقد',
+    'add_attachments' => 'إضافة مرفق ',
     'customer_name' => 'العميل',
     'end_date' => 'تاريخ الانتهاء',
     'work_card' => 'كرت العمل',

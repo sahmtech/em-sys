@@ -31,6 +31,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/fetch_contract_details', [\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'fetch_contract_details'])->name('fetch_contract_details');
         Route::get('/operation_orders', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index'])->name('operation_orders');
+
+        Route::post('/upload_attachments', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'upload_attachments'])->name('upload_attachments');
+
         // Route::post('/storeOperation', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'store'])->name('storeOperation');
         // Route::PUT('/updateOrder/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'update'])->name('updateOrder');
         // Route::get('/getUpdatedData/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'getUpdatedData'])->name('getUpdatedData');

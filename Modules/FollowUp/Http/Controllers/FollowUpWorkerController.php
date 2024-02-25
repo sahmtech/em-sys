@@ -217,7 +217,9 @@ class FollowUpWorkerController extends Controller
 
 
 
-
+    public function upload_attachments(Request $request)
+    {
+    }
     private function getDocumentExpirationDate($user, $documentType)
     {
         foreach ($user->OfficialDocument as $off) {
