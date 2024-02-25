@@ -1825,7 +1825,7 @@ class CustomAdminSidebarMenu
             //$menu->header("");
 
 
-            if ($is_admin || auth()->user()->can('internationalrelations.view_orders_operations')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_operation_orders')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'index']),
                     __('internationalrelations::lang.order_request'),
