@@ -284,7 +284,7 @@ class FollowUpWorkerController extends Controller
             }
 
 
-            $offDoc = EssentialsOfficialDocument::create($input2);
+            EssentialsOfficialDocument::create($input2);
 
             $output = [
                 'success' => true,

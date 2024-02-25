@@ -152,8 +152,8 @@
                     </div>
                 </div>
 
-
-              <div class="box box-primary" id="add-attachments-box">
+{{-- 
+     <div class="box box-primary" id="add-attachments-box">
                 <div class="box-body box-profile text-center">
                     <div class="row">
                     
@@ -165,7 +165,8 @@
                     </div>
                 </div>
             </div>
-
+ --}}
+            
             </div>
 
 @include('followup::workers.add_attachment_modal')

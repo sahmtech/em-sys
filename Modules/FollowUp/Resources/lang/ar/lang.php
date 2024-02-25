@@ -12,6 +12,7 @@ return [
     'work_card' => 'كرت العمل',
     'insurance' => 'التأمين',
     'has_insurance' => 'مؤمن',
+    'title' => 'العنوان',
     'not_have_insurance' => 'غير مؤمن',
     'contract_end_date' => 'تاريخ انتهاء العقد',
     'passport' => 'رقم جواز السفر',
