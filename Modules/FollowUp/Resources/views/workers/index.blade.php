@@ -109,7 +109,7 @@
                             <th>
                                 <input type="checkbox" id="select-all">
                             </th>
-                            <td class="table-td-width-100px">@lang('followup::lang.id')</td>
+                           
                             
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                            
@@ -224,7 +224,7 @@
                 processing: true,
                 serverSide: true,
                
-                info: false,
+              
                 ajax: {
 
                     url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']) }}",
@@ -260,9 +260,7 @@
                         orderable: false,
                         searchable: false,
                     },
-                    {
-                        data:"id"
-                    },
+                    
                     {
                         data: 'worker',
                         render: function(data, type, row) {
@@ -470,10 +468,6 @@
             var dt = $('#workers_table').DataTable();
 
             var fields = fields;
-            //  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-            //     13, 14, 15,
-            //     16, 17, 18
-            // ];
 
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);
