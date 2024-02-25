@@ -13,6 +13,8 @@ return [
     'insurance' => 'التأمين',
     'has_insurance' => 'مؤمن',
     'title' => 'العنوان',
+    'select_worker' => 'اختر عامل',
+    'select_doc_type' => 'اختر نوع الوثيقة ',
     'not_have_insurance' => 'غير مؤمن',
     'contract_end_date' => 'تاريخ انتهاء العقد',
     'passport' => 'رقم جواز السفر',

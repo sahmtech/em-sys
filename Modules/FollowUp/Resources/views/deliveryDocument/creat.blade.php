@@ -9,7 +9,7 @@
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
-                    <section class="content">
+                
 
                         {!! Form::open([
                             'url' => action('Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController@store'),
@@ -20,40 +20,38 @@
 
                         <div class="row">
 
-                            <div class="col-md-6" style="margin-top: 0px;">
+                           <div class="col-md-6" >
                                 {!! Form::label('worker', __('followup::lang.worker')) !!}<span style="color: red; font-size:10px"> *</span>
-
-                                <select class="form-control " required name="user_id" id="worker__select"
-                                    style="padding: 2px;">
+                                <select class="form-control" required name="user_id" id="worker__select" style="padding: 2px;">
+                                    <option value="">{{ __('followup::lang.select_worker')}}</option>
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}">
                                             {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name }}
                                         </option>
                                     @endforeach
                                 </select>
-
+                            </div>
+                            <div class="col-md-6">
+                                {!! Form::label('documents', __('followup::lang.document_type')) !!}<span style="color: red; font-size:10px"> *</span>
+                                <select class="form-control" required name="document_id" id="document_id" style="padding: 2px;">
+                                    <option value="">{{ __('followup::lang.select_doc_type') }}</option>
+                                    @foreach ($documents as $document)
+                                        <option value="{{ $document->id }}">
+                                            {{ $document->name_ar . ' - ' . $document->name_en }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
-                           <div class="col-md-6" style="margin-top: 0px;">
-                                    {!! Form::label('documents', __('followup::lang.document_type')) !!}<span style="color: red; font-size:10px"> *</span>
-                                    <select class="form-control" required name="document_id" id="document_id" style="padding: 2px;">
-                                        @foreach ($documents as $document)
-                                            <option value="{{ $document->id }}">
-                                                {{ $document->name_ar . ' - ' . $document->name_en }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6" id="inputTitleContainer" style="margin-top: 10px; display: none;">
-                                    {!! Form::label('title', __('followup::lang.title')) !!}<span style="color: red; font-size:10px"> *</span>
-                                    {!! Form::text('title', null, ['class' => 'form-control', 'id' => 'title']) !!}
-                                </div>
+                            <div class="col-md-6" id="inputTitleContainer" style="display: none;">
+                                {!! Form::label('title', __('followup::lang.title')) !!}<span style="color: red; font-size:10px"> *</span>
+                                {!! Form::text('title', null, ['class' => 'form-control', 'id' => 'title']) !!}
+                            </div>
 
 
                         </div>
 
-                        <div class="row" style="margin-top:8px; ">
+                        <div class="row" >
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('document', __('followup::lang.upload_document') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
@@ -92,7 +90,7 @@
 
 
                         {!! Form::close() !!}
-                    </section>
+               
 
 
                 </div>

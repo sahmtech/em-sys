@@ -10,7 +10,7 @@ class FollowupDeliveryDocument extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'document_id', 'file_path', 'nots'];
+    protected $fillable = ['user_id', 'document_id', 'file_path', 'nots', 'title'];
 
 
     public function document()

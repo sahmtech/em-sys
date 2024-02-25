@@ -176,10 +176,11 @@ class FollowupDeliveryDocumentController extends Controller
             }
             $input2['user_id'] = $input['user_id'];
             $input2['document_id'] = $input['document_id'];
-            $input2['title'] = $input['title'];
+            $input2['title'] = $request->input('title');
             $input2['nots'] = $input['nots'];
 
-            FollowupDeliveryDocument::create([$input2]);
+
+            FollowupDeliveryDocument::create($input2);
 
             $output = [
                 'success' => true,
@@ -241,6 +242,13 @@ class FollowupDeliveryDocumentController extends Controller
             $update_data['user_id'] = $request->input('user_id');
             $update_data['document_id'] = $request->input('document_id');
             $update_data['nots'] = $request->input('nots');
+
+            if ($update_data['document_id'] != 11) {
+                $update_data['title'] = null;
+            } else {
+                $update_data['title'] = $request->input('title');
+            }
+
 
             $document_delivery = FollowupDeliveryDocument::find($id);
             $document_delivery->update($update_data);

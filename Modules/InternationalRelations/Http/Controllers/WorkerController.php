@@ -865,17 +865,14 @@ class WorkerController extends Controller
 
             $incompleteWorkers = IrProposedLabor::whereIn('id', $selectedRows)
                 ->where(function ($query) {
-                    $query->where('medical_examination', '=', 0)
-                        ->orWhereNull('medical_examination')
-                        ->orWhere('fingerprinting', '=', 0)
-                        ->orWhereNull('fingerprinting')
-                        ->orWhere('arrival_status', '=', 1);
+
+                    $query->Where('arrival_status', '=', 1);
                 })
                 ->get();
 
 
             if ($incompleteWorkers->isNotEmpty()) {
-                // Check if any incomplete worker has arrival_status = 0
+
                 $hasArrivalStatusZero = $incompleteWorkers->contains('arrival_status', 1);
 
                 if ($hasArrivalStatusZero) {

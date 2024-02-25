@@ -1,15 +1,14 @@
 <div class="modal-dialog modal-lg" id="edit_document_delivery_model" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:red"><span
-                    aria-hidden="true">&times;</span></button>
+           
             <h4 class="modal-title"><i class="fas fa-edit"></i> @lang('followup::lang.edit_delivery')</h4>
         </div>
 
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
-                    <section class="content">
+                  
 
                         {!! Form::open([
                             'url' => action(
@@ -23,11 +22,10 @@
 
                         <div class="row">
 
-                            <div class="col-sm-6" style="margin-top: 0px;">
+                            <div class="col-md-6" >
                                 {!! Form::label('worker', __('followup::lang.worker')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control " name="user_id" id="worker__select"
-                                    style="padding: 2px;">
+                                <select class="form-control " name="user_id" id="worker__select">
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}"
                                             @if ($worker->id == $document_delivery->user_id) selected @endif>
@@ -38,10 +36,9 @@
 
                             </div>
 
-                            <div class="col-sm-6" style="margin-top: 0px;">
+                                <div class="col-md-6">
                                 {!! Form::label('documents', __('followup::lang.document_type')) !!}<span style="color: red; font-size:10px"> *</span>
-
-                                <select class="form-control " name="document_id" id="document_id" style="padding: 2px;">
+                                <select class="form-control" name="document_id" id="document_id">
                                     @foreach ($documents as $document)
                                         <option value="{{ $document->id }}"
                                             @if ($document->id == $document_delivery->document_id) selected @endif>
@@ -49,14 +46,18 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div>
 
+                            <div class="col-md-6" id="inputTitleContainer" @if ($document_delivery->document_id != 11) style="display: none;" @endif>
+                                {!! Form::label('title', __('followup::lang.title')) !!}<span style="color: red; font-size:10px"> *</span>
+                                {!! Form::text('title', $document_delivery->title, ['class' => 'form-control', 'id' => 'title']) !!}
                             </div>
 
 
                         </div>
 
-                        <div class="row" style="margin-top:8px; ">
-                            <div class="col-sm-6">
+                        <div class="row" >
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('document', __('followup::lang.upload_document') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                     {!! Form::file('document', ['class' => 'form-control', 'accept' => 'doc/*']) !!}
@@ -65,7 +66,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-6">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('nots', __('followup::lang.nots') . '  ') !!}
                                     {!! Form::text('nots', $document_delivery->nots, [
@@ -77,18 +78,15 @@
                             </div>
                         </div>
 
+                     <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
 
-
-                        <div class="row" style="margin-top: 220px;">
-                            <div class="col-sm-12" style="display: flex;justify-content: center;">
-                                <button type="submit" style="width:50%; border-radius: 28px;"
-                                    class="btn btn-primary pull-right btn-flat ">@lang('messages.save')</button>
-                            </div>
-                        </div>
 
 
                         {!! Form::close() !!}
-                    </section>
+                
 
 
                 </div>
@@ -115,5 +113,23 @@
             });
         });
 
+    });
+</script>
+
+
+
+<script>
+    $(document).ready(function() {
+        $('#document_id').change(function() {
+            var selectedOption = $(this).val();
+            if (selectedOption == 11) {
+                $('#inputTitleContainer').show();
+            } else {
+                $('#inputTitleContainer').hide();
+            }
+        });
+
+      
+        $('#document_id').trigger('change');
     });
 </script>
