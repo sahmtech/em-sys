@@ -112,6 +112,7 @@
                         <table class="table table-bordered table-striped" id="within_two_month_expiry_contracts_table">
                             <thead>
                                 <tr>
+                                     <th>@lang('followup::lang.sponsor')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.residency')</th>
                                     <th>@lang('followup::lang.project')</th>
@@ -138,6 +139,7 @@
                         <table class="table table-bordered table-striped" id="within_two_month_expiry_residency_table">
                             <thead>
                                 <tr>
+                                    <th>@lang('followup::lang.sponsor')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.residency')</th>
                                     <th>@lang('followup::lang.project')</th>
@@ -164,13 +166,16 @@
                         <table class="table table-bordered table-striped" id="within_two_month_expiry_work_cards_table">
                             <thead>
                                 <tr>
+                                   <th>@lang('followup::lang.sponsor')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
+                                 
+
                                     <th>@lang('followup::lang.residency')</th>
                                     <th>@lang('followup::lang.work_card')</th>
                                     <th>@lang('followup::lang.project')</th>
                                     <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.end_date')</th>
-                                    <th></th>
+                                    
                                 </tr>
                             </thead>
                         </table>
@@ -205,9 +210,14 @@
                 ajax: {
                     url: "{{ route('withinTwoMonthExpiryContracts') }}",
                 },
-                columns: [{
+                columns: [
+                    {
+                        data: 'sponser'
+                    },
+                    {
                         data: 'worker_name'
                     },
+                   
                     {
                         data: 'residency'
                     },
@@ -245,7 +255,11 @@
                 ajax: {
                     url: "{{ route('withinTwoMonthExpiryResidency') }}",
                 },
-                columns: [{
+                columns: [
+                    {
+                        data: 'sponser'
+                    },
+                    {
                         data: 'worker_name'
                     },
                     {
@@ -285,7 +299,11 @@
                 ajax: {
                     url: "{{ route('withinTwoMonthExpiryWorkCard') }}",
                 },
-                columns: [{
+                columns: [
+                    {
+                        data: 'sponser'
+                    },
+                    {
                         data: 'worker_name'
                     },
                     {
