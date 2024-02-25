@@ -24,6 +24,13 @@ return [
   'time_sheet_for' => 'تايم شييت لـ',
   'total_payrolls' => 'الإجمالي الكلي',
   'details' => 'التفاصيل',
+  'view_payroll_group' => 'عرض مجموعة مسير الرواتب',
+  'payroll_groups' => 'مجموعات مسير الرواتب',
+  'payrolls' => 'مسيرات الرواتب',
+  'payroll' => 'مسير الرواتب',
+
+
+
 ];
 
   //  ''=>'',

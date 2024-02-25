@@ -328,7 +328,7 @@ class PayrollController extends Controller
      */
     public function store(Request $request)
     {
-        return  $request->all();
+        // return  $request->all();
         $business_id = request()->session()->get('user.business_id');
         try {
             $transaction_date = $request->input('transaction_date');
