@@ -1312,6 +1312,7 @@ class Util
             __('followup::lang.blood_group'),
             __('followup::lang.bank_code'),
             __('essentials::lang.travel_categorie'),
+            __('essentials::lang.passport_end_date'),
         ];
     }
 

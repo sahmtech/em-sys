@@ -755,6 +755,7 @@ return [
   'doc_type' => 'نوع الوثيقة',
   'national_id' => 'هوية وطنية',
   'passport' => 'جواز سفر ',
+  'passport_end_date' => 'تاريخ  انتهاء جواز السفر',
   'residence_permit' => 'إقامة',
   'drivers_license' => 'رخصة قيادة',
   'car_registration' => ' استمارة سيارة',

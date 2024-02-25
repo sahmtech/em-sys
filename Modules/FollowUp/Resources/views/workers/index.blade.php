@@ -107,12 +107,19 @@
                                 <input type="checkbox" id="select-all">
                             </th>
                             <td class="table-td-width-100px">@lang('followup::lang.id')</td>
+                            
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.company')</td>
+                           
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                             <td class="table-td-width-100px">@lang('followup::lang.company')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.border_no')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
@@ -261,11 +268,12 @@
                             return link;
                         }
                     },
-                    {
-                        data: 'company_id'                
-                    },
+                   
                     {
                         data: 'residence_permit'
+                    },
+                    {
+                        data: 'company_id'                
                     },
                     {
                         data: 'contact_name'
@@ -276,6 +284,12 @@
                     {
                         data: 'residence_permit_expiration'
                     },
+                    {
+                        data: 'insurance'
+                    },
+                    {data:'passport_number'},
+                    {data:'passport_expire_date'},
+                    {data:'border_no'},
                     {
                         data: 'admissions_date'
                     },

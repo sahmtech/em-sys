@@ -10,7 +10,7 @@
                     @csrf
             <!-- Modal Body -->
             <div class="modal-body">
-                <!-- File upload form -->
+               <input type="hidden" value="{{ $user->id }}" name="worker_id">
                
                        <div class="form-group col-md-6">
                                     {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}

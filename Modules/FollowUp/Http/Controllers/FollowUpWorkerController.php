@@ -22,6 +22,8 @@ use Spatie\Activitylog\Models\Activity;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
@@ -149,6 +151,38 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('company_id', function ($user) {
                     return  $user->company->name ?? "";
                 })
+                ->addColumn('insurance', function ($user) {
+                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                        return __('followup::lang.has_insurance');
+                    } else {
+                        return __('followup::lang.has_not_insurance');
+                    }
+                })
+
+                ->addColumn('passport_number', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->number ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+                ->addColumn('passport_expire_date', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -219,6 +253,54 @@ class FollowUpWorkerController extends Controller
 
     public function upload_attachments(Request $request)
     {
+
+        try {
+            $input = $request->only(
+                [
+                    'worker_id',
+                    'doc_type',
+                    'doc_number',
+                    'issue_date',
+                    'issue_place',
+                    'expiration_date',
+                    'file'
+                ]
+            );
+
+            $worker_id = $request->input('worker_id');
+
+            $input2['type'] = $input['doc_type'];
+            $input2['number'] = $input['doc_number'];
+            $input2['issue_date'] = $input['issue_date'];
+            $input2['expiration_date'] = $input['expiration_date'];
+            $input2['employee_id'] =  $request->input('worker_id');
+            $input2['issue_place'] = $input['issue_place'];
+            $input2['is_active'] = 1;
+            if (request()->hasFile('file')) {
+                $file = request()->file('file');
+                $filePath = $file->store('/officialDocuments');
+
+                $input2['file_path'] = $filePath;
+            }
+
+
+            $offDoc = EssentialsOfficialDocument::create($input2);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+
+        return redirect()->route('showWorker', ['id' => $worker_id])->with($output);
     }
     private function getDocumentExpirationDate($user, $documentType)
     {

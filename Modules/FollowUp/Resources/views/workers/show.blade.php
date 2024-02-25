@@ -29,6 +29,7 @@
 
                         <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
                             alt="User profile picture">
+                     
 
                         <h3 class="profile-username text-center">
                             {{ $user->user_full_name }}
@@ -155,6 +156,7 @@
               <div class="box box-primary" id="add-attachments-box">
                 <div class="box-body box-profile text-center">
                     <div class="row">
+                    
                         <div class="col-md-12">
                             <button id="open-attachments-modal-btn" class="btn btn-success" style="width: 150px" data-toggle="modal" data-target="#attachments-modal">
                                 @lang('followup::lang.add_attachments')
