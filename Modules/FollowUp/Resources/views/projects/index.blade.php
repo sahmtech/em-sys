@@ -85,11 +85,18 @@
                         data: 'id'
                     },
                     {
-                        data: 'contact_name'
+                        data:"contact_name"
                     },
-                    {
-                        data: 'contact_location_name'
+                     {
+                        data: 'contact_location_name',
+                        render: function(data, type, row) {
+                            var link = '<a href="' + '{{ route('projectView', ['id' => ':id']) }}'
+                                .replace(':id', row.id) + '">' + data + '</a>';
+                            return link;
+                        }
                     },
+                 
+                   
                     {
                         data: 'number_of_contract'
                     },
@@ -127,10 +134,10 @@
                         data: 'status',
                         render: function(data, type, full, meta) {
                             switch (data) {
-                                case 'Done':
-                                    return '{{ trans('sales::lang.Done') }}';
-                                case 'Under_process':
-                                    return '{{ trans('sales::lang.Under_process') }}';
+                                case 'valid':
+                                    return '{{ trans('sales::lang.valid') }}';
+                                case 'finished':
+                                    return '{{ trans('sales::lang.finished') }}';
 
 
                                 default:

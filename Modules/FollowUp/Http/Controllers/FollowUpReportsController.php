@@ -99,14 +99,12 @@ class FollowUpReportsController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-       
-                if(request()->input('project_name')=='none'){
+
+                if (request()->input('project_name') == 'none') {
                     $users = $users->whereNull('users.assigned_to');
-                }
-                else{
+                } else {
                     $users = $users->where('users.assigned_to', request()->input('project_name'));
                 }
-                
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
@@ -231,8 +229,9 @@ class FollowUpReportsController extends Controller
                 'transactions.salesContract.salesOrderOperation'
 
             ]);
+
+
         $salesProjects = SalesProject::with(['contact']);
-        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
 
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
@@ -242,17 +241,14 @@ class FollowUpReportsController extends Controller
             $contacts_fillter = Contact::whereIn('id',   $contacts_ids)->pluck('supplier_business_name', 'id');
         }
 
+
+        if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+
+            $salesProjects = $salesProjects->where('id', request()->input('project_name'));
+        }
+
         if (request()->ajax()) {
-            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-       
-                if(request()->input('project_name')=='none'){
-                    $users = $users->whereNull('users.assigned_to');
-                }
-                else{
-                    $users = $users->where('users.assigned_to', request()->input('project_name'));
-                }
-                
-            }
+
 
             return Datatables::of($salesProjects)
                 ->addColumn(
@@ -325,8 +321,29 @@ class FollowUpReportsController extends Controller
                 ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
+        $contacts_fillter = SalesProject::pluck('name', 'id');
 
         return view('followup::reports.projects')->with(compact('contacts_fillter'));
+    }
+
+    public function fetch_contract_details(Request $request)
+    {
+        $projectId = $request->input('project_id');
+        $salesProject = SalesProject::with(['salesContract'])->where('id', $projectId)->first();
+        $salesContract = null;
+        if ($salesProject) {
+            $salesContract = $salesProject->salesContract;
+        }
+
+        $output = [
+            'success' => true,
+            'data' => [
+                'salesContract' => $salesContract,
+
+            ],
+            'msg' => __('lang_v1.fetched_success'),
+        ];
+        return response()->json($output);
     }
 
 
