@@ -40,6 +40,8 @@ class CustomAdminSidebarMenu
             $this->medicalInsuranceMenu();
         } elseif (Str::startsWith($currentPath, ['employee_affairs'])) {
             $this->employeeAffairsMenu();
+        } elseif (Str::startsWith($currentPath, ['payrolls'])) {
+            $this->payrollsMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
@@ -960,6 +962,24 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
+            }
+        });
+    }
+    public function payrollsMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
+                    __('essentials::lang.payroll'),
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
+                );
             }
         });
     }

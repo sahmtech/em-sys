@@ -332,6 +332,9 @@ class HomeController extends Controller
         $legalAffairsPermissions = [
             ['value' => 'legalaffairs.legalAffairs_dashboard'],
         ];
+        $payrollsPermissions = [
+            ['value' => 'essentials.payrolls_dashboard'],
+        ];
 
         // $settingsPermissions = [
         //     ['value' => 'business_settings.access'],
@@ -361,6 +364,7 @@ class HomeController extends Controller
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => '	far fa-handshake', 'link' =>   route('essentials_word_cards_dashboard')],
             ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' =>   route('employee_affairs_dashboard')],
+            ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],

@@ -22,6 +22,7 @@
                 'method' => 'post',
                 'id' => 'add_payroll_step1',
             ]) !!}
+            {!! Form::hidden('payroll_group_name', strip_tags($group_name)) !!}
             <div class="table-responsive">
                 <div style="margin-bottom: 10px;">
                     <div class="col-md-12">
@@ -48,6 +49,17 @@
                                 @lang('worker.submit')
                             </button>
 
+                        </div>
+                        <div class="col-md-4">
+                            {!! Form::label('payroll_group_status', __('sale.status') . ':*') !!}
+                            @show_tooltip(__('essentials::lang.group_status_tooltip'))
+                            {!! Form::select('payroll_group_status', ['draft' => __('sale.draft'), 'final' => __('sale.final')], null, [
+                                'class' => 'form-control select2',
+                                'required',
+                                'style' => 'width: 100%;',
+                                'placeholder' => __('messages.please_select'),
+                            ]) !!}
+                            <p class="help-block text-muted">@lang('essentials::lang.payroll_cant_be_deleted_if_final')</p>
                         </div>
                         <div class="col-md-4">
                             <h4 style="  color: red;" class="total_payrolls"></h4>
@@ -327,42 +339,52 @@
                 var field = $(this).data('field');
                 var newValue = $(this).text();
 
-                // Find the corresponding hidden input and update its value
                 $('input.form-hidden[data-index="' + index + '"][data-field="' + field + '"]').val(
                     newValue);
-                if (field === 'absence_day' || field === 'basic' || field === 'other_allowances') {
-                    updateAbsenceAmount(index);
-                }
-                if (field === 'total_salary' || field === 'basic' || field === 'over_time_h') {
-                    updateOverTime(index);
-                }
-                if (field === 'monthly_cost' || field === 'wd') {
-                    updateCost2(index);
-                }
-                if (field === 'cost2' || field === 'other_addition' || field === 'absence_amount' ||
-                    field === 'other_deduction' || field === 'over_time') {
-                    updateInvoiceValue(index);
-                }
-                if (field === 'monthly_cost') {
-                    updateVat(index);
-                }
-                if (field === 'invoice_value') {
-                    updateTotal(index);
-                }
+                // if (field === 'absence_day' || field === 'basic' || field === 'other_allowances') {
+                //     updateAbsenceAmount(index);
+                // }
+                // if (field === 'total_salary' || field === 'basic' || field === 'over_time_h') {
+                //     updateOverTime(index);
+                // }
+                // if (field === 'monthly_cost' || field === 'wd') {
+                //     updateCost2(index);
+                // }
+                // if (field === 'cost2' || field === 'other_addition' || field === 'absence_amount' ||
+                //     field === 'other_deduction' || field === 'over_time') {
+                //     updateInvoiceValue(index);
+                // }
+                // if (field === 'monthly_cost') {
+                //     updateVat(index);
+                // }
+                // if (field === 'invoice_value') {
+                //     updateTotal(index);
+                // }
 
-                if (field === 'absence_amount' || field === 'other_deduction') {
-                    updateDeductions(index);
-                }
+                // if (field === 'absence_amount' || field === 'other_deduction') {
+                //     updateDeductions(index);
+                // }
 
-                if (field === 'over_time' || field === 'other_addition') {
-                    updateAdditions(index);
-                }
+                // if (field === 'over_time' || field === 'other_addition') {
+                //     updateAdditions(index);
+                // }
 
-                if (field === 'total_salary' || field === 'wd' || field === 'additions' || field ===
-                    'deductions') {
-                    updateFinalSalary(index);
-                    updateTotalPayrolls();
-                }
+                // if (field === 'total_salary' || field === 'wd' || field === 'additions' || field ===
+                //     'deductions') {
+                //     updateFinalSalary(index);
+                //     updateTotalPayrolls();
+                // }
+                updateAbsenceAmount(index);
+                updateOverTime(index);
+                updateTotalSalary(index);
+                updateCost2(index);
+                updateInvoiceValue(index);
+                updateVat(index);
+                updateTotal(index);
+                updateDeductions(index);
+                updateAdditions(index);
+                updateFinalSalary(index);
+                updateTotalPayrolls();
 
             });
         });
