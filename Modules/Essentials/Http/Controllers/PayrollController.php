@@ -59,6 +59,10 @@ class PayrollController extends Controller
         $this->businessUtil = $businessUtil;
     }
 
+    public function dashboard()
+    {
+        return view('essentials::payroll.dashboard');
+    }
     /**
      * Display a listing of the resource.
      *
