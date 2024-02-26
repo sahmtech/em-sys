@@ -234,7 +234,7 @@ class VisaCardController extends Controller
 
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 

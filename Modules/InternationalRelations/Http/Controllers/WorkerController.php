@@ -1338,7 +1338,7 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong')
             ];
 
             return redirect()->route('importWorkers', ['delegation_id' => $delegation_id, 'agency_id' => $agency_id, 'transaction_sell_line_id' => $transaction_sell_line_id])->with('notification', $output);
