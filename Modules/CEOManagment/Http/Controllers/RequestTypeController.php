@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\CEOManagment\Entities\RequestsType;
+use Modules\CEOManagment\Entities\Task;
 use Modules\CEOManagment\Entities\WkProcedure;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -68,16 +69,19 @@ class RequestTypeController extends Controller
 
 
             return datatables::of($requestsTypes)
+                ->addColumn('tasks', function ($requestType) {
 
+                    $tasksList = $requestType->tasks->map(function ($task) {
+                        return $task->description;
+                    })->implode('<br>');
+
+                    return $tasksList;
+                })
                 ->addColumn(
                     'action',
                     function ($row) use ($is_admin, $can_edit_requests_type, $can_delete_requests_type) {
                         $html = '';
-                        // if ($is_admin || $can_edit_requests_type) {
-                        //     $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
-                        //  data-id="' . $row->id . '" data-type-value="' . $row->type . '" data-prefix-value="' . $row->prefix . '" data-for-value="' . $row->for . '">
-                        //  <i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
-                        // }
+
                         if ($is_admin || $can_delete_requests_type) {
                             $html .= '<button class="btn btn-xs btn-danger delete_item_button"
                             data-href="' . route('deleteRequestType', ['id' => $row->id]) . '">
@@ -90,7 +94,7 @@ class RequestTypeController extends Controller
                 )
 
 
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'tasks'])
                 ->make(true);
         }
         return view('ceomanagment::requests_types.index')->with(compact('missingTypes'));
@@ -115,8 +119,11 @@ class RequestTypeController extends Controller
         try {
             $input = $request->only(['type', 'for']);
             $input['prefix'] = $this->getTypePrefix($input['type']);
+            $requestTypeIds = [];
             if ($input['for'] != 'both') {
-                RequestsType::create($input);
+
+                $requestType = RequestsType::create($input);
+                $requestTypeIds[] = $requestType->id;
             }
             if ($input['for'] === 'both') {
                 $existingFor = RequestsType::where('type', $input['type'])->value('for');
@@ -129,10 +136,26 @@ class RequestTypeController extends Controller
 
                 foreach ($forValues as $forValue) {
                     $input['for'] = $forValue;
-                    RequestsType::create($input);
+                    $requestType = RequestsType::create($input);
+                    $requestTypeIds[] = $requestType->id;
                 }
             }
+            $tasks = $request->tasks ?? [];
+            $links = $request->task_links ?? [];
 
+            foreach ($requestTypeIds as $requestTypeId) {
+                foreach ($tasks as $index => $task) {
+                    if (!empty($task)) {
+                        $taskInput = [
+                            'description' => $task,
+                            'link' => $links[$index] ?? null,
+                            'request_type_id' => $requestTypeId,
+                        ];
+
+                        Task::create($taskInput);
+                    }
+                }
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
@@ -231,10 +254,6 @@ class RequestTypeController extends Controller
     }
     public function destroy($id)
     {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
             $procedures = WkProcedure::Where('request_type_id', $id)->first();
@@ -246,6 +265,7 @@ class RequestTypeController extends Controller
                 ];
                 return $output;
             }
+            Task::where('request_type_id', $id)->delete();
             RequestsType::where('id', $id)
                 ->delete();
 
@@ -263,5 +283,15 @@ class RequestTypeController extends Controller
         }
 
         return $output;
+    }
+
+
+    public function getTasksForType(Request $request)
+    {
+        $typeId = $request->typeId;
+
+        $tasks = Task::where('request_type_id', $typeId)->pluck('description', 'id');
+        error_log('11111111111111');
+        return response()->json($tasks);
     }
 }

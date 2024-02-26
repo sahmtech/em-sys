@@ -1,7 +1,7 @@
 <?php
 return [
     'CEOmanagement_dashboard' => 'الصفحة الرئيسية للرئيس التنفيذي',
-    'CEO_Managment' => 'الرئيس التنفيذي',
+    'CEO_Managment' => 'إدارة التشغيل',
     'requests' => 'الطلبات',
     'escalate_requests' => 'الطلبات المصعّدة',
     'requests_by_sequential' => 'الطلبات حسب التسلسل',
@@ -71,6 +71,15 @@ return [
     'repeated_managements_please_re_check' => 'يوجد إدارات مكررة، يرجى إعادة إدخال الإجراء',
     'cant_delete_procedure_it_have_requests' => 'لا يمكن حذف الإجراء، يوجد طلبات متعلقة بهذا الإجراء',
     'cant_edit_procedure_it_have_requests' => 'لا يمكن تعديل الإجراء، يوجد طلبات متعلقة بهذا الإجراء',
+
+    'action_type' => 'نوع العملية',
+    'task' => 'المهمة',
+    'Accept/Reject' => 'قبول/رفض',
+    'do_task' => 'أداء مهمة',
+    'remove' => 'حذف',
+    'add_task' => 'إضافة مهمة',
+    'task_link' => 'رابط الوصول للمهمة',
+    'tasks' => 'المهمات',
 
 
 

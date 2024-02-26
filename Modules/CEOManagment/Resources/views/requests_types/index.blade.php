@@ -30,6 +30,7 @@
                                     <th>@lang('ceomanagment::lang.request_type')</th>
                                     <th>@lang('ceomanagment::lang.request_prefix')</th>
                                     <th>@lang('ceomanagment::lang.request_for')</th>
+                                    <th>@lang('ceomanagment::lang.tasks')</th>
                                     <th>@lang('ceomanagment::lang.action')</th>
 
 
@@ -89,15 +90,34 @@
                                         ],
                                     ) !!}
                                 </div>
-                                {{-- 
-                                <div class="form-group col-md-4">
-                                    {!! Form::label('prefix', __('ceomanagment::lang.request_prefix') . ':*') !!}
-                                    {!! Form::text('prefix', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('ceomanagment::lang.request_prefix') . ' (' . __('ceomanagment::lang.example') . ': lev)',
-                                        'required',
-                                    ]) !!}
-                                </div> --}}
+                                <div class="form-group col-md-12 task-select-container">
+                                    {!! Form::label('task', __('ceomanagment::lang.task') . ':') !!}
+                                    <div class="input-group">
+                                        <div class="col-md-6">
+                                            {!! Form::text('tasks[]', null, [
+                                                'class' => 'form-control task',
+                                                'placeholder' => __('ceomanagment::lang.task'),
+                                                'style' => 'width:100%; height:40px',
+                                            ]) !!}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {!! Form::text('task_links[]', null, [
+                                                'class' => 'form-control task-link',
+                                                'placeholder' => __('ceomanagment::lang.task_link'),
+                                                'style' => 'width:100%; height:40px',
+                                            ]) !!}
+                                        </div>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default add-task-btn" type="button">
+                                                @lang('ceomanagment::lang.add_task')
+                                            </button>
+                                            <button class="btn btn-danger remove-task-btn" type="button"
+                                                style="display: none;">
+                                                @lang('ceomanagment::lang.remove')
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -161,15 +181,7 @@
                                         ],
                                     ) !!}
                                 </div>
-                                {{-- 
-                                <div class="form-group col-md-4">
-                                    {!! Form::label('prefix', __('ceomanagment::lang.request_prefix') . ':*') !!}
-                                    {!! Form::text('prefix', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('ceomanagment::lang.request_prefix') . ' (' . __('ceomanagment::lang.example') . ': lev)',
-                                        'required',
-                                    ]) !!}
-                                </div> --}}
+
 
                             </div>
                         </div>
@@ -188,6 +200,13 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+
+            var typeTranslations = {
+                @foreach ($missingTypes as $type)
+                    '{{ $type }}': '@lang('ceomanagment::lang.' . $type)',
+                @endforeach
+            };
+
             var requests_types = $('#requests_types').DataTable({
                 processing: true,
                 serverSide: true,
@@ -257,6 +276,12 @@
                         }
                     },
                     {
+                        data: 'tasks',
+                        name: 'tasks',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -294,37 +319,44 @@
             });
 
 
+            $(document).on('click', '.edit-item', function() {
+                var itemId = $(this).data('id');
+                var requestType = $(this).data('type-value');
+                var requestPrefix = $(this).data('prefix-value');
+                var requestFor = $(this).data('for-value');
+
+                var editModal = $('#editModal');
+
+                editModal.find('select[name="type2"] option').each(function() {
+                    if ($(this).text() === typeTranslations[requestType]) {
+                        $(this).parent().val($(this).val()).trigger('change');
+                        return false;
+                    }
+                });
 
 
-        });
-    </script>
-    <script>
-        var typeTranslations = {
-            @foreach ($missingTypes as $type)
-                '{{ $type }}': '@lang('ceomanagment::lang.' . $type)',
-            @endforeach
-        };
+                editModal.find('select[name="for2"]').val(requestFor).trigger('change');
+                editModal.find('input[name="request_type_id"]').val(itemId);
 
-        $(document).on('click', '.edit-item', function() {
-            var itemId = $(this).data('id');
-            var requestType = $(this).data('type-value');
-            var requestPrefix = $(this).data('prefix-value');
-            var requestFor = $(this).data('for-value');
+                editModal.modal('show');
+            });
+            $(document).on('click', '.add-task-btn', function() {
+                var taskContainer = $(this).closest('.task-select-container');
+                var newTaskContainer = taskContainer.clone();
 
-            var editModal = $('#editModal');
+                newTaskContainer.find('.task').val('');
+                newTaskContainer.find('.task-link').val('');
+                newTaskContainer.find('.add-task-btn').hide();
+                newTaskContainer.find('.remove-task-btn').show();
 
-            editModal.find('select[name="type2"] option').each(function() {
-                if ($(this).text() === typeTranslations[requestType]) {
-                    $(this).parent().val($(this).val()).trigger('change');
-                    return false;
-                }
+                taskContainer.after(newTaskContainer);
             });
 
 
-            editModal.find('select[name="for2"]').val(requestFor).trigger('change');
-            editModal.find('input[name="request_type_id"]').val(itemId);
+            $(document).on('click', '.remove-task-btn', function() {
+                $(this).closest('.task-select-container').remove();
+            });
 
-            editModal.modal('show');
         });
     </script>
 

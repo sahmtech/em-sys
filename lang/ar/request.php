@@ -207,6 +207,8 @@ return [
   'this_user_has_this_request_recently' => 'هذا المستخدم لديه الطلب مسبقا و لم يتم انتهاء الاجراء الذي يخصّه',
   'done' => 'تم التنفيذ',
   'not_yet_done' => 'لم يتم التنفيذ بعد',
+  'created_department_name' => 'الإدارة التي أنشأت الطلب',
+
 
 
 

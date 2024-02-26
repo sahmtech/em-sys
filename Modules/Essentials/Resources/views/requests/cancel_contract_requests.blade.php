@@ -288,15 +288,15 @@
 
 
                             buttonsHtml +=
-                                '@if (auth()->user()->hasRole('Admin#1') ||auth()->user()->can('essentials.show_essentials_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
+                                '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.show_essentials_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
                                 row.id +
                                 '">@lang('request.view_request')</button>@endif';
 
-                            if(data != 'inactive'){
-                            buttonsHtml +=
-                                '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.cancel_contract'))<button class="btn btn-primary btn-sm btn-finish-procedure" data-request-id="' +
-                                row.id +
-                                '">@lang('request.finish_procedure')</button>@endif';
+                            if (data != 'inactive') {
+                                buttonsHtml +=
+                                    '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.cancel_contract'))<button class="btn btn-primary btn-sm btn-finish-procedure" data-request-id="' +
+                                    row.id +
+                                    '">@lang('request.finish_procedure')</button>@endif';
                             }
 
                             return buttonsHtml;
@@ -315,8 +315,9 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'
+                            .replace(
+                                ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
 
@@ -391,45 +392,44 @@
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
-                                // if (j === 0) {
-                                //     activity += '<p>' +
-                                //         '{{ __('request.created_department_name') }}' + ': ' +
-                                //         response.followup_processes[j].department.name + '</p>';
-                                // } else {
-                                 
-                                    activity += '<p>' +
-                                        '{{ __('request.department_name') }}' + ': ' +
-                                        response.followup_processes[j].department.name;
+                                activity += '<p>' +
+                                    '{{ __('request.created_department_name') }}' +
+                                    ': ' +
+                                    response.request_info.started_depatment.name + '</p>';
 
-                                    activity +=
-                                        '<p class="{{ __('request.status') }} ' +
-                                        response.followup_processes[j].status.toLowerCase() +
-                                        '">' +
-                                        '<strong>{{ __('request.status') }}:</strong> ' +
-                                        response.followup_processes[j].status + '</p>';
+                                activity += '<p>' +
+                                    '{{ __('request.department_name') }}' + ': ' +
+                                    response.followup_processes[j].department.name;
 
-                                    activity += '<p>' + '{{ __('request.reason') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].reason) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .reason + '</strong>';
-                                    } else {
-                                        activity += '{{ __('request.not_exist') }}';
-                                    }
-                                    activity += '<p>' + '{{ __('request.note') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].status_note) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .status_note + '</strong>';
-                                    } else {
-                                        activity += '{{ __('request.not_exist') }}';
-                                    }
-                                    activity += '</p>';
-                                    activity += '<p style="color: green;">' +
-                                        '{{ __('request.updated_by') }}' + ': ' + (
-                                            response.followup_processes[j].updated_by ||
-                                            '{{ __('request.not_exist') }}') + '</p>';
-                                
+                                activity +=
+                                    '<p class="{{ __('request.status') }} ' +
+                                    response.followup_processes[j].status.toLowerCase() +
+                                    '">' +
+                                    '<strong>{{ __('request.status') }}:</strong> ' +
+                                    response.followup_processes[j].status + '</p>';
+
+                                activity += '<p>' + '{{ __('request.reason') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].reason) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .reason + '</strong>';
+                                } else {
+                                    activity += '{{ __('request.not_exist') }}';
+                                }
+                                activity += '<p>' + '{{ __('request.note') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].status_note) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .status_note + '</strong>';
+                                } else {
+                                    activity += '{{ __('request.not_exist') }}';
+                                }
+                                activity += '</p>';
+                                activity += '<p style="color: green;">' +
+                                    '{{ __('request.updated_by') }}' + ': ' + (
+                                        response.followup_processes[j].updated_by ||
+                                        '{{ __('request.not_exist') }}') + '</p>';
+
 
                                 activity += '</li>';
                                 activitiesList.append(activity);
@@ -475,8 +475,9 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('finish_contract_procedure', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
+                        url: '{{ route('finish_contract_procedure', ['requestId' => ':requestId']) }}'
+                            .replace(
+                                ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
                             console.log(response);
@@ -490,9 +491,8 @@
                     })
                 }
             });
-      
+
         });
-    
     </script>
 
 
