@@ -213,7 +213,6 @@ class EssentialsManageEmployeeController extends Controller
         if (!empty($request->input('nationality')) && $request->input('nationality') != 'all') {
 
             $users->where('users.nationality_id', $request->input('nationality'));
-          
         }
         if (request()->ajax()) {
 
@@ -898,11 +897,9 @@ class EssentialsManageEmployeeController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
         return redirect()->back()->with('status', $output);
@@ -938,7 +935,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-      
+
 
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -956,8 +953,11 @@ class EssentialsManageEmployeeController extends Controller
             ->with(compact(
                 'roles',
                 'nationalities',
-                'username_ext','countries',
-                'blood_types','spacializations','professions',
+                'username_ext',
+                'countries',
+                'blood_types',
+                'spacializations',
+                'professions',
                 'contact',
                 'locations',
                 'banks',
@@ -1023,11 +1023,9 @@ class EssentialsManageEmployeeController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 
@@ -1081,11 +1079,9 @@ class EssentialsManageEmployeeController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 
@@ -1376,7 +1372,7 @@ class EssentialsManageEmployeeController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-         
+
             DB::beginTransaction();
 
 
@@ -1486,10 +1482,9 @@ class EssentialsManageEmployeeController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 

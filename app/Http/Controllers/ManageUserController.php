@@ -44,11 +44,11 @@ class ManageUserController extends Controller
     public function index()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_create_user= auth()->user()->can('user.create');
-        $can_delete_user= auth()->user()->can('user.delete');
+        $can_create_user = auth()->user()->can('user.create');
+        $can_delete_user = auth()->user()->can('user.delete');
 
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -71,7 +71,7 @@ class ManageUserController extends Controller
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin , $can_create_user , $can_delete_user) {
+                    function ($row) use ($is_admin, $can_create_user, $can_delete_user) {
                         $html = '';
                         if ($is_admin || auth()->user()->can('user.update')) {
 
@@ -118,7 +118,7 @@ class ManageUserController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -154,7 +154,7 @@ class ManageUserController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -209,7 +209,7 @@ class ManageUserController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.view'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -236,7 +236,7 @@ class ManageUserController extends Controller
         try {
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             if (!($is_admin || auth()->user()->can('user.update'))) {
-               //temp  abort(403, 'Unauthorized action.');
+                //temp  abort(403, 'Unauthorized action.');
             }
 
             $business_id = request()->session()->get('user.business_id');
@@ -283,7 +283,7 @@ class ManageUserController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -331,7 +331,7 @@ class ManageUserController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -416,7 +416,7 @@ class ManageUserController extends Controller
             }
 
             //Grant Location permissions
-          //  $this->moduleUtil->giveLocationPermissions($user, $request);
+            //  $this->moduleUtil->giveLocationPermissions($user, $request);
 
             //Assign selected contacts
             if ($user_data['selected_contacts'] == 1) {
@@ -454,10 +454,9 @@ class ManageUserController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 
@@ -488,7 +487,7 @@ class ManageUserController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.delete'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -552,7 +551,7 @@ class ManageUserController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (!($is_admin || auth()->user()->can('superadmin')) && empty(session('previous_user_id'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $user_id = auth()->user()->id;
