@@ -4,7 +4,7 @@
 @section('content')
 
     <section class="content-header">
-        <h1> @lang('essentials::lang.all_payroll_groups')
+        <h1> @lang('agent.payroll')
         </h1>
     </section>
     <!-- Main content -->
@@ -12,28 +12,68 @@
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
                 <div class="col-md-12">
-                    <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#payroll_modal">
-                        <i class="fa fa-plus"></i>
-                        @lang('messages.add')
-                    </button>
-                </div>
-                <br><br><br>
-                <div class="col-md-12">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="payroll_group_table" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>@lang('essentials::lang.name')</th>
-                                    <th>@lang('sale.status')</th>
-                                    <th>@lang('sale.payment_status')</th>
-                                    <th>@lang('essentials::lang.total_gross_amount')</th>
-                                    <th>@lang('lang_v1.added_by')</th>
-                                    <th>@lang('business.location')</th>
-                                    <th>@lang('lang_v1.created_at')</th>
-                                    <th>@lang('messages.action')</th>
-                                </tr>
-                            </thead>
-                        </table>
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#payrolls_groups_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-coins" aria-hidden="true"></i>
+                                @lang('agent.payroll_groups')
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#payrolls_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-layer-group" aria-hidden="true"></i>
+                                @lang('agent.payrolls')
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <br><br>
+                        <div class="tab-pane active" id="payrolls_groups_tab">
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-primary " data-toggle="modal"
+                                    data-target="#payroll_modal">
+                                    <i class="fa fa-plus"></i>
+                                    @lang('messages.add')
+                                </button>
+                            </div>
+                            <br><br><br>
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" id="payroll_group_table"
+                                        style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>@lang('essentials::lang.name')</th>
+                                                <th>@lang('sale.status')</th>
+                                                <th>@lang('sale.payment_status')</th>
+                                                <th>@lang('essentials::lang.total_gross_amount')</th>
+                                                <th>@lang('lang_v1.added_by')</th>
+                                                <th>@lang('lang_v1.created_at')</th>
+                                                <th>@lang('messages.action')</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="payrolls_tab">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" id="payrolls_table" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>@lang('essentials::lang.employee')</th>
+                                                <th>@lang('essentials::lang.month_year')</th>
+                                                <th>@lang('purchase.ref_no')</th>
+                                                <th>@lang('sale.total_amount')</th>
+                                                <th>@lang('sale.payment_status')</th>
+                                                <th>@lang('messages.action')</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -274,31 +314,14 @@
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
             payrolls_table = $('#payrolls_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('agentTimeSheet.index') }}",
-                    data: function(d) {
-                        if ($('#user_id_filter').length) {
-                            d.user_id = $('#user_id_filter').val();
-                        }
-                        if ($('#location_id_filter').length) {
-                            d.location_id = $('#location_id_filter').val();
-                        }
-                        d.month_year = $('#month_year_filter').val();
-                        if ($('#department_id').length) {
-                            d.department_id = $('#department_id').val();
-                        }
-                        if ($('#designation_id').length) {
-                            d.designation_id = $('#designation_id').val();
-                        }
-                    },
+                    url: "{{ route('agentTimeSheet.payrolls') }}",
                 },
                 columnDefs: [{
-                    targets: 7,
+
                     orderable: false,
                     searchable: false,
                 }, ],
@@ -308,14 +331,6 @@
                 columns: [{
                         data: 'user',
                         name: 'user'
-                    },
-                    {
-                        data: 'department',
-                        name: 'dept.name'
-                    },
-                    {
-                        data: 'designation',
-                        name: 'dsgn.name'
                     },
                     {
                         data: 'transaction_date',
@@ -338,10 +353,9 @@
                         name: 'action'
                     },
                 ],
-                fnDrawCallback: function(oSettings) {
-                    __currency_convert_recursively($('#payrolls_table'));
-                },
             });
+
+
             //payroll groups
 
             payroll_group_table = $('#payroll_group_table').DataTable({
@@ -370,10 +384,6 @@
                     {
                         data: 'added_by',
                         name: 'added_by'
-                    },
-                    {
-                        data: 'location_name',
-                        name: 'BL.name'
                     },
                     {
                         data: 'created_at',

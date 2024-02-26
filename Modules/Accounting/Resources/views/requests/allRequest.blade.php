@@ -112,16 +112,16 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
-        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.add_request')) 
-            @slot('tool')
-                <div class="box-tools">
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.add_request'))
+                @slot('tool')
+                    <div class="box-tools">
 
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                        data-target="#addRequestModal">
-                        <i class="fa fa-plus"></i> @lang('request.create_order')
-                    </button>
-                </div>
-            @endslot
+                        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                            data-target="#addRequestModal">
+                            <i class="fa fa-plus"></i> @lang('request.create_order')
+                        </button>
+                    </div>
+                @endslot
             @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
@@ -157,17 +157,22 @@
 
                     <div class="modal-body">
                         <div class="row">
-                            
+
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
-                                {!! Form::select('type',collect($requestTypes)->mapWithKeys(fn($type, $id) => [$id => trans("request.$type")])->toArray(), null, [
-                                    'class' => 'form-control',
-                                    'required',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('essentials::lang.select_type'),
-                                    'id' => 'requestType',
-                                ]) !!}
+                                {!! Form::select(
+                                    'type',
+                                    collect($requestTypes)->mapWithKeys(fn($type, $id) => [$id => trans("request.$type")])->toArray(),
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'style' => 'height: 40px',
+                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'id' => 'requestType',
+                                    ],
+                                ) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('user_id', __('essentials::lang.name') . ':*') !!}
@@ -209,6 +214,13 @@
                                     'id' => 'endDateField',
                                 ]) !!}
                             </div>
+                            {{-- <div class="form-group col-md-6" id="project" style="display: none;">
+                                {!! Form::label('project', __('essentials::lang.project') . ':*') !!}
+                                {!! Form::text('project', null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 60px; width: 250px;',
+                                ]) !!}
+                            </div> --}}
                             <div class="form-group col-md-6" id="escape_time" style="display: none;">
                                 {!! Form::label('escape_time', __('request.escape_time') . ':*') !!}
                                 {!! Form::time('escape_time', null, [
@@ -416,14 +428,14 @@
                         <div class="row">
 
                             <div class="workflow-container" id="workflow-container">
-                           
+
                             </div>
 
 
                         </div>
 
 
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('request.worker_details')</h4>
@@ -441,18 +453,19 @@
 
                                 <h4>@lang('request.attachments')</h4>
                                 <ul id="attachments-list">
-                                    
+
                                 </ul>
                             </div>
                         </div>
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
-                        
+
                             <div class="form-group">
                                 <label for="attachment">
                                     <h4>@lang('request.add_attachment')</h4>
                                 </label>
-                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment"
+                                    name="attachment">
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         </form>
@@ -532,7 +545,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                  
+
                     {
                         data: 'request_type_id',
                         render: function(data, type, row) {
@@ -569,10 +582,14 @@
                                 return '@lang('request.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('request.cancleContractRequest')';
-                            }  else if (data === 'WarningRequest') {
+                            } else if (data === 'WarningRequest') {
                                 return '@lang('request.WarningRequest')';
-                            }else if (data === 'passportRenewal') {
+                            } else if (data === 'passportRenewal') {
                                 return '@lang('request.passportRenewal')';
+                            } else if (data === 'AjirAsked') {
+                                return '@lang('request.AjirAsked')';
+                            } else if (data === 'AlternativeWorker') {
+                                return '@lang('request.AlternativeWorker')';
                             } else {
                                 return data;
                             }
@@ -591,7 +608,7 @@
 
                     {
                         data: 'can_return',
-                        
+
                     },
 
 
@@ -675,18 +692,19 @@
                 // var data = requests_table.row(this).data();
                 // var requestId = data.id;
 
-            
+
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'
+                            .replace(
+                                ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
                             console.log(response);
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
+                            var attachmentsList = $('#attachments-list');
                             var workerList = $('#worker-list');
 
                             workflowContainer.html('');
@@ -745,45 +763,44 @@
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
-                                // if (j === 0) {
-                                //     activity += '<p>' +
-                                //         '{{ __('essentials::lang.created_department_name') }}' + ': ' +
-                                //         response.followup_processes[j].department.name + '</p>';
-                                // } else {
-                                 
-                                    activity += '<p>' +
-                                        '{{ __('essentials::lang.department_name') }}' + ': ' +
-                                        response.followup_processes[j].department.name;
+                                activity += '<p>' +
+                                    '{{ __('request.created_department_name') }}' +
+                                    ': ' +
+                                    response.request_info.started_depatment.name + '</p>';
 
-                                    activity +=
-                                        '<p class="{{ __('essentials::lang.status') }} ' +
-                                        response.followup_processes[j].status.toLowerCase() +
-                                        '">' +
-                                        '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
-                                        response.followup_processes[j].status + '</p>';
+                                activity += '<p>' +
+                                    '{{ __('essentials::lang.department_name') }}' + ': ' +
+                                    response.followup_processes[j].department.name;
 
-                                    activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].reason) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .reason + '</strong>';
-                                    } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
-                                    }
-                                    activity += '<p>' + '{{ __('essentials::lang.note') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].status_note) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .status_note + '</strong>';
-                                    } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
-                                    }
-                                    activity += '</p>';
-                                    activity += '<p style="color: green;">' +
-                                        '{{ __('essentials::lang.updated_by') }}' + ': ' + (
-                                            response.followup_processes[j].updated_by ||
-                                            '{{ __('essentials::lang.not_exist') }}') + '</p>';
-                                
+                                activity +=
+                                    '<p class="{{ __('essentials::lang.status') }} ' +
+                                    response.followup_processes[j].status.toLowerCase() +
+                                    '">' +
+                                    '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
+                                    response.followup_processes[j].status + '</p>';
+
+                                activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].reason) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .reason + '</strong>';
+                                } else {
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
+                                }
+                                activity += '<p>' + '{{ __('essentials::lang.note') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].status_note) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .status_note + '</strong>';
+                                } else {
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
+                                }
+                                activity += '</p>';
+                                activity += '<p style="color: green;">' +
+                                    '{{ __('essentials::lang.updated_by') }}' + ': ' + (
+                                        response.followup_processes[j].updated_by ||
+                                        '{{ __('essentials::lang.not_exist') }}') + '</p>';
+
 
                                 activity += '</li>';
                                 activitiesList.append(activity);
@@ -792,11 +809,15 @@
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
-                                    attachment += '<p>';
-                                   
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("request.attach") }} ' + (j + 1) + '</a>';
-                               
-                                 attachment += '</p>';
+                                attachment += '<p>';
+
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('request.attach') }} ' + (j + 1) + '</a>';
+
+                                attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
@@ -825,228 +846,259 @@
     </script>
 
 
-    
-<script>
-    $(document).ready(function() {
-        var users = @json($users);
-        var mainReasonSelect = $('#mainReasonSelect');
-        var subReasonContainer = $('#sub_reason_container');
-        var subReasonSelect = $('#subReasonSelect');
 
-        function fetchUsersWithSaudiNationality() {
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    <script>
+        $(document).ready(function() {
+            var users = @json($users);
+            var mainReasonSelect = $('#mainReasonSelect');
+            var subReasonContainer = $('#sub_reason_container');
+            var subReasonSelect = $('#subReasonSelect');
+
+            function fetchUsersWithSaudiNationality() {
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
 
 
-            $.ajax({
-                url: '/get-non-saudi-users',
-                type: 'POST',
-                data: {
-                    _token: csrfToken,
-                    users: @json($users)
-                },
-                success: function(data) {
-                    console.log(data.users);
-                    var userSelect = $('#worker');
-                    userSelect.empty();
+                $.ajax({
+                    url: '/get-non-saudi-users',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        users: @json($users)
+                    },
+                    success: function(data) {
+                        console.log(data.users);
+                        var userSelect = $('#worker');
+                        userSelect.empty();
 
-                    $.each(data.users, function(key, value) {
-                        userSelect.append($('<option>', {
-                            value: key,
-                            text: value
-                        }));
-                    });
-
-                  
-                    userSelect.trigger('change');
-                },
-                error: function(xhr) {
-          
-                    console.log('Error:', xhr.responseText);
-                }
-            });
-        }
-        mainReasonSelect.on('change', function() {
-            var selectedMainReason = $(this).val();
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            console.log(selectedMainReason);
-            $.ajax({
-                url: '{{ route('getSubReasons') }}',
-                type: 'POST',
-                data: {
-                    _token: csrfToken,
-                    main_reason: selectedMainReason
-                },
-                success: function(data) {
-                    subReasonSelect.empty();
-
-                    if (data.sub_reasons.length > 0) {
-                        subReasonContainer.show();
-
-                        $.each(data.sub_reasons, function(index, subReason) {
-                            subReasonSelect.append($('<option>', {
-                                value: subReason.id,
-                                text: subReason.name
+                        $.each(data.users, function(key, value) {
+                            userSelect.append($('<option>', {
+                                value: key,
+                                text: value
                             }));
                         });
-                    } else {
-                        subReasonContainer.hide();
+
+
+                        userSelect.trigger('change');
+                    },
+                    error: function(xhr) {
+
+                        console.log('Error:', xhr.responseText);
                     }
-                }
+                });
+            }
+            mainReasonSelect.on('change', function() {
+                var selectedMainReason = $(this).val();
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                console.log(selectedMainReason);
+                $.ajax({
+                    url: '{{ route('getSubReasons') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        main_reason: selectedMainReason
+                    },
+                    success: function(data) {
+                        subReasonSelect.empty();
+
+                        if (data.sub_reasons.length > 0) {
+                            subReasonContainer.show();
+
+                            $.each(data.sub_reasons, function(index, subReason) {
+                                subReasonSelect.append($('<option>', {
+                                    value: subReason.id,
+                                    text: subReason.name
+                                }));
+                            });
+                        } else {
+                            subReasonContainer.hide();
+                        }
+                    }
+                });
+
             });
+
+            $('#requestType').change(handleTypeChange);
+
+            function handleTypeChange() {
+                var selectedId = $('#requestType').val();
+
+                $.ajax({
+                    url: '/get-request-type/' + selectedId,
+                    type: 'GET',
+                    success: function(response) {
+                        var selectedType = response.type;
+
+                        if (selectedType === 'leavesAndDepartures') {
+                            $('#start_date').show();
+
+                        } else {
+                            $('#start_date').hide();
+                        }
+
+                        if (selectedType === 'leavesAndDepartures') {
+                            $('#end_date').show();
+                        } else {
+                            $('#end_date').hide();
+                        }
+                        // if (selectedType === 'AlternativeWorker') {
+                        //     $('#project').show();
+                        // } else {
+                        //     $('#project').hide();
+                        // }
+                        if (selectedType === 'returnRequest') {
+                            $('#exit_date').show();
+                            $('#return_date').show();
+                            fetchUsersWithSaudiNationality();
+
+                        } else {
+                            $('#exit_date').hide();
+                            $('#return_date').hide();
+
+                        }
+                        if (selectedType === 'leavesAndDepartures') {
+                            $('#leaveType').show();
+                        } else {
+                            $('#leaveType').hide();
+                        }
+                        if (selectedType === 'workInjuriesRequest') {
+                            $('#workInjuriesDate').show();
+                        } else {
+                            $('#workInjuriesDate').hide();
+                        }
+
+
+                        if (selectedType === 'escapeRequest') {
+                            $('#escape_time').show();
+                            $('#escape_date').show();
+                            fetchUsersWithSaudiNationality();
+                        } else {
+                            $('#escape_time').hide();
+                            $('#escape_date').hide();
+                        }
+                        if (selectedType === 'advanceSalary') {
+                            $('#installmentsNumber').show();
+                            $('#monthlyInstallment').show();
+                            $('#amount').show();
+
+                        } else {
+                            $('#installmentsNumber').hide();
+                            $('#monthlyInstallment').hide();
+                            $('#amount').hide();
+                        }
+                        if (selectedType === 'residenceEditRequest') {
+                            $('#resEditType').show();
+                            fetchUsersWithSaudiNationality();
+
+
+                        } else {
+                            $('#resEditType').hide();
+
+                        }
+                        if (selectedType === 'baladyCardRequest') {
+                            $('#baladyType').show();
+
+
+                        } else {
+                            $('#baladyType').hide();
+
+                        }
+                        if (selectedType === 'insuranceUpgradeRequest') {
+                            $('#ins_class').show();
+
+
+                        } else {
+                            $('#ins_class').hide();
+
+                        }
+                        if (selectedType === 'cancleContractRequest') {
+                            $('#main_reason').show();
+
+
+                        } else {
+                            $('#main_reason').hide();
+
+                        }
+                        if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest') {
+                            $('#visa_number').show();
+
+
+                        } else {
+                            $('#visa_number').hide();
+
+                        }
+                        if (selectedType === 'atmCard') {
+                            $('#atmType').show();
+
+
+                        } else {
+                            $('#atmType').hide();
+
+                        }
+                        if (selectedType === 'exitRequest') {
+                            fetchUsersWithSaudiNationality();
+
+                        }
+
+                        if (selectedType === 'passportRenewal') {
+                            fetchUsersWithSaudiNationality();
+
+                        }
+
+
+                    },
+                    error: function(xhr) {
+
+                        console.log('Error:', xhr.responseText);
+                    }
+                });
+            }
+
+            $('#addRequestModal').on('shown.bs.modal', function(e) {
+                $('#worker').select2({
+                    dropdownParent: $(
+                        '#addRequestModal'),
+                    width: '100%',
+                });
+
+            });
+
+
+
+
 
         });
+    </script>
 
-        $('#requestType').change(handleTypeChange);
 
-        function handleTypeChange() {
-            var selectedId = $('#requestType').val();
 
-            $.ajax({
-                url: '/get-request-type/' + selectedId,
-                type: 'GET',
-                success: function(response) {
-                    var selectedType = response.type;
+    <script>
+        $(document).ready(function() {
+            $(document).on('change', '.task-checkbox', function() {
+                var taskId = $(this).data('task-id');
 
-                    if (selectedType === 'leavesAndDepartures') {
-                        $('#start_date').show();
+                var isChecked = $(this).is(':checked') ? 1 : 0;
 
-                    } else {
-                        $('#start_date').hide();
+                $.ajax({
+                    url: '/update-task-status',
+                    method: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        taskId: taskId,
+                        isDone: isChecked
+                    },
+                    success: function(response) {
+                        window.location.reload();
+
+                        console.log('Task status updated successfully.');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to update task status.');
                     }
-
-                    if (selectedType === 'leavesAndDepartures') {
-                        $('#end_date').show();
-                    } else {
-                        $('#end_date').hide();
-                    }
-                    if (selectedType === 'returnRequest') {
-                        $('#exit_date').show();
-                        $('#return_date').show();
-                        fetchUsersWithSaudiNationality();
-
-                    } else {
-                        $('#exit_date').hide();
-                        $('#return_date').hide();
-
-                    }
-                    if (selectedType === 'leavesAndDepartures') {
-                        $('#leaveType').show();
-                    } else {
-                        $('#leaveType').hide();
-                    }
-                    if (selectedType === 'workInjuriesRequest') {
-                        $('#workInjuriesDate').show();
-                    } else {
-                        $('#workInjuriesDate').hide();
-                    }
-
-
-                    if (selectedType === 'escapeRequest') {
-                        $('#escape_time').show();
-                        $('#escape_date').show();
-                        fetchUsersWithSaudiNationality();
-                    } else {
-                        $('#escape_time').hide();
-                        $('#escape_date').hide();
-                    }
-                    if (selectedType === 'advanceSalary') {
-                        $('#installmentsNumber').show();
-                        $('#monthlyInstallment').show();
-                        $('#amount').show();
-
-                    } else {
-                        $('#installmentsNumber').hide();
-                        $('#monthlyInstallment').hide();
-                        $('#amount').hide();
-                    }
-                    if (selectedType === 'residenceEditRequest') {
-                        $('#resEditType').show();
-                        fetchUsersWithSaudiNationality();
-
-
-                    } else {
-                        $('#resEditType').hide();
-
-                    }
-                    if (selectedType === 'baladyCardRequest') {
-                        $('#baladyType').show();
-
-
-                    } else {
-                        $('#baladyType').hide();
-
-                    }
-                    if (selectedType === 'insuranceUpgradeRequest') {
-                        $('#ins_class').show();
-
-
-                    } else {
-                        $('#ins_class').hide();
-
-                    }
-                    if (selectedType === 'cancleContractRequest') {
-                        $('#main_reason').show();
-
-
-                    } else {
-                        $('#main_reason').hide();
-
-                    }
-                    if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest') {
-                        $('#visa_number').show();
-
-
-                    } else {
-                        $('#visa_number').hide();
-
-                    }
-                    if (selectedType === 'atmCard') {
-                        $('#atmType').show();
-
-
-                    } else {
-                        $('#atmType').hide();
-
-                    }
-                    if (selectedType === 'exitRequest') {
-                        fetchUsersWithSaudiNationality();
-
-                    } 
-                   
-                    if (selectedType === 'passportRenewal') {
-                        fetchUsersWithSaudiNationality();
-
-                    } 
-
-
-                },
-                error: function(xhr) {
-                   
-                    console.log('Error:', xhr.responseText);
-                }
+                });
             });
-        }
-
-        $('#addRequestModal').on('shown.bs.modal', function(e) {
-            $('#worker').select2({
-                dropdownParent: $(
-                    '#addRequestModal'),
-                width: '100%',
-            });
-
         });
-
-
-      
-
-
-    });
-</script>
-
-
-
-
+    </script>
 
 
 @endsection

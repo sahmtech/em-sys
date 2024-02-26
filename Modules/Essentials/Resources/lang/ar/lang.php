@@ -143,6 +143,7 @@ return [
   "within_current_month" => "خلال الشهر الحالي",
   "within_current_fy" => "خلال السنة المالية الحالية",
   "payroll" => " مسير الرواتب",
+  "payrolls" => " مسيرات الرواتب",
   "payroll_create_edit" => "الراتب",
   "all_payrolls" => "كل مسيرات الرواتب",
   "proceed" => "إكمال",

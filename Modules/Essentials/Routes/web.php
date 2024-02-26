@@ -84,13 +84,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/cards/create', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'create'])->name('create.Cards');
         Route::post('/cards/store', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'store'])->name('card.store');
         Route::get('/get-responsible-data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'get_responsible_data'])->name('get_responsible_data');
-       
+
         Route::post('/get_selected_workcards_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'getSelectedRowsData'])->name('getSelectedworkcardData');
         Route::post('/get__operation_selected_workcards_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'getOperationSelectedworkcardData'])->name('getOperationSelectedworkcardData');
-        
+
         Route::post('/post_renew_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'postRenewData'])->name('postRenewData');
         Route::post('/post_operation_renew_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'postOperationRenewData'])->name('postOperationRenewData');
-        
+
         Route::get('/get_residency_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports'])->name('getResidencyreport');
 
 
@@ -285,6 +285,20 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             ->name('insurance_companies_contracts.delete');
     });
 
+    Route::prefix('payrolls')->group(function () {
+        Route::get('/dashboard',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'dashboard'])->name('payrolls_dashboard');
+        Route::get('/location-employees', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnLocation']);
+        Route::get('/my-payrolls', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getMyPayrolls']);
+        Route::get('/get-allowance-deduction-row', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getAllowanceAndDeductionRow']);
+        Route::get('/payroll-group-datatable', [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollGroupDatatable']);
+        Route::get('/view/{id}/payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewPayrollGroup']);
+        Route::get('/edit/{id}/payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEditPayrollGroup']);
+        Route::post('/update-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getUpdatePayrollGroup']);
+        Route::get('/payroll-group/{id}/add-payment', [Modules\Essentials\Http\Controllers\PayrollController::class, 'addPayment']);
+        Route::post('/post-payment-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'postAddPayment']);
+        Route::resource('/payroll', 'Modules\Essentials\Http\Controllers\PayrollController');
+        Route::resource('/holiday', 'EssentialsHolidayController');
+    });
 
     Route::prefix('hrm')->group(function () {
 
@@ -432,17 +446,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             [Modules\Essentials\Http\Controllers\AttendanceController::class, 'getUserAttendanceSummary']
         );
 
-        Route::get('/location-employees', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnLocation']);
-        Route::get('/my-payrolls', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getMyPayrolls']);
-        Route::get('/get-allowance-deduction-row', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getAllowanceAndDeductionRow']);
-        Route::get('/payroll-group-datatable', [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollGroupDatatable']);
-        Route::get('/view/{id}/payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewPayrollGroup']);
-        Route::get('/edit/{id}/payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEditPayrollGroup']);
-        Route::post('/update-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getUpdatePayrollGroup']);
-        Route::get('/payroll-group/{id}/add-payment', [Modules\Essentials\Http\Controllers\PayrollController::class, 'addPayment']);
-        Route::post('/post-payment-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'postAddPayment']);
-        Route::resource('/payroll', 'Modules\Essentials\Http\Controllers\PayrollController');
-        Route::resource('/holiday', 'EssentialsHolidayController');
+
 
         Route::get('/shift/assign-users/{shift_id}', [Modules\Essentials\Http\Controllers\ShiftController::class, 'getAssignUsers']);
         Route::post('/shift/assign-users', [Modules\Essentials\Http\Controllers\ShiftController::class, 'postAssignUsers']);

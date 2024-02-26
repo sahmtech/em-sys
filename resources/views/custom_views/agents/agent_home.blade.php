@@ -180,90 +180,90 @@
                     }
                 });
             });
-            var requests_table = $('#requests_table').DataTable({
-                processing: true,
-                serverSide: true,
-                fixedHeader: false,
-                scrollCollapse: true,
-                paging: false,
-                info: false,
-                dom: 'rtip',
-                ajax: {
-                    url: "{{ route('agent_workers_requests') }}"
-                },
+            // var requests_table = $('#requests_table').DataTable({
+            //     processing: true,
+            //     serverSide: true,
+            //     fixedHeader: false,
+            //     scrollCollapse: true,
+            //     paging: false,
+            //     info: false,
+            //     dom: 'rtip',
+            //     ajax: {
+            //         url: "{{ route('agent_workers_requests') }}"
+            //     },
 
-                columns: [
+            //     columns: [
 
-                    {
-                        data: 'request_no'
-                    },
+            //         {
+            //             data: 'request_no'
+            //         },
 
-                    {
-                        data: 'user'
-                    },
-                    {
-                        data: 'id_proof_number'
-                    },
-                    {
-                        data: 'assigned_to'
-                    },
-                    {
-                        data: 'type',
-                        render: function(data, type, row) {
-                            if (data === 'exitRequest') {
-                                return '@lang('followup::lang.exitRequest')';
+            //         {
+            //             data: 'user'
+            //         },
+            //         {
+            //             data: 'id_proof_number'
+            //         },
+            //         {
+            //             data: 'assigned_to'
+            //         },
+            //         {
+            //             data: 'type',
+            //             render: function(data, type, row) {
+            //                 if (data === 'exitRequest') {
+            //                     return '@lang('followup::lang.exitRequest')';
 
-                            } else if (data === 'returnRequest') {
-                                return '@lang('followup::lang.returnRequest')';
-                            } else if (data === 'escapeRequest') {
-                                return '@lang('followup::lang.escapeRequest')';
-                            } else if (data === 'advanceSalary') {
-                                return '@lang('followup::lang.advanceSalary')';
-                            } else if (data === 'leavesAndDepartures') {
-                                return '@lang('followup::lang.leavesAndDepartures')';
-                            } else if (data === 'atmCard') {
-                                return '@lang('followup::lang.atmCard')';
-                            } else if (data === 'residenceRenewal') {
-                                return '@lang('followup::lang.residenceRenewal')';
-                            } else if (data === 'workerTransfer') {
-                                return '@lang('followup::lang.workerTransfer')';
-                            } else if (data === 'residenceCard') {
-                                return '@lang('followup::lang.residenceCard')';
-                            } else if (data === 'workInjuriesRequest') {
-                                return '@lang('followup::lang.workInjuriesRequest')';
-                            } else if (data === 'residenceEditRequest') {
-                                return '@lang('followup::lang.residenceEditRequest')';
-                            } else if (data === 'baladyCardRequest') {
-                                return '@lang('followup::lang.baladyCardRequest')';
-                            } else if (data === 'mofaRequest') {
-                                return '@lang('followup::lang.mofaRequest')';
-                            } else if (data === 'insuranceUpgradeRequest') {
-                                return '@lang('followup::lang.insuranceUpgradeRequest')';
-                            } else if (data === 'chamberRequest') {
-                                return '@lang('followup::lang.chamberRequest')';
-                            } else if (data === 'cancleContractRequest') {
-                                return '@lang('followup::lang.cancleContractRequest')';
-                            } else {
-                                return data;
-                            }
-                        }
-                    },
-                    {
-                        data: 'created_at'
-                    },
-                    {
-                        data: 'status',
+            //                 } else if (data === 'returnRequest') {
+            //                     return '@lang('followup::lang.returnRequest')';
+            //                 } else if (data === 'escapeRequest') {
+            //                     return '@lang('followup::lang.escapeRequest')';
+            //                 } else if (data === 'advanceSalary') {
+            //                     return '@lang('followup::lang.advanceSalary')';
+            //                 } else if (data === 'leavesAndDepartures') {
+            //                     return '@lang('followup::lang.leavesAndDepartures')';
+            //                 } else if (data === 'atmCard') {
+            //                     return '@lang('followup::lang.atmCard')';
+            //                 } else if (data === 'residenceRenewal') {
+            //                     return '@lang('followup::lang.residenceRenewal')';
+            //                 } else if (data === 'workerTransfer') {
+            //                     return '@lang('followup::lang.workerTransfer')';
+            //                 } else if (data === 'residenceCard') {
+            //                     return '@lang('followup::lang.residenceCard')';
+            //                 } else if (data === 'workInjuriesRequest') {
+            //                     return '@lang('followup::lang.workInjuriesRequest')';
+            //                 } else if (data === 'residenceEditRequest') {
+            //                     return '@lang('followup::lang.residenceEditRequest')';
+            //                 } else if (data === 'baladyCardRequest') {
+            //                     return '@lang('followup::lang.baladyCardRequest')';
+            //                 } else if (data === 'mofaRequest') {
+            //                     return '@lang('followup::lang.mofaRequest')';
+            //                 } else if (data === 'insuranceUpgradeRequest') {
+            //                     return '@lang('followup::lang.insuranceUpgradeRequest')';
+            //                 } else if (data === 'chamberRequest') {
+            //                     return '@lang('followup::lang.chamberRequest')';
+            //                 } else if (data === 'cancleContractRequest') {
+            //                     return '@lang('followup::lang.cancleContractRequest')';
+            //                 } else {
+            //                     return data;
+            //                 }
+            //             }
+            //         },
+            //         {
+            //             data: 'created_at'
+            //         },
+            //         {
+            //             data: 'status',
 
-                    },
-                    {
-                        data: 'note'
-                    },
-
-
+            //         },
+            //         {
+            //             data: 'note'
+            //         },
 
 
-                ],
-            });
+
+
+            //     ],
+            // });
 
 
         });

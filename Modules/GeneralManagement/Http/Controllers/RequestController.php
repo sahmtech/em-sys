@@ -2,9 +2,7 @@
 
 namespace Modules\GeneralManagement\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleCompany;
-use App\Company;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Routing\Controller;
 use App\User;;
@@ -14,10 +12,12 @@ use App\Utils\ModuleUtil;
 use App\Utils\RequestUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
 
+use App\Request as UserRequest;
+use App\RequestProcess;
 use Carbon\Carbon;
-
+use Illuminate\Http\Request;
+use Modules\CEOManagment\Entities\RequestsType;
 
 class RequestController extends Controller
 {
@@ -88,22 +88,11 @@ class RequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $companies_ids = Company::pluck('id')->toArray();
+
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
-
-            $companies_ids = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
-                }
-            }
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
@@ -113,28 +102,43 @@ class RequestController extends Controller
             ->pluck('id')->toArray();
 
 
-        $escalatedRequests = FollowupWorkerRequest::where('followup_worker_requests_process.sub_status', 'escalateRequest')->select([
-            'followup_worker_requests.request_no',
-            'followup_worker_requests_process.id as process_id',
-            'followup_worker_requests.id',
-            'followup_worker_requests.type as type',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-            'followup_worker_requests.created_at',
-            'followup_worker_requests_process.status',
-            'followup_worker_requests_process.status_note as note',
-            'followup_worker_requests.reason',
-            'essentials_wk_procedures.department_id as department_id',
-            'users.id_proof_number',
-            'essentials_wk_procedures.can_return',
-            'users.assigned_to',
-            'essentials_procedure_escalations.escalates_to'
+        $escalatedRequests = null;
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->groupBy('request_id');
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+
+        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->select([
+
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+
+            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+
+            'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+
+
+            'procedure_escalations.escalates_to'
 
         ])
-            ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-            ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-            ->join('essentials_procedure_escalations', 'essentials_procedure_escalations.procedure_id', '=', 'essentials_wk_procedures.id')
-            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('essentials_procedure_escalations.escalates_to', $departmentIds)
-            ->where('followup_worker_requests_process.status', 'pending')->where('users.status', '!=', 'inactive')->whereIn('users.id', $userIds);
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('requests.id', '=', 'latest_process.request_id');
+            })
+            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+            ->leftjoin('procedure_tasks', 'procedure_tasks.procedure_id', '=', 'wk_procedures.id')
+            ->leftjoin('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+            ->leftjoin('request_procedure_tasks', function ($join) {
+                $join->on('request_procedure_tasks.procedure_task_id', '=', 'procedure_tasks.id')
+                    ->where('request_procedure_tasks.request_id', '=', 'requests.id');
+            })
+
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+
+            ->join('procedure_escalations', 'procedure_escalations.procedure_id', '=', 'wk_procedures.id')
+
+            ->whereIn('requests.related_to', $userIds)->whereIn('procedure_escalations.escalates_to', $departmentIds)
+            ->where('process.status', 'pending')->where('users.status', '!=', 'inactive')->groupBy('requests.id');
 
 
         if (request()->ajax()) {
@@ -144,8 +148,12 @@ class RequestController extends Controller
 
                 ->editColumn('created_at', function ($row) {
 
-
                     return Carbon::parse($row->created_at);
+                })
+                ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                    if ($row->request_type_id) {
+                        return $allRequestTypes[$row->request_type_id];
+                    }
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
@@ -170,5 +178,28 @@ class RequestController extends Controller
         }
         $statuses = $this->statuses;
         return view('generalmanagement::requests.escalate_requests')->with(compact('statuses'));
+    }
+
+    public function changeEscalationStatus(Request $request)
+    {
+        try {
+
+            UserRequest::where('id', $request->request_id)->update(['status' => $request->status]);
+            RequestProcess::where('request_id', $request->request_id)->where('status', 'pending')->update(['status' => $request->status]);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
     }
 }

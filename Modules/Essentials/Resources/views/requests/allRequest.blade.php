@@ -161,7 +161,7 @@
 
                     <div class="modal-body">
                         <div class="row">
-                            
+
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('request.type') . ':*') !!}
@@ -585,11 +585,13 @@
                                 return '@lang('request.WarningRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('request.cancleContractRequest')';
-                            }
-                            else if (data === 'passportRenewal') {
+                            } else if (data === 'passportRenewal') {
                                 return '@lang('request.passportRenewal')';
-                            } 
-                            else {
+                            } else if (data === 'AjirAsked') {
+                                return '@lang('request.AjirAsked')';
+                            } else if (data === 'AlternativeWorker') {
+                                return '@lang('request.AlternativeWorker')';
+                            } else {
                                 return data;
                             }
                         }
@@ -774,13 +776,10 @@
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
-                                // if (j === 0) {
-                                //     activity += '<p>' +
-                                //         '{{ __('request.created_department_name') }}' +
-                                //         ': ' +
-                                //         response.followup_processes[j].department.name + '</p>';
-                                // } else {
-
+                                activity += '<p>' +
+                                    '{{ __('request.created_department_name') }}' +
+                                    ': ' +
+                                    response.request_info.started_depatment.name + '</p>';
                                 activity += '<p>' +
                                     '{{ __('request.department_name') }}' + ': ' +
                                     response.followup_processes[j].department.name;
@@ -893,11 +892,11 @@
                             }));
                         });
 
-                      
+
                         userSelect.trigger('change');
                     },
                     error: function(xhr) {
-              
+
                         console.log('Error:', xhr.responseText);
                     }
                 });
@@ -1048,17 +1047,17 @@
                         if (selectedType === 'exitRequest') {
                             fetchUsersWithSaudiNationality();
 
-                        } 
-                       
+                        }
+
                         if (selectedType === 'passportRenewal') {
                             fetchUsersWithSaudiNationality();
 
-                        } 
+                        }
 
 
                     },
                     error: function(xhr) {
-                       
+
                         console.log('Error:', xhr.responseText);
                     }
                 });
@@ -1074,9 +1073,36 @@
             });
 
 
-          
 
 
+
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $(document).on('change', '.task-checkbox', function() {
+                var taskId = $(this).data('task-id');
+
+                var isChecked = $(this).is(':checked') ? 1 : 0;
+
+                $.ajax({
+                    url: '/update-task-status',
+                    method: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        taskId: taskId,
+                        isDone: isChecked
+                    },
+                    success: function(response) {
+                        window.location.reload();
+
+                        console.log('Task status updated successfully.');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to update task status.');
+                    }
+                });
+            });
         });
     </script>
 
