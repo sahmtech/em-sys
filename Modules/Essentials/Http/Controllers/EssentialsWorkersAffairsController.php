@@ -108,7 +108,8 @@ class EssentialsWorkersAffairsController extends Controller
             ->with(['country', 'contract', 'OfficialDocument']);
 
         $users->select(
-            'users.*','users.id as worker_id',
+            'users.*',
+            'users.id as worker_id',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )
@@ -120,14 +121,12 @@ class EssentialsWorkersAffairsController extends Controller
             $users =  $users->where('users.company_id', request()->input('company'));
         }
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-       
-            if(request()->input('project_name')=='none'){
+
+            if (request()->input('project_name') == 'none') {
                 $users = $users->whereNull('users.assigned_to');
-            }
-            else{
+            } else {
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
-            
         }
 
         if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
@@ -267,11 +266,9 @@ class EssentialsWorkersAffairsController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
         return redirect()->back()->with('status', $output);
@@ -422,11 +419,9 @@ class EssentialsWorkersAffairsController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 
@@ -762,7 +757,7 @@ class EssentialsWorkersAffairsController extends Controller
                 }
             }
             foreach ($offical_documents_types  as  $index => $offical_documents_type) {
-           
+
                 if (
                     $offical_documents_type
                 ) {
@@ -803,10 +798,9 @@ class EssentialsWorkersAffairsController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
         return redirect()->route('show_workers_affairs', ['id' => $id])->with('status', $output);

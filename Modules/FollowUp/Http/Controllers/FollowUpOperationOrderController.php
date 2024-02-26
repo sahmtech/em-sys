@@ -41,12 +41,12 @@ class FollowUpOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-     //   $contracts= salesContract::all()->pluck('id','contract_number');
+        //   $contracts= salesContract::all()->pluck('id','contract_number');
         $contracts = DB::table('sales_orders_operations')
-        ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-        ->select('sales_contracts.number_of_contract as contract_number')
-        ->get();
-        
+            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+            ->select('sales_contracts.number_of_contract as contract_number')
+            ->get();
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
@@ -72,7 +72,7 @@ class FollowUpOperationOrderController extends Controller
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
-            $operations->whereIn('contacts.id',$contacts_ids);
+            $operations->whereIn('contacts.id', $contacts_ids);
         }
 
 
@@ -189,10 +189,9 @@ class FollowUpOperationOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 
@@ -252,10 +251,9 @@ class FollowUpOperationOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
         }
 

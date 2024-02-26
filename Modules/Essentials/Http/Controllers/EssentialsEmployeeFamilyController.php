@@ -42,7 +42,7 @@ class EssentialsEmployeeFamilyController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -61,7 +61,7 @@ class EssentialsEmployeeFamilyController extends Controller
                 'essentials_employees_families.eqama_number',
                 'essentials_employees_families.nationality_id',
 
-            ])->orderby('id','desc');
+            ])->orderby('id', 'desc');
 
         if (request()->ajax()) {
 
@@ -111,7 +111,7 @@ class EssentialsEmployeeFamilyController extends Controller
         return view('essentials::employee_affairs.employee_families.index')->with(compact('users'));
     }
 
-    
+
     public function import_index()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -172,7 +172,7 @@ class EssentialsEmployeeFamilyController extends Controller
 
                     if (!empty($value[0])) {
                         $emp_array['emp_eqama_no'] =  intval($value[0]);
-                      
+
 
                         $proof_number = User::where('id_proof_number', $emp_array['emp_eqama_no'])->first();
                         //  $family_proof_number=EssentialsEmployeesFamily::where('eqama_number',$emp_array['emp_eqama_no'])->first();
@@ -197,7 +197,7 @@ class EssentialsEmployeeFamilyController extends Controller
 
                     if (!empty($value[2])) {
                         $emp_array['family_eqama_no'] = intval($value[2]);
-                       
+
                         $business = EssentialsEmployeesFamily::where('eqama_number', $emp_array['family_eqama_no'])->first();
 
                         if ($business) {
@@ -235,7 +235,7 @@ class EssentialsEmployeeFamilyController extends Controller
                     $formated_data[] = $emp_array;
                 }
 
-            
+
                 if (!$is_valid) {
                     throw new \Exception($error_msg);
                 }
@@ -259,7 +259,6 @@ class EssentialsEmployeeFamilyController extends Controller
                         $family->gender = $emp_data['gender'];
                         $family->employee_id = $user->id;
                         $family->save();
-                     
                     }
                 }
 
@@ -276,12 +275,10 @@ class EssentialsEmployeeFamilyController extends Controller
 
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
-
             return redirect()->route('import-employees-familiy')->with('notification', $output);
         }
         // $type = ! empty($contact->type) && $contact->type != 'both' ? $contact->type : 'supplier';

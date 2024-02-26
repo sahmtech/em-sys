@@ -55,9 +55,9 @@ class AttendanceController extends Controller
         $can_view_own_attendance = auth()->user()->can('essentials.view_own_attendance');
 
         if (!$can_crud_all_attendance && !$can_view_own_attendance) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
-        $statuses = EssentialsAttendanceStatus::pluck( 'name','id');
+        $statuses = EssentialsAttendanceStatus::pluck('name', 'id');
         if (request()->ajax()) {
             $attendance = EssentialsAttendance::where('essentials_attendances.business_id', $business_id)
                 ->join('users as u', 'u.id', '=', 'essentials_attendances.user_id')
@@ -106,16 +106,15 @@ class AttendanceController extends Controller
             return Datatables::of($attendance)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin,  $can_edit_all_attendance ,   $can_delete_all_attendance) {
+                    function ($row) use ($is_admin,  $can_edit_all_attendance,   $can_delete_all_attendance) {
                         $html = '';
-                        if ($is_admin || $can_edit_all_attendance  ) {
-                            $html .= '<a href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$row->id])}}  " class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                        if ($is_admin || $can_edit_all_attendance) {
+                            $html .= '<a href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$row->id])}}  " class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                             &nbsp;';
-                          
                         }
-                       if ($is_admin || $can_delete_all_attendance  ){
-                           $html .= '<button class="btn btn-xs btn-danger delete-attendance" data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@destroy\', [$row->id])}}"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                       }
+                        if ($is_admin || $can_delete_all_attendance) {
+                            $html .= '<button class="btn btn-xs btn-danger delete-attendance" data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@destroy\', [$row->id])}}"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
                         return $html;
                     }
                     // '<button data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>
@@ -504,7 +503,7 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_crud_attendance_by_shift= auth()->user()->can('essentials.crud_attendance_by_shift');
+        $can_crud_attendance_by_shift = auth()->user()->can('essentials.crud_attendance_by_shift');
         // $can_add_attendance_by_shift= auth()->user()->can('essentials.add_attendance_by_shift');
         // $can_edit_attendance_by_shift= auth()->user()->can('essentials.edit_attendance_by_shift');
 
@@ -691,10 +690,9 @@ class AttendanceController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.somthing_went_wrong'),
             ];
 
             return redirect()->back()->with('notification', $output);

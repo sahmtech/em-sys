@@ -231,7 +231,6 @@ class VisaCardController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
                 'msg' => __('messages.somthing_went_wrong'),
