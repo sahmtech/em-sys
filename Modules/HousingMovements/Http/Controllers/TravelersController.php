@@ -568,42 +568,48 @@ class TravelersController extends Controller
                     $worker = IrProposedLabor::with('visa')->find($data['worker_id']);
 
                     if ($worker) {
-                        User::create([
-                            'first_name' => $worker->first_name,
-                            'mid_name' => $worker->mid_name,
-                            'last_name' => $worker->last_name,
-                            'age' => $worker->age,
-                            'gender' => $worker->gender,
-                            'email' => $worker->email,
-                            'profile_image' => $worker->profile_image,
-                            'dob' => $worker->dob,
-                            'marital_status' => $worker->marital_status,
-                            'blood_group' => $worker->blood_group,
-                            'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract->project->id,
-                            'contact_number' => $worker->contact_number,
-                            'permanent_address' => $worker->permanent_address,
-                            'current_address' => $worker->current_address,
-                            'passport_number' => $worker->passport_number,
-                            'nationality_id' => $worker->transactionSellLine?->service?->nationality?->id ?? null,
-                            'business_id' => $business_id,
-                            'user_type' => 'worker',
-                            'border_no' => $data['border_no'],
-                            'proposal_worker_id' => $data['worker_id'],
+                        $border_number = User::where('border_no', $data['border_no'])->get();
+                        if ($border_number) {
+                            $output = ['success' => 1, 'msg' => __('housingmovements.border_no_exist')];
+                        } else {
 
-                        ]);
-                        $worker->update(['arrival_status' => 1]);
+                            User::create([
+                                'first_name' => $worker->first_name,
+                                'mid_name' => $worker->mid_name,
+                                'last_name' => $worker->last_name,
+                                'age' => $worker->age,
+                                'gender' => $worker->gender,
+                                'email' => $worker->email,
+                                'profile_image' => $worker->profile_image,
+                                'dob' => $worker->dob,
+                                'marital_status' => $worker->marital_status,
+                                'blood_group' => $worker->blood_group,
+                                'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract->project->id,
+                                'contact_number' => $worker->contact_number,
+                                'permanent_address' => $worker->permanent_address,
+                                'current_address' => $worker->current_address,
+                                'passport_number' => $worker->passport_number,
+                                'nationality_id' => $worker->transactionSellLine?->service?->nationality?->id ?? null,
+                                'business_id' => $business_id,
+                                'user_type' => 'worker',
+                                'border_no' => $data['border_no'],
+                                'proposal_worker_id' => $data['worker_id'],
+
+                            ]);
+                            $worker->update(['arrival_status' => 1]);
 
 
-                        $allWorkersArrived = IrProposedLabor::where('visa_id', $worker->visa_id)
-                            ->where('arrival_status', 1)
-                            ->count() == IrProposedLabor::where('visa_id', $worker->visa_id)
-                            ->count();
+                            $allWorkersArrived = IrProposedLabor::where('visa_id', $worker->visa_id)
+                                ->where('arrival_status', 1)
+                                ->count() == IrProposedLabor::where('visa_id', $worker->visa_id)
+                                ->count();
 
-                        if ($allWorkersArrived) {
+                            if ($allWorkersArrived) {
 
-                            $visa = $worker->visa;
-                            if ($visa) {
-                                $visa->update(['status' => 1]);
+                                $visa = $worker->visa;
+                                if ($visa) {
+                                    $visa->update(['status' => 1]);
+                                }
                             }
                         }
                     }

@@ -279,6 +279,7 @@
                             toastr.success(result.msg);
                             users_table.ajax.reload();
                             $('#addWorker').modal('hide');
+                            location.reload()
 
                             
                         

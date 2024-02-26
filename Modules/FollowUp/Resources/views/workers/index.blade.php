@@ -41,7 +41,6 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('status_label', __('followup::lang.status') . ':') !!}
-
                             <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
                                 <option value="all" selected>@lang('lang_v1.all')</option>
                                 @foreach ($status_filltetr as $key => $value)
@@ -61,7 +60,10 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
+                        $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6],
+                         $fields[7],$fields[8],$fields[9] ,$fields[10] ,$fields[11],
+                         $fields[12],$fields[13],$fields[14] ,$fields[15] ,$fields[16],
+                          $fields[17],$fields[18],$fields[19] ,$fields[20] ,$fields[21]];
 
                         $default = array_keys($default_fields);
 
@@ -93,7 +95,7 @@
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
+                <table class="table table-bordered table-striped" id="workers_table">
                     <thead>
                         <tr>
                             {{-- <th>@lang('followup::lang.name')</th>
@@ -107,11 +109,20 @@
                             <th>
                                 <input type="checkbox" id="select-all">
                             </th>
+                           
+                            
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
+                           
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                             <td class="table-td-width-100px">@lang('followup::lang.company')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.border_no')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
@@ -144,6 +155,7 @@
                     </button>
                     @endif
                 </div>
+
             </div>
             <div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
@@ -208,15 +220,14 @@
             $('#status_fillter').select2();
 
             var workers_table = $('#workers_table').DataTable({
+                
                 processing: true,
                 serverSide: true,
                
-                info: false,
+              
                 ajax: {
 
                     url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']) }}",
-                    // url: "{{ route('projectWorkers') }}",
-
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
@@ -239,8 +250,9 @@
                 },
 
                 columns: [
+                    
                 
-                {
+                   {
                         data: null,
                         render: function(data, type, row, meta) {
                             return '<input type="checkbox" class="select-row" data-id="' + row.id + '">';
@@ -248,7 +260,8 @@
                         orderable: false,
                         searchable: false,
                     },
-                {
+                    
+                    {
                         data: 'worker',
                         render: function(data, type, row) {
                             var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
@@ -256,8 +269,12 @@
                             return link;
                         }
                     },
+                   
                     {
                         data: 'residence_permit'
+                    },
+                    {
+                        data: 'company_id'                
                     },
                     {
                         data: 'contact_name'
@@ -268,6 +285,12 @@
                     {
                         data: 'residence_permit_expiration'
                     },
+                    {
+                        data: 'insurance'
+                    },
+                    {data:'passport_number'},
+                    {data:'passport_expire_date'},
+                    {data:'border_no'},
                     {
                         data: 'admissions_date'
                     },
@@ -445,10 +468,6 @@
             var dt = $('#workers_table').DataTable();
 
             var fields = fields;
-            //  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-            //     13, 14, 15,
-            //     16, 17, 18
-            // ];
 
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);

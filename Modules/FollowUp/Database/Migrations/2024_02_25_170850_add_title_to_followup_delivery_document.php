@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('ir_visa_cards', function (Blueprint $table) {
-            $table->integer('proposed_workers_number')->after('status')->default(0);
+        Schema::table('followup_delivery_documents', function (Blueprint $table) {
+            $table->string('title')->nullable()->after('file_path');
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('ir_proposal_labors', function (Blueprint $table) {
+        Schema::table('', function (Blueprint $table) {
         });
     }
 };

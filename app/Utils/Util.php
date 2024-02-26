@@ -1297,21 +1297,37 @@ class Util
             __('followup::lang.eqama_end_date'),
             __('followup::lang.admissions_date'),
             __('essentials::lang.admissions_type'),
-            __('essentials::lang.admissions_status'),
+
+            __('essentials::lang.passport_expire_date'),
+            __('essentials::lang.passport_number'),
+            __('essentials::lang.company_id'),
+
+
+            __('essentials::lang.border_no'),
+            __('essentials::lang.insurance'),
+
+            __('followup::lang.profession'),
+            __('followup::lang.total_salary'),
             __('followup::lang.contract_end_date'),
+            __('followup::lang.gender'),
+            __('followup::lang.bank_code'),
             __('essentials::lang.mobile_number'),
             __('business.email'),
+            __('essentials::lang.admissions_status'),
+
+
             __('followup::lang.department'),
-            __('followup::lang.profession'),
+
             __('followup::lang.specialization'),
             __('followup::lang.status'),
             __('followup::lang.Basic_salary'),
-            __('followup::lang.total_salary'),
-            __('followup::lang.gender'),
+
+
             __('followup::lang.marital_status'),
             __('followup::lang.blood_group'),
-            __('followup::lang.bank_code'),
+
             __('essentials::lang.travel_categorie'),
+
         ];
     }
 

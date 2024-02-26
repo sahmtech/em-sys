@@ -756,6 +756,10 @@ return [
   'doc_type' => 'نوع الوثيقة',
   'national_id' => 'هوية وطنية',
   'passport' => 'جواز سفر ',
+  'passport_expire_date' => 'تاريخ  انتهاء جواز السفر',
+  'border_no' => 'رقم الحدود',
+  'passport_number' => 'رقم الجواز',
+  'company_id' => 'الكفيل',
   'residence_permit' => 'إقامة',
   'drivers_license' => 'رخصة قيادة',
   'car_registration' => ' استمارة سيارة',
@@ -1471,7 +1475,7 @@ return [
 
 
   'is_active' => 'حالة التعيين',
-  'active' => 'مفعل',
+
   'not_active' => 'غير مفعل',
   'end_activate' => 'إنهاء التعيين',
   'change_is_active' => 'تغير حالة التفعيل',
@@ -1509,7 +1513,7 @@ return [
   'salary_per_month' => 'الراتب الأساسي لكل شهر',
   'worker_with_same_id_proof_number_exists' => 'لايمكن اضافة العامل رقم الاقامة موجود سابقا',
   'is_active' => 'حالة التعيين',
-  'active' => 'مفعل',
+
   'not_active' => 'غير مفعل',
   'end_activate' => 'إنهاء التعيين',
   'change_is_active' => 'تغير حالة التفعيل',

@@ -217,6 +217,7 @@
 
                 processing: true,
                 serverSide: true,
+                
                 ajax: {
                     url: "{{ route('operation_orders') }}",
                     data: function(d) {
@@ -226,8 +227,6 @@
 
                     }
                 },
-
-
 
                 columns: [
 
@@ -280,6 +279,7 @@
 
                 ]
             });
+
             // Add an event listener to trigger filtering when your filters change
 
             $('#contract-select, #status_filter').change(function() {

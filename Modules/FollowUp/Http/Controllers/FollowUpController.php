@@ -44,8 +44,8 @@ class FollowUpController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $business = Business::where('id', $business_id)->first();
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
-        ->pluck('id')->toArray();
+            ->where('name', 'LIKE', '%متابعة%')
+            ->pluck('id')->toArray();
 
         $new_requests = UserRequest::whereDate('created_at', Carbon::now($business->time_zone)->toDateString())->count();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -58,29 +58,32 @@ class FollowUpController extends Controller
 
 
         $on_going_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
-        ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
-            $query->whereIn('wk_procedures.department_id', $departmentIds)
-                ->orWhereIn('request_processes.superior_department_id', $departmentIds);
-        })->where('requests.status', 'under_process')->count();
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('request_processes.superior_department_id', $departmentIds);
+            })->where('requests.status', 'under_process')->count();
 
         $finished_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
-        ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
-            $query->whereIn('wk_procedures.department_id', $departmentIds)
-                ->orWhereIn('request_processes.superior_department_id', $departmentIds);
-        })->where(function ($query) {
-            $query->where('requests.status', 'rejected')
-                ->orWhere('requests.status', 'approved');
-        })->count();
-        
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('request_processes.superior_department_id', $departmentIds);
+            })->where(function ($query) {
+                $query->where('requests.status', 'rejected')
+                    ->orWhere('requests.status', 'approved');
+            })->count();
+
         $total_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
-        ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
-            $query->whereIn('wk_procedures.department_id', $departmentIds)
-                ->orWhereIn('request_processes.superior_department_id', $departmentIds);
-        })->count();
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('request_processes.superior_department_id', $departmentIds);
+            })->count();
 
 
 
-        return view('followup::index', compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests'));
+        return view(
+            'followup::index',
+            compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests')
+        );
     }
 
 
@@ -161,14 +164,14 @@ class FollowUpController extends Controller
 
     public function withinTwoMonthExpiryContracts()
     {
-        // $business_id = request()->session()->get('user.business_id');
+
         $business_id = 1;
         $business = Business::where('id', $business_id)->first();
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-      
+
 
         if (!$is_admin) {
             $userIds = [];
@@ -177,13 +180,13 @@ class FollowUpController extends Controller
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
-          
         }
 
-        $contracts = User::whereIn('id', $userIds)->where('user_type', 'worker')->whereHas('contract', function ($qu) use ($business) {
-            $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
-                ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
-        })
+        $contracts = User::whereIn('id', $userIds)->where('user_type', 'worker')
+            ->whereHas('contract', function ($qu) use ($business) {
+                $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
+                    ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
+            })
             ->whereHas('OfficialDocument', function ($query) {
                 $query->where('type', 'residence_permit');
             });
@@ -212,6 +215,12 @@ class FollowUpController extends Controller
                 'project',
                 function ($row) {
                     return $row->assignedTo?->name ?? null;
+                }
+            )
+            ->addColumn(
+                'sponser',
+                function ($row) {
+                    return $row->company?->name ?? null;
                 }
             )
             ->addColumn(
@@ -252,7 +261,7 @@ class FollowUpController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-      
+
 
         if (!$is_admin) {
             $userIds = [];
@@ -261,14 +270,13 @@ class FollowUpController extends Controller
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
-          
         }
 
         $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
             ->whereDate('expiration_date', '>=', Carbon::now($business->time_zone))
             ->whereDate('expiration_date', '<=', Carbon::now($business->time_zone)->addMonths(2))
-            ->whereHas('employee', function ($qu) use($userIds) {
-                $qu->where('user_type', 'worker')->whereIn('id',$userIds);
+            ->whereHas('employee', function ($qu) use ($userIds) {
+                $qu->where('user_type', 'worker')->whereIn('id', $userIds);
             });
 
         return DataTables::of($residencies)
@@ -282,6 +290,12 @@ class FollowUpController extends Controller
                 'residency',
                 function ($row) {
                     return $row->number;
+                }
+            )
+            ->addColumn(
+                'sponser',
+                function ($row) {
+                    return $row->employee?->company->name ?? null;
                 }
             )
             ->addColumn(
@@ -330,7 +344,7 @@ class FollowUpController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-      
+
 
         if (!$is_admin) {
             $userIds = [];
@@ -339,15 +353,17 @@ class FollowUpController extends Controller
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
-          
         }
-        $contracts = User::whereIn('id',$userIds)->where('user_type', 'worker')->whereHas('contract', function ($qu) use ($business) {
-            $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
-                ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
-        })->whereHas('essentialsworkCard', function ($qu) {
-        });
+        $contracts = User::whereIn('id', $userIds)
+            ->where('user_type', 'worker')
+            ->whereHas('contract', function ($qu) use ($business) {
+                $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
+                    ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
+            })
+            ->whereHas('essentialsworkCard', function ($qu) {
+            });
 
- 
+
 
         return DataTables::of($contracts)
             ->addColumn(
@@ -360,6 +376,12 @@ class FollowUpController extends Controller
                 'residency',
                 function ($row) {
                     return $row->OfficialDocument->number;
+                }
+            )
+            ->addColumn(
+                'sponser',
+                function ($row) {
+                    return $row->company?->name ?? null;
                 }
             )
             ->addColumn(

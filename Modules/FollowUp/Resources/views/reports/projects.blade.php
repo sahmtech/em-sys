@@ -16,7 +16,7 @@
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('project_name_filter', __('sales::lang.contact_name') . ':') !!}
+                            {!! Form::label('project_name_filter', __('followup::lang.project') . ':') !!}
                             {!! Form::select('project_name_filter', $contacts_fillter, null, [
                                 'class' => 'form-control select2',
                                 'style' => 'width:100%;padding:2px;',
@@ -58,14 +58,15 @@
 
     </section>
     <!-- /.content -->
-
+ 
+@include('followup::reports.contract_modal')
 @endsection
 
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
 
-            var table = $('#projects_table').DataTable({
+            var project_table = $('#projects_table').DataTable({
                 processing: true,
                 serverSide: true,
 
@@ -75,10 +76,6 @@
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
                         }
-                        if ($('#customer_name_filter').val()) {
-                            d.customer_name = $('#customer_name_filter').val();
-                        }
-
 
                     }
                 },
@@ -88,9 +85,14 @@
                     {
                         data: 'contact_name'
                     },
+                   
                     {
-                        data: 'contact_location_name'
+                        data: 'contact_location_name',
+                        render: function(data, type, full, meta) {
+                            return '<a href="#" class="open-contract-modal" data-id="' + full.id + '">' + data + '</a>';
+                        }
                     },
+                     
                     {
                         data: 'number_of_contract'
                     },
@@ -159,9 +161,44 @@
                 ]
             });
 
-            $('#project_name_filter,#customer_name_filter,#type_filter').on('change', function() {
-                table.ajax.reload();
-                //   $('#projects_table').DataTable().ajax.reload();
+            $('#projects_table').on('click', '.open-contract-modal', function(e) {
+                e.preventDefault();
+                var projectId = $(this).data('id');
+               var Url = '{{ route('fetch_contract_details') }}'
+                $.ajax({
+                    url:Url,
+                    type: 'GET',
+                    data: { project_id: projectId },
+                     dataType: 'json',
+                    success: function(response) {
+                        var data = response.data;
+                        console.log(data.salesContract);
+                    
+                        $('#contract_number').text(data.salesContract.number_of_contract);
+                        $('#start_date').text(data.salesContract.start_date);
+                        $('#end_date').text(data.salesContract.end_date);
+                        if (data.salesContract.contract_file_path) {
+                            $('#contract_file_button').show();
+                            $('#contract_file_button').attr('onclick', 'viewContract("' + data.salesContract.contract_file_path + '")');
+                            $('#no_contract_message').hide();
+                        } else {
+                            $('#contract_file_button').hide();
+                            $('#no_contract_message').show();
+                        }
+                        $('#contract_modal').modal('show');
+                    },
+                    error: function(error) {
+                        console.error('Error fetching contract details:', error);
+                    }
+                });
+                
+               
+                $('#contract_modal').modal('show');
+            });
+
+            $('#project_name_filter,#type_filter').on('change', function() {
+                project_table.ajax.reload();
+              
             });
         });
     </script>

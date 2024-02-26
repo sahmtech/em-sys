@@ -201,6 +201,7 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['expiration_date'] = $input['expiration_date'];
             $input2['employee_id'] =  $request->input('employees2');
             $input2['issue_place'] = $input['issue_place'];
+            $input2['is_active'] = $input['is_active'];
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');

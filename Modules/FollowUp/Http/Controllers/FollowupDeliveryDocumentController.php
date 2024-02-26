@@ -46,7 +46,7 @@ class FollowupDeliveryDocumentController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $userIds)->get();
+
 
 
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
@@ -56,6 +56,8 @@ class FollowupDeliveryDocumentController extends Controller
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $followupUserAccessProject)->get();
         }
+
+        $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $userIds)->get();
         if (request()->ajax()) {
 
             if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
@@ -83,6 +85,9 @@ class FollowupDeliveryDocumentController extends Controller
                 })
                 ->editColumn('nots', function ($row) {
                     return $row->nots ?? '';
+                })
+                ->editColumn('title', function ($row) {
+                    return $row->title ?? '';
                 })
 
                 ->addColumn(
@@ -150,24 +155,48 @@ class FollowupDeliveryDocumentController extends Controller
      */
     public function store(Request $request)
     {
-        // DB::beginTransaction();
-        // try {
-        if ($request->hasFile('document')) {
-            $file = $request->file('document');
-            $filePath = $file->store('/documents');
+        try {
+
+            $input = $request->only(
+                [
+                    'document',
+                    'user_id',
+                    'document_id',
+                    'file_path',
+                    'title',
+                    'nots',
+
+                ]
+            );
+
+            if ($request->hasFile('document')) {
+                $file = $request->file('document');
+                $filePath = $file->store('/documents');
+                $input2['file_path'] = $filePath;
+            }
+            $input2['user_id'] = $input['user_id'];
+            $input2['document_id'] = $input['document_id'];
+            $input2['title'] = $request->input('title');
+            $input2['nots'] = $input['nots'];
+
+
+            FollowupDeliveryDocument::create($input2);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ];
         }
-        FollowupDeliveryDocument::create([
-            'user_id' => $request->input('user_id'),
-            'document_id' => $request->input('document_id'),
-            'file_path' => $filePath,
-            'nots' => $request->input('nots'),
-        ]);
-        // DB::commit();
-        return redirect()->back();
-        // } catch (Exception $e) {
-        //     DB::rollBack();
-        //     return redirect()->back();
-        // }
+
+
+        return redirect()->route('documents-delivery')->with($output);
     }
 
     /**
@@ -213,6 +242,13 @@ class FollowupDeliveryDocumentController extends Controller
             $update_data['user_id'] = $request->input('user_id');
             $update_data['document_id'] = $request->input('document_id');
             $update_data['nots'] = $request->input('nots');
+
+            if ($update_data['document_id'] != 11) {
+                $update_data['title'] = null;
+            } else {
+                $update_data['title'] = $request->input('title');
+            }
+
 
             $document_delivery = FollowupDeliveryDocument::find($id);
             $document_delivery->update($update_data);

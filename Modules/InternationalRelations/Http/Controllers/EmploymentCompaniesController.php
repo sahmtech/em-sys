@@ -313,7 +313,7 @@ class EmploymentCompaniesController extends Controller
 
         $company_requests = IrDelegation::with(['transactionSellLine.service', 'visaCard'])
             ->where('agency_id', $id)->get();
-        //   dd($company_requests[0]->lastArrivalproposedLabors($company_requests[0]->agency_id)->first()->arrival_date);
+        // dd($company_requests[0]->lastArrivalproposedLabors($company_requests[0]->agency_id)->first()->arrival_date);
 
 
         return view('internationalrelations::EmploymentCompanies.employment_company_profile')
@@ -377,6 +377,7 @@ class EmploymentCompaniesController extends Controller
 
             $input2['supplier_business_name'] = $input['Office_name'];
             $input2['name'] = $input['name'];
+            $input2['email'] = $input['email'];
             $input2['country'] = $input['country'];
             $input2['mobile'] = $input['mobile'];
             $input2['evaluation'] = $input['evaluation'];

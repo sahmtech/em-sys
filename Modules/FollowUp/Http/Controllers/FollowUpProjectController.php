@@ -44,20 +44,22 @@ class FollowUpProjectController extends Controller
             ]);
         }
         $can_projectView = auth()->user()->can('followup.projectView');
-        
-        $salesProjects = SalesProject::with(['contact']);
-        $contacts2 = Contact::whereIn('type',['lead','qualified','unqualified','converted'])
-        ->pluck('supplier_business_name', 'id');
-        
+
+        $contacts2 = Contact::whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])
+            ->pluck('supplier_business_name', 'id');
+
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $salesProjects =  $salesProjects->whereIn('id',  $followupUserAccessProject);
             $contacts_ids =  $salesProjects->pluck('contact_id')->unique()->toArray();
-           
+
             $contacts2 = Contact::whereIn('id',  $contacts_ids)
-            ->whereIn('type',['lead','qualified','unqualified','converted'])
-            ->pluck('supplier_business_name', 'id');
+                ->whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])
+                ->pluck('supplier_business_name', 'id');
         }
+
+
+        $salesProjects = SalesProject::with(['contact']);
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
@@ -103,11 +105,10 @@ class FollowUpProjectController extends Controller
 
                     return $row->users
                         ->where('user_type', 'worker')
-
                         ->count();
                 })
                 ->addColumn('duration', function ($row) {
-                    return $row->contract_duration    ?? null;
+                    return $row->contract_duration ?? null;
                 })
                 ->addColumn('contract_form', function ($row) {
                     return $row->salesContract?->transaction->contract_form ?? null;;
@@ -147,7 +148,7 @@ class FollowUpProjectController extends Controller
 
 
         return view('followup::projects.index')
-        ->with(compact('contacts2'));
+            ->with(compact('contacts2'));
     }
 
     /**
@@ -178,32 +179,34 @@ class FollowUpProjectController extends Controller
     {
 
         $users = User::where('assigned_to', $id)
-        ->with([
-            'country',
-            'appointment' => function ($query) {
-                $query->where('is_active', 1)->latest('created_at');
-            },
-            'appointment.profession',
-            'userAllowancesAndDeductions',
-            
-            'appointment.location',
-            'contract' => function ($query) {
-                $query->where('is_active', 1)->latest('created_at');
-            },
-            'OfficialDocument' => function ($query) {
-                $query->where('is_active', 1)->latest('created_at');
-            },
-            'workCard'
-        ])
-        ->get();
+            ->with([
+                'country',
+                'appointment' => function ($query) {
+                    $query->where('is_active', 1)->latest('created_at');
+                },
+                'appointment.profession',
+                'userAllowancesAndDeductions',
 
-     
-    
+                'appointment.location',
+                'contract' => function ($query) {
+                    $query->where('is_active', 1)->latest('created_at');
+                },
+                'OfficialDocument' => function ($query) {
+                    $query->where('is_active', 1)->latest('created_at');
+                },
+                'workCard'
+            ])
+            ->get();
 
-        
-    
-        return view('followup::projects.show',
-         compact('users', 'id'));
+
+
+
+
+
+        return view(
+            'followup::projects.show',
+            compact('users', 'id')
+        );
     }
 
 

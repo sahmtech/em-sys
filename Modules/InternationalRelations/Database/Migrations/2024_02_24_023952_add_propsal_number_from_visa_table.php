@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('ir_proposal_labors', function (Blueprint $table) {
+        Schema::table('', function (Blueprint $table) {
         });
     }
 };

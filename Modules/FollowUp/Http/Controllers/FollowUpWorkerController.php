@@ -22,6 +22,8 @@ use Spatie\Activitylog\Models\Activity;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
@@ -73,9 +75,8 @@ class FollowUpWorkerController extends Controller
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('id', $userIds)->whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
             $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
-
         }
-    
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -85,16 +86,15 @@ class FollowUpWorkerController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
+
         $fields = $this->moduleUtil->getWorkerFields();
         $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+
         $users->select(
             'users.*',
-            // 'users.id_proof_number',
-            // 'users.nationality_id',
-            // 'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )->orderBy('users.id', 'desc')
@@ -104,13 +104,11 @@ class FollowUpWorkerController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                if(request()->input('project_name')=='none'){
+                if (request()->input('project_name') == 'none') {
                     $users = $users->whereNull('users.assigned_to');
-                }
-                else{
+                } else {
                     $users = $users->where('users.assigned_to', request()->input('project_name'));
                 }
-               
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
@@ -150,9 +148,46 @@ class FollowUpWorkerController extends Controller
                     }
                 })
 
+                ->addColumn('company_id', function ($user) {
+                    return  $user->company->name ?? "";
+                })
+                ->addColumn('insurance', function ($user) {
+                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                        return __('followup::lang.has_insurance');
+                    } else {
+                        return __('followup::lang.has_not_insurance');
+                    }
+                })
+
+                ->addColumn('passport_number', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->number ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+                ->addColumn('passport_expire_date', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
+
                 ->addColumn('admissions_date', function ($user) {
                     // return $this->getDocumentnumber($user, 'admissions_date');
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
@@ -216,7 +251,57 @@ class FollowUpWorkerController extends Controller
 
 
 
+    public function upload_attachments(Request $request)
+    {
 
+        try {
+            $input = $request->only(
+                [
+                    'worker_id',
+                    'doc_type',
+                    'doc_number',
+                    'issue_date',
+                    'issue_place',
+                    'expiration_date',
+                    'file'
+                ]
+            );
+
+            $worker_id = $request->input('worker_id');
+
+            $input2['type'] = $input['doc_type'];
+            $input2['number'] = $input['doc_number'];
+            $input2['issue_date'] = $input['issue_date'];
+            $input2['expiration_date'] = $input['expiration_date'];
+            $input2['employee_id'] =  $request->input('worker_id');
+            $input2['issue_place'] = $input['issue_place'];
+            $input2['is_active'] = 1;
+            if (request()->hasFile('file')) {
+                $file = request()->file('file');
+                $filePath = $file->store('/officialDocuments');
+
+                $input2['file_path'] = $filePath;
+            }
+
+
+            EssentialsOfficialDocument::create($input2);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+
+        return redirect()->route('showWorker', ['id' => $worker_id])->with($output);
+    }
     private function getDocumentExpirationDate($user, $documentType)
     {
         foreach ($user->OfficialDocument as $off) {
@@ -388,15 +473,14 @@ class FollowUpWorkerController extends Controller
 
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
-           
 
-            if(!$selectedRowsData){
+
+            if (!$selectedRowsData) {
                 $output = [
                     'success' => false,
                     'msg' => __('followup::lang.please_select_rows'),
                 ];
                 return $output;
-    
             }
             foreach ($selectedRowsData as $row) {
                 $worker = User::find($row->id);

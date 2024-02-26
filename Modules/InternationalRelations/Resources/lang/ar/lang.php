@@ -177,6 +177,7 @@ return [
   'change_arrival_date' => 'تغير تاريخ الوصول',
   'cancel_proposal_worker' => 'الغاء عامل مقترح',
   'cancel_visaworker_incomplete' => 'لا يمكن الغاء العامل قبل الوصول لمرحلة ختم الجواز',
+  'cancel_visaworker_arrival_status_zero' => 'لايمكن الغاء العامل بعد أن تم وصوله',
   'worker_canceled' => 'تم الغاء العامل من التأشيرة',
   'international_reports' => 'عرض التقارير',
   'reports' => 'التقارير',
