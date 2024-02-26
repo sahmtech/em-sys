@@ -166,8 +166,9 @@ class EssentialsDepartmentsController extends Controller
                     if ($is_admin || $can_add_manager) {
                         $manager = DB::table('essentials_employee_appointmets')
                             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active',1)
+                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active', 1)
                             ->where('essentials_employee_appointmets.type', 'appoint')
+                            ->where('essentials_employee_appointmets.is_active', 1)
                             ->where('users.user_type', 'manager')
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
                             ->first();
@@ -181,8 +182,9 @@ class EssentialsDepartmentsController extends Controller
                     if ($is_admin || $can_add_deputy) {
                         $manager = DB::table('essentials_employee_appointmets')
                             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active',1)
+                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active', 1)
                             ->where('essentials_employee_appointmets.type', 'deputy')
+                            ->where('essentials_employee_appointmets.is_active', 1)
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
                             ->first();
 
@@ -194,8 +196,9 @@ class EssentialsDepartmentsController extends Controller
                     if ($is_admin || $can_delegatingManager_name) {
                         $delegatingManager = DB::table('essentials_employee_appointmets')
                             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
-                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active',1)
+                            ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active', 1)
                             ->where('essentials_employee_appointmets.type', 'delegating')
+                            ->where('essentials_employee_appointmets.is_active', 1)
                             ->where('users.user_type', 'manager')
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
                             ->first();
@@ -349,13 +352,13 @@ class EssentialsDepartmentsController extends Controller
             $input2['start_from'] = $input['start_date'];
             $input2['profession_id'] = $input['profession'];
             $input2['type'] = 'appoint';
-   
+
             $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input['employee'])
                 ->latest('created_at')->first();
-   
+
 
             if ($previous_appointement && $previous_appointement->is_active == 1) {
-              
+
                 $previous_appointement->is_active = 0;
                 $previous_appointement->end_at = $input['start_date'];
                 $previous_appointement->save();
@@ -394,7 +397,7 @@ class EssentialsDepartmentsController extends Controller
                 ->latest('created_at')->first();
 
 
-            if ($previous_appointement && $previous_appointement->is_active == 1){
+            if ($previous_appointement && $previous_appointement->is_active == 1) {
                 $previous_appointement->is_active = 0;
                 $previous_appointement->end_at = $input['start_date'];
                 $previous_appointement->save();
@@ -431,7 +434,7 @@ class EssentialsDepartmentsController extends Controller
             $input2['department_id'] = $id;
 
             $input2['profession_id'] = $input['profession'];
-           
+
             $input2['start_from'] = $input['start_date'];
             $input2['end_at'] = $input['end_date'];
             $input2['type'] = 'delegating';
@@ -439,15 +442,15 @@ class EssentialsDepartmentsController extends Controller
 
 
             $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id', $input['employee'])
-            ->latest('created_at')->first();
+                ->latest('created_at')->first();
 
 
-        if ($previous_appointement && $previous_appointement->is_active == 1){
-            $previous_appointement->is_active = 0;
-            $previous_appointement->end_at = $input['start_date'];
-            $previous_appointement->save();
-        }
-        EssentialsEmployeeAppointmet::create($input2);
+            if ($previous_appointement && $previous_appointement->is_active == 1) {
+                $previous_appointement->is_active = 0;
+                $previous_appointement->end_at = $input['start_date'];
+                $previous_appointement->save();
+            }
+            EssentialsEmployeeAppointmet::create($input2);
 
 
             $output = [
@@ -466,12 +469,14 @@ class EssentialsDepartmentsController extends Controller
     }
     public function getDepartmentInfo($id)
     {
+
         $department = EssentialsDepartment::find($id);
         $manager = DB::table('essentials_employee_appointmets')
             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'appoint')
             ->where('users.user_type', 'manager')
+            ->where('essentials_employee_appointmets.is_active', 1)
             ->select(
                 'users.id as id',
                 'essentials_employee_appointmets.profession_id as profession_id',
@@ -479,11 +484,13 @@ class EssentialsDepartmentsController extends Controller
                 'essentials_employee_appointmets.start_from as start_from',
             )
             ->first();
+
         $delegate = DB::table('essentials_employee_appointmets')
             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'delegating')
             ->where('users.user_type', 'manager')
+            ->where('essentials_employee_appointmets.is_active', 1)
             ->select(
                 'users.id as id',
                 'essentials_employee_appointmets.profession_id as profession_id',
@@ -514,6 +521,7 @@ class EssentialsDepartmentsController extends Controller
 
     public function update(Request $request, $id)
     {
+
         try {
             $department = EssentialsDepartment::find($id);
 
@@ -532,65 +540,93 @@ class EssentialsDepartmentsController extends Controller
 
             $managerId = $request->input('manager');
             $delegateId = $request->input('delegate');
-            if ($managerId) {
 
-                $managerAppointment = EssentialsEmployeeAppointmet::where('employee_id', $managerId)
+            if ($managerId) {
+                $managerRecords = DB::table('essentials_employee_appointmets')
+                    ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                    ->where('essentials_employee_appointmets.department_id', $id)
+                    ->where('essentials_employee_appointmets.type', 'appoint')
+                    ->where('users.user_type', 'manager')
+                    ->where('essentials_employee_appointmets.is_active', 1)
+                    ->select('essentials_employee_appointmets.id')
+                    ->get();
+
+                if (!$managerRecords->isEmpty()) {
+                    foreach ($managerRecords as $record) {
+                        DB::table('essentials_employee_appointmets')
+                            ->where('id', $record->id)
+                            ->update(['is_active' => 0, 'end_at' => $request->input('start_date')]);
+                    }
+                }
+
+                $managerAppointments = EssentialsEmployeeAppointmet::where('employee_id', $managerId)
                     ->where('department_id', $id)
                     ->where('type', 'appoint')
-                    ->first();
+                    ->where('is_active', 1)
+                    ->get();
 
-                if ($managerAppointment) {
-
-                    $managerAppointment->update([
-                        'profession_id' => $request->filled('profession') ? $request->input('profession') : $managerAppointment->profession_id,
-                        // 'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : $managerAppointment->specialization_id,
-                        'start_from' => $request->filled('start_date') ? $request->input('start_date') : $managerAppointment->start_from,
-                    ]);
-                } else {
-
-
-                    EssentialsEmployeeAppointmet::create([
-                        'employee_id' => $managerId,
-                        'department_id' => $id,
-                        'type' => 'appoint',
-                        'profession_id' => $request->filled('profession') ? $request->input('profession') : null,
-                        // 'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : null,
-                        'start_from' => $request->filled('start_date') ? $request->input('start_date') : null,
-                    ]);
+                if (!$managerAppointments->isEmpty()) {
+                    foreach ($managerAppointments as $record) {
+                        DB::table('essentials_employee_appointmets')
+                            ->where('id', $record->id)
+                            ->update(['is_active' => 0]);
+                    }
                 }
+
+
+                EssentialsEmployeeAppointmet::create([
+                    'employee_id' => $managerId,
+                    'department_id' => $id,
+                    'type' => 'appoint',
+                    'profession_id' => $request->filled('profession') ? $request->input('profession') : null,
+                    'start_from' => $request->filled('start_date') ? $request->input('start_date') : null,
+                    'is_active' => 1
+                ]);
             }
+
             if ($delegateId) {
+                $managerRecords = DB::table('essentials_employee_appointmets')
+                    ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                    ->where('essentials_employee_appointmets.department_id', $id)
+                    ->where('essentials_employee_appointmets.type', 'delegating')
+                    ->where('users.user_type', 'manager')
+                    ->where('essentials_employee_appointmets.is_active', 1)
+                    ->select('essentials_employee_appointmets.id')
+                    ->get();
 
+                if (!$managerRecords->isEmpty()) {
+                    foreach ($managerRecords as $record) {
+                        DB::table('essentials_employee_appointmets')
+                            ->where('id', $record->id)
+                            ->update(['is_active' => 0]);
+                    }
+                }
 
-                $delegateAppointment = EssentialsEmployeeAppointmet::where('employee_id', $delegateId)
+                $managerAppointments = EssentialsEmployeeAppointmet::where('employee_id', $delegateId)
                     ->where('department_id', $id)
                     ->where('type', 'delegating')
-                    ->first();
+                    ->where('is_active', 1)
+                    ->get();
 
-                if ($delegateAppointment) {
-
-
-                    $delegateAppointment->update([
-                        'profession_id' => $request->filled('profession2') ? $request->input('profession2') : $delegateAppointment->profession_id,
-                        'specialization_id' => $request->filled('specialization2') ? $request->input('specialization2') : $delegateAppointment->specialization_id,
-                        'start_from' => $request->filled('start_date2') ? $request->input('start_date2') : $delegateAppointment->start_from,
-                        'end_at' => $request->filled('end_date2') ? $request->input('end_date2') : $delegateAppointment->end_at,
-                    ]);
-                } else {
-
-
-                    EssentialsEmployeeAppointmet::create([
-                        'employee_id' => $delegateId,
-                        'department_id' => $id,
-                        'type' => 'delegating',
-                        'profession_id' => $request->filled('profession2') ? $request->input('profession2') : null,
-                        'specialization_id' => $request->filled('specialization2') ? $request->input('specialization2') : null,
-                        'start_from' => $request->filled('start_date2') ? $request->input('start_date2') : null,
-                        'end_at' => $request->filled('end_date2') ? $request->input('end_date2') : null,
-                    ]);
+                if (!$managerAppointments->isEmpty()) {
+                    foreach ($managerAppointments as $record) {
+                        DB::table('essentials_employee_appointmets')
+                            ->where('id', $record->id)
+                            ->update(['is_active' => 0, 'end_at' => $request->input('start_date2')]);
+                    }
                 }
-            }
 
+
+                EssentialsEmployeeAppointmet::create([
+                    'employee_id' => $delegateId,
+                    'department_id' => $id,
+                    'type' => 'delegating',
+                    'profession_id' => $request->filled('profession2') ? $request->input('profession2') : null,
+                    'start_from' => $request->filled('start_date2') ? $request->input('start_date2') : null,
+                    'end_at' => $request->filled('end_date2') ? $request->input('end_date2') : null,
+                    'is_active' => 1
+                ]);
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -615,6 +651,7 @@ class EssentialsDepartmentsController extends Controller
             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'appoint')
+            ->where('essentials_employee_appointmets.is_active', 1)
             ->where('users.user_type', 'manager')
             ->select(
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as managername"),
@@ -628,6 +665,7 @@ class EssentialsDepartmentsController extends Controller
             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'delegating')
+            ->where('essentials_employee_appointmets.is_active', 1)
             ->where('users.user_type', 'manager')
             ->select(
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as delegatename"),
