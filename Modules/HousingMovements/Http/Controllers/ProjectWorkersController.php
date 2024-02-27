@@ -877,7 +877,7 @@ class ProjectWorkersController extends Controller
     public function storeProjectWorker(Request $request)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $business_id = request()->session()->get('user.business_id');
+
         if (!($is_admin || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -891,36 +891,51 @@ class ProjectWorkersController extends Controller
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
 
-            $com_id = request()->input('essentials_department_id');
-            $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
-                ->first();
+            // $com_id = request()->input('essentials_department_id');
+            // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
+            //     ->first();
 
-            if ($latestRecord) {
-                $latestRefNo = $latestRecord->emp_number;
-                $latestRefNo++;
-                $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+            // if ($latestRecord) {
+            //     $latestRefNo = $latestRecord->emp_number;
+            //     $latestRefNo++;
+            //     $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+            // } else {
+
+            //     $request['emp_number'] =  $business_id . '000';
+            // }
+
+
+            if ($request->input('id_proof_number')) {
+                $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+            }
+            if ($request->input('border_no')) {
+                $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
+            }
+
+
+
+            if ($existingprofnumber || $existingBordernumber) {
+
+                if ($existingprofnumber != null) {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                    ];
+                } else {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
+                    ];
+                }
             } else {
+                $user = $this->moduleUtil->createUser($request);
+                event(new UserCreatedOrModified($user, 'added'));
 
-                $request['emp_number'] =  $business_id . '000';
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
             }
-
-
-
-            $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-
-            if ($existingprofnumber) {
-                $errorMessage = trans('essentials::lang.worker_with_same_id_proof_number_exists');
-                throw new \Exception($errorMessage);
-            }
-
-            $user = $this->moduleUtil->createUser($request);
-
-            event(new UserCreatedOrModified($user, 'added'));
-
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [

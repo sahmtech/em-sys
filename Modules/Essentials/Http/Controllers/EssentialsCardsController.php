@@ -439,7 +439,8 @@ class EssentialsCardsController extends Controller
             }
         }
 
-        $users = User::whereIn('users.id', $userIds)
+        $users = User::with('assignedTo')
+            ->whereIn('users.id', $userIds)
             ->where('users.is_cmmsn_agnt', 0)
             ->where('users.nationality_id', '!=', 5)
             ->where('users.status', 'active')
@@ -487,6 +488,7 @@ class EssentialsCardsController extends Controller
                 'users.username',
                 'users.business_id',
                 'users.user_type',
+                'users.assigned_to',
                 DB::raw(
                     "CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"
                 ),
@@ -508,6 +510,12 @@ class EssentialsCardsController extends Controller
             ])
 
             ->orderby('id', 'desc');
+
+        //dd($users->where('users.id', 5586)->first()->assigned_to);
+        if (!empty($request->input('project'))) {
+
+            $users->where('assigned_to', $request->input('project'));
+        }
 
         if (
             !empty($request->input('proof_numbers')) &&
@@ -545,6 +553,10 @@ class EssentialsCardsController extends Controller
 
                 ->addColumn('total_salary', function ($row) {
                     return $row->calculateTotalSalary();
+                })
+
+                ->addColumn('project', function ($row) {
+                    return $row->assignedTo->name ?? " ";
                 })
 
                 ->editColumn('essentials_department_id', function ($row) use (
@@ -677,9 +689,11 @@ class EssentialsCardsController extends Controller
                 'users.id'
             )
             ->get();
+        $sales_projects = SalesProject::pluck('name', 'id');
 
         return view('essentials::cards.operations')->with(
             compact(
+                'sales_projects',
                 'durationOptions',
                 'companies',
                 'proof_numbers',

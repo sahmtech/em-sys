@@ -92,6 +92,19 @@
                     </select>
                 </div>
             </div>
+
+             <div class="col-md-3">
+                <div class="form-group">
+                    <label for="offer_type_filter">@lang('essentials::lang.project'):</label>
+                    {!! Form::select('contact-select', $sales_projects, null, [
+                        'class' => 'form-control select2',
+                        'style' => 'height:40px',
+                        'placeholder' => __('lang_v1.all'),
+                    
+                        'id' => 'contact-select',
+                    ]) !!}
+                </div>
+            </div>
         @endcomponent
         @component('components.widget', ['class' => 'box-primary'])
           
@@ -104,13 +117,13 @@
                             <th>
                             <input type="checkbox" class="largerCheckbox" id="chkAll" />
                            </th>
-                           <th>#</th>
+                         
                           
                             <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_number')</th>
                                
                                 <th>@lang('essentials::lang.employee_name')</th>
-                             
+                                <th>@lang('essentials::lang.project')</th>
                                 <th>@lang('essentials::lang.Identity_proof_id')</th>
                                 <th>@lang('essentials::lang.contry_nationality')</th>
                                 <th>@lang('essentials::lang.total_salary')</th>
@@ -232,6 +245,8 @@
                         d.status = $('#status_filter').val();
                         d.business = $('#select_business_id').val();
                         d.proof_numbers = $('#proof_numbers_select').val();
+                        d.project = $('#contact-select').val();
+
                         console.log(d);
                     },
                 },
@@ -244,7 +259,7 @@
                         orderable: false,
                         searchable: false
                     },
-                   {data:'id'},
+                 
                     {
                         "data": "profile_image",
                         "render": function(data, type, row) {
@@ -270,6 +285,9 @@
                             }
                             return data;
                         }
+                    },
+                    {
+                        data:"project"
                     },
             
                     {
@@ -345,6 +363,10 @@
             $('#proof_numbers_select').on('change', function() {
                 console.log( 'proof',$('#proof_numbers_select').val());
                 operation_table.ajax.reload();
+            });
+             $('#contact-select').on('change', function() {
+
+                 operation_table.ajax.reload();
             });
 
             $('#employees').on('change', '.tblChk', function() {
