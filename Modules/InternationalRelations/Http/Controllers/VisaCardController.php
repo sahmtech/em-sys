@@ -233,7 +233,7 @@ class VisaCardController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -400,7 +400,7 @@ class VisaCardController extends Controller
         } catch (\Exception $e) {
             $output = [
                 'success' => false,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
             return response()->json($output);
         }

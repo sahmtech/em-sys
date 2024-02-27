@@ -268,7 +268,7 @@ class EssentialsWorkersAffairsController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->back()->with('status', $output);
@@ -398,30 +398,47 @@ class EssentialsWorkersAffairsController extends Controller
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
             $request['user_type'] = 'worker';
+            $existingprofnumber = null;
+            $existingBordernumber = null;
 
             if ($request->input('id_proof_number')) {
                 $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-
-                if ($existingprofnumber) {
-                    $errorMessage = trans('essentials::lang.worker_with_same_id_proof_number_exists');
-                    throw new \Exception($errorMessage);
-                }
+            }
+            if ($request->input('border_no')) {
+                $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
             }
 
 
-            $user = $this->moduleUtil->createUser($request);
-            $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
+
+            if ($existingprofnumber || $existingBordernumber) {
+
+                if ($existingprofnumber != null) {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                    ];
+                } else {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
+                    ];
+                }
+            } else {
+
+                $user = $this->moduleUtil->createUser($request);
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
 
 
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -800,7 +817,7 @@ class EssentialsWorkersAffairsController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->route('show_workers_affairs', ['id' => $id])->with('status', $output);

@@ -106,7 +106,7 @@ class TemplateController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->route('templates.index')
@@ -183,7 +183,7 @@ class TemplateController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->route('templates.index')
@@ -230,7 +230,7 @@ class TemplateController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->route('templates.index')

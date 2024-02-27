@@ -1937,7 +1937,7 @@ class EssentialsCardsController extends Controller
             );
             $output = [
                 'success' => 0,
-                'msg' => __('messeages.somthing_went_wrong'),
+                'msg' => __('messeages.something_went_wrong'),
             ];
         }
 

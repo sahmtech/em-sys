@@ -753,6 +753,7 @@ return [
   'monthly_cost' => 'التكلفة الشهرية',
   'edit_work' => 'تعديل مباشرة العمل',
   'edit_contract' => 'تعديل العقد',
+  'worker_with_same_border_number_exists' => 'رقم الحدود المدخل للعامل موجود سابقا ',
   'doc_type' => 'نوع الوثيقة',
   'national_id' => 'هوية وطنية',
   'passport' => 'جواز سفر ',
