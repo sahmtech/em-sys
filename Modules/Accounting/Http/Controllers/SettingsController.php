@@ -15,6 +15,7 @@ use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\ModuleUtil;
 use App\Business;
 use App\Company;
+use App\User;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -40,7 +41,7 @@ class SettingsController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_settings = auth()->user()->can('accounting.settings');
@@ -72,7 +73,7 @@ class SettingsController extends Controller
     public function resetData()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 
@@ -118,7 +119,7 @@ class SettingsController extends Controller
     public function saveSettings(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 
@@ -257,7 +258,7 @@ class SettingsController extends Controller
     protected function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 

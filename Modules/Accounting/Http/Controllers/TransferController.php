@@ -47,7 +47,7 @@ class TransferController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_transfer = auth()->user()->can('accounting.transfer');
@@ -173,7 +173,7 @@ class TransferController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 
@@ -191,7 +191,7 @@ class TransferController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 
@@ -281,7 +281,7 @@ class TransferController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 
@@ -313,7 +313,7 @@ class TransferController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 
@@ -383,7 +383,7 @@ class TransferController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
 

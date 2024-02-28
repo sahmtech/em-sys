@@ -5,6 +5,7 @@ namespace Modules\Accounting\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use App\User;
 use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingBudget;
 use App\Utils\ModuleUtil;
@@ -34,11 +35,11 @@ class BudgetController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
-     
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_manage_budget= auth()->user()->can('accounting.manage_budget');
+        $can_manage_budget = auth()->user()->can('accounting.manage_budget');
         if (!($is_admin || $can_manage_budget)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -49,102 +50,119 @@ class BudgetController extends Controller
         $fy_year = request()->input('financial_year', null);
         $budget = [];
         $accounts = [];
-        if($fy_year!= null) {
+        if ($fy_year != null) {
             $accounts = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
-                                ->where('status', 'active')
-                                ->select('name', 'id', 'account_primary_type')
-                                ->get();
+                ->where('status', 'active')
+                ->select('name', 'id', 'account_primary_type')
+                ->get();
 
             $budget = AccountingBudget::whereIn('accounting_account_id', $accounts->pluck('id'))
-                                ->where('financial_year', $fy_year)
-                                ->get();
+                ->where('financial_year', $fy_year)
+                ->get();
 
-            if(count($budget) == 0) {
-                return redirect(action('\Modules\Accounting\Http\Controllers\BudgetController@create') . 
-                '?financial_year=' . $fy_year);
+            if (count($budget) == 0) {
+                return redirect(action('\Modules\Accounting\Http\Controllers\BudgetController@create') .
+                    '?financial_year=' . $fy_year);
             }
         }
         $months = $this->getFinancialYearMonths();
 
         $account_types = AccountingAccountType::accounting_primary_type();
 
-        if(!empty(request()->input('format'))) {
+        if (!empty(request()->input('format'))) {
             $view_type = request()->input('view_type');
-            if(request()->input('view_type')=='monthly') {
-                if(request()->input('format')=='pdf') {
-                    $html = view('accounting::budget.partials.budget_monthly_pdf')->with(compact('accounts', 
-                    'budget', 'months', 'fy_year', 'account_types'))->render();
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Monthly.pdf';
-    
+            if (request()->input('view_type') == 'monthly') {
+                if (request()->input('format') == 'pdf') {
+                    $html = view('accounting::budget.partials.budget_monthly_pdf')->with(compact(
+                        'accounts',
+                        'budget',
+                        'months',
+                        'fy_year',
+                        'account_types'
+                    ))->render();
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Monthly.pdf';
+
                     $mpdf = $this->getMpdf();
                     $mpdf->WriteHTML($html);
                     $mpdf->Output($output_file_name, 'D');
-                } else if(request()->input('format')=='excel') {
+                } else if (request()->input('format') == 'excel') {
                     $export = new BudgetExport($accounts, $budget, $months, $fy_year, $account_types, $view_type);
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Monthly.xlsx';
-                
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Monthly.xlsx';
+
                     return Excel::download($export, $output_file_name);
-                } else if(request()->input('format')=='csv') {
+                } else if (request()->input('format') == 'csv') {
                     $export = new BudgetExport($accounts, $budget, $months, $fy_year, $account_types, $view_type);
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Monthly.csv';
-                
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Monthly.csv';
+
                     return Excel::download($export, $output_file_name);
                 }
-            } else if(request()->input('view_type')=='quarterly') {
-                if(request()->input('format')=='pdf') {
-                    $html = view('accounting::budget.partials.budget_quarterly_pdf')->with(compact('accounts', 
-                    'budget', 'fy_year', 'account_types'))->render();
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Quarterly.pdf';
-    
+            } else if (request()->input('view_type') == 'quarterly') {
+                if (request()->input('format') == 'pdf') {
+                    $html = view('accounting::budget.partials.budget_quarterly_pdf')->with(compact(
+                        'accounts',
+                        'budget',
+                        'fy_year',
+                        'account_types'
+                    ))->render();
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Quarterly.pdf';
+
                     $mpdf = $this->getMpdf();
                     $mpdf->WriteHTML($html);
                     $mpdf->Output($output_file_name, 'D');
-                } else if(request()->input('format')=='excel') {
+                } else if (request()->input('format') == 'excel') {
                     $export = new BudgetExport($accounts, $budget, $months, $fy_year, $account_types, $view_type);
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Quarterly.xlsx';
-                
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Quarterly.xlsx';
+
                     return Excel::download($export, $output_file_name);
-                } else if(request()->input('format')=='csv') {
+                } else if (request()->input('format') == 'csv') {
                     $export = new BudgetExport($accounts, $budget, $months, $fy_year, $account_types, $view_type);
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Quarterly.csv';
-                
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Quarterly.csv';
+
                     return Excel::download($export, $output_file_name);
                 }
-            } else if(request()->input('view_type')=='yearly') {
-                if(request()->input('format')=='pdf') {
-                    $html = view('accounting::budget.partials.budget_yearly_pdf')->with(compact('accounts', 
-                    'budget', 'fy_year', 'account_types'))->render();
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Yearly.pdf';
-    
+            } else if (request()->input('view_type') == 'yearly') {
+                if (request()->input('format') == 'pdf') {
+                    $html = view('accounting::budget.partials.budget_yearly_pdf')->with(compact(
+                        'accounts',
+                        'budget',
+                        'fy_year',
+                        'account_types'
+                    ))->render();
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Yearly.pdf';
+
                     $mpdf = $this->getMpdf();
                     $mpdf->WriteHTML($html);
                     $mpdf->Output($output_file_name, 'D');
-                } else if(request()->input('format')=='excel') {
+                } else if (request()->input('format') == 'excel') {
                     $export = new BudgetExport($accounts, $budget, $months, $fy_year, $account_types, $view_type);
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Yearly.xlsx';
-                
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Yearly.xlsx';
+
                     return Excel::download($export, $output_file_name);
-                } else if(request()->input('format')=='csv') {
+                } else if (request()->input('format') == 'csv') {
                     $export = new BudgetExport($accounts, $budget, $months, $fy_year, $account_types, $view_type);
-    
-                    $output_file_name = 'Budget-'. $fy_year . '-Yearly.csv';
-                
+
+                    $output_file_name = 'Budget-' . $fy_year . '-Yearly.csv';
+
                     return Excel::download($export, $output_file_name);
                 }
             }
-            
         }
 
-        return view('accounting::budget.index')->with(compact('accounts', 'budget', 'months', 'fy_year', 
-                'account_types'));
+        return view('accounting::budget.index')->with(compact(
+            'accounts',
+            'budget',
+            'months',
+            'fy_year',
+            'account_types'
+        ));
     }
 
     private function getFinancialYearMonths()
@@ -165,12 +183,12 @@ class BudgetController extends Controller
             11 => 'nov',
             12 => 'dec'
         ];
-        for($i=$fy_start_month;count($months)<=11;$i++) {
-            $months[$i]=$month_names[$i];
-            if($i==12) {
-                $i=0;
+        for ($i = $fy_start_month; count($months) <= 11; $i++) {
+            $months[$i] = $month_names[$i];
+            if ($i == 12) {
+                $i = 0;
             }
-        }   
+        }
 
         return $months;
     }
@@ -183,20 +201,20 @@ class BudgetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
-        
-    
+
+
 
         $fy_year = request()->input('financial_year');
 
         $accounts = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
-                                ->where('status', 'active')
-                                ->select('name', 'id')
-                                ->get();
+            ->where('status', 'active')
+            ->select('name', 'id')
+            ->get();
         $months = $this->getFinancialYearMonths();
-        
+
         $budget = AccountingBudget::whereIn('accounting_account_id', $accounts->pluck('id'))
-                                ->where('financial_year', $fy_year)
-                                ->get();
+            ->where('financial_year', $fy_year)
+            ->get();
 
         return view('accounting::budget.create')->with(compact('fy_year', 'accounts', 'months', 'budget'));
     }
@@ -210,15 +228,15 @@ class BudgetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
-        
-     
-        
+
+
+
         try {
             DB::beginTransaction();
 
-            foreach($request->input('budget') as $key => $value) {
+            foreach ($request->input('budget') as $key => $value) {
                 $inputs = [];
-                foreach($value as $k => $v) {
+                foreach ($value as $k => $v) {
                     $inputs[$k] = !is_null($v) ? $this->moduleUtil->num_uf($v) : null;
                 }
                 AccountingBudget::updateOrCreate(
@@ -229,13 +247,12 @@ class BudgetController extends Controller
                     $inputs
                 );
             }
-        
-            DB::commit();
 
+            DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
         }
 
         return redirect()->back();

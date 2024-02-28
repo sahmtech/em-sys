@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Http\Controllers;
 
 use App\Transaction;
+use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Illuminate\Contracts\Support\Renderable;
@@ -70,7 +71,7 @@ class AutomatedMigrationController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
 
         // try {
@@ -216,7 +217,7 @@ class AutomatedMigrationController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
 
         // return $request;
 
