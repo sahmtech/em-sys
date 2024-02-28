@@ -2274,6 +2274,10 @@ class DataController extends Controller
             $user->essentials_pay_period = request()->input('essentials_pay_period') ?? 'month';
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
 
+            if (request()->input('max_anuual_leave_days')) {
+                $user->max_anuual_leave_days = request()->input('max_anuual_leave_days');
+            }
+
             if (request()->input('health_insurance') != null) {
                 $user->has_insurance = request()->input('health_insurance');
             }
@@ -2361,6 +2365,7 @@ class DataController extends Controller
                 $travel_ticket_categorie->save();
             }
 
+
             if (request()->input('profession')) {
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id = $user->id;
@@ -2418,7 +2423,10 @@ class DataController extends Controller
             $user->user_type = request()->input('user_type');
             $user->company_id = request()->input('company_id');
 
-            if (request()->input('health_insurance') != null) {
+            if (request()->input('max_anuual_leave_days') != null) {
+                $user->max_anuual_leave_days = request()->input('max_anuual_leave_days');
+            }
+            if (request()->input('health_insurance')) {
                 $user->has_insurance = request()->input('health_insurance');
             }
             if (request()->input('border_no') == 3) {

@@ -28,6 +28,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::DELETE('deleteRequestType/{id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'destroy'])->name('deleteRequestType');
         Route::post('updateRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'update'])->name('updateRequestType');
         Route::get('/get-tasks-for-type', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'getTasksForType'])->name('get-tasks-for-type');
+        Route::get('/getRequestType/{request_type_id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'getRequestType'])->name('getRequestType');
+
 
         Route::get('/departments', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index'])->name('departments');
         Route::get('/createDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'create'])->name('createDepartment');

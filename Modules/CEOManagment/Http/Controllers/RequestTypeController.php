@@ -81,7 +81,10 @@ class RequestTypeController extends Controller
                     'action',
                     function ($row) use ($is_admin, $can_edit_requests_type, $can_delete_requests_type) {
                         $html = '';
+                        if ($is_admin || $can_edit_requests_type) {
 
+                            $html .= '<a href="#" class="btn btn-xs btn-primary edit-request-type" data-id="' . $row->id . '" data-url="' . route('getRequestType', ['request_type_id' => $row->id]) . '">' . __('ceomanagment::lang.edit_request_tasks') . '</a>&nbsp;';
+                        }
                         if ($is_admin || $can_delete_requests_type) {
                             $html .= '<button class="btn btn-xs btn-danger delete_item_button"
                             data-href="' . route('deleteRequestType', ['id' => $row->id]) . '">
@@ -179,32 +182,40 @@ class RequestTypeController extends Controller
     public function update(Request $request)
 
     {
-
+        // return $request;
         try {
 
-            $exist = RequestsType::where('id', '!=', $request->request_type_id)->where([['type2', $request->type], ['for2', $request->for]])->first();
-            if ($exist) {
+            $requests = WkProcedure::where('request_type_id', $request->request_type_id)->get();
+
+            if ($requests->count() != 0) {
                 $output = [
                     'success' => false,
-                    'msg' => __('ceomanagment::lang.this_type_is_already_exists'),
+                    'msg' => __('ceomanagment::lang.cant_edit_type_it_have_procedures'),
                 ];
-                return redirect()->back()->with($output);
+                return $output;
             }
-            $input = $request->only(['type2', 'request_type_id', 'for2']);
-            $requestType = RequestsType::findOrFail($input['request_type_id']);
-            $requestType->type = $input['type2'];
+            Task::where('request_type_id', $request->request_type_id)->delete();
 
-            if ($input['for2'] !== 'both') {
-                $requestType->for = $input['for2'];
-            } elseif ($input['for2'] === 'both') {
-                $newFor = $requestType->for === 'worker' ? 'employee' : 'worker';
-                $requestType = new RequestsType();
-                $requestType->type = $input['type2'];
-                $requestType->prefix = $this->getTypePrefix($input['type2']);
-                $requestType->for = $newFor;
+            if (isset($request->tasks)) {
+                $descriptions = $request->tasks['description'] ?? [];
+                $links = $request->tasks['link'] ?? [];
+
+                foreach ($descriptions as $index => $description) {
+
+                    if (!empty($description)) {
+
+                        $taskInput = [
+                            'description' => $description,
+                            'link' => $links[$index] ?? null,
+                            'request_type_id' => $request->request_type_id,
+                        ];
+
+
+                        Task::create($taskInput);
+                    }
+                }
             }
 
-            $requestType->save();
 
             $output = [
                 'success' => true,
@@ -291,7 +302,17 @@ class RequestTypeController extends Controller
         $typeId = $request->typeId;
 
         $tasks = Task::where('request_type_id', $typeId)->pluck('description', 'id');
-        error_log('11111111111111');
+
         return response()->json($tasks);
+    }
+
+    public function getRequestType($id)
+    {
+        $requestType = RequestsType::with('tasks')->findOrFail($id);
+
+        return response()->json([
+            'status' => 'success',
+            'requestType' => $requestType,
+        ]);
     }
 }

@@ -567,8 +567,6 @@ class EssentialsWorkersAffairsController extends Controller
     public function edit($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
         $business_id = request()->session()->get('user.business_id');
         $user = User::with(['contactAccess', 'assignedTo'])
             ->findOrFail($id);
