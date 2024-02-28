@@ -426,14 +426,6 @@ class WkProcedureController extends Controller
             $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
             $for = WkProcedure::where('id', $id)->first()->request_owner_type;
 
-            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
-            if ($procedures) {
-                foreach ($procedures as $procedure) {
-                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
-                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
-                    $procedure->delete();
-                }
-            }
 
             $type = $procedureType;
 
@@ -457,6 +449,14 @@ class WkProcedureController extends Controller
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
 
+            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
+            if ($procedures) {
+                foreach ($procedures as $procedure) {
+                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
+                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
+                    $procedure->delete();
+                }
+            }
             $previousStepIds = [];
             if ($edit_modal_department_id_start) {
                 foreach ($edit_modal_department_id_start as $start_dep) {
@@ -479,8 +479,10 @@ class WkProcedureController extends Controller
             }
 
             if ($steps) {
-                foreach ($steps  as $index => $step) {
-                    $index = 0;
+                $index = 0;
+                foreach ($steps  as $step) {
+
+                    error_log($index);
                     $start_dep = $step['edit_modal_department_id_steps'][0];
                     $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = WkProcedure::create([
@@ -549,15 +551,7 @@ class WkProcedureController extends Controller
             }
 
 
-            $procedures = WkProcedure::where('request_type_id', $type)->get();
 
-            if ($procedures) {
-                foreach ($procedures as $procedure) {
-                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
-                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
-                    $procedure->delete();
-                }
-            }
 
             $steps = $request->input('step');
 
@@ -568,7 +562,15 @@ class WkProcedureController extends Controller
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
+            $procedures = WkProcedure::where('request_type_id', $type)->get();
 
+            if ($procedures) {
+                foreach ($procedures as $procedure) {
+                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
+                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
+                    $procedure->delete();
+                }
+            }
             $previousStepIds = [];
             if ($steps) {
                 $index = 0;
@@ -586,10 +588,10 @@ class WkProcedureController extends Controller
                         'end' => $index === count($steps) - 1 ? 1 : 0,
                         'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
                         'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
-                        'action_type' => $step['action_type'] ?? null,
+                        'action_type' => $step['edit_action_type'] ?? null,
                     ]);
-                    if (isset($step['tasks']) && $step['action_type'] === 'task') {
-                        foreach ($step['tasks'] as $taskId) {
+                    if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
+                        foreach ($step['edit_tasks'] as $taskId) {
                             if (!is_null($taskId)) {
                                 ProcedureTask::create([
                                     'procedure_id' => $workflowStep->id,
