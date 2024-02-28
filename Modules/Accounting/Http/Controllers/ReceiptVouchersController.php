@@ -43,7 +43,7 @@ class ReceiptVouchersController extends Controller
         }
 
         $transactions = TransactionPayment::with('transaction')->where('payment_type', 'credit')
-            ->orWhereHas('transaction', function ($q){
+            ->orWhereHas('transaction', function ($q) {
                 $q->where('type', 'sell');
             })
             ->orderBy('id');

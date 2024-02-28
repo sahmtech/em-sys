@@ -675,16 +675,7 @@ class CoaController extends Controller
 
     public function importe_accounts(Request $request)
     {
-        // $existingContent = File::getRequire(base_path() . '\Modules\Accounting\Resources\lang\ar\lang.php');
-        // $newContent ="'account_name_en' => 'اسم الحساب amen الانكليزية'";
-        // $combinedContent = $existingContent . $newContent;
-        // file_put_contents($existingContent, $combinedContent);
-
-
-
-        // // return $a = File::getRequire(base_path() . '\Modules\Accounting\Resources\lang\ar\lang.php');
-        // // $a[0] = "'account_name_en' => 'اسم الحساب amen الانكليزية'";
-        // return $existingContent;
+    
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_import_accountss = auth()->user()->can('accouning.import_accounts');
@@ -714,7 +705,7 @@ class CoaController extends Controller
                     continue;
                 } else {
                     $accountingAccountType = AccountingAccountType::where('name', $value[4])->first();
-                    if (!$accountingAccountType || AccountingAccount::where('gl_code', $value[3])->first()) {
+                    if (!$accountingAccountType || AccountingAccount::where('gl_code', $value[3])->where('business_id', $business_id)->first()) {
                         continue;
                     } else {
 
