@@ -355,6 +355,19 @@
                     ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
                 ) !!}
             </div>
+            <div class="form-group col-md-3">
+                {!! Form::label('max_anuual_leave_days', __('essentials::lang.max_anuual_leave_days') . ':') !!}
+                {!! Form::select(
+                    'max_anuual_leave_days',
+                    ['31' => __('essentials::lang.31_days'), '21' => __('essentials::lang.21_days')],
+                    $user->max_anuual_leave_days ?? null,
+                    [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                        'placeholder' => __('essentials::lang.max_anuual_leave_days'),
+                    ],
+                ) !!}
+            </div>
         </div>
         <input type="hidden" id="selectedData" name="selectedData" value="">
 
@@ -511,7 +524,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
                     </div>
-                 
+
                 </div>
             </div>
         </div>
@@ -686,8 +699,6 @@
 
 
             });
-
-            
         </script>
 
 
