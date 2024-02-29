@@ -35,7 +35,7 @@ class BudgetController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;

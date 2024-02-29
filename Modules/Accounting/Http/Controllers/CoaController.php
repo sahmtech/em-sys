@@ -42,7 +42,7 @@ class CoaController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -131,7 +131,7 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -150,7 +150,7 @@ class CoaController extends Controller
     {
         //check no accounts
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -176,7 +176,7 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -230,7 +230,7 @@ class CoaController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+             $company_id = Session::get('selectedCompanyId');
 
 
             $account_primary_type = request()->input('account_primary_type');
@@ -274,7 +274,7 @@ class CoaController extends Controller
     public function store_old(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -345,7 +345,7 @@ class CoaController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
 
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
         try {
@@ -425,7 +425,7 @@ class CoaController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -484,7 +484,7 @@ class CoaController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -524,7 +524,7 @@ class CoaController extends Controller
     public function activateDeactivate($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -555,7 +555,7 @@ class CoaController extends Controller
     public function ledger($account_id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -699,7 +699,7 @@ class CoaController extends Controller
         }
 
         try {
-            $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+             $company_id = Session::get('selectedCompanyId');
 
 
             if ($request->hasFile('accounts_csv')) {
@@ -710,7 +710,7 @@ class CoaController extends Controller
                 foreach ($accounts_csv as  $value) {
 
                     $business_id = request()->session()->get('user.business_id');
-                    $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+                     $company_id = Session::get('selectedCompanyId');
 
                     $user_id = request()->session()->get('user.id');
 

@@ -36,7 +36,7 @@ class JournalEntryController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -120,7 +120,7 @@ class JournalEntryController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -131,7 +131,7 @@ class JournalEntryController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -230,7 +230,7 @@ class JournalEntryController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -242,7 +242,7 @@ class JournalEntryController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -263,7 +263,7 @@ class JournalEntryController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -348,7 +348,7 @@ class JournalEntryController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -371,7 +371,7 @@ class JournalEntryController extends Controller
     public function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -446,7 +446,7 @@ class JournalEntryController extends Controller
     public function saveMap(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
 

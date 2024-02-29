@@ -39,7 +39,7 @@ class PaymentVouchersController extends Controller
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_payment_vouchers = auth()->user()->can('accounting.payment_vouchers');
@@ -151,7 +151,7 @@ class PaymentVouchersController extends Controller
         if ($transaction_id) {
             try {
                 $business_id = $request->session()->get('user.business_id');
-                $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+                 $company_id = Session::get('selectedCompanyId');
 
                 $transaction = Transaction::where('business_id', $business_id)->where('company_id', $company_id)->with(['contact'])->findOrFail($transaction_id);
 
@@ -255,7 +255,7 @@ class PaymentVouchersController extends Controller
                     DB::beginTransaction();
 
                     $business_id = request()->session()->get('business.id');
-                    $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+                     $company_id = Session::get('selectedCompanyId');
                     $tp = $this->transactionUtil->payContact($request, true, $company_id);
                     $pos_settings = !empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
                     $enable_cash_denomination_for_payment_methods = !empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];

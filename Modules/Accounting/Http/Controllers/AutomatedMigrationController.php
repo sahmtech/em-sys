@@ -71,7 +71,7 @@ class AutomatedMigrationController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
 
         // try {
@@ -217,7 +217,7 @@ class AutomatedMigrationController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+         $company_id = Session::get('selectedCompanyId');
 
         // return $request;
 
