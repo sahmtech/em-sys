@@ -13,7 +13,7 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
-            @can('user.create')
+              @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.create_worker'))
                 @slot('tool')
                     <div class="row">
                         <div class="col-sm-3">
@@ -24,7 +24,8 @@
                         </div>
                     </div>
                 @endslot
-            @endcan
+            @endif
+            
             <div class="row">
 
 

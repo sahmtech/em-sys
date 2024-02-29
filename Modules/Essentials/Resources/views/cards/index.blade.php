@@ -134,24 +134,36 @@
 
 @section('javascript')
 
-
 <script>
-    $(document).ready(function() {
-        $('#workcard_duration_input').on('change', function() {
-            var selectedDuration = $(this).find(':selected').attr('value');
-             console.log(selectedDuration);
-            var feesInput = $('#fees_input');
-            console.log(feesInput);
-            
-            var feesMapping = {
-                '3': 2425,
-                '6': 4850,
-                '9': 7275,
-                '12': 9700,
-            };
-            console.log(feesMapping[selectedDuration]);
-
-            $('#fees_input').val(feesMapping[selectedDuration]);
+    $(document).ready(function(){
+        $('#workcard_duration_input').change(function(){
+            var selectedDuration = $(this).val();
+            var feesOptions = [];
+            switch(selectedDuration) {
+                case '3':
+                    feesOptions = ['163', '288', '413'];
+                    break;
+                case '6':
+                    feesOptions = ['326', '825'];
+                    break;
+                case '9':
+                    feesOptions = ['488'];
+                    break;
+                case '1':
+                    feesOptions = ['650', '1150'];
+                    break;
+                default:
+                    feesOptions = [];
+            }
+            // Clear previous options
+            $('#fees_input').empty();
+            // Populate fees dropdown with new options
+            $.each(feesOptions, function(index, value) {
+                $('#fees_input').append($('<option>', {
+                    value: value,
+                    text: value
+                }));
+            });
         });
     });
 </script>

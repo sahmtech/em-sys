@@ -130,7 +130,7 @@ class EssentialsCardsController extends Controller
             '3' => __('essentials::lang.3_months'),
             '6' => __('essentials::lang.6_months'),
             '9' => __('essentials::lang.9_months'),
-            '12' => __('essentials::lang.12_months'),
+            '1' => __('essentials::lang.1_year'),
         ];
         $companies = Company::pluck('name', 'id');
         $card = EssentialsWorkCard::whereIn('employee_id', $userIds)

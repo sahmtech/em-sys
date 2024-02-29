@@ -162,7 +162,7 @@
                     </div>		
 
 
-                    <div class="col-md-4">
+                   <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('workcard_duration', __('essentials::lang.work_card_duration') . ':*') !!}
                             <div class="input-group">
@@ -184,7 +184,7 @@
                                 <span class="input-group-addon">
                                     <i class="fa fa-id-badge"></i>
                                 </span>
-                                {!! Form::text('fees_input', null,
+                                {!! Form::select('fees_input', [], null,
                                     ['class' => 'form-control','id'=>'fees_input', 'required',
                                     'placeholder' => __('essentials::lang.fees')]); !!}
                             </div>
