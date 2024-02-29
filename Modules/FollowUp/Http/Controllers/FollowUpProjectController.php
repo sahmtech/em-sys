@@ -20,6 +20,21 @@ use Modules\Essentials\Entities\EssentialsCity;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Http\Controllers\SalesController;
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+
+use App\Category;
+use Modules\Essentials\Entities\EssentialsDepartment;
+
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+
+
+use App\Company;
 
 class FollowUpProjectController extends Controller
 {
@@ -155,9 +170,104 @@ class FollowUpProjectController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+
+
+    public function createWorker()
     {
-        return view('followup::create');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_add_wroker = auth()->user()->can('followup.create_worker');
+        if (!($is_admin || $can_add_wroker)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        $username_ext = $this->moduleUtil->getUsernameExtension();
+        // $locations = BusinessLocation::where('business_id', $business_id)
+        //     ->Active()
+        //     ->get();
+        $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+        $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+
+        $contacts = SalesProject::pluck('name', 'id')->toArray();
+        $contacts = [null => __('essentials::lang.undefined')] + $contacts;
+
+        $blood_types = [
+            'A+' => 'A positive (A+).',
+            'A-' => 'A negative (A-).',
+            'B+' => 'B positive (B+)',
+            'B-' => 'B negative (B-).',
+            'AB+' => 'AB positive (AB+).',
+            'AB-' => 'AB negative (AB-).',
+            'O+' => 'O positive (O+).',
+            'O-' => 'O positive (O-).',
+        ];
+
+
+
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $countries = $countries = EssentialsCountry::forDropdown();
+        $resident_doc = null;
+        $user = null;
+        $designations = Category::forDropdown($business_id, 'hrm_designation');
+
+        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+        $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
+
+        $user = !empty($data['user']) ? $data['user'] : null;
+
+        $allowance_deduction_ids = [];
+        if (!empty($user)) {
+            $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+                ->pluck('allowance_deduction_id')
+                ->toArray();
+        }
+
+        if (!empty($user)) {
+            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+        } else {
+            $contract = null;
+        }
+
+        // $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
+        $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
+        $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
+        $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+
+        $company = Company::all()->pluck('name', 'id');
+
+        return  view('essentials::employee_affairs.workers_affairs.create')
+            ->with(compact(
+                'departments',
+                'countries',
+                'spacializations',
+                'nationalities',
+                'username_ext',
+                'blood_types',
+                'job_titles',
+                'contacts',
+                'company',
+                'banks',
+                'contract_types',
+                'form_partials',
+                'resident_doc',
+                'user',
+
+                'allowance_types',
+                'travel_ticket_categorie',
+                'contract_types',
+                'nationalities',
+                'specializations',
+                'professions'
+
+            ));
     }
 
     /**

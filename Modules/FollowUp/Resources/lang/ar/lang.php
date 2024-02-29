@@ -12,6 +12,7 @@ return [
     'work_card' => 'كرت العمل',
     'insurance' => 'التأمين',
     'has_insurance' => 'مؤمن',
+    'create_worker' => 'إضافة عامل',
     'title' => 'العنوان',
     'select_worker' => 'اختر عامل',
     'select_doc_type' => 'اختر نوع الوثيقة ',

@@ -130,7 +130,7 @@ class EssentialsCardsController extends Controller
             '3' => __('essentials::lang.3_months'),
             '6' => __('essentials::lang.6_months'),
             '9' => __('essentials::lang.9_months'),
-            '12' => __('essentials::lang.12_months'),
+            '1' => __('essentials::lang.1_year'),
         ];
         $companies = Company::pluck('name', 'id');
         $card = EssentialsWorkCard::whereIn('employee_id', $userIds)
@@ -439,7 +439,8 @@ class EssentialsCardsController extends Controller
             }
         }
 
-        $users = User::whereIn('users.id', $userIds)
+        $users = User::with('assignedTo')
+            ->whereIn('users.id', $userIds)
             ->where('users.is_cmmsn_agnt', 0)
             ->where('users.nationality_id', '!=', 5)
             ->where('users.status', 'active')
@@ -487,6 +488,7 @@ class EssentialsCardsController extends Controller
                 'users.username',
                 'users.business_id',
                 'users.user_type',
+                'users.assigned_to',
                 DB::raw(
                     "CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"
                 ),
@@ -508,6 +510,12 @@ class EssentialsCardsController extends Controller
             ])
 
             ->orderby('id', 'desc');
+
+        //dd($users->where('users.id', 5586)->first()->assigned_to);
+        if (!empty($request->input('project'))) {
+
+            $users->where('assigned_to', $request->input('project'));
+        }
 
         if (
             !empty($request->input('proof_numbers')) &&
@@ -545,6 +553,10 @@ class EssentialsCardsController extends Controller
 
                 ->addColumn('total_salary', function ($row) {
                     return $row->calculateTotalSalary();
+                })
+
+                ->addColumn('project', function ($row) {
+                    return $row->assignedTo->name ?? " ";
                 })
 
                 ->editColumn('essentials_department_id', function ($row) use (
@@ -677,9 +689,11 @@ class EssentialsCardsController extends Controller
                 'users.id'
             )
             ->get();
+        $sales_projects = SalesProject::pluck('name', 'id');
 
         return view('essentials::cards.operations')->with(
             compact(
+                'sales_projects',
                 'durationOptions',
                 'companies',
                 'proof_numbers',
@@ -1937,7 +1951,7 @@ class EssentialsCardsController extends Controller
             );
             $output = [
                 'success' => 0,
-                'msg' => __('messeages.somthing_went_wrong'),
+                'msg' => __('messeages.something_went_wrong'),
             ];
         }
 

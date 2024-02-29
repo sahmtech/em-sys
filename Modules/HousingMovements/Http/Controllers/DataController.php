@@ -33,6 +33,11 @@ class DataController extends Controller
                 'group_name' => __('housingmovements::lang.housing_move'),
                 'group_permissions' => [
                     [
+                        'value' => 'housingmovements.create_worker',
+                        'label' => __('housingmovements::lang.create_worker'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'housingmovements.housing_move_dashbord',
                         'label' => __('housingmovements::lang.housing_move_dashbord'),
                         'default' => false,
@@ -95,7 +100,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    
+
 
                     [
                         'value' => 'housingmovements.crud_facilities',
@@ -107,7 +112,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.all_request'),
                         'default' => false,
                     ],
-                
+
 
                     [
                         'value' => 'housingmovements.return_the_request',
@@ -176,7 +181,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.worker_housed'),
                         'default' => false,
                     ],
-                    
+
                     [
                         'value' => 'housingmovements.leave_room',
                         'label' => __('housingmovements::lang.leave_room'),
@@ -187,7 +192,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.transfer_from_room'),
                         'default' => false,
                     ],
-                     [
+                    [
                         'value' => 'housingmovements.housingmovements_view_department_employees',
                         'label' => __('housingmovements::lang.department_employees'),
                         'default' => false,

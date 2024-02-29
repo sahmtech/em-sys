@@ -191,7 +191,7 @@ class FollowupDeliveryDocumentController extends Controller
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 

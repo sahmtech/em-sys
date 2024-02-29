@@ -899,7 +899,7 @@ class EssentialsManageEmployeeController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->back()->with('status', $output);
@@ -993,6 +993,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $com_id = request()->input('company_id');
             error_log($com_id);
+
             // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
             //     ->first();
 
@@ -1008,24 +1009,26 @@ class EssentialsManageEmployeeController extends Controller
 
 
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-
+            // dd($existingprofnumber);
             if ($existingprofnumber) {
-                $errorMessage = trans('essentials::lang.user_with_same_id_proof_number_exists');
-                throw new \Exception($errorMessage);
+
+                $output = [
+                    'success' => 0,
+                    'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                ];
+            } else {
+                $user = $this->moduleUtil->createUser($request);
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
             }
-
-            $user = $this->moduleUtil->createUser($request);
-
-            $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1049,39 +1052,61 @@ class EssentialsManageEmployeeController extends Controller
 
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
-            $business_id = request()->session()->get('user.business_id');
+            // $business_id = request()->session()->get('user.business_id');
 
-            $numericPart = (int)substr($business_id, 3);
-            $lastEmployee = User::where('business_id', $business_id)
-                ->orderBy('emp_number', 'desc')
-                ->first();
+            // $numericPart = (int)substr($business_id, 3);
+            // $lastEmployee = User::where('business_id', $business_id)
+            //     ->orderBy('emp_number', 'desc')
+            //     ->first();
 
-            if ($lastEmployee) {
+            // if ($lastEmployee) {
 
-                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
+            //     $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
 
-                $nextNumericPart = $lastEmpNumber + 1;
+            //     $nextNumericPart = $lastEmpNumber + 1;
 
-                $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
-            } else {
+            //     $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+            // } else {
 
-                $request['emp_number'] =  $business_id . '000';
+            //     $request['emp_number'] =  $business_id . '000';
+            // }
+
+            if ($request->input('id_proof_number')) {
+                $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+            }
+            if ($request->input('border_no')) {
+                $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
             }
 
 
-            $user = $this->moduleUtil->createUser($request);
 
-            event(new UserCreatedOrModified($user, 'added'));
+            if ($existingprofnumber || $existingBordernumber) {
 
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
+                if ($existingprofnumber != null) {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                    ];
+                } else {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
+                    ];
+                }
+            } else {
+                $user = $this->moduleUtil->createUser($request);
+                event(new UserCreatedOrModified($user, 'added'));
+
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1484,7 +1509,7 @@ class EssentialsManageEmployeeController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.somthing_went_wrong'),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
