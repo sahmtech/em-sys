@@ -345,7 +345,7 @@ class FollowUpProjectController extends Controller
         return view(
             'followup::projects.show',
             compact('users', 'id', 'requestTypes', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes')
-        );;
+        );
     }
 
 
