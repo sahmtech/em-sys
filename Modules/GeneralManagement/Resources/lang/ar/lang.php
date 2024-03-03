@@ -33,4 +33,6 @@ return [
     'notification_title' => 'العنوان',
     'notification_msg' => 'المحتوى',
     'notification_recievers' => 'المرسل لهم',
+    'edit_notification_settings' => 'تعديل إعدادات الإشعارات',
+    'notification_settings' => 'إعدادات الإشعارات',
 ];

@@ -138,6 +138,12 @@ class NotificationController extends Controller
         return redirect()->back()->with('status', $output);
     }
 
+    public function settings()
+    {
+
+        return view('generalmanagement::notifications.settings');
+    }
+
     /**
      * Show the specified resource.
      * @param int $id
