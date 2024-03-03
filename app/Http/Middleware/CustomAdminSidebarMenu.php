@@ -29,8 +29,6 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
         $currentPath = $request->path();
-
-        error_log($currentPath);
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles', 'get-all-users'])) {
             $this->userManagementMenu();
@@ -320,6 +318,13 @@ class CustomAdminSidebarMenu
                                 route('notifications.create'),
                                 __('generalmanagement::lang.send_notifications'),
                                 ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'create']
+                            );
+                        }
+                        if ($is_admin ||  auth()->user()->can('generalmanagement.edit_notification_settings')) {
+                            $sub->url(
+                                route('notifications.settings'),
+                                __('generalmanagement::lang.notification_settings'),
+                                ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'settings']
                             );
                         }
                     },
