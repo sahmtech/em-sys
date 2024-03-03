@@ -505,7 +505,7 @@ class EssentialsWorkersAffairsController extends Controller
 
                 $officialDocuments = $user->OfficialDocument;
                 $workerDocuments = $user->proposal_worker?->worker_documents;
-                $contract_doc = $user->contract;
+                $contract_doc = $user->contract()->where('is_active', 1)->first();
                 if ($contract_doc !== false) {
 
                     $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
@@ -513,10 +513,10 @@ class EssentialsWorkersAffairsController extends Controller
 
                     $documents = $officialDocuments->merge($workerDocuments);
                 }
-                // $documents = $officialDocuments->merge($workerDocuments);
             } else {
                 $officialDocuments = $user->OfficialDocument;
-                $contract_doc = $user->contract;
+                $contract_doc = $user->contract()->where('is_active', 1)->first();
+
 
                 if ($contract_doc !== false) {
 
@@ -774,9 +774,9 @@ class EssentialsWorkersAffairsController extends Controller
                 $bankCode = $bank_details['bank_code'];
                 $input['number'] = $bankCode;
                 $input['file_path'] =  $path;
-
                 $Iban_doc->update($input);
             }
+
             $delete_iban_file = $request->delete_iban_file ?? null;
             if ($delete_iban_file && $delete_iban_file == 1) {
 

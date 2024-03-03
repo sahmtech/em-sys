@@ -1151,45 +1151,16 @@ class EssentialsManageEmployeeController extends Controller
 
         if ($user) {
             if ($user->user_type == 'employee' || $user->user_type == 'manager') {
-
                 $officialDocuments = $user->OfficialDocument;
-                $contract_doc = $user->contract;
+                $contract_doc = $user->contract()->where('is_active', 1)->first(); // Use ->first() to retrieve the contract
 
-                if ($contract_doc !== false) {
-
-                    $documents = $officialDocuments->merge([$contract_doc]);
+                if ($contract_doc !== null) { // Check if a contract exists
+                    $documents = $officialDocuments->merge([$contract_doc]); // Wrap $contract_doc in an array since merge expects a collection
                 } else {
-                    $documents = $user->OfficialDocument;
-                }
-            } else if ($user->user_type == 'worker') {
-
-                if (!empty($user->proposal_worker_id)) {
-                    $officialDocuments = $user->OfficialDocument;
-                    $contract_doc = $user->contract;
-                    $workerDocuments = $user->proposal_worker?->worker_documents;
-
-
-                    if ($contract_doc !== false) {
-
-                        $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
-                    } else {
-
-                        $documents = $officialDocuments->merge($workerDocuments);
-                    }
-                } else {
-                    $officialDocuments = $user->OfficialDocument;
-                    $contract_doc = $user->contract;
-
-                    if ($contract_doc !== false) {
-
-                        $documents = $officialDocuments->merge([$contract_doc]);
-                    } else {
-                        $documents = $user->OfficialDocument;
-                    }
+                    $documents = $officialDocuments;
                 }
             }
         }
-
 
 
         $dataArray = [];

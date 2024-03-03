@@ -72,12 +72,12 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('delivery_date', __('housingmovements::lang.delivery_date') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                    {!! Form::input('date', 'delivery_date', '', [
+                                    {!! Form::date('date', null, [
                                         'class' => 'form-control',
                                         'required',
                                         'placeholder' => __('housingmovements::lang.delivery_date'),
                                         'id' => 'delivery_date',
-                                        'min' => \Carbon\Carbon::now()->format('Y-m-d'),
+                                       
                                     ]) !!}
                                 </div>
                             </div>

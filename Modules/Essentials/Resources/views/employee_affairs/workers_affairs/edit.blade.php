@@ -554,11 +554,15 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="form-group">
+                                    
+                                       
+                                    
                                     {!! Form::file('contract_file', [
                                         'class' => 'form-control',
                                         'style' => 'height:36px; ',
                                         'accept' => '.*',
                                     ]) !!}
+                                    
 
                                 </div>
                             </div>
