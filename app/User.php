@@ -527,4 +527,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(HtrRoomsWorkersHistory::class, 'worker_id', 'id');
     }
+
+
+    public function sentNotificationsUser()
+    {
+        return $this->hasMany(SentNotificationsUser::class, 'user_id');
+    }
+
+    public function SentNotification()
+    {
+        return $this->hasMany(SentNotification::class, 'user_id');
+    }
 }

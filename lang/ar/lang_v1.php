@@ -1457,5 +1457,11 @@ return [
     'finished_success' => 'تم الإنهاء بنجاح',
     'pills' => 'الفواتير',
     'create_pill' => 'إنشاء فاتورة',
-
+    'all_notifications' => 'جميع الإشعارات',
+    'notification_sender' => 'المرسل',
+    'notification_type' => 'نمط الاشعار',
+    'notification_title' => 'العنوان',
+    'notification_msg' => 'المحتوى',
+    'notification_read_at' => 'تاريخ قراءة الإشعار',
+    'notification_created_at' => 'تاريخ إنشاء الإشعار',
 ];
