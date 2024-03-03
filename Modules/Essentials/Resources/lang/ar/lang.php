@@ -1038,8 +1038,12 @@ return [
   'work_card_duration' => 'مدة رخصة العمل',
   'renew_duration' => 'مدة التجديد',
   'pay_number' => ' رقم السداد',
-  'fees' => 'رسوم  مكتب العمل ',
+  'passport_fees' => 'رسوم الجوازات ',
+  'work_card_fees' => 'رسوم  مكتب العمل ',
+  'other_fees' => 'رسوم أخرى',
+  'payment_number_invalid' => 'لا يمكن اتمام عملية الحفظ لأن رقم السداد يجب أن يكون مكونا من 14 رقم فقط أو فارغ',
   'nationality' => 'الجنسية ',
+  '12_months' => '12 شهرا',
   'all' => 'الكل',
   'residencyreports' => 'تقرير تكاليف الإقامات',
 

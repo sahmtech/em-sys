@@ -183,6 +183,7 @@ return [
   'reports' => 'التقارير',
   'visa_reports' => 'ملخص التاشيرات',
   'visa_start_date' => 'تاريخ بداية التاشيرة',
+  'workers_exceed_target_number' => 'عدد العمال المضافين لنفس المكتب أكبر من العدد المفوض به',
   'visa_end_date' => 'تاريخ نهاية التاشيرة ',
   'visa_status' => 'حالة التاشيرة',
   'existing_visa' => 'تاشيرة قائمة ',

@@ -1,5 +1,5 @@
 <div id="renewModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" style="width:1000px" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -10,7 +10,7 @@
 
             {!! Form::open(['url' => route('postRenewData'), 'method' => 'post', 'id' => 'renew_form']) !!}
                 <div class="modal-body">
-                    <input name="building_htr" id="building_htr" type="hidden" value="300" />
+                    {{-- <input name="building_htr" id="building_htr" type="hidden" value="300" /> --}}
 
                     <div class="row">
                         
