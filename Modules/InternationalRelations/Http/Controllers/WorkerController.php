@@ -863,7 +863,7 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => false,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return response()->json($output);
