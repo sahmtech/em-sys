@@ -1750,4 +1750,8 @@ return [
   'extendable' => 'قابلة للتمديد',
   'number of months after adminssion date' => 'عدد الأشهر من تاريخ مباشرة العمل',
   'Leave the input empty to take the value "undefined"' => 'اترك الحقل فارغاً في حال كانت العدد الأقصى غير محدد',
+  'max_anuual_leave_days' => 'عدد أيام الإجازة السنوية المستحقة',
+  '21_days' => '21 يوم',
+  '31_days' => '31 يوم',
+
 ];

@@ -288,10 +288,44 @@
                                                 'style' => 'height:40px',
                                             ]) !!}
                                         </div>
-
-                                        <div class="clearfix"></div>
                                         <div class="form-group col-md-4">
+                                            {!! Form::label('edit_action_type', __('ceomanagment::lang.action_type') . ':*') !!}
+                                            {!! Form::select(
+                                                'step[0][edit_action_type]',
+                                                ['accept_reject' => __('ceomanagment::lang.Accept/Reject'), 'task' => __('ceomanagment::lang.do_task')],
+                                                null,
+                                                [
+                                                    'class' => 'form-control action_type_select',
+                                                    'placeholder' => __('ceomanagment::lang.action_type'),
+                                                    'style' => 'width:100%; height:40px',
+                                                ],
+                                            ) !!}
+                                        </div>
+
+                                        <div class="form-group col-md-6 task-select-container" style="display: none;">
+
+                                            {!! Form::label('edit_tasks', __('ceomanagment::lang.task') . ':*') !!}
+                                            <div class="input-group">
+                                                {!! Form::select('step[0][edit_tasks][]', $tasks, null, [
+                                                    'class' => 'form-control task-select',
+                                                    'placeholder' => __('ceomanagment::lang.task'),
+                                                    'style' => 'width:100%; height:40px',
+                                                ]) !!}
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default add-task-btn" type="button">
+                                                        @lang('ceomanagment::lang.add_task')</button>
+
+                                                    <button class="btn btn-danger remove-task-btn" type="button"
+                                                        style="display: none;"> @lang('ceomanagment::lang.remove')</button>
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="form-group col-md-4 edit-can-reject-checkbox-container"
+                                            style="display: block;">
                                             <div class="checkbox">
+
                                                 <label>
 
                                                     {!! Form::checkbox('step[0][edit_modal_can_reject_steps][]', 1, null, []) !!}{{ __('essentials::lang.can_reject') }}
@@ -723,7 +757,8 @@
                         'checked', stepData.can_reject);
                     $(stepSelector).find('[name^="step[' + index + '][edit_modal_can_return_steps]"]').prop(
                         'checked', stepData.can_return);
-
+                    $(stepSelector).find('[name^="step[' + index + '][edit_action_type]"]')
+                        .val(stepData.action_type);
                     // Populate the first escalation directly
                     if (stepData.escalations && stepData.escalations.length > 0) {
                         var firstEscalation = stepData.escalations[0];
@@ -777,6 +812,91 @@
                         });
                     }
 
+                    if (stepData.tasks && stepData.tasks.length > 0) {
+                        var firstTask = stepData.tasks[0];
+                        var parent = $(stepSelector).closest('.entire_step');
+                        var container = parent.find('.task-select-container').first();
+                        container.show();
+                        container.find('.add-task-btn').show();
+                        container.find('.remove-task-btn')
+                            .hide();
+                        parent.find('.edit-can-reject-checkbox-container').hide();
+
+
+                        var typeId = stepData.request_type_id;
+
+                        $.ajax({
+                            url: '/ceomanagment/get-tasks-for-type',
+                            type: 'GET',
+                            data: {
+                                typeId: typeId
+                            },
+                            success: function(response) {
+                                var container = $('select[name="step[' + index +
+                                        '][edit_tasks][]"]')
+                                    .closest('.task-select-container');
+                                var tasksSelect = container.find(
+                                    'select[name="step[' + index + '][edit_tasks][]"]');
+                                tasksSelect.empty();
+                                tasksSelect.append('<option value="">' + 'Select Task' +
+                                    '</option>');
+                                $.each(response, function(key, value) {
+                                    tasksSelect.append('<option value="' + key + '">' +
+                                        value + '</option>');
+                                });
+                                tasksSelect.val(firstTask.id);
+                            }
+                        });
+
+                    }
+
+                    if (stepData.tasks && stepData.tasks.length > 1) {
+                        stepData.tasks.slice(1).forEach(function(task, index) {
+                            var stepContainer = $(stepSelector).closest('.entire_step');
+                            var taskContainers = stepContainer.find('.task-select-container');
+                            var taskClone = taskContainers.first().clone();
+                            stepContainer.find('.edit-can-reject-checkbox-container').hide();
+
+                            var newIndex = index;
+                            var newSelect = taskClone.find('select').attr('name', 'step[' +
+                                newIndex + '][edit_tasks][]');
+                            taskClone.find('.add-task-btn').hide();
+                            taskClone.find('.remove-task-btn').show().css('display',
+                                'inline-block');
+                            taskClone.css('display', '');
+
+                            taskContainers.last().after(taskClone);
+
+                            var typeId = stepData
+                                .request_type_id;
+                            $.ajax({
+                                url: '/ceomanagment/get-tasks-for-type',
+                                type: 'GET',
+                                data: {
+                                    typeId: typeId
+                                },
+                                success: function(response) {
+                                    newSelect.empty();
+                                    newSelect.append('<option value="">' +
+                                        'Select Task' + '</option>');
+                                    $.each(response, function(key, value) {
+                                        newSelect.append($('<option>', {
+                                            value: key,
+                                            text: value
+                                        }));
+                                    });
+                                    newSelect.val(task.id);
+                                }
+                            });
+                        });
+                    }
+
+
+
+                    // Add click event listener for the remove button
+                    $(document).on('click', '.remove-task-btn', function() {
+                        $(this).closest('.task-select-container').remove();
+                    });
                     $(stepSelector).find('.select2').select2();
                     edit_modal_steps_count++;
                 }
@@ -797,6 +917,8 @@
                             stepIndex + ']');
                         $(this).attr('name', newName);
                     });
+                    var parent = $(stepTemplate).closest('.entire_step');
+                    var container = parent.find('.task-select-container').hide();
 
                     populateStepData(stepTemplate, stepIndex, stepData);
                     stepTemplate.css('display', 'block');
@@ -814,17 +936,20 @@
                     container.find('.task-select-container').first().show();
                     container.find('.add-task-btn').first().show();
                     container.find('.can-reject-checkbox-container').hide();
+                    container.find('.edit-can-reject-checkbox-container').hide();
                 } else {
                     container.find('.task-select-container').hide();
 
                     container.find('.task-select-container').not(':first').remove();
                     container.find('.can-reject-checkbox-container').show();
+                    container.find('.edit-can-reject-checkbox-container').show();
                 }
             }
 
             $(document).on('change', '.action_type_select', function() {
                 var selectedActionType = $(this).val();
                 var stepContainer = $(this).closest('.entire_step');
+
                 adjustTaskInputs(stepContainer, selectedActionType);
             });
 

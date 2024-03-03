@@ -137,7 +137,7 @@
         ) !!}
     </div>
 
-    @if (empty($contract))
+    {{-- @if (empty($contract))
         <div class="col-md-3">
             <div class="form-group">
                 {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
@@ -148,8 +148,16 @@
             </div>
 
         </div>
-    @endif
+    @endif --}}
+    <div class="clearfix"></div>
+    <br>
+    <div class="form-group col-md-3">
+        <button type="button" class="btn btn-success align-self-center contract_attachements_btn"
+            id="ContractFileLink">
+            {{ __('essentials::lang.contract_file') }}
+        </button>
 
+    </div>
 </div>
 
 
@@ -308,6 +316,19 @@
             ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
             $user->has_insurance ?? null,
             ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
+        ) !!}
+    </div>
+    <div class="form-group col-md-3">
+        {!! Form::label('max_anuual_leave_days', __('essentials::lang.max_anuual_leave_days') . ':') !!}
+        {!! Form::select(
+            'max_anuual_leave_days',
+            ['31' => __('essentials::lang.31_days'), '21' => __('essentials::lang.21_days')],
+            $user->max_anuual_leave_days ?? null,
+            [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('essentials::lang.max_anuual_leave_days'),
+            ],
         ) !!}
     </div>
 </div>

@@ -1,7 +1,10 @@
 @php
-    $all_notifications = auth()->user()->notifications;
+    // $all_notifications = auth()->user()->notifications;
+    // $unread_notifications = $all_notifications->where('read_at', null);
+    // $total_unread = count($unread_notifications);
+    $all_notifications = App\SentNotificationsUser::where('user_id', auth()->user()->id)->get();
     $unread_notifications = $all_notifications->where('read_at', null);
-    $total_unread = count($unread_notifications);
+    $total_unread = count($unread_notifications ?? []);
 @endphp
 <!-- Notifications: style can be found in dropdown.less -->
 <li>
@@ -13,13 +16,16 @@
     <a href="#" class="dropdown-toggle load_notifications" data-toggle="dropdown" id="show_unread_notifications"
         data-loaded="false">
         <i class="fas fa-bell"></i>
-        <span class="label label-warning notifications_count">
-            @if (!empty($total_unread))
+        @if (!empty($total_unread))
+            <span class="label label-warning notifications_count">
+
                 {{ $total_unread }}
-            @endif
-        </span>
+
+            </span>
+        @endif
     </a>
     <ul class="dropdown-menu">
+
         <!-- <li class="header">You have 10 unread notifications</li> -->
         <li>
             <!-- inner menu: contains the actual data -->
@@ -28,13 +34,16 @@
             </ul>
         </li>
 
+
         @if (count($all_notifications) > 10)
             <li class="footer load_more_li">
                 <a href="#" class="load_more_notifications">@lang('lang_v1.load_more')</a>
             </li>
         @endif
+        <li class="footer load_more_li">
+            <a href="{{ route('getMyNotification') }}" class="btn btn-primary">@lang('lang_v1.all_notifications')</a>
+        </li>
     </ul>
 </li>
-
 
 <input type="hidden" id="notification_page" value="1">

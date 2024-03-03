@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_leave_types', function (Blueprint $table) {
-            $table->string('leave_type')->nullable()->after('id'); 
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('max_anuual_leave_days')->default(21)->after('room_id');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('', function (Blueprint $table) {
-
+        Schema::table('users', function (Blueprint $table) {
+            //
         });
     }
 };

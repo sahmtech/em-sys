@@ -132,61 +132,29 @@
             </div>
 
 
-
-            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="editRequestTypeModal" tabindex="-1" role="dialog"
+                aria-labelledby="editRequestTypeModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                        {!! Form::open(['route' => 'updateRequestType', 'enctype' => 'multipart/form-data']) !!}
+                        {!! Form::open(['id' => 'editRequestTypeForm', 'method' => 'POST']) !!}
                         <div class="modal-header">
-                            <h4 class="modal-title">@lang('ceomanagment::lang.edit_requests_type')</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('ceomanagment::lang.edit_request_tasks')</h4>
                         </div>
-                        <div class="modal-body">
 
+                        <div class="modal-body">
+                            {!! Form::hidden('request_type_id', '', ['id' => 'requestTypeId']) !!}
                             <div class="row">
 
-                                <div class="form-group col-md-4">
-                                    {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
-                                    {!! Form::select(
-                                        'type2',
-                                        array_combine($missingTypes, array_map(fn($type) => trans("ceomanagment::lang.$type"), $missingTypes)),
-                                        null,
-                                        [
-                                            'class' => 'form-control',
-                                            'id' => 'type_select',
-                                            'placeholder' => __('ceomanagment::lang.request_type'),
-                                            'required',
-                                            'style' => 'height:37px',
-                                        ],
-                                    ) !!}
-                                </div>
-                                <div class="form-group col-md-4">
-                                    {!! Form::label('for', __('ceomanagment::lang.request_for') . ':*') !!}
-                                    {!! Form::select(
-                                        'for2',
-                                        [
-                                            'worker' => __('ceomanagment::lang.worker'),
-                                            'employee' => __('ceomanagment::lang.employee'),
-                                            'both' => __('ceomanagment::lang.both'),
-                                        ],
-                                        null,
-                                        [
-                                            'class' => 'form-control',
-                                            'placeholder' => __('ceomanagment::lang.select_type'),
-                                            'required',
-                                            'style' => 'height:37px',
-                                        ],
-                                    ) !!}
-                                </div>
+                                <div class="form-group col-md-12" id="tasks-container-modal">
 
-
+                                </div>
                             </div>
                         </div>
+
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                         </div>
                         {!! Form::close() !!}
@@ -194,10 +162,19 @@
                 </div>
             </div>
 
+
         </div>
     </section>
 @endsection
 @section('javascript')
+    <script>
+        var translations = {
+            task: "{{ __('ceomanagment::lang.task') }}",
+            task_link: "{{ __('ceomanagment::lang.task_link') }}",
+            add_task: "{{ __('ceomanagment::lang.add_task') }}",
+            remove: "{{ __('ceomanagment::lang.remove') }}"
+        };
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -356,6 +333,92 @@
             $(document).on('click', '.remove-task-btn', function() {
                 $(this).closest('.task-select-container').remove();
             });
+
+
+
+            $(document).on('click', '.edit-request-type', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var requestTypeId = $(this).data('id');
+                var procedureId = $(this).data('id');
+                var updateUrl = "{{ route('updateRequestType', ['id' => ':id']) }}".replace(':id',
+                    requestTypeId);
+                $('#editRequestTypeModal form').attr('action', updateUrl);
+                $('#editRequestTypeModal #requestTypeId').val(requestTypeId);
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        console.log(response);
+                        var tasksContainer = $('#editRequestTypeModal #tasks-container-modal');
+                        tasksContainer.empty();
+
+                        response.requestType.tasks.forEach(function(task) {
+                            var taskHtml = `
+                                    <div class="form-group col-md-12 task-input-group">
+                                        <label for="task">${translations.task}:</label>
+                                        <div class="input-group">
+                                            <div class="col-md-6">
+                                                <input type="text" name="tasks[description][]" class="form-control task" placeholder="${translations.task}" style="width:100%; height:40px;" value="${task.description}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" name="tasks[link][]" class="form-control task-link" placeholder="${translations.task_link}" style="width:100%; height:40px;" value="${task.link}">
+                                            </div>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-danger remove-task-btn-edit" type="button" style="margin-left: 10px;">
+                                                    ${translations.remove}
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>`;
+                            tasksContainer.append(taskHtml);
+                        });
+
+
+
+
+
+                        tasksContainer.append(
+                            '<button class="btn btn-primary add-task-btn" type="button">Add New Task </button>'
+                        );
+
+
+                        tasksContainer.on('click', '.remove-task-btn-edit', function() {
+                            $(this).closest('.task-input-group').remove();
+                        });
+
+                        $('.add-task-btn').off('click').on('click', function() {
+                            var newTaskHtml = `
+                                <div class="form-group col-md-12 task-input-group">
+                                    <label for="task">${translations.task}:</label>
+                                    <div class="input-group">
+                                        <div class="col-md-6">
+                                            <input type="text" name="tasks[description][]" class="form-control task" placeholder="${translations.task}" style="width:100%; height:40px;" value="">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" name="tasks[link][]" class="form-control task-link" placeholder="${translations.task_link}" style="width:100%; height:40px;" value="">
+                                        </div>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger remove-task-btn-edit" type="button" style="margin-left: 10px;">
+                                                ${translations.remove}
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>`;
+                            tasksContainer.append(newTaskHtml);
+
+
+
+                        });
+
+
+                        $('#editRequestTypeModal').modal('show');
+                    }
+
+                });
+            });
+
 
         });
     </script>

@@ -189,16 +189,16 @@
             </div>
 
 
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
-                    {!! Form::file('contract_file', [
-                        'class' => 'form-control',
-                        'style' => 'height:40px',
-                    ]) !!}
-                </div>
+            <div class="clearfix"></div>
+            <br>
+            <div class="form-group col-md-3">
+                <button type="button" class="btn btn-success align-self-center contract_attachements_btn"
+                    id="ContractFileLink">
+                    {{ __('essentials::lang.contract_file') }}
+                </button>
 
             </div>
+
 
 
         </div>
@@ -353,6 +353,19 @@
                     ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
                     $user->has_insurance ?? null,
                     ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
+                ) !!}
+            </div>
+            <div class="form-group col-md-3">
+                {!! Form::label('max_anuual_leave_days', __('essentials::lang.max_anuual_leave_days') . ':') !!}
+                {!! Form::select(
+                    'max_anuual_leave_days',
+                    ['31' => __('essentials::lang.31_days'), '21' => __('essentials::lang.21_days')],
+                    $user->max_anuual_leave_days ?? null,
+                    [
+                        'class' => 'form-control',
+                        'style' => 'height:40px',
+                        'placeholder' => __('essentials::lang.max_anuual_leave_days'),
+                    ],
                 ) !!}
             </div>
         </div>
@@ -511,13 +524,58 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
                     </div>
-                 
+
                 </div>
             </div>
         </div>
 
 
+        <div class="modal fade" data-file-path="{{ $contract->file_path ?? '' }}" id="ContractFilePopupModal"
+            tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
 
+
+                    <input type="hidden" name="delete_contract_file" value="0" id="delete_contract_file_input">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.contract_file')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row" id="contractFilePreviewRow" style="display: none;">
+                            <div class="form-group col-md-12">
+                                <iframe src="" id="popupContractFilePreview" style="width: 100%; height: 400px;"
+                                    frameborder="0"></iframe>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    {!! Form::file('contract_file', [
+                                        'class' => 'form-control',
+                                        'style' => 'height:36px; ',
+                                        'accept' => '.*',
+                                    ]) !!}
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button"
+                                    class="btn btn-danger deleteContractFile">@lang('messages.delete')</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
 
 
@@ -593,7 +651,72 @@
             });
 
 
+            $(document).ready(function() {
+                let contractFileChanged = false;
 
+                $('#ContractFileLink').on('click', function(e) {
+                    e.preventDefault();
+                    openContractFilePopup();
+                });
+
+                $('input[type="file"]').on('change', function(event) {
+                    previewContractFile(event);
+                    contractFileChanged = true;
+                    $('#delete_contract_file_input').val('0');
+                    enableSaveButton();
+                });
+
+
+                $('#update_contract_file_form').submit(function(e) {
+                    if (!contractFileChanged) {
+                        e.preventDefault();
+                    }
+                });
+
+                function openContractFilePopup() {
+                    const modal = $('#ContractFilePopupModal');
+                    const filePath = modal.data('file-path');
+                    const filePreviewIframe = $('#popupContractFilePreview');
+                    const filePreviewRow = $('#contractFilePreviewRow');
+
+                    if (filePath) {
+                        filePreviewIframe.attr('src', '/uploads/' + filePath);
+                        filePreviewRow.show();
+                    } else {
+                        filePreviewIframe.attr('src', '');
+                        filePreviewRow.hide();
+                    }
+
+                    modal.modal('show');
+                }
+
+
+
+                function enableSaveButton() {
+                    $('.saveFile').prop('disabled', !contractFileChanged);
+                }
+
+                function previewContractFile(event) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var output = document.getElementById('popupContractFilePreview');
+                        output.src = e.target.result;
+                        document.getElementById('contractFilePreviewRow').style.display =
+                            '';
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+
+                $('.deleteContractFile').on('click', function() {
+                    $('#popupContractFilePreview').attr('src', '');
+                    $('input[type="file"]').val('');
+                    $('#delete_contract_file_input').val('1');
+                    ibanFileChanged = true;
+                    enableSaveButton();
+                    document.getElementById('contractFilePreviewRow').style.display =
+                        'none';
+                });
+            });
 
 
 
@@ -686,8 +809,6 @@
 
 
             });
-
-            
         </script>
 
 

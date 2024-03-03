@@ -101,6 +101,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('/accounting/receipt_vouchers/load/data', [ReceiptVouchersController::class, 'loadNeededData'])->name('receipt_vouchers.load');
     Route::resource('payment_vouchers', 'PaymentVouchersController');
     Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
+    Route::post('/accounting/payment_vouchers', [PaymentVouchersController::class, 'store'])->name('index-store');
     Route::get('/accounting/payment_vouchers', [PaymentVouchersController::class, 'index'])->name('index-payment_vouchers');
 
 

@@ -215,7 +215,16 @@ class WkProcedureController extends Controller
 
         foreach ($procedures as $procedure) {
             $escalations = ProcedureEscalation::where('procedure_id', $procedure->id)->get();
+            $tasks = ProcedureTask::where('procedure_id', $procedure->id)->get();
+
+
+            $taskIds = $tasks->pluck('task_id');
+
+            $taskDescriptions = Task::whereIn('id', $taskIds)->get(['id', 'description']);
+
+
             $procedure->escalations = $escalations;
+            $procedure->tasks = $taskDescriptions;
         }
 
 
@@ -403,7 +412,7 @@ class WkProcedureController extends Controller
 
     public function update(Request $request, $id)
     {
-
+        //return $request;
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
             $requests = UserRequest::where('request_type_id', $type)->get();
@@ -417,13 +426,6 @@ class WkProcedureController extends Controller
             $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
             $for = WkProcedure::where('id', $id)->first()->request_owner_type;
 
-            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
-            if ($procedures) {
-                foreach ($procedures as $procedure) {
-                    //     EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
-                    $procedure->delete();
-                }
-            }
 
             $type = $procedureType;
 
@@ -447,6 +449,14 @@ class WkProcedureController extends Controller
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
 
+            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
+            if ($procedures) {
+                foreach ($procedures as $procedure) {
+                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
+                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
+                    $procedure->delete();
+                }
+            }
             $previousStepIds = [];
             if ($edit_modal_department_id_start) {
                 foreach ($edit_modal_department_id_start as $start_dep) {
@@ -469,7 +479,10 @@ class WkProcedureController extends Controller
             }
 
             if ($steps) {
-                foreach ($steps  as $index => $step) {
+                $index = 0;
+                foreach ($steps  as $step) {
+
+                    error_log($index);
                     $start_dep = $step['edit_modal_department_id_steps'][0];
                     $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = WkProcedure::create([
@@ -482,21 +495,34 @@ class WkProcedureController extends Controller
                         'end' => $index === count($steps) - 1 ? 1 : 0,
                         'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
                         'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
+                        'action_type' => $step['edit_action_type'] ?? null,
                     ]);
+                    if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
+                        foreach ($step['edit_tasks'] as $taskId) {
+                            if (!is_null($taskId)) {
+                                ProcedureTask::create([
+                                    'procedure_id' => $workflowStep->id,
+                                    'task_id' => $taskId,
+                                ]);
+                            }
+                        }
+                    }
+
                     foreach ($previousStepIds as $id) {
                         WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
                     }
                     $previousStepIds = [];
                     $previousStepIds[] = $workflowStep->id;
-                    // if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
-                    //     foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
-                    //         EssentialsProceduresEscalation::create([
-                    //             'procedure_id' => $workflowStep->id,
-                    //             'escalates_to' => $escalationDept,
-                    //             'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
-                    //         ]);
-                    //     }
-                    // }
+                    if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+                        foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+                            ProcedureEscalation::create([
+                                'procedure_id' => $workflowStep->id,
+                                'escalates_to' => $escalationDept,
+                                'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+                            ]);
+                        }
+                    }
+                    $index++;
                 }
             }
 
@@ -525,14 +551,7 @@ class WkProcedureController extends Controller
             }
 
 
-            $procedures = WkProcedure::where('request_type_id', $type)->get();
 
-            if ($procedures) {
-                foreach ($procedures as $procedure) {
-                    //EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
-                    $procedure->delete();
-                }
-            }
 
             $steps = $request->input('step');
 
@@ -543,12 +562,20 @@ class WkProcedureController extends Controller
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
+            $procedures = WkProcedure::where('request_type_id', $type)->get();
 
+            if ($procedures) {
+                foreach ($procedures as $procedure) {
+                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
+                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
+                    $procedure->delete();
+                }
+            }
             $previousStepIds = [];
             if ($steps) {
                 $index = 0;
                 foreach ($steps  as $step) {
-                    error_log($index);
+
                     $start_dep = $step['edit_modal_department_id_steps'][0];
                     $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = WkProcedure::create([
@@ -561,21 +588,32 @@ class WkProcedureController extends Controller
                         'end' => $index === count($steps) - 1 ? 1 : 0,
                         'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
                         'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
+                        'action_type' => $step['edit_action_type'] ?? null,
                     ]);
+                    if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
+                        foreach ($step['edit_tasks'] as $taskId) {
+                            if (!is_null($taskId)) {
+                                ProcedureTask::create([
+                                    'procedure_id' => $workflowStep->id,
+                                    'task_id' => $taskId,
+                                ]);
+                            }
+                        }
+                    }
                     foreach ($previousStepIds as $id) {
                         WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
                     }
                     $previousStepIds = [];
                     $previousStepIds[] = $workflowStep->id;
-                    // if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
-                    //     foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
-                    //         EssentialsProceduresEscalation::create([
-                    //             'procedure_id' => $workflowStep->id,
-                    //             'escalates_to' => $escalationDept,
-                    //             'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
-                    //         ]);
-                    //     }
-                    // }
+                    if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+                        foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+                            ProcedureEscalation::create([
+                                'procedure_id' => $workflowStep->id,
+                                'escalates_to' => $escalationDept,
+                                'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+                            ]);
+                        }
+                    }
                     $index++;
                 }
             }
@@ -612,11 +650,8 @@ class WkProcedureController extends Controller
                 ];
                 return $output;
             }
-            // $tasks = ProcedureTask::where('procedure_id', $id)->get();
-            // foreach ($tasks as $task) {
-            //     RequestProcedureTask::where('procedure_task_id', $task->id)->delete();
-            // }
-            // ProcedureTask::where('procedure_id', $id)->delete();
+
+            ProcedureTask::where('procedure_id', $id)->delete();
             ProcedureEscalation::where('procedure_id', $id)->delete();
             WkProcedure::where('request_type_id', $type)->delete();
 

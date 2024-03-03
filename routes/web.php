@@ -160,32 +160,32 @@ include_once 'install_r.php';
 //     }
 
 // );
-Route::get(
-    '/xlsx',
-    function () {
-        $reader = new Xlsx();
-        $filePath = public_path('xlsx.xlsx'); // Make sure this is your source file path
-        $spreadsheet = $reader->load($filePath);
-        $worksheet = $spreadsheet->getActiveSheet();
+// Route::get(
+//     '/xlsx',
+//     function () {
+//         $reader = new Xlsx();
+//         $filePath = public_path('xlsx.xlsx'); // Make sure this is your source file path
+//         $spreadsheet = $reader->load($filePath);
+//         $worksheet = $spreadsheet->getActiveSheet();
 
-        $highestRow = $worksheet->getHighestRow(); // Get the highest row number
+//         $highestRow = $worksheet->getHighestRow(); // Get the highest row number
 
-        for ($row = 195; $row >= 3; $row--) { // Start from the last row to avoid messing up row numbers after deletion
-            $idProofNumber = $worksheet->getCell('D' . $row)->getValue();
+//         for ($row = 195; $row >= 3; $row--) { // Start from the last row to avoid messing up row numbers after deletion
+//             $idProofNumber = $worksheet->getCell('D' . $row)->getValue();
 
-            // Check if ID Proof Number exists in users table
-            if (User::where('id_proof_number', $idProofNumber)->exists()) {
-                // If exists, delete the row from the worksheet
-                $worksheet->removeRow($row);
-            }
-        }
+//             // Check if ID Proof Number exists in users table
+//             if (User::where('id_proof_number', $idProofNumber)->exists()) {
+//                 // If exists, delete the row from the worksheet
+//                 $worksheet->removeRow($row);
+//             }
+//         }
 
-        // Save the modified spreadsheet back to the file
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-        $writer->save(public_path('modified_result.xlsx')); // This will save the modified file under a new name
-    }
+//         // Save the modified spreadsheet back to the file
+//         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+//         $writer->save(public_path('modified_result.xlsx')); // This will save the modified file under a new name
+//     }
 
-);
+// );
 // Route::get('/db_fix', function () {
 //     $businesses = Business::all();
 //     $numbersArray = $businesses->mapWithKeys(function ($business) {
@@ -275,6 +275,8 @@ Route::middleware(['setData'])->group(function () {
 
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu', 'CheckUserLogin'])->group(function () {
+    Route::get('/my_notifications', [HomeController::class, 'getMyNotifications'])->name('getMyNotification');
+
     Route::get('pos/payment/{id}', [SellPosController::class, 'edit'])->name('edit-pos-payment');
     Route::get('service-staff-availability', [SellPosController::class, 'showServiceStaffAvailibility']);
     Route::get('pause-resume-service-staff-timer/{user_id}', [SellPosController::class, 'pauseResumeServiceStaffTimer']);
@@ -745,6 +747,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])->group(function () {
+
     Route::get('/load-more-notifications', [HomeController::class, 'loadMoreNotifications']);
     Route::get('/get-total-unread', [HomeController::class, 'getTotalUnreadNotifications']);
     Route::get('/purchases/print/{id}', [PurchaseController::class, 'printInvoice']);

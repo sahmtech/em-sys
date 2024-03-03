@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Http\Controllers;
 
 use App\AccountType;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -33,7 +34,7 @@ class AccountTypeController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -131,7 +132,7 @@ class AccountTypeController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
         try {
@@ -181,7 +182,7 @@ class AccountTypeController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -209,7 +210,7 @@ class AccountTypeController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -247,7 +248,7 @@ class AccountTypeController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 

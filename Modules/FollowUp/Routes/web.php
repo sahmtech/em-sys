@@ -52,6 +52,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');
+        Route::post('/storeSelectedRowsRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'storeSelectedRowsRequest'])->name('storeSelectedRowsRequest');
+
         Route::get('/allRequests', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests'])->name('allRequests');
 
         Route::get('/viewRequest/{requestId}', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'viewRequest'])->name('viewRequest');
