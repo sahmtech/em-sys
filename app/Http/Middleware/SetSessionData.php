@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Business;
+use App\Company;
 use App\Utils\BusinessUtil;
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -18,11 +19,12 @@ class SetSessionData
      */
     public function handle($request, Closure $next)
     {
-        if (! $request->session()->has('user')) {
+        if (!$request->session()->has('user')) {
             $business_util = new BusinessUtil;
 
             $user = Auth::user();
-            $session_data = ['id' => $user->id,
+            $session_data = [
+                'id' => $user->id,
                 'surname' => $user->surname,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
@@ -30,10 +32,12 @@ class SetSessionData
                 'business_id' => $user->business_id,
                 'language' => 'ar',
             ];
-            $business = Business::findOrFail($user->business_id);
-
+            // $business = Business::findOrFail($user->business_id);
+            $business = Company::findOrFail($user->company_id);
+            // error_log($business);
             $currency = $business->currency;
-            $currency_data = ['id' => $currency->id,
+            $currency_data = [
+                'id' => $currency->id,
                 'code' => $currency->code,
                 'symbol' => $currency->symbol,
                 'thousand_separator' => $currency->thousand_separator,
