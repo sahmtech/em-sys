@@ -1151,22 +1151,44 @@ class EssentialsManageEmployeeController extends Controller
         if ($user) {
             if ($user->user_type == 'employee' || $user->user_type == 'manager') {
 
-                $documents = $user->OfficialDocument;
-            } else if ($user->user_type == 'worker') {
+                $officialDocuments = $user->OfficialDocument;
+                $contract_doc = $user->contract;
 
+                if ($contract_doc !== false) {
 
-                if (!empty($user->proposal_worker_id)) {
-
-
-                    $officialDocuments = $user->OfficialDocument;
-                    $workerDocuments = $user->proposal_worker?->worker_documents;
-
-                    $documents = $officialDocuments->merge($workerDocuments);
+                    $documents = $officialDocuments->merge([$contract_doc]);
                 } else {
                     $documents = $user->OfficialDocument;
                 }
+            } else if ($user->user_type == 'worker') {
+
+                if (!empty($user->proposal_worker_id)) {
+                    $officialDocuments = $user->OfficialDocument;
+                    $contract_doc = $user->contract;
+                    $workerDocuments = $user->proposal_worker?->worker_documents;
+
+
+                    if ($contract_doc !== false) {
+
+                        $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
+                    } else {
+
+                        $documents = $officialDocuments->merge($workerDocuments);
+                    }
+                } else {
+                    $officialDocuments = $user->OfficialDocument;
+                    $contract_doc = $user->contract;
+
+                    if ($contract_doc !== false) {
+
+                        $documents = $officialDocuments->merge([$contract_doc]);
+                    } else {
+                        $documents = $user->OfficialDocument;
+                    }
+                }
             }
         }
+
 
 
         $dataArray = [];
@@ -1365,9 +1387,10 @@ class EssentialsManageEmployeeController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number',
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file'
 
             ]);
+            // dd($request->file('Iban_file'));
 
 
 
@@ -1414,11 +1437,20 @@ class EssentialsManageEmployeeController extends Controller
 
             if ($request->hasFile('Iban_file')) {
                 error_log("1111");
+
                 $file = request()->file('Iban_file');
-                $path = $file->store('/employee_bank_ibans');
+                $path = $file->store('/officialDocuments');
                 $bank_details = $request->input('bank_details');
                 $bank_details['Iban_file'] = $path;
                 $user_data['bank_details'] = json_encode($bank_details);
+
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+
+                $Iban_doc->update($input);
             }
 
             $user->update($user_data);

@@ -545,7 +545,7 @@
 
                 $('#update_iban_file_form').submit(function(e) {
                     if (!ibanFileChanged) {
-                        e.preventDefault(); // Prevent form submission if no changes made
+                        e.preventDefault(); 
                     }
                 });
 

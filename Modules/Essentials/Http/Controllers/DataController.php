@@ -2319,11 +2319,9 @@ class DataController extends Controller
                     $filePath = $file->store('/employee_contracts');
                     $contract->file_path = $filePath;
                 }
+
                 $contract->save();
             }
-
-
-
 
 
             if (
