@@ -14,8 +14,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
     Route::prefix('generalmanagement')->group(function () {
         Route::get('/', 'GeneralManagementController@index');
         Route::get('/dashboard', [Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])->name('GeneralManagement.dashboard');
-
-        //requests
+        Route::prefix('notifications')->group(function () {
+            Route::get('/index', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+            Route::get('/create', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'create'])->name('notifications.create');
+            Route::post('/store', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'storeAndSend'])->name('notifications.send');
+        });
         Route::get('/president_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index'])->name('president_requests');
         Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');
         Route::post('/changeEscalationStatus', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('generalmanagement.changeEscalationStatus');

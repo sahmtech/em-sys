@@ -15,7 +15,7 @@ class DataController extends Controller
                 'group_name' => __('generalmanagement::lang.GeneralManagement'),
                 'group_permissions' =>
                 [
-                    
+
                     [
                         'value' => 'generalmanagement.generalmanagement_dashboard',
                         'label' => __('generalmanagement::lang.generalmanagement_dashboard'),
@@ -46,7 +46,12 @@ class DataController extends Controller
                         'label' => __('generalmanagement::lang.return_request'),
                         'default' => false,
                     ],
-                   
+                    [
+                        'value' => 'generalmanagement.send_notifications',
+                        'label' => __('generalmanagement::lang.send_notifications'),
+                        'default' => false,
+                    ],
+
                 ],
             ],
         ];

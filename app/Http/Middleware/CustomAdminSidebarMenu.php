@@ -30,10 +30,12 @@ class CustomAdminSidebarMenu
         });
         $currentPath = $request->path();
 
-
+        error_log($currentPath);
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles', 'get-all-users'])) {
             $this->userManagementMenu();
+        } elseif (Str::startsWith($currentPath, ['my_notifications'])) {
+            $this->myNotifications();
         } elseif (Str::startsWith($currentPath, ['work_cards'])) {
             $this->workCardsMenu();
         } elseif (Str::startsWith($currentPath, ['medicalInsurance'])) {
@@ -127,6 +129,12 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_IR');
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
+    }
+    public function myNotifications()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+        });
     }
     public function toDoMenu()
     {
@@ -278,7 +286,7 @@ class CustomAdminSidebarMenu
                 action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index']),
                 '<i class="fas fa-users-cog"></i> ' . __('generalmanagement::lang.GeneralManagement'),
                 [
-                    'active' => request()->segment(1) == 'generalmanagement',
+                    'active' => request()->segment(1) == 'generalmanagement' && request()->segment(2) == 'dashboard',
                     // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ],
             );
@@ -290,6 +298,32 @@ class CustomAdminSidebarMenu
                     ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
                     __('generalmanagement::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
+                );
+            }
+            if ($is_admin   || auth()->user()->can('generalmanagement.view_notifications') || auth()->user()->can('generalmanagement.send_notifications')) {
+
+
+
+
+                $menu->dropdown(
+                    __('generalmanagement::lang.notifications'),
+                    function ($sub)  use ($is_admin) {
+                        if ($is_admin || auth()->user()->can('generalmanagement.view_notifications')) {
+                            $sub->url(
+                                route('notifications.index'),
+                                __('generalmanagement::lang.view_notifications'),
+                                ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'index']
+                            );
+                        }
+                        if ($is_admin ||  auth()->user()->can('generalmanagement.send_notifications')) {
+                            $sub->url(
+                                route('notifications.create'),
+                                __('generalmanagement::lang.send_notifications'),
+                                ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'create']
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-envelope',]
                 );
             }
         });
