@@ -114,14 +114,13 @@
     </div>
 
 
-    <div class="col-md-3">
-        <div class="form-group">
-            {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
-            {!! Form::file('contract_file', [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-            ]) !!}
-        </div>
+    <div class="clearfix"></div>
+    <br>
+    <div class="form-group col-md-3">
+        <button type="button" class="btn btn-success align-self-center contract_attachements_btn"
+            id="ContractFileLink">
+            {{ __('essentials::lang.contract_file') }}
+        </button>
 
     </div>
 

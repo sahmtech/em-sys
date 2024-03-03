@@ -554,7 +554,7 @@ class RequestUtil extends Util
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            erroe_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),

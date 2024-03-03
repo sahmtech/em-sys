@@ -10,6 +10,8 @@ use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
 use Menu;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsCountry;
@@ -2413,7 +2415,7 @@ class DataController extends Controller
         //update
         if ($data['event'] == 'user_updated') {
 
-
+            error_log('i am here');
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
@@ -2531,56 +2533,64 @@ class DataController extends Controller
             // }
 
             $id = $data['model_instance']['id'];
+
+            $contract = EssentialsEmployeesContract::where('employee_id', $id)->where('is_active', 1)->first();
+
+            $delete_contract_file =  request()->input('delete_contract_file') ?? null;
+
+
+            if ($delete_contract_file && $delete_contract_file == 1) {
+
+                $filePath =  !empty($contract->file_path) ? $contract->file_path ?? null : null;
+                if ($filePath) {
+                    $contract->file_path = null;
+
+
+                    Storage::delete($filePath);
+                }
+            }
+
+
+
             if (
                 request()->input('contract_number') != null || request()->input('contract_type') != null
                 || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
+                || request()->hasFile('contract_file')
+
             ) {
+
                 $contractDuration =  request()->input('contract_duration');
                 $contract_per_period = request()->input('contract_duration_unit');
-                $contract = EssentialsEmployeesContract::where('employee_id', $id)->first();
+                $contract = EssentialsEmployeesContract::where('employee_id', $id)->where('is_active', 1)->first();
 
                 if ($contract) {
-                    $contract->contract_number = request()->input('contract_number');
-                    $contract->contract_start_date = request()->input('contract_start_date');
-                    $contract->contract_end_date = request()->input('contract_end_date');
-                    $contract->contract_duration = $contractDuration;
-                    $contract->contract_per_period = $contract_per_period;
-                    $contract->probation_period = request()->input('probation_period');
-                    $contract->is_renewable = request()->input('is_renewable');
-                    $contract->contract_type_id = request()->input('contract_type');
-
-                    if (request()->hasFile('contract_file')) {
-                        $file = request()->file('contract_file');
-                        $filePath = $file->store('/employee_contracts');
-                        $contract->file_path = $filePath;
-                    }
-
-                    $contract->save();
-                } else {
-                    $contractDuration =  request()->input('contract_duration');
-                    $contract_per_period = request()->input('contract_duration_unit');
-
-                    $contract = new EssentialsEmployeesContract();
-                    $contract->employee_id = $user->id;
-                    $contract->contract_number = request()->input('contract_number');
-                    $contract->contract_start_date = request()->input('contract_start_date');
-                    $contract->contract_end_date = request()->input('contract_end_date');
-                    $contract->contract_duration = $contractDuration;
-                    $contract->contract_per_period = $contract_per_period;
-                    $contract->probation_period = request()->input('probation_period');
-                    $contract->is_renewable = request()->input('is_renewable');
-                    $contract->contract_type_id = request()->input('contract_type');
-
-
-
-                    if (request()->hasFile('contract_file')) {
-                        $file = request()->file('contract_file');
-                        $filePath = $file->store('/employee_contracts');
-                        $contract->file_path = $filePath;
-                    }
+                    $contract->is_active = 0;
+                    $contract->status = 'canceled';
                     $contract->save();
                 }
+                $contract = new EssentialsEmployeesContract();
+                $contract->employee_id = $user->id;
+                $contract->contract_number = request()->input('contract_number');
+                $contract->contract_start_date = request()->input('contract_start_date');
+                $contract->contract_end_date = request()->input('contract_end_date');
+                $contract->contract_duration = $contractDuration;
+                $contract->contract_per_period = $contract_per_period;
+                $contract->probation_period = request()->input('probation_period');
+                $contract->is_renewable = request()->input('is_renewable');
+                $contract->contract_type_id = request()->input('contract_type');
+
+
+
+                if (request()->hasFile('contract_file')) {
+
+
+                    $file = request()->file('contract_file');
+                    $filePath = $file->store('/employee_contracts');
+                    $contract->file_path = $filePath;
+                }
+                $contract->save();
             }
+
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
 
                 $travel_ticket_categorie = EssentialsEmployeeTravelCategorie::where('employee_id', $id)->first();

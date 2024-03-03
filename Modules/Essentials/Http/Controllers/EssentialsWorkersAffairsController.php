@@ -609,7 +609,7 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
         if (!empty($user)) {
-            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->where('is_active', 1)->first();
         } else {
             $contract = null;
         }
@@ -746,9 +746,23 @@ class EssentialsWorkersAffairsController extends Controller
 
             $user = User::findOrFail($id);
 
+            $delete_iban_file = $request->delete_iban_file ?? null;
+            if ($delete_iban_file && $delete_iban_file == 1) {
 
+                $filePath =  !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? null : null;
+                if ($filePath) {
+                    Storage::delete($filePath);
+                }
+            }
+
+            if ($request->hasFile('Iban_file')) {
+                $file = request()->file('Iban_file');
+                $path = $file->store('/employee_bank_ibans');
+                $bank_details = $request->input('bank_details');
+                $bank_details['Iban_file'] = $path;
+                $user_data['bank_details'] = json_encode($bank_details);
+            }
             $user->update($user_data);
-
 
 
             $deleted_documents = $request->deleted_documents ?? null;
@@ -779,8 +793,6 @@ class EssentialsWorkersAffairsController extends Controller
                     if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
                         if (isset($files[$index])) {
                             $filePath = $files[$index]->store('/officialDocuments');
-                            error_log("!111111111111111");
-                            error_log($filePath);
                             EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
                         }
                     } elseif ($offical_documents_choosen_files[$index]) {
@@ -791,8 +803,7 @@ class EssentialsWorkersAffairsController extends Controller
                             $filePath = $files[$index]->store('/officialDocuments');
                             $document2->file_path = $filePath;
                         }
-                        error_log("!22222222222");
-                        error_log($filePath);
+
                         $document2->save();
                     }
                 }

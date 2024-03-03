@@ -33,6 +33,13 @@ use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
+use Modules\CEOManagment\Entities\WkProcedure;
+
+use Modules\CEOManagment\Entities\RequestsType;
+
+use Modules\Essentials\Entities\EssentialsLeaveType;
+
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
 
 class FollowUpWorkerController extends Controller
 {
@@ -245,8 +252,34 @@ class FollowUpWorkerController extends Controller
                 ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $business_id = request()->session()->get('user.business_id');
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%متابعة%')
+            ->pluck('id')->toArray();
+        $requestTypeIds = WkProcedure::distinct()
+            ->with('request_type')
+            ->whereIn('department_id', $departmentIds)
+            ->where('request_owner_type', 'worker')
+            ->where('start', '1')
+            ->pluck('request_type_id')
+            ->toArray();
 
-        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+        $requestTypes = RequestsType::whereIn('id', $requestTypeIds)
+            ->get()
+            ->mapWithKeys(function ($requestType) {
+                return [$requestType->id => $requestType->type];
+            })
+            ->unique()
+            ->toArray();
+
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
+
+
+        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities', 'requestTypes', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes'));
     }
 
 

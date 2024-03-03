@@ -1279,7 +1279,8 @@ class EssentialsManageEmployeeController extends Controller
         $roles = $this->getRolesArray($business_id);
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
-        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->select('*')->get();
+        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->where('is_active', 1)->select('*')->first();
+
 
         $allowance_deduction_ids = [];
         if (!empty($user)) {
@@ -1334,6 +1335,7 @@ class EssentialsManageEmployeeController extends Controller
                 'appointments',
                 'username_ext',
                 'contract_types',
+                'contract',
                 'nationalities',
                 'allowance_deduction_ids',
                 'professions'
