@@ -2555,7 +2555,7 @@ class DataController extends Controller
             if (
                 request()->input('contract_number') != null || request()->input('contract_type') != null
                 || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
-                || request()->hasFile('contract_file')
+                || request()->input('contract_file')
 
             ) {
 

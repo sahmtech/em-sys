@@ -155,6 +155,7 @@ class EssentialsManageEmployeeController extends Controller
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
             ->where('essentials_employees_contracts.is_active', 1)
+            ->where('essentials_admission_to_works.is_active', 1)
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
