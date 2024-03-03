@@ -792,6 +792,13 @@ class EssentialsWorkersAffairsController extends Controller
                 $bank_details = $request->input('bank_details');
                 $bank_details['Iban_file'] = $path;
                 $user_data['bank_details'] = json_encode($bank_details);
+
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+                $Iban_doc->update($input);
             }
             $user->update($user_data);
 
