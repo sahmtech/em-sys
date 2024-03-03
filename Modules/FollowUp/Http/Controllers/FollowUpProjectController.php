@@ -2,24 +2,22 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleProject;
+
 use App\Contact;
-use App\ContactLocation;
-use App\Transaction;
+
 use App\User;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Sales\Entities\salesContract;
+
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsCity;
+
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
-use Modules\Sales\Http\Controllers\SalesController;
+
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsProfession;
@@ -33,6 +31,14 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 
+
+use Modules\CEOManagment\Entities\WkProcedure;
+
+use Modules\CEOManagment\Entities\RequestsType;
+
+use Modules\Essentials\Entities\EssentialsLeaveType;
+
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
 
 use App\Company;
 
@@ -309,14 +315,37 @@ class FollowUpProjectController extends Controller
             ->get();
 
 
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $business_id = request()->session()->get('user.business_id');
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%متابعة%')
+            ->pluck('id')->toArray();
+        $requestTypeIds = WkProcedure::distinct()
+            ->with('request_type')
+            ->whereIn('department_id', $departmentIds)
+            ->where('request_owner_type', 'worker')
+            ->where('start', '1')
+            ->pluck('request_type_id')
+            ->toArray();
 
+        $requestTypes = RequestsType::whereIn('id', $requestTypeIds)
+            ->get()
+            ->mapWithKeys(function ($requestType) {
+                return [$requestType->id => $requestType->type];
+            })
+            ->unique()
+            ->toArray();
 
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
 
 
         return view(
             'followup::projects.show',
-            compact('users', 'id')
-        );
+            compact('users', 'id', 'requestTypes', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes')
+        );;
     }
 
 
