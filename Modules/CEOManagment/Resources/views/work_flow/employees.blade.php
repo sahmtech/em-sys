@@ -664,17 +664,24 @@
                     escalationCountInput.val(newEscalationCount);
                 }
             });
+
             let editStepZeroVisible = false;
+
             $(document).on("click", "#edit_modal_add_step", function() {
                 var stepZero = $("#edit_modal_step_0");
                 var newStep = stepZero.clone();
                 newStep.find('.escalation-field-template').not(':first').remove();
+
+                newStep.find('input, select').val('');
+                newStep.find('.task-select-container').hide();
+
                 edit_modal_steps_count++;
                 newStep.attr('id', 'edit_modal_step_' + edit_modal_steps_count);
                 newStep.find('[id]').each(function() {
                     var newId = $(this).attr('id').replace(/_0$/, '_' + edit_modal_steps_count);
                     $(this).attr('id', newId);
                 });
+
                 newStep.find('[name]').each(function() {
                     var newName = $(this).attr('name').replace(/step\[0\]/, 'step[' +
                         edit_modal_steps_count + ']');
@@ -688,9 +695,6 @@
                 $("#workflow-step_edit_modal").append(newStep);
 
             });
-
-
-
 
 
             function clearEditModal() {
@@ -717,7 +721,7 @@
                     url: url,
                     type: 'GET',
                     success: function(response) {
-
+                        console.log(response.procedures);
                         var procedures = typeof response.procedures === 'string' ? JSON.parse(
                             response.procedures) : response.procedures;
 

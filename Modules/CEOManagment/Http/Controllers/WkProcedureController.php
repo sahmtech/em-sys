@@ -536,8 +536,10 @@ class WkProcedureController extends Controller
 
         return redirect()->back()->with(['status' => $output]);
     }
+
     public function updateEmployeeProcedure(Request $request, $id)
     {
+        //return $request;
 
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
