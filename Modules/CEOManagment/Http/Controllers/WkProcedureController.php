@@ -539,7 +539,7 @@ class WkProcedureController extends Controller
 
     public function updateEmployeeProcedure(Request $request, $id)
     {
-        //return $request;
+        //   return $request->all();
 
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
@@ -653,9 +653,12 @@ class WkProcedureController extends Controller
                 return $output;
             }
 
-            ProcedureTask::where('procedure_id', $id)->delete();
-            ProcedureEscalation::where('procedure_id', $id)->delete();
-            WkProcedure::where('request_type_id', $type)->delete();
+            $wk_pocedures =  WkProcedure::where('request_type_id', $type)->get();
+            foreach ($wk_pocedures  as $wk_pocedure) {
+                ProcedureTask::where('procedure_id',  $wk_pocedure->id)->delete();
+                ProcedureEscalation::where('procedure_id',  $wk_pocedure->id)->delete();
+                $wk_pocedure->delete();
+            }
 
             $output = [
                 'success' => true,

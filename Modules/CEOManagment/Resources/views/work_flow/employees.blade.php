@@ -133,20 +133,22 @@
                                         </div>
 
                                         <div class="form-group col-md-6 task-select-container" style="display: none;">
-                                            {!! Form::label('task', __('ceomanagment::lang.task') . ':*') !!}
-                                            <div class="input-group">
-                                                {!! Form::select('step[0][tasks][]', $tasks, null, [
-                                                    'class' => 'form-control task-select',
-                                                    'placeholder' => __('ceomanagment::lang.task'),
-                                                    'style' => 'width:100%; height:40px',
-                                                ]) !!}
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default add-task-btn" type="button">
-                                                        @lang('ceomanagment::lang.add_task')</button>
+                                            <div class="task_template">
+                                                {!! Form::label('task', __('ceomanagment::lang.task') . ':*') !!}
+                                                <div class="input-group">
+                                                    {!! Form::select('step[0][tasks][]', $tasks, null, [
+                                                        'class' => 'form-control task-select',
+                                                        'placeholder' => __('ceomanagment::lang.task'),
+                                                        'style' => 'width:100%; height:40px',
+                                                    ]) !!}
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default add-task-btn" type="button">
+                                                            @lang('ceomanagment::lang.add_task')</button>
 
-                                                    <button class="btn btn-danger remove-task-btn" type="button"
-                                                        style="display: none;"> @lang('ceomanagment::lang.remove')</button>
-                                                </span>
+                                                        <button class="btn btn-danger remove-task-btn" type="button"
+                                                            style="display: none;"> @lang('ceomanagment::lang.remove')</button>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="clearfix"></div>
@@ -219,6 +221,8 @@
                                                 {{-- <div class="additional-escalations col-md-12"></div> --}}
                                             </div>
                                         </div>
+                                        <div class="clearfix"></div>
+                                        <hr>
                                     </div>
                                 </div>
                                 <br>
@@ -303,21 +307,22 @@
                                         </div>
 
                                         <div class="form-group col-md-6 task-select-container" style="display: none;">
+                                            <div class="task_template">
+                                                {!! Form::label('edit_tasks', __('ceomanagment::lang.task') . ':*') !!}
+                                                <div class="input-group">
+                                                    {!! Form::select('step[0][edit_tasks][]', $tasks, null, [
+                                                        'class' => 'form-control task-select',
+                                                        'placeholder' => __('ceomanagment::lang.task'),
+                                                        'style' => 'width:100%; height:40px',
+                                                    ]) !!}
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default add-task-btn" type="button">
+                                                            @lang('ceomanagment::lang.add_task')</button>
 
-                                            {!! Form::label('edit_tasks', __('ceomanagment::lang.task') . ':*') !!}
-                                            <div class="input-group">
-                                                {!! Form::select('step[0][edit_tasks][]', $tasks, null, [
-                                                    'class' => 'form-control task-select',
-                                                    'placeholder' => __('ceomanagment::lang.task'),
-                                                    'style' => 'width:100%; height:40px',
-                                                ]) !!}
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default add-task-btn" type="button">
-                                                        @lang('ceomanagment::lang.add_task')</button>
-
-                                                    <button class="btn btn-danger remove-task-btn" type="button"
-                                                        style="display: none;"> @lang('ceomanagment::lang.remove')</button>
-                                                </span>
+                                                        <button class="btn btn-danger remove-task-btn" type="button"
+                                                            style="display: none;"> @lang('ceomanagment::lang.remove')</button>
+                                                    </span>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -392,6 +397,8 @@
                                                 {{-- <div class="additional-escalations col-md-12"></div> --}}
                                             </div>
                                         </div>
+                                        <div class="clearfix"></div>
+                                        <hr>
                                     </div>
                                 </div>
                                 <br>
@@ -588,6 +595,7 @@
                 var stepZero = $("#add_modal_step_0");
                 var newStep = stepZero.clone();
                 newStep.find('.escalation-field-template').not(':first').remove();
+                newStep.find('.task_template').not(':first').remove();
                 add_modal_steps_count++;
                 newStep.attr('id', 'add_modal_step_' + add_modal_steps_count);
                 newStep.find('[id]').each(function() {
@@ -599,7 +607,7 @@
                         add_modal_steps_count + ']');
                     $(this).attr('name', newName);
                 });
-                newStep.css('display', 'block');
+                // newStep.css('display', 'block');
                 newStep.find('.escalation-field-template').find('input').val(
                     '');
                 newStep.find('.escalation-field-template').find('select').val(
@@ -702,6 +710,8 @@
                 $('#editProceduresModal select').val('').trigger('change');
                 $("#workflow-step_edit_modal").find('.entire_step').find('.escalation-field-template').not(':first')
                     .remove();
+                $("#workflow-step_edit_modal").find('.entire_step').find('.task_template').not(':first')
+                    .remove();
                 $("#workflow-step_edit_modal").find('.entire_step').not(':first').remove();
 
             }
@@ -734,7 +744,6 @@
 
                                     populateStepData('#edit_modal_step_0', index,
                                         procedure);
-
                                 } else {
                                     addStepToEditModal(procedure, index);
 
@@ -752,7 +761,6 @@
 
 
                 function populateStepData(stepSelector, index, stepData) {
-
 
                     // Populate the step with data
                     $(stepSelector).find('[name^="step[' + index + '][edit_modal_department_id_steps]"]')
@@ -774,7 +782,8 @@
                             '][edit_modal_escalates_after_steps]"]').val(firstEscalation
                             .escalates_after);
                     }
-
+                    $(stepSelector).closest('.entire_step').find('.edit-can-reject-checkbox-container')
+                        .show()
                     // Clone and populate additional escalations if they exist
                     var escalationsContainer = $(stepSelector).find('.escalations-container');
                     if (stepData.escalations.length > 1) {
@@ -816,6 +825,7 @@
                         });
                     }
 
+
                     if (stepData.tasks && stepData.tasks.length > 0) {
                         var firstTask = stepData.tasks[0];
                         var parent = $(stepSelector).closest('.entire_step');
@@ -836,9 +846,8 @@
                                 typeId: typeId
                             },
                             success: function(response) {
-                                var container = $('select[name="step[' + index +
-                                        '][edit_tasks][]"]')
-                                    .closest('.task-select-container');
+                                var container = $(stepSelector).find('.task-select-container');
+
                                 var tasksSelect = container.find(
                                     'select[name="step[' + index + '][edit_tasks][]"]');
                                 tasksSelect.empty();
@@ -855,21 +864,22 @@
                     }
 
                     if (stepData.tasks && stepData.tasks.length > 1) {
-                        stepData.tasks.slice(1).forEach(function(task, index) {
+
+
+                        stepData.tasks.slice(1).forEach(function(task) {
+
                             var stepContainer = $(stepSelector).closest('.entire_step');
                             var taskContainers = stepContainer.find('.task-select-container');
-                            var taskClone = taskContainers.first().clone();
+                            var taskClone = taskContainers.find('.task_template').clone();
                             stepContainer.find('.edit-can-reject-checkbox-container').hide();
 
-                            var newIndex = index;
-                            var newSelect = taskClone.find('select').attr('name', 'step[' +
-                                newIndex + '][edit_tasks][]');
+                            // var newIndex = index;
+                            var newSelect = taskClone.find('select').val('');
                             taskClone.find('.add-task-btn').hide();
                             taskClone.find('.remove-task-btn').show().css('display',
                                 'inline-block');
                             taskClone.css('display', '');
 
-                            taskContainers.last().after(taskClone);
 
                             var typeId = stepData
                                 .request_type_id;
@@ -892,15 +902,15 @@
                                     newSelect.val(task.id);
                                 }
                             });
+                            taskContainers.append(taskClone);
+
                         });
                     }
 
 
 
                     // Add click event listener for the remove button
-                    $(document).on('click', '.remove-task-btn', function() {
-                        $(this).closest('.task-select-container').remove();
-                    });
+
                     $(stepSelector).find('.select2').select2();
                     edit_modal_steps_count++;
                 }
@@ -910,7 +920,7 @@
                 function addStepToEditModal(stepData, stepIndex) {
 
                     var stepTemplate = $('#edit_modal_step_0').clone();
-
+                    stepTemplate.find('.task_template').not(':first').remove();
                     stepTemplate.attr('id', 'edit_modal_step_' + stepIndex);
                     stepTemplate.find('[id]').each(function() {
                         var newId = $(this).attr('id').replace(/_0$/, '_' + stepIndex);
@@ -921,8 +931,8 @@
                             stepIndex + ']');
                         $(this).attr('name', newName);
                     });
-                    var parent = $(stepTemplate).closest('.entire_step');
-                    var container = parent.find('.task-select-container').hide();
+                    // var parent = $(stepTemplate).closest('.entire_step');
+                    stepTemplate.find('.task-select-container').hide();
 
                     populateStepData(stepTemplate, stepIndex, stepData);
                     stepTemplate.css('display', 'block');
@@ -938,12 +948,14 @@
             function adjustTaskInputs(container, actionType) {
                 if (actionType === 'task') {
                     container.find('.task-select-container').first().show();
+                    container.find('.task-select-container').not(':first').remove();
+                    container.find('.task-select-container').find('select').val('');
                     container.find('.add-task-btn').first().show();
                     container.find('.can-reject-checkbox-container').hide();
                     container.find('.edit-can-reject-checkbox-container').hide();
                 } else {
+                    container.find('.task-select-container').find('select').val('');
                     container.find('.task-select-container').hide();
-
                     container.find('.task-select-container').not(':first').remove();
                     container.find('.can-reject-checkbox-container').show();
                     container.find('.edit-can-reject-checkbox-container').show();
@@ -960,17 +972,18 @@
             $(document).on('click', '.add-task-btn', function(e) {
                 e.preventDefault();
                 var taskSelectContainer = $(this).closest('.task-select-container');
-                var newTaskSelect = taskSelectContainer.clone(true);
+                var taskTemplate = $(this).closest('.task_template');
+                var newTaskSelect = taskTemplate.clone();
                 newTaskSelect.find('select').val('');
                 newTaskSelect.find('.add-task-btn').hide();
                 newTaskSelect.find('.remove-task-btn').show();
-                taskSelectContainer.after(newTaskSelect);
+                taskSelectContainer.append(newTaskSelect);
+            });
+            $(document).on('click', '.remove-task-btn', function() {
+                $(this).closest('.task_template').remove();
             });
 
-            $(document).on('click', '.remove-task-btn', function(e) {
-                e.preventDefault();
-                $(this).closest('.task-select-container').remove();
-            });
+
 
             $('.action_type_select').each(function() {
                 var selectedActionType = $(this).val();
