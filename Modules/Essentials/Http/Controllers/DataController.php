@@ -2325,11 +2325,9 @@ class DataController extends Controller
                     $filePath = $file->store('/employee_contracts');
                     $contract->file_path = $filePath;
                 }
+
                 $contract->save();
             }
-
-
-
 
 
             if (
@@ -2551,7 +2549,7 @@ class DataController extends Controller
             }
 
 
-
+            //  dd(request()->input('contract_file_exist'));
             if (
                 request()->input('contract_number') != null || request()->input('contract_type') != null
                 || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
@@ -2582,7 +2580,6 @@ class DataController extends Controller
 
 
                 if (request()->hasFile('contract_file')) {
-
 
                     $file = request()->file('contract_file');
                     $filePath = $file->store('/employee_contracts');

@@ -69,18 +69,28 @@
                                     ]) !!}
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+
+                             <div class="form-group col-md-6" >
+                                {!! Form::label('delivery_date', __('essentials::lang.delivery_date') . ':*') !!}
+                                {!! Form::date('delivery_date', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('essentials::lang.delivery_date'),
+                                 
+                                ]) !!}
+                            </div>
+                            {{-- <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('delivery_date', __('housingmovements::lang.delivery_date') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                    {!! Form::input('date', 'delivery_date', '', [
+                                    {!! Form::date('date', null, [
                                         'class' => 'form-control',
                                         'required',
                                         'placeholder' => __('housingmovements::lang.delivery_date'),
-                                        'id' => 'delivery_date',
-                                        'min' => \Carbon\Carbon::now()->format('Y-m-d'),
+                                       
+                                       
                                     ]) !!}
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="row">
@@ -94,6 +104,12 @@
                             </div>
                         </div>
 
+                         <div class="clearfix"></div>
+                            <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                            </div>
+{{-- 
                         <div class="row" style="margin-top: 220px;">
                             <div class="col-sm-12"
                                 style="display: flex;
@@ -104,7 +120,7 @@
                                     id="add_car_type"
                                     class="btn btn-primary pull-right btn-flat journal_add_btn">@lang('messages.save')</button>
                             </div>
-                        </div>
+                        </div> --}}
 
                         {!! Form::close() !!}
                     </section>
