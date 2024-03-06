@@ -296,7 +296,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/update-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getUpdatePayrollGroup']);
         Route::get('/payroll-group/{id}/add-payment', [Modules\Essentials\Http\Controllers\PayrollController::class, 'addPayment']);
         Route::post('/post-payment-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'postAddPayment']);
-        Route::resource('/payroll', 'Modules\Essentials\Http\Controllers\PayrollController');
+        Route::get('/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])->name('payrolls.index');
+        Route::get('/payrollsGroup/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollsGroupIndex'])->name('payrolls.payrollsGroup.index');
+        Route::get('/create',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'create'])->name('payrolls.create');
+        // Route::resource('/payroll', 'Modules\Essentials\Http\Controllers\PayrollController');
         Route::resource('/holiday', 'EssentialsHolidayController');
     });
 
