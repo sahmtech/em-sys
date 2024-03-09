@@ -146,7 +146,6 @@ class EssentialsManageEmployeeController extends Controller
             }
         }
 
-
         $users = User::whereIn('users.id', $userIds)
             ->with([
                 'userAllowancesAndDeductions',
@@ -154,11 +153,17 @@ class EssentialsManageEmployeeController extends Controller
             ])
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
-            ->where('essentials_employees_contracts.is_active', 1)
-            ->where('essentials_admission_to_works.is_active', 1)
-            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+
+            ->leftJoin('essentials_admission_to_works', function ($join) {
+                $join->on('essentials_admission_to_works.employee_id', '=', 'users.id')
+                    ->where('essentials_admission_to_works.is_active', 1);
+            })
+            ->leftJoin('essentials_employees_contracts', function ($join) {
+                $join->on('essentials_employees_contracts.employee_id', '=', 'users.id')
+                    ->where('essentials_employees_contracts.is_active', 1);
+            })
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+
             ->select([
                 'users.id as id',
                 'users.emp_number',
@@ -179,10 +184,10 @@ class EssentialsManageEmployeeController extends Controller
                 'users.status',
                 'users.essentials_salary',
                 'users.total_salary',
-
-
             ])
             ->orderBy('id', 'desc');
+
+
 
         if (!empty($request->input('specialization')) && $request->input('specialization') != 'all') {
 
@@ -1415,22 +1420,32 @@ class EssentialsManageEmployeeController extends Controller
             }
 
             if ($request->hasFile('Iban_file')) {
-                error_log("1111");
-
-                $file = request()->file('Iban_file');
+                $file = $request->file('Iban_file');
                 $path = $file->store('/officialDocuments');
                 $bank_details = $request->input('bank_details');
                 $bank_details['Iban_file'] = $path;
                 $user_data['bank_details'] = json_encode($bank_details);
 
+                $bankCode = $bank_details['bank_code'];
+                $input = [
+                    'number' => $bankCode,
+                    'file_path' => $path,
+                ];
 
                 $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
-                $bankCode = $bank_details['bank_code'];
-                $input['number'] = $bankCode;
-                $input['file_path'] =  $path;
 
-                $Iban_doc->update($input);
+                // Check if $Iban_doc exists
+                if ($Iban_doc) {
+                    // Update existing $Iban_doc
+                    $Iban_doc->update($input);
+                } else {
+                    // Create new $Iban_doc if it doesn't exist
+                    $input['employee_id'] = $user->id;
+                    $input['type'] = 'Iban';
+                    EssentialsOfficialDocument::create($input);
+                }
             }
+
 
             $user->update($user_data);
 

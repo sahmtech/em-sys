@@ -20,6 +20,8 @@
                                     'PhD' => __('essentials::lang.PhD'),
                             
                                     'diploma' => __('essentials::lang.diploma'),
+                                                             'minor' => __('essentials::lang.minor'),
+                        'sponsorship' => __('essentials::lang.sponsorship'),
                                 ],
                                 null,
                                 [
@@ -122,6 +124,8 @@
                                             'master' => __('essentials::lang.master'),
                                             'PhD' => __('essentials::lang.PhD'),
                                             'diploma' => __('essentials::lang.diploma'),
+                                            'minor' => __('essentials::lang.minor'),
+                                            'sponsorship' => __('essentials::lang.sponsorship'),
                                         ],
                                         null,
                                         ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
