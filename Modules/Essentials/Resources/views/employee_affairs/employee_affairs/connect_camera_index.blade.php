@@ -11,17 +11,23 @@
 @component('components.widget')
 <div class="col-md-3">
     <div class="form-group">
-        <!-- Add a button to start accessing the camera -->
-        <button id="startCameraButton" class="btn btn-primary btn-big">@lang('essentials::lang.open_camera')</button>
+      <div class="row">
+         <div class="col-sm-3">
+             <button id="startCameraButton" class="btn btn-primary btn-big">@lang('essentials::lang.open_camera')</button>
         <!-- Add a button to close the camera -->
-        <button id="stopCameraButton" class="btn btn-danger btn-big" style="display: none;">@lang('essentials::lang.close_camera')</button>
-        <!-- Add a video element to display camera stream -->
+       
+         </div>
+       
+      </div>
+       
         <div class="clearfix"></div>
         <video id="cameraStream" width="100%" height="auto" style="display: none;" autoplay></video>
         <br>
         <div class="clearfix"></div>
         <!-- Add a button to capture a photo -->
         <button id="captureButton" class="btn btn-primary btn-big" style="display: none;">@lang('essentials::lang.capture_photo')</button>
+        <button id="stopCameraButton" class="btn btn-danger btn-big" style="display: none;">@lang('essentials::lang.close')</button>
+        <!-- Add a video element to display camera stream -->
     </div>
 </div>
 @endcomponent
@@ -38,13 +44,13 @@
     // Function to start accessing the camera when the button is clicked
     function startCamera() {
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
+            .then(streamObj => {
+                video.srcObject = streamObj;
                 video.style.display = 'block'; // Show the video element
                 document.getElementById('captureButton').style.display = 'block'; // Show the capture button
                 document.getElementById('stopCameraButton').style.display = 'block'; // Show the stop camera button
                 // Store the stream for later use
-                stream = stream;
+                stream = streamObj;
             })
             .catch(error => {
                 console.error('Error accessing the camera:', error);
