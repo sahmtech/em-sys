@@ -213,7 +213,8 @@ return [
   'travel_categorie' => 'فئة تذكرة السفر',
   'book_visa' => 'حجز تذكرة سفر',
   'view_visa_data' => 'عرض معلومات الرحلة',
-  
+  'please select the type of leave' => 'الرجاء اختيار نوع إجازة'
+
 
 
 
