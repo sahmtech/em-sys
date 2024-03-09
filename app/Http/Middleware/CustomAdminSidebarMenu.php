@@ -1023,7 +1023,7 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
                 $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
+                    route('payrolls.index'),
                     __('essentials::lang.payroll'),
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
                 );
@@ -1173,13 +1173,13 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-                    __('essentials::lang.payroll'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
-                );
-            }
+            // if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
+            //     $menu->url(
+            //         action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
+            //         __('essentials::lang.payroll'),
+            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
+            //     );
+            // }
 
             // if ($is_admin ) {
             //     $menu->url(

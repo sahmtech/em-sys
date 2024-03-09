@@ -1757,4 +1757,31 @@ return [
   '21_days' => '21 يوم',
   '31_days' => '31 يوم',
 
+
+  'companies' => 'الشركات',
+  'payroll_for' => 'مسير الرواتب لـ',
+
+  'identity_card_number' => 'الهوية',
+  'work_days' => 'أيام العمل',
+  'salary' => 'الراتب',
+  'housing_allowance' => 'بدل سكن',
+  'transportation_allowance' => 'بدل النقل',
+  'other_allowance' => 'بدلات أخرى',
+  'total' => 'إجمالي',
+  'violations' => 'مخالفات',
+  'absence' => 'غياب',
+  'other_deductions' => 'خصومات أخرى',
+  'loan' => 'سلف',
+  'total_deduction' => 'إجمالي المستقطع',
+  'over_time_hours' => 'ساعات إضافية',
+  'additional_addition' => 'مبلغ إضافي',
+  'other_additions' => 'استحقاقات أخرى',
+  'total_additions' => 'إجمالي الإضافات',
+  'final_salary' => 'الراتب المستحق',
+  'payment_method' => 'الاستلام',
+  'notes' => 'ملاحظات',
+  'the_total' => 'الإجمالي',
+  'draft_payroll' => 'مسودة',
+  'final_payroll' => 'مسير نهائي',
+
 ];
