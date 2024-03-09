@@ -20,7 +20,7 @@
         <div class="clearfix"></div>
         <!-- Add buttons to capture a photo and close the camera -->
         <div class="btn-group">
-            <button id="captureButton" class="btn btn-primary btn-big" style="display: none;">@lang('essentials::lang.capture_photo')</button>
+            <button id="captureButton" class="btn btn-primary btn-big" style="display: none; padding:10px; margin-right: 5px; !important">@lang('essentials::lang.capture_photo')</button>
             <button id="stopCameraButton" class="btn btn-danger btn-big" style="display: none;">@lang('essentials::lang.close')</button>
         </div>
     </div>
