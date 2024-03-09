@@ -88,6 +88,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get-Irsalary-requests', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index'])->name('get_Irsalary_requests');
 
 
+        Route::get('/travel_categories', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index'])->name('travel_categories');
+        Route::post('/book_visa_from_request', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'book_visa'])->name('book_visa_from_request');
+        Route::get('/getVisaData/{requestId}', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'getVisaData'])->name('getVisaData');
+
+
 
         // Route::get('/getBusiness', [\App\Http\Controllers\BusinessController::class, 'getBusiness'])->name('getBusiness');
         // Route::get('/business.view/{id}', [\App\Http\Controllers\BusinessController::class, 'show'])->name('business.view');
