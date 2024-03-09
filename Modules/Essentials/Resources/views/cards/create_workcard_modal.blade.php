@@ -162,7 +162,7 @@
                     </div>		
 
 
-                    <div class="col-md-4">
+                   <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('workcard_duration', __('essentials::lang.work_card_duration') . ':*') !!}
                             <div class="input-group">
@@ -179,18 +179,56 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('fees', __('essentials::lang.fees') . ':*') !!}
+                            {!! Form::label('fees', __('essentials::lang.passport_fees') . ':*') !!}
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="fa fa-id-badge"></i>
                                 </span>
-                                {!! Form::text('fees_input', null,
-                                    ['class' => 'form-control','id'=>'fees_input', 'required',
-                                    'placeholder' => __('essentials::lang.fees')]); !!}
+                                {!! Form::select('passport_fees_input', [], null,
+                                    ['class' => 'form-control','id'=>'fees_input', 'required','style'=>'height:36px',
+                                    'placeholder' => __('essentials::lang.passport_fees')]); !!}
                             </div>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('work_card_fees', __('essentials::lang.work_card_fees') . ':*') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-id-badge"></i>
+                                </span>
+                                {!! Form::text('work_card_fees', null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px',
+                                    'placeholder' => __('essentials::lang.work_card_fees'),
+                                    'id' => 'work_card_fees', 'required'
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4 ">
+                        <div class="form-group">
+                            {!! Form::label('other_fees', __('essentials::lang.other_fees') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-id-badge"></i>
+                                </span>
+                                {!! Form::text('other_fees', null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px',
+                                    'placeholder' => __('essentials::lang.other_fees'),
+                                    'style' => 'width: 100%;',
+                                    'id' => 'other_fees',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+
+
                     <div class="col-md-4">
                         <div class="form-group" >
                             {!! Form::label('pay_number', __('essentials::lang.pay_number') . ':') !!}
@@ -199,9 +237,11 @@
                                     <i class="fa fa-id-badge"></i>
                                 </span>
                                 {!! Form::text('Payment_number', null,
-                                 ['class' => 'form-control', 
+                                 ['class' => 'form-control', 'id'=>'Payment_number',
                                   'placeholder' => __('essentials::lang.pay_number')]); !!}
                             </div>
+                            <div id="error-message" style="color: red; display: none;">You cannot enter more than 14 numbers</div>
+
                         </div>
                     </div>
 
@@ -214,7 +254,7 @@
          
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button  type="submit" class="btn btn-primary ">@lang('messages.save')</button>
+                <button  type="submit" class="btn btn-primary " id="saveButton">@lang('messages.save')</button>
 			
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
             </div>
@@ -223,6 +263,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 

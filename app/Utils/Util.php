@@ -1297,21 +1297,37 @@ class Util
             __('followup::lang.eqama_end_date'),
             __('followup::lang.admissions_date'),
             __('essentials::lang.admissions_type'),
-            __('essentials::lang.admissions_status'),
+
+            __('essentials::lang.passport_expire_date'),
+            __('essentials::lang.passport_number'),
+            __('essentials::lang.company_id'),
+
+
+            __('essentials::lang.border_no'),
+            __('essentials::lang.insurance'),
+
+            __('followup::lang.profession'),
+            __('followup::lang.total_salary'),
             __('followup::lang.contract_end_date'),
+            __('followup::lang.gender'),
+            __('followup::lang.bank_code'),
             __('essentials::lang.mobile_number'),
             __('business.email'),
+            __('essentials::lang.admissions_status'),
+
+
             __('followup::lang.department'),
-            __('followup::lang.profession'),
+
             __('followup::lang.specialization'),
             __('followup::lang.status'),
             __('followup::lang.Basic_salary'),
-            __('followup::lang.total_salary'),
-            __('followup::lang.gender'),
+
+
             __('followup::lang.marital_status'),
             __('followup::lang.blood_group'),
-            __('followup::lang.bank_code'),
+
             __('essentials::lang.travel_categorie'),
+
         ];
     }
 
@@ -1764,24 +1780,18 @@ class Util
 
         $bankDetails = json_decode($user_details['bank_details'], true);
 
-        if ($request->hasFile('bank_details.Iban_file') && !empty($bankDetails) && array_key_exists('bank_code', $bankDetails)) {
+        if ($request->hasFile('Iban_file') && !empty($bankDetails)) {
+
             $bankCode = $bankDetails['bank_code'];
             $input['type'] = 'Iban';
             $input['status'] = 'valid';
+            $input['is_active'] = 1;
             $input['employee_id'] = $user->id;
             $input['number'] = $bankCode;
+            $input['file_path'] = $file->store('/officialDocuments');
 
-            $file = request()->file('bank_details.Iban_file');
-            if ($file->isValid() && $file->getMimeType() && in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif'])) {
-                $input['file_path'] = $file->store('/officialDocuments');
-
-                $Iban_doc = EssentialsOfficialDocument::create($input);
-            } else {
-
-                return response()->json(['error' => 'Invalid file format. Please upload an image.']);
-            }
+            EssentialsOfficialDocument::create($input);
         }
-
 
 
         $moduleUtil = new \App\Utils\ModuleUtil;

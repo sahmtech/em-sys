@@ -61,13 +61,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('visa_cards', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'index'])->name('visa_cards');
         Route::post('/storeVisa', [Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'store'])->name('storeVisa');
         Route::get('/ir/viewVisaWorkers/{id}', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'viewVisaWorkers'])->name('viewVisaWorkers');
+        Route::post('/change_arrival_date', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'changeArrivalDate'])->name('change_arrival_date');
+        Route::get('/get-visa-report', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'getVisaReport'])->name('get-visa-report');
 
 
         Route::post('/medical_examination', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'medical_examination'])->name('medical_examination');
         Route::post('/fingerprinting', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'fingerprinting'])->name('fingerprinting');
         Route::post('/passport_stamped', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'passport_stamped'])->name('passport_stamped');
         Route::post('/storeVisaWorker', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeVisaWorker'])->name('storeVisaWorker');
+        Route::post('/cancel_proposal_worker', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'cancelVisaWorker'])->name('cancel_proposal_worker');
         Route::get('/ir_showWorker/{id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'])->name('ir_showWorker');
+
 
         Route::get('/allIrRequests', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index'])->name('allIrRequests');
         Route::post('/ir_change-status', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeStatus'])->name('ir_changeStatus');
@@ -82,6 +86,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get_order_nationlities', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'getNationalities'])->name('get_order_nationlities');
 
         Route::get('/get-Irsalary-requests', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index'])->name('get_Irsalary_requests');
+
+
+        Route::get('/travel_categories', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index'])->name('travel_categories');
+        Route::post('/book_visa_from_request', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'book_visa'])->name('book_visa_from_request');
+        Route::get('/getVisaData/{requestId}', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'getVisaData'])->name('getVisaData');
 
 
 

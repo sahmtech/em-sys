@@ -58,7 +58,7 @@ class AgentController extends Controller
 
     protected $requestUtil;
 
-    
+
 
     /**
      * Create a new controller instance.
@@ -70,19 +70,17 @@ class AgentController extends Controller
         TransactionUtil $transactionUtil,
         ModuleUtil $moduleUtil,
         Util $commonUtil,
-        RestaurantUtil $restUtil,RequestUtil $requestUtil
+        RestaurantUtil $restUtil,
+        RequestUtil $requestUtil
     ) {
         $this->businessUtil = $businessUtil;
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
         $this->restUtil = $restUtil;
-   
+
 
         $this->requestUtil = $requestUtil;
-      
-    
-        
     }
     private function __chartOptions2()
     {
@@ -113,454 +111,481 @@ class AgentController extends Controller
 
     public function agentHome()
     {
-        //Get Dashboard widgets from module
-        $module_widgets = $this->moduleUtil->getModuleData('dashboard_widget');
+        try {
+            //Get Dashboard widgets from module
+            $module_widgets = $this->moduleUtil->getModuleData('dashboard_widget');
 
-        $widgets = [];
+            $widgets = [];
 
-        foreach ($module_widgets as $widget_array) {
-            if (!empty($widget_array['position'])) {
-                $widgets[$widget_array['position']][] = $widget_array['widget'];
+            foreach ($module_widgets as $widget_array) {
+                if (!empty($widget_array['position'])) {
+                    $widgets[$widget_array['position']][] = $widget_array['widget'];
+                }
             }
+
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $projectsIds);
+            $workers_count = $workers->count();
+            $active_workers_count = $workers->where('status', 'active')->count();
+            $inactive_workers_count = $workers->whereNot('status', 'active')->count();
+
+
+            $chart = new CommonChart;
+            $colors = [
+                '#ec268f', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
+                '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
+                '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+            ];
+            $labels = [
+                __('followup::lang.customer_home_active_workers_count'),
+                __('followup::lang.customer_home_in_active_workers_count'),
+
+            ];
+            $values = [
+                $active_workers_count,
+                $inactive_workers_count,
+
+            ];
+            $chart->labels($labels)
+                ->options($this->__chartOptions2())
+                ->dataset(__('followup::lang.customer_home_workers_count'), 'pie', $values)
+                ->color($colors);
+            return view('custom_views.agents.agent_home', compact(
+                'active_workers_count',
+                'inactive_workers_count',
+                'workers_count',
+                'chart',
+                'widgets',
+                'common_settings'
+            ));
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
-
-        $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-        $user = User::where('id', auth()->user()->id)->first();
-        $contact_id =  $user->crm_contact_id;
-        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $projectsIds);
-        $workers_count = $workers->count();
-        $active_workers_count = $workers->where('status', 'active')->count();
-        $inactive_workers_count = $workers->whereNot('status', 'active')->count();
-
-
-        $chart = new CommonChart;
-        $colors = [
-            '#ec268f', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
-            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
-        ];
-        $labels = [
-            __('followup::lang.customer_home_active_workers_count'),
-            __('followup::lang.customer_home_in_active_workers_count'),
-
-        ];
-        $values = [
-            $active_workers_count,
-            $inactive_workers_count,
-
-        ];
-        $chart->labels($labels)
-            ->options($this->__chartOptions2())
-            ->dataset(__('followup::lang.customer_home_workers_count'), 'pie', $values)
-            ->color($colors);
-        return view('custom_views.agents.agent_home', compact(
-            'active_workers_count',
-            'inactive_workers_count',
-            'workers_count',
-            'chart',
-            'widgets',
-            'common_settings'
-        ));
     }
 
 
     public function agentProjects()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $user = User::where('id', auth()->user()->id)->first();
-        $contact_id =  $user->crm_contact_id;
-        $SalesProjects = SalesProject::where('contact_id', $contact_id);
-        $cities = EssentialsCity::forDropdown();
-        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        try {
+            $business_id = request()->session()->get('user.business_id');
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $SalesProjects = SalesProject::where('contact_id', $contact_id);
+            $cities = EssentialsCity::forDropdown();
+            $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+            $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as  full_name"))->get();
-        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-        if (request()->ajax()) {
+            $name_in_charge_choices = $all_users->pluck('full_name', 'id');
+            if (request()->ajax()) {
 
 
-            return Datatables::of($SalesProjects)
-                ->addColumn(
-                    'id',
-                    function ($row) {
-                        return $row->id;
-                    }
-                )
+                return Datatables::of($SalesProjects)
+                    ->addColumn(
+                        'id',
+                        function ($row) {
+                            return $row->id;
+                        }
+                    )
 
-                ->addColumn(
-                    'contact_location_name',
-                    function ($row) {
-                        return  $row->name;
-                    }
-                )
-                ->addColumn(
-                    'contact_location_city',
-                    function ($row) use ($cities) {
-                        if ($row->city) {
-                            return  $cities[$row->city];
-                        } else return null;
-                    }
-                )
-                ->addColumn(
-                    'contact_location_name_in_charge',
-                    function ($row) use ($name_in_charge_choices) {
+                    ->addColumn(
+                        'contact_location_name',
+                        function ($row) {
+                            return  $row->name;
+                        }
+                    )
+                    ->addColumn(
+                        'contact_location_city',
+                        function ($row) use ($cities) {
+                            if ($row->city) {
+                                return  $cities[$row->city];
+                            } else return null;
+                        }
+                    )
+                    ->addColumn(
+                        'contact_location_name_in_charge',
+                        function ($row) use ($name_in_charge_choices) {
 
-                        if ($row->name_in_charge) {
-                            return $name_in_charge_choices[$row->name_in_charge];
-                        } else return null;
-                    }
-                )
-                ->addColumn(
-                    'contact_location_phone_in_charge',
-                    function ($row) {
-                        return  $row->phone_in_charge;
-                    }
-                )
-                ->addColumn(
-                    'contact_location_email_in_charge',
-                    function ($row) {
-                        return $row->email_in_charge;
-                    }
-                )
+                            if ($row->name_in_charge) {
+                                return $name_in_charge_choices[$row->name_in_charge];
+                            } else return null;
+                        }
+                    )
+                    ->addColumn(
+                        'contact_location_phone_in_charge',
+                        function ($row) {
+                            return  $row->phone_in_charge;
+                        }
+                    )
+                    ->addColumn(
+                        'contact_location_email_in_charge',
+                        function ($row) {
+                            return $row->email_in_charge;
+                        }
+                    )
 
-                ->addColumn(
-                    'action',
-                    function ($row) {
-                        $html = '';
+                    ->addColumn(
+                        'action',
+                        function ($row) {
+                            $html = '';
 
-                        $html .= '<a href="' . route('sale.editSaleProject', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                            $html .= '<a href="' . route('sale.editSaleProject', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                              &nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroySaleProject', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                            $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroySaleProject', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
 
-                        return $html;
-                    }
-                )
-                ->filterColumn('contact_name', function ($query, $keyword) {
+                            return $html;
+                        }
+                    )
+                    ->filterColumn('contact_name', function ($query, $keyword) {
 
-                    $query->whereHas('contact', function ($qu) use ($keyword) {
-                        $qu->where('supplier_business_name', 'like', "%{$keyword}%");
-                    });
-                })
-                ->filterColumn('contact_location_name', function ($query, $keyword) {
+                        $query->whereHas('contact', function ($qu) use ($keyword) {
+                            $qu->where('supplier_business_name', 'like', "%{$keyword}%");
+                        });
+                    })
+                    ->filterColumn('contact_location_name', function ($query, $keyword) {
 
-                    $query->where('name', 'like', "%{$keyword}%");
-                })
+                        $query->where('name', 'like', "%{$keyword}%");
+                    })
 
 
-                ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_id', 'action'])
-                ->make(true);
+                    ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_id', 'action'])
+                    ->make(true);
+            }
+
+            $cities = EssentialsCity::forDropdown();
+            $contacts = Contact::pluck('supplier_business_name', 'id');
+            return view('custom_views.agents.agent_projects')->with(compact('cities', 'contacts', 'name_in_charge_choices'));
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
-
-        $cities = EssentialsCity::forDropdown();
-        $contacts = Contact::pluck('supplier_business_name', 'id');
-        return view('custom_views.agents.agent_projects')->with(compact('cities', 'contacts', 'name_in_charge_choices'));
     }
 
 
     public function agentContracts()
     {
 
+        try {
+            $contacts = Contact::all()->pluck('supplier_business_name', 'id');
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
 
-        $contacts = Contact::all()->pluck('supplier_business_name', 'id');
-        $user = User::where('id', auth()->user()->id)->first();
-        $contact_id =  $user->crm_contact_id;
-      
-        if (request()->ajax()) {
+            if (request()->ajax()) {
 
-            $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
-                ->select([
-                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
-                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
-                ])->where('contact_id', $contact_id);
+                $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                    ->select([
+                        'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
+                        'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
+                        'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                    ])->where('contact_id', $contact_id);
 
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $contracts->where('sales_contracts.status', request()->input('status'));
-            }
-            if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
-                $contracts->where('transactions.contract_form', request()->input('contract_form'));
-            }
-            return Datatables::of($contracts)
-
-
-                ->editColumn('contact_id', function ($row) use ($contacts) {
-                    $item = $contacts[$row->contact_id] ?? '';
-
-                    return $item;
-                })
+                if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                    $contracts->where('sales_contracts.status', request()->input('status'));
+                }
+                if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
+                    $contracts->where('transactions.contract_form', request()->input('contract_form'));
+                }
+                return Datatables::of($contracts)
 
 
-                ->addColumn(
-                    'action',
-                    function ($row) {
-                        $html = '';
-                        $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
-                        $html .= '&nbsp;';
+                    ->editColumn('contact_id', function ($row) use ($contacts) {
+                        $item = $contacts[$row->contact_id] ?? '';
 
-                        if (!empty($row->file)) {
-                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file . '\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
-                        } else {
-                            $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                        return $item;
+                    })
+
+
+                    ->addColumn(
+                        'action',
+                        function ($row) {
+                            $html = '';
+                            $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
+                            $html .= '&nbsp;';
+
+                            if (!empty($row->file)) {
+                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file . '\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
+                            } else {
+                                $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                            }
+                            $html .= '&nbsp;';
+                            $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                            return $html;
                         }
-                        $html .= '&nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
-                        return $html;
-                    }
-                )
+                    )
 
 
 
-                ->filterColumn('number_of_contract', function ($query, $keyword) {
-                    $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
-                })
+                    ->filterColumn('number_of_contract', function ($query, $keyword) {
+                        $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
+                    })
 
-                ->rawColumns(['action'])
-                ->make(true);
+                    ->rawColumns(['action'])
+                    ->make(true);
+            }
+
+
+
+            return view('custom_views.agents.agent_contracts');
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
-
-
-
-        return view('custom_views.agents.agent_contracts');
     }
 
     public function agentWorker()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $user = User::where('id', auth()->user()->id)->first();
-        $contact_id =  $user->crm_contact_id;
-   
-        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::where('contact_id', $contact_id)->pluck('name', 'id')->toArray();
+        try {
+            $business_id = request()->session()->get('user.business_id');
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
-        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
-        $categories = Category::all()->pluck('name', 'id');
-        $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $status_filltetr = $this->moduleUtil->getUserStatus();
-        $fields = $this->moduleUtil->getWorkerFields();
-        $user = User::where('id', auth()->user()->id)->first();
-        $contact_id =  $user->crm_contact_id;
-        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
-            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
-            ->with(['country', 'contract', 'OfficialDocument']);
+            $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::where('contact_id', $contact_id)->pluck('name', 'id')->toArray();
 
-        $users->select(
-            'users.id',
-            'users.*',
-            'users.id_proof_number',
-            'users.nationality_id',
-            'users.essentials_salary',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-            'sales_projects.name as contact_name'
-        );
+            $nationalities = EssentialsCountry::nationalityForDropdown();
+            $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+            $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
+            $categories = Category::all()->pluck('name', 'id');
+            $departments = EssentialsDepartment::all()->pluck('name', 'id');
+            $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+            $professions = EssentialsProfession::all()->pluck('name', 'id');
+            $status_filltetr = $this->moduleUtil->getUserStatus();
+            $fields = $this->moduleUtil->getWorkerFields();
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
+                ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
+                ->with(['country', 'contract', 'OfficialDocument']);
 
-        if (request()->ajax()) {
-            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-       
-                if(request()->input('project_name')=='none'){
-                    $users = $users->whereNull('users.assigned_to');
-                }
-                else{
-                    $users = $users->where('users.assigned_to', request()->input('project_name'));
-                }
-                
-            }
+            $users->select(
+                'users.id',
+                'users.*',
+                'users.id_proof_number',
+                'users.nationality_id',
+                'users.essentials_salary',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                'sales_projects.name as contact_name'
+            );
 
-            if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
+            if (request()->ajax()) {
+                if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
-                $users = $users->where('users.status', request()->input('status_fillter'));
-            }
-
-            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
-                $start = request()->filter_start_date;
-                $end = request()->filter_end_date;
-
-                $users->whereHas('contract', function ($query) use ($start, $end) {
-                    $query->whereDate('contract_end_date', '>=', $start)
-                        ->whereDate('contract_end_date', '<=', $end);
-                });
-            }
-            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-
-                $users = $users->where('users.nationality_id', request()->nationality);
-            }
-
-            return Datatables::of($users)
-
-                ->addColumn('nationality', function ($user) {
-                    return optional($user->country)->nationality ?? ' ';
-                })
-                ->addColumn('residence_permit_expiration', function ($user) {
-                    $residencePermitDocument = $user->OfficialDocument
-                        ->where('type', 'residence_permit')
-                        ->first();
-                    if ($residencePermitDocument) {
-
-                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                    if (request()->input('project_name') == 'none') {
+                        $users = $users->whereNull('users.assigned_to');
                     } else {
-
-                        return ' ';
+                        $users = $users->where('users.assigned_to', request()->input('project_name'));
                     }
-                })
+                }
 
-                ->addColumn('residence_permit', function ($user) {
-                    return $this->getDocumentnumber($user, 'residence_permit');
-                })
-                ->addColumn('admissions_date', function ($user) {
+                if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
-                    return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
-                })
+                    $users = $users->where('users.status', request()->input('status_fillter'));
+                }
 
-                ->addColumn('contract_end_date', function ($user) {
-                    return optional($user->contract)->contract_end_date ?? ' ';
-                })
+                if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+                    $start = request()->filter_start_date;
+                    $end = request()->filter_end_date;
 
-                ->addColumn('profession', function ($row) use ($appointments, $professions) {
-                    $professionId = $appointments[$row->id] ?? '';
+                    $users->whereHas('contract', function ($query) use ($start, $end) {
+                        $query->whereDate('contract_end_date', '>=', $start)
+                            ->whereDate('contract_end_date', '<=', $end);
+                    });
+                }
+                if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
-                    $professionName = $professions[$professionId] ?? '';
+                    $users = $users->where('users.nationality_id', request()->nationality);
+                }
 
-                    return $professionName;
-                })
+                return Datatables::of($users)
+
+                    ->addColumn('nationality', function ($user) {
+                        return optional($user->country)->nationality ?? ' ';
+                    })
+                    ->addColumn('residence_permit_expiration', function ($user) {
+                        $residencePermitDocument = $user->OfficialDocument
+                            ->where('type', 'residence_permit')
+                            ->first();
+                        if ($residencePermitDocument) {
+
+                            return optional($residencePermitDocument)->expiration_date ?? ' ';
+                        } else {
+
+                            return ' ';
+                        }
+                    })
+
+                    ->addColumn('residence_permit', function ($user) {
+                        return $this->getDocumentnumber($user, 'residence_permit');
+                    })
+                    ->addColumn('admissions_date', function ($user) {
+
+                        return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
+                    })
+
+                    ->addColumn('contract_end_date', function ($user) {
+                        return optional($user->contract)->contract_end_date ?? ' ';
+                    })
+
+                    ->addColumn('profession', function ($row) use ($appointments, $professions) {
+                        $professionId = $appointments[$row->id] ?? '';
+
+                        $professionName = $professions[$professionId] ?? '';
+
+                        return $professionName;
+                    })
 
 
 
-                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
-                    $specializationId = $appointments2[$row->id] ?? '';
-                    $specializationName = $specializations[$specializationId] ?? '';
+                    ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
+                        $specializationId = $appointments2[$row->id] ?? '';
+                        $specializationName = $specializations[$specializationId] ?? '';
 
-                    return $specializationName;
-                })->addColumn('bank_code', function ($user) {
+                        return $specializationName;
+                    })->addColumn('bank_code', function ($user) {
 
-                    $bank_details = json_decode($user->bank_details);
-                    return $bank_details->bank_code ?? ' ';
-                })
-                ->addColumn('worker', function ($user) {
-                    return $user->worker;
-                })
-                ->addColumn('contact_name', function ($user) {
-                    return $user->contact_name;
-                })
-                ->filterColumn('worker', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
-                })
-                ->filterColumn('residence_permit', function ($query, $keyword) {
-                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
-                })
+                        $bank_details = json_decode($user->bank_details);
+                        return $bank_details->bank_code ?? ' ';
+                    })
+                    ->addColumn('worker', function ($user) {
+                        return $user->worker;
+                    })
+                    ->addColumn('contact_name', function ($user) {
+                        return $user->contact_name;
+                    })
+                    ->filterColumn('worker', function ($query, $keyword) {
+                        $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                    })
+                    ->filterColumn('residence_permit', function ($query, $keyword) {
+                        $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                    })
 
-                ->rawColumns(['contact_name',
-                    'nationality', 'worker',
-                    'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'
-                ])
-                ->make(true);
+                    ->rawColumns([
+                        'contact_name',
+                        'nationality', 'worker',
+                        'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'
+                    ])
+                    ->make(true);
+            }
+
+            return view('custom_views.agents.agent_workers')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
-
-        return view('custom_views.agents.agent_workers')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
     public function showAgentWorker($id)
     {
+        try {
+            $business_id = request()->session()->get('user.business_id');
 
-        $business_id = request()->session()->get('user.business_id');
-
-        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
-            ->find($id);
-
-
-
-        $documents = null;
+            $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
+                ->find($id);
 
 
-        if (!empty($user->proposal_worker_id)) {
 
-            $officialDocuments = $user->OfficialDocument;
-            $workerDocuments = $user->proposal_worker?->worker_documents;
-            $documents = $officialDocuments->merge($workerDocuments);
-        } else {
-            $documents = $user->OfficialDocument;
+            $documents = null;
+
+
+            if (!empty($user->proposal_worker_id)) {
+
+                $officialDocuments = $user->OfficialDocument;
+                $workerDocuments = $user->proposal_worker?->worker_documents;
+                $documents = $officialDocuments->merge($workerDocuments);
+            } else {
+                $documents = $user->OfficialDocument;
+            }
+
+
+
+
+
+            $dataArray = [];
+            if (!empty($user->bank_details)) {
+                $dataArray = json_decode($user->bank_details, true)['bank_name'];
+            }
+
+
+            $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
+            $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+            $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
+            $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+
+
+            $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+
+            if ($professionId !== null) {
+                $profession = EssentialsProfession::find($professionId)->name;
+            } else {
+                $profession = "";
+            }
+
+            // $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+            // if ($specializationId !== null) {
+            //     $specialization = EssentialsSpecialization::find($specializationId)->name;
+            // } else {
+            //     $specialization = "";
+            // }
+
+
+            $user->profession = $profession;
+            //   $user->specialization = $specialization;
+
+
+            $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
+
+            $users = User::forDropdown($business_id, false);
+
+            $activities = Activity::forSubject($user)
+                ->with(['causer', 'subject'])
+                ->latest()
+                ->get();
+
+            $nationalities = EssentialsCountry::nationalityForDropdown();
+            $nationality_id = $user->nationality_id;
+            $nationality = "";
+
+            if (!empty($nationality_id)) {
+                $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
+            }
+
+            return view('custom_views.agents.show_agent_worker')->with(compact(
+                'user',
+                'view_partials',
+                'users',
+                'activities',
+                'bank_name',
+                'admissions_to_work',
+                'Qualification',
+                'Contract',
+                'nationalities',
+                'nationality',
+                'documents',
+            ));
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
-
-
-
-
-
-        $dataArray = [];
-        if (!empty($user->bank_details)) {
-            $dataArray = json_decode($user->bank_details, true)['bank_name'];
-        }
-
-
-        $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
-        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
-        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-
-
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
-
-        if ($professionId !== null) {
-            $profession = EssentialsProfession::find($professionId)->name;
-        } else {
-            $profession = "";
-        }
-
-        // $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-        // if ($specializationId !== null) {
-        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
-        // } else {
-        //     $specialization = "";
-        // }
-
-
-        $user->profession = $profession;
-     //   $user->specialization = $specialization;
-
-
-        $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
-
-        $users = User::forDropdown($business_id, false);
-
-        $activities = Activity::forSubject($user)
-            ->with(['causer', 'subject'])
-            ->latest()
-            ->get();
-
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $nationality_id = $user->nationality_id;
-        $nationality = "";
-
-        if (!empty($nationality_id)) {
-            $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
-        }
-
-        return view('custom_views.agents.show_agent_worker')->with(compact(
-            'user',
-            'view_partials',
-            'users',
-            'activities',
-            'bank_name',
-            'admissions_to_work',
-            'Qualification',
-            'Contract',
-            'nationalities',
-            'nationality',
-            'documents',
-        ));
     }
 
- 
+
     public function storeAgentRequests(Request $request)
     {
-        $business_id = request()->session()->get('user.business_id');
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
-        ->pluck('id')->toArray();
-        return $this->requestUtil->storeRequest($request, $departmentIds);
+        try {
+            $business_id = request()->session()->get('user.business_id');
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+                ->where('name', 'LIKE', '%متابعة%')
+                ->pluck('id')->toArray();
+            return $this->requestUtil->storeRequest($request, $departmentIds);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
     }
 
     public function agentRequests()
@@ -568,10 +593,10 @@ class AgentController extends Controller
 
         // $business_id = request()->session()->get('user.business_id');
 
-    
+
         // $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-       
-       
+
+
         // $ContactsLocation = SalesProject::all()->pluck('name', 'id');
 
         // $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
@@ -619,11 +644,11 @@ class AgentController extends Controller
         //             return $item;
         //         })
         //         ->editColumn('status', function ($row) {
-            
 
-                   
+
+
         //             $status = trans('followup::lang.' . $row->status) ?? ' ';
-                    
+
 
         //             return $status;
         //         })
@@ -644,12 +669,12 @@ class AgentController extends Controller
 
 
 
-       // return view('custom_views.agents.requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+        // return view('custom_views.agents.requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
     public function agentWorkersRequests()
     {
-      
+
         // if (request()->ajax()) {
 
         //     $ContactsLocation = SalesProject::all()->pluck('name', 'id');

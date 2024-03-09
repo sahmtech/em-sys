@@ -155,6 +155,7 @@ class EssentialsManageEmployeeController extends Controller
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
             ->where('essentials_employees_contracts.is_active', 1)
+            ->where('essentials_admission_to_works.is_active', 1)
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
@@ -213,7 +214,6 @@ class EssentialsManageEmployeeController extends Controller
         if (!empty($request->input('nationality')) && $request->input('nationality') != 'all') {
 
             $users->where('users.nationality_id', $request->input('nationality'));
-          
         }
         if (request()->ajax()) {
 
@@ -898,11 +898,9 @@ class EssentialsManageEmployeeController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->back()->with('status', $output);
@@ -938,7 +936,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-      
+
 
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -956,8 +954,11 @@ class EssentialsManageEmployeeController extends Controller
             ->with(compact(
                 'roles',
                 'nationalities',
-                'username_ext','countries',
-                'blood_types','spacializations','professions',
+                'username_ext',
+                'countries',
+                'blood_types',
+                'spacializations',
+                'professions',
                 'contact',
                 'locations',
                 'banks',
@@ -993,6 +994,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $com_id = request()->input('company_id');
             error_log($com_id);
+
             // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
             //     ->first();
 
@@ -1008,26 +1010,26 @@ class EssentialsManageEmployeeController extends Controller
 
 
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-
+            // dd($existingprofnumber);
             if ($existingprofnumber) {
-                $errorMessage = trans('essentials::lang.user_with_same_id_proof_number_exists');
-                throw new \Exception($errorMessage);
+
+                $output = [
+                    'success' => 0,
+                    'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                ];
+            } else {
+                $user = $this->moduleUtil->createUser($request);
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
             }
-
-            $user = $this->moduleUtil->createUser($request);
-
-            $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1051,41 +1053,61 @@ class EssentialsManageEmployeeController extends Controller
 
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
-            $business_id = request()->session()->get('user.business_id');
+            // $business_id = request()->session()->get('user.business_id');
 
-            $numericPart = (int)substr($business_id, 3);
-            $lastEmployee = User::where('business_id', $business_id)
-                ->orderBy('emp_number', 'desc')
-                ->first();
+            // $numericPart = (int)substr($business_id, 3);
+            // $lastEmployee = User::where('business_id', $business_id)
+            //     ->orderBy('emp_number', 'desc')
+            //     ->first();
 
-            if ($lastEmployee) {
+            // if ($lastEmployee) {
 
-                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
+            //     $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
 
-                $nextNumericPart = $lastEmpNumber + 1;
+            //     $nextNumericPart = $lastEmpNumber + 1;
 
-                $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
-            } else {
+            //     $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+            // } else {
 
-                $request['emp_number'] =  $business_id . '000';
+            //     $request['emp_number'] =  $business_id . '000';
+            // }
+
+            if ($request->input('id_proof_number')) {
+                $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+            }
+            if ($request->input('border_no')) {
+                $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
             }
 
 
-            $user = $this->moduleUtil->createUser($request);
 
-            event(new UserCreatedOrModified($user, 'added'));
+            if ($existingprofnumber || $existingBordernumber) {
 
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
+                if ($existingprofnumber != null) {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                    ];
+                } else {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
+                    ];
+                }
+            } else {
+                $user = $this->moduleUtil->createUser($request);
+                event(new UserCreatedOrModified($user, 'added'));
+
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1129,20 +1151,13 @@ class EssentialsManageEmployeeController extends Controller
 
         if ($user) {
             if ($user->user_type == 'employee' || $user->user_type == 'manager') {
+                $officialDocuments = $user->OfficialDocument;
+                $contract_doc = $user->contract()->where('is_active', 1)->first(); // Use ->first() to retrieve the contract
 
-                $documents = $user->OfficialDocument;
-            } else if ($user->user_type == 'worker') {
-
-
-                if (!empty($user->proposal_worker_id)) {
-
-
-                    $officialDocuments = $user->OfficialDocument;
-                    $workerDocuments = $user->proposal_worker?->worker_documents;
-
-                    $documents = $officialDocuments->merge($workerDocuments);
+                if ($contract_doc !== null) { // Check if a contract exists
+                    $documents = $officialDocuments->merge([$contract_doc]); // Wrap $contract_doc in an array since merge expects a collection
                 } else {
-                    $documents = $user->OfficialDocument;
+                    $documents = $officialDocuments;
                 }
             }
         }
@@ -1216,6 +1231,11 @@ class EssentialsManageEmployeeController extends Controller
      * @param int $id
      * @return Renderable
      */
+
+    public function get_connect_camera()
+    {
+        return view('essentials::employee_affairs.employee_affairs.connect_camera_index');
+    }
     public function edit($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -1258,7 +1278,8 @@ class EssentialsManageEmployeeController extends Controller
         $roles = $this->getRolesArray($business_id);
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
-        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->select('*')->get();
+        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->where('is_active', 1)->select('*')->first();
+
 
         $allowance_deduction_ids = [];
         if (!empty($user)) {
@@ -1313,6 +1334,7 @@ class EssentialsManageEmployeeController extends Controller
                 'appointments',
                 'username_ext',
                 'contract_types',
+                'contract',
                 'nationalities',
                 'allowance_deduction_ids',
                 'professions'
@@ -1344,9 +1366,10 @@ class EssentialsManageEmployeeController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number',
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file'
 
             ]);
+            // dd($request->file('Iban_file'));
 
 
 
@@ -1376,7 +1399,7 @@ class EssentialsManageEmployeeController extends Controller
             if (!empty($request->input('has_insurance'))) {
                 $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
             }
-         
+
             DB::beginTransaction();
 
 
@@ -1393,11 +1416,20 @@ class EssentialsManageEmployeeController extends Controller
 
             if ($request->hasFile('Iban_file')) {
                 error_log("1111");
+
                 $file = request()->file('Iban_file');
-                $path = $file->store('/employee_bank_ibans');
+                $path = $file->store('/officialDocuments');
                 $bank_details = $request->input('bank_details');
                 $bank_details['Iban_file'] = $path;
                 $user_data['bank_details'] = json_encode($bank_details);
+
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+
+                $Iban_doc->update($input);
             }
 
             $user->update($user_data);
@@ -1486,10 +1518,9 @@ class EssentialsManageEmployeeController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 

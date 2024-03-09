@@ -72,9 +72,7 @@ class EmploymentCompaniesController extends Controller
         $countries = EssentialsCountry::forDropdown();
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $contacts = DB::table('contacts')
-            ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
-            ->leftJoin('ir_delegations', 'contacts.id', '=', 'ir_delegations.agency_id')
+        $contacts = Contact::leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
             ->select([
                 'contacts.id',
                 'contacts.supplier_business_name',
@@ -84,12 +82,12 @@ class EmploymentCompaniesController extends Controller
                 'contacts.mobile',
                 'contacts.email',
                 'contacts.evaluation',
-                'contacts.landline'
+                'contacts.landline',
 
             ])
 
             ->where('type', 'recruitment')
-            ->orderBy('id', 'desc');
+            ->orderBy('contacts.id', 'desc');
 
 
         if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
@@ -106,7 +104,7 @@ class EmploymentCompaniesController extends Controller
             $contacts->where('contacts.evaluation', $evaluationFilter);
         }
 
-        if (!empty($request->input('company_requests_filter'))) {
+        if (!empty($request->input('company_requests_filter')) && $request->input('company_requests_filter') !== 'all') {
 
             if ($request->input('company_requests_filter') === 'has_agency_requests') {
 
@@ -281,7 +279,50 @@ class EmploymentCompaniesController extends Controller
      */
     public function show($id)
     {
-        return view('internationalrelations::EmploymentCompanies.employment_company_profile');
+        $employment_companies = Contact::where('type', 'recruitment')
+            ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
+            ->select([
+                'contacts.id',
+                'contacts.supplier_business_name',
+                'essentials_countries.id as country',
+                'contacts.multi_nationalities',
+                'contacts.name',
+                'contacts.mobile',
+                'contacts.email',
+                'contacts.evaluation',
+                'contacts.landline'
+
+            ])
+            ->find($id);
+
+        $comp_country_name = null;
+        if (!empty($employment_companies->country)) {
+            $country = EssentialsCountry::findOrFail($employment_companies->country);
+            $nameJson = $country->name;
+            $nameArray = json_decode($nameJson, true);
+            $comp_country_name = $nameArray['ar'];
+        }
+
+        $nationalities = null;
+
+        if ($employment_companies->multi_nationalities != null) {
+            $nationalityIds = json_decode($employment_companies->multi_nationalities);
+            $nationalities = EssentialsCountry::whereIn('id', $nationalityIds)
+                ->pluck('nationality', 'id');
+        }
+
+        $company_requests = IrDelegation::with(['transactionSellLine.service', 'visaCard'])
+            ->where('agency_id', $id)->get();
+        // dd($company_requests[0]->lastArrivalproposedLabors($company_requests[0]->agency_id)->first()->arrival_date);
+
+
+        return view('internationalrelations::EmploymentCompanies.employment_company_profile')
+            ->with(compact(
+                'employment_companies',
+                'comp_country_name',
+                'nationalities',
+                'company_requests'
+            ));
     }
 
     /**
@@ -336,6 +377,7 @@ class EmploymentCompaniesController extends Controller
 
             $input2['supplier_business_name'] = $input['Office_name'];
             $input2['name'] = $input['name'];
+            $input2['email'] = $input['email'];
             $input2['country'] = $input['country'];
             $input2['mobile'] = $input['mobile'];
             $input2['evaluation'] = $input['evaluation'];

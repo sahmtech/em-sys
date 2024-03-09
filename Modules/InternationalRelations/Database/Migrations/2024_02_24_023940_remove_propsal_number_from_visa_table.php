@@ -13,14 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_leave_types', function (Blueprint $table) {
-           
-            $table->dropColumn('leave_type');
-
-        
-          
-
-           
+        Schema::table('ir_visa_cards', function (Blueprint $table) {
+            $table->dropColumn('proposed_workers_number');
         });
     }
 
@@ -31,8 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('', function (Blueprint $table) {
-
+        Schema::table('visa', function (Blueprint $table) {
         });
     }
 };

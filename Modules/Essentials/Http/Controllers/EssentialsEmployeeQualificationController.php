@@ -151,10 +151,9 @@ class EssentialsEmployeeQualificationController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->back()->with('status', $output);

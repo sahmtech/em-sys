@@ -190,7 +190,6 @@
                                         'chamberRequest' => __('request.chamberRequest'),
                                         'cancleContractRequest' => __('request.cancleContractRequest'),
                                         'WarningRequest' => __('request.WarningRequest'),
-
                                     ],
                                     null,
                                     [
@@ -291,7 +290,6 @@
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
                                         'placeholder' => __('essentials::lang.select_type'),
-                                        
                                     ],
                                 ) !!}
                             </div>
@@ -326,7 +324,6 @@
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
                                         'placeholder' => __('essentials::lang.select_type'),
-                                        
                                     ],
                                 ) !!}
                             </div>
@@ -439,14 +436,14 @@
                         <div class="row">
 
                             <div class="workflow-container" id="workflow-container">
-                           
+
                             </div>
 
 
                         </div>
 
 
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('request.worker_details')</h4>
@@ -464,18 +461,19 @@
 
                                 <h4>@lang('request.attachments')</h4>
                                 <ul id="attachments-list">
-                                    
+
                                 </ul>
                             </div>
                         </div>
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
-                        
+
                             <div class="form-group">
                                 <label for="attachment">
                                     <h4>@lang('request.add_attachment')</h4>
                                 </label>
-                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment"
+                                    name="attachment">
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         </form>
@@ -598,10 +596,14 @@
                                 return '@lang('request.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('request.cancleContractRequest')';
-                            }  else if (data === 'WarningRequest') {
+                            } else if (data === 'WarningRequest') {
                                 return '@lang('request.WarningRequest')';
-                            }else if (data === 'passportRenewal') {
+                            } else if (data === 'passportRenewal') {
                                 return '@lang('request.passportRenewal')';
+                            } else if (data === 'AjirAsked') {
+                                return '@lang('request.AjirAsked')';
+                            } else if (data === 'AlternativeWorker') {
+                                return '@lang('request.AlternativeWorker')';
                             } else {
                                 return data;
                             }
@@ -720,7 +722,7 @@
                 // var data = requests_table.row(this).data();
                 // var requestId = data.id;
 
-            
+
                 if (requestId) {
                     $.ajax({
                         url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
@@ -731,7 +733,7 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
+                            var attachmentsList = $('#attachments-list');
                             var workerList = $('#worker-list');
 
                             workflowContainer.html('');
@@ -827,11 +829,15 @@
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
-                                    attachment += '<p>';
-                                   
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
-                               
-                                 attachment += '</p>';
+                                attachment += '<p>';
+
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('followup::lang.attach') }} ' + (j + 1) + '</a>';
+
+                                attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
@@ -860,223 +866,223 @@
     </script>
 
 
-<script>
-    $(document).ready(function() {
-        var users = @json($users);
-        var mainReasonSelect = $('#mainReasonSelect');
-        var subReasonContainer = $('#sub_reason_container');
-        var subReasonSelect = $('#subReasonSelect');
+    <script>
+        $(document).ready(function() {
+            var users = @json($users);
+            var mainReasonSelect = $('#mainReasonSelect');
+            var subReasonContainer = $('#sub_reason_container');
+            var subReasonSelect = $('#subReasonSelect');
 
-        function fetchUsersWithSaudiNationality() {
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+            function fetchUsersWithSaudiNationality() {
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
 
 
-            $.ajax({
-                url: '/get-non-saudi-users',
-                type: 'POST',
-                data: {
-                    _token: csrfToken,
-                    users: @json($users)
-                },
-                success: function(data) {
-                    console.log(data.users);
-                    var userSelect = $('#worker');
-                    userSelect.empty();
+                $.ajax({
+                    url: '/get-non-saudi-users',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        users: @json($users)
+                    },
+                    success: function(data) {
+                        console.log(data.users);
+                        var userSelect = $('#worker');
+                        userSelect.empty();
 
-                    $.each(data.users, function(key, value) {
-                        userSelect.append($('<option>', {
-                            value: key,
-                            text: value
-                        }));
-                    });
-
-                  
-                    userSelect.trigger('change');
-                },
-                error: function(xhr) {
-          
-                    console.log('Error:', xhr.responseText);
-                }
-            });
-        }
-        mainReasonSelect.on('change', function() {
-            var selectedMainReason = $(this).val();
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            console.log(selectedMainReason);
-            $.ajax({
-                url: '{{ route('getSubReasons') }}',
-                type: 'POST',
-                data: {
-                    _token: csrfToken,
-                    main_reason: selectedMainReason
-                },
-                success: function(data) {
-                    subReasonSelect.empty();
-
-                    if (data.sub_reasons.length > 0) {
-                        subReasonContainer.show();
-
-                        $.each(data.sub_reasons, function(index, subReason) {
-                            subReasonSelect.append($('<option>', {
-                                value: subReason.id,
-                                text: subReason.name
+                        $.each(data.users, function(key, value) {
+                            userSelect.append($('<option>', {
+                                value: key,
+                                text: value
                             }));
                         });
-                    } else {
-                        subReasonContainer.hide();
+
+
+                        userSelect.trigger('change');
+                    },
+                    error: function(xhr) {
+
+                        console.log('Error:', xhr.responseText);
                     }
-                }
+                });
+            }
+            mainReasonSelect.on('change', function() {
+                var selectedMainReason = $(this).val();
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                console.log(selectedMainReason);
+                $.ajax({
+                    url: '{{ route('getSubReasons') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        main_reason: selectedMainReason
+                    },
+                    success: function(data) {
+                        subReasonSelect.empty();
+
+                        if (data.sub_reasons.length > 0) {
+                            subReasonContainer.show();
+
+                            $.each(data.sub_reasons, function(index, subReason) {
+                                subReasonSelect.append($('<option>', {
+                                    value: subReason.id,
+                                    text: subReason.name
+                                }));
+                            });
+                        } else {
+                            subReasonContainer.hide();
+                        }
+                    }
+                });
+
             });
+
+            $('#requestType').change(handleTypeChange);
+
+            function handleTypeChange() {
+                var selectedId = $('#requestType').val();
+
+                $.ajax({
+                    url: '/get-request-type/' + selectedId,
+                    type: 'GET',
+                    success: function(response) {
+                        var selectedType = response.type;
+
+                        if (selectedType === 'leavesAndDepartures') {
+                            $('#start_date').show();
+
+                        } else {
+                            $('#start_date').hide();
+                        }
+
+                        if (selectedType === 'leavesAndDepartures') {
+                            $('#end_date').show();
+                        } else {
+                            $('#end_date').hide();
+                        }
+                        if (selectedType === 'returnRequest') {
+                            $('#exit_date').show();
+                            $('#return_date').show();
+                            fetchUsersWithSaudiNationality();
+
+                        } else {
+                            $('#exit_date').hide();
+                            $('#return_date').hide();
+
+                        }
+                        if (selectedType === 'leavesAndDepartures') {
+                            $('#leaveType').show();
+                        } else {
+                            $('#leaveType').hide();
+                        }
+                        if (selectedType === 'workInjuriesRequest') {
+                            $('#workInjuriesDate').show();
+                        } else {
+                            $('#workInjuriesDate').hide();
+                        }
+
+
+                        if (selectedType === 'escapeRequest') {
+                            $('#escape_time').show();
+                            $('#escape_date').show();
+                            fetchUsersWithSaudiNationality();
+                        } else {
+                            $('#escape_time').hide();
+                            $('#escape_date').hide();
+                        }
+                        if (selectedType === 'advanceSalary') {
+                            $('#installmentsNumber').show();
+                            $('#monthlyInstallment').show();
+                            $('#amount').show();
+
+                        } else {
+                            $('#installmentsNumber').hide();
+                            $('#monthlyInstallment').hide();
+                            $('#amount').hide();
+                        }
+                        if (selectedType === 'residenceEditRequest') {
+                            $('#resEditType').show();
+                            fetchUsersWithSaudiNationality();
+
+
+                        } else {
+                            $('#resEditType').hide();
+
+                        }
+                        if (selectedType === 'baladyCardRequest') {
+                            $('#baladyType').show();
+
+
+                        } else {
+                            $('#baladyType').hide();
+
+                        }
+                        if (selectedType === 'insuranceUpgradeRequest') {
+                            $('#ins_class').show();
+
+
+                        } else {
+                            $('#ins_class').hide();
+
+                        }
+                        if (selectedType === 'cancleContractRequest') {
+                            $('#main_reason').show();
+
+
+                        } else {
+                            $('#main_reason').hide();
+
+                        }
+                        if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest') {
+                            $('#visa_number').show();
+
+
+                        } else {
+                            $('#visa_number').hide();
+
+                        }
+                        if (selectedType === 'atmCard') {
+                            $('#atmType').show();
+
+
+                        } else {
+                            $('#atmType').hide();
+
+                        }
+                        if (selectedType === 'exitRequest') {
+                            fetchUsersWithSaudiNationality();
+
+                        }
+
+                        if (selectedType === 'passportRenewal') {
+                            fetchUsersWithSaudiNationality();
+
+                        }
+
+
+                    },
+                    error: function(xhr) {
+
+                        console.log('Error:', xhr.responseText);
+                    }
+                });
+            }
+
+            $('#addRequestModal').on('shown.bs.modal', function(e) {
+                $('#worker').select2({
+                    dropdownParent: $(
+                        '#addRequestModal'),
+                    width: '100%',
+                });
+
+            });
+
+
+
+
 
         });
-
-        $('#requestType').change(handleTypeChange);
-
-        function handleTypeChange() {
-            var selectedId = $('#requestType').val();
-
-            $.ajax({
-                url: '/get-request-type/' + selectedId,
-                type: 'GET',
-                success: function(response) {
-                    var selectedType = response.type;
-
-                    if (selectedType === 'leavesAndDepartures') {
-                        $('#start_date').show();
-
-                    } else {
-                        $('#start_date').hide();
-                    }
-
-                    if (selectedType === 'leavesAndDepartures') {
-                        $('#end_date').show();
-                    } else {
-                        $('#end_date').hide();
-                    }
-                    if (selectedType === 'returnRequest') {
-                        $('#exit_date').show();
-                        $('#return_date').show();
-                        fetchUsersWithSaudiNationality();
-
-                    } else {
-                        $('#exit_date').hide();
-                        $('#return_date').hide();
-
-                    }
-                    if (selectedType === 'leavesAndDepartures') {
-                        $('#leaveType').show();
-                    } else {
-                        $('#leaveType').hide();
-                    }
-                    if (selectedType === 'workInjuriesRequest') {
-                        $('#workInjuriesDate').show();
-                    } else {
-                        $('#workInjuriesDate').hide();
-                    }
-
-
-                    if (selectedType === 'escapeRequest') {
-                        $('#escape_time').show();
-                        $('#escape_date').show();
-                        fetchUsersWithSaudiNationality();
-                    } else {
-                        $('#escape_time').hide();
-                        $('#escape_date').hide();
-                    }
-                    if (selectedType === 'advanceSalary') {
-                        $('#installmentsNumber').show();
-                        $('#monthlyInstallment').show();
-                        $('#amount').show();
-
-                    } else {
-                        $('#installmentsNumber').hide();
-                        $('#monthlyInstallment').hide();
-                        $('#amount').hide();
-                    }
-                    if (selectedType === 'residenceEditRequest') {
-                        $('#resEditType').show();
-                        fetchUsersWithSaudiNationality();
-
-
-                    } else {
-                        $('#resEditType').hide();
-
-                    }
-                    if (selectedType === 'baladyCardRequest') {
-                        $('#baladyType').show();
-
-
-                    } else {
-                        $('#baladyType').hide();
-
-                    }
-                    if (selectedType === 'insuranceUpgradeRequest') {
-                        $('#ins_class').show();
-
-
-                    } else {
-                        $('#ins_class').hide();
-
-                    }
-                    if (selectedType === 'cancleContractRequest') {
-                        $('#main_reason').show();
-
-
-                    } else {
-                        $('#main_reason').hide();
-
-                    }
-                    if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest') {
-                        $('#visa_number').show();
-
-
-                    } else {
-                        $('#visa_number').hide();
-
-                    }
-                    if (selectedType === 'atmCard') {
-                        $('#atmType').show();
-
-
-                    } else {
-                        $('#atmType').hide();
-
-                    }
-                    if (selectedType === 'exitRequest') {
-                        fetchUsersWithSaudiNationality();
-
-                    } 
-                   
-                    if (selectedType === 'passportRenewal') {
-                        fetchUsersWithSaudiNationality();
-
-                    } 
-
-
-                },
-                error: function(xhr) {
-                   
-                    console.log('Error:', xhr.responseText);
-                }
-            });
-        }
-
-        $('#addRequestModal').on('shown.bs.modal', function(e) {
-            $('#worker').select2({
-                dropdownParent: $(
-                    '#addRequestModal'),
-                width: '100%',
-            });
-
-        });
-
-
-      
-
-
-    });
-</script>
+    </script>
 
 
 

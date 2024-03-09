@@ -2,24 +2,45 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleProject;
+
 use App\Contact;
-use App\ContactLocation;
-use App\Transaction;
+
 use App\User;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Sales\Entities\salesContract;
+
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsCity;
+
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
-use Modules\Sales\Http\Controllers\SalesController;
+
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+
+use App\Category;
+use Modules\Essentials\Entities\EssentialsDepartment;
+
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+
+
+use Modules\CEOManagment\Entities\WkProcedure;
+
+use Modules\CEOManagment\Entities\RequestsType;
+
+use Modules\Essentials\Entities\EssentialsLeaveType;
+
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
+use App\Company;
 
 class FollowUpProjectController extends Controller
 {
@@ -44,20 +65,22 @@ class FollowUpProjectController extends Controller
             ]);
         }
         $can_projectView = auth()->user()->can('followup.projectView');
-        
-        $salesProjects = SalesProject::with(['contact']);
-        $contacts2 = Contact::whereIn('type',['lead','qualified','unqualified','converted'])
-        ->pluck('supplier_business_name', 'id');
-        
+
+        $contacts2 = Contact::whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])
+            ->pluck('supplier_business_name', 'id');
+
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $salesProjects =  $salesProjects->whereIn('id',  $followupUserAccessProject);
             $contacts_ids =  $salesProjects->pluck('contact_id')->unique()->toArray();
-           
+
             $contacts2 = Contact::whereIn('id',  $contacts_ids)
-            ->whereIn('type',['lead','qualified','unqualified','converted'])
-            ->pluck('supplier_business_name', 'id');
+                ->whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])
+                ->pluck('supplier_business_name', 'id');
         }
+
+
+        $salesProjects = SalesProject::with(['contact']);
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
@@ -103,11 +126,10 @@ class FollowUpProjectController extends Controller
 
                     return $row->users
                         ->where('user_type', 'worker')
-
                         ->count();
                 })
                 ->addColumn('duration', function ($row) {
-                    return $row->contract_duration    ?? null;
+                    return $row->contract_duration ?? null;
                 })
                 ->addColumn('contract_form', function ($row) {
                     return $row->salesContract?->transaction->contract_form ?? null;;
@@ -147,16 +169,111 @@ class FollowUpProjectController extends Controller
 
 
         return view('followup::projects.index')
-        ->with(compact('contacts2'));
+            ->with(compact('contacts2'));
     }
 
     /**
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+
+
+    public function createWorker()
     {
-        return view('followup::create');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_add_wroker = auth()->user()->can('followup.create_worker');
+        if (!($is_admin || $can_add_wroker)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        $username_ext = $this->moduleUtil->getUsernameExtension();
+        // $locations = BusinessLocation::where('business_id', $business_id)
+        //     ->Active()
+        //     ->get();
+        $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+        $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+
+        $contacts = SalesProject::pluck('name', 'id')->toArray();
+        $contacts = [null => __('essentials::lang.undefined')] + $contacts;
+
+        $blood_types = [
+            'A+' => 'A positive (A+).',
+            'A-' => 'A negative (A-).',
+            'B+' => 'B positive (B+)',
+            'B-' => 'B negative (B-).',
+            'AB+' => 'AB positive (AB+).',
+            'AB-' => 'AB negative (AB-).',
+            'O+' => 'O positive (O+).',
+            'O-' => 'O positive (O-).',
+        ];
+
+
+
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $countries = $countries = EssentialsCountry::forDropdown();
+        $resident_doc = null;
+        $user = null;
+        $designations = Category::forDropdown($business_id, 'hrm_designation');
+
+        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+        $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
+
+        $user = !empty($data['user']) ? $data['user'] : null;
+
+        $allowance_deduction_ids = [];
+        if (!empty($user)) {
+            $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+                ->pluck('allowance_deduction_id')
+                ->toArray();
+        }
+
+        if (!empty($user)) {
+            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+        } else {
+            $contract = null;
+        }
+
+        // $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
+        $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
+        $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
+        $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+
+        $company = Company::all()->pluck('name', 'id');
+
+        return  view('essentials::employee_affairs.workers_affairs.create')
+            ->with(compact(
+                'departments',
+                'countries',
+                'spacializations',
+                'nationalities',
+                'username_ext',
+                'blood_types',
+                'job_titles',
+                'contacts',
+                'company',
+                'banks',
+                'contract_types',
+                'form_partials',
+                'resident_doc',
+                'user',
+
+                'allowance_types',
+                'travel_ticket_categorie',
+                'contract_types',
+                'nationalities',
+                'specializations',
+                'professions'
+
+            ));
     }
 
     /**
@@ -178,32 +295,57 @@ class FollowUpProjectController extends Controller
     {
 
         $users = User::where('assigned_to', $id)
-        ->with([
-            'country',
-            'appointment' => function ($query) {
-                $query->where('is_active', 1)->latest('created_at');
-            },
-            'appointment.profession',
-            'userAllowancesAndDeductions',
-            
-            'appointment.location',
-            'contract' => function ($query) {
-                $query->where('is_active', 1)->latest('created_at');
-            },
-            'OfficialDocument' => function ($query) {
-                $query->where('is_active', 1)->latest('created_at');
-            },
-            'workCard'
-        ])
-        ->get();
+            ->with([
+                'country',
+                'appointment' => function ($query) {
+                    $query->where('is_active', 1)->latest('created_at');
+                },
+                'appointment.profession',
+                'userAllowancesAndDeductions',
 
-     
-    
+                'appointment.location',
+                'contract' => function ($query) {
+                    $query->where('is_active', 1)->latest('created_at');
+                },
+                'OfficialDocument' => function ($query) {
+                    $query->where('is_active', 1)->latest('created_at');
+                },
+                'workCard'
+            ])
+            ->get();
 
-        
-    
-        return view('followup::projects.show',
-         compact('users', 'id'));
+
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $business_id = request()->session()->get('user.business_id');
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%متابعة%')
+            ->pluck('id')->toArray();
+        $requestTypeIds = WkProcedure::distinct()
+            ->with('request_type')
+            ->whereIn('department_id', $departmentIds)
+            ->where('request_owner_type', 'worker')
+            ->where('start', '1')
+            ->pluck('request_type_id')
+            ->toArray();
+
+        $requestTypes = RequestsType::whereIn('id', $requestTypeIds)
+            ->get()
+            ->mapWithKeys(function ($requestType) {
+                return [$requestType->id => $requestType->type];
+            })
+            ->unique()
+            ->toArray();
+
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
+
+
+        return view(
+            'followup::projects.show',
+            compact('users', 'id', 'requestTypes', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes')
+        );
     }
 
 

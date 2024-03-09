@@ -108,7 +108,8 @@ class EssentialsWorkersAffairsController extends Controller
             ->with(['country', 'contract', 'OfficialDocument']);
 
         $users->select(
-            'users.*','users.id as worker_id',
+            'users.*',
+            'users.id as worker_id',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )
@@ -120,14 +121,12 @@ class EssentialsWorkersAffairsController extends Controller
             $users =  $users->where('users.company_id', request()->input('company'));
         }
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-       
-            if(request()->input('project_name')=='none'){
+
+            if (request()->input('project_name') == 'none') {
                 $users = $users->whereNull('users.assigned_to');
-            }
-            else{
+            } else {
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
-            
         }
 
         if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
@@ -267,11 +266,9 @@ class EssentialsWorkersAffairsController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->back()->with('status', $output);
@@ -401,32 +398,47 @@ class EssentialsWorkersAffairsController extends Controller
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
             $request['user_type'] = 'worker';
+            $existingprofnumber = null;
+            $existingBordernumber = null;
 
             if ($request->input('id_proof_number')) {
                 $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-
-                if ($existingprofnumber) {
-                    $errorMessage = trans('essentials::lang.worker_with_same_id_proof_number_exists');
-                    throw new \Exception($errorMessage);
-                }
+            }
+            if ($request->input('border_no')) {
+                $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
             }
 
 
-            $user = $this->moduleUtil->createUser($request);
-            $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
+
+            if ($existingprofnumber || $existingBordernumber) {
+
+                if ($existingprofnumber != null) {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                    ];
+                } else {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
+                    ];
+                }
+            } else {
+
+                $user = $this->moduleUtil->createUser($request);
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
 
 
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -493,10 +505,25 @@ class EssentialsWorkersAffairsController extends Controller
 
                 $officialDocuments = $user->OfficialDocument;
                 $workerDocuments = $user->proposal_worker?->worker_documents;
+                $contract_doc = $user->contract()->where('is_active', 1)->first();
+                if ($contract_doc !== false) {
 
-                $documents = $officialDocuments->merge($workerDocuments);
+                    $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
+                } else {
+
+                    $documents = $officialDocuments->merge($workerDocuments);
+                }
             } else {
-                $documents = $user->OfficialDocument;
+                $officialDocuments = $user->OfficialDocument;
+                $contract_doc = $user->contract()->where('is_active', 1)->first();
+
+
+                if ($contract_doc !== false) {
+
+                    $documents = $officialDocuments->merge([$contract_doc]);
+                } else {
+                    $documents = $user->OfficialDocument;
+                }
             }
         }
 
@@ -572,8 +599,6 @@ class EssentialsWorkersAffairsController extends Controller
     public function edit($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
         $business_id = request()->session()->get('user.business_id');
         $user = User::with(['contactAccess', 'assignedTo'])
             ->findOrFail($id);
@@ -599,7 +624,7 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
         if (!empty($user)) {
-            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->where('is_active', 1)->first();
         } else {
             $contract = null;
         }
@@ -735,10 +760,47 @@ class EssentialsWorkersAffairsController extends Controller
 
 
             $user = User::findOrFail($id);
+            if ($request->hasFile('Iban_file')) {
+                error_log($request->hasFile('Iban_file'));
+
+                $file = request()->file('Iban_file');
+                $path = $file->store('/officialDocuments');
+                $bank_details = $request->input('bank_details');
+                $bank_details['Iban_file'] = $path;
+                $user_data['bank_details'] = json_encode($bank_details);
 
 
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+                $Iban_doc->update($input);
+            }
+
+            $delete_iban_file = $request->delete_iban_file ?? null;
+            if ($delete_iban_file && $delete_iban_file == 1) {
+
+                $filePath =  !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? null : null;
+                if ($filePath) {
+                    Storage::delete($filePath);
+                }
+            }
+
+            if ($request->hasFile('Iban_file')) {
+                $file = request()->file('Iban_file');
+                $path = $file->store('/employee_bank_ibans');
+                $bank_details = $request->input('bank_details');
+                $bank_details['Iban_file'] = $path;
+                $user_data['bank_details'] = json_encode($bank_details);
+
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+                $Iban_doc->update($input);
+            }
             $user->update($user_data);
-
 
 
             $deleted_documents = $request->deleted_documents ?? null;
@@ -762,15 +824,13 @@ class EssentialsWorkersAffairsController extends Controller
                 }
             }
             foreach ($offical_documents_types  as  $index => $offical_documents_type) {
-           
+
                 if (
                     $offical_documents_type
                 ) {
                     if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
                         if (isset($files[$index])) {
                             $filePath = $files[$index]->store('/officialDocuments');
-                            error_log("!111111111111111");
-                            error_log($filePath);
                             EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
                         }
                     } elseif ($offical_documents_choosen_files[$index]) {
@@ -781,8 +841,7 @@ class EssentialsWorkersAffairsController extends Controller
                             $filePath = $files[$index]->store('/officialDocuments');
                             $document2->file_path = $filePath;
                         }
-                        error_log("!22222222222");
-                        error_log($filePath);
+
                         $document2->save();
                     }
                 }
@@ -803,10 +862,9 @@ class EssentialsWorkersAffairsController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return redirect()->route('show_workers_affairs', ['id' => $id])->with('status', $output);

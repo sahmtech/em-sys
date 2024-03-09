@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RequestsType extends Model
 {
-  //  use HasFactory;
 
-    protected $guarded = ['id'];
-    
-    
+
+  protected $guarded = ['id'];
+  public function tasks()
+  {
+    return $this->hasMany(Task::class, 'request_type_id');
+  }
 }

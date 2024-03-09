@@ -12,7 +12,12 @@ use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsProceduresEscalation;
 use Modules\CEOManagment\Entities\RequestsType;
+use Modules\CEOManagment\Entities\ProcedureTask;
+use Modules\CEOManagment\Entities\ProcedureEscalation;
+use Modules\CEOManagment\Entities\Task;
 use Modules\CEOManagment\Entities\WkProcedure;
+use Modules\CEOManagment\Entities\RequestProcedureTask;
+
 
 class WkProcedureController extends Controller
 {
@@ -38,8 +43,7 @@ class WkProcedureController extends Controller
 
         $escalates_departments = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
-                $query->where('name', 'like', '%تنفيذ%')
-                    ->orWhere('name', 'like', '%مجلس%')
+                $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%');
             })
             ->pluck('name', 'id')->toArray();
@@ -108,8 +112,8 @@ class WkProcedureController extends Controller
                 ->rawColumns(['steps', 'action'])
                 ->make(true);
         }
-
-        return view('ceomanagment::work_flow.employees')->with(compact('departments', 'escalates_departments', 'missingTypes'));
+        $tasks = Task::all()->pluck('description', 'id');
+        return view('ceomanagment::work_flow.employees')->with(compact('departments', 'tasks', 'escalates_departments', 'missingTypes'));
     }
 
     public function workersProcedures()
@@ -124,8 +128,7 @@ class WkProcedureController extends Controller
 
         $escalates_departments = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
-                $query->where('name', 'like', '%تنفيذ%')
-                    ->orWhere('name', 'like', '%مجلس%')
+                $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%');
             })
             ->pluck('name', 'id')->toArray();
@@ -194,8 +197,8 @@ class WkProcedureController extends Controller
                 ->rawColumns(['steps', 'action'])
                 ->make(true);
         }
-
-        return view('ceomanagment::work_flow.workers')->with(compact('departments', 'escalates_departments', 'missingTypes'));
+        $tasks = Task::all()->pluck('description', 'id');
+        return view('ceomanagment::work_flow.workers')->with(compact('departments', 'tasks', 'escalates_departments', 'missingTypes'));
     }
     /**
      * Show the form for creating a new resource.
@@ -211,8 +214,17 @@ class WkProcedureController extends Controller
 
 
         foreach ($procedures as $procedure) {
-            $escalations = EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->get();
+            $escalations = ProcedureEscalation::where('procedure_id', $procedure->id)->get();
+            $tasks = ProcedureTask::where('procedure_id', $procedure->id)->get();
+
+
+            $taskIds = $tasks->pluck('task_id');
+
+            $taskDescriptions = Task::whereIn('id', $taskIds)->get(['id', 'description']);
+
+
             $procedure->escalations = $escalations;
+            $procedure->tasks = $taskDescriptions;
         }
 
 
@@ -260,7 +272,7 @@ class WkProcedureController extends Controller
                         'next_department_id' => null,
                         'start' => 1,
                         'end' => 0,
-                        'can_reject' => null,
+                        'can_reject' => 1,
                         'can_return' =>  null,
                     ]);
                     $previousStepIds[] = $workflowStep->id;
@@ -280,21 +292,32 @@ class WkProcedureController extends Controller
                     'end' => $index === count($steps) - 1 ? 1 : 0,
                     'can_reject' => $step['add_modal_can_reject_steps'][0] ?? 0,
                     'can_return' => $step['add_modal_can_return_steps'][0] ?? 0,
+                    'action_type' => $step['action_type'] ?? null,
                 ]);
+                if (isset($step['tasks']) && $step['action_type'] === 'task') {
+                    foreach ($step['tasks'] as $taskId) {
+                        if (!is_null($taskId)) {
+                            ProcedureTask::create([
+                                'procedure_id' => $workflowStep->id,
+                                'task_id' => $taskId,
+                            ]);
+                        }
+                    }
+                }
                 foreach ($previousStepIds as $id) {
                     WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
                 }
                 $previousStepIds = [];
                 $previousStepIds[] = $workflowStep->id;
-                // if (!(empty($step['add_modal_escalates_to_steps']) || empty($step['add_modal_escalates_after_steps']))) {
-                //     foreach ($step['add_modal_escalates_to_steps'] as $key => $escalationDept) {
-                //         EssentialsProceduresEscalation::create([
-                //             'procedure_id' => $workflowStep->id,
-                //             'escalates_to' => $escalationDept,
-                //             'escalates_after' => $step['add_modal_escalates_after_steps'][$key] ?? null,
-                //         ]);
-                //     }
-                // }
+                if (!(empty($step['add_modal_escalates_to_steps']) || empty($step['add_modal_escalates_after_steps']))) {
+                    foreach ($step['add_modal_escalates_to_steps'] as $key => $escalationDept) {
+                        ProcedureEscalation::create([
+                            'procedure_id' => $workflowStep->id,
+                            'escalates_to' => $escalationDept,
+                            'escalates_after' => $step['add_modal_escalates_after_steps'][$key] ?? null,
+                        ]);
+                    }
+                }
             }
 
 
@@ -344,21 +367,33 @@ class WkProcedureController extends Controller
                     'end' => $index === count($steps) - 1 ? 1 : 0,
                     'can_reject' => $step['add_modal_can_reject_steps'][0] ?? 0,
                     'can_return' => $step['add_modal_can_return_steps'][0] ?? 0,
+                    'action_type' => $step['action_type'] ?? null,
                 ]);
+                if (isset($step['tasks']) && $step['action_type'] === 'task') {
+                    foreach ($step['tasks'] as $taskId) {
+                        if (!is_null($taskId)) {
+                            ProcedureTask::create([
+                                'procedure_id' => $workflowStep->id,
+                                'task_id' => $taskId,
+                            ]);
+                        }
+                    }
+                }
+
                 foreach ($previousStepIds as $id) {
                     WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
                 }
                 $previousStepIds = [];
                 $previousStepIds[] = $workflowStep->id;
-                // if (!(empty($step['add_modal_escalates_to_steps']) || empty($step['add_modal_escalates_after_steps']))) {
-                //     foreach ($step['add_modal_escalates_to_steps'] as $key => $escalationDept) {
-                //         EssentialsProceduresEscalation::create([
-                //             'procedure_id' => $workflowStep->id,
-                //             'escalates_to' => $escalationDept,
-                //             'escalates_after' => $step['add_modal_escalates_after_steps'][$key] ?? null,
-                //         ]);
-                //     }
-                // }
+                if (!(empty($step['add_modal_escalates_to_steps']) || empty($step['add_modal_escalates_after_steps']))) {
+                    foreach ($step['add_modal_escalates_to_steps'] as $key => $escalationDept) {
+                        ProcedureEscalation::create([
+                            'procedure_id' => $workflowStep->id,
+                            'escalates_to' => $escalationDept,
+                            'escalates_after' => $step['add_modal_escalates_after_steps'][$key] ?? null,
+                        ]);
+                    }
+                }
             }
 
 
@@ -377,7 +412,7 @@ class WkProcedureController extends Controller
 
     public function update(Request $request, $id)
     {
-
+        //return $request;
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
             $requests = UserRequest::where('request_type_id', $type)->get();
@@ -391,13 +426,6 @@ class WkProcedureController extends Controller
             $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
             $for = WkProcedure::where('id', $id)->first()->request_owner_type;
 
-            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
-            if ($procedures) {
-                foreach ($procedures as $procedure) {
-               //     EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
-                    $procedure->delete();
-                }
-            }
 
             $type = $procedureType;
 
@@ -421,6 +449,14 @@ class WkProcedureController extends Controller
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
 
+            $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
+            if ($procedures) {
+                foreach ($procedures as $procedure) {
+                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
+                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
+                    $procedure->delete();
+                }
+            }
             $previousStepIds = [];
             if ($edit_modal_department_id_start) {
                 foreach ($edit_modal_department_id_start as $start_dep) {
@@ -443,7 +479,10 @@ class WkProcedureController extends Controller
             }
 
             if ($steps) {
-                foreach ($steps  as $index => $step) {
+                $index = 0;
+                foreach ($steps  as $step) {
+
+                    error_log($index);
                     $start_dep = $step['edit_modal_department_id_steps'][0];
                     $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = WkProcedure::create([
@@ -456,21 +495,34 @@ class WkProcedureController extends Controller
                         'end' => $index === count($steps) - 1 ? 1 : 0,
                         'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
                         'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
+                        'action_type' => $step['edit_action_type'] ?? null,
                     ]);
+                    if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
+                        foreach ($step['edit_tasks'] as $taskId) {
+                            if (!is_null($taskId)) {
+                                ProcedureTask::create([
+                                    'procedure_id' => $workflowStep->id,
+                                    'task_id' => $taskId,
+                                ]);
+                            }
+                        }
+                    }
+
                     foreach ($previousStepIds as $id) {
                         WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
                     }
                     $previousStepIds = [];
                     $previousStepIds[] = $workflowStep->id;
-                    // if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
-                    //     foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
-                    //         EssentialsProceduresEscalation::create([
-                    //             'procedure_id' => $workflowStep->id,
-                    //             'escalates_to' => $escalationDept,
-                    //             'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
-                    //         ]);
-                    //     }
-                    // }
+                    if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+                        foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+                            ProcedureEscalation::create([
+                                'procedure_id' => $workflowStep->id,
+                                'escalates_to' => $escalationDept,
+                                'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+                            ]);
+                        }
+                    }
+                    $index++;
                 }
             }
 
@@ -484,9 +536,11 @@ class WkProcedureController extends Controller
 
         return redirect()->back()->with(['status' => $output]);
     }
-     public function updateEmployeeProcedure(Request $request, $id)
+
+    public function updateEmployeeProcedure(Request $request, $id)
     {
-     
+        //   return $request->all();
+
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
             $requests = UserRequest::where('request_type_id', $type)->get();
@@ -497,16 +551,9 @@ class WkProcedureController extends Controller
                 ];
                 return redirect()->back()->with(['status' => $output]);
             }
-         
 
-            $procedures = WkProcedure::where('request_type_id', $type)->get();
-           
-            if ($procedures) {
-                foreach ($procedures as $procedure) {
-                 //   EssentialsProceduresEscalation::where('procedure_id', $procedure->id)->delete();
-                    $procedure->delete();
-                }
-            }
+
+
 
             $steps = $request->input('step');
 
@@ -517,12 +564,20 @@ class WkProcedureController extends Controller
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
+            $procedures = WkProcedure::where('request_type_id', $type)->get();
 
+            if ($procedures) {
+                foreach ($procedures as $procedure) {
+                    ProcedureTask::where('procedure_id', $procedure->id)->delete();
+                    ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
+                    $procedure->delete();
+                }
+            }
             $previousStepIds = [];
-            if($steps){
-                $index=0;
+            if ($steps) {
+                $index = 0;
                 foreach ($steps  as $step) {
-                    error_log($index);
+
                     $start_dep = $step['edit_modal_department_id_steps'][0];
                     $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                     $workflowStep = WkProcedure::create([
@@ -535,25 +590,36 @@ class WkProcedureController extends Controller
                         'end' => $index === count($steps) - 1 ? 1 : 0,
                         'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
                         'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
+                        'action_type' => $step['edit_action_type'] ?? null,
                     ]);
+                    if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
+                        foreach ($step['edit_tasks'] as $taskId) {
+                            if (!is_null($taskId)) {
+                                ProcedureTask::create([
+                                    'procedure_id' => $workflowStep->id,
+                                    'task_id' => $taskId,
+                                ]);
+                            }
+                        }
+                    }
                     foreach ($previousStepIds as $id) {
                         WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
                     }
                     $previousStepIds = [];
                     $previousStepIds[] = $workflowStep->id;
-                    // if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
-                    //     foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
-                    //         EssentialsProceduresEscalation::create([
-                    //             'procedure_id' => $workflowStep->id,
-                    //             'escalates_to' => $escalationDept,
-                    //             'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
-                    //         ]);
-                    //     }
-                    // }
-                    $index ++;
+                    if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+                        foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+                            ProcedureEscalation::create([
+                                'procedure_id' => $workflowStep->id,
+                                'escalates_to' => $escalationDept,
+                                'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+                            ]);
+                        }
+                    }
+                    $index++;
                 }
             }
-          
+
 
 
             \DB::commit();
@@ -574,8 +640,7 @@ class WkProcedureController extends Controller
      */
     public function destroy($id)
     {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
 
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
@@ -587,13 +652,20 @@ class WkProcedureController extends Controller
                 ];
                 return $output;
             }
-            WkProcedure::where('request_type_id', $type)->delete();
+
+            $wk_pocedures =  WkProcedure::where('request_type_id', $type)->get();
+            foreach ($wk_pocedures  as $wk_pocedure) {
+                ProcedureTask::where('procedure_id',  $wk_pocedure->id)->delete();
+                ProcedureEscalation::where('procedure_id',  $wk_pocedure->id)->delete();
+                $wk_pocedure->delete();
+            }
 
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
         } catch (\Exception $e) {
+            error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [

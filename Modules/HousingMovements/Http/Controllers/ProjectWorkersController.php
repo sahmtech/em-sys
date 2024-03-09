@@ -71,9 +71,9 @@ class ProjectWorkersController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-       $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
-     
-        
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -100,16 +100,14 @@ class ProjectWorkersController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-       
-                if(request()->input('project_name')=='none'){
+
+                if (request()->input('project_name') == 'none') {
                     $users = $users->whereNull('users.assigned_to');
-                }
-                else{
+                } else {
                     $users = $users->where('users.assigned_to', request()->input('project_name'));
                 }
-                
             }
-            
+
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
@@ -349,32 +347,31 @@ class ProjectWorkersController extends Controller
     }
 
 
-    public function addProject(Request $request){
+    public function addProject(Request $request)
+    {
 
-     try {
-        if(!$request->project){
-            $output = [
-                'success' => false,
-                'msg' => __('housingmovements::lang.please_select_project'),
-            ];
-            return $output;
+        try {
+            if (!$request->project) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('housingmovements::lang.please_select_project'),
+                ];
+                return $output;
+            }
+            $selectedRowsData = json_decode($request->input('selectedRowsData'));
 
-        }
-        $selectedRowsData = json_decode($request->input('selectedRowsData'));
+            if (!$selectedRowsData) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('housingmovements::lang.please_select_rows'),
+                ];
+                return $output;
+            }
 
-        if(!$selectedRowsData){
-            $output = [
-                'success' => false,
-                'msg' => __('housingmovements::lang.please_select_rows'),
-            ];
-            return $output;
-
-        }
-          
             foreach ($selectedRowsData as $row) {
                 $worker = User::find($row->id);
 
-               
+
 
                 if (!$worker) {
 
@@ -775,29 +772,25 @@ class ProjectWorkersController extends Controller
             'bookedInfo',
         ));
     }
+
     public function create()
     {
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
         $business_id = request()->session()->get('user.business_id');
-
-
-        if (!$this->moduleUtil->isSubscribed($business_id)) {
-            return $this->moduleUtil->expiredResponse();
-        } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
-            return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_add_wroker = auth()->user()->can('housingmovements.create_worker');
+        if (!($is_admin || $can_add_wroker)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
         }
-
-        // $roles = $this->getRolesArray($business_id);
         $username_ext = $this->moduleUtil->getUsernameExtension();
         // $locations = BusinessLocation::where('business_id', $business_id)
         //     ->Active()
         //     ->get();
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
-
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
@@ -849,9 +842,9 @@ class ProjectWorkersController extends Controller
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
 
-        $company = Company::where('business_id', $business_id)->pluck('name', 'id');
+        $company = Company::all()->pluck('name', 'id');
 
-        return  view('housingmovements::projects_workers.create')
+        return  view('essentials::employee_affairs.workers_affairs.create')
             ->with(compact(
                 'departments',
                 'countries',
@@ -859,6 +852,7 @@ class ProjectWorkersController extends Controller
                 'nationalities',
                 'username_ext',
                 'blood_types',
+                'job_titles',
                 'contacts',
                 'company',
                 'banks',
@@ -876,66 +870,180 @@ class ProjectWorkersController extends Controller
 
             ));
     }
-
-    public function storeProjectWorker(Request $request)
-    {
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $business_id = request()->session()->get('user.business_id');
-        if (!($is_admin || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
-
-        try {
-            if (!empty($request->input('dob'))) {
-                $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
-            }
-
-            $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
-            $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+    // public function create()
+    // {
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //     if (!($is_admin || auth()->user()->can('user.create'))) {
+    //         //temp  abort(403, 'Unauthorized action.');
+    //     }
+    //     $business_id = request()->session()->get('user.business_id');
 
 
-            $com_id = request()->input('essentials_department_id');
-            $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
-                ->first();
+    //     if (!$this->moduleUtil->isSubscribed($business_id)) {
+    //         return $this->moduleUtil->expiredResponse();
+    //     } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
+    //         return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
+    //     }
 
-            if ($latestRecord) {
-                $latestRefNo = $latestRecord->emp_number;
-                $latestRefNo++;
-                $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-            } else {
+    //     // $roles = $this->getRolesArray($business_id);
+    //     $username_ext = $this->moduleUtil->getUsernameExtension();
+    //     // $locations = BusinessLocation::where('business_id', $business_id)
+    //     //     ->Active()
+    //     //     ->get();
+    //     $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+    //     $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
 
-                $request['emp_number'] =  $business_id . '000';
-            }
+    //     $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+    //     $nationalities = EssentialsCountry::nationalityForDropdown();
+
+    //     $contacts = SalesProject::pluck('name', 'id')->toArray();
+    //     $contacts = [null => __('essentials::lang.undefined')] + $contacts;
+
+    //     $blood_types = [
+    //         'A+' => 'A positive (A+).',
+    //         'A-' => 'A negative (A-).',
+    //         'B+' => 'B positive (B+)',
+    //         'B-' => 'B negative (B-).',
+    //         'AB+' => 'AB positive (AB+).',
+    //         'AB-' => 'AB negative (AB-).',
+    //         'O+' => 'O positive (O+).',
+    //         'O-' => 'O positive (O-).',
+    //     ];
 
 
 
-            $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+    //     $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+    //     $countries = $countries = EssentialsCountry::forDropdown();
+    //     $resident_doc = null;
+    //     $user = null;
+    //     $designations = Category::forDropdown($business_id, 'hrm_designation');
 
-            if ($existingprofnumber) {
-                $errorMessage = trans('essentials::lang.worker_with_same_id_proof_number_exists');
-                throw new \Exception($errorMessage);
-            }
+    //     $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+    //     $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
-            $user = $this->moduleUtil->createUser($request);
+    //     $user = !empty($data['user']) ? $data['user'] : null;
 
-            event(new UserCreatedOrModified($user, 'added'));
+    //     $allowance_deduction_ids = [];
+    //     if (!empty($user)) {
+    //         $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+    //             ->pluck('allowance_deduction_id')
+    //             ->toArray();
+    //     }
 
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
-        } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    //     if (!empty($user)) {
+    //         $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+    //     } else {
+    //         $contract = null;
+    //     }
 
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = [
-                'success' => 0,
-                'msg' => $e->getMessage(),
-            ];
-        }
+    //     // $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
+    //     $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
+    //     $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
+    //     $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
+    //     $nationalities = EssentialsCountry::nationalityForDropdown();
+    //     $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+    //     $professions = EssentialsProfession::all()->pluck('name', 'id');
 
-        return redirect()->route('workers.index')->with('status', $output);
-    }
+    //     $company = Company::where('business_id', $business_id)->pluck('name', 'id');
+
+    //     return  view('housingmovements::projects_workers.create')
+    //         ->with(compact(
+    //             'departments',
+    //             'countries',
+    //             'spacializations',
+    //             'nationalities',
+    //             'username_ext',
+    //             'blood_types',
+    //             'contacts',
+    //             'company',
+    //             'banks',
+    //             'contract_types',
+    //             'form_partials',
+    //             'resident_doc',
+    //             'user',
+
+    //             'allowance_types',
+    //             'travel_ticket_categorie',
+    //             'contract_types',
+    //             'nationalities',
+    //             'specializations',
+    //             'professions'
+
+    //         ));
+    // }
+
+    // public function storeProjectWorker(Request $request)
+    // {
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+    //     if (!($is_admin || auth()->user()->can('user.create'))) {
+    //         //temp  abort(403, 'Unauthorized action.');
+    //     }
+
+    //     try {
+    //         if (!empty($request->input('dob'))) {
+    //             $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+    //         }
+
+    //         $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+    //         $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+
+
+    //         // $com_id = request()->input('essentials_department_id');
+    //         // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
+    //         //     ->first();
+
+    //         // if ($latestRecord) {
+    //         //     $latestRefNo = $latestRecord->emp_number;
+    //         //     $latestRefNo++;
+    //         //     $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+    //         // } else {
+
+    //         //     $request['emp_number'] =  $business_id . '000';
+    //         // }
+
+
+    //         if ($request->input('id_proof_number')) {
+    //             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+    //         }
+    //         if ($request->input('border_no')) {
+    //             $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
+    //         }
+
+
+
+    //         if ($existingprofnumber || $existingBordernumber) {
+
+    //             if ($existingprofnumber != null) {
+    //                 $output = [
+    //                     'success' => 0,
+    //                     'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+    //                 ];
+    //             } else {
+    //                 $output = [
+    //                     'success' => 0,
+    //                     'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
+    //                 ];
+    //             }
+    //         } else {
+    //             $user = $this->moduleUtil->createUser($request);
+    //             event(new UserCreatedOrModified($user, 'added'));
+
+    //             $output = [
+    //                 'success' => 1,
+    //                 'msg' => __('user.user_added'),
+    //             ];
+    //         }
+    //     } catch (\Exception $e) {
+    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    //         $output = [
+    //             'success' => 0,
+    //             'msg' => __('messages.something_went_wrong'),
+    //         ];
+    //     }
+
+    //     return redirect()->route('workers.index')->with('status', $output);
+    // }
 
     /**
      * Show the form for editing the specified resource.

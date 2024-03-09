@@ -228,14 +228,14 @@ class ToDoController extends Controller
             if (!$is_admin) {
                 $userIds = [];
                 $userIds = $this->moduleUtil->applyAccessRole();
-                  $userIds[]= auth()->user()->id;
+                $userIds[] = auth()->user()->id;
             }
-            $users=User::whereIn('id',$userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            $users = User::whereIn('id', $userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         }
 
 
-     
+
         return view('essentials::todo.index')->with(compact('users', 'task_statuses', 'priorities'));
     }
 
@@ -344,10 +344,9 @@ class ToDoController extends Controller
             if (!$is_admin) {
                 $userIds = [];
                 $userIds = $this->moduleUtil->applyAccessRole();
-                  $userIds[]= auth()->user()->id;
-              
+                $userIds[] = auth()->user()->id;
             }
-            $users=User::whereIn('id',$userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            $users = User::whereIn('id', $userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         }
 
@@ -450,9 +449,9 @@ class ToDoController extends Controller
             if (!$is_admin) {
                 $userIds = [];
                 $userIds = $this->moduleUtil->applyAccessRole();
-                  $userIds[]= auth()->user()->id;
+                $userIds[] = auth()->user()->id;
             }
-            $users=User::whereIn('id',$userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            $users = User::whereIn('id', $userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         }
 

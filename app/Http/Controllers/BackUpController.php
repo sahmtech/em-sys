@@ -92,9 +92,10 @@ class BackUpController extends Controller
                 'msg' => __('lang_v1.success'),
             ];
         } catch (Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 

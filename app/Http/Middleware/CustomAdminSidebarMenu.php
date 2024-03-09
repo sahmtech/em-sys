@@ -29,17 +29,19 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
         $currentPath = $request->path();
-
-
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles', 'get-all-users'])) {
             $this->userManagementMenu();
+        } elseif (Str::startsWith($currentPath, ['my_notifications'])) {
+            $this->myNotifications();
         } elseif (Str::startsWith($currentPath, ['work_cards'])) {
             $this->workCardsMenu();
         } elseif (Str::startsWith($currentPath, ['medicalInsurance'])) {
             $this->medicalInsuranceMenu();
         } elseif (Str::startsWith($currentPath, ['employee_affairs'])) {
             $this->employeeAffairsMenu();
+        } elseif (Str::startsWith($currentPath, ['payrolls'])) {
+            $this->payrollsMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
@@ -125,6 +127,12 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_IR');
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
+    }
+    public function myNotifications()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+        });
     }
     public function toDoMenu()
     {
@@ -276,7 +284,7 @@ class CustomAdminSidebarMenu
                 action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index']),
                 '<i class="fas fa-users-cog"></i> ' . __('generalmanagement::lang.GeneralManagement'),
                 [
-                    'active' => request()->segment(1) == 'generalmanagement',
+                    'active' => request()->segment(1) == 'generalmanagement' && request()->segment(2) == 'dashboard',
                     // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ],
             );
@@ -288,6 +296,39 @@ class CustomAdminSidebarMenu
                     ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
                     __('generalmanagement::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
+                );
+            }
+            if ($is_admin   || auth()->user()->can('generalmanagement.view_notifications') || auth()->user()->can('generalmanagement.send_notifications')) {
+
+
+
+
+                $menu->dropdown(
+                    __('generalmanagement::lang.notifications'),
+                    function ($sub)  use ($is_admin) {
+                        if ($is_admin || auth()->user()->can('generalmanagement.view_notifications')) {
+                            $sub->url(
+                                route('notifications.index'),
+                                __('generalmanagement::lang.view_notifications'),
+                                ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'index']
+                            );
+                        }
+                        if ($is_admin ||  auth()->user()->can('generalmanagement.send_notifications')) {
+                            $sub->url(
+                                route('notifications.create'),
+                                __('generalmanagement::lang.send_notifications'),
+                                ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'create']
+                            );
+                        }
+                        if ($is_admin ||  auth()->user()->can('generalmanagement.edit_notification_settings')) {
+                            $sub->url(
+                                route('notifications.settings'),
+                                __('generalmanagement::lang.notification_settings'),
+                                ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'settings']
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-envelope',]
                 );
             }
         });
@@ -960,6 +1001,32 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
+
+
+                $menu->url(
+
+                    route('connect_camera'),
+                    __('essentials::lang.connect_camera'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'connect_camera'],
+                );
+            }
+        });
+    }
+    public function payrollsMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
+                $menu->url(
+                    route('payrolls.index'),
+                    __('essentials::lang.payroll'),
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
+                );
             }
         });
     }
@@ -1106,13 +1173,13 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-                    __('essentials::lang.payroll'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
-                );
-            }
+            // if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
+            //     $menu->url(
+            //         action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
+            //         __('essentials::lang.payroll'),
+            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
+            //     );
+            // }
 
             // if ($is_admin ) {
             //     $menu->url(
@@ -1825,20 +1892,11 @@ class CustomAdminSidebarMenu
             //$menu->header("");
 
 
-            if ($is_admin || auth()->user()->can('internationalrelations.view_orders_operations')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_operation_orders')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'index']),
                     __('internationalrelations::lang.order_request'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'order_request'],
-                );
-            }
-
-
-            if ($is_admin || auth()->user()->can('internationalrelations.view_employment_companies')) {
-                $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
-                    __('internationalrelations::lang.EmploymentCompanies'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
                 );
             }
 
@@ -1883,13 +1941,31 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'visa_cards'],
                 );
             }
-            if ($is_admin || auth()->user()->can('internationalrelations.view_Airlines')) {
-                $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
-                    __('internationalrelations::lang.Airlines'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
+
+
+            if (
+                $is_admin || auth()->user()->can('internationalrelations.international_reports')
+            ) {
+                $menu->dropdown(
+                    __('internationalrelations::lang.reports'),
+                    function ($sub) {
+                        if (auth()->user()->can('internationalrelations::lang.view_visa_reports')) {
+                            $sub->url(
+                                action([\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'getVisaReport']),
+                                __('internationalrelations::lang.visa_reports'),
+                                [
+
+                                    'active' => request()->segment(1) == 'internationalrelations' && request()->segment(2) == 'visa_reports'
+                                ]
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-plus-circle',]
                 );
             }
+
+
+
             if ($is_admin || auth()->user()->can('internationalrelations.view_ir_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
@@ -1898,6 +1974,15 @@ class CustomAdminSidebarMenu
                         (request()->segment(2) == 'allIrRequests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
+            if ($is_admin || auth()->user()->can('internationalrelations.travel_categories')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index']),
+                    __('internationalrelations::lang.travel_categories'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' &&
+                        request()->segment(2) == 'travel_categories']
+                );
+            }
+
             if ($is_admin || auth()->user()->can('internationalrelations.crud_all_reports')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
@@ -1913,6 +1998,20 @@ class CustomAdminSidebarMenu
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'IrsalaryRequests'
                     ]
+                );
+            }
+            if ($is_admin || auth()->user()->can('internationalrelations.view_employment_companies')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
+                    __('internationalrelations::lang.EmploymentCompanies'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
+                );
+            }
+            if ($is_admin || auth()->user()->can('internationalrelations.view_Airlines')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
+                    __('internationalrelations::lang.Airlines'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 );
             }
         });

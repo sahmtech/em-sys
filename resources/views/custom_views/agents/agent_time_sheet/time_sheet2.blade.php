@@ -1,16 +1,22 @@
 @extends('layouts.app')
 
 @php
-    $action_url = action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'store']);
-    $title = __('essentials::lang.add_payroll');
-    $subtitle = __('essentials::lang.add_payroll');
-    $submit_btn_text = __('messages.save');
-    $group_name = __('essentials::lang.payroll_for_month', ['date' => $month_name . ' ' . $year]);
+    $action_url = '';
+    $title = '';
+    $subtitle = '';
+    $submit_btn_text = '';
+    $group_name = '';
     if ($action == 'edit') {
         $action_url = action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'getUpdatePayrollGroup']);
         $title = __('essentials::lang.edit_payroll');
         $subtitle = __('essentials::lang.edit_payroll');
         $submit_btn_text = __('messages.update');
+    } else {
+        $action_url = route('agentTimeSheet.submitTmeSheet');
+        $title = __('essentials::lang.add_payroll');
+        $subtitle = __('essentials::lang.add_payroll');
+        $submit_btn_text = __('messages.save');
+        $group_name = __('essentials::lang.payroll_for_month', ['date' => $month_name . ' ' . $year]);
     }
 @endphp
 
@@ -20,7 +26,7 @@
 
     <!-- Content Header (Page header) -->
     {!! Form::open([
-        'url' => route('agentTimeSheet.submitTmeSheet'),
+        'url' => $action_url,
         'method' => 'post',
         'id' => 'add_payroll_form',
     ]) !!}

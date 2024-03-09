@@ -11,6 +11,7 @@ use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use DB;
 use App\BusinessLocation;
+use App\User;
 use Illuminate\Support\Facades\Session;
 
 class ReportController extends Controller
@@ -42,7 +43,7 @@ class ReportController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -74,7 +75,7 @@ class ReportController extends Controller
     public function trialBalance()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -115,7 +116,7 @@ class ReportController extends Controller
     public function balanceSheet()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -203,7 +204,7 @@ class ReportController extends Controller
     public function accountReceivableAgeingReport()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -220,7 +221,7 @@ class ReportController extends Controller
     public function accountPayableAgeingReport()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
         $location_id = request()->input('location_id', null);
         $report_details = $this->accountingUtil->getAgeingReport($business_id, 'purchase', $company_id, 'contact', $location_id);

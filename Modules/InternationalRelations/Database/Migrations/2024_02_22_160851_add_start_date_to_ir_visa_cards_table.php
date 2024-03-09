@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_leave_types', function (Blueprint $table) {
-            $table->dropColumn('leave_type');
-         
-
+        Schema::table('ir_visa_cards', function (Blueprint $table) {
+            $table->date('start_date')->nullable()->after('transaction_sell_line_id');
         });
     }
 
@@ -27,5 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('ir_visa_cards', function (Blueprint $table) {
+        });
     }
 };

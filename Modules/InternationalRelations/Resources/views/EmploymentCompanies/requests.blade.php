@@ -55,6 +55,7 @@
                     <th>{{ __('internationalrelations::lang.agency_name') }}</th>   
                     <th>{{ __('internationalrelations::lang.target_quantity') }}</th>
                     <th>{{ __('internationalrelations::lang.currently_proposed_labors_quantity') }}</th>
+                    <th>{{ __('internationalrelations::lang.company_request_start_date') }}</th>
                     <th>{{ __('sales::lang.profession_name') }}</th>
                     <th>{{ __('sales::lang.specialization_name') }}</th>
                     <th>{{ __('sales::lang.gender') }}</th>
@@ -104,6 +105,7 @@
                     { "data": "agency_name" },
                     { "data": "target_quantity" },
                     { "data": "currently_proposed_labors_quantity" },
+                    { "data": "start_date" },
                     { "data": "profession_name" },
                     { "data": "specialization_name" },
                     { "data": "gender" },

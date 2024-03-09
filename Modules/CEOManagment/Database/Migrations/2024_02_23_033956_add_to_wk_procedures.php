@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_leave_types', function (Blueprint $table) {
-            $table->string('leave_type')->nullable()->after('id'); 
+        Schema::table('wk_procedures', function (Blueprint $table) {
+            $table->enum('action_type', ['accept_reject', 'task'])->after('next_department_id')->nullable();
         });
     }
 
@@ -26,7 +26,6 @@ return new class extends Migration
     public function down()
     {
         Schema::table('', function (Blueprint $table) {
-
         });
     }
 };

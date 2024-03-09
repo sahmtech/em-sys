@@ -6,12 +6,12 @@
 </div>
 
 <div class="col-md-6">
-    @if($user->user_type != 'worker')
-    <p><strong>@lang('essentials::lang.department'):</strong> {{ $user_department->name ?? '' }}</p>
-@endif
+    @if ($user->user_type != 'worker')
+        <p><strong>@lang('essentials::lang.department'):</strong> {{ $user_department->name ?? '' }}</p>
+    @endif
 
     <p><strong>@lang('essentials::lang.profession'):</strong> {{ $user->profession ?? '' }}</p>
-  
+
 
 </div>
 
@@ -36,7 +36,7 @@
             @endif
         @endif
     </p>
-
+    <p><strong>@lang('essentials::lang.max_anuual_leave_days'):</strong> {{ $user->max_anuual_leave_days ?? '' }} @lang('essentials::lang.day')</p>
     <p><strong>@lang('lang_v1.primary_work_location'):</strong>
         @if (!empty($work_location))
             {{ $work_location->name }}

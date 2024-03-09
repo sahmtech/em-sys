@@ -18,7 +18,7 @@
                         <div class="col-sm-4">
                             {!! Form::label('worker', __('followup::lang.worker')) !!}
 
-                            <select class="form-control" name="worker_filtter" id='worker_filtter' style="padding: 2px;">
+                            <select class="form-control" name="worker_filtter" id='worker_filtter' >
                                 <option value="all" selected>@lang('lang_v1.all')</option>
                                 @foreach ($workers as $worker)
                                     <option value="{{ $worker->id }}">
@@ -32,7 +32,7 @@
                         <div class="col-sm-4" style="margin-top: 0px;">
                             {!! Form::label('documents', __('followup::lang.documents')) !!}
 
-                            <select class="form-control" name="documents_filtter" id='documents_filtter' style="padding: 2px;">
+                            <select class="form-control" name="documents_filtter" id='documents_filtter' >
                                 <option value="all" selected>@lang('lang_v1.all')</option>
                                 @foreach ($documents as $document)
                                     <option value="{{ $document->id }}">
@@ -65,6 +65,7 @@
 
                                         <th>@lang('followup::lang.worker')</th>
                                         <th>@lang('followup::lang.documents')</th>
+                                        <th>@lang('followup::lang.title')</th>
                                         <th>@lang('followup::lang.nots')</th>
                                         <th>@lang('messages.action')</th>
                                     </tr>
@@ -128,6 +129,9 @@
                     },
                     {
                         "data": "doc_name"
+                    },
+                     {
+                        "data": "title"
                     },
                     {
                         "data": "nots"

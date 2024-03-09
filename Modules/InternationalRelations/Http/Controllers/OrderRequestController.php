@@ -107,7 +107,7 @@ class OrderRequestController extends Controller
                             $html .= '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'viewDelegation'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('internationalrelations::lang.viewDelegation') . '</a>&nbsp;';
                         }
                     }
-                    
+
                     if ($row->has_visa != 1) {
                         if ($is_admin || $can_add_operation_order_visa) {
                             $html .= '<button data-id="' . $row->id . '" class="btn btn-xs btn-info btn-add-visa" data-toggle="modal" data-target="#addVisaModal">
@@ -182,9 +182,11 @@ class OrderRequestController extends Controller
         if (!($is_admin || $can_view_delegation_info)) {
             //temp  abort(403, 'Unauthorized action.');
         }
+
         $operation = SalesOrdersOperation::with('salesContract.transaction')
             ->where('id', $id)
             ->first();
+
         $business_id = request()->session()->get('user.business_id');
         $query = Transaction::where('business_id', $business_id)
             ->where('id', $operation->salesContract->transaction->id)
@@ -197,6 +199,8 @@ class OrderRequestController extends Controller
 
         return view('internationalrelations::orderRequest.viewDelegation')->with(compact('irDelegations'));
     }
+
+
     public function saveRequest(Request $request)
     {
 
@@ -206,6 +210,7 @@ class OrderRequestController extends Controller
 
             $order_id = isset($request->order_id) ? $request->order_id : null;
             $order = SalesOrdersOperation::find($order_id);
+            $today = \Carbon::now()->format('Y-m-d H:i:s');
 
             if (!$order) {
                 return response()->json(['success' => false, 'message' => __('lang_v1.order_not_found')]);
@@ -264,6 +269,7 @@ class OrderRequestController extends Controller
                             'agency_id' => $item['agency_name'],
                             'targeted_quantity' => $item['target_quantity'],
                             'validationFile' => $filePath ?? null,
+                            'start_date' => $today
                         ]);
 
                         TransactionSellLine::where('id', $sellLine->id)->update([
@@ -281,6 +287,7 @@ class OrderRequestController extends Controller
             //     'success' => true,
             //     'msg' => __('lang_v1.added_success'),
             // ];
+
             return response()->json(['success' => true, 'message' =>  __('lang_v1.saved_successfully')]);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

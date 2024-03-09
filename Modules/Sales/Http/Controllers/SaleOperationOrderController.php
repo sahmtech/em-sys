@@ -40,8 +40,13 @@ class SaleOperationOrderController extends Controller
      * @param  Util  $commonUtil
      * @return void
      */
-    public function __construct(Util $commonUtil,  ModuleUtil $moduleUtil, TransactionUtil $transactionUtil,  NotificationUtil $notificationUtil,
-        ContactUtil $contactUtil) {
+    public function __construct(
+        Util $commonUtil,
+        ModuleUtil $moduleUtil,
+        TransactionUtil $transactionUtil,
+        NotificationUtil $notificationUtil,
+        ContactUtil $contactUtil
+    ) {
         $this->commonUtil = $commonUtil;
         $this->contactUtil = $contactUtil;
         $this->moduleUtil = $moduleUtil;
@@ -102,15 +107,15 @@ class SaleOperationOrderController extends Controller
                     return __('sales::lang.' . $row->Status);
                 })
 
-                ->addColumn('show_operation', function ($row) use ($is_admin,$can_show_sale_operation_order) {
+                ->addColumn('show_operation', function ($row) use ($is_admin, $can_show_sale_operation_order) {
 
                     $html = '';
                     if ($is_admin  || $can_show_sale_operation_order) {
-                    $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
-                     }
-                      return $html;
+                        $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
+                    }
+                    return $html;
                 })
-          
+
                 ->rawColumns(['show_operation', 'action'])
                 ->removeColumn('id')
                 ->make(true);
@@ -122,7 +127,7 @@ class SaleOperationOrderController extends Controller
             'not_started' => __('sales::lang.not_started'),
 
         ];
-        $leads = Contact::where('type','converted')->pluck('supplier_business_name', 'id');
+        $leads = Contact::where('type', 'converted')->pluck('supplier_business_name', 'id');
 
         $agencies = Contact::where('type', 'agency')
             ->where('business_id', $business_id)
@@ -139,14 +144,14 @@ class SaleOperationOrderController extends Controller
 
     public function getContracts(Request $request)
     {
-       
+
         $customerId = $request->input('customer_id');
         $business_id = $request->session()->get('user.business_id');
 
         $offer_prices = Transaction::where('contact_id', $customerId)
             ->where('business_id', $business_id)
             ->pluck('id');
-        
+
         $contracts = [];
         foreach ($offer_prices as $key) {
             $contractIds = salesContract::where('offer_price_id', $key)
@@ -158,10 +163,9 @@ class SaleOperationOrderController extends Controller
             $totalQuantity = 0;
             foreach ($contractIds as $contract) {
                 $contractQuantity = TransactionSellLine::where('transaction_id', $key)->sum('quantity');
-                
+
                 $salesOrdersQuantity = SalesOrdersOperation::where('sale_contract_id', $contract['id'])->sum('orderQuantity');
                 $totalQuantity += ($contractQuantity - $salesOrdersQuantity);
-        
             }
             if ($totalQuantity > 0) {
                 $contracts = array_merge($contracts, $contractIds);
@@ -222,7 +226,7 @@ class SaleOperationOrderController extends Controller
 
             DB::transaction(function () use ($request) {
                 $operation_order = [
-                 'sale_contract_id', 'operation_order_type', 'quantity',
+                    'sale_contract_id', 'operation_order_type', 'quantity',
                     'Interview', 'Location', 'Delivery', 'Note', 'Industry'
                 ];
                 $operation_details = $request->only($operation_order);
@@ -240,7 +244,7 @@ class SaleOperationOrderController extends Controller
 
                 $operation_details['orderQuantity'] = $request->input('quantity');
                 $operation_details['contact_id'] = $request->input('contact_id');
-              
+
 
 
                 $operation = SalesOrdersOperation::create($operation_details);
@@ -253,10 +257,9 @@ class SaleOperationOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -275,7 +278,7 @@ class SaleOperationOrderController extends Controller
     public function show($id)
     {
         try {
-            $operations = SalesOrdersOperation::with('contact','salesContract.transaction.sell_lines.service')
+            $operations = SalesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
                 ->where('id', $id)
                 ->first();
 
@@ -285,20 +288,17 @@ class SaleOperationOrderController extends Controller
 
             return view('sales::operation_order.show')
                 ->with(compact('operations', 'sell_lines'));
-          
-   
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
     }
 
-  
+
     /**
      * Show the form for editing the specified resource.
      * @param int $id
@@ -365,10 +365,9 @@ class SaleOperationOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
         return $output;

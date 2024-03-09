@@ -12,22 +12,21 @@
             ]) !!}
         </div>
     </div>
-   
+
 
 
     <div class="col-md-3">
         <div class="form-group">
             {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
-            {!! Form::select('profession',$job_titles, !empty($user->profession_id) ? $user->profession_id : null, [
+            {!! Form::select('profession', $job_titles, !empty($user->profession_id) ? $user->profession_id : null, [
                 'class' => 'form-control select2',
                 'required',
                 'style' => 'height:40px',
                 'placeholder' => __('sales::lang.profession'),
-          
             ]) !!}
         </div>
     </div>
- 
+
 </div>
 
 
@@ -115,14 +114,13 @@
     </div>
 
 
-    <div class="col-md-3">
-        <div class="form-group">
-            {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
-            {!! Form::file('contract_file', [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-            ]) !!}
-        </div>
+    <div class="clearfix"></div>
+    <br>
+    <div class="form-group col-md-3">
+        <button type="button" class="btn btn-success align-self-center contract_attachements_btn"
+            id="ContractFileLink">
+            {{ __('essentials::lang.contract_file') }}
+        </button>
 
     </div>
 
@@ -258,7 +256,7 @@
                 @endisset
             </select>
         </div>
-    
+
         <div class="form-group col-md-3" id="category_input" style="display: none;">
             {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
             {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, [
@@ -276,6 +274,19 @@
             ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
             $user->has_insurance ?? null,
             ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.health_insurance')],
+        ) !!}
+    </div>
+    <div class="form-group col-md-3">
+        {!! Form::label('max_anuual_leave_days', __('essentials::lang.max_anuual_leave_days') . ':') !!}
+        {!! Form::select(
+            'max_anuual_leave_days',
+            ['31' => __('essentials::lang.31_days'), '21' => __('essentials::lang.21_days')],
+            $user->max_anuual_leave_days ?? null,
+            [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('essentials::lang.max_anuual_leave_days'),
+            ],
         ) !!}
     </div>
 </div>
@@ -320,7 +331,7 @@
 
 <script>
     $(document).ready(function() {
-        
+
         $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function() {
             updateContractEndDate();
         });
@@ -413,7 +424,7 @@
 
 <script>
     $(document).ready(function() {
-        
+
         function calculateTotalSalary() {
             var essentialsSalary = parseFloat($('#essentials_salary').val()) || 0;
             var totalAllowance = 0;
@@ -438,7 +449,7 @@
 
 
         var selectedData = [];
-        
+
         $('#salary-table-body').on('click', '.remove-row', function() {
             $(this).closest('tr').remove();
         });
@@ -506,28 +517,27 @@
     });
 </script>
 <script>
-   
-
     $(document).ready(function() {
-     
+
         toggleCategoryInput();
 
-    
+
         $('#can_add_category').change(function() {
             toggleCategoryInput();
         });
+
         function toggleCategoryInput() {
             console.log('11111111111111');
-        var selectedOption = $('#can_add_category').val();
-        console.log(selectedOption);
-        if (selectedOption === '1') {
-            $('#category_input').show();
-            @isset($user_travel)
-                $('#travel_ticket_categorie').val('{{ $user_travel->categorie_id }}');
-            @endisset
-        } else {
-            $('#category_input').hide();
+            var selectedOption = $('#can_add_category').val();
+            console.log(selectedOption);
+            if (selectedOption === '1') {
+                $('#category_input').show();
+                @isset($user_travel)
+                    $('#travel_ticket_categorie').val('{{ $user_travel->categorie_id }}');
+                @endisset
+            } else {
+                $('#category_input').hide();
+            }
         }
-    }
     });
 </script>

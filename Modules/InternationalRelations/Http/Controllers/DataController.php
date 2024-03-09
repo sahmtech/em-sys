@@ -77,6 +77,22 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.show_employment_company_profile'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'internationalrelations.change_arrival_date',
+                        'label' => __('internationalrelations::lang.change_arrival_date'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.international_reports',
+                        'label' => __('internationalrelations::lang.international_reports'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.view_visa_reports',
+                        'label' => __('internationalrelations::lang.view_visa_reports'),
+                        'default' => false,
+                    ],
+
 
                     [
                         'value' => 'internationalrelations.view_employment_company_delegation_requests',
@@ -243,7 +259,16 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
+                    [
+                        'value' => 'internationalrelations.view_travel_categorie_requests',
+                        'label' => __('internationalrelations::lang.view_travel_categorie_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.book_visa',
+                        'label' => __('internationalrelations::lang.book_visa'),
+                        'default' => false,
+                    ],
 
 
 

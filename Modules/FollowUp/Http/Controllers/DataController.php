@@ -192,6 +192,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'followup.create_worker',
+                        'label' => __('followup::lang.create_worker'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'followup.crud_contact_locations',
                         'label' => __('followup::lang.crud_contact_locations'),
                         'default' => false,

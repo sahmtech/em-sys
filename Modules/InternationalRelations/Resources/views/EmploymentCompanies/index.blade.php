@@ -166,7 +166,7 @@
                                             'style' => 'width: 230px; height: 40px;',
                                             'class' => 'form-control select2',
                                             'placeholder' => __('internationalrelations::lang.nationality'),
-                                            'required',
+                                          
                                         ]) !!}
                                     </div>
                                 </div>
@@ -304,7 +304,9 @@
                 { data: 'email', name: 'email' },
                 { data: 'comp_evaluation', name: 'comp_evaluation' },
                 { data: 'action', name: 'action' },
-            ]
+            ],
+
+           
         });
 
         
@@ -338,9 +340,9 @@
            $('#editEmpCompanyModal select[name="nationalities[]"]').val(JSON.parse(data.employment_companies.multi_nationalities)).trigger('change');
            $('#editEmpCompanyModal select[name="country"]').val(data.employment_companies.country).trigger('change');
           
-        $('#editEmpCompanyModal select[name="evaluation"]').val(data.employment_companies.evaluation).trigger('change');
+           $('#editEmpCompanyModal select[name="evaluation"]').val(data.employment_companies.evaluation).trigger('change');
                    
-            $('#editEmpCompanyModal').modal('show');
+           $('#editEmpCompanyModal').modal('show');
         },
 
         error: function(error) {
@@ -348,36 +350,36 @@
         }
     });
 
-     $('body').on('submit', '#editEmpCompanyModal form', function (e) {
-            e.preventDefault();
+ $('body').on('submit', '#editEmpCompanyModal form', function (e) {
+    e.preventDefault();
 
-            var empCompanyId = $('#empCompanyIdInput').val();
+    var empCompanyId = $('#empCompanyIdInput').val();
 
-            var urlWithId = '{{ route("update.EmploymentCompanies", ":empCompanyId") }}';
-            urlWithId = urlWithId.replace(':empCompanyId', empCompanyId);
+    var urlWithId = '{{ route("update.EmploymentCompanies", ":empCompanyId") }}';
+    urlWithId = urlWithId.replace(':empCompanyId', empCompanyId);
 
-            $.ajax({
-                url: urlWithId,
-                type: 'POST',
-                data: new FormData(this),
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    if (response.success) {
-                        company_table.ajax.reload();
-                        toastr.success(response.msg);
-                        $('#editEmpCompanyModal').modal('hide');
-                    } else {
-                        toastr.error(response.msg);
-                    }
-                },
-                error: function (error) {
-                    console.error('Error submitting form:', error);
-                    toastr.error('An error occurred while submitting the form.', 'Error');
-                },
-            });
-        });
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            if (response.success) {
+                toastr.success(response.msg);
+                // Reload the page
+                location.reload();
+            } else {
+                toastr.error(response.msg);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
 });
+    });
  });
 </script>
 

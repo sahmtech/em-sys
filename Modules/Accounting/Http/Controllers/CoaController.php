@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -41,7 +42,7 @@ class CoaController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -129,7 +130,8 @@ class CoaController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+
+         $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -148,7 +150,8 @@ class CoaController extends Controller
     {
         //check no accounts
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -173,7 +176,8 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
 
         if (request()->ajax()) {
@@ -226,7 +230,8 @@ class CoaController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $company_id = Session::get('selectedCompanyId');
+             $company_id = Session::get('selectedCompanyId');
+
 
             $account_primary_type = request()->input('account_primary_type');
             $sub_types_obj = AccountingAccountType::where('account_primary_type', $account_primary_type)
@@ -269,7 +274,8 @@ class CoaController extends Controller
     public function store_old(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -339,7 +345,8 @@ class CoaController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
 
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
         try {
             DB::beginTransaction();
@@ -418,7 +425,8 @@ class CoaController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -476,7 +484,8 @@ class CoaController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
 
         try {
@@ -515,7 +524,8 @@ class CoaController extends Controller
     public function activateDeactivate($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -545,7 +555,8 @@ class CoaController extends Controller
     public function ledger($account_id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+         $company_id = Session::get('selectedCompanyId');
+
 
 
 
@@ -675,16 +686,7 @@ class CoaController extends Controller
 
     public function importe_accounts(Request $request)
     {
-        // $existingContent = File::getRequire(base_path() . '\Modules\Accounting\Resources\lang\ar\lang.php');
-        // $newContent ="'account_name_en' => 'اسم الحساب amen الانكليزية'";
-        // $combinedContent = $existingContent . $newContent;
-        // file_put_contents($existingContent, $combinedContent);
 
-
-
-        // // return $a = File::getRequire(base_path() . '\Modules\Accounting\Resources\lang\ar\lang.php');
-        // // $a[0] = "'account_name_en' => 'اسم الحساب amen الانكليزية'";
-        // return $existingContent;
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_import_accountss = auth()->user()->can('accouning.import_accounts');
@@ -696,61 +698,62 @@ class CoaController extends Controller
             ]);
         }
 
-        // try {
-        $company_id = Session::get('selectedCompanyId');
+        try {
+             $company_id = Session::get('selectedCompanyId');
 
-        if ($request->hasFile('accounts_csv')) {
-            $file = $request->file('accounts_csv');
-            $parsed_array = Excel::toArray([], $file);
-            $accounts_csv = array_splice($parsed_array[0], 1);
-            DB::beginTransaction();
-            foreach ($accounts_csv as  $value) {
 
-                $business_id = request()->session()->get('user.business_id');
-                $company_id = Session::get('selectedCompanyId');
-                $user_id = request()->session()->get('user.id');
+            if ($request->hasFile('accounts_csv')) {
+                $file = $request->file('accounts_csv');
+                $parsed_array = Excel::toArray([], $file);
+                $accounts_csv = array_splice($parsed_array[0], 1);
+                DB::beginTransaction();
+                foreach ($accounts_csv as  $value) {
 
-                if (!$value[0] || !$value[1] || !$value[2]  || !$value[3] || !$value[4]) {
-                    continue;
-                } else {
-                    $accountingAccountType = AccountingAccountType::where('name', $value[4])->first();
-                    if (!$accountingAccountType || AccountingAccount::where('gl_code', $value[3])->first()) {
+                    $business_id = request()->session()->get('user.business_id');
+                     $company_id = Session::get('selectedCompanyId');
+
+                    $user_id = request()->session()->get('user.id');
+
+                    if (!$value[0] || !$value[1] || !$value[2]  || !$value[3] || !$value[4]) {
                         continue;
                     } else {
+                        $accountingAccountType = AccountingAccountType::where('name', $value[4])->first();
+                        if (!$accountingAccountType || AccountingAccount::where('gl_code', $value[3])->where('company_id', $company_id)->first()) {
+                            continue;
+                        } else {
 
-                        AccountingAccount::create([
-                            'name' => $value[0],
-                            'business_id' => $business_id,
-                            'company_id' => $company_id,
-                            'account_primary_type' => $value[2],
-                            'account_sub_type_id' => $accountingAccountType->id,
-                            'detail_type_id' =>  $accountingAccountType->account_type == 'sub_type' ? null : AccountingAccountType::find($accountingAccountType->parent_id)->id,
-                            'gl_code' => $value[3],
-                            'status' => 'active',
-                            'created_by' => $user_id,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
+                            AccountingAccount::create([
+                                'name' => $value[0],
+                                'business_id' => $business_id,
+                                'company_id' => $company_id,
+                                'account_primary_type' => $value[2],
+                                'account_sub_type_id' => $accountingAccountType->id,
+                                'detail_type_id' =>  $accountingAccountType->account_type == 'sub_type' ? null : AccountingAccountType::find($accountingAccountType->parent_id)->id,
+                                'gl_code' => $value[3],
+                                'status' => 'active',
+                                'created_by' => $user_id,
+                                'created_at' => Carbon::now(),
+                                'updated_at' => Carbon::now(),
+                            ]);
+                        }
                     }
                 }
             }
+            DB::commit();
+
+
+
+            return redirect()->back()
+                ->with('status', [
+                    'success' => 1,
+                    'msg' => __('lang_v1.added_success')
+                ]);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('status', [
+                    'success' => 0,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
-        DB::commit();
-
-
-
-        return redirect()->back()
-            ->with('status', [
-                'success' => 1,
-                'msg' => __('lang_v1.added_success')
-            ]);
-
-        // } catch (\Exception $e) {
-        //     return redirect()->back()
-        //         ->with('status', [
-        //             'success' => 0,
-        //             'msg' => __('messages.something_went_wrong'),
-        //         ]);
-        // }
     }
 }

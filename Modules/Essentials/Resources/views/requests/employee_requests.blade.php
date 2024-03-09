@@ -111,17 +111,16 @@
     <section class="content">
 
         @component('components.widget', ['class' => 'box-primary'])
-          
-                @slot('tool')
-                    <div class="box-tools">
+            @slot('tool')
+                <div class="box-tools">
 
-                        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                            data-target="#addRequestModal">
-                            <i class="fa fa-plus"></i> @lang('request.create_order')
-                        </button>
-                    </div>
-                @endslot
-          
+                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                        data-target="#addRequestModal">
+                        <i class="fa fa-plus"></i> @lang('request.create_order')
+                    </button>
+                </div>
+            @endslot
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -749,11 +748,10 @@
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
-                                // if (j === 0) {
-                                //     activity += '<p>' +
-                                //         '{{ __('request.created_department_name') }}' + ': ' +
-                                //         response.followup_processes[j].department.name + '</p>';
-                                // } else {
+                                activity += '<p>' +
+                                    '{{ __('request.created_department_name') }}' +
+                                    ': ' +
+                                    response.request_info.started_depatment.name + '</p>';
 
                                 activity += '<p>' +
                                     '{{ __('request.department_name') }}' + ': ' +
@@ -1008,6 +1006,32 @@
             });
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            $(document).on('change', '.task-checkbox', function() {
+                var taskId = $(this).data('task-id');
 
+                var isChecked = $(this).is(':checked') ? 1 : 0;
+
+                $.ajax({
+                    url: '/update-task-status',
+                    method: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        taskId: taskId,
+                        isDone: isChecked
+                    },
+                    success: function(response) {
+                        window.location.reload();
+
+                        console.log('Task status updated successfully.');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to update task status.');
+                    }
+                });
+            });
+        });
+    </script>
 
 @endsection

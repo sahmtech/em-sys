@@ -11,15 +11,18 @@
 |
 */
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
-    Route::prefix('generalmanagement')->group(function() {
+    Route::prefix('generalmanagement')->group(function () {
         Route::get('/', 'GeneralManagementController@index');
         Route::get('/dashboard', [Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])->name('GeneralManagement.dashboard');
-   
-        //requests
+        Route::prefix('notifications')->group(function () {
+            Route::get('/index', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+            Route::get('/create', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'create'])->name('notifications.create');
+            Route::post('/store', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'storeAndSend'])->name('notifications.send');
+            Route::get('/settings', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'settings'])->name('notifications.settings');
+        });
         Route::get('/president_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index'])->name('president_requests');
         Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');
-        Route::post('/change-status', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeStatus'])->name('generalmanagement.changeStatus');
+        Route::post('/changeEscalationStatus', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('generalmanagement.changeEscalationStatus');
         Route::get('/viewGmRequest/{requestId}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewGmRequest');
-   
     });
 });

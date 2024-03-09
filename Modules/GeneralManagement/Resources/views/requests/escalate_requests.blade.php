@@ -119,7 +119,6 @@
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.eqama_number')</th>
-                            {{-- <th>@lang('request.project_name')</th> --}}
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
                             <th>@lang('request.status')</th>
@@ -198,34 +197,8 @@
             </div>
         </div>
 
-        {{-- return request --}}
-        <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="returnModalLabel">@lang('request.return_the_request')</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="returnModalForm">
-                            <div class="form-group">
-                                <label for="reasonInput">@lang('request.reason')</label>
-                                <input type="text" class="form-control" id="reasonInput" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">@lang('request.update')</button>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('request.close')</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        @include('request.change_request_status')
+        @include('generalmanagement::requests.change_escalation_status')
 
     </section>
     <!-- /.content -->
@@ -264,7 +237,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                   
+
                     {
                         data: 'request_type_id',
                         render: function(data, type, row) {
@@ -319,7 +292,7 @@
                         data: 'note'
                     },
                     {
-                   
+
                         render: function(data, type, row) {
                             var buttonsHtml = '';
 
@@ -371,39 +344,7 @@
                     },
                 });
             });
-            $('#requests_table').on('click', '.btn-return', function() {
-                var requestId = $(this).data('request-id');
-                $('#returnModal').modal('show');
-                $('#returnModal').data('id', requestId);
-            });
 
-
-            $('#returnModalForm').submit(function(e) {
-                e.preventDefault();
-
-                var requestId = $('#returnModal').data('id');
-                var reason = $('#reasonInput').val();
-
-                $.ajax({
-                    url: "{{ route('returnRequest') }}",
-                    method: "POST",
-                    data: {
-                        requestId: requestId,
-                        reason: reason
-                    },
-                    success: function(result) {
-
-                        if (result.success == true) {
-                            $('#returnModal').modal('hide');
-                            toastr.success(result.msg);
-                            requests_table.ajax.reload();
-
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                });
-            });
 
 
             $(document).on('click', '.btn-view-request', function() {
@@ -414,8 +355,9 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'
+                            .replace(
+                                ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
                             console.log(response);
@@ -480,46 +422,44 @@
 
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
+                                activity += '<p>' +
+                                    '{{ __('request.created_department_name') }}' +
+                                    ': ' +
+                                    response.request_info.started_depatment.name + '</p>';
 
-                                // if (j === 0) {
-                                //     activity += '<p>' +
-                                //         '{{ __('essentials::lang.created_department_name') }}' + ': ' +
-                                //         response.followup_processes[j].department.name + '</p>';
-                                // } else {
-                                 
-                                    activity += '<p>' +
-                                        '{{ __('essentials::lang.department_name') }}' + ': ' +
-                                        response.followup_processes[j].department.name;
+                                activity += '<p>' +
+                                    '{{ __('essentials::lang.department_name') }}' + ': ' +
+                                    response.followup_processes[j].department.name;
 
-                                    activity +=
-                                        '<p class="{{ __('essentials::lang.status') }} ' +
-                                        response.followup_processes[j].status.toLowerCase() +
-                                        '">' +
-                                        '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
-                                        response.followup_processes[j].status + '</p>';
+                                activity +=
+                                    '<p class="{{ __('essentials::lang.status') }} ' +
+                                    response.followup_processes[j].status.toLowerCase() +
+                                    '">' +
+                                    '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
+                                    response.followup_processes[j].status + '</p>';
 
-                                    activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].reason) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .reason + '</strong>';
-                                    } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
-                                    }
-                                    activity += '<p>' + '{{ __('essentials::lang.note') }}' +
-                                        ': ';
-                                    if (response.followup_processes[j].status_note) {
-                                        activity += '<strong>' + response.followup_processes[j]
-                                            .status_note + '</strong>';
-                                    } else {
-                                        activity += '{{ __('essentials::lang.not_exist') }}';
-                                    }
-                                    activity += '</p>';
-                                    activity += '<p style="color: green;">' +
-                                        '{{ __('essentials::lang.updated_by') }}' + ': ' + (
-                                            response.followup_processes[j].updated_by ||
-                                            '{{ __('essentials::lang.not_exist') }}') + '</p>';
-                                
+                                activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].reason) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .reason + '</strong>';
+                                } else {
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
+                                }
+                                activity += '<p>' + '{{ __('essentials::lang.note') }}' +
+                                    ': ';
+                                if (response.followup_processes[j].status_note) {
+                                    activity += '<strong>' + response.followup_processes[j]
+                                        .status_note + '</strong>';
+                                } else {
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
+                                }
+                                activity += '</p>';
+                                activity += '<p style="color: green;">' +
+                                    '{{ __('essentials::lang.updated_by') }}' + ': ' + (
+                                        response.followup_processes[j].updated_by ||
+                                        '{{ __('essentials::lang.not_exist') }}') + '</p>';
+
 
                                 activity += '</li>';
                                 activitiesList.append(activity);

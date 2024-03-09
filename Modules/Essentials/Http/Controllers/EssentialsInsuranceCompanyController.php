@@ -37,7 +37,7 @@ class EssentialsInsuranceCompanyController extends Controller
         $can_edit_insurance_companies = auth()->user()->can('essentials.edit_insurance_companies');
         $can_delete_insurance_companies = auth()->user()->can('essentials.delete_insurance_companies');
 
- 
+
 
         $insuranceCompanies = Contact::where('contacts.type', 'insurance');
 
@@ -57,51 +57,50 @@ class EssentialsInsuranceCompanyController extends Controller
 
         $countries = EssentialsCountry::forDropdown();
         $cities = EssentialsCity::forDropdown();
-        $states=EssentialsRegion::forDropdown();
+        $states = EssentialsRegion::forDropdown();
         if (request()->ajax()) {
 
- 
 
-        return Datatables::of($insuranceCompanies)
-            ->editColumn('city', function ($row) use ($cities) {
-                $item = $cities[$row->city] ?? '';
-                return $item;
-            })
-            ->editColumn('country', function ($row) use ($countries) {
-                $item = $countries[$row->country] ?? '';
-                return $item;
-            })
-               
-            ->editColumn('state', function ($row) use ($states) {
-                $item = $states[$row->state] ?? '';
-                return $item;
-            })
-               
-            ->addColumn(
+
+            return Datatables::of($insuranceCompanies)
+                ->editColumn('city', function ($row) use ($cities) {
+                    $item = $cities[$row->city] ?? '';
+                    return $item;
+                })
+                ->editColumn('country', function ($row) use ($countries) {
+                    $item = $countries[$row->country] ?? '';
+                    return $item;
+                })
+
+                ->editColumn('state', function ($row) use ($states) {
+                    $item = $states[$row->state] ?? '';
+                    return $item;
+                })
+
+                ->addColumn(
                     'action',
-                    function ($row) use($is_admin , $can_delete_insurance_companies ) {
+                    function ($row) use ($is_admin, $can_delete_insurance_companies) {
                         $html = '';
                         //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
                         //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                       if($is_admin || $can_delete_insurance_companies)
-                       {
-                        $html .= '<button class="btn btn-xs btn-danger delete_insurance_company_button" data-href="' . route('insurance_companies.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                       }
-                       
+                        if ($is_admin || $can_delete_insurance_companies) {
+                            $html .= '<button class="btn btn-xs btn-danger delete_insurance_company_button" data-href="' . route('insurance_companies.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
                         return $html;
                     }
                 )
                 ->filterColumn('supplier_business_name', function ($query, $keyword) {
                     $query->where('supplier_business_name', "LIKE", "%{$keyword}%");
                 })
-              
+
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-     
+
         $companies = Company::all()->pluck('name', 'id');
-        return view('essentials::insurance_companies.index')->with(compact('countries','companies', 'cities','states'));
+        return view('essentials::insurance_companies.index')->with(compact('countries', 'companies', 'cities', 'states'));
     }
 
     /**
@@ -128,13 +127,15 @@ class EssentialsInsuranceCompanyController extends Controller
 
 
         try {
-            $input = $request->only([ 'insurance_company',
-             'city', 'state', 'country', 'address', 'tax_number', 'phone_number', 'mobile_number']);
-           
+            $input = $request->only([
+                'insurance_company',
+                'city', 'state', 'country', 'address', 'tax_number', 'phone_number', 'mobile_number'
+            ]);
+
             $Contact_data['business_id'] =  1;
             $Contact_data['created_by'] = $user_id;
             $Contact_data['supplier_business_name'] = $input['insurance_company'];
-           
+
             $Contact_data['tax_number'] = $input['tax_number'];
             $Contact_data['city'] = $input['city'];
             $Contact_data['state'] = $input['state'];
@@ -144,7 +145,7 @@ class EssentialsInsuranceCompanyController extends Controller
             $Contact_data['mobile'] = $input['mobile_number'];
             $Contact_data['created_by '] = $input['mobile_number'];
             $Contact_data['type'] = 'insurance';
-          
+
             Contact::create($Contact_data);
             $output = [
                 'success' => true,
@@ -155,8 +156,8 @@ class EssentialsInsuranceCompanyController extends Controller
             error_log(print_r('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
             $output = [
                 'success' => false,
-               // 'msg' => __('messages.somthing_went_wrong'),
-               'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
+
             ];
         }
 
