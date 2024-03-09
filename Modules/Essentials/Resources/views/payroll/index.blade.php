@@ -252,21 +252,22 @@
 
 
             $(document).on('change', '#companies', function() {
-                let project_id = $(this).val();
+                let company_id = $(this).val();
                 $.ajax({
                     method: 'GET',
-                    url: "{{ route('agentTimeSheet.getWorkersBasedOnProject') }}",
+                    url: "{{ route('payrolls.getEmployeesBasedOnCompany') }}",
                     dataType: 'json',
                     data: {
-                        'project_id': project_id
+                        'company_id': company_id
                     },
                     success: function(result) {
                         if (result.success == true) {
                             $('#employee_ids').empty();
-                            $.each(result.workers, function(id, worker) {
+                            console.log(result.employees);
+                            $.each(result.employees, function(id, employee) {
                                 $('#employee_ids').append($('<option>', {
                                     value: id,
-                                    text: worker
+                                    text: employee
                                 }));
                             });
                             $('#employee_ids').select2();

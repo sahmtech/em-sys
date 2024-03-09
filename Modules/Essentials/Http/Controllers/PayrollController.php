@@ -20,6 +20,7 @@ use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -89,12 +90,37 @@ class PayrollController extends Controller
             }
         }
         $companies = Company::whereIn('id',  $companies_ids)->pluck('name', 'id')->toArray();
-        $employees = User::whereIn('id', $userIds)->select(
+        $employees = User::where('user_type', 'employee')->whereIn('id', $userIds)->select(
             'users.*',
             DB::raw("CONCAT(COALESCE(users.first_name, ''),  ' ', COALESCE(users.last_name, '')) as name"),
         )->pluck('name', 'id')->toArray();
 
         return view('essentials::payroll.index')->with(compact('companies', 'employees'));
+    }
+
+    public function getEmployeesBasedOnCompany(Request $request)
+    {
+        $employees = [];
+        if ($request->company_id != 'all') {
+            $employees =  User::whereIn('user_type', ['employee', 'manager'])
+                ->where('users.company_id', $request->company_id)
+                ->select(
+                    'users.*',
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
+                )->pluck('name', 'id')->toArray();
+        } else {
+            $employees =  User::whereIn('user_type', ['employee', 'manager'])
+                ->select(
+                    'users.*',
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
+                )->pluck('name', 'id')->toArray();
+        }
+
+        return [
+            'success' => true,
+            'msg' => __('lang_v1.success'),
+            'employees' => $employees,
+        ];
     }
 
     public function payrollsGroupIndex()
@@ -150,19 +176,20 @@ class PayrollController extends Controller
 
 
                             $html .= '<li>
-                                    <a href="' . route('agentTimeSheet.viewPayrollGroup', ['id' => $row->id]) . '" target="_blank">
+                                    <a href="' . route('payrolls.show', ['id' => $row->id]) . '" target="_blank">
                                             <i class="fa fa-eye" aria-hidden="true"></i> '
                                 . __('messages.view') .
                                 '</a>
                                 </li>';
 
-
-                            $html .= '<li>
-                                        <a href="' . route('agentTimeSheet.getEditPayrollGroup', ['id' => $row->id]) . '" target="_blank">
+                            if ($row->status == 'draft') {
+                                $html .= '<li>
+                                        <a href="' . route('payrolls.edit', ['id' => $row->id]) . '" target="_blank">
                                                 <i class="fas fa-edit" aria-hidden="true"></i> '
-                                . __('messages.edit') .
-                                '</a>
+                                    . __('messages.edit') .
+                                    '</a>
                                     </li>';
+                            }
 
 
 
@@ -225,7 +252,7 @@ class PayrollController extends Controller
     {
         $employee_ids = request()->input('employee_ids');
         $month_year = request()->input('month_year');
-        $employees = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
+        $employees = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
             ->whereIn('users.id',  $employee_ids)
             ->select(
                 'users.*',
@@ -259,6 +286,7 @@ class PayrollController extends Controller
                     $other_allowance += floatval($allowance->amount ?? "0");
                 }
             }
+            $salary = $worker->essentials_salary + $other_allowance;
 
             $payrolls[] = [
                 'id' => $worker->user_id,
@@ -271,7 +299,7 @@ class PayrollController extends Controller
                 'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
                 'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
                 'other_allowance' => number_format($other_allowance, 0, '.', ''),
-                'total' => number_format($other_allowance, 0, '.', ''),
+                'total' => number_format($salary, 0, '.', ''),
                 'violations' => 0,
                 'absence' => 0,
                 'absence_deduction' => 0,
@@ -290,62 +318,50 @@ class PayrollController extends Controller
         }
 
         $date = (Carbon::createFromFormat('m/Y', request()->input('month_year')))->format('F Y');
+        $transaction_date = request()->input('month_year');
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
 
-        return view('essentials::payroll.create')->with(compact('employee_ids', 'group_name', 'date', 'month_year', 'payrolls', 'action'));
-
-        // } else {
-        //     return redirect()->action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])
-        //         ->with(
-        //             'status',
-        //             [
-        //                 'success' => true,
-        //                 'msg' => __('essentials::lang.payroll_already_added_for_given_user'),
-        //             ]
-        //         );
-        // }
+        return view('essentials::payroll.create')->with(compact('employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
-     * @return Response
-     */
+
     public function store(Request $request)
     {
-        // return  $request->all();
-        $business_id = request()->session()->get('user.business_id');
+
+
+        $user = User::find(auth()->user()->id);
+        $business_id = $user->business_id ?? 1;
+        $company_id = $user->company_id ?? 1;
         try {
-            $transaction_date = $request->input('transaction_date');
-            $payrolls = $request->input('payrolls');
-            $notify_employee = !empty($request->input('notify_employee')) ? 1 : 0;
+            DB::beginTransaction();
             $payroll_group['business_id'] = $business_id;
+            $payroll_group['company_id'] = $company_id;
             $payroll_group['name'] = $request->input('payroll_group_name');
             $payroll_group['status'] = $request->input('payroll_group_status');
-            $payroll_group['gross_total'] = $this->transactionUtil->num_uf($request->input('total_gross_amount'));
-            $payroll_group['location_id'] = $request->input('location_id');
+            $payroll_group['gross_total'] = $request->input('total_payrolls');
             $payroll_group['created_by'] = auth()->user()->id;
-
-            DB::beginTransaction();
-
             $payroll_group = PayrollGroup::create($payroll_group);
+            $transaction_date = Carbon::createFromFormat('m/Y', $request->transaction_date)->format('Y-m-d H:i:s');
+
+            //ref_no,
             $transaction_ids = [];
-            foreach ($payrolls as $key => $payroll) {
+            $employees_details = $request->payrolls;
+            foreach ($employees_details as $employee_details) {
+                $payroll['expense_for'] = $employee_details['id'];
                 $payroll['transaction_date'] = $transaction_date;
                 $payroll['business_id'] = $business_id;
                 $payroll['created_by'] = auth()->user()->id;
                 $payroll['type'] = 'payroll';
                 $payroll['payment_status'] = 'due';
-                $payroll['status'] = 'final';
-                $payroll['total_before_tax'] = $payroll['final_total'];
-                $payroll['essentials_amount_per_unit_duration'] = $this->moduleUtil->num_uf($payroll['essentials_amount_per_unit_duration']);
+                $payroll['status'] = $request->input('payroll_group_status');
+                $payroll['total_before_tax'] = $employee_details['final_salary'];
+                $payroll['essentials_amount_per_unit_duration'] = $employee_details['salary'];
 
-                $allowances_and_deductions = $this->getAllowanceAndDeductionJson($payroll);
+                $allowances_and_deductions = $this->getAllowanceAndDeductionJson($employee_details);
                 $payroll['essentials_allowances'] = $allowances_and_deductions['essentials_allowances'];
                 $payroll['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
-
+                $payroll['final_total'] = $employee_details['final_salary'];
                 //Update reference count
                 $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
 
@@ -356,15 +372,25 @@ class PayrollController extends Controller
                     $prefix = !empty($settings['payroll_ref_no_prefix']) ? $settings['payroll_ref_no_prefix'] : '';
                     $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
                 }
-                unset($payroll['allowance_names'], $payroll['allowance_types'], $payroll['allowance_percent'], $payroll['allowance_amounts'], $payroll['deduction_names'], $payroll['deduction_types'], $payroll['deduction_percent'], $payroll['deduction_amounts'], $payroll['total']);
+                unset(
+                    $payroll['allowance_names'],
+                    $payroll['allowance_types'],
+                    $payroll['allowance_percent'],
+                    $payroll['allowance_amounts'],
+                    $payroll['deduction_names'],
+                    $payroll['deduction_types'],
+                    $payroll['deduction_percent'],
+                    $payroll['deduction_amounts'],
+                    $payroll['total']
+                );
 
                 $transaction = Transaction::create($payroll);
                 $transaction_ids[] = $transaction->id;
 
-                if ($notify_employee && $payroll_group->status == 'final') {
-                    $transaction->action = 'created';
-                    $transaction->transaction_for->notify(new PayrollNotification($transaction));
-                }
+                // if ($notify_employee && $payroll_group->status == 'final') {
+                //     $transaction->action = 'created';
+                //     $transaction->transaction_for->notify(new PayrollNotification($transaction));
+                // }
             }
 
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
@@ -378,45 +404,72 @@ class PayrollController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
-        return redirect()->action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])->with('status', $output);
+        return redirect()->route('payrolls.index')->with('status', $output);
     }
 
     private function getAllowanceAndDeductionJson($payroll)
     {
-        $allowance_names = $payroll['allowance_names'];
-        $allowance_types = $payroll['allowance_types'];
-        $allowance_percents = $payroll['allowance_percent'];
+        $allowance_types = [];
         $allowance_names_array = [];
         $allowance_percent_array = [];
         $allowance_amounts = [];
 
-        foreach ($payroll['allowance_amounts'] as $key => $value) {
-            if (!empty($allowance_names[$key])) {
-                $allowance_amounts[] = $this->moduleUtil->num_uf($value);
-                $allowance_names_array[] = $allowance_names[$key];
-                $allowance_percent_array[] = !empty($allowance_percents[$key]) ? $this->moduleUtil->num_uf($allowance_percents[$key]) : 0;
-            }
+
+        if ($payroll['over_time_hours_addition'] != 0) {
+            $allowance_names_array[] = 'وقت إضافي';
+            $allowance_amounts[] = $payroll['over_time_hours_addition'];
+            $allowance_percent_array[] = 0;
+            $allowance_types[] = 'fixed';
+        }
+        if ($payroll['additional_addition'] != 0) {
+            $allowance_names_array[] = 'مبلغ إضافي';
+            $allowance_amounts[] = $payroll['additional_addition'];
+            $allowance_percent_array[] = 0;
+
+            $allowance_types[] = 'fixed';
+        }
+        if ($payroll['other_additions'] != 0) {
+            $allowance_names_array[] = 'استحفافات إخرى';
+            $allowance_amounts[] = $payroll['other_additions'];
+            $allowance_percent_array[] = 0;
+            $allowance_types[] = 'fixed';
         }
 
-        $deduction_names = $payroll['deduction_names'];
-        $deduction_types = $payroll['deduction_types'];
-        $deduction_percents = $payroll['deduction_percent'];
+
+        $deduction_types = [];
         $deduction_names_array = [];
         $deduction_percents_array = [];
         $deduction_amounts = [];
-        foreach ($payroll['deduction_amounts'] as $key => $value) {
-            if (!empty($deduction_names[$key])) {
-                $deduction_names_array[] = $deduction_names[$key];
-                $deduction_amounts[] = $this->moduleUtil->num_uf($value);
-                $deduction_percents_array[] = !empty($deduction_percents[$key]) ? $this->moduleUtil->num_uf($deduction_percents[$key]) : 0;
-            }
+
+        if ($payroll['violations'] != 0) {
+            $deduction_names_array[] = 'مخالفات';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['violations']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['absence'] != 0) {
+            $deduction_names_array[] = 'غياب';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['absence']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['other_deductions'] != 0) {
+            $deduction_names_array[] = 'خصومات أخرى';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['other_deductions']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['loan'] != 0) {
+            $deduction_names_array[] = 'سلف';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['loan']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
         }
 
         $output['essentials_allowances'] = json_encode([
@@ -435,122 +488,241 @@ class PayrollController extends Controller
         return $output;
     }
 
-    /**
-     * Show the specified resource.
-     *
-     * @return Response
-     */
+
     public function show($id)
     {
-        // $business_id = request()->session()->get('user.business_id');
-        $query = Transaction::with(['transaction_for', 'payment_lines']);
-        $business_id = $query->first()->business_id;
-        // $query = Transaction::where('business_id', $business_id)
-        //                 ->with(['transaction_for', 'payment_lines']);
+        $payroll_group = PayrollGroup::find($id);
+        $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
+        $transaction_date = $payroll_group_transactions->first()->transaction_date;
+        $date = Carbon::parse($transaction_date)->format('F Y');
+        $month_year = $date;
+        $employee_ids = [];
 
-        if (!auth()->user()->can('essentials.view_all_payroll')) {
-            $query->where('expense_for', auth()->user()->id);
+        foreach ($payroll_group_transactions as $payroll_group_transaction) {
+            $employee_ids[] = $payroll_group_transaction->expense_for;
         }
-        $payroll = $query->findOrFail($id);
+        $usersArr = User::whereIn('id', $employee_ids)->select([
+            'users.*',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
 
-        $transaction_date = \Carbon::parse($payroll->transaction_date);
+        ])->get();
 
-        $department = Category::where('category_type', 'hrm_department')
-            ->find($payroll->transaction_for->essentials_department_id);
 
-        $designation = Category::where('category_type', 'hrm_designation')
-            ->find($payroll->transaction_for->essentials_designation_id);
+        $businesses = Business::pluck('name', 'id',);
 
-        $location = BusinessLocation::where('business_id', $business_id)
-            ->find($payroll->transaction_for->location_id);
+        $payrolls = [];
 
-        $month_name = $transaction_date->format('F');
-        $year = $transaction_date->format('Y');
-        $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
-        $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
-        $bank_details = json_decode($payroll->transaction_for->bank_details, true);
-        $payment_types = $this->moduleUtil->payment_types();
-        $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_total);
 
-        $start_of_month = \Carbon::parse($payroll->transaction_date);
-        $end_of_month = \Carbon::parse($payroll->transaction_date)->endOfMonth();
+        // return  json_decode($payroll_group_transactions[3]->essentials_allowances);
+        foreach ($payroll_group_transactions as $payroll_group_transaction) {
 
-        $leaves = EssentialsLeave::where('business_id', $business_id)
-            ->where('user_id', $payroll->transaction_for->id)
-            ->whereDate('start_date', '>=', $start_of_month)
-            ->whereDate('end_date', '<=', $end_of_month)
-            ->get();
 
-        $total_leaves = 0;
-        $days_in_a_month = \Carbon::parse($start_of_month)->daysInMonth;
-        foreach ($leaves as $key => $leave) {
-            $start_date = \Carbon::parse($leave->start_date);
-            $end_date = \Carbon::parse($leave->end_date);
+            $user = $usersArr->where('id', $payroll_group_transaction->expense_for)->first();
+            $housing_allowance = 0;
+            $transportation_allowance = 0;
+            $other_allowance = 0;
+            $allowances = json_decode($user)->user_allowances_and_deductions ?? [];
+            foreach ($allowances as $allowance) {
+                $allowance_dsc =   $allowance->essentials_allowance_and_deduction->description;
+                if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+                    $housing_allowance = $allowance->amount;
+                } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+                    $transportation_allowance = $allowance->amount;
+                } else {
+                    $other_allowance += floatval($allowance->amount ?? "0");
+                }
+            }
+            $salary = $user->essentials_salary + $other_allowance;
+            $essentials_allowances = json_decode($payroll_group_transaction->essentials_allowances);
+            $over_time_hours = 0;
+            $additional_addition = 0;
+            $other_additions = 0;
+            foreach ($essentials_allowances->allowance_names as $index => $allowance) {
+                if ((stripos($allowance, 'وقت') !== false)) {
+                    $over_time_hours = $essentials_allowances->allowance_amounts[$index];
+                }
+                if ((stripos($allowance, 'مبلغ') !== false)) {
+                    $additional_addition = $essentials_allowances->allowance_amounts[$index];
+                }
+                if ((stripos($allowance, 'خرى') !== false)) {
+                    $other_additions = $essentials_allowances->allowance_amounts[$index];
+                }
+            }
 
-            $diff = $start_date->diffInDays($end_date);
-            $diff += 1;
-            $total_leaves += $diff;
+
+
+            $essentials_deductions = json_decode($payroll_group_transaction->essentials_deductions);
+            $violations = 0;
+            $absence = 0;
+            $other_deductions = 0;
+            $loan = 0;
+            foreach ($essentials_deductions->deduction_names as $index => $deduction) {
+                if ((stripos($deduction, 'مخالف') !== false)) {
+                    $violations = $essentials_deductions->deduction_amounts[$index];
+                }
+                if ((stripos($deduction, 'غياب') !== false)) {
+                    $absence = $essentials_deductions->deduction_amounts[$index];
+                }
+                if ((stripos($deduction, 'خرى') !== false)) {
+                    $other_deductions = $essentials_deductions->deduction_amounts[$index];
+                }
+                if ((stripos($deduction, 'سلف') !== false)) {
+                    $loan = $essentials_deductions->deduction_amounts[$index];
+                }
+            }
+            $payrolls[] = [
+                'id' => $user->id,
+                'name' =>  $user->name ?? '',
+                'nationality' => $user->country?->nationality ?? '',
+                'identity_card_number' => $user->id_proof_number ?? '',
+                'profession' => '',
+                'work_days' => 30,
+                'salary' => number_format($payroll_group_transaction->essentials_amount_per_unit_duration, 0, '.', ''),
+                'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
+                'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
+                'other_allowance' => number_format($other_allowance, 0, '.', ''),
+                'total' => number_format($salary, 0, '.', ''),
+                'violations' =>   $violations,
+                'absence' => $absence,
+                'absence_deduction' => 0,
+                'other_deductions' => $other_deductions,
+                'loan' => $loan,
+                'total_deduction' => 0,
+                'over_time_hours' => $over_time_hours,
+                'over_time_hours_addition' => 0,
+                'additional_addition' => $additional_addition,
+                'other_additions' => $other_additions,
+                'total_additions' => 0,
+                'final_salary' => $payroll_group_transaction->final_total,
+                'payment_method' => '',
+                'notes' => '',
+            ];
         }
 
-        $total_days_present = $this->essentialsUtil->getTotalDaysWorkedForGivenDateOfAnEmployee(
-            $business_id,
-            $payroll->transaction_for->id,
-            $start_of_month->format('Y-m-d'),
-            $end_of_month->format('Y-m-d')
-        );
+        $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
+        $action = 'edit';
 
-        $total_work_duration = $this->essentialsUtil->getTotalWorkDuration(
-            'hour',
-            $payroll->transaction_for->id,
-            $business_id,
-            $start_of_month->format('Y-m-d'),
-            $end_of_month->format('Y-m-d')
-        );
-
-        return view('essentials::payroll.show')
-            ->with(compact(
-                'payroll',
-                'month_name',
-                'allowances',
-                'deductions',
-                'year',
-                'payment_types',
-                'bank_details',
-                'designation',
-                'department',
-                'final_total_in_words',
-                'total_leaves',
-                'days_in_a_month',
-                'total_work_duration',
-                'location',
-                'total_days_present'
-            ));
+        return view('essentials::payroll.show')->with(compact('employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @return Response
-     */
     public function edit($id)
     {
-        $business_id = request()->session()->get('user.business_id');
+        $payroll_group = PayrollGroup::find($id);
+        $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
+        $transaction_date = $payroll_group_transactions->first()->transaction_date;
+        $date = Carbon::parse($transaction_date)->format('F Y');
+        $month_year = $date;
+        $employee_ids = [];
+
+        foreach ($payroll_group_transactions as $payroll_group_transaction) {
+            $employee_ids[] = $payroll_group_transaction->expense_for;
+        }
+        $usersArr = User::whereIn('id', $employee_ids)->select([
+            'users.*',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
+
+        ])->get();
+
+
+        $businesses = Business::pluck('name', 'id',);
+
+        $payrolls = [];
+
+
+        // return  json_decode($payroll_group_transactions[3]->essentials_allowances);
+        foreach ($payroll_group_transactions as $payroll_group_transaction) {
+
+
+            $user = $usersArr->where('id', $payroll_group_transaction->expense_for)->first();
+            $housing_allowance = 0;
+            $transportation_allowance = 0;
+            $other_allowance = 0;
+            $allowances = json_decode($user)->user_allowances_and_deductions ?? [];
+            foreach ($allowances as $allowance) {
+                $allowance_dsc =   $allowance->essentials_allowance_and_deduction->description;
+                if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+                    $housing_allowance = $allowance->amount;
+                } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+                    $transportation_allowance = $allowance->amount;
+                } else {
+                    $other_allowance += floatval($allowance->amount ?? "0");
+                }
+            }
+            $salary = $user->essentials_salary + $other_allowance;
+            $essentials_allowances = json_decode($payroll_group_transaction->essentials_allowances);
+            $over_time_hours = 0;
+            $additional_addition = 0;
+            $other_additions = 0;
+            foreach ($essentials_allowances->allowance_names as $index => $allowance) {
+                if ((stripos($allowance, 'وقت') !== false)) {
+                    $over_time_hours = $essentials_allowances->allowance_amounts[$index];
+                }
+                if ((stripos($allowance, 'مبلغ') !== false)) {
+                    $additional_addition = $essentials_allowances->allowance_amounts[$index];
+                }
+                if ((stripos($allowance, 'خرى') !== false)) {
+                    $other_additions = $essentials_allowances->allowance_amounts[$index];
+                }
+            }
 
 
 
-        $payroll = Transaction::where('business_id', $business_id)
-            ->with(['transaction_for'])
-            ->where('type', 'payroll')
-            ->findOrFail($id);
+            $essentials_deductions = json_decode($payroll_group_transaction->essentials_deductions);
+            $violations = 0;
+            $absence = 0;
+            $other_deductions = 0;
+            $loan = 0;
+            foreach ($essentials_deductions->deduction_names as $index => $deduction) {
+                if ((stripos($deduction, 'مخالف') !== false)) {
+                    $violations = $essentials_deductions->deduction_amounts[$index];
+                }
+                if ((stripos($deduction, 'غياب') !== false)) {
+                    $absence = $essentials_deductions->deduction_amounts[$index];
+                }
+                if ((stripos($deduction, 'خرى') !== false)) {
+                    $other_deductions = $essentials_deductions->deduction_amounts[$index];
+                }
+                if ((stripos($deduction, 'سلف') !== false)) {
+                    $loan = $essentials_deductions->deduction_amounts[$index];
+                }
+            }
+            $payrolls[] = [
+                'id' => $user->id,
+                'name' =>  $user->name ?? '',
+                'nationality' => $user->country?->nationality ?? '',
+                'identity_card_number' => $user->id_proof_number ?? '',
+                'profession' => '',
+                'work_days' => 30,
+                'salary' => number_format($payroll_group_transaction->essentials_amount_per_unit_duration, 0, '.', ''),
+                'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
+                'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
+                'other_allowance' => number_format($other_allowance, 0, '.', ''),
+                'total' => number_format($salary, 0, '.', ''),
+                'violations' =>   $violations,
+                'absence' => $absence,
+                'absence_deduction' => 0,
+                'other_deductions' => $other_deductions,
+                'loan' => $loan,
+                'total_deduction' => 0,
+                'over_time_hours' => $over_time_hours,
+                'over_time_hours_addition' => 0,
+                'additional_addition' => $additional_addition,
+                'other_additions' => $other_additions,
+                'total_additions' => 0,
+                'final_salary' => $payroll_group_transaction->final_total,
+                'payment_method' => '',
+                'notes' => '',
+            ];
+        }
 
-        $transaction_date = \Carbon::parse($payroll->transaction_date);
-        $month_name = $transaction_date->format('F');
-        $year = $transaction_date->format('Y');
-        $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
-        $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
+        $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
+        $action = 'edit';
 
-        return view('essentials::payroll.edit')->with(compact('payroll', 'month_name', 'allowances', 'deductions', 'year'));
+        return view('essentials::payroll.create')->with(compact('employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
     }
+
+
+
 
     /**
      * Update the specified resource in storage.
@@ -1568,4 +1740,255 @@ class PayrollController extends Controller
     //             );
     //     }
     // }
+
+
+    // /**
+    //  * Store a newly created resource in storage.
+    //  *
+    //  * @param  Request  $request
+    //  * @return Response
+    //  */
+    // public function store(Request $request)
+    // {
+    //     // return  $request->all();
+    //     $business_id = request()->session()->get('user.business_id');
+    //     try {
+    //         $transaction_date = $request->input('transaction_date');
+    //         $payrolls = $request->input('payrolls');
+    //         $notify_employee = !empty($request->input('notify_employee')) ? 1 : 0;
+    //         $payroll_group['business_id'] = $business_id;
+    //         $payroll_group['name'] = $request->input('payroll_group_name');
+    //         $payroll_group['status'] = $request->input('payroll_group_status');
+    //         $payroll_group['gross_total'] = $this->transactionUtil->num_uf($request->input('total_gross_amount'));
+    //         $payroll_group['location_id'] = $request->input('location_id');
+    //         $payroll_group['created_by'] = auth()->user()->id;
+
+    //         DB::beginTransaction();
+
+    //         $payroll_group = PayrollGroup::create($payroll_group);
+    //         $transaction_ids = [];
+    //         foreach ($payrolls as $key => $payroll) {
+    //             $payroll['transaction_date'] = $transaction_date;
+    //             $payroll['business_id'] = $business_id;
+    //             $payroll['created_by'] = auth()->user()->id;
+    //             $payroll['type'] = 'payroll';
+    //             $payroll['payment_status'] = 'due';
+    //             $payroll['status'] = 'final';
+    //             $payroll['total_before_tax'] = $payroll['final_total'];
+    //             $payroll['essentials_amount_per_unit_duration'] = $this->moduleUtil->num_uf($payroll['essentials_amount_per_unit_duration']);
+
+    //             $allowances_and_deductions = $this->getAllowanceAndDeductionJson($payroll);
+    //             $payroll['essentials_allowances'] = $allowances_and_deductions['essentials_allowances'];
+    //             $payroll['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
+
+    //             //Update reference count
+    //             $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
+
+    //             //Generate reference number
+    //             if (empty($payroll['ref_no'])) {
+    //                 $settings = request()->session()->get('business.essentials_settings');
+    //                 $settings = !empty($settings) ? json_decode($settings, true) : [];
+    //                 $prefix = !empty($settings['payroll_ref_no_prefix']) ? $settings['payroll_ref_no_prefix'] : '';
+    //                 $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
+    //             }
+    //             unset($payroll['allowance_names'], $payroll['allowance_types'], $payroll['allowance_percent'], $payroll['allowance_amounts'], $payroll['deduction_names'], $payroll['deduction_types'], $payroll['deduction_percent'], $payroll['deduction_amounts'], $payroll['total']);
+
+    //             $transaction = Transaction::create($payroll);
+    //             $transaction_ids[] = $transaction->id;
+
+    //             if ($notify_employee && $payroll_group->status == 'final') {
+    //                 $transaction->action = 'created';
+    //                 $transaction->transaction_for->notify(new PayrollNotification($transaction));
+    //             }
+    //         }
+
+    //         $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
+
+    //         DB::commit();
+
+    //         $output = [
+    //             'success' => true,
+    //             'msg' => __('lang_v1.added_success'),
+    //         ];
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+    //         $output = [
+    //             'success' => false,
+    //             'msg' => __('messages.something_went_wrong'),
+    //         ];
+    //     }
+
+    //     return redirect()->action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])->with('status', $output);
+    // }
+
+
+    // private function getAllowanceAndDeductionJson($payroll)
+    // {
+    //     $allowance_names = $payroll['allowance_names'];
+    //     $allowance_types = $payroll['allowance_types'];
+    //     $allowance_percents = $payroll['allowance_percent'];
+    //     $allowance_names_array = [];
+    //     $allowance_percent_array = [];
+    //     $allowance_amounts = [];
+
+    //     foreach ($payroll['allowance_amounts'] as $key => $value) {
+    //         if (!empty($allowance_names[$key])) {
+    //             $allowance_amounts[] = $this->moduleUtil->num_uf($value);
+    //             $allowance_names_array[] = $allowance_names[$key];
+    //             $allowance_percent_array[] = !empty($allowance_percents[$key]) ? $this->moduleUtil->num_uf($allowance_percents[$key]) : 0;
+    //         }
+    //     }
+
+    //     $deduction_names = $payroll['deduction_names'];
+    //     $deduction_types = $payroll['deduction_types'];
+    //     $deduction_percents = $payroll['deduction_percent'];
+    //     $deduction_names_array = [];
+    //     $deduction_percents_array = [];
+    //     $deduction_amounts = [];
+    //     foreach ($payroll['deduction_amounts'] as $key => $value) {
+    //         if (!empty($deduction_names[$key])) {
+    //             $deduction_names_array[] = $deduction_names[$key];
+    //             $deduction_amounts[] = $this->moduleUtil->num_uf($value);
+    //             $deduction_percents_array[] = !empty($deduction_percents[$key]) ? $this->moduleUtil->num_uf($deduction_percents[$key]) : 0;
+    //         }
+    //     }
+
+    //     $output['essentials_allowances'] = json_encode([
+    //         'allowance_names' => $allowance_names_array,
+    //         'allowance_amounts' => $allowance_amounts,
+    //         'allowance_types' => $allowance_types,
+    //         'allowance_percents' => $allowance_percent_array,
+    //     ]);
+    //     $output['essentials_deductions'] = json_encode([
+    //         'deduction_names' => $deduction_names_array,
+    //         'deduction_amounts' => $deduction_amounts,
+    //         'deduction_types' => $deduction_types,
+    //         'deduction_percents' => $deduction_percents_array,
+    //     ]);
+
+    //     return $output;
+    // }
+
+
+    // /**
+    //  * Show the specified resource.
+    //  *
+    //  * @return Response
+    //  */
+    // public function show($id)
+    // {
+    //     // $business_id = request()->session()->get('user.business_id');
+    //     $query = Transaction::with(['transaction_for', 'payment_lines']);
+    //     $business_id = $query->first()->business_id;
+    //     // $query = Transaction::where('business_id', $business_id)
+    //     //                 ->with(['transaction_for', 'payment_lines']);
+
+    //     if (!auth()->user()->can('essentials.view_all_payroll')) {
+    //         $query->where('expense_for', auth()->user()->id);
+    //     }
+    //     $payroll = $query->findOrFail($id);
+
+    //     $transaction_date = \Carbon::parse($payroll->transaction_date);
+
+    //     $department = Category::where('category_type', 'hrm_department')
+    //         ->find($payroll->transaction_for->essentials_department_id);
+
+    //     $designation = Category::where('category_type', 'hrm_designation')
+    //         ->find($payroll->transaction_for->essentials_designation_id);
+
+    //     $location = BusinessLocation::where('business_id', $business_id)
+    //         ->find($payroll->transaction_for->location_id);
+
+    //     $month_name = $transaction_date->format('F');
+    //     $year = $transaction_date->format('Y');
+    //     $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
+    //     $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
+    //     $bank_details = json_decode($payroll->transaction_for->bank_details, true);
+    //     $payment_types = $this->moduleUtil->payment_types();
+    //     $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_total);
+
+    //     $start_of_month = \Carbon::parse($payroll->transaction_date);
+    //     $end_of_month = \Carbon::parse($payroll->transaction_date)->endOfMonth();
+
+    //     $leaves = EssentialsLeave::where('business_id', $business_id)
+    //         ->where('user_id', $payroll->transaction_for->id)
+    //         ->whereDate('start_date', '>=', $start_of_month)
+    //         ->whereDate('end_date', '<=', $end_of_month)
+    //         ->get();
+
+    //     $total_leaves = 0;
+    //     $days_in_a_month = \Carbon::parse($start_of_month)->daysInMonth;
+    //     foreach ($leaves as $key => $leave) {
+    //         $start_date = \Carbon::parse($leave->start_date);
+    //         $end_date = \Carbon::parse($leave->end_date);
+
+    //         $diff = $start_date->diffInDays($end_date);
+    //         $diff += 1;
+    //         $total_leaves += $diff;
+    //     }
+
+    //     $total_days_present = $this->essentialsUtil->getTotalDaysWorkedForGivenDateOfAnEmployee(
+    //         $business_id,
+    //         $payroll->transaction_for->id,
+    //         $start_of_month->format('Y-m-d'),
+    //         $end_of_month->format('Y-m-d')
+    //     );
+
+    //     $total_work_duration = $this->essentialsUtil->getTotalWorkDuration(
+    //         'hour',
+    //         $payroll->transaction_for->id,
+    //         $business_id,
+    //         $start_of_month->format('Y-m-d'),
+    //         $end_of_month->format('Y-m-d')
+    //     );
+
+    //     return view('essentials::payroll.show')
+    //         ->with(compact(
+    //             'payroll',
+    //             'month_name',
+    //             'allowances',
+    //             'deductions',
+    //             'year',
+    //             'payment_types',
+    //             'bank_details',
+    //             'designation',
+    //             'department',
+    //             'final_total_in_words',
+    //             'total_leaves',
+    //             'days_in_a_month',
+    //             'total_work_duration',
+    //             'location',
+    //             'total_days_present'
+    //         ));
+    // }
+
+
+    // /**
+    //  * Show the form for editing the specified resource.
+    //  *
+    //  * @return Response
+    //  */
+    // public function edit($id)
+    // {
+    //     $business_id = request()->session()->get('user.business_id');
+
+
+
+    //     $payroll = Transaction::where('business_id', $business_id)
+    //         ->with(['transaction_for'])
+    //         ->where('type', 'payroll')
+    //         ->findOrFail($id);
+
+    //     $transaction_date = \Carbon::parse($payroll->transaction_date);
+    //     $month_name = $transaction_date->format('F');
+    //     $year = $transaction_date->format('Y');
+    //     $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
+    //     $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
+
+    //     return view('essentials::payroll.edit')->with(compact('payroll', 'month_name', 'allowances', 'deductions', 'year'));
+    // }
+
+
 }

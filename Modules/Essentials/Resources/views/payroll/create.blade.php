@@ -18,7 +18,7 @@
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             {!! Form::open([
-                'url' => route('agentTimeSheet.submitTmeSheet'),
+                'url' => route('payrolls.submit'),
                 'method' => 'post',
                 'id' => 'add_payroll_step1',
             ]) !!}
@@ -34,23 +34,30 @@
                                 @lang('essentials::lang.submit')
                             </button>
                         </div>
-                        <div class="col-md-4">
-                            {!! Form::label('payroll_group_status', __('sale.status') . ':*') !!}
-                            @show_tooltip(__('essentials::lang.group_status_tooltip'))
-                            {!! Form::select('payroll_group_status', ['draft' => __('sale.draft'), 'final' => __('sale.final')], null, [
-                                'class' => 'form-control select2',
-                                'required',
-                                'style' => 'width: 100%;',
-                                'placeholder' => __('messages.please_select'),
-                            ]) !!}
-                            <p class="help-block text-muted">@lang('essentials::lang.payroll_cant_be_deleted_if_final')</p>
+                        <div class="col-md-2">
                         </div>
                         <div class="col-md-4">
-                            <h4 style="  color: red;" class="total_payrolls"></h4>
+                            {!! Form::label('payroll_group_status', __('sale.status') . ':*') !!}
+
+                            {!! Form::select(
+                                'payroll_group_status',
+                                ['draft' => __('essentials::lang.draft_payroll'), 'final' => __('essentials::lang.final_payroll')],
+                                null,
+                                [
+                                    'class' => 'form-control select2 pull-right',
+                                    'required',
+                                    'style' => 'width: 80%;',
+                                    'placeholder' => __('messages.please_select'),
+                                ],
+                            ) !!}
+
+                        </div>
+                        <div class="col-md-4">
+                            <h4 style="  color: red;" class="total_payrolls" id="h4_total_payrolls"></h4>
                             {!! Form::hidden('total_payrolls', null, [
                                 'id' => 'total_payrolls',
                             ]) !!}
-                            {!! Form::hidden('transaction_date', $date) !!}
+                            {!! Form::hidden('transaction_date', $transaction_date) !!}
 
                         </div>
                     </div>
@@ -62,28 +69,28 @@
                     <thead>
                         <tr>
                             <th style="width: 50px;">#</th>
-                            <th style="width: 100px;">@lang('essentials::lang.name')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.nationality')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.identity_card_number')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.profession')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.work_days')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.salary')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.housing_allowance')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.transportation_allowance')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.other_allowance')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.total')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.violations')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.absence')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.other_deductions')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.loan')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.total_deduction')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.over_time_hours')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.additional_addition')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.other_additions')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.total_additions')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.final_salary')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.payment_method')</th>
-                            <th style="width: 100px;">@lang('essentials::lang.notes')</th>
+                            <th style="width:100px;">@lang('essentials::lang.name')</th>
+                            <th style="width:75px;">@lang('essentials::lang.nationality')</th>
+                            <th style="width:100px;">@lang('essentials::lang.identity_card_number')</th>
+                            <th style="width:75px;">@lang('essentials::lang.profession')</th>
+                            <th style="width:75px;">@lang('essentials::lang.work_days')</th>
+                            <th style="width:75px;">@lang('essentials::lang.salary')</th>
+                            <th style="width:75px;">@lang('essentials::lang.housing_allowance')</th>
+                            <th style="width:75px;">@lang('essentials::lang.transportation_allowance')</th>
+                            <th style="width:75px;">@lang('essentials::lang.other_allowance')</th>
+                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total')</th>
+                            <th style="width:75px;">@lang('essentials::lang.violations')</th>
+                            <th style="width:75px;">@lang('essentials::lang.absence')</th>
+                            <th style="width:75px;">@lang('essentials::lang.other_deductions')</th>
+                            <th style="width:75px;">@lang('essentials::lang.loan')</th>
+                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_deduction')</th>
+                            <th style="width:75px;">@lang('essentials::lang.over_time_hours')</th>
+                            <th style="width:75px;">@lang('essentials::lang.additional_addition')</th>
+                            <th style="width:75px;">@lang('essentials::lang.other_additions')</th>
+                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_additions')</th>
+                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.final_salary')</th>
+                            <th style="width:75px;">@lang('essentials::lang.payment_method')</th>
+                            <th style="width:75px;">@lang('essentials::lang.notes')</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -165,8 +172,8 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                <td name="total"> <span data-index="{{ $index }}"
-                                        data-field="total">{{ $payroll['total'] }}</span>
+                                <td style="background-color: rgb(185, 182, 182);" name="total"> <span
+                                        data-index="{{ $index }}" data-field="total">{{ $payroll['total'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][total]', $payroll['total'], [
                                         'data-index' => $index,
                                         'data-field' => 'total',
@@ -212,7 +219,8 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                <td name="total_deduction"><span data-index="{{ $index }}"
+                                <td style="background-color: rgb(185, 182, 182);" name="total_deduction"><span
+                                        data-index="{{ $index }}"
                                         data-field="total_deduction">{{ $payroll['total_deduction'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][total_deduction]', $payroll['total_deduction'], [
                                         'data-index' => $index,
@@ -252,7 +260,8 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                <td name="total_additions"><span data-index="{{ $index }}"
+                                <td style="background-color: rgb(185, 182, 182);" name="total_additions"><span
+                                        data-index="{{ $index }}"
                                         data-field="total_additions">{{ $payroll['total_additions'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][total_additions]', $payroll['total_additions'], [
                                         'data-index' => $index,
@@ -260,7 +269,8 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                <td name="final_salary"><span data-index="{{ $index }}"
+                                <td style="background-color: rgb(185, 182, 182);" name="final_salary"><span
+                                        data-index="{{ $index }}"
                                         data-field="final_salary">{{ $payroll['final_salary'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][final_salary]', $payroll['final_salary'], [
                                         'data-index' => $index,
@@ -289,7 +299,7 @@
                         @endforeach
                     </tbody>
                     <tfoot>
-                        <tr style="background-color: rgb(185, 182, 182);">
+                        <tr>
                             <td colspan="2">
                                 @lang('essentials::lang.the_total')
                             </td>
@@ -331,7 +341,8 @@
                             </td>
                             <td name="the_total_total_additions">
                             </td>
-                            <td name="the_total_final_salary">
+                            <td style="  color: red;" name="the_total_final_salary">
+
                             </td>
                             <td>
                             </td>
@@ -364,10 +375,10 @@
                 $('input.form-hidden[data-index="' + index + '"][data-field="' + field + '"]').val(
                     newValue);
                 if (field == 'absence') {
-                    updateAbsenceDeduction();
+                    updateAbsenceDeduction(index);
                 }
                 if (field == 'over_time_hours') {
-                    updateOverTimeHoursAddition();
+                    updateOverTimeHoursAddition(index);
                 }
 
                 initializeCalculations();
@@ -403,7 +414,7 @@
 
         });
 
-        function updateAbsenceDeduction() {
+        function updateAbsenceDeduction(index) {
             var absence = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='absence']").val()) || 0;
             var total = parseFloat($("input.form-hidden[data-index='" + index +
@@ -416,7 +427,7 @@
                 .toFixed(0));
         }
 
-        function updateOverTimeHoursAddition() {
+        function updateOverTimeHoursAddition(index) {
             var over_time_hours = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='over_time_hours']").val()) || 0;
             var total = parseFloat($("input.form-hidden[data-index='" + index +
@@ -431,7 +442,7 @@
                 .toFixed(0));
         }
 
-        function initializeCalculations() {
+        function initializeCalculations(index) {
             $('.payroll_row').each(function() {
                 var index = $(this).find('.editable span[contenteditable="true"]').first().data('index');
                 if (index !== undefined) {
@@ -632,7 +643,10 @@
             $("input.form-hidden[data-field='final_salary']").each(function() {
                 value += parseFloat($(this).val()) || 0;
             });
+            $("#total_payrolls").val(value);
             $('td[name="the_total_final_salary"]').text(value);
+            // $('#h4_total_payrolls').text(value);
+            // $("#total_payrolls").val(value);
         };
 
         initializeCalculations();

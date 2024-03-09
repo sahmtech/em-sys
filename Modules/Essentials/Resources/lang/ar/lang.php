@@ -1762,7 +1762,7 @@ return [
   'violations' => 'مخالفات',
   'absence' => 'غياب',
   'other_deductions' => 'خصومات أخرى',
-  'loan' => 'سلفة',
+  'loan' => 'سلف',
   'total_deduction' => 'إجمالي المستقطع',
   'over_time_hours' => 'ساعات إضافية',
   'additional_addition' => 'مبلغ إضافي',
@@ -1772,4 +1772,6 @@ return [
   'payment_method' => 'الاستلام',
   'notes' => 'ملاحظات',
   'the_total' => 'الإجمالي',
+  'draft_payroll' => 'مسودة',
+  'final_payroll' => 'مسير نهائي',
 ];
