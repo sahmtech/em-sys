@@ -65,7 +65,6 @@ class WorkerController extends Controller
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
 
         if (!($is_admin)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -89,7 +88,7 @@ class WorkerController extends Controller
             'interviewStatus',
             'agency_id', 'transaction_sell_line_id'
         ]);
-        //  dd(  $workers->get());
+
 
         if (!empty($request->input('specialization'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
@@ -133,27 +132,27 @@ class WorkerController extends Controller
 
                     return $agencys[$row->agency_id] ?? '';
                 })
-                // ->addColumn('interviewStatus', function ($row) {
-                //     if ($row->interviewStatus === null) {
-                //         $html = '<button class="btn btn-xs btn-success change_status_modal" data-employee-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('internationalrelations::lang.change_interview_status') . '</button>';
-                //     } else {
-                //         $html = __('internationalrelations::lang.' . $row->interviewStatus);
 
-                //         switch ($row->interviewStatus) {
-                //             case 'not_attend':
-                //                 $html = '<span style="color: orange;">' . $html . '</span>';
-                //                 break;
-                //             case 'unacceptable':
-                //                 $html = '<span style="color: red;">' . $html . '</span>';
-                //                 break;
-                //             case 'acceptable':
-                //                 $html = '<span style="color: green;">' . $html . '</span>';
-                //                 break;
-                //         }
-                //     }
 
-                //     return $html;
-                // })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 ->addColumn('action', function ($row) use ($is_admin, $can_view_worker_profile) {
                     $html = '';
@@ -186,7 +185,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_worker_info = auth()->user()->can('internationalrelations.view_worker_info');
         if (!($is_admin || $can_view_worker_info)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -206,7 +204,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_accepted_workers = auth()->user()->can('internationalrelations.view_accepted_workers');
         if (!($is_admin || $can_view_accepted_workers)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
 
@@ -314,7 +311,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_unaccepted_workers = auth()->user()->can('internationalrelations.view_unaccepted_workers');
         if (!($is_admin || $can_view_unaccepted_workers)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
@@ -436,7 +432,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_proposed_labors = auth()->user()->can('internationalrelations.view_proposed_labors');
         if (!($is_admin || $can_view_proposed_labors)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
         $currentDate = now();
@@ -621,7 +616,6 @@ class WorkerController extends Controller
             $can_passport_stamped = auth()->user()->can('internationalrelations.passport_stamped');
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             if (!($is_admin || $can_passport_stamped)) {
-                //temp  abort(403, 'Unauthorized action.');
             }
 
             $selectedRowsData = json_decode($request->input('selectedRowsData2'));
@@ -676,7 +670,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_fingerprinting = auth()->user()->can('internationalrelations.fingerprinting');
         if (!($is_admin || $can_fingerprinting)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $selectedRows = $request->input('selectedRows');
@@ -706,7 +699,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_medical_examination = auth()->user()->can('internationalrelations.medical_examination');
         if (!($is_admin || $can_medical_examination)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $selectedRows = $request->input('selectedRows');
@@ -737,7 +729,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_accepted_by_worker = auth()->user()->can('internationalrelations.accepted_by_worker');
         if (!($is_admin || $can_accepted_by_worker)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -796,21 +787,51 @@ class WorkerController extends Controller
         $can_store_visa_worker = auth()->user()->can('internationalrelations.store_visa_worker');
         $visa_id = $request->visaId;
         if (!($is_admin || $can_store_visa_worker)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $selectedWorkersCount = count($request->worker_id);
-            $visaCard = IrVisaCard::where('id', $visa_id)->with('operationOrder.salesContract.transaction.sell_lines')->first();
+            $visaCard = IrVisaCard::where('id', $visa_id)
+                ->with('operationOrder.salesContract.transaction.sell_lines')
+                ->first();
             $orderQuantity = $visaCard->operationOrder->orderQuantity;
             $proposed_workers_number = $visaCard->proposed_workers_number;
-
-
+            $delegation_agency_targeted_count = null;
 
             if ($selectedWorkersCount > $orderQuantity) {
-
                 $output = [
                     'success' => false,
                     'msg' => __('internationalrelations::lang.number_of_added_workers_more_than_target'),
+                ];
+            } else {
+                $exceededAgencies = [];
+
+
+                $groupedWorkers = collect($request->worker_id)->groupBy(function ($workerId) {
+                    return IrProposedLabor::where('id', $workerId)->first()->agency_id;
+                });
+
+                foreach ($groupedWorkers as $agencyId => $workers) {
+
+                    if ($visaCard->delegation->agency()->whereIn('id', [$agencyId])->exists()) {
+
+                        $delegation_agency_targeted_count = $visaCard->delegation->where('agency_id', [$agencyId])->first()->targeted_quantity;
+
+
+                        $workersCount = $workers->count();
+
+                        if ($workersCount > $delegation_agency_targeted_count) {
+                            $exceededAgencies[] = $agencyId;
+                        }
+                    }
+                }
+            }
+
+
+
+            if (!empty($exceededAgencies)) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('internationalrelations::lang.workers_exceed_target_number'),
                 ];
             } else if ($proposed_workers_number + $selectedWorkersCount <=  $orderQuantity) {
 
@@ -839,14 +860,14 @@ class WorkerController extends Controller
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            error_log($e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
+
         return response()->json($output);
-        //return redirect()->route('viewVisaWorkers', ['id' => $visa_id])->with($output);
     }
 
 
@@ -857,7 +878,6 @@ class WorkerController extends Controller
         $can_cancel_proposal_worker = auth()->user()->can('internationalrelations.cancel_proposal_worker');
         $visa_id = $request->visaId;
         if (!($is_admin || $can_cancel_proposal_worker)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -887,7 +907,7 @@ class WorkerController extends Controller
                     ];
                 }
             } else {
-                // Update visa_id to null for selected workers
+
                 IrProposedLabor::whereIn('id', $selectedRows)
                     ->update([
                         'visa_id' => null,
@@ -899,11 +919,11 @@ class WorkerController extends Controller
 
 
                 foreach ($selectedRows as $workerId) {
-                    // $agencyId = IrProposedLabor::where('id', $workerId)->value('agency_id');
-                    // if ($agencyId) {
-                    //     IrDelegation::where('agency_id', $agencyId)
-                    //         ->decrement('proposed_labors_quantity');
-                    // }
+
+
+
+
+
 
                     IrVisaCard::where('id', $visa_id)->decrement('proposed_workers_number');
                 }
@@ -935,7 +955,6 @@ class WorkerController extends Controller
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
 
         if (!($is_admin || $can_store_proposed_labor)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -981,7 +1000,6 @@ class WorkerController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
         if (!($is_admin || $can_store_proposed_labor)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -1110,7 +1128,6 @@ class WorkerController extends Controller
 
         $canChangeWorkerStatus = $user->can('internationalrelations.change_worker_status');
         if (!($is_admin || $canChangeWorkerStatus)) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1195,7 +1212,7 @@ class WorkerController extends Controller
                         $error_msg = __('essentials::lang.last_name_required') . $row_no;
                         break;
                     }
-                    // $worker_array['age'] = $value[3];
+
 
                     if (!empty($value[3])) {
                         $worker_array['age'] = $value[3];
@@ -1204,7 +1221,7 @@ class WorkerController extends Controller
                         $error_msg = __('essentials::lang.age_required') . $row_no;
                         break;
                     }
-                    //  $worker_array['gender'] = $value[4];
+
 
                     if (!empty($value[4])) {
                         $worker_array['gender'] = $value[4];
@@ -1295,12 +1312,6 @@ class WorkerController extends Controller
                         break;
                     }
                     $formated_data[] = $worker_array;
-
-                    //  dd(   $formated_data );
-
-
-
-
                 }
 
 
@@ -1344,7 +1355,7 @@ class WorkerController extends Controller
             return redirect()->route('importWorkers', ['delegation_id' => $delegation_id, 'agency_id' => $agency_id, 'transaction_sell_line_id' => $transaction_sell_line_id])->with('notification', $output);
         }
 
-        //return $output;
+
         return redirect()->route('proposed_laborIndex')->with('notification', 'success insert');
     }
 }

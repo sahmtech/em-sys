@@ -155,6 +155,7 @@ class EssentialsManageEmployeeController extends Controller
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
             ->where('essentials_employees_contracts.is_active', 1)
+            ->where('essentials_admission_to_works.is_active', 1)
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
@@ -1150,20 +1151,13 @@ class EssentialsManageEmployeeController extends Controller
 
         if ($user) {
             if ($user->user_type == 'employee' || $user->user_type == 'manager') {
+                $officialDocuments = $user->OfficialDocument;
+                $contract_doc = $user->contract()->where('is_active', 1)->first(); // Use ->first() to retrieve the contract
 
-                $documents = $user->OfficialDocument;
-            } else if ($user->user_type == 'worker') {
-
-
-                if (!empty($user->proposal_worker_id)) {
-
-
-                    $officialDocuments = $user->OfficialDocument;
-                    $workerDocuments = $user->proposal_worker?->worker_documents;
-
-                    $documents = $officialDocuments->merge($workerDocuments);
+                if ($contract_doc !== null) { // Check if a contract exists
+                    $documents = $officialDocuments->merge([$contract_doc]); // Wrap $contract_doc in an array since merge expects a collection
                 } else {
-                    $documents = $user->OfficialDocument;
+                    $documents = $officialDocuments;
                 }
             }
         }
@@ -1237,6 +1231,11 @@ class EssentialsManageEmployeeController extends Controller
      * @param int $id
      * @return Renderable
      */
+
+    public function get_connect_camera()
+    {
+        return view('essentials::employee_affairs.employee_affairs.connect_camera_index');
+    }
     public function edit($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -1367,9 +1366,10 @@ class EssentialsManageEmployeeController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number',
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file'
 
             ]);
+            // dd($request->file('Iban_file'));
 
 
 
@@ -1416,11 +1416,20 @@ class EssentialsManageEmployeeController extends Controller
 
             if ($request->hasFile('Iban_file')) {
                 error_log("1111");
+
                 $file = request()->file('Iban_file');
-                $path = $file->store('/employee_bank_ibans');
+                $path = $file->store('/officialDocuments');
                 $bank_details = $request->input('bank_details');
                 $bank_details['Iban_file'] = $path;
                 $user_data['bank_details'] = json_encode($bank_details);
+
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+
+                $Iban_doc->update($input);
             }
 
             $user->update($user_data);

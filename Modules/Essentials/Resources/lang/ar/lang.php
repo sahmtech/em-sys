@@ -1038,9 +1038,17 @@ return [
   'work_card_duration' => 'مدة رخصة العمل',
   'renew_duration' => 'مدة التجديد',
   'pay_number' => ' رقم السداد',
-  'fees' => 'رسوم  مكتب العمل ',
+  'passport_fees' => 'رسوم الجوازات ',
+  'work_card_fees' => 'رسوم  مكتب العمل ',
+  'other_fees' => 'رسوم أخرى',
+  'payment_number_invalid' => 'لا يمكن اتمام عملية الحفظ لأن رقم السداد يجب أن يكون مكونا من 14 رقم فقط أو فارغ',
   'nationality' => 'الجنسية ',
+  '12_months' => '12 شهرا',
+  'contract_file' => 'ملف العقد',
   'all' => 'الكل',
+  'connect_camera' => 'الاتصال بالكاميرا',
+  'open_camera' => 'افتح الكاميرا',
+  'capture_photo' => 'التقط صورة ',
   'residencyreports' => 'تقرير تكاليف الإقامات',
 
   'company_name' => 'اسم الشركة',
@@ -1749,6 +1757,7 @@ return [
   '21_days' => '21 يوم',
   '31_days' => '31 يوم',
 
+
   'companies' => 'الشركات',
   'payroll_for' => 'مسير الرواتب لـ',
 
@@ -1774,4 +1783,5 @@ return [
   'the_total' => 'الإجمالي',
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
+
 ];

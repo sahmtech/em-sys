@@ -183,6 +183,7 @@ return [
   'reports' => 'التقارير',
   'visa_reports' => 'ملخص التاشيرات',
   'visa_start_date' => 'تاريخ بداية التاشيرة',
+  'workers_exceed_target_number' => 'عدد العمال المضافين لنفس المكتب أكبر من العدد المفوض به',
   'visa_end_date' => 'تاريخ نهاية التاشيرة ',
   'visa_status' => 'حالة التاشيرة',
   'existing_visa' => 'تاشيرة قائمة ',
@@ -191,5 +192,15 @@ return [
   'targeted_workers_number' => 'عدد العمالة المطلوب',
   'number_of_added_workers_more_than_target' => 'عدد العمالة المضافة للتاشيرة أكبر من العدد المطلوب',
   'can_not_add_more_workers' => 'لا يمكن إضافة  عمال أكثر من العدد المطلوب',
+  'travel_categories' => 'تذاكر السفر',
+  'view_travel_categorie_requests' => 'عرض طلبات تذاكر السفر',
+  'book_visa' => 'حجز تذكرة سفر',
+  'select_company' => 'اختر شركة',
+  'data and time of trip' => 'تاريخ ووقت الرحلة',
+  'trip_data' => 'معلومات الرحلة',
+  'Time of Trip' => 'وقت الرحلة',
+  'Date of Trip' => 'تاريخ الرحلة',
+  'Airline company' => 'شركة الطيران',
+
 
 ];

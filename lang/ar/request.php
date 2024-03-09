@@ -208,6 +208,12 @@ return [
   'done' => 'تم التنفيذ',
   'not_yet_done' => 'لم يتم التنفيذ بعد',
   'created_department_name' => 'الإدارة التي أنشأت الطلب',
+  'travel_categories_requests' => 'طلبات تذاكر السفر',
+  'finish_procedure' => 'إنهاء الإجراء',
+  'travel_categorie' => 'فئة تذكرة السفر',
+  'book_visa' => 'حجز تذكرة سفر',
+  'view_visa_data' => 'عرض معلومات الرحلة',
+  
 
 
 
