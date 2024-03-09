@@ -1854,8 +1854,6 @@ class CustomAdminSidebarMenu
             }
 
 
-
-
             // if ($is_admin || auth()->user()->can('essentials.view_facilities_management') ) {
             //     $menu->url(
             //         action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
@@ -1897,20 +1895,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin || auth()->user()->can('internationalrelations.view_employment_companies')) {
-                $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
-                    __('internationalrelations::lang.EmploymentCompanies'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
-                );
-            }
-            if ($is_admin || auth()->user()->can('internationalrelations.view_Airlines')) {
-                $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
-                    __('internationalrelations::lang.Airlines'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
-                );
-            }
+
             if (
                 $is_admin || auth()->user()->can('internationalrelations.international_reports')
             ) {
@@ -1942,6 +1927,15 @@ class CustomAdminSidebarMenu
                         (request()->segment(2) == 'allIrRequests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
+            if ($is_admin || auth()->user()->can('internationalrelations.travel_categories')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index']),
+                    __('internationalrelations::lang.travel_categories'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' &&
+                        request()->segment(2) == 'travel_categories']
+                );
+            }
+
             if ($is_admin || auth()->user()->can('internationalrelations.crud_all_reports')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
@@ -1957,6 +1951,20 @@ class CustomAdminSidebarMenu
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'IrsalaryRequests'
                     ]
+                );
+            }
+            if ($is_admin || auth()->user()->can('internationalrelations.view_employment_companies')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
+                    __('internationalrelations::lang.EmploymentCompanies'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
+                );
+            }
+            if ($is_admin || auth()->user()->can('internationalrelations.view_Airlines')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
+                    __('internationalrelations::lang.Airlines'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 );
             }
         });
