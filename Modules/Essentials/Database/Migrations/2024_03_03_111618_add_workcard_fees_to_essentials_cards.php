@@ -13,14 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_leave_types', function (Blueprint $table) {
-           
-           
-
-        
-            $table->enum('leave_type', ['Annual', 'Urgent'])->after('id'); 
-
-           
+        Schema::table('essentials_work_cards', function (Blueprint $table) {
+            $table->string('work_card_fees')->nullable()->after('fees');
         });
     }
 
@@ -32,7 +26,6 @@ return new class extends Migration
     public function down()
     {
         Schema::table('', function (Blueprint $table) {
-
         });
     }
 };

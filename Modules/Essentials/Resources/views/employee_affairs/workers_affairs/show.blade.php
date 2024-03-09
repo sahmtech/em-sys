@@ -126,7 +126,7 @@
                                                 @if ($document->file_path || $document->attachment)
                                                     <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
                                                         data-file-url="{{ $document->file_path ?? $document->attachment }}">
-                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                       {{ trans('followup::lang.' . ($document->type ?? 'contract_file')) }}
                                                     </a>
                                                 @else
                                                     {{ trans('followup::lang.' . $document->type) }}

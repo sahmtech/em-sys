@@ -1548,5 +1548,5 @@ return [
     'validate_mobile' => 'Mobile number should start with 05 and have exactly 10 digits',
     'pills' => 'Pills',
     'create_pill' => 'create pill',
-
+    'all_notifications' => 'All Notifications',
 ];

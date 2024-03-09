@@ -554,11 +554,15 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="form-group">
+                                    
+                                       
+                                    
                                     {!! Form::file('contract_file', [
                                         'class' => 'form-control',
                                         'style' => 'height:36px; ',
                                         'accept' => '.*',
                                     ]) !!}
+                                    
 
                                 </div>
                             </div>
@@ -603,7 +607,7 @@
 
                 $('#update_iban_file_form').submit(function(e) {
                     if (!ibanFileChanged) {
-                        e.preventDefault(); // Prevent form submission if no changes made
+                        e.preventDefault(); 
                     }
                 });
 

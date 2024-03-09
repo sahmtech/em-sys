@@ -505,10 +505,25 @@ class EssentialsWorkersAffairsController extends Controller
 
                 $officialDocuments = $user->OfficialDocument;
                 $workerDocuments = $user->proposal_worker?->worker_documents;
+                $contract_doc = $user->contract()->where('is_active', 1)->first();
+                if ($contract_doc !== false) {
 
-                $documents = $officialDocuments->merge($workerDocuments);
+                    $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
+                } else {
+
+                    $documents = $officialDocuments->merge($workerDocuments);
+                }
             } else {
-                $documents = $user->OfficialDocument;
+                $officialDocuments = $user->OfficialDocument;
+                $contract_doc = $user->contract()->where('is_active', 1)->first();
+
+
+                if ($contract_doc !== false) {
+
+                    $documents = $officialDocuments->merge([$contract_doc]);
+                } else {
+                    $documents = $user->OfficialDocument;
+                }
             }
         }
 
@@ -745,6 +760,22 @@ class EssentialsWorkersAffairsController extends Controller
 
 
             $user = User::findOrFail($id);
+            if ($request->hasFile('Iban_file')) {
+                error_log($request->hasFile('Iban_file'));
+
+                $file = request()->file('Iban_file');
+                $path = $file->store('/officialDocuments');
+                $bank_details = $request->input('bank_details');
+                $bank_details['Iban_file'] = $path;
+                $user_data['bank_details'] = json_encode($bank_details);
+
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+                $Iban_doc->update($input);
+            }
 
             $delete_iban_file = $request->delete_iban_file ?? null;
             if ($delete_iban_file && $delete_iban_file == 1) {
@@ -761,6 +792,13 @@ class EssentialsWorkersAffairsController extends Controller
                 $bank_details = $request->input('bank_details');
                 $bank_details['Iban_file'] = $path;
                 $user_data['bank_details'] = json_encode($bank_details);
+
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                $bankCode = $bank_details['bank_code'];
+                $input['number'] = $bankCode;
+                $input['file_path'] =  $path;
+                $Iban_doc->update($input);
             }
             $user->update($user_data);
 

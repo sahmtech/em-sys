@@ -536,8 +536,8 @@
            
 
 
-            function calculateFees(selectedValue) {
-                switch (selectedValue) {
+            function calculateFees(selectedDuration) {
+                switch (selectedDuration) {
                     case '3':
                         return 2425;
                     case '6':
@@ -610,9 +610,16 @@
                            
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
-                                style: 'height: 40px; width:140px; text-align: center;padding: 0 10px;',
-                                text: '{{ __('essentials::lang.fees') }}'
+                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                text: '{{ __('essentials::lang.work_card_fees') }}'
                             }));
+
+                             labelsRow.append($('<label>', {
+                                class: inputClasses + 'col-md-2',
+                                style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
+                                text: '{{ __('essentials::lang.passport_fees') }}'
+                            }));
+
 
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
@@ -744,57 +751,157 @@
                                     class:  inputClasses2 + ' input-with-padding'+' fees-input',
                                     style: 'height: 40px; width:140px; text-align: center;padding: 0 10px; !important',
                                     placeholder: '{{ __('essentials::lang.fees') }}',
-                                    
+                                    required: true ,
                                     value: row.fees
                                 });
-
                                 rowDiv.append(feesInput_);
 
-
-                                var pay_numberInput = $('<input>', {
-                                    type: 'number',
-                                    name: 'Payment_number[]',
-                                    class:  inputClasses2 + ' input-with-padding', 
-                                    style: 'height: 40px; width:140px; text-align: center; padding: 0 10px; !important',
-                                    placeholder: '{{ __('essentials::lang.pay_number') }}',
-                                   
-                                    value: row.Payment_number
+                                 var passportFeesSelect = $('<select>', {
+                                    name: 'passportfees[]',
+                                    class: inputClasses2 + ' input-with-padding fees-input',
+                                    style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
+                                    placeholder: '{{ __('essentials::lang.passport_fees') }}',
+                                    required: true 
                                 });
-                                rowDiv.append(pay_numberInput);
                                
+                               
+                                var option = $('<option>', {
+                                    value: row.passport_fees,
+                                    text: row.passport_fees
+                                });
+                                passportFeesSelect.append(option);
+                                rowDiv.append(passportFeesSelect);
+
+                                
+
+                                    var pay_numberInput = $('<input>', {
+                                        type: 'number',
+                                        name: 'Payment_number[]',
+                                        class: inputClasses2 + ' input-with-padding',
+                                        style: 'height: 40px; width:160px; text-align: center; padding: 0 10px; !important',
+                                        placeholder: '{{ __('essentials::lang.pay_number') }}',
+                                        value: row.Payment_number
+                                    });
+
+                                    
+                                     
+                                   pay_numberInput.on('input', function() {
+                                            var currentValue = $(this).val().replace(/\D/g, ''); // Remove non-numeric characters
+                                            if (currentValue.length !== 14) {
+                                                // If not exactly 14 digits, show error message
+                                                $('#error-message').text('You must enter exactly 14 numbers').show();
+                                            } else {
+                                                // If exactly 14 digits, hide error message
+                                                $('#error-message').hide();
+                                            }
+                                        });
+
+
+                                    rowDiv.append(pay_numberInput);
 
 
                                 $('.modal-body').append(rowDiv);
                                 
+                              
+
+
                                 $(document).ready(function() {
-                                    
-                                    var defaultDuration = $('select[name="renew_duration[]"]').val();
-                                    
-                                    
-                                    var feesInput = $('select[name="renew_duration[]"]').closest('.row').find('.fees-input');
-                                    
-                                    
-                                    var calculatedFees = calculateFees(defaultDuration);
-                                    
-                                    
-                                    feesInput.val(calculatedFees);
+                                
+                                var defaultDuration = $('select[name="renew_duration[]"]').val();
+
+                                
+                                var feesInput = $('select[name="renew_duration[]"]').closest('.row').find('.fees-input');
+                                var calculatedFees = calculateFees(defaultDuration);
+                                feesInput.val(calculatedFees);
+
+                                
+                                var passportFeesSelect = $('select[name="renew_duration[]"]').closest('.row').find('select[name="passportfees[]"]');
+                                passportFeesSelect.empty();
+                                var feesOptions = {};
+                                if (defaultDuration === '3') {
+                                    feesOptions = {
+                                        163: '163',
+                                        288: '288',
+                                        413: '413',
+                                    };
+                                } else if (defaultDuration === '6') {
+                                    feesOptions = {
+                                        326: '326',
+                                        825: '825',
+                                    };
+                                } else if (defaultDuration === '9') {
+                                    feesOptions = {
+                                        488: '488',
+                                    };
+                                } else if (defaultDuration === '12') {
+                                    feesOptions = {
+                                        650: '650',
+                                        1150: '1150',
+                                    };
+                                }
+
+                                $.each(feesOptions, function(value, text) {
+                                    var option = $('<option>', {
+                                        value: value,
+                                        text: text
+                                    });
+                                    passportFeesSelect.append(option);
                                 });
+
+                                
+                                passportFeesSelect.trigger('change');
+                            });
+
+
                                
-                                $(document).on('change', 'select[name="renew_duration[]"]', function() {
-                                    console.log("option");
-                
-                                    
-                                    var selectedDuration = $(this).val();
-                                    
-                                    
-                                    var feesInput = $(this).closest('.row').find('.fees-input');
-                                    
-                                    
-                                    var calculatedFees = calculateFees(selectedDuration);
-                                    
-                                    
-                                    feesInput.val(calculatedFees);
+                              $(document).on('change', 'select[name="renew_duration[]"]', function() {
+                                var selectedDuration = $(this).val();
+                                var feesInput = $(this).closest('.row').find('.fees-input');
+                                var calculatedFees = calculateFees(selectedDuration);
+                                feesInput.val(calculatedFees);
+
+                                var passportFeesSelect = $(this).closest('.row').find('select[name="passportfees[]"]');
+                                passportFeesSelect.empty();
+
+                                var feesOptions = {};
+                                if (selectedDuration === '3') {
+                                    feesOptions = {
+                                        163: '163',
+                                        288: '288',
+                                        413: '413',
+                                    };
+                                } else if (selectedDuration === '6') {
+                                    feesOptions = {
+                                        326: '326',
+                                        825: '825',
+                                    };
+                                } else if (selectedDuration === '9') {
+                                    feesOptions = {
+                                        488: '488',
+                                    };
+                                } else if (selectedDuration === '12') {
+                                    feesOptions = {
+                                        650: '650',
+                                        1150: '1150',
+                                    };
+                                }
+
+                                $.each(feesOptions, function(value, text) {
+                                    var option = $('<option>', {
+                                        value: value,
+                                        text: text
+                                    });
+                                    passportFeesSelect.append(option);
                                 });
+
+                                
+                                passportFeesSelect.trigger('change');
+                              });
+
+
+
+
+                                 
 
                               
 
@@ -832,6 +939,7 @@
                                 operation_table.ajax.reload();
                                 toastr.success(response.msg);
                                 $('#renewOperationModal').modal('hide');
+                                location.reload();
                             } else {
                                 toastr.error(response.msg);
                                 $('#renewOperationModal').modal('hide');

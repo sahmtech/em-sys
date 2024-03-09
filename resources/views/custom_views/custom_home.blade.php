@@ -105,7 +105,7 @@
                 </div> --}}
 
         </div>
-        @if (count($cards) < 4)
+        @if (count($cards) < 5)
             <div class="card-grid">
             </div>
             <div class="card-grid">
