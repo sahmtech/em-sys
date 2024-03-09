@@ -1046,6 +1046,9 @@ return [
   '12_months' => '12 شهرا',
   'contract_file' => 'ملف العقد',
   'all' => 'الكل',
+  'connect_camera' => 'الاتصال بالكاميرا',
+  'open_camera' => 'افتح الكاميرا',
+  'capture_photo' => 'التقط صورة ',
   'residencyreports' => 'تقرير تكاليف الإقامات',
 
   'company_name' => 'اسم الشركة',

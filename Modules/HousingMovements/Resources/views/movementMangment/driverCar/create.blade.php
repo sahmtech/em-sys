@@ -24,22 +24,22 @@
 
 
                         <div class="row">
-                            <div class="col-sm-12" style="margin-top: 0px;">
-                                {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
+                            <div class="col-sm-12" >
+                                {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}
+                                  *
 
                                 <select class="form-control " name="user_id" id="worker__select" style="padding: 2px;">
-                                    {{-- <option value="all" selected>@lang('lang_v1.all')</option> --}}
+                                  
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}">
                                             {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name . ' - ' . $worker->essentialsEmployeeAppointmets->profession->name }}
                                         </option>
                                     @endforeach
                                 </select>
-                                {{-- <input type="text" id="searchWorkerInput" placeholder="Search Worker"
-                                    style="margin-top: 5px;"> --}}
+                              
                             </div>
 
-                            <div class="col-sm-12" style="margin-top: 5px;">
+                            <div class="col-sm-12" >
                                 {!! Form::label('carType_label', __('housingmovements::lang.car')) !!}<span style="color: red; font-size:10px"> *</span>
 
                                 <select class="form-control" id="car_id" name="car_id" style="padding: 2px;"
@@ -56,12 +56,12 @@
                             </div>
                         </div>
 
-                        <div class="row" style="margin-top: 5px;">
+                        <div class="row" >
 
-                            <div class="col-sm-6">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('counter_number', __('housingmovements::lang.counter_number') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                    {!! Form::number('counter_number', '', [
+                                    {!! Form::number('counter_number', null, [
                                         'class' => 'form-control',
                                         'required',
                                         'placeholder' => __('housingmovements::lang.counter_number'),
@@ -79,7 +79,7 @@
                                  
                                 ]) !!}
                             </div>
-                            {{-- <div class="col-sm-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('delivery_date', __('housingmovements::lang.delivery_date') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                     {!! Form::date('date', null, [
@@ -94,7 +94,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('car_image', __('housingmovements::lang.car_image') . '  ') !!}
                                     {!! Form::file('car_image', ['class' => 'form-control', 'accept' => 'image/*']) !!}

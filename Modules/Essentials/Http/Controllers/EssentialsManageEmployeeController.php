@@ -1231,6 +1231,11 @@ class EssentialsManageEmployeeController extends Controller
      * @param int $id
      * @return Renderable
      */
+
+    public function get_connect_camera()
+    {
+        return view('essentials::employee_affairs.employee_affairs.connect_camera_index');
+    }
     public function edit($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
