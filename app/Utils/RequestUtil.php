@@ -317,8 +317,9 @@ class RequestUtil extends Util
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
+            $type = RequestsType::where('id', $request->type)->first()->type;
 
-            if ($request->type == 'cancleContractRequest' && !empty($request->main_reason)) {
+            if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
 
                 $contract = EssentialsEmployeesContract::where('employee_id', $request->worker_id)->firstOrFail();
                 if (is_null($contract->wish_id)) {
@@ -372,7 +373,8 @@ class RequestUtil extends Util
                     }
 
 
-                    if ($request->type == "exitRequest") {
+                    if ($type == "exitRequest") {
+
                         $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $userId)->first()->contract_end_date ?? null;
                     }
 
@@ -457,7 +459,7 @@ class RequestUtil extends Util
 
 
                             if ($createdBy_type == 'employee' || ($createdBy_type == 'manager' &&  $createdBy_department !=  $department_id) || ($createdBy_type == 'admin' && !(in_array($department_id, $departmentIds)))) {
-                                error_log('555555555555555');
+
                                 if ($department_id) {
                                     $process = RequestProcess::create([
                                         'started_department_id' => $departmentIds[0],
@@ -466,7 +468,7 @@ class RequestUtil extends Util
                                         'status' => 'pending'
                                     ]);
                                 } else {
-                                    error_log('66666666666666666666');
+
 
                                     RequestAttachment::where('request_id', $Request->id)->delete();
                                     $Request->delete();

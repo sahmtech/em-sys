@@ -115,8 +115,8 @@ class DriverCarController extends Controller
      */
     public function create()
     {
-        
-        $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+
+        $essentials_specializations_ids = EssentialsProfession::where('type', 'job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
         $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
         $driver_ids = DriverCar::all()->pluck('user_id');
 
@@ -136,8 +136,10 @@ class DriverCarController extends Controller
         }
 
 
-
-        return view('housingmovements::movementMangment.driverCar.create', compact('workers', 'cars'));
+        return view(
+            'housingmovements::movementMangment.driverCar.create',
+            compact('workers', 'cars')
+        );
     }
 
     /**
@@ -197,7 +199,7 @@ class DriverCarController extends Controller
      */
     public function edit($id)
     {
-        $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+        $essentials_specializations_ids = EssentialsProfession::where('type', 'job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
         $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
         $driver = DriverCar::find($id);
         $driver_ids = DriverCar::all()->pluck('user_id');

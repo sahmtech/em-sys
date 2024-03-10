@@ -259,7 +259,16 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
+                    [
+                        'value' => 'internationalrelations.view_travel_categorie_requests',
+                        'label' => __('internationalrelations::lang.view_travel_categorie_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.book_visa',
+                        'label' => __('internationalrelations::lang.book_visa'),
+                        'default' => false,
+                    ],
 
 
 
