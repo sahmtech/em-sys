@@ -786,6 +786,7 @@ class HomeController extends Controller
                 'title' =>  $sent_notification->title ?? '',
                 'msg' => $sent_notification->msg ?? '',
                 'icon_class' =>  $icon_classes[$sent_notification->type] ?? '',
+                // 'link' => route('showNotificationModal'),
                 'link' => '',
                 'created_at' => Carbon::parse($sent_notification->created_at)->diffForHumans() ?? '',
                 'read_at' => $notification->read_at ?? '',
@@ -906,6 +907,11 @@ class HomeController extends Controller
         }
 
         return view('home.calendar')->with(compact('all_locations', 'users', 'event_types'));
+    }
+
+    public function showNotificationModal()
+    {
+        return view('custom_views.notification_modal', ['showModal' => true]);
     }
 
     public function showNotification($id)
