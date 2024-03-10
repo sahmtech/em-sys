@@ -125,7 +125,8 @@ class EssentialsManageEmployeeController extends Controller
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
 
-        $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
+        // $contract = EssentialsEmployeesContract::all()
+        // ->where()->pluck('contract_end_date', 'id');
         $companies = Company::all()->pluck('name', 'id');
 
         $companies_ids = Company::pluck('id')->toArray();
@@ -1177,7 +1178,11 @@ class EssentialsManageEmployeeController extends Controller
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)
+            ->where('status', 'valid')
+            ->where('is_active', 1)
+            ->first();
 
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
@@ -1283,7 +1288,13 @@ class EssentialsManageEmployeeController extends Controller
         $roles = $this->getRolesArray($business_id);
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
-        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->where('is_active', 1)->select('*')->first();
+
+        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)
+            ->where('is_active', 1)
+            ->where('status', 'valid')
+            ->select('*')
+            ->first();
+        //dd($contract);
 
 
         $allowance_deduction_ids = [];

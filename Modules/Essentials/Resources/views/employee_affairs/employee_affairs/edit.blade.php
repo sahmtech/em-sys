@@ -193,6 +193,8 @@
                 </div>
             </div>
         </div>
+        
+
 
         <div class="modal fade" data-file-path="{{ !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? '' : '' }}"
             id="ibanFilePopupModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
@@ -343,10 +345,10 @@
                 </div>
             </div>
         </div>
-
-
+ 
 
         {!! Form::close() !!}
+      
     @stop
     @section('javascript')
     
