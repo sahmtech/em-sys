@@ -2580,10 +2580,12 @@ class DataController extends Controller
 
 
                 if (request()->hasFile('contract_file')) {
-
                     $file = request()->file('contract_file');
                     $filePath = $file->store('/employee_contracts');
                     $contract->file_path = $filePath;
+                } elseif (request()->input('existing_contract_file')) {
+                    // If existing_contract_file is not empty, keep the existing file path
+                    $contract->file_path = request()->input('existing_contract_file');
                 }
                 $contract->save();
             }

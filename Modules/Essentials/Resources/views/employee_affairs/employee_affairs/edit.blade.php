@@ -194,8 +194,7 @@
             </div>
         </div>
 
-        <div class="modal fade"
-            data-file-path="{{ !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? '' : '' }}"
+        <div class="modal fade" data-file-path="{{ !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? '' : '' }}"
             id="ibanFilePopupModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -224,6 +223,9 @@
                                         'style' => 'height:36px; ',
                                         'accept' => '.*',
                                     ]) !!}
+                                      @if(!empty(json_decode($user->bank_details, true)['Iban_file']))
+                                        <input type="hidden" name="existing_iban_file" value="{{ json_decode($user->bank_details, true)['Iban_file'] }}">
+                                    @endif
 
                                 </div>
                             </div>
@@ -313,11 +315,17 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="form-group">
-                                    {!! Form::file('contract_file', [
+                                    {!! Form::file('contract_file',
+                                    
+
+                                     [
                                         'class' => 'form-control',
                                         'style' => 'height:36px; ',
                                         'accept' => '.*',
                                     ]) !!}
+                                     @if(!empty($contract->file_path))
+                                        <input type="hidden" name="existing_contract_file" value="{{ $contract->file_path }}">
+                                    @endif
 
                                 </div>
                             </div>
@@ -341,6 +349,76 @@
         {!! Form::close() !!}
     @stop
     @section('javascript')
+    
+    <script>
+          $(document).ready(function() {
+                let contractFileChanged = false;
+
+                $('#ContractFileLink').on('click', function(e) {
+                    e.preventDefault();
+                    openContractFilePopup();
+                });
+
+                $('input[type="file"]').on('change', function(event) {
+                    previewContractFile(event);
+                    contractFileChanged = true;
+                    $('#delete_contract_file_input').val('0');
+                    enableSaveButton();
+                });
+
+
+                $('#update_contract_file_form').submit(function(e) {
+                    if (!contractFileChanged) {
+                        e.preventDefault();
+                    }
+                });
+
+                function openContractFilePopup() {
+                    const modal = $('#ContractFilePopupModal');
+                    const filePath = modal.data('file-path');
+                    const filePreviewIframe = $('#popupContractFilePreview');
+                    const filePreviewRow = $('#contractFilePreviewRow');
+
+                    if (filePath) {
+                        filePreviewIframe.attr('src', '/uploads/' + filePath);
+                        filePreviewRow.show();
+                    } else {
+                        filePreviewIframe.attr('src', '');
+                        filePreviewRow.hide();
+                    }
+
+                    modal.modal('show');
+                }
+
+
+
+                function enableSaveButton() {
+                    $('.saveFile').prop('disabled', !contractFileChanged);
+                }
+
+                function previewContractFile(event) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var output = document.getElementById('popupContractFilePreview');
+                        output.src = e.target.result;
+                        document.getElementById('contractFilePreviewRow').style.display =
+                            '';
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+
+                $('.deleteContractFile').on('click', function() {
+                    $('#popupContractFilePreview').attr('src', '');
+                    $('input[type="file"]').val('');
+                    $('#delete_contract_file_input').val('1');
+                    ibanFileChanged = true;
+                    enableSaveButton();
+                    document.getElementById('contractFilePreviewRow').style.display =
+                        'none';
+                });
+            });
+
+    </script>
         <script type="text/javascript">
             $(document).ready(function() {
                 let ibanFileChanged = false;
@@ -410,72 +488,74 @@
             });
 
 
-            $(document).ready(function() {
-                let contractFileChanged = false;
+            // $(document).ready(function() {
+            //     let contractFileChanged = false;
 
-                $('#ContractFileLink').on('click', function(e) {
-                    e.preventDefault();
-                    openContractFilePopup();
-                });
+            //     $('#ContractFileLink').on('click', function(e) {
+            //         e.preventDefault();
+            //         openContractFilePopup();
+            //     });
 
-                $('input[type="file"]').on('change', function(event) {
-                    previewContractFile(event);
-                    contractFileChanged = true;
-                    $('#delete_contract_file_input').val('0');
-                    enableSaveButton();
-                });
-
-
-                $('#update_contract_file_form').submit(function(e) {
-                    if (!contractFileChanged) {
-                        e.preventDefault();
-                    }
-                });
-
-                function openContractFilePopup() {
-                    const modal = $('#ContractFilePopupModal');
-                    const filePath = modal.data('file-path');
-                    const filePreviewIframe = $('#popupContractFilePreview');
-                    const filePreviewRow = $('#contractFilePreviewRow');
-
-                    if (filePath) {
-                        filePreviewIframe.attr('src', '/uploads/' + filePath);
-                        filePreviewRow.show();
-                    } else {
-                        filePreviewIframe.attr('src', '');
-                        filePreviewRow.hide();
-                    }
-
-                    modal.modal('show');
-                }
+            //     $('input[type="file"]').on('change', function(event) {
+            //         previewContractFile(event);
+            //         contractFileChanged = true;
+            //         $('#delete_contract_file_input').val('0');
+            //         enableSaveButton();
+            //     });
 
 
+            //     $('#update_contract_file_form').submit(function(e) {
+            //         if (!contractFileChanged) {
+            //             e.preventDefault();
+            //         }
+            //     });
 
-                function enableSaveButton() {
-                    $('.saveFile').prop('disabled', !contractFileChanged);
-                }
+            //     function openContractFilePopup() {
+            //         const modal = $('#ContractFilePopupModal');
+            //         const filePath = modal.data('file-path');
+            //         const filePreviewIframe = $('#popupContractFilePreview');
+            //         const filePreviewRow = $('#contractFilePreviewRow');
 
-                function previewContractFile(event) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        var output = document.getElementById('popupContractFilePreview');
-                        output.src = e.target.result;
-                        document.getElementById('contractFilePreviewRow').style.display =
-                            '';
-                    };
-                    reader.readAsDataURL(event.target.files[0]);
-                }
+            //         if (filePath) {
+            //             filePreviewIframe.attr('src', '/uploads/' + filePath);
+            //             filePreviewRow.show();
+            //         } else {
+            //             filePreviewIframe.attr('src', '');
+            //             filePreviewRow.hide();
+            //         }
 
-                $('.deleteContractFile').on('click', function() {
-                    $('#popupContractFilePreview').attr('src', '');
-                    $('input[type="file"]').val('');
-                    $('#delete_contract_file_input').val('1');
-                    ibanFileChanged = true;
-                    enableSaveButton();
-                    document.getElementById('contractFilePreviewRow').style.display =
-                        'none';
-                });
-            });
+            //         modal.modal('show');
+            //     }
+
+
+
+            //     function enableSaveButton() {
+            //         $('.saveFile').prop('disabled', !contractFileChanged);
+            //     }
+
+            //     function previewContractFile(event) {
+            //         var reader = new FileReader();
+            //         reader.onload = function(e) {
+            //             var output = document.getElementById('popupContractFilePreview');
+            //             output.src = e.target.result;
+            //             document.getElementById('contractFilePreviewRow').style.display =
+            //                 '';
+            //         };
+            //         reader.readAsDataURL(event.target.files[0]);
+            //     }
+
+
+
+            //     $('.deleteContractFile').on('click', function() {
+            //         $('#popupContractFilePreview').attr('src', '');
+            //         $('input[type="file"]').val('');
+            //         $('#delete_contract_file_input').val('1');
+            //         ibanFileChanged = true;
+            //         enableSaveButton();
+            //         document.getElementById('contractFilePreviewRow').style.display =
+            //             'none';
+            //     });
+            // });
 
 
 

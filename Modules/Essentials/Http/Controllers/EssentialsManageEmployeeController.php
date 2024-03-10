@@ -1434,15 +1434,34 @@ class EssentialsManageEmployeeController extends Controller
 
                 $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
 
-                // Check if $Iban_doc exists
+
                 if ($Iban_doc) {
-                    // Update existing $Iban_doc
+
                     $Iban_doc->update($input);
                 } else {
-                    // Create new $Iban_doc if it doesn't exist
+
                     $input['employee_id'] = $user->id;
                     $input['type'] = 'Iban';
                     EssentialsOfficialDocument::create($input);
+                }
+            } elseif ($request->existing_iban_file) {
+
+                $bank_details = $request->input('bank_details');
+                $bank_details['Iban_file'] = $request->existing_iban_file;
+                $user_data['bank_details'] = json_encode($bank_details);
+
+                $bankCode = $bank_details['bank_code'];
+                $input = [
+                    'number' => $bankCode,
+                    'file_path' => $request->existing_iban_file,
+                ];
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+
+
+                if ($Iban_doc) {
+
+                    $Iban_doc->update($input);
                 }
             }
 
