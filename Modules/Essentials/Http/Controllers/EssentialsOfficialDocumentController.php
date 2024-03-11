@@ -188,11 +188,11 @@ class EssentialsOfficialDocumentController extends Controller
                     'doc_number',
                     'issue_date',
                     'issue_place',
-
                     'expiration_date',
                     'file'
                 ]
             );
+
 
 
             $input2['type'] = $input['doc_type'];
@@ -201,7 +201,8 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['expiration_date'] = $input['expiration_date'];
             $input2['employee_id'] =  $request->input('employees2');
             $input2['issue_place'] = $input['issue_place'];
-            $input2['is_active'] = $input['is_active'];
+            $input2['is_active'] = 1;
+            $input2['status'] = 'valid';
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
@@ -210,7 +211,7 @@ class EssentialsOfficialDocumentController extends Controller
             }
 
 
-            EssentialsOfficialDocument::create($input2);
+            $doc = EssentialsOfficialDocument::create($input2);
 
 
             $output = [
