@@ -125,7 +125,8 @@ class EssentialsManageEmployeeController extends Controller
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
 
-        $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
+        // $contract = EssentialsEmployeesContract::all()
+        // ->where()->pluck('contract_end_date', 'id');
         $companies = Company::all()->pluck('name', 'id');
 
         $companies_ids = Company::pluck('id')->toArray();
@@ -146,7 +147,6 @@ class EssentialsManageEmployeeController extends Controller
             }
         }
 
-
         $users = User::whereIn('users.id', $userIds)
             ->with([
                 'userAllowancesAndDeductions',
@@ -154,11 +154,17 @@ class EssentialsManageEmployeeController extends Controller
             ])
             ->where('users.is_cmmsn_agnt', 0)
             ->where('user_type', '!=', 'worker')
-            ->where('essentials_employees_contracts.is_active', 1)
-            ->where('essentials_admission_to_works.is_active', 1)
-            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+
+            ->leftJoin('essentials_admission_to_works', function ($join) {
+                $join->on('essentials_admission_to_works.employee_id', '=', 'users.id')
+                    ->where('essentials_admission_to_works.is_active', 1);
+            })
+            ->leftJoin('essentials_employees_contracts', function ($join) {
+                $join->on('essentials_employees_contracts.employee_id', '=', 'users.id')
+                    ->where('essentials_employees_contracts.is_active', 1);
+            })
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+
             ->select([
                 'users.id as id',
                 'users.emp_number',
@@ -179,10 +185,10 @@ class EssentialsManageEmployeeController extends Controller
                 'users.status',
                 'users.essentials_salary',
                 'users.total_salary',
-
-
             ])
             ->orderBy('id', 'desc');
+
+
 
         if (!empty($request->input('specialization')) && $request->input('specialization') != 'all') {
 
@@ -1172,7 +1178,11 @@ class EssentialsManageEmployeeController extends Controller
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)
+            ->where('status', 'valid')
+            ->where('is_active', 1)
+            ->first();
 
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
@@ -1278,7 +1288,13 @@ class EssentialsManageEmployeeController extends Controller
         $roles = $this->getRolesArray($business_id);
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
-        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->where('is_active', 1)->select('*')->first();
+
+        $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)
+            ->where('is_active', 1)
+            ->where('status', 'valid')
+            ->select('*')
+            ->first();
+        //dd($contract);
 
 
         $allowance_deduction_ids = [];
@@ -1415,22 +1431,51 @@ class EssentialsManageEmployeeController extends Controller
             }
 
             if ($request->hasFile('Iban_file')) {
-                error_log("1111");
-
-                $file = request()->file('Iban_file');
+                $file = $request->file('Iban_file');
                 $path = $file->store('/officialDocuments');
                 $bank_details = $request->input('bank_details');
                 $bank_details['Iban_file'] = $path;
                 $user_data['bank_details'] = json_encode($bank_details);
 
+                $bankCode = $bank_details['bank_code'];
+                $input = [
+                    'number' => $bankCode,
+                    'file_path' => $path,
+                ];
 
                 $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
-                $bankCode = $bank_details['bank_code'];
-                $input['number'] = $bankCode;
-                $input['file_path'] =  $path;
 
-                $Iban_doc->update($input);
+
+                if ($Iban_doc) {
+
+                    $Iban_doc->update($input);
+                } else {
+
+                    $input['employee_id'] = $user->id;
+                    $input['type'] = 'Iban';
+                    EssentialsOfficialDocument::create($input);
+                }
+            } elseif ($request->existing_iban_file) {
+
+                $bank_details = $request->input('bank_details');
+                $bank_details['Iban_file'] = $request->existing_iban_file;
+                $user_data['bank_details'] = json_encode($bank_details);
+
+                $bankCode = $bank_details['bank_code'];
+                $input = [
+                    'number' => $bankCode,
+                    'file_path' => $request->existing_iban_file,
+                ];
+
+                $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+
+
+                if ($Iban_doc) {
+
+                    $Iban_doc->update($input);
+                }
             }
+
 
             $user->update($user_data);
 

@@ -1050,7 +1050,8 @@ return [
   'open_camera' => 'افتح الكاميرا',
   'capture_photo' => 'التقط صورة ',
   'residencyreports' => 'تقرير تكاليف الإقامات',
-
+  'sponsorship' => 'كفالة',
+  'minor' => 'ثانوي',
   'company_name' => 'اسم الشركة',
   'create_work_cards' => 'إضافة رخصة عمل',
   'select_altemployee' => 'اختر البديل',

@@ -2196,7 +2196,8 @@ class DataController extends Controller
             }
 
             if (!empty($user)) {
-                $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+                $contract = EssentialsEmployeesContract::where('employee_id', $user->id)
+                    ->where('is_active', 1)->first();
             } else {
                 $contract = null;
             }
@@ -2252,7 +2253,7 @@ class DataController extends Controller
                 'essentials_employees_contracts.status',
                 'essentials_employees_contracts.is_renewable',
 
-            ])->first();
+            ])->where('is_active', 1)->first();
             return view('essentials::partials.user_details_part', compact('contract', 'user_department', 'user_designstion', 'user', 'work_location'))
                 ->render();
         }
@@ -2549,13 +2550,15 @@ class DataController extends Controller
             }
 
 
-            //  dd(request()->input('contract_file_exist'));
+            //dd(request()->input('contract_type'));
             if (
                 request()->input('contract_number') != null || request()->input('contract_type') != null
                 || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
                 || request()->input('contract_file')
 
             ) {
+
+
 
                 $contractDuration =  request()->input('contract_duration');
                 $contract_per_period = request()->input('contract_duration_unit');
@@ -2576,16 +2579,22 @@ class DataController extends Controller
                 $contract->probation_period = request()->input('probation_period');
                 $contract->is_renewable = request()->input('is_renewable');
                 $contract->contract_type_id = request()->input('contract_type');
+                $contract->is_active = 1;
 
 
 
                 if (request()->hasFile('contract_file')) {
-
                     $file = request()->file('contract_file');
                     $filePath = $file->store('/employee_contracts');
                     $contract->file_path = $filePath;
+                } elseif (request()->input('existing_contract_file')) {
+
+                    $contract->file_path = request()->input('existing_contract_file');
                 }
+
+
                 $contract->save();
+                //dd($contract);
             }
 
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
