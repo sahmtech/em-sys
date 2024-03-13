@@ -144,6 +144,7 @@ return [
   "within_current_fy" => "خلال السنة المالية الحالية",
   "payroll" => " مسير الرواتب",
   "payrolls" => " مسيرات الرواتب",
+  "payrolls_management" => 'إدارة الرواتب',
   "payroll_create_edit" => "الراتب",
   "all_payrolls" => "كل مسيرات الرواتب",
   "proceed" => "إكمال",
@@ -1783,5 +1784,5 @@ return [
   'the_total' => 'الإجمالي',
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
-
+  'user_type' => 'الفئة',
 ];

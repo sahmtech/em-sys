@@ -62,7 +62,10 @@
                                     <table class="table table-bordered table-striped" id="payrolls_table" style="width: 100%;">
                                         <thead>
                                             <tr>
-                                                <th>@lang('essentials::lang.employee')</th>
+                                                <th>@lang('essentials::lang.name')</th>
+                                                <th>@lang('essentials::lang.user_type')</th>
+                                                <th>@lang('essentials::lang.company')</th>
+                                                <th>@lang('essentials::lang.project')</th>
                                                 <th>@lang('essentials::lang.month_year')</th>
                                                 <th>@lang('purchase.ref_no')</th>
                                                 <th>@lang('sale.total_amount')</th>
@@ -208,46 +211,56 @@
 
 
 
-            // payrolls_table = $('#payrolls_table').DataTable({
-            //     processing: true,
-            //     serverSide: true,
-            //     ajax: {
-            //         url: "{{ route('agentTimeSheet.payrolls') }}",
-            //     },
-            //     columnDefs: [{
+            payrolls_table = $('#payrolls_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('payrolls.payrolls.index') }}",
+                },
+                columnDefs: [{
 
-            //         orderable: false,
-            //         searchable: false,
-            //     }, ],
-            //     aaSorting: [
-            //         [4, 'desc']
-            //     ],
-            //     columns: [{
-            //             data: 'user',
-            //             name: 'user'
-            //         },
-            //         {
-            //             data: 'transaction_date',
-            //             name: 'transaction_date'
-            //         },
-            //         {
-            //             data: 'ref_no',
-            //             name: 'ref_no'
-            //         },
-            //         {
-            //             data: 'final_total',
-            //             name: 'final_total'
-            //         },
-            //         {
-            //             data: 'payment_status',
-            //             name: 'payment_status'
-            //         },
-            //         {
-            //             data: 'action',
-            //             name: 'action'
-            //         },
-            //     ],
-            // });
+                    orderable: false,
+                    searchable: false,
+                }, ],
+
+                columns: [{
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'user_type',
+                        name: 'user_type'
+                    },
+                    {
+                        data: 'company',
+                        name: 'company'
+                    },
+                    {
+                        data: 'project',
+                        name: 'project'
+                    },
+                    {
+                        data: 'transaction_date',
+                        name: 'transaction_date'
+                    },
+                    {
+                        data: 'ref_no',
+                        name: 'ref_no'
+                    },
+                    {
+                        data: 'final_total',
+                        name: 'final_total'
+                    },
+                    {
+                        data: 'payment_status',
+                        name: 'payment_status'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action'
+                    },
+                ],
+            });
 
 
 
