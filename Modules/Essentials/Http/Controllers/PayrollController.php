@@ -31,6 +31,8 @@ use Modules\Essentials\Entities\EssentialsUserSalesTarget;
 use Modules\Essentials\Entities\PayrollGroup;
 use Modules\Essentials\Notifications\PayrollNotification;
 use Modules\Essentials\Utils\EssentialsUtil;
+use Modules\Sales\Entities\SalesProject;
+use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 use Yajra\DataTables\Facades\DataTables;
 
 class PayrollController extends Controller
@@ -247,6 +249,142 @@ class PayrollController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
+
+
+    public function payrollsIndex()
+    {
+        try {
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            // $companies_ids = Company::pluck('id')->toArray();
+            $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+            if (!$is_admin) {
+                $userIds = [];
+                $userIds = $this->moduleUtil->applyAccessRole();
+
+                // $companies_ids = [];
+                // $roles = auth()->user()->roles;
+                // foreach ($roles as $role) {
+
+                //     $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                //     if ($accessRole) {
+                //         $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                //     }
+                // }
+            }
+            $companies = Company::pluck('name', 'id')->toArray();
+            $projects = SalesProject::pluck('name', 'id')->toArray();
+            $payrolls = Transaction::whereIn('transactions.expense_for', $userIds)->where('type', 'payroll')
+                ->join('users as u', 'u.id', '=', 'transactions.expense_for')
+                ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
+                ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
+                ->leftJoin('essentials_payroll_group_transactions as epgt', 'transactions.id', '=', 'epgt.transaction_id')
+                ->leftJoin('essentials_payroll_groups as epg', 'epgt.payroll_group_id', '=', 'epg.id')
+                ->select([
+                    'u.user_type as user_type',
+                    'u.company_id as company_id',
+                    'u.assigned_to as assigned_to',
+                    'transactions.id',
+                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as name"),
+                    'final_total',
+                    'transaction_date',
+                    'ref_no',
+                    'transactions.payment_status',
+                    'dept.name as department',
+                    'dsgn.name as designation',
+                    'epgt.payroll_group_id',
+                ]);
+            return Datatables::of($payrolls)
+                ->addColumn(
+                    'company',
+                    function ($row) use ($companies) {
+                        error_log($row->user_type);
+                        error_log(json_encode($companies));
+                        error_log($companies[$row->company_id]);
+                        error_log("-----------");
+
+                        if ($row->user_type == 'employee' || $row->user_type == 'manager') {
+                            return $companies[$row->company_id] ?? '';
+                        } else {
+                            return '';
+                        }
+                    }
+                )
+                ->addColumn(
+                    'project',
+                    function ($row) use ($projects) {
+                        if ($row->user_type == 'worker') {
+                            return $projects[$row->assigned_to] ?? '';
+                        } else {
+                            return '';
+                        }
+                    }
+                )
+                ->addColumn(
+                    'user_type',
+                    function ($row) {
+                        if ($row->user_type == 'worker') {
+                            return __('essentials::lang.worker');
+                        } elseif ($row->user_type == 'employee' || $row->user_type == 'manager') {
+                            return __('essentials::lang.employee');
+                        } else {
+                            return '';
+                        }
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    function ($row) {
+
+                        $html = '<div class="btn-group">
+                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                        data-toggle="dropdown" aria-expanded="false">' .
+                            __('messages.actions') .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+                        $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+                        // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
+
+                        if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
+                            $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
+                        }
+
+                        $html .= '</ul></div>';
+
+                        return $html;
+                    }
+                )
+                ->addColumn('transaction_date', function ($row) {
+                    $transaction_date = \Carbon::parse($row->transaction_date);
+
+                    return $transaction_date->format('F Y');
+                })
+                ->editColumn('final_total', '<span class="display_currency" data-currency_symbol="true">{{$final_total}}</span>')
+                ->filterColumn('user', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->editColumn(
+                    'payment_status',
+                    '<a href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'show\'], [$id])}}" class="view_payment_modal payment-status-label no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label @payment_status($payment_status)">{{__(\'lang_v1.\' . $payment_status)}}
+                        </span></a>
+                        <span class="print_section">{{__(\'lang_v1.\' . $payment_status)}}</span>
+                        '
+                )
+                ->removeColumn('id')
+                ->rawColumns(['action', 'final_total', 'payment_status'])
+                ->make(true);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
+    }
+
+
+
 
     public function create()
     {
@@ -1990,5 +2128,62 @@ class PayrollController extends Controller
     //     return view('essentials::payroll.edit')->with(compact('payroll', 'month_name', 'allowances', 'deductions', 'year'));
     // }
 
+
+    // public function addPayment($id)
+    // {
+    //     $business_id = request()->session()->get('user.business_id');
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //     $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+
+    //     if (!$is_admin) {
+    //         $userProjects = [];
+    //         $userBusinesses = [];
+    //         $roles = auth()->user()->roles;
+    //         foreach ($roles as $role) {
+
+    //             $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+    //             if ($accessRole) {
+    //                 $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+    //                 $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+    //             }
+    //         }
+    //         $user_businesses_ids = array_unique($userBusinesses);
+    //     }
+    //     $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
+    //         ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
+    //         ->findOrFail($id);
+
+    //     $payrolls = [];
+    //     $month_name = null;
+    //     $year = null;
+    //     foreach ($payroll_group->payrollGroupTransactions as $transaction) {
+
+    //         //payroll info
+    //         if (empty($month_name) && empty($year)) {
+    //             $transaction_date = \Carbon::parse($transaction->transaction_date);
+    //             $month_name = $transaction_date->format('F');
+    //             $year = $transaction_date->format('Y');
+    //         }
+
+    //         //transaction info
+    //         $payrolls[$transaction->expense_for]['transaction_id'] = $transaction->id;
+    //         $payrolls[$transaction->expense_for]['final_total'] = $transaction->final_total;
+    //         $payrolls[$transaction->expense_for]['payment_status'] = $transaction->payment_status;
+    //         $payrolls[$transaction->expense_for]['paid_on'] = \Carbon::now();
+
+    //         //get employee info
+    //         $payrolls[$transaction->expense_for]['employee'] = $transaction->transaction_for->user_full_name;
+    //         $payrolls[$transaction->expense_for]['employee_id'] = $transaction->transaction_for->id;
+    //         $payrolls[$transaction->expense_for]['bank_details'] = json_decode($transaction->transaction_for->bank_details, true);
+    //     }
+
+    //     $payment_types = $this->transactionUtil->payment_types();
+    //     $accounts = $this->moduleUtil->accountsDropdown($business_id, true, false, true);
+
+    //     return view('essentials::payroll.pay_payroll_group')
+    //         ->with(compact('payroll_group', 'month_name', 'year', 'payrolls', 'payment_types', 'accounts'));
+    // }
 
 }

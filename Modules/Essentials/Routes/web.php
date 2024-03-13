@@ -299,6 +299,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/post-payment-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'postAddPayment']);
         Route::get('/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])->name('payrolls.index');
         Route::get('/payrollsGroup/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollsGroupIndex'])->name('payrolls.payrollsGroup.index');
+        Route::get('/payrolls/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollsIndex'])->name('payrolls.payrolls.index');
         Route::get('/create',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'create'])->name('payrolls.create');
         Route::get('/edit/{id}',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'edit'])->name('payrolls.edit');
         Route::get('/show/{id}',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'show'])->name('payrolls.show');
