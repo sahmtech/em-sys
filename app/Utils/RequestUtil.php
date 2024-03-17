@@ -8,7 +8,7 @@ use App\RequestAttachment;
 use App\User;
 use Carbon\Carbon;
 use App\Utils\ModuleUtil;
-
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -21,6 +21,7 @@ use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Notifications\NewTaskNotification;
 
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 
 
@@ -318,7 +319,7 @@ class RequestUtil extends Util
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
             $type = RequestsType::where('id', $request->type)->first()->type;
-
+            error_log($type);
             if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
 
                 $contract = EssentialsEmployeesContract::where('employee_id', $request->worker_id)->firstOrFail();
@@ -338,6 +339,16 @@ class RequestUtil extends Util
                 }
             }
 
+            if ($type == 'leavesAndDepartures' && is_null($request->leaveType)) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('request.please select the type of leave'),
+                ];
+                return redirect()->back()->withErrors([$output['msg']]);
+            }
+
+
+
             $requestTypeFor = RequestsType::findOrFail($request->type)->for;
             $createdByUser = auth()->user();
             $createdBy_type = $createdByUser->user_type;
@@ -346,6 +357,7 @@ class RequestUtil extends Util
             $success = 1;
 
             foreach ($request->user_id as $userId) {
+                $count_of_users = count($request->user_id);
                 if ($userId === null) continue;
 
                 $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
@@ -377,7 +389,14 @@ class RequestUtil extends Util
 
                         $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $userId)->first()->contract_end_date ?? null;
                     }
+                    if ($type == "leavesAndDepartures") {
 
+                        $validationResult = $this->validateLeaveRequirements($request, $userId, $count_of_users);
+                        if ($validationResult !== true) {
+
+                            return $validationResult;
+                        }
+                    }
 
                     $Request = new UserRequest;
 
@@ -1260,6 +1279,43 @@ class RequestUtil extends Util
         $prefix = RequestsType::where('id', $request_type_id)->first()->prefix;
         return $prefix;
     }
+
+    protected function validateLeaveRequirements($request, $userId, $count)
+    {
+        error_log($count);
+        error_log($userId);
+        error_log($request);
+
+
+
+        $leave_type = EssentialsLeaveType::where('id', $request->leaveType)->first();
+        $work_duration = EssentialsEmployeeAppointmet::where('employee_id', $userId)->where('is_active', 1)->first();
+
+        if (!$work_duration) {
+            return null;
+        }
+
+        $due_date = $leave_type->due_date;
+        $start_date = new DateTime($work_duration->start_from);
+        $current_date = new DateTime();
+        $interval = $start_date->diff($current_date);
+        $months_from_start = ($interval->y * 12) + $interval->m + ($interval->d > 0 ? 1 : 0);
+
+        if ($months_from_start < $due_date) {
+            if ($count == 1) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('messages.cant add request because not enough months of service'),
+                ];
+                return $output;
+            } else {
+                return null;
+            }
+        }
+
+        return true;
+    }
+
 
     private function generateRequestNo($request_type_id)
     {

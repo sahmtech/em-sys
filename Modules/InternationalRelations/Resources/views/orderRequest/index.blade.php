@@ -63,7 +63,7 @@
                         <div class="row">
                             @csrf
                             <input type="hidden" name="id" id="visaOrderId" value="">
-                            <div  class="col-md-10" id="nationalityInputsContainer"></div>
+                            <div class="col-md-10" id="nationalityInputsContainer"></div>
                         </div>
                     </div>
 
@@ -135,12 +135,12 @@
 
                 ]
             });
-         
+
             $(document).on('click', '.btn-add-visa', function() {
                 var orderId = $(this).data('id');
                 var modal = $('#addVisaModal');
 
-            
+
                 $.ajax({
                     type: 'GET',
                     url: '{{ route('get_order_nationlities') }}',
@@ -149,27 +149,28 @@
                     },
                     dataType: 'json',
                     success: function(response) {
-                        if (response.success && response.data && response.data.nationalities) {
+                        if (response.success && response.data && response.data.nationalities &&
+                            response.data.nationalities.length > 0) {
                             var nationalities = response.data.nationalities;
 
-                         
+
                             var nationalityInputsContainer = modal.find(
                                 '#nationalityInputsContainer');
-                            nationalityInputsContainer.html(''); 
+                            nationalityInputsContainer.html('');
 
-                      
+
                             $.each(nationalities, function(index, nationality) {
-                             
+
                                 var rowHtml = '<div class="row">' +
                                     '<div class="col-md-12">' +
-                                    '<h4>' + nationality.nationality+ '</h4>' +
+                                    '<h4>' + nationality.nationality + '</h4>' +
                                     '</div>' +
                                     '</div>';
 
-                            
+
                                 nationalityInputsContainer.append(rowHtml);
 
-                                
+
                                 var visaNumberInput =
                                     '<div class="form-group col-md-6">' +
                                     '<label for="visa_number_' + nationality.id + '">' +
@@ -181,7 +182,7 @@
                                     '</div>';
                                 nationalityInputsContainer.append(visaNumberInput);
 
-                           
+
                                 var fileInput = '<div class="form-group col-md-6">' +
                                     '<label for="file_' + nationality.id + '">' +
                                     '{{ __('internationalrelations::lang.attachments') }}*' +
@@ -192,18 +193,24 @@
                                 nationalityInputsContainer.append(fileInput);
                             });
 
-                         
+
                             modal.find('#visaOrderId').val(orderId);
 
-                           
+
                             modal.modal('show');
                         } else {
-                       
-                            console.error('Error fetching nationalities');
+
+                            var nationalityInputsContainer = modal.find(
+                                '#nationalityInputsContainer');
+                            nationalityInputsContainer.html(
+                                '<div class="col-md-12"><p>{{ __('internationalrelations::lang.no_nationalities_delegation') }}</p></div>'
+                            );
+                            modal.find('#visaOrderId').val(orderId);
+                            modal.modal('show');
                         }
                     },
                     error: function(error) {
-                 
+
                         console.error('AJAX request failed', error);
                     }
                 });

@@ -201,6 +201,7 @@ return [
   'Time of Trip' => 'وقت الرحلة',
   'Date of Trip' => 'تاريخ الرحلة',
   'Airline company' => 'شركة الطيران',
+  'no_nationalities_delegation' => 'لا يوجد جنسيات تم تفويضها'
 
 
 ];

@@ -6,19 +6,20 @@
     <section class="content-header">
         <h1>@lang('followup::lang.recruitmentRequests')</h1>
     </section>
+
     <head>
         <style>
-.text-success {
-    color: green;
-}
+            .text-success {
+                color: green;
+            }
 
-.text-danger {
-    color: red;
-}
+            .text-danger {
+                color: red;
+            }
 
-.text-warning {
-    color: yellow;
-}
+            .text-warning {
+                color: yellow;
+            }
         </style>
     </head>
     <section class="content">
@@ -45,7 +46,7 @@
                                     <th>@lang('sales::lang.profession')</th>
                                     <th>@lang('essentials::lang.specialization')</th>
                                     <th>@lang('essentials::lang.nationlity')</th>
-                                 {{-- <th>@lang('essentials::lang.quantity')</th> --}}  
+                                    {{-- <th>@lang('essentials::lang.quantity')</th> --}}
                                     <th>@lang('essentials::lang.required_date')</th>
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('essentials::lang.notes')</th>
@@ -209,34 +210,35 @@
                         data: 'date'
                     },
                     {
-                    data: 'status',
-                    render: function (data, type, full, meta) {
-                        var statusList = '';
-                        // Assuming 'status' is a string like "approved: 5, rejected: 6, pending: 1"
-                        var statusArray = data.split(', ');
+                        data: 'status',
+                        render: function(data, type, full, meta) {
+                            var statusList = '';
+                            // Assuming 'status' is a string like "approved: 5, rejected: 6, pending: 1"
+                            var statusArray = data.split(', ');
 
-                        statusArray.forEach(function (statusItem) {
-                            var parts = statusItem.split(': ');
-                            var statusName = parts[0].trim();
-                            console.log(statusName);
-                            var statusValue = parseInt(parts[1]);
-                            console.log(statusValue);
-                            // Define color classes based on status
-                            var colorClass = '';
-                            if (statusName === 'مقبول') {
-                                colorClass = 'text-success'; // Green color for approved
-                            } else if (statusName === 'مرفوض') {
-                                colorClass = 'text-danger'; // Red color for canceled
-                            } else if (statusName === 'pending') {
-                                colorClass = 'text-warning'; // Yellow color for pending
-                            }
+                            statusArray.forEach(function(statusItem) {
+                                var parts = statusItem.split(': ');
+                                var statusName = parts[0].trim();
+                                console.log(statusName);
+                                var statusValue = parseInt(parts[1]);
+                                console.log(statusValue);
+                                // Define color classes based on status
+                                var colorClass = '';
+                                if (statusName === 'مقبول') {
+                                    colorClass = 'text-success'; // Green color for approved
+                                } else if (statusName === 'مرفوض') {
+                                    colorClass = 'text-danger'; // Red color for canceled
+                                } else if (statusName === 'pending') {
+                                    colorClass = 'text-warning'; // Yellow color for pending
+                                }
 
-                            statusList += '<span class="' + colorClass + '">' + statusName + ': ' + statusValue + '</span><br>';
-                        });
+                                statusList += '<span class="' + colorClass + '">' +
+                                    statusName + ': ' + statusValue + '</span><br>';
+                            });
 
-                        return statusList;
-                    }
-                },
+                            return statusList;
+                        }
+                    },
 
 
                     // {
@@ -267,28 +269,7 @@
 
                 ],
             });
-            professionSelect.on('change', function() {
-                var selectedProfession = $(this).val();
-                console.log(selectedProfession);
-                var csrfToken = $('meta[name="csrf-token"]').attr('content');
-                $.ajax({
-                    url: '{{ route('specializations') }}',
-                    type: 'POST',
-                    data: {
-                        _token: csrfToken,
-                        profession_id: selectedProfession
-                    },
-                    success: function(data) {
-                        specializationSelect.empty();
-                        $.each(data, function(id, name) {
-                            specializationSelect.append($('<option>', {
-                                value: id,
-                                text: name
-                            }));
-                        });
-                    }
-                });
-            });
+
 
             function reloadDataTable() {
                 requests_table.ajax.reload();
