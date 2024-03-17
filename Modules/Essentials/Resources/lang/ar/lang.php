@@ -1046,6 +1046,7 @@ return [
   'nationality' => 'الجنسية ',
   '12_months' => '12 شهرا',
   'contract_file' => 'ملف العقد',
+  'english_name' => 'الاسم الانكليزي',
   'all' => 'الكل',
   'connect_camera' => 'الاتصال بالكاميرا',
   'open_camera' => 'افتح الكاميرا',

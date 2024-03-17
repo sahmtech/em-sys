@@ -48,6 +48,14 @@
                             ['class' => 'form-control', 'required'],
                         ) !!}
                     </div>
+                      <div class="form-group col-md-6">
+                                    {!! Form::label('dob', __('essentials::lang.dob') . ':') !!}
+                                    {!! Form::date('dob', $family->dob, [
+                                        'class' => 'form-control',
+                                       
+                                        'placeholder' => __('essentials::lang.dob'),
+                                    ]) !!}
+                                </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('relative_relation', __('essentials::lang.relative_relation') . ':*') !!}
                         {!! Form::select(
@@ -75,7 +83,7 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        {!! Form::label('address', __('essentials::lang.address') . ':*') !!}
+                        {!! Form::label('address', __('essentials::lang.address') . ':') !!}
                         {!! Form::text('address', $family->address, [
                             'class' => 'form-control',
                             'placeholder' => __('essentials::lang.address'),

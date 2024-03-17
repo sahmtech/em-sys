@@ -120,17 +120,22 @@
 	        ],
 	    });
 
-	    $('#date_range_filter').daterangepicker(
+	   $('#date_range_filter').val('');
+    
+    // Initialize date range picker
+    $('#date_range_filter').daterangepicker(
         dateRangeSettings,
-	        function (start, end) {
-	            $('#date_range_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
-	           task_table.ajax.reload();
-	        }
-	    );
-	    $('#date_range_filter').on('cancel.daterangepicker', function(ev, picker) {
-	        $('#date_range_filter').val('');
-	        task_table.ajax.reload();
-	    });
+        function (start, end) {
+            // $('#date_range_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
+            task_table.ajax.reload();
+        }
+    );
+
+    // Handle cancel event
+    $('#date_range_filter').on('cancel.daterangepicker', function(ev, picker) {
+        $('#date_range_filter').val('');
+        task_table.ajax.reload();
+    });
 
 		//delete a task
 		$(document).on('click', '.delete_task', function(e){

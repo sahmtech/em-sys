@@ -30,6 +30,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.english_name')</th>
                                     <th>@lang('essentials::lang.Birth_date')</th>
                                    
                                     <th>@lang('essentials::lang.Residency_no')</th>
@@ -128,6 +129,9 @@
                 columns: [
                     {
                         data: 'user'
+                    },
+                    {
+                        data:'english_name'
                     },
                     {
                         data: 'dob'

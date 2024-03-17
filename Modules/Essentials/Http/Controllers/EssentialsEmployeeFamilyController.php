@@ -56,6 +56,7 @@ class EssentialsEmployeeFamilyController extends Controller
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_families.full_name as family',
                 'essentials_employees_families.gender',
+                'essentials_employees_families.dob',
                 'essentials_employees_families.address',
                 'essentials_employees_families.relative_relation',
                 'essentials_employees_families.eqama_number',
@@ -214,22 +215,26 @@ class EssentialsEmployeeFamilyController extends Controller
 
                     $emp_array['relation'] = $value[3];
                     $emp_array['gender'] = $value[4];
-                    //    $emp_array['mobile'] = $value[5];                         
-                    //    $emp_array['nationality_id'] = $value[6]; 
-                    //    if ($emp_array['nationality_id'] !== null) {
 
-                    //     $business = EssentialsCountry::find($emp_array['nationality_id']);
-                    //     if (!$business) {
+                    if (!empty($value[5])) {
+                        if (is_numeric($value[5])) {
 
-                    //         $is_valid = false;
-                    //         $error_msg = __('essentials::lang.nationality_id_not_found').$row_no;
-                    //         break;
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //     $emp_array['nationality_id']=null;
-                    // } 
+                            $excelDateValue = (float)$value[5];
+                            $unixTimestamp = ($excelDateValue - 25569) * 86400;
+                            $date = date('Y-m-d', $unixTimestamp);
+                            $emp_array['dob'] = $date;
+                        } else {
+
+                            $date = DateTime::createFromFormat('d/m/Y', $value[5]);
+                            if ($date) {
+                                $dob = $date->format('Y-m-d');
+                                $emp_array['dob'] = $dob;
+                            }
+                        }
+                    } else {
+                        $emp_array['dob'] = null;
+                    }
+
 
 
                     $formated_data[] = $emp_array;
@@ -252,11 +257,12 @@ class EssentialsEmployeeFamilyController extends Controller
 
                         $family = new EssentialsEmployeesFamily();
                         $family->full_name = $emp_data['full_name'];
-                        //  $family->mobile_number=$emp_data['mobile'];
+
                         $family->relative_relation = $emp_data['relation'];
                         $family->eqama_number = $emp_data['family_eqama_no'];
-                        //  $family->nationality_id=$emp_data['nationality_id'];
+
                         $family->gender = $emp_data['gender'];
+                        $family->dob = $emp_data['dob'];
                         $family->employee_id = $user->id;
                         $family->save();
                     }
@@ -274,6 +280,7 @@ class EssentialsEmployeeFamilyController extends Controller
         } catch (\Exception $e) {
 
             DB::rollBack();
+            error_log($e->getMessage());
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
@@ -300,7 +307,10 @@ class EssentialsEmployeeFamilyController extends Controller
 
 
         try {
-            $input = $request->only(['full_name', 'address', 'gender', 'relative_relation', 'eqama_number', 'employee']);
+            $input = $request->only([
+                'full_name', 'address', 'gender', 'dob',
+                'relative_relation', 'eqama_number', 'employee'
+            ]);
 
             $input2['employee_id'] = $input['employee'];
 
@@ -309,6 +319,7 @@ class EssentialsEmployeeFamilyController extends Controller
             // $input2['last_name'] = $input['last_name'];
 
             $input2['full_name'] = $input['full_name'];
+            $input2['dob'] = $input['dob'];
 
             $input2['address'] = $input['address'];
 
@@ -417,7 +428,10 @@ class EssentialsEmployeeFamilyController extends Controller
 
 
         try {
-            $input = $request->only(['full_name', 'address', 'gender', 'relative_relation', 'eqama_number', 'employee']);
+            $input = $request->only([
+                'full_name', 'address', 'gender', 'dob',
+                'relative_relation', 'eqama_number', 'employee'
+            ]);
 
             $input2['employee_id'] = $input['employee'];
 
@@ -426,6 +440,7 @@ class EssentialsEmployeeFamilyController extends Controller
             // $input2['last_name'] = $input['last_name'];
 
             $input2['full_name'] = $input['full_name'];
+            $input2['dob'] = $input['dob'];
 
             $input2['address'] = $input['address'];
 
