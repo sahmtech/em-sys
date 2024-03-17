@@ -215,9 +215,15 @@ class PayrollController extends Controller
                             return $html;
                         }
                     )
-                    ->editColumn('status', '
-                    @lang("sale.".$status)
-                ')
+                    ->editColumn('status', function ($row) {
+                        if ($row->status == "draft") {
+                            return __('essentials::lang.draft_payroll');
+                        } elseif ($row->status == "final") {
+                            return __('essentials::lang.final_payroll');
+                        } else {
+                            return "";
+                        }
+                    })
                     ->editColumn('created_at', '
                     {{@format_datetime($created_at)}}
                 ')
@@ -298,10 +304,8 @@ class PayrollController extends Controller
                 ->addColumn(
                     'company',
                     function ($row) use ($companies) {
-                        error_log($row->user_type);
-                        error_log(json_encode($companies));
-                        error_log($companies[$row->company_id]);
-                        error_log("-----------");
+
+
 
                         if ($row->user_type == 'employee' || $row->user_type == 'manager') {
                             return $companies[$row->company_id] ?? '';
@@ -415,7 +419,7 @@ class PayrollController extends Controller
             $other_allowance = 0;
             $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
             foreach ($allowances as $allowance) {
-                $allowance_dsc =   $allowance->essentials_allowance_and_deduction->description;
+                $allowance_dsc =   $allowance?->essentials_allowance_and_deduction?->description;
                 if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
                     $housing_allowance = $allowance->amount;
                 } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
