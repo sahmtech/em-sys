@@ -28,10 +28,11 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    
                                     <th>@lang('essentials::lang.family')</th>
                                     <th>@lang('essentials::lang.gender')</th>
                                    
-                                   
+                                    <th>@lang('essentials::lang.dob')</th>
                                     <th>@lang('essentials::lang.relative_relation')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('essentials::lang.address')</th>
@@ -86,6 +87,15 @@
                                         null,
                                         ['class' => 'form-control', 'required'],
                                     ) !!}
+                                </div>
+
+                                 <div class="form-group col-md-6">
+                                    {!! Form::label('dob', __('essentials::lang.dob') . ':') !!}
+                                    {!! Form::date('dob', null, [
+                                        'class' => 'form-control',
+                                       
+                                        'placeholder' => __('essentials::lang.dob'),
+                                    ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('relative_relation', __('essentials::lang.relative_relation') . ':*') !!}
@@ -174,6 +184,9 @@
                                 return '@lang('lang_v1.others')';
                             }
                         }
+                    },
+                    {
+                        data:"dob"
                     },
                    
                   
