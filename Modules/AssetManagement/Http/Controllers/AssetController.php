@@ -5,6 +5,7 @@ namespace Modules\AssetManagement\Http\Controllers;
 use App\BusinessLocation;
 use App\Category;
 use App\Media;
+use App\Company;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Illuminate\Http\Request;
@@ -56,29 +57,44 @@ class AssetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
- 
+
         $purchase_types = $this->purchaseTypes;
 
         if ($request->ajax()) {
             $assets = Asset::with(['media', 'warranties', 'maintenances'])
-                        ->leftJoin('categories as CAT', 'assets.category_id',
-                            '=', 'CAT.id')
-                        ->leftJoin('business_locations as BL', 'assets.location_id',
-                            '=', 'BL.id')
-                        ->leftJoin('asset_transactions as AT', function ($join) {
-                            $join->on('assets.id', '=', 'AT.asset_id')
-                                ->where('transaction_type', 'allocate');
-                        })
-                        ->where('assets.business_id', $business_id)
-                        ->select('asset_code', 'assets.name as asset', 'assets.quantity as quantity',
-                        'model', 'purchase_date',
-                        'unit_price', 'is_allocatable',
-                        'CAT.name as category', 'BL.name as location',
-                        'assets.id as id', DB::raw('SUM(COALESCE(AT.quantity, 0)) as allocated_qty'),
-                        DB::raw('(SELECT SUM(COALESCE(AR.quantity, 0)) FROM asset_transactions AS AR WHERE(AR.asset_id=assets.id AND AR.transaction_type=\'revoke\')) as revoked_qty'),
-                        'assets.description as description'
-                        )
-                        ->groupBy('id');
+                ->leftJoin(
+                    'categories as CAT',
+                    'assets.category_id',
+                    '=',
+                    'CAT.id'
+                )
+                ->leftJoin(
+                    'business_locations as BL',
+                    'assets.location_id',
+                    '=',
+                    'BL.id'
+                )
+                ->leftJoin('asset_transactions as AT', function ($join) {
+                    $join->on('assets.id', '=', 'AT.asset_id')
+                        ->where('transaction_type', 'allocate');
+                })
+                ->where('assets.business_id', $business_id)
+                ->select(
+                    'asset_code',
+                    'assets.name as asset',
+                    'assets.quantity as quantity',
+                    'model',
+                    'purchase_date',
+                    'unit_price',
+                    'is_allocatable',
+                    'CAT.name as category',
+                    'BL.name as location',
+                    'assets.id as id',
+                    DB::raw('SUM(COALESCE(AT.quantity, 0)) as allocated_qty'),
+                    DB::raw('(SELECT SUM(COALESCE(AR.quantity, 0)) FROM asset_transactions AS AR WHERE(AR.asset_id=assets.id AND AR.transaction_type=\'revoke\')) as revoked_qty'),
+                    'assets.description as description'
+                )
+                ->groupBy('id');
 
             $permitted_locations = auth()->user()->permitted_locations();
 
@@ -86,16 +102,16 @@ class AssetController extends Controller
                 $assets->whereIn('assets.location_id', $permitted_locations);
             }
 
-            if (! empty(request()->input('location_id'))) {
+            if (!empty(request()->input('location_id'))) {
                 $assets->where('assets.location_id', request()->input('location_id'));
             }
-            if (! empty(request()->input('category_id'))) {
+            if (!empty(request()->input('category_id'))) {
                 $assets->where('assets.category_id', request()->input('category_id'));
             }
-            if (! empty(request()->input('purchase_type'))) {
+            if (!empty(request()->input('purchase_type'))) {
                 $assets->where('assets.purchase_type', request()->input('purchase_type'));
             }
-            if (! empty(request()->input('is_allocatable'))) {
+            if (!empty(request()->input('is_allocatable'))) {
                 $assets->where('assets.is_allocatable', 1);
             }
 
@@ -105,10 +121,10 @@ class AssetController extends Controller
                 ->addColumn('action', function ($row) {
                     $html = '<div class="btn-group">
                                     <button class="btn btn-info dropdown-toggle btn-xs" type="button"  data-toggle="dropdown" aria-expanded="false">
-                                        '.__('messages.action').'
+                                        ' . __('messages.action') . '
                                         <span class="caret"></span>
                                         <span class="sr-only">
-                                        '.__('messages.action').'
+                                        ' . __('messages.action') . '
                                         </span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-left" role="menu">
@@ -116,18 +132,18 @@ class AssetController extends Controller
 
                     if ($row->is_allocatable && (($row->allocated_qty - $row->revoked_qty) != $row->quantity)) {
                         $html .= '<li>
-                                    <a data-href="'.action([\Modules\AssetManagement\Http\Controllers\AssetAllocationController::class, 'create'], ['asset_id' => $row->id]).'" class="cursor-pointer" id="allocate_asset">
+                                    <a data-href="' . action([\Modules\AssetManagement\Http\Controllers\AssetAllocationController::class, 'create'], ['asset_id' => $row->id]) . '" class="cursor-pointer" id="allocate_asset">
                                         <i class="fas fa-plus-circle"></i>
-                                    '.__('assetmanagement::lang.allocate_asset').'
+                                    ' . __('assetmanagement::lang.allocate_asset') . '
                                     </a>
                                     </li>';
                     }
 
                     if (auth()->user()->can('asset.view_all_maintenance') || auth()->user()->can('asset.view_own_maintenance')) {
                         $html .= '<li>
-                                        <a data-href="'.route('asset-maintenance.create').'?asset_id='.$row->id.'" class="cursor-pointer send_to_maintenance">
+                                        <a data-href="' . route('asset-maintenance.create') . '?asset_id=' . $row->id . '" class="cursor-pointer send_to_maintenance">
                                             <i class="fas fa-tools"></i>
-                                        '.__('assetmanagement::lang.send_to_maintenance').'
+                                        ' . __('assetmanagement::lang.send_to_maintenance') . '
                                         </a>
                                         </li>';
                     }
@@ -135,17 +151,17 @@ class AssetController extends Controller
                     if (auth()->user()->can('asset.update')) {
                         $html .= '
                                 <li>
-                                    <a data-href="'.action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'edit'], [$row->id]).'" class="cursor-pointer edit_asset">
+                                    <a data-href="' . action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'edit'], [$row->id]) . '" class="cursor-pointer edit_asset">
                                         <i class="fa fa-edit"></i>
-                                        '.__('messages.edit').'
+                                        ' . __('messages.edit') . '
                                     </a>
                                 </li>';
                     }
                     if (auth()->user()->can('asset.delete')) {
                         $html .= '<li>
-                                    <a data-href="'.action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'destroy'], [$row->id]).'"  id="delete_asset" class="cursor-pointer">
+                                    <a data-href="' . action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'destroy'], [$row->id]) . '"  id="delete_asset" class="cursor-pointer">
                                         <i class="fas fa-trash"></i>
-                                        '.__('messages.delete').'
+                                        ' . __('messages.delete') . '
                                     </a>
                                 </li>
                                 </ul>';
@@ -179,13 +195,13 @@ class AssetController extends Controller
                     @endif
                 ')
                 ->editColumn('unit_price', function ($row) {
-                    return '<span class="display_currency total-discount" data-currency_symbol="true" data-orig-value="'.$row->unit_price.'">'.$row->unit_price.'</span>';
+                    return '<span class="display_currency total-discount" data-currency_symbol="true" data-orig-value="' . $row->unit_price . '">' . $row->unit_price . '</span>';
                 })
                 ->addColumn('image', function ($row) {
                     $html = '';
-                    if (! empty($row->media->first())) {
+                    if (!empty($row->media->first())) {
                         $url = $row->media->first()->display_url;
-                        $html = '<a href="'.$url.'" target="_blank"><i class="fas fa-eye fa-lg"></i></a>';
+                        $html = '<a href="' . $url . '" target="_blank"><i class="fas fa-eye fa-lg"></i></a>';
                     }
 
                     return $html;
@@ -200,17 +216,17 @@ class AssetController extends Controller
                         if ($now->between($start_date, $end_date)) {
                             $warranty = $w;
 
-                            $html = '<span class="label bg-green">'.__('assetmanagement::lang.in_warranty').'</span><br>';
+                            $html = '<span class="label bg-green">' . __('assetmanagement::lang.in_warranty') . '</span><br>';
 
-                            $html .= '<small>'.$this->commonUtil->format_date($w->start_date).' ~ '.$this->commonUtil->format_date($w->end_date).'</br>';
-                            $html .= '('.$now->diffInDays($end_date, false).' '.__('assetmanagement::lang.days_left').') </small>';
+                            $html .= '<small>' . $this->commonUtil->format_date($w->start_date) . ' ~ ' . $this->commonUtil->format_date($w->end_date) . '</br>';
+                            $html .= '(' . $now->diffInDays($end_date, false) . ' ' . __('assetmanagement::lang.days_left') . ') </small>';
 
                             break;
                         }
                     }
 
                     if (empty($warranty)) {
-                        $html = '<span class="label bg-red">'.__('assetmanagement::lang.not_in_warranty').'</span>';
+                        $html = '<span class="label bg-red">' . __('assetmanagement::lang.not_in_warranty') . '</span>';
                     }
 
                     return $html;
@@ -221,7 +237,7 @@ class AssetController extends Controller
                     foreach ($row->maintenances as $maintenance) {
                         if (in_array($maintenance->status, ['new', 'in_progress'])) {
                             $count = $row->maintenances->whereIn('status', ['new', 'in_progress'])->count();
-                            $html .= '<br><span class="label bg-red">'.__('assetmanagement::lang.n_in_maintenance', ['n' => $count]).'</span>';
+                            $html .= '<br><span class="label bg-red">' . __('assetmanagement::lang.n_in_maintenance', ['n' => $count]) . '</span>';
                             break;
                         }
                     }
@@ -230,16 +246,18 @@ class AssetController extends Controller
                 })
                 ->removeColumn('id')
                 ->removeColumn('maintenances')
-                ->rawColumns(['action', 'is_allocatable', 'purchase_date',
-                    'quantity', 'allocated_qty', 'unit_price', 'warranty_period', 'image', 'warranty', 'asset', ])
+                ->rawColumns([
+                    'action', 'is_allocatable', 'purchase_date',
+                    'quantity', 'allocated_qty', 'unit_price', 'warranty_period', 'image', 'warranty', 'asset',
+                ])
                 ->make(true);
         }
 
-        $business_locations = BusinessLocation::forDropdown($business_id);
+        $business_locations = Company::all()->pluck('name', 'id');
         $asset_category = Category::forDropdown($business_id, 'asset');
 
         return view('assetmanagement::asset.index')
-                ->with(compact('purchase_types', 'business_locations', 'asset_category'));
+            ->with(compact('purchase_types', 'business_locations', 'asset_category'));
     }
 
     /**
@@ -249,17 +267,18 @@ class AssetController extends Controller
      */
     public function create(Request $request)
     {
-        if (! auth()->user()->can('asset.create')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('asset.create')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-  
+
 
         if ($request->ajax()) {
             $asset_category = Category::forDropdown($business_id, 'asset');
-            $business_locations = BusinessLocation::forDropdown($business_id);
+            $business_locations =
+                Company::all()->pluck('name', 'id');
 
             $purchase_types = $this->purchaseTypes;
 
@@ -276,22 +295,34 @@ class AssetController extends Controller
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('asset.create')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('asset.create')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-    
+
 
         try {
-            $input = $request->only('asset_code', 'name', 'quantity', 'model',
-                'serial_no', 'category_id', 'location_id', 'purchase_date',
-                'unit_price', 'depreciation', 'is_allocatable', 'description', 'purchase_type');
+            $input = $request->only(
+                'asset_code',
+                'name',
+                'quantity',
+                'model',
+                'serial_no',
+                'category_id',
+                'location_id',
+                'purchase_date',
+                'unit_price',
+                'depreciation',
+                'is_allocatable',
+                'description',
+                'purchase_type'
+            );
 
             $input['business_id'] = $business_id;
             $input['created_by'] = request()->session()->get('user.id');
-            $input['is_allocatable'] = ! empty($input['is_allocatable']) ? 1 : 0;
+            $input['is_allocatable'] = !empty($input['is_allocatable']) ? 1 : 0;
 
             DB::beginTransaction();
 
@@ -303,19 +334,19 @@ class AssetController extends Controller
                 $input['asset_code'] = $this->commonUtil->generateReferenceNumber('asset_code', $ref_count, null, $asset_code_prefix);
             }
 
-            if (! empty($input['quantity'])) {
+            if (!empty($input['quantity'])) {
                 $input['quantity'] = $this->commonUtil->num_uf($input['quantity']);
             }
 
-            if (! empty($input['purchase_date'])) {
+            if (!empty($input['purchase_date'])) {
                 $input['purchase_date'] = $this->commonUtil->uf_date($input['purchase_date']);
             }
 
-            if (! empty($input['unit_price'])) {
+            if (!empty($input['unit_price'])) {
                 $input['unit_price'] = $this->commonUtil->num_uf($input['unit_price']);
             }
 
-            if (! empty($input['depreciation'])) {
+            if (!empty($input['depreciation'])) {
                 $input['depreciation'] = $this->commonUtil->num_uf($input['depreciation']);
             }
 
@@ -326,10 +357,10 @@ class AssetController extends Controller
                 Media::uploadMedia($business_id, $asset, $request, 'image', true);
             }
             $warranties = [];
-            if (! empty($request->input('start_dates'))) {
+            if (!empty($request->input('start_dates'))) {
                 $months = $request->input('months');
                 foreach ($request->input('start_dates') as $key => $value) {
-                    if (! empty($value) && ! empty($months[$key])) {
+                    if (!empty($value) && !empty($months[$key])) {
                         $start_date = $this->commonUtil->uf_date($value);
                         $warranties[] = [
                             'start_date' => $start_date,
@@ -342,7 +373,7 @@ class AssetController extends Controller
                 }
             }
 
-            if (! empty($warranties)) {
+            if (!empty($warranties)) {
                 $asset->warranties()->createMany($warranties);
             }
 
@@ -355,7 +386,7 @@ class AssetController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -387,18 +418,18 @@ class AssetController extends Controller
      */
     public function edit($id)
     {
-        if (! auth()->user()->can('asset.update')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('asset.update')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-        
+
 
         if (request()->ajax()) {
             $asset = Asset::with(['warranties'])
-                        ->where('business_id', $business_id)
-                        ->findOrfail($id);
+                ->where('business_id', $business_id)
+                ->findOrfail($id);
 
             $asset_category = Category::forDropdown($business_id, 'asset');
             $business_locations = BusinessLocation::forDropdown($business_id);
@@ -419,69 +450,80 @@ class AssetController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (! auth()->user()->can('asset.update')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('asset.update')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-        
+
 
         try {
-            $input = $request->only('name', 'quantity', 'model',
-                        'category_id', 'location_id', 'purchase_date', 'unit_price', 'depreciation',
-                        'is_allocatable', 'description', 'purchase_type', 'serial_no');
-            $input['is_allocatable'] = ! empty($input['is_allocatable']) ? 1 : 0;
+            $input = $request->only(
+                'name',
+                'quantity',
+                'model',
+                'category_id',
+                'location_id',
+                'purchase_date',
+                'unit_price',
+                'depreciation',
+                'is_allocatable',
+                'description',
+                'purchase_type',
+                'serial_no'
+            );
+            $input['is_allocatable'] = !empty($input['is_allocatable']) ? 1 : 0;
 
             DB::beginTransaction();
 
-            if (! empty($input['quantity'])) {
+            if (!empty($input['quantity'])) {
                 $input['quantity'] = $this->commonUtil->num_uf($input['quantity']);
             }
 
-            if (! empty($input['purchase_date'])) {
+            if (!empty($input['purchase_date'])) {
                 $input['purchase_date'] = $this->commonUtil->uf_date($input['purchase_date']);
             }
 
-            if (! empty($input['unit_price'])) {
+            if (!empty($input['unit_price'])) {
                 $input['unit_price'] = $this->commonUtil->num_uf($input['unit_price']);
             }
 
-            if (! empty($input['depreciation'])) {
+            if (!empty($input['depreciation'])) {
                 $input['depreciation'] = $this->commonUtil->num_uf($input['depreciation']);
             }
 
             $asset = Asset::where('business_id', $business_id)
-                        ->findOrfail($id);
+                ->findOrfail($id);
 
             $asset->update($input);
 
             //update existing warranties
             $edited_warranty_ids = [];
-            if (! empty($request->input('edit_warranty'))) {
+            if (!empty($request->input('edit_warranty'))) {
                 foreach ($request->input('edit_warranty') as $key => $value) {
                     $edited_warranty_ids[] = $key;
                     $start_date = $this->commonUtil->uf_date($value['start_date']);
                     AssetWarranty::where('id', $key)
-                                ->update([
-                                    'start_date' => $start_date,
-                                    'end_date' => \Carbon::parse($start_date)->addMonths($value['months'])->format('Y-m-d'),
-                                    'additional_cost' => $this->commonUtil->num_uf($value['additional_cost']),
-                                    'additional_note' => $value['additional_note'],
+                        ->update([
+                            'start_date' => $start_date,
+                            'end_date' => \Carbon::parse($start_date)->addMonths($value['months'])->format('Y-m-d'),
+                            'additional_cost' => $this->commonUtil->num_uf($value['additional_cost']),
+                            'additional_note' => $value['additional_note'],
 
-                                ]);
+                        ]);
                 }
             }
             AssetWarranty::where('asset_id', $asset->id)
-                        ->whereNotIn('id', $edited_warranty_ids)
-                        ->delete();
+                ->whereNotIn('id', $edited_warranty_ids)
+                ->delete();
 
             //add new warranties
             $warranties = [];
-            if (! empty($request->input('start_dates'))) {
+            if (!empty($request->input('start_dates'))) {
                 $months = $request->input('months');
                 foreach ($request->input('start_dates') as $key => $value) {
-                    if (! empty($value) && ! empty($months[$key])) {
+                    if (!empty($value) && !empty($months[$key])) {
                         $start_date = $this->commonUtil->uf_date($value);
                         $warranties[] = [
                             'start_date' => $start_date,
@@ -494,7 +536,7 @@ class AssetController extends Controller
                 }
             }
 
-            if (! empty($warranties)) {
+            if (!empty($warranties)) {
                 $asset->warranties()->createMany($warranties);
             }
 
@@ -512,7 +554,7 @@ class AssetController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -533,18 +575,18 @@ class AssetController extends Controller
      */
     public function destroy($id)
     {
-        if (! auth()->user()->can('asset.delete')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('asset.delete')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-        
+
 
         if (request()->ajax()) {
             try {
                 $asset = Asset::where('business_id', $business_id)
-                            ->findOrfail($id);
+                    ->findOrfail($id);
 
                 $asset->delete();
                 $asset->media()->delete();
@@ -554,7 +596,7 @@ class AssetController extends Controller
                     'msg' => __('lang_v1.success'),
                 ];
             } catch (Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
                 $output = [
                     'success' => false,
@@ -571,24 +613,34 @@ class AssetController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $allocated_assets = AssetTransaction::where('receiver', auth()->user()->id)
-                                            ->select(
-                                                DB::raw('SUM(quantity) as total_quantity_allocated'),
-                                                DB::raw('(SELECT SUM(quantity) FROM asset_transactions as AT WHERE 
+            ->select(
+                DB::raw('SUM(quantity) as total_quantity_allocated'),
+                DB::raw('(SELECT SUM(quantity) FROM asset_transactions as AT WHERE 
                                                 AT.parent_id = asset_transactions.id AND AT.transaction_type="revoke") as total_revoked_quantity')
-                                            )->first();
+            )->first();
 
         $total_assets_allocated = $allocated_assets->total_quantity_allocated - $allocated_assets->total_revoked_quantity;
 
-        $asset_allocation_by_category = AssetTransaction::where('asset_transactions.receiver',
-                                                    auth()->user()->id)
-                            ->leftJoin('assets as a', 'a.id',
-                            '=', 'asset_transactions.asset_id')
-                            ->leftJoin('categories as cat', 'a.category_id',
-                            '=', 'cat.id')
-                                            ->select(
-                                                DB::raw("SUM(COALESCE(asset_transactions.quantity, 0) - COALESCE((SELECT SUM(quantity) FROM asset_transactions as AT WHERE AT.parent_id =asset_transactions.id AND AT.transaction_type='revoke'),0)) as total_quantity_allocated"),
-                                                'cat.name as category'
-                                            )->groupBy('cat.id')->get();
+        $asset_allocation_by_category = AssetTransaction::where(
+            'asset_transactions.receiver',
+            auth()->user()->id
+        )
+            ->leftJoin(
+                'assets as a',
+                'a.id',
+                '=',
+                'asset_transactions.asset_id'
+            )
+            ->leftJoin(
+                'categories as cat',
+                'a.category_id',
+                '=',
+                'cat.id'
+            )
+            ->select(
+                DB::raw("SUM(COALESCE(asset_transactions.quantity, 0) - COALESCE((SELECT SUM(quantity) FROM asset_transactions as AT WHERE AT.parent_id =asset_transactions.id AND AT.transaction_type='revoke'),0)) as total_quantity_allocated"),
+                'cat.name as category'
+            )->groupBy('cat.id')->get();
 
 
 
@@ -601,38 +653,45 @@ class AssetController extends Controller
 
         if ($is_admin) {
             $total_assets = Asset::where('business_id', $business_id)
-                                ->select(DB::raw('SUM(quantity) as total_quantity'))
-                                ->first()->total_quantity;
+                ->select(DB::raw('SUM(quantity) as total_quantity'))
+                ->first()->total_quantity;
 
             $assets_by_category = Asset::where('assets.business_id', $business_id)
-                                    ->leftJoin('categories as cat', 'assets.category_id', '=', 'cat.id')
-                                ->select(
-                                        DB::raw('SUM(quantity) as total_quantity'),
-                                        'cat.name as category'
-                                    )
-                                ->groupBy('cat.id')
-                                ->get();
+                ->leftJoin('categories as cat', 'assets.category_id', '=', 'cat.id')
+                ->select(
+                    DB::raw('SUM(quantity) as total_quantity'),
+                    'cat.name as category'
+                )
+                ->groupBy('cat.id')
+                ->get();
 
             $current_date_add30 = Carbon::now()->addDays(30)->toDateString();
 
             $expiring_assets = Asset::where('assets.business_id', $business_id)
-                                        ->leftJoin('asset_warranties as aw', 'aw.asset_id', '=', 'assets.id')
-                                        ->groupBy('assets.id')
-                                        ->havingRaw("MAX(aw.end_date) <= '{$current_date_add30}'")
-                                        ->select('assets.name', 'assets.asset_code', \DB::raw('MAX(aw.end_date) as max_end_date'), 'assets.id')
-                                        ->get();
-                            
+                ->leftJoin('asset_warranties as aw', 'aw.asset_id', '=', 'assets.id')
+                ->groupBy('assets.id')
+                ->havingRaw("MAX(aw.end_date) <= '{$current_date_add30}'")
+                ->select('assets.name', 'assets.asset_code', \DB::raw('MAX(aw.end_date) as max_end_date'), 'assets.id')
+                ->get();
+
             $allocated_assets_for_all_users = AssetTransaction::where('business_id', $business_id)
-                                            ->select(
-                                                DB::raw("SUM(IF(transaction_type='allocate', quantity, 0)) as total_quantity_allocated"),
-                                                DB::raw("SUM(IF(transaction_type='revoke', quantity, 0)) as total_revoked_quantity")
-                                            )->first();
+                ->select(
+                    DB::raw("SUM(IF(transaction_type='allocate', quantity, 0)) as total_quantity_allocated"),
+                    DB::raw("SUM(IF(transaction_type='revoke', quantity, 0)) as total_revoked_quantity")
+                )->first();
 
             $total_assets_allocated_for_all_users = $allocated_assets_for_all_users->total_quantity_allocated - $allocated_assets_for_all_users->total_revoked_quantity;
         }
 
         return view('assetmanagement::asset.dashboard')
-                ->with(compact('total_assets_allocated', 'asset_allocation_by_category',
-                    'is_admin', 'total_assets', 'assets_by_category', 'expiring_assets', 'total_assets_allocated_for_all_users'));
+            ->with(compact(
+                'total_assets_allocated',
+                'asset_allocation_by_category',
+                'is_admin',
+                'total_assets',
+                'assets_by_category',
+                'expiring_assets',
+                'total_assets_allocated_for_all_users'
+            ));
     }
 }
