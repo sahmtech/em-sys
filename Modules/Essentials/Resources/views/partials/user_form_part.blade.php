@@ -132,7 +132,7 @@
         {!! Form::select(
             'is_renewable',
             ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')],
-            !empty($contract->probation_period) ? $contract->probation_period : null,
+            !empty($contract->is_renewable) ? $contract->is_renewable : null,
             ['class' => 'form-control', 'style' => 'height:40px'],
         ) !!}
     </div>

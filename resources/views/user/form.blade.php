@@ -226,6 +226,8 @@
                         'master' => __('essentials::lang.master'),
                         'PhD' => __('essentials::lang.PhD'),
                         'diploma' => __('essentials::lang.diploma'),
+                         'minor' => __('essentials::lang.minor'),
+                        'sponsorship' => __('essentials::lang.sponsorship'),
                     ],
                     !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
                     ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
@@ -523,75 +525,74 @@
         });
     </script>
 
-    <script>
-        function addRow() {
-            var table = document.getElementById('documentsTable').getElementsByTagName('tbody')[0];
-            var newRow = table.rows[0].cloneNode(true);
-            var len = table.rows.length;
+ <script>
+    function addRow() {
+        var table = document.getElementById('documentsTable').getElementsByTagName('tbody')[0];
+        var newRow = table.rows[0].cloneNode(true);
+        var len = table.rows.length;
 
+        // Clear the value of the document file input field in the new row
+        newRow.cells[1].getElementsByTagName('input')[0].value = '';
 
-            newRow.cells[0].getElementsByTagName('select')[0].name = 'document_type[' + len + ']';
-            newRow.cells[1].getElementsByTagName('input')[0].name = 'document_file[' + len + ']';
+        newRow.cells[0].getElementsByTagName('select')[0].name = 'document_type[' + len + ']';
+        newRow.cells[1].getElementsByTagName('input')[0].name = 'document_file[' + len + ']';
 
-
-            var removeButton =
-                '<button type="button" class="btn btn-danger remove-row">{{ __('messages.delete') }}</button>';
-            if (newRow.cells[2]) {
-                newRow.cells[2].innerHTML = removeButton;
-            } else {
-                var newCell = newRow.insertCell(2);
-                newCell.innerHTML = removeButton;
-            }
-
-
-            table.appendChild(newRow);
+        var removeButton =
+            '<button type="button" class="btn btn-danger remove-row">{{ __('messages.delete') }}</button>';
+        if (newRow.cells[2]) {
+            newRow.cells[2].innerHTML = removeButton;
+        } else {
+            var newCell = newRow.insertCell(2);
+            newCell.innerHTML = removeButton;
         }
 
-        $(document).on('click', '.remove-row', function() {
+        table.appendChild(newRow);
+    }
 
-            if ($('#documentsTable tbody tr').length > 1) {
-                $(this).closest('tr').remove();
-            }
-        });
+    $(document).on('click', '.remove-row', function() {
 
-        $(document).on('change', 'select[name^="document_type"]', function() {
-            updateDocumentTypes();
-        });
-
-        $(document).on('change', 'input[name^="document_file"]', function() {
-            updateDocumentTypes();
-        });
-
-        function updateDocumentTypes() {
-            var DocumentTypes = [];
-
-            $('select[name^="document_type"]').each(function(index) {
-                var document_type = $(this).val();
-                var document_file = $('input[name^="document_file"]').eq(index)
-                    .val(); // Get the file input based on the index
-                if (document_type && document_file) { // Check if both values are not empty
-                    DocumentTypes.push({
-                        document_type: document_type,
-                        document_file: document_file // This will be the file name
-                    });
-                }
-            });
-
-            console.log(DocumentTypes);
-            var inputElement = document.getElementById('DocumentTypes');
-            if (inputElement) {
-                inputElement.value = JSON.stringify(DocumentTypes);
-            } else {
-                // If the element does not exist, create it and append to the form
-                inputElement = document.createElement('input');
-                inputElement.type = 'hidden';
-                inputElement.id = 'DocumentTypes';
-                inputElement.name = 'DocumentTypes';
-                $('form').append(inputElement);
-                inputElement.value = JSON.stringify(DocumentTypes);
-            }
+        if ($('#documentsTable tbody tr').length > 1) {
+            $(this).closest('tr').remove();
         }
-    </script>
+    });
+
+    $(document).on('change', 'select[name^="document_type"]', function() {
+        updateDocumentTypes();
+    });
+
+    $(document).on('change', 'input[name^="document_file"]', function() {
+        updateDocumentTypes();
+    });
+
+    function updateDocumentTypes() {
+        var DocumentTypes = [];
+
+        $('select[name^="document_type"]').each(function(index) {
+            var document_type = $(this).val();
+            var document_file = $('input[name^="document_file"]').eq(index).val(); // Get the file input based on the index
+            if (document_type && document_file) { // Check if both values are not empty
+                DocumentTypes.push({
+                    document_type: document_type,
+                    document_file: document_file // This will be the file name
+                });
+            }
+        });
+
+        console.log(DocumentTypes);
+        var inputElement = document.getElementById('DocumentTypes');
+        if (inputElement) {
+            inputElement.value = JSON.stringify(DocumentTypes);
+        } else {
+            // If the element does not exist, create it and append to the form
+            inputElement = document.createElement('input');
+            inputElement.type = 'hidden';
+            inputElement.id = 'DocumentTypes';
+            inputElement.name = 'DocumentTypes';
+            $('form').append(inputElement);
+            inputElement.value = JSON.stringify(DocumentTypes);
+        }
+    }
+</script>
 
 
 

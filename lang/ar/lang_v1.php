@@ -1464,4 +1464,10 @@ return [
     'notification_msg' => 'المحتوى',
     'notification_read_at' => 'تاريخ قراءة الإشعار',
     'notification_created_at' => 'تاريخ إنشاء الإشعار',
+    'GeneralManagementNotification' => 'إشعار المدير العام',
+    'email_enabled' => 'البريد الالكتروني',
+    'dashboard_enabled' => 'لوحة التحكم',
+    'ResidencyExpiration_15_D' => 'إشعار إقامة تنتهي خلال 15 يوما',
+    'ExpiredResidency' => 'إشعار انتهاء إقامة',
+
 ];

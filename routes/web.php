@@ -749,6 +749,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])->group(function () {
 
     Route::get('/load-more-notifications', [HomeController::class, 'loadMoreNotifications']);
+    Route::get('/showNotificationModal', [HomeController::class, 'showNotificationModal'])->name('showNotificationModal');
     Route::get('/get-total-unread', [HomeController::class, 'getTotalUnreadNotifications']);
     Route::get('/purchases/print/{id}', [PurchaseController::class, 'printInvoice']);
     Route::get('/purchases/{id}', [PurchaseController::class, 'show']);
