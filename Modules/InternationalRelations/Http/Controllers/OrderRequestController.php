@@ -138,7 +138,6 @@ class OrderRequestController extends Controller
     public function Delegation($id)
     {
 
-
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_delegate_order = auth()->user()->can('internationalrelations.delegate_order');
@@ -195,7 +194,7 @@ class OrderRequestController extends Controller
 
         $sellLineIds = $query->pluck('sell_lines.*.id')->flatten()->toArray();
 
-        $irDelegations = IrDelegation::with('agency', 'transactionSellLine.service.profession')->whereIn('transaction_sell_line_id', $sellLineIds)->get();
+        $irDelegations = IrDelegation::with('agency', 'transactionSellLine.service.profession')->where('operation_order_id', $id)->whereIn('transaction_sell_line_id', $sellLineIds)->get();
 
         return view('internationalrelations::orderRequest.viewDelegation')->with(compact('irDelegations'));
     }
@@ -266,6 +265,7 @@ class OrderRequestController extends Controller
 
                         IrDelegation::create([
                             'transaction_sell_line_id' =>  $sellLine->id,
+                            'operation_order_id' => $order_id,
                             'agency_id' => $item['agency_name'],
                             'targeted_quantity' => $item['target_quantity'],
                             'validationFile' => $filePath ?? null,
@@ -317,34 +317,58 @@ class OrderRequestController extends Controller
      * @return Renderable
      */
 
+    // public function getNationalities(Request $request)
+    // {
+    //     $orderId = $request->input('orderId');
+
+    //     $delegation = IrDelegation::where('operation_order_id', $orderId)->get();
+
+    //     $operation = SalesOrdersOperation::with('salesContract.transaction')
+    //         ->where('id', $orderId)
+    //         ->first();
+
+    //     $businessId = request()->session()->get('user.business_id');
+    //     $transactionId = $operation->salesContract->transaction->id;
+
+
+    //     $transaction = Transaction::where('business_id', $businessId)
+    //         ->where('id', $transactionId)
+    //         ->with([
+    //             'sell_lines' => function ($query) {
+    //                 $query->with([
+    //                     'service' => function ($query) {
+    //                         $query->with('nationality');
+    //                     }
+    //                 ]);
+    //             }
+    //         ])
+    //         ->first();
+
+
+    //     $nationalities = collect($transaction->sell_lines)
+    //         ->pluck('service.nationality')
+    //         ->unique()
+    //         ->values()
+    //         ->all();
+
+    //     return response()->json(['success' => true, 'data' => ['nationalities' => $nationalities]]);
+    // }
     public function getNationalities(Request $request)
     {
         $orderId = $request->input('orderId');
 
-        $operation = SalesOrdersOperation::with('salesContract.transaction')
-            ->where('id', $orderId)
-            ->first();
-
-        $businessId = request()->session()->get('user.business_id');
-        $transactionId = $operation->salesContract->transaction->id;
+        $delegations = IrDelegation::where('operation_order_id', $orderId)->get();
 
 
-        $transaction = Transaction::where('business_id', $businessId)
-            ->where('id', $transactionId)
-            ->with([
-                'sell_lines' => function ($query) {
-                    $query->with([
-                        'service' => function ($query) {
-                            $query->with('nationality');
-                        }
-                    ]);
-                }
-            ])
-            ->first();
+        $transactionSellLineIds = $delegations->pluck('transaction_sell_line_id')->unique();
 
 
-        $nationalities = collect($transaction->sell_lines)
-            ->pluck('service.nationality')
+        $services = TransactionSellLine::whereIn('id', $transactionSellLineIds)
+            ->with('service.nationality')
+            ->get();
+
+
+        $nationalities = $services->pluck('service.nationality')
             ->unique()
             ->values()
             ->all();

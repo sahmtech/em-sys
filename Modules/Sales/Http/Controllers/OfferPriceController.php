@@ -145,7 +145,7 @@ class OfferPriceController extends Controller
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
                             $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
-                            <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
+                            <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
                             </a>';
                         }
                         return $html;
@@ -215,28 +215,40 @@ class OfferPriceController extends Controller
             return Datatables::of($sells)
 
 
+                // ->addColumn(
+                //     'action',
+                //     function ($row) use ($is_admin, $can_print_offer_price) {
+                //         $html = '';
+                //         if ($is_admin || $can_print_offer_price) {
+                //             $html = '<div class="btn-group">
+                //                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                //                     data-toggle="dropdown" aria-expanded="false">' .
+                //                 __('messages.actions') .
+                //                 '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                //                     </span>
+                //                 </button>
+                //                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                //                     <li>
+                //                     <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
+                //                     <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
+                //                     </a>
+                //                     </li>';
+
+                //             $html .= '</ul></div>';
+                //         }
+
+                //         return $html;
+                //     }
+                // )
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_print_offer_price) {
+                    function ($row)  use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                            $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                    data-toggle="dropdown" aria-expanded="false">' .
-                                __('messages.actions') .
-                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                    </span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <li>
-                                    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
-                                    </a>
-                                    </li>';
-
-                            $html .= '</ul></div>';
+                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                            <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
+                            </a>';
                         }
-
                         return $html;
                     }
                 )
@@ -304,27 +316,12 @@ class OfferPriceController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_print_offer_price) {
+                    function ($row)  use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                            $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                    data-toggle="dropdown" aria-expanded="false">' .
-                                __('messages.actions') .
-                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                    </span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <li>
-                                    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
-                                    </a>
-                                    </li>';
-
-
-
-
-                            $html .= '</ul></div>';
+                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                        <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
+                        </a>';
                         }
                         return $html;
                     }
