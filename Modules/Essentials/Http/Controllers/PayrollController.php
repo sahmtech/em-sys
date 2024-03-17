@@ -102,21 +102,14 @@ class PayrollController extends Controller
 
     public function getEmployeesBasedOnCompany(Request $request)
     {
-        $employees = [];
-        if ($request->company_id != 'all') {
-            $employees =  User::whereIn('user_type', ['employee', 'manager'])
-                ->where('users.company_id', $request->company_id)
-                ->select(
-                    'users.*',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
-                )->pluck('name', 'id')->toArray();
-        } else {
-            $employees =  User::whereIn('user_type', ['employee', 'manager'])
-                ->select(
-                    'users.*',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
-                )->pluck('name', 'id')->toArray();
-        }
+
+        $employees =  User::whereIn('user_type', ['employee', 'manager'])
+            ->whereIn('users.company_id', $request->company_id)
+            ->select(
+                'users.*',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
+            )->pluck('name', 'id')->toArray();
+
 
         return [
             'success' => true,
@@ -167,31 +160,31 @@ class PayrollController extends Controller
                     ->addColumn(
                         'action',
                         function ($row) {
-                            $html = '<div class="btn-group">
-                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                        data-toggle="dropdown" aria-expanded="false">' .
-                                __('messages.actions') .
-                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+                            // $html = '<div class="btn-group">
+                            //         <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                            //             data-toggle="dropdown" aria-expanded="false">' .
+                            //     __('messages.actions') .
+                            //     '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                            //             </span>
+                            //         </button>
+                            //         <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
 
-                            $html .= '<li>
-                                    <a href="' . route('payrolls.show', ['id' => $row->id]) . '" target="_blank">
-                                            <i class="fa fa-eye" aria-hidden="true"></i> '
-                                . __('messages.view') .
-                                '</a>
-                                </li>';
+                            // $html .= '<li>
+                            //         <a href="' . route('payrolls.show', ['id' => $row->id]) . '" target="_blank">
+                            //                 <i class="fa fa-eye" aria-hidden="true"></i> '
+                            //     . __('messages.view') .
+                            //     '</a>
+                            //     </li>';
 
-                            if ($row->status == 'draft') {
-                                $html .= '<li>
-                                        <a href="' . route('payrolls.edit', ['id' => $row->id]) . '" target="_blank">
-                                                <i class="fas fa-edit" aria-hidden="true"></i> '
-                                    . __('messages.edit') .
-                                    '</a>
-                                    </li>';
-                            }
+                            // if ($row->status == 'draft') {
+                            //     $html .= '<li>
+                            //             <a href="' . route('payrolls.edit', ['id' => $row->id]) . '" target="_blank">
+                            //                     <i class="fas fa-edit" aria-hidden="true"></i> '
+                            //         . __('messages.edit') .
+                            //         '</a>
+                            //         </li>';
+                            // }
 
 
 
@@ -200,24 +193,34 @@ class PayrollController extends Controller
 
 
 
-                            if ($row->status == 'final' && $row->payment_status != 'paid') {
-                                $html .= '<li>
-                                    <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'addPayment'], [$row->id]) . '" target="_blank">
-                                            <i class="fas fa-money-check" aria-hidden="true"></i> '
-                                    . __('purchase.add_payment') .
-                                    '</a>
-                                </li>';
-                            }
+                            // if ($row->status == 'final' && $row->payment_status != 'paid') {
+                            //     $html .= '<li>
+                            //         <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'addPayment'], [$row->id]) . '" target="_blank">
+                            //                 <i class="fas fa-money-check" aria-hidden="true"></i> '
+                            //         . __('purchase.add_payment') .
+                            //         '</a>
+                            //     </li>';
+                            // }
 
 
-                            $html .= '</ul></div>';
 
+                            // $html .= '</ul></div>';
+                            $html = '<a href="' . route('payrolls.show', ['id' => $row->id, 'type' => 'group']) . '" target="_blank">
+                                 <i class="fa fa-eye" aria-hidden="true"></i> '
+                                . __('messages.view') .
+                                '</a>';
                             return $html;
                         }
                     )
-                    ->editColumn('status', '
-                    @lang("sale.".$status)
-                ')
+                    ->editColumn('status', function ($row) {
+                        if ($row->status == "draft") {
+                            return __('essentials::lang.draft_payroll');
+                        } elseif ($row->status == "final") {
+                            return __('essentials::lang.final_payroll');
+                        } else {
+                            return "";
+                        }
+                    })
                     ->editColumn('created_at', '
                     {{@format_datetime($created_at)}}
                 ')
@@ -298,10 +301,8 @@ class PayrollController extends Controller
                 ->addColumn(
                     'company',
                     function ($row) use ($companies) {
-                        error_log($row->user_type);
-                        error_log(json_encode($companies));
-                        error_log($companies[$row->company_id]);
-                        error_log("-----------");
+
+
 
                         if ($row->user_type == 'employee' || $row->user_type == 'manager') {
                             return $companies[$row->company_id] ?? '';
@@ -336,25 +337,25 @@ class PayrollController extends Controller
                     'action',
                     function ($row) {
 
-                        $html = '<div class="btn-group">
-                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                        data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+                        // $html = '<div class="btn-group">
+                        //             <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                        //                 data-toggle="dropdown" aria-expanded="false">' .
+                        //     __('messages.actions') .
+                        //     '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                        //                 </span>
+                        //             </button>
+                        //             <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
-                        $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+                        // $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
 
-                        // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
+                        // // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
 
-                        if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
-                            $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
-                        }
+                        // if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
+                        //     $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
+                        // }
 
-                        $html .= '</ul></div>';
-
+                        // $html .= '</ul></div>';
+                        $html = '<a href="#" data-href="' . route('payrolls.show', ['id' => $row->id, 'type' => 'single']) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                         return $html;
                     }
                 )
@@ -415,7 +416,7 @@ class PayrollController extends Controller
             $other_allowance = 0;
             $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
             foreach ($allowances as $allowance) {
-                $allowance_dsc =   $allowance->essentials_allowance_and_deduction->description;
+                $allowance_dsc =   $allowance?->essentials_allowance_and_deduction?->description;
                 if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
                     $housing_allowance = $allowance->amount;
                 } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
@@ -627,35 +628,144 @@ class PayrollController extends Controller
     }
 
 
-    public function show($id)
+    public function show($id, $type)
     {
-        $payroll_group = PayrollGroup::find($id);
-        $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
-        $transaction_date = $payroll_group_transactions->first()->transaction_date;
-        $date = Carbon::parse($transaction_date)->format('F Y');
-        $month_year = $date;
-        $employee_ids = [];
+        if ($type == 'group') {
+            $payroll_group = PayrollGroup::find($id);
+            $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
+            $transaction_date = $payroll_group_transactions->first()->transaction_date;
+            $date = Carbon::parse($transaction_date)->format('F Y');
+            $month_year = $date;
+            $employee_ids = [];
 
-        foreach ($payroll_group_transactions as $payroll_group_transaction) {
-            $employee_ids[] = $payroll_group_transaction->expense_for;
-        }
-        $usersArr = User::whereIn('id', $employee_ids)->select([
-            'users.*',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
+            foreach ($payroll_group_transactions as $payroll_group_transaction) {
+                $employee_ids[] = $payroll_group_transaction->expense_for;
+            }
+            $usersArr = User::whereIn('id', $employee_ids)->select([
+                'users.*',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
 
-        ])->get();
-
-
-        $businesses = Business::pluck('name', 'id',);
-
-        $payrolls = [];
+            ])->get();
 
 
-        // return  json_decode($payroll_group_transactions[3]->essentials_allowances);
-        foreach ($payroll_group_transactions as $payroll_group_transaction) {
+            $businesses = Business::pluck('name', 'id',);
+
+            $payrolls = [];
 
 
-            $user = $usersArr->where('id', $payroll_group_transaction->expense_for)->first();
+            // return  json_decode($payroll_group_transactions[3]->essentials_allowances);
+            foreach ($payroll_group_transactions as $payroll_group_transaction) {
+
+
+                $user = $usersArr->where('id', $payroll_group_transaction->expense_for)->first();
+                $housing_allowance = 0;
+                $transportation_allowance = 0;
+                $other_allowance = 0;
+                $allowances = json_decode($user)->user_allowances_and_deductions ?? [];
+                foreach ($allowances as $allowance) {
+                    $allowance_dsc =   $allowance->essentials_allowance_and_deduction->description;
+                    if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+                        $housing_allowance = $allowance->amount;
+                    } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+                        $transportation_allowance = $allowance->amount;
+                    } else {
+                        $other_allowance += floatval($allowance->amount ?? "0");
+                    }
+                }
+                $salary = $user->essentials_salary + $other_allowance;
+                $essentials_allowances = json_decode($payroll_group_transaction->essentials_allowances);
+                $over_time_hours = 0;
+                $additional_addition = 0;
+                $other_additions = 0;
+                foreach ($essentials_allowances->allowance_names as $index => $allowance) {
+                    if ((stripos($allowance, 'وقت') !== false)) {
+                        $over_time_hours = $essentials_allowances->allowance_amounts[$index];
+                    }
+                    if ((stripos($allowance, 'مبلغ') !== false)) {
+                        $additional_addition = $essentials_allowances->allowance_amounts[$index];
+                    }
+                    if ((stripos($allowance, 'خرى') !== false)) {
+                        $other_additions = $essentials_allowances->allowance_amounts[$index];
+                    }
+                }
+
+
+
+                $essentials_deductions = json_decode($payroll_group_transaction->essentials_deductions);
+                $violations = 0;
+                $absence = 0;
+                $other_deductions = 0;
+                $loan = 0;
+                foreach ($essentials_deductions->deduction_names as $index => $deduction) {
+                    if ((stripos($deduction, 'مخالف') !== false)) {
+                        $violations = $essentials_deductions->deduction_amounts[$index];
+                    }
+                    if ((stripos($deduction, 'غياب') !== false)) {
+                        $absence = $essentials_deductions->deduction_amounts[$index];
+                    }
+                    if ((stripos($deduction, 'خرى') !== false)) {
+                        $other_deductions = $essentials_deductions->deduction_amounts[$index];
+                    }
+                    if ((stripos($deduction, 'سلف') !== false)) {
+                        $loan = $essentials_deductions->deduction_amounts[$index];
+                    }
+                }
+                $payrolls[] = [
+                    'id' => $user->id,
+                    'name' =>  $user->name ?? '',
+                    'nationality' => $user->country?->nationality ?? '',
+                    'identity_card_number' => $user->id_proof_number ?? '',
+                    'profession' => '',
+                    'work_days' => 30,
+                    'salary' => number_format($payroll_group_transaction->essentials_amount_per_unit_duration, 0, '.', ''),
+                    'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
+                    'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
+                    'other_allowance' => number_format($other_allowance, 0, '.', ''),
+                    'total' => number_format($salary, 0, '.', ''),
+                    'violations' =>   $violations,
+                    'absence' => $absence,
+                    'absence_deduction' => 0,
+                    'other_deductions' => $other_deductions,
+                    'loan' => $loan,
+                    'total_deduction' => 0,
+                    'over_time_hours' => $over_time_hours,
+                    'over_time_hours_addition' => 0,
+                    'additional_addition' => $additional_addition,
+                    'other_additions' => $other_additions,
+                    'total_additions' => 0,
+                    'final_salary' => $payroll_group_transaction->final_total,
+                    'payment_method' => '',
+                    'notes' => '',
+                ];
+            }
+
+            $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
+            $action = 'edit';
+
+            return view('essentials::payroll.show')->with(compact('employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
+        } elseif ($type == "single") {
+
+            $payroll_group_transactions = Transaction::find($id);
+
+            $transaction_date = $payroll_group_transactions->transaction_date;
+            $date = Carbon::parse($transaction_date)->format('F Y');
+            $month_year = $date;
+            $employee_ids =  $payroll_group_transactions->expense_for;
+            $user = User::where('id', $employee_ids)->select([
+                'users.*',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
+
+            ])->first();
+
+
+            $businesses = Business::pluck('name', 'id',);
+
+            $payrolls = [];
+
+
+
+
+
             $housing_allowance = 0;
             $transportation_allowance = 0;
             $other_allowance = 0;
@@ -671,7 +781,7 @@ class PayrollController extends Controller
                 }
             }
             $salary = $user->essentials_salary + $other_allowance;
-            $essentials_allowances = json_decode($payroll_group_transaction->essentials_allowances);
+            $essentials_allowances = json_decode($payroll_group_transactions->essentials_allowances);
             $over_time_hours = 0;
             $additional_addition = 0;
             $other_additions = 0;
@@ -689,7 +799,7 @@ class PayrollController extends Controller
 
 
 
-            $essentials_deductions = json_decode($payroll_group_transaction->essentials_deductions);
+            $essentials_deductions = json_decode($payroll_group_transactions->essentials_deductions);
             $violations = 0;
             $absence = 0;
             $other_deductions = 0;
@@ -715,7 +825,7 @@ class PayrollController extends Controller
                 'identity_card_number' => $user->id_proof_number ?? '',
                 'profession' => '',
                 'work_days' => 30,
-                'salary' => number_format($payroll_group_transaction->essentials_amount_per_unit_duration, 0, '.', ''),
+                'salary' => number_format($payroll_group_transactions->essentials_amount_per_unit_duration, 0, '.', ''),
                 'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
                 'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
                 'other_allowance' => number_format($other_allowance, 0, '.', ''),
@@ -731,16 +841,17 @@ class PayrollController extends Controller
                 'additional_addition' => $additional_addition,
                 'other_additions' => $other_additions,
                 'total_additions' => 0,
-                'final_salary' => $payroll_group_transaction->final_total,
+                'final_salary' => $payroll_group_transactions->final_total,
                 'payment_method' => '',
                 'notes' => '',
             ];
+
+
+            $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
+            $action = 'edit';
+            $user_name = $user->name;
+            return view('essentials::payroll.show')->with(compact('user_name', 'employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
         }
-
-        $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
-        $action = 'edit';
-
-        return view('essentials::payroll.show')->with(compact('employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
     }
 
     public function edit($id)

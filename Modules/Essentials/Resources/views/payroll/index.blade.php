@@ -95,11 +95,12 @@
                     <div class="modal-body">
                         <div class="form-group">
                             {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
-                            {!! Form::select('companies', $companies, null, [
+                            {!! Form::select('companies[]', $companies, null, [
                                 'class' => 'form-control select2',
                                 'style' => 'width: 100%;',
                                 'id' => 'companies',
-                                'placeholder' => __('lang_v1.all'),
+                                'multiple',
+                                // 'placeholder' => __('lang_v1.all'),
                             ]) !!}
                         </div>
                         <div class="form-group">
