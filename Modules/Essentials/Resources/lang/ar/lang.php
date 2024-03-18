@@ -144,6 +144,7 @@ return [
   "within_current_fy" => "خلال السنة المالية الحالية",
   "payroll" => " مسير الرواتب",
   "payrolls" => " مسيرات الرواتب",
+  "payrolls_management" => 'إدارة الرواتب',
   "payroll_create_edit" => "الراتب",
   "all_payrolls" => "كل مسيرات الرواتب",
   "proceed" => "إكمال",
@@ -1045,12 +1046,14 @@ return [
   'nationality' => 'الجنسية ',
   '12_months' => '12 شهرا',
   'contract_file' => 'ملف العقد',
+  'english_name' => 'الاسم الانكليزي',
   'all' => 'الكل',
   'connect_camera' => 'الاتصال بالكاميرا',
   'open_camera' => 'افتح الكاميرا',
   'capture_photo' => 'التقط صورة ',
   'residencyreports' => 'تقرير تكاليف الإقامات',
-
+  'sponsorship' => 'كفالة',
+  'minor' => 'ثانوي',
   'company_name' => 'اسم الشركة',
   'create_work_cards' => 'إضافة رخصة عمل',
   'select_altemployee' => 'اختر البديل',
@@ -1783,5 +1786,5 @@ return [
   'the_total' => 'الإجمالي',
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
-
+  'user_type' => 'الفئة',
 ];

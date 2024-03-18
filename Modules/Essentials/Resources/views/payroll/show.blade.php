@@ -6,7 +6,7 @@
 
     <section class="content-header">
         <h1>
-            <span>@lang('essentials::lang.payroll_for')</span> {{ $date }}
+            <span>@lang('essentials::lang.payroll_for')</span> {{ $user_name ?? '' }} {{ $date }}
         </h1>
     </section>
 

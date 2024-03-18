@@ -68,7 +68,7 @@
                 </div>
                 <!-- /.box -->
 
-
+              
                 <!-- Profile Image -->
                 <div class="box box-primary">
                     <div class="box-body box-profile">

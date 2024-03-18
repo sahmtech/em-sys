@@ -368,7 +368,7 @@ class HomeController extends Controller
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => '	far fa-handshake', 'link' =>   route('essentials_word_cards_dashboard')],
             ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' =>   route('employee_affairs_dashboard')],
-            ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
+            ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls_management'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
@@ -786,6 +786,7 @@ class HomeController extends Controller
                 'title' =>  $sent_notification->title ?? '',
                 'msg' => $sent_notification->msg ?? '',
                 'icon_class' =>  $icon_classes[$sent_notification->type] ?? '',
+                // 'link' => route('showNotificationModal'),
                 'link' => '',
                 'created_at' => Carbon::parse($sent_notification->created_at)->diffForHumans() ?? '',
                 'read_at' => $notification->read_at ?? '',
@@ -906,6 +907,11 @@ class HomeController extends Controller
         }
 
         return view('home.calendar')->with(compact('all_locations', 'users', 'event_types'));
+    }
+
+    public function showNotificationModal()
+    {
+        return view('custom_views.notification_modal', ['showModal' => true]);
     }
 
     public function showNotification($id)

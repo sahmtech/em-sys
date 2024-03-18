@@ -380,8 +380,11 @@
                 if (field == 'over_time_hours') {
                     updateOverTimeHoursAddition(index);
                 }
-
-                initializeCalculations();
+                updateTotal(index);
+                updateTotalDeduction(index);
+                updateTotalAdditions(index);
+                updateFinalSalary(index);
+                //initializeCalculations(index);
                 updateFooter();
             });
 
@@ -403,14 +406,6 @@
                 updateTheTotalTotalAdditions();
                 updateTheTotalFinalSalary();
             }
-
-            $('td.editable span[contenteditable="true"]').on('input', function() {
-                var index = $(this).data('index');
-                var field = $(this).data('field');
-                var newValue = $(this).text();
-                updateFooter();
-
-            });
 
         });
 
