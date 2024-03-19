@@ -106,7 +106,7 @@ return [
   "clocked_in_at" => "تسجيل حضور في",
   "clock_in_clock_out" => "الحضور والانصراف",
   "profile_info" => "معلومات الملف الشخصي",
-  "dob" => "تاريخ الولادة",
+  "dob" => "تاريخ الميلاد",
   "married" => "متزوج",
   "unmarried" => "اعزب",
   "marital_status" => "الحالة الإجتماعية",
