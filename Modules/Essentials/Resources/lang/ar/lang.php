@@ -259,8 +259,9 @@ return [
   "todays_attendance" => "حضور اليوم",
   "already_clocked_in" => "تم تسجيل الدخول بالفعل",
   "not_clocked_in" => "لم يتم تسجيل الدخول",
-  "crud_leave_type" => "عرض نوع الإجازة",
+  "crud_leave_type" => "أنواع الإجازات",
   "crud_all_leave" => "عرض كل الإجازات",
+  'view_leave_balances' => 'عرض رصيد الإجازات',
   "crud_own_leave" => "إضافة / عرض الإجازة الخاصة",
   "crud_all_attendance" => "عرض كل الحضور",
   "view_own_attendance" => "عرض الحضور الخاص بي",
@@ -1787,4 +1788,5 @@ return [
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
+  'leave_balances' => 'رصيد الإجازات'
 ];

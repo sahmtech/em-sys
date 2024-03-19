@@ -31,6 +31,7 @@ use Modules\HelpDesk\Entities\HdTicketReply;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsEmployeesFamily;
+use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\HousingMovements\Entities\HtrRoom;
 use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
 
@@ -496,7 +497,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(EssentialsEmployeeTravelCategorie::class, 'employee_id');
     }
-
+    public function leaveBalances()
+    {
+        return $this->hasMany(UserLeaveBalance::class);
+    }
     public function essentialsUserShifts()
     {
         return $this->hasMany(EssentialsUserShift::class, 'user_id');
