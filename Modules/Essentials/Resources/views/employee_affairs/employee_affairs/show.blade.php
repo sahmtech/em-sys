@@ -362,6 +362,7 @@
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="form-group col-md-12">
+                                                 <video id="video" width="100%" height="auto" autoplay style="display: none"></video>
                                                 <img src="" id="popupImage" alt="@lang('essentials::lang.profile_picture')"
                                                     style="max-width: 100%; height: auto;" />
                                             </div>
@@ -370,16 +371,27 @@
                                        <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                                                    <button type="button" class="btn btn-primary" id="capturePhoto">@lang('essentials::lang.open_camera')</button>
                                                      <button type="button" class="btn btn-danger deleteImage">@lang('messages.delete')</button>
+                                                   
                                                 </div>
                                             </div>
+                                           
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                    
-                                                    {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+                                                    {!! Form::file('profile_picture', ['class' => 'form-control','id'=>'fileInputWrapper', 'accept' => 'image/*']) !!}
                                                 </div>
                                             </div>
+                                           
+                                            <div class="col-md-6" style="float:none;margin:auto;" justify-content-md-center>
+                                                <div class="form-group">
+                                                  
+                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelCameraBtn" style="display: none">@lang('essentials::lang.cancel_camera')</button>
+                                                      <button type="button" class="btn btn-primary" id="takePhotoBtn" style="display: none">@lang('essentials::lang.capture_photo')</button>
+                                                </div>
+                                            </div>
+                                            
                                         </div>
                                    
 
@@ -531,69 +543,138 @@
 
 
     <script type="text/javascript">
-        $(document).ready(function() {
-            let imageChanged = false;
 
-            $('#profileImageLink').on('click', function(e) {
-                e.preventDefault();
-                openImagePopup();
+   
+     $(document).ready(function() {
+    let imageChanged = false;
+    let videoStream = null;
+
+    $('#profileImageLink').on('click', function(e) {
+        e.preventDefault();
+        openImagePopup();
+    });
+
+    $('.deleteImage').on('click', function() {
+        $('#popupImage').attr('src', ''); // Remove image source
+        $('input[type="file"]').val(''); // Clear file input
+        $('#delete_image_input').val('1'); // Indicate that the image should be deleted
+        imageChanged = true;
+        enableSaveButton();
+    });
+
+    $('#capturePhoto').on('click', function() {
+        $('#popupImage').hide();
+        $('#video').show();
+        $('#takePhotoBtn').show();
+        $('#cancelCameraBtn').show();
+        startVideoStream();
+    });
+
+    $('#takePhotoBtn').on('click', function() {
+        takePhoto();
+    });
+
+    $('#cancelCameraBtn').on('click', function() {
+        stopVideoStream();
+        $('#video').hide();
+        $('#takePhotoBtn').hide();
+        $('#cancelCameraBtn').hide();
+        $('#popupImage').show();
+    });
+
+    $('input[type="file"]').on('change', function() {
+        previewImage(event);
+        imageChanged = true;
+        enableSaveButton();
+    });
+
+    function enableSaveButton() {
+        $('.saveImage').prop('disabled', !imageChanged);
+    }
+
+    $('#update_profile_picture_form').submit(function(e) {
+        if (!imageChanged) {
+            e.preventDefault(); // Prevent form submission if no changes made
+        }
+    });
+
+    function openImagePopup() {
+        $('#popupImage').attr('src', $('#profileImage').attr('src'));
+        $('#imagePopupModal').modal('show');
+    }
+
+    function startVideoStream() {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                var video = document.getElementById('video');
+                videoStream = stream;
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function(err) {
+                console.log("An error occurred: " + err);
             });
+    }
 
-            $('.deleteImage').on('click', function() {
-                $('#popupImage').attr('src', ''); // Remove image source
-                $('input[type="file"]').val(''); // Clear file input
-                $('#delete_image_input').val('1'); // Indicate that the image should be deleted
-                imageChanged = true;
-                enableSaveButton();
-            });
+    function stopVideoStream() {
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+            videoStream = null;
+        }
+    }
 
+    function takePhoto() {
+    var video = document.getElementById('video');
+    var canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    var imageDataUrl = canvas.toDataURL('image/jpeg');
+    $('#popupImage').attr('src', imageDataUrl);
 
-            $('input[type="file"]').on('change', function() {
-                previewImage(event);
-                imageChanged = true;
-                enableSaveButton();
-            });
+    // Convert data URL to Blob
+    var byteString = atob(imageDataUrl.split(',')[1]);
+    var mimeString = imageDataUrl.split(',')[0].split(':')[1].split(';')[0];
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], { type: mimeString });
 
-            function enableSaveButton() {
-                $('.saveImage').prop('disabled', !imageChanged);
-            }
+    const hiddenFileInput = document.getElementById('fileInputWrapper');
+    const dataTransfer = new DataTransfer();
+    const file = new File([blob], 'profile_picture.jpg', { type: mimeString });
 
-            $('#update_profile_picture_form').submit(function(e) {
-                if (!imageChanged) {
-                    e.preventDefault(); // Prevent form submission if no changes made
-                }
-            });
+    dataTransfer.items.add(file);
+ 
+    hiddenFileInput.files = dataTransfer.files;
 
-            function openImagePopup() {
-                console.log('before');
-                $('#popupImage').attr('src', $('#profileImage').attr('src'));
-                $('#imagePopupModal').modal('show');
-                console.log($('#profileImage').attr('src'));
-                console.log('after');
-            }
-
-            function previewImage(event) {
-                var reader = new FileReader();
-                reader.onload = function() {
-                    var output = document.getElementById('popupImage');
-                    output.src = reader.result;
-                };
-                reader.readAsDataURL(event.target.files[0]);
-            }
-
-        });
-
+    stopVideoStream();
+     imageChanged = true;
+   
+    $('#video').hide();
+    $('#popupImage').show();
+    enableSaveButton(); 
+}
 
 
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('popupImage');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
 
+    $('#user_id').change(function() {
+        if ($(this).val()) {
+            window.location = "{{ url('/users') }}/" + $(this).val();
+        }
+    });
+});
 
-        $(document).ready(function() {
-            $('#user_id').change(function() {
-                if ($(this).val()) {
-                    window.location = "{{ url('/users') }}/" + $(this).val();
-                }
-            });
-        });
     </script>
 
 

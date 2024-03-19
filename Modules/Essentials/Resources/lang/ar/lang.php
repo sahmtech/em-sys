@@ -107,6 +107,7 @@ return [
   "clock_in_clock_out" => "الحضور والانصراف",
   "profile_info" => "معلومات الملف الشخصي",
   "dob" => "تاريخ الميلاد",
+  'cancel_camera'=>'اغلاق الكاميرا',
   "married" => "متزوج",
   "unmarried" => "اعزب",
   "marital_status" => "الحالة الإجتماعية",

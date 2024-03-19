@@ -3,7 +3,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="captureModalLabel">Capture Photo</h5>
+        <h5 class="modal-title" id="captureModalLabel">@lang('essentials::lang.open_camera')</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -14,8 +14,8 @@
       </div>
            <input type="file" id="hiddenProfilePicture" style="display: none;" accept="image/*">
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">Cancel</button>
-        <button type="button" class="btn btn-primary" id="takePhotoButton">Take Photo</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">@lang('essentials::lang.cancel_camera')</button>
+        <button type="button" class="btn btn-primary" id="takePhotoButton">@lang('essentials::lang.capture_photo')</button>
         <button id="doneButton" class="btn btn-primary" style="display: none;">Done</button>
       </div>
     </div>
