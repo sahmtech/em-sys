@@ -335,7 +335,7 @@
                         </div>
 
                         <div class="modal fade" id="imagePopupModal" tabindex="-1" role="dialog"
-                            aria-labelledby="gridSystemModalLabel">
+                            aria-labelledby="gridSystemModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
 
@@ -362,25 +362,27 @@
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="form-group col-md-12">
+                                                <video id="video" width="100%" height="auto" autoplay id='videoElement' style="display: none"></video>
                                                 <img src="" id="popupImage" alt="@lang('essentials::lang.profile_picture')"
                                                     style="max-width: 100%; height: auto;" />
                                             </div>
 
                                         </div>
-                                        <div class="row">
+                                       <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+                                                    <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                                                     <button type="button" class="btn btn-danger deleteImage">@lang('messages.delete')</button>
                                                 </div>
-
                                             </div>
-                                            <div class="col-md-3">
-                                                <button type="button"
-                                                    class="btn btn-danger deleteImage">@lang('messages.delete')</button>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                   
+                                                    {!! Form::file('profile_picture', ['class' => 'form-control','id' => 'fileInputWrapper', 'accept' => 'image/*']) !!}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-
+                                     
                                     <div class="modal-footer">
                                         <button type="submit" class="btn btn-primary saveImage"
                                             disabled>@lang('messages.save')</button>
@@ -524,76 +526,121 @@
     </section>
 @endsection
 @section('javascript')
-    <!-- document & note.js -->
-
-
     <script type="text/javascript">
-        $(document).ready(function() {
-            let imageChanged = false;
+    $(document).ready(function() {
+        let imageChanged = false;
 
-            $('#profileImageLink').on('click', function(e) {
-                e.preventDefault();
-                openImagePopup();
-            });
-
-            $('.deleteImage').on('click', function() {
-                $('#popupImage').attr('src', ''); // Remove image source
-                $('input[type="file"]').val(''); // Clear file input
-                $('#delete_image_input').val('1'); // Indicate that the image should be deleted
-                imageChanged = true;
-                enableSaveButton();
-            });
-
-
-            $('input[type="file"]').on('change', function() {
-                previewImage(event);
-                imageChanged = true;
-                enableSaveButton();
-            });
-
-            function enableSaveButton() {
-                $('.saveImage').prop('disabled', !imageChanged);
-            }
-
-            $('#update_profile_picture_form').submit(function(e) {
-                if (!imageChanged) {
-                    e.preventDefault(); // Prevent form submission if no changes made
-                }
-            });
-
-            function openImagePopup() {
-                console.log('before');
-                $('#popupImage').attr('src', $('#profileImage').attr('src'));
-                $('#imagePopupModal').modal('show');
-                console.log($('#profileImage').attr('src'));
-                console.log('after');
-            }
-
-            function previewImage(event) {
-                var reader = new FileReader();
-                reader.onload = function() {
-                    var output = document.getElementById('popupImage');
-                    output.src = reader.result;
-                };
-                reader.readAsDataURL(event.target.files[0]);
-            }
-
+        $('#profileImageLink').on('click', function(e) {
+            e.preventDefault();
+            openImagePopup();
         });
 
-
-
-
-
-        $(document).ready(function() {
-            $('#user_id').change(function() {
-                if ($(this).val()) {
-                    window.location = "{{ url('/users') }}/" + $(this).val();
-                }
-            });
+        $('.deleteImage').on('click', function() {
+            $('#popupImage').attr('src', ''); // Remove image source
+            $('input[type="file"]').val(''); // Clear file input
+            $('#delete_image_input').val('1'); // Indicate that the image should be deleted
+            imageChanged = true;
+            enableSaveButton();
         });
-    </script>
 
+        $('#captureButton').on('click', function() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    $('#videoElement').show();
+                    $('#popupImage').hide();
+                    $('#fileInputWrapper').hide();
+                    $('#videoElement').get(0).srcObject = stream;
 
+                    $('#captureButton').hide();
+                    $('.cancelCapture').show();
+                    $('.takePhoto').show();
 
+                    $('.takePhoto').on('click', function() {
+                        var canvas = document.createElement('canvas');
+                        var video = document.getElementById('videoElement');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                        var dataURL = canvas.toDataURL('image/jpeg');
+                        $('#popupImage').attr('src', dataURL);
+                        $('#videoElement').hide();
+                        $('#popupImage').show();
+                        $('#fileInputWrapper').show();
+                        $('#fileInputWrapper input[type="file"]').get(0).files = [dataURLtoBlob(dataURL)];
+                        $('.cancelCapture').hide();
+                        $('.takePhoto').hide();
+                        $('#captureButton').show();
+                        imageChanged = true;
+                        enableSaveButton();
+                        stream.getTracks().forEach(function(track) {
+                            track.stop();
+                        });
+                    });
+
+                    $('.cancelCapture').on('click', function() {
+                        $('#videoElement').hide();
+                        $('#popupImage').show();
+                        $('#fileInputWrapper').show();
+                        $('.cancelCapture').hide();
+                        $('.takePhoto').hide();
+                        $('#captureButton').show();
+                        stream.getTracks().forEach(function(track) {
+                            track.stop();
+                        });
+                    });
+                })
+                .catch(function(err) {
+                    console.log("An error occurred: " + err);
+                });
+                
+            // Set delete_image_input to 1
+            $('#delete_image_input').val('1');
+            enableSaveButton();
+        });
+
+        $('input[type="file"]').on('change', function() {
+            previewImage(event);
+            imageChanged = true;
+            enableSaveButton();
+        });
+
+        function enableSaveButton() {
+            $('.saveImage').prop('disabled', !imageChanged);
+        }
+
+        $('#update_profile_picture_form').submit(function(e) {
+            if (!imageChanged) {
+                e.preventDefault(); // Prevent form submission if no changes made
+            }
+        });
+
+        function openImagePopup() {
+            $('#popupImage').attr('src', $('#profileImage').attr('src'));
+            $('#imagePopupModal').modal('show');
+        }
+
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('popupImage');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function dataURLtoBlob(dataURL) {
+            var arr = dataURL.split(',');
+            var mime = arr[0].match(/:(.*?);/)[1];
+            var bstr = atob(arr[1]);
+            var n = bstr.length;
+            var u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+    });
+</script>
 
 @endsection
+

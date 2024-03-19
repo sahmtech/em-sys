@@ -49,13 +49,20 @@
                         </div>
                     </div>
              
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
-                            {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
-                        </div>
-
+               <div class="col-md-4">
+                    <div class="form-group">
+                        {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
+                        {!! Form::file('profile_picture', ['class' => 'form-control', 'id' => 'fileInputWrapper', 'accept' => 'image/*']) !!}
                     </div>
+
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                    </div>
+
+                    <!-- Hidden file input to store the captured photo -->
+               
+                </div>
+@include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('user_type', __('user.user_type') . ':*') !!}
@@ -157,6 +164,7 @@
 @stop
 
 @section('javascript')
+
 
     <script type="text/javascript">
         $(document).ready(function() {

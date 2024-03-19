@@ -22,7 +22,7 @@
                         @endphp
                     @endif
                     <div class="form-group">
-                        {!! Form::label('location_id', __('business.business_location') . ':*' )!!}
+                        {!! Form::label('location_id', __('assetmanagement::lang.company') . ':*' )!!}
                         {!! Form::select('location_id', $business_locations, $default_location, ['class' => 'form-control', 'placeholder' => __('messages.please_select'), 'required', 'style' => 'width: 100%;']); !!}
                     </div>
                 </div>
