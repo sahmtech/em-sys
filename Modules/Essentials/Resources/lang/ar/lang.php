@@ -106,7 +106,8 @@ return [
   "clocked_in_at" => "تسجيل حضور في",
   "clock_in_clock_out" => "الحضور والانصراف",
   "profile_info" => "معلومات الملف الشخصي",
-  "dob" => "تاريخ الولادة",
+  "dob" => "تاريخ الميلاد",
+  'cancel_camera'=>'اغلاق الكاميرا',
   "married" => "متزوج",
   "unmarried" => "اعزب",
   "marital_status" => "الحالة الإجتماعية",
@@ -1761,6 +1762,7 @@ return [
   '31_days' => '31 يوم',
 
 
+
   'companies' => 'الشركات',
   'payroll_for' => 'مسير الرواتب لـ',
 
@@ -1788,3 +1790,4 @@ return [
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
 ];
+

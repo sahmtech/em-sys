@@ -27,7 +27,7 @@
 		  		{!! Form::textarea('message', null, ['class' => 'form-control', 'required', 'id' => 'chat-msg', 'placeholder' => __('essentials::lang.type_message'), 'rows' => 1]); !!}
 		  		<div class="input-group-addon" 
 		  		style="width: 137px;padding: 0;border: none;">
-		  			{!! Form::select('location_id',$business_locations,  null, ['class' => 'form-control', 'placeholder' => __('lang_v1.select_location'), 'style' => 'width: 100%;' ]); !!}
+		  			{!! Form::select('location_id',$business_locations,  null, ['class' => 'form-control', 'placeholder' => __('assetmanagement::lang.company'), 'style' => 'width: 100%;' ]); !!}
 		  		</div>
 		  		<div class="input-group-btn">
 		  			<button type="submit" class="btn btn-success pull-right ladda-button" data-style="expand-right">

@@ -132,9 +132,15 @@
             <div class="col-md-12">
                 <div class="form-group">
                     {!! Form::label('profile_photo', __('lang_v1.upload_image') . ':') !!}
-                    {!! Form::file('profile_photo', ['id' => 'profile_photo', 'accept' => 'image/*']); !!}
+                    {!! Form::file('profile_photo', ['id' => 'profile_photo','id' => 'fileInputWrapper', 'accept' => 'image/*']); !!}
                     <small><p class="help-block">@lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])</p></small>
                 </div>
+
+                
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                    </div>
+                    @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
             </div>
         @endcomponent
     </div>
