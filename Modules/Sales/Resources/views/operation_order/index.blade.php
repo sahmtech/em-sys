@@ -40,18 +40,17 @@
         @endcomponent
 
         @component('components.widget', ['class' => 'box-primary'])
-        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_sale_operation_orders"))
-     
-            @slot('tool')
-                <div class="box-tools">
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.add_sale_operation_orders'))
+                @slot('tool')
+                    <div class="box-tools">
 
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                        data-target="#addOperationModal">
-                        <i class="fa fa-plus"></i> @lang('messages.add')
-                    </button>
-                </div>
-            @endslot
-        @endif
+                        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                            data-target="#addOperationModal">
+                            <i class="fa fa-plus"></i> @lang('messages.add')
+                        </button>
+                    </div>
+                @endslot
+            @endif
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped ajax_view" id="operation_table">
@@ -114,37 +113,42 @@
                                 ]) !!}
                             </div>
 
-                           
+
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('Industry', __('sales::lang.Industry') . ':') !!}
                                 {!! Form::text('Industry', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Industry')]) !!}
                             </div>
 
-                           
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('quantity', __('sales::lang.quantity') . ':*') !!}
                                 {!! Form::Number('quantity', null, [
                                     'class' => 'form-control',
                                     'required',
                                     'placeholder' => __('sales::lang.quantity'),
-                                    'id' => 'quantity-input', 
+                                    'id' => 'quantity-input',
                                 ]) !!}
-                            <p id="quantity-message" style="color: red;"></p>
+                                <p id="quantity-message" style="color: red;"></p>
                             </div>
 
-                        
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('operation_order_type', __('sales::lang.operation_order_type') . ':*') !!}
                                 {!! Form::select(
                                     'operation_order_type',
                                     ['Internal' => __('sales::lang.Internal'), 'External' => __('sales::lang.external')],
                                     null,
-                                    ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.operation_order_type')],
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => 'height:40px',
+                                        'required',
+                                        'placeholder' => __('sales::lang.operation_order_type'),
+                                    ],
                                 ) !!}
 
                             </div>
-                     
+
                             <div class="form-group col-md-6">
 
                                 {!! Form::label('Interview', __('sales::lang.Interview') . ':*') !!}
@@ -165,7 +169,7 @@
 
 
                             </div>
-                           
+
                             <div class="form-group col-md-6">
 
                                 {!! Form::label('Delivery', __('sales::lang.Delivery') . ':') !!}
@@ -308,66 +312,67 @@
             });
 
             $('#customer-select').change(function() {
-                    var selectedCustomerId = $(this).val();
-                    if (selectedCustomerId) {
-                        $.ajax({
-                            url: '{{ route('get-contracts') }}',
-                            type: 'POST',
-                            data: {
-                                customer_id: selectedCustomerId
-                            },
-                            success: function(response) {
-                                var contactSelect = $('#contact-select');
-                                contactSelect.empty();
+                var selectedCustomerId = $(this).val();
+                if (selectedCustomerId) {
+                    $.ajax({
+                        url: '{{ route('get-contracts') }}',
+                        type: 'POST',
+                        data: {
+                            customer_id: selectedCustomerId
+                        },
+                        success: function(response) {
+                            var contactSelect = $('#contact-select');
+                            contactSelect.empty();
 
 
-                                contactSelect.append(
-                                    '<option value="">اختر العقد</option>');
+                            contactSelect.append(
+                                '<option value="">اختر العقد</option>');
 
 
 
-                                $.each(response, function(index, contract) {
-                                    contactSelect.append(new Option(contract
-                                        .number_of_contract, contract.id
-                                        ));
-                                });
+                            $.each(response, function(index, contract) {
+                                contactSelect.append(new Option(contract
+                                    .number_of_contract, contract.id
+                                ));
+                            });
 
-                                console.log(contactSelect);
-                                contactSelect.find('option').first().attr('selected',
-                                    'selected');
-                            },
-                            error: function() {
-                                console.error('An error occurred.');
-                            }
-                        });
-                    }
-                });
+                            console.log(contactSelect);
+                            contactSelect.find('option').first().attr('selected',
+                                'selected');
+                        },
+                        error: function() {
+                            console.error('An error occurred.');
+                        }
+                    });
+                }
+            });
 
-          
+
             $('#contact-select').change(function() {
-            var selectedContractId = $(this).val();
-      
-            if (selectedContractId) {
-                $.ajax({
-                    url: '{{ route('get-contract-details') }}',
-                    type: 'POST',
-                    data: {
-                        contract_id: selectedContractId
-                    },
-                    success: function(response) {
-                       
-                        $('#quantity-input').attr('max', response);
-                        $('#quantity-message').text('Enter a number equal or less than ' + response);
-                       
-                    },
-                    error: function() {
-                        console.error('An error occurred.');
-                    }
-                });
-            }
-        });
+                var selectedContractId = $(this).val();
 
-          
+                if (selectedContractId) {
+                    $.ajax({
+                        url: '{{ route('get-contract-details') }}',
+                        type: 'POST',
+                        data: {
+                            contract_id: selectedContractId
+                        },
+                        success: function(response) {
+
+                            $('#quantity-input').attr('max', response);
+                            $('#quantity-message').text('Enter a number equal or less than ' +
+                                response);
+
+                        },
+                        error: function() {
+                            console.error('An error occurred.');
+                        }
+                    });
+                }
+            });
+
+
 
         });
     </script>

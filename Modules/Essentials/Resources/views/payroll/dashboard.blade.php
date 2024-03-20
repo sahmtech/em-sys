@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', __('essentials::lang.payrolls_management'))
 
 @section('content')
 
