@@ -1787,4 +1787,8 @@ return [
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
+  'user_type.employee' => 'موظفين',
+  'user_type.worker' => 'عمال',
+  'user_type.remote_employee' => 'موظفين عن بعد',
+  'late_hours' => 'تأخير',
 ];
