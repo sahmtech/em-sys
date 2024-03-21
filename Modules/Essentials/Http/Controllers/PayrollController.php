@@ -666,6 +666,8 @@ class PayrollController extends Controller
 
     public function show($id, $type)
     {
+
+
         if ($type == 'group') {
             $payroll_group = PayrollGroup::find($id);
             $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
@@ -682,7 +684,12 @@ class PayrollController extends Controller
                 DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
 
             ])->get();
-
+            $user = $usersArr->first();
+            $user_type = $user->user_type;
+            $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
+            if ($user->contract->contract_type_id == $remote_id) {
+                $user_type =  "remote_employee";
+            }
 
             $businesses = Business::pluck('name', 'id',);
 
@@ -792,7 +799,6 @@ class PayrollController extends Controller
 
             $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
             $action = 'edit';
-            $user_type = $usersArr->first()->user_type;
             return view('essentials::payroll.show')->with(compact('user_type', 'employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
         } elseif ($type == "single") {
 
@@ -802,11 +808,18 @@ class PayrollController extends Controller
             $date = Carbon::parse($transaction_date)->format('F Y');
             $month_year = $date;
             $employee_ids =  $payroll_group_transactions->expense_for;
-            $user = User::where('id', $employee_ids)->select([
+            $user = User::with('contract')->where('id', $employee_ids)->select([
                 'users.*',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
 
             ])->first();
+
+            $user_type = $user->user_type;
+            $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
+            if ($user->contract->contract_type_id == $remote_id) {
+                $user_type =  "remote_employee";
+            }
+
 
 
             $businesses = Business::pluck('name', 'id',);
@@ -916,7 +929,6 @@ class PayrollController extends Controller
             $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
             $action = 'edit';
             $user_name = $user->name;
-            $user_type = $user->user_type;
             return view('essentials::payroll.show')->with(compact('user_type', 'user_name', 'employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
         }
     }
