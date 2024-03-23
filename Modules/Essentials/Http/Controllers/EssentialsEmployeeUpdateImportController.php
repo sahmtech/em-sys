@@ -447,6 +447,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                     $emp_array['total_salary'] = $value[48];
                     $emp_array['company_id'] = $value[49];
+                    $emp_array['english_name'] = $value[50];
                     $formated_data[] = $emp_array;
                 }
 
@@ -489,6 +490,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                     'first_name',
                                     'mid_name',
                                     'last_name',
+                                    'english_name',
                                     'email',
                                     'dob',
                                     'essentials_department_id',

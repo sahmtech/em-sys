@@ -26,6 +26,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\View;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsUserSalesTarget;
 use Modules\Essentials\Entities\PayrollGroup;
@@ -96,8 +97,13 @@ class PayrollController extends Controller
             'users.*',
             DB::raw("CONCAT(COALESCE(users.first_name, ''),  ' ', COALESCE(users.last_name, '')) as name"),
         )->pluck('name', 'id')->toArray();
+        $user_types = [
+            "employee" => __('essentials::lang.user_type.employee'),
+            "worker" => __('essentials::lang.user_type.worker'),
+            "remote_employee" => __('essentials::lang.user_type.remote_employee'),
+        ];
 
-        return view('essentials::payroll.index')->with(compact('companies', 'employees'));
+        return view('essentials::payroll.index')->with(compact('companies', 'employees', 'user_types'));
     }
 
     public function getEmployeesBasedOnCompany(Request $request)
@@ -389,9 +395,23 @@ class PayrollController extends Controller
 
     public function create()
     {
-        $employee_ids = request()->input('employee_ids');
+        $companies_ids = request()->input('companies');
+        $user_type = request()->input('user_type');
+        $employee_ids = User::with('contract')->whereIn('company_id', $companies_ids);
+        if ($user_type == "worker") {
+            $employee_ids = $employee_ids->where('user_type', 'worker');
+        } elseif ($user_type == "employee" || $user_type == "remote_employee") {
+            $employee_ids = $employee_ids->where('user_type', 'employee');
+        }
+        if ($user_type == "remote_employee") {
+            $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
+            $employee_ids = $employee_ids->whereHas('contract', function ($query) use ($remote_id) {
+                $query->where('contract_type_id', $remote_id);
+            });
+        }
+        $employee_ids = $employee_ids->pluck('id')->toArray();
         $month_year = request()->input('month_year');
-        $employees = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
+        $employees = User::with(['appointment.profession', 'assignedTo', 'essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
             ->whereIn('users.id',  $employee_ids)
             ->select(
                 'users.*',
@@ -426,13 +446,21 @@ class PayrollController extends Controller
                 }
             }
             $salary = $worker->essentials_salary + $other_allowance;
+            if ($worker->user_type == "worker") {
 
+                $project_name = $worker->assignedTo?->name ?? '';
+            }
+            if ($worker->user_type == "employee") {
+                $profession = $worker->appointment?->profession?->name ?? '';
+            }
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
                 'identity_card_number' => $worker->id_proof_number ?? '',
-                'profession' => '',
+                'project_name' => $project_name ?? '',
+                'region' => $region ?? '',
+                'profession' => $profession ?? '',
                 'work_days' => 30,
                 'salary' => number_format($worker->essentials_salary, 0, '.', ''),
                 'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
@@ -441,6 +469,8 @@ class PayrollController extends Controller
                 'total' => number_format($salary, 0, '.', ''),
                 'violations' => 0,
                 'absence' => 0,
+                'late' => 0,
+                'late_deduction' => 0,
                 'absence_deduction' => 0,
                 'other_deductions' => 0,
                 'loan' => 0,
@@ -461,7 +491,7 @@ class PayrollController extends Controller
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
 
-        return view('essentials::payroll.create')->with(compact('employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action'));
+        return view('essentials::payroll.create')->with(compact('user_type', 'employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action'));
     }
 
 
@@ -560,20 +590,20 @@ class PayrollController extends Controller
         $allowance_amounts = [];
 
 
-        if ($payroll['over_time_hours_addition'] != 0) {
+        if (isset($payroll['over_time_hours_addition']) && $payroll['over_time_hours_addition'] != 0) {
             $allowance_names_array[] = 'وقت إضافي';
             $allowance_amounts[] = $payroll['over_time_hours_addition'];
             $allowance_percent_array[] = 0;
             $allowance_types[] = 'fixed';
         }
-        if ($payroll['additional_addition'] != 0) {
+        if (isset($payroll['additional_addition']) && $payroll['additional_addition'] != 0) {
             $allowance_names_array[] = 'مبلغ إضافي';
             $allowance_amounts[] = $payroll['additional_addition'];
             $allowance_percent_array[] = 0;
 
             $allowance_types[] = 'fixed';
         }
-        if ($payroll['other_additions'] != 0) {
+        if (isset($payroll['other_additions']) && $payroll['other_additions'] != 0) {
             $allowance_names_array[] = 'استحفافات إخرى';
             $allowance_amounts[] = $payroll['other_additions'];
             $allowance_percent_array[] = 0;
@@ -595,6 +625,12 @@ class PayrollController extends Controller
         if ($payroll['absence'] != 0) {
             $deduction_names_array[] = 'غياب';
             $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['absence']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['late'] != 0) {
+            $deduction_names_array[] = 'تأخير';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['late']);
             $deduction_percents_array[] = 0;
             $deduction_types[] = 'fixed';
         }
@@ -630,6 +666,8 @@ class PayrollController extends Controller
 
     public function show($id, $type)
     {
+
+
         if ($type == 'group') {
             $payroll_group = PayrollGroup::find($id);
             $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
@@ -646,7 +684,12 @@ class PayrollController extends Controller
                 DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
 
             ])->get();
-
+            $user = $usersArr->first();
+            $user_type = $user->user_type;
+            $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
+            if ($user->contract->contract_type_id == $remote_id) {
+                $user_type =  "remote_employee";
+            }
 
             $businesses = Business::pluck('name', 'id',);
 
@@ -696,12 +739,16 @@ class PayrollController extends Controller
                 $absence = 0;
                 $other_deductions = 0;
                 $loan = 0;
+                $late = 0;
                 foreach ($essentials_deductions->deduction_names as $index => $deduction) {
                     if ((stripos($deduction, 'مخالف') !== false)) {
                         $violations = $essentials_deductions->deduction_amounts[$index];
                     }
                     if ((stripos($deduction, 'غياب') !== false)) {
                         $absence = $essentials_deductions->deduction_amounts[$index];
+                    }
+                    if ((stripos($deduction, 'تأخير') !== false)) {
+                        $late = $essentials_deductions->deduction_amounts[$index];
                     }
                     if ((stripos($deduction, 'خرى') !== false)) {
                         $other_deductions = $essentials_deductions->deduction_amounts[$index];
@@ -710,12 +757,21 @@ class PayrollController extends Controller
                         $loan = $essentials_deductions->deduction_amounts[$index];
                     }
                 }
+                if ($user->user_type == "worker") {
+
+                    $project_name = $user->assignedTo?->name ?? '';
+                }
+                if ($user->user_type == "employee") {
+                    $profession = $user->appointment?->profession?->name ?? '';
+                }
                 $payrolls[] = [
                     'id' => $user->id,
                     'name' =>  $user->name ?? '',
                     'nationality' => $user->country?->nationality ?? '',
                     'identity_card_number' => $user->id_proof_number ?? '',
-                    'profession' => '',
+                    'project_name' => $project_name ?? '',
+                    'region' => $region ?? '',
+                    'profession' => $profession ?? '',
                     'work_days' => 30,
                     'salary' => number_format($payroll_group_transaction->essentials_amount_per_unit_duration, 0, '.', ''),
                     'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
@@ -724,6 +780,8 @@ class PayrollController extends Controller
                     'total' => number_format($salary, 0, '.', ''),
                     'violations' =>   $violations,
                     'absence' => $absence,
+                    'late' =>  $late,
+                    'late_deduction' => 0,
                     'absence_deduction' => 0,
                     'other_deductions' => $other_deductions,
                     'loan' => $loan,
@@ -741,8 +799,7 @@ class PayrollController extends Controller
 
             $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
             $action = 'edit';
-
-            return view('essentials::payroll.show')->with(compact('employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
+            return view('essentials::payroll.show')->with(compact('user_type', 'employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
         } elseif ($type == "single") {
 
             $payroll_group_transactions = Transaction::find($id);
@@ -751,11 +808,18 @@ class PayrollController extends Controller
             $date = Carbon::parse($transaction_date)->format('F Y');
             $month_year = $date;
             $employee_ids =  $payroll_group_transactions->expense_for;
-            $user = User::where('id', $employee_ids)->select([
+            $user = User::with('contract')->where('id', $employee_ids)->select([
                 'users.*',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
 
             ])->first();
+
+            $user_type = $user->user_type;
+            $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
+            if ($user->contract->contract_type_id == $remote_id) {
+                $user_type =  "remote_employee";
+            }
+
 
 
             $businesses = Business::pluck('name', 'id',);
@@ -804,12 +868,16 @@ class PayrollController extends Controller
             $absence = 0;
             $other_deductions = 0;
             $loan = 0;
+            $late = 0;
             foreach ($essentials_deductions->deduction_names as $index => $deduction) {
                 if ((stripos($deduction, 'مخالف') !== false)) {
                     $violations = $essentials_deductions->deduction_amounts[$index];
                 }
                 if ((stripos($deduction, 'غياب') !== false)) {
                     $absence = $essentials_deductions->deduction_amounts[$index];
+                }
+                if ((stripos($deduction, 'تأخير') !== false)) {
+                    $late = $essentials_deductions->deduction_amounts[$index];
                 }
                 if ((stripos($deduction, 'خرى') !== false)) {
                     $other_deductions = $essentials_deductions->deduction_amounts[$index];
@@ -818,12 +886,21 @@ class PayrollController extends Controller
                     $loan = $essentials_deductions->deduction_amounts[$index];
                 }
             }
+            if ($user->user_type == "worker") {
+
+                $project_name = $user->assignedTo?->name ?? '';
+            }
+            if ($user->user_type == "employee") {
+                $profession = $user->appointment?->profession?->name ?? '';
+            }
             $payrolls[] = [
                 'id' => $user->id,
                 'name' =>  $user->name ?? '',
                 'nationality' => $user->country?->nationality ?? '',
                 'identity_card_number' => $user->id_proof_number ?? '',
-                'profession' => '',
+                'project_name' => $project_name ?? '',
+                'region' => $region ?? '',
+                'profession' => $profession ?? '',
                 'work_days' => 30,
                 'salary' => number_format($payroll_group_transactions->essentials_amount_per_unit_duration, 0, '.', ''),
                 'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
@@ -832,6 +909,8 @@ class PayrollController extends Controller
                 'total' => number_format($salary, 0, '.', ''),
                 'violations' =>   $violations,
                 'absence' => $absence,
+                'late' =>  $late,
+                'late_deduction' => 0,
                 'absence_deduction' => 0,
                 'other_deductions' => $other_deductions,
                 'loan' => $loan,
@@ -850,7 +929,7 @@ class PayrollController extends Controller
             $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
             $action = 'edit';
             $user_name = $user->name;
-            return view('essentials::payroll.show')->with(compact('user_name', 'employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
+            return view('essentials::payroll.show')->with(compact('user_type', 'user_name', 'employee_ids', 'group_name', 'transaction_date', 'date', 'month_year', 'payrolls', 'action'));
         }
     }
 

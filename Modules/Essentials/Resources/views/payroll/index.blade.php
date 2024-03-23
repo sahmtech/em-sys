@@ -83,7 +83,7 @@
         @endcomponent
 
         <div class="modal fade" id="payroll_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog" role="document">
                 <div class="modal-content">
 
                     {!! Form::open([
@@ -93,17 +93,49 @@
                     ]) !!}
 
                     <div class="modal-body">
-                        <div class="form-group">
-                            {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
-                            {!! Form::select('companies[]', $companies, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width: 100%;',
-                                'id' => 'companies',
-                                'multiple',
-                                // 'placeholder' => __('lang_v1.all'),
-                            ]) !!}
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
+                                    {!! Form::select('companies[]', $companies, null, [
+                                        'class' => 'form-control select2',
+                                        'style' => 'width: 100%;',
+                                        'id' => 'companies',
+                                        'required',
+                                        'multiple',
+                                        // 'placeholder' => __('lang_v1.all'),
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {!! Form::label('user_type', __('essentials::lang.user_type') . ':*') !!}
+                                    {!! Form::select('user_type', $user_types, null, [
+                                        'class' => 'form-control select2',
+                                        'style' => 'width: 100%;',
+                                        'id' => 'user_type',
+                                        'required',
+                                        // 'placeholder' => __('lang_v1.all'),
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {!! Form::label('month_year', __('essentials::lang.month_year') . ':*') !!}
+                                    <div class="input-group">
+                                        {!! Form::text('month_year', null, [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('essentials::lang.month_year'),
+                                            'required',
+                                            'readonly',
+                                        ]) !!}
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
+
+                        {{-- <div class="form-group">
                             {!! Form::label('employee_ids', __('essentials::lang.employee') . ':*') !!}
                             <button type="button" class="btn btn-primary btn-xs select-all">
                                 @lang('lang_v1.select_all')
@@ -118,20 +150,9 @@
                                 'multiple',
                                 'id' => 'employee_ids',
                             ]) !!}
-                        </div>
+                        </div> --}}
 
-                        <div class="form-group">
-                            {!! Form::label('month_year', __('essentials::lang.month_year') . ':*') !!}
-                            <div class="input-group">
-                                {!! Form::text('month_year', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('essentials::lang.month_year'),
-                                    'required',
-                                    'readonly',
-                                ]) !!}
-                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            </div>
-                        </div>
+
                     </div>
 
                     <div class="modal-footer">

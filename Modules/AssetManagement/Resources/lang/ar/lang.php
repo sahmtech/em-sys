@@ -14,6 +14,8 @@ return [
     'asset_code' => 'كود العهدة',
     'series_model' => 'الرقم التسلسلي',
     'warranty_period' => 'فترة الضمان',
+    'companies' => 'الشركات',
+    'company' => 'الشركة',
     'depreciation' => 'الاستهلاك',
     'is_allocatable' => 'قابل للتخصيص؟',
     'warranty_period_in_month' => 'فترة الضمان في <i> <b> شهر </ b> </i>',
@@ -94,5 +96,5 @@ return [
     'send_for_maintenance_details' => 'رد الصيانة',
     'maintenance_note' => 'ملاحظة الطلب',
     'delete_asset' => 'حذف العهدة',
-    'assetManagement_dashboard'=>'الصفحة الرئيسية لإدارة العُهد',
+    'assetManagement_dashboard' => 'الصفحة الرئيسية لإدارة العُهد',
 ];
