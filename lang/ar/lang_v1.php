@@ -1469,5 +1469,11 @@ return [
     'dashboard_enabled' => 'لوحة التحكم',
     'ResidencyExpiration_15_D' => 'إشعار إقامة تنتهي خلال 15 يوما',
     'ExpiredResidency' => 'إشعار انتهاء إقامة',
+    'Subscription_1' => 'إشعار انتهاء اشتراك',
+    'Subscription_ended' => 'اشعار قرب انتهاء اشتراك',
+    'Document_ended' => 'اشعار انتهاء وثيقة',
+    'Document_1' => 'اشعار قرب انتهاء وثيقة',
+    'Contract_ended' => 'اشعار انتهاء عقد موظف',
+    'Contract_1' => 'اشعار قرب انتهاء عقد موظف',
 
 ];
