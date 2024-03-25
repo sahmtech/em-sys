@@ -3,7 +3,13 @@
 @section('title', __('essentials::lang.add_new_employee'))
 
 @section('content')
-
+<head>
+    <style>
+    #video {
+        transform: scaleX(-1); /* Flip the video horizontally */
+    }
+</style>
+</head>
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('essentials::lang.add_new_employee')</h1>
@@ -48,22 +54,15 @@
                             {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
                         </div>
                     </div>
-             
-               <div class="col-md-4">
-                    <div class="form-group">
-                        {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
-                        {!! Form::file('profile_picture', ['class' => 'form-control', 'id' => 'fileInputWrapper', 'accept' => 'image/*']) !!}
-                    </div>
 
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
-                    </div>
-
-                    <!-- Hidden file input to store the captured photo -->
-               
-                </div>
-@include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
                     <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
+                            {!! Form::text('emp_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.emp_number')]) !!}
+                        </div>
+                    </div>
+
+                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('user_type', __('user.user_type') . ':*') !!}
                             {!! Form::select(
@@ -84,6 +83,23 @@
                             ) !!}
                         </div>
                     </div>
+
+             
+               <div class="col-md-4">
+                    <div class="form-group">
+                        {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
+                        {!! Form::file('profile_picture', ['class' => 'form-control', 'id' => 'fileInputWrapper', 'accept' => 'image/*']) !!}
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                    </div>
+
+                    <!-- Hidden file input to store the captured photo -->
+               
+                </div>
+@include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
+                   
 
                   
                 </div>
@@ -132,7 +148,7 @@
                                 <div class="form-group">
                                     {!! Form::file('contract_file', [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px; ',
+                                        'style' => 'height:40px; ',
                                         'accept' => '.*',
                                     ]) !!}
 

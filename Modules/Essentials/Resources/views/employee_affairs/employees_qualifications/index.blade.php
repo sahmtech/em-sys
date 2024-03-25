@@ -80,7 +80,7 @@
                                     <th class='table-td-width-40px'>@lang('essentials::lang.degree')</th>
                                     <th class='table-td-width-100px'>@lang('essentials::lang.great_degree')</th>
                                     <th class='table-td-width-60px'>@lang('essentials::lang.marksName')</th>
-
+                                    <th class='table-td-width-100px'>@lang('essentials::lang.qualification_file')</th>
                                     <th class='table-td-width-100px'>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -107,7 +107,7 @@
                                 <div class="form-group col-md-6">
                                     {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
                                     {!! Form::select('employee', $users, null, [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control select2',
                                         'style' => 'width:100%;height:40px',
                                         'placeholder' => __('essentials::lang.select_employee'),
                                         'required',
@@ -246,10 +246,11 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+
             $('#major_filter_select').select2();
 
             $('#addQualificationModal').on('shown.bs.modal', function(e) {
-                $('#employee_select').select2({
+                $('#employee').select2({
                     dropdownParent: $(
                         '#addQualificationModal'),
                     width: '100%',
@@ -337,6 +338,8 @@
                         data: 'marksName'
                     },
                     {
+                        data:'qualification_file'},
+                    {
                         data: 'action'
                     },
                 ],
@@ -396,15 +399,15 @@
                     dataType: 'json',
                     success: function(response) {
                         var data = response.data;
+                        console.log(data);
 
                         $('#editQualificationModal select[name="employee"]').val(data.employee)
                             .trigger('change');
                         $('#editQualificationModal select[name="qualification_type"]').val(data
                             .qualification_type).trigger('change');
-                        $('#editQualificationModal select[name="specialization"]').val(data
-                            .specialization).trigger('change');
-                        $('#editQualificationModal select[name="sub_specialization"]').val(data
-                            .sub_specialization).trigger('change');
+                           $('#editQualificationModal select[name="general_specialization"]').val(data.general_specialization).trigger('change');
+                        $('#editQualificationModal select[name="sub_specialization"]').val(data.sub_specialization).trigger(
+                            'change');
 
                         $('#editQualificationModal select[name="major"]').val(data.major)
                             .trigger('change');
@@ -469,18 +472,18 @@
             });
 
 
-            $('#editQualificationModal select[name="employee"]').val(data.employee).trigger('change');
-            $('#editQualificationModal select[name="qualification_type"]').val(data.qualification_type).trigger(
-                'change');
-            $('#editQualificationModal select[name="specialization"]').val(data.specialization).trigger('change');
-            $('#editQualificationModal select[name="sub_specialization"]').val(data.sub_specialization).trigger(
-                'change');
+            // $('#editQualificationModal select[name="employee"]').val(data.employee).trigger('change');
+            // $('#editQualificationModal select[name="qualification_type"]').val(data.qualification_type).trigger(
+            //     'change');
+            // $('#editQualificationModal select[name="specialization"]').val(data.specialization).trigger('change');
+            // $('#editQualificationModal select[name="sub_specialization"]').val(data.sub_specialization).trigger(
+            //     'change');
 
-            $('#editQualificationModal input[name="graduation_year"]').val(data.graduation_year);
-            $('#editQualificationModal input[name="graduation_institution"]').val(data.graduation_institution);
-            $('#editQualificationModal select[name="graduation_country"]').val(data.graduation_country).trigger(
-                'change');
-            $('#editQualificationModal input[name="degree"]').val(data.degree);
+            // $('#editQualificationModal input[name="graduation_year"]').val(data.graduation_year);
+            // $('#editQualificationModal input[name="graduation_institution"]').val(data.graduation_institution);
+            // $('#editQualificationModal select[name="graduation_country"]').val(data.graduation_country).trigger(
+            //     'change');
+            // $('#editQualificationModal input[name="degree"]').val(data.degree);
            
         });
 
@@ -643,5 +646,40 @@
         });
     </script>
 
+
+  <script type="text/javascript">
+        $(document).ready(function() {
+            console.log('done');
+
+            var professionSelect = $('#editprofessionSelect');
+            console.log(professionSelect );           
+             var specializationSelect = $('#editspecializationSelect');
+
+
+            professionSelect.on('change', function() {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function(data) {
+                        specializationSelect.empty();
+                        $.each(data, function(id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
 
 @endsection

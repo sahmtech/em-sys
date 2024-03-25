@@ -30,8 +30,8 @@
                             <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
                                 alt="@lang('essentials::lang.profile_picture')" id="profileImage">
                         </a>
-                        <h3 class="profile-username text-center">
-                            {{ $user->full_name }}
+                         <h3 class="profile-username text-center">
+                            {{ $user->first_name . ' ' .$user->mid_name .' '. $user->last_name }}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
@@ -112,11 +112,17 @@
                                         <div class="checkbox">
                                             <label>
 
-                                                @if ($document->file_path)
-                                                    <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
-                                                        data-file-url="{{ $document->file_path ?? $document->attachment }}">
-                                                         {{ trans('followup::lang.' . ($document->type ?? 'contract_file')) }}
+                                               @if ($document->file_path)
+                                               <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        @if ($document instanceof \Modules\Essentials\Entities\EssentialsOfficialDocument)
+                                                            {{ trans('followup::lang.' .$document->type) }}
+                                                        @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesContract)
+                                                            {{ trans('followup::lang.contract_file') }}
+                                                        @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesQualification)
+                                                            {{ trans('essentials::lang.qualification_file') }}
+                                                        @endif
                                                     </a>
+
                                                 @elseif($document->attachment)
                                                     <a href="/uploads/{{ $document->attachment }}"
                                                         data-file-url="{{ $document->attachment }}">
