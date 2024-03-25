@@ -48,6 +48,14 @@
                             {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
                         </div>
                     </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('email', __('essentials::lang.emp_numer') . ':') !!}
+                            {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.emp_numer')]) !!}
+                        </div>
+                    </div>
+
              
                <div class="col-md-4">
                     <div class="form-group">

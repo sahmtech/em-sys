@@ -1793,4 +1793,5 @@ return [
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
+  'emp_number' => 'الرقم الوظيفي',
 ];
