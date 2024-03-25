@@ -1467,6 +1467,15 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('sales.Unsupported_workers')) {
+
+                $menu->url(
+                    action([\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'index']),
+                    __('sales::lang.Unsupported_workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'Unsupported_workers']
+                );
+            }
+
             if ($is_admin || auth()->user()->can('sales.view_sale_operation_orders')) {
 
                 $menu->url(

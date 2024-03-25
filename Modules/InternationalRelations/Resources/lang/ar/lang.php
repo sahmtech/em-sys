@@ -201,7 +201,16 @@ return [
   'Time of Trip' => 'وقت الرحلة',
   'Date of Trip' => 'تاريخ الرحلة',
   'Airline company' => 'شركة الطيران',
-  'no_nationalities_delegation' => 'لا يوجد جنسيات تم تفويضها'
+  'no_nationalities_delegation' => 'لا يوجد جنسيات تم تفويضها',
+  'orderOperations_for_contract' => 'أوامر التشغيل  لعقد معين',
+  'view_operations_order_for_contract' => 'استعراض أوامر التشغيل التابعة لعقد',
+  'view_operations_order_for_unSupported_workers' => 'استعراض أوامر التشغيل  لعمالة غير تابعة لمشروع',
+  'orderOperationForUnsupportedWorkers' => 'أوامر التشغيل لعمالة غير تابعة لمشروع',
+  'order_number' => 'رقم الطلب',
+  'unSupported_visa_cards' => 'التأشيرت لعمالة غير تابعة لمشروع',
+  'supported_visa_cards' => 'التأشيرت لعمالة تابعة لمشروع',
+  'company_requests_for_workers_supported' => 'الطلبات التابعة لمشاريع',
+  'company_requests_for_workers_un_supported' => 'الطلبات الغير متعلقة بمشاريع'
 
 
 ];

@@ -28,91 +28,232 @@ class DelegationController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
+    // public function index(Request $request)
+
+    // {
+
+
+    //     $business_id = request()->session()->get('user.business_id');
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //     $can_add_proposed_worker = auth()->user()->can('internationalrelations.add_proposed_worker');
+    //     $can_import_proposed_workers = auth()->user()->can('internationalrelations.import_proposed_workers');
+    //     if (!($is_admin || $can_add_proposed_worker || $can_import_proposed_workers)) {
+    //         //temp  abort(403, 'Unauthorized action.');
+    //     }
+
+    //     $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+    //     if (request()->ajax()) {
+    //         $irDelegations = IrDelegation::whereNotNull('operation_order_id')->with(['agency', 'transactionSellLine.service']);
+    //         if (!empty($request->input('agency'))) {
+    //             $irDelegations->where('agency_id', $request->input('agency'));
+    //         }
+
+    //         return Datatables::of($irDelegations)
+    //             ->addColumn('agency_name', function ($delegation) {
+    //                 return $delegation->agency->supplier_business_name ?? null;
+    //             })
+    //             ->addColumn('target_quantity', function ($delegation) {
+    //                 return $delegation->targeted_quantity ?? null;
+    //             })
+    //             ->addColumn('currently_proposed_labors_quantity', function ($delegation) {
+    //                 return $delegation->proposed_labors_quantity ?? null;
+    //             })
+    //             ->addColumn('profession_name', function ($delegation) {
+    //                 return $delegation->transactionSellLine->service->profession->name ?? null;
+    //             })
+    //             ->addColumn('specialization_name', function ($delegation) {
+    //                 return $delegation->transactionSellLine->service->specialization->name ?? null;
+    //             })
+    //             ->addColumn('gender', function ($delegation) {
+    //                 return __('sales::lang.' . $delegation->transactionSellLine->service->gender) ?? null;
+    //             })
+    //             ->addColumn('service_price', function ($delegation) {
+    //                 return $delegation->transactionSellLine->service->service_price ?? null;
+    //             })
+    //             ->addColumn('additional_allwances', function ($delegation) {
+    //                 if (!empty($delegation->transactionSellLine->additional_allwances)) {
+    //                     $allowancesHtml = '<ul>';
+    //                     foreach (json_decode($delegation->transactionSellLine->additional_allwances) as $allowance) {
+    //                         if (is_object($allowance) && property_exists($allowance, 'salaryType') && property_exists($allowance, 'amount')) {
+    //                             if ($allowance->salaryType) {
+    //                                 $allowancesHtml .= '<li>' . __('sales::lang.' . $allowance->salaryType) . ': ' . $allowance->amount . '</li>';
+    //                             }
+    //                         }
+    //                     }
+    //                     $allowancesHtml .= '</ul>';
+    //                     return $allowancesHtml;
+    //                 }
+
+    //                 return null;
+    //             })
+    //             ->addColumn('monthly_cost_for_one', function ($delegation) {
+    //                 return $delegation->transactionSellLine->service->monthly_cost_for_one ?? null;
+    //             })
+
+    //             ->addColumn('actions', function ($delegation) use ($can_add_proposed_worker, $can_import_proposed_workers, $is_admin) {
+    //                 $html = '';
+    //                 if ($is_admin || $can_add_proposed_worker) {
+    //                     $html .= '<button class="btn btn-xs btn-primary">
+    //                             <a href="' . route('createProposed_labor', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
+    //                         . trans("internationalrelations::lang.addWorker") .
+    //                         '</a>
+    //                           </button> &nbsp;';
+    //                 }
+    //                 if ($is_admin || $can_import_proposed_workers) {
+    //                     $html .= '<button class="btn btn-xs btn-success">
+    //                             <a href="' . route('importWorkers', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
+    //                         . trans("internationalrelations::lang.importWorkers") .
+    //                         '</a>
+    //                           </button>';
+    //                 }
+    //                 return $html;
+    //             })
+
+    //             ->rawColumns(['actions', 'additional_allwances'])
+    //             ->make(true);
+    //     }
+
+
+    //     return view('internationalrelations::EmploymentCompanies.requests')->with(compact('agencys'));
+    // }
     public function index(Request $request)
-
     {
-        
-
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_admin = auth()->user()->hasRole('Admin#1');
         $can_add_proposed_worker = auth()->user()->can('internationalrelations.add_proposed_worker');
-        $can_import_proposed_workers= auth()->user()->can('internationalrelations.import_proposed_workers');
+        $can_import_proposed_workers = auth()->user()->can('internationalrelations.import_proposed_workers');
+
         if (!($is_admin || $can_add_proposed_worker || $can_import_proposed_workers)) {
-           //temp  abort(403, 'Unauthorized action.');
+            abort(403, 'Unauthorized action.');
         }
 
-        
         $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        if (request()->ajax()) {
-           $irDelegations = IrDelegation::with(['agency', 'transactionSellLine.service']);
-           if (!empty($request->input('agency'))) {
-            $irDelegations->where('agency_id', $request->input('agency'));
+
+        if ($request->ajax()) {
+            $irDelegations = IrDelegation::query()
+                ->where(function ($query) {
+                    $query->whereNotNull('operation_order_id')
+                        ->orWhereNotNull('unSupported_operation_id');
+                })
+                ->with(['agency', 'transactionSellLine.service', 'unSupported_operation.unSupported_worker']);
+
+            if (!empty($request->input('agency'))) {
+                $irDelegations->where('agency_id', $request->input('agency'));
             }
 
             return Datatables::of($irDelegations)
-            ->addColumn('agency_name', function ($delegation) {
-                return $delegation->agency->supplier_business_name ?? null;
-            })
-            ->addColumn('target_quantity', function ($delegation) {
-                return $delegation->targeted_quantity ?? null;
-            })
-            ->addColumn('currently_proposed_labors_quantity', function ($delegation) {
-                return $delegation->proposed_labors_quantity ?? null;
-            })
-            ->addColumn('profession_name', function ($delegation) {
-                return $delegation->transactionSellLine->service->profession->name ?? null;
-            })
-            ->addColumn('specialization_name', function ($delegation) {
-                return $delegation->transactionSellLine->service->specialization->name ?? null;
-            })
-            ->addColumn('gender', function ($delegation) {
-                return __('sales::lang.' . $delegation->transactionSellLine->service->gender)?? null;
-            })
-            ->addColumn('service_price', function ($delegation) {
-                return $delegation->transactionSellLine->service->service_price ?? null;
-            })
-            ->addColumn('additional_allwances', function ($delegation) {
-                if (!empty($delegation->transactionSellLine->additional_allwances)) {
-                    $allowancesHtml = '<ul>';
-                    foreach (json_decode($delegation->transactionSellLine->additional_allwances) as $allowance) {
-                        if (is_object($allowance) && property_exists($allowance, 'salaryType') && property_exists($allowance, 'amount')) {
-                           if($allowance->salaryType){
-                            $allowancesHtml .= '<li>' . __('sales::lang.' . $allowance->salaryType) . ': ' . $allowance->amount . '</li>';
-                        }}
+                ->addColumn('agency_name', function ($delegation) {
+                    return $delegation->agency->supplier_business_name ?? null;
+                })
+                ->addColumn('target_quantity', function ($delegation) {
+                    return $delegation->targeted_quantity ?? null;
+                })
+                ->addColumn('currently_proposed_labors_quantity', function ($delegation) {
+                    return $delegation->proposed_labors_quantity ?? null;
+                })
+                ->addColumn('profession_name', function ($delegation) {
+                    if (!empty($delegation->transactionSellLine)) {
+                        return optional($delegation->transactionSellLine->service)->profession->name ?? null;
+                    } elseif (!empty($delegation->unSupported_operation)) {
+                        return optional($delegation->unSupported_operation->unSupported_worker)->profession->name ?? null;
                     }
-                    $allowancesHtml .= '</ul>';
-                    return $allowancesHtml;
-                }
+                    return null;
+                })
+                ->addColumn('specialization_name', function ($delegation) {
+                    if (!empty($delegation->transactionSellLine)) {
+                        return optional($delegation->transactionSellLine->service)->specialization->name ?? null;
+                    } elseif (!empty($delegation->unSupported_operation)) {
+                        return optional($delegation->unSupported_operation->unSupported_worker)->specialization->name ?? null;
+                    }
+                    return null;
+                })
+                ->addColumn('gender', function ($delegation) {
+                    return !empty($delegation->transactionSellLine) ? __('sales::lang.' . $delegation->transactionSellLine->service->gender) : '';
+                })
+                ->addColumn('service_price', function ($delegation) {
+                    if (!empty($delegation->transactionSellLine)) {
+                        return optional($delegation->transactionSellLine->service)->service_price ?? null;
+                    } elseif (!empty($delegation->unSupported_operation)) {
+                        $worker = $delegation->unSupported_operation->unSupported_worker;
+                        return $worker ? $worker->salary * $worker->total_quantity : null;
+                    }
+                    return null;
+                })
+                ->addColumn('monthly_cost_for_one', function ($delegation) {
+                    if (!empty($delegation->unSupported_operation)) {
+                        return optional($delegation->unSupported_operation->unSupported_worker)->salary ?? null;
+                    }
+                    return null;
+                })
+                ->addColumn('additional_allwances', function ($delegation) {
+                    if (!empty($delegation->transactionSellLine->additional_allwances)) {
+                        $allowancesHtml = '<ul>';
+                        foreach (json_decode($delegation->transactionSellLine->additional_allwances) as $allowance) {
+                            if (is_object($allowance) && property_exists($allowance, 'salaryType') && property_exists($allowance, 'amount')) {
+                                if ($allowance->salaryType) {
+                                    $allowancesHtml .= '<li>' . __('sales::lang.' . $allowance->salaryType) . ': ' . $allowance->amount . '</li>';
+                                }
+                            }
+                        }
+                        $allowancesHtml .= '</ul>';
+                        return $allowancesHtml;
+                    }
 
-                return null;
-            })
-            ->addColumn('monthly_cost_for_one', function ($delegation) {
-                return $delegation->transactionSellLine->service->monthly_cost_for_one ?? null;
-            })
-          
-            ->addColumn('actions', function ($delegation) use ($can_add_proposed_worker, $can_import_proposed_workers, $is_admin) {
-                $html = '';
-                if ($is_admin || $can_add_proposed_worker) {
-                    $html .= '<button class="btn btn-xs btn-primary">
-                                <a href="' . route('createProposed_labor', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
-                                    . trans("internationalrelations::lang.addWorker") .
-                                '</a>
-                              </button> &nbsp;';
-                }
-                if ($is_admin || $can_import_proposed_workers) {
-                    $html .= '<button class="btn btn-xs btn-success">
-                                <a href="' . route('importWorkers', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
-                                    . trans("internationalrelations::lang.importWorkers") .
-                                '</a>
-                              </button>';
-                }
-                return $html;
-            })
-            
-            ->rawColumns(['actions', 'additional_allwances'])
-            ->make(true);
-            }
+                    return null;
+                })
+                ->addColumn('actions', function ($delegation) use ($can_add_proposed_worker, $can_import_proposed_workers, $is_admin) {
+                    $html = '';
 
+
+                    if ($is_admin || $can_add_proposed_worker) {
+
+                        if (!empty($delegation->operation_order_id)) {
+                            $route = route('createProposed_labor', [
+                                'delegation_id' => $delegation->id,
+                                'agency_id' => $delegation->agency_id,
+                                'transaction_sell_line_id' => $delegation->transaction_sell_line_id,
+                            ]);
+                        } elseif (!empty($delegation->unSupported_operation_id)) {
+                            $route = route('createProposed_labor_unSupported', [
+                                'delegation_id' => $delegation->id,
+                                'agency_id' => $delegation->agency_id,
+                                'unSupportedworker_order_id' => $delegation->unSupportedworker_order_id,
+
+                            ]);
+                        } else {
+                            $route = '#';
+                        }
+
+                        $html .= '<button class="btn btn-xs btn-primary" onclick="location.href=\'' . $route . '\'">' . trans("internationalrelations::lang.addWorker") . '</button> &nbsp;';
+                    }
+
+
+                    if ($is_admin || $can_import_proposed_workers) {
+                        if (!empty($delegation->operation_order_id)) {
+                            $route = route('importWorkers', [
+                                'delegation_id' => $delegation->id,
+                                'agency_id' => $delegation->agency_id,
+                                'transaction_sell_line_id' => $delegation->transaction_sell_line_id,
+                            ]);
+                        } elseif (!empty($delegation->unSupported_operation_id)) {
+                            $route = route('importWorkers_unSupported', [
+                                'delegation_id' => $delegation->id,
+                                'agency_id' => $delegation->agency_id,
+                                'unSupportedworker_order_id' => $delegation->unSupportedworker_order_id,
+
+                            ]);
+                        } else {
+                            $route = '#';
+                        }
+
+                        $html .= '<button class="btn btn-xs btn-success" onclick="location.href=\'' . $route . '\'">' . trans("internationalrelations::lang.importWorkers") . '</button>';
+                    }
+
+                    return $html;
+                })
+                ->rawColumns(['actions', 'additional_allwances'])
+                ->make(true);
+        }
 
         return view('internationalrelations::EmploymentCompanies.requests')->with(compact('agencys'));
     }

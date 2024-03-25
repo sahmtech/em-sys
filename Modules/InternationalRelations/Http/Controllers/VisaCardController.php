@@ -15,6 +15,7 @@ use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Sales\Entities\SalesUnSupportedOperationOrder;
 use Modules\InternationalRelations\Entities\IrVisaCard;
 
 use Modules\InternationalRelations\Entities\IrDelegation;
@@ -39,15 +40,13 @@ class VisaCardController extends Controller
      */
     public function index(Request $request)
     {
-
-
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_visa_card = auth()->user()->can('internationalrelations.crud_visa_cards');
         if (!($is_admin || $can_crud_visa_card)) {
             //temp  abort(403, 'Unauthorized action.');
         }
-        $visaCards = IrVisaCard::with(
+        $visaCards = IrVisaCard::whereNotNull('operation_order_id')->with(
             'operationOrder.contact',
             'operationOrder.salesContract.transaction.sell_lines.agencies',
             'operationOrder.salesContract.transaction.sell_lines.service'
@@ -122,7 +121,57 @@ class VisaCardController extends Controller
         return view('internationalrelations::visa.index')->with(compact('orders'));
     }
 
+    public function unSupported_visa_cards(Request $request)
+    {
 
+
+        $visaCards = IrVisaCard::whereNotNull('unSupported_operation_id')->with(
+            'unSupported_operation',
+            'unSupportedworker_order'
+        );
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        if ($request->ajax()) {
+            return Datatables::of($visaCards)
+                ->addColumn('operation_order_no', function ($row) {
+                    return optional($row->unSupported_operation)->operation_order_no;
+                })
+                ->addColumn('nationality_list', function ($row) use ($nationalities) {
+                    return $nationalities[optional($row->unSupportedworker_order)->nationality_id] ?? '';
+                })
+                ->addColumn('profession_list', function ($row) use ($professions) {
+                    return $professions[optional($row->unSupportedworker_order)->profession_id] ?? '';
+                })
+                ->addColumn('agency_name', function ($row) {
+                    $irDelegations = IrDelegation::where('unSupported_operation_id', $row->unSupported_operation->id)->get();
+                    $agencyNames = $irDelegations->flatMap(function ($delegation) {
+                        $agency = Contact::where('id', $delegation->agency_id)->first();
+                        if ($agency) {
+                            return ["<li>{$agency->supplier_business_name}</li>"];
+                        }
+                        return [];
+                    })->unique()->implode('');
+
+
+                    return "<ul>{$agencyNames}</ul>";
+                })
+                ->addColumn('orderQuantity', function ($row) {
+                    return optional($row->unSupported_operation)->orderQuantity;
+                })
+                ->rawColumns(['nationality_list', 'agency_name', 'operation_order_no', 'profession_list', 'orderQuantity'])
+                ->make(true);
+        }
+
+        $orders = DB::table('sales_un_supported_operation_orders')
+            ->whereNotIn('id', function ($query) {
+                $query->select('unSupported_operation_id')->from('ir_visa_cards');
+            })
+            ->pluck('operation_order_no', 'id');
+
+        return view('internationalrelations::visa.unSupported_visa_cards')->with(compact('orders'));
+    }
     public function getVisaReport()
     {
         $visaCards = IrVisaCard::with(['delegation'])->get();
@@ -194,14 +243,6 @@ class VisaCardController extends Controller
     public function store(Request $request)
     {
 
-
-        $business_id = $request->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_store_visa_card = auth()->user()->can('internationalrelations.store_visa_card');
-        if (!($is_admin || $can_store_visa_card)) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
-
         try {
             DB::transaction(function () use ($request) {
                 foreach ($request->input('visa_number') as $nationalityId => $visaNumber) {
@@ -217,12 +258,13 @@ class VisaCardController extends Controller
                         'visa_number' => $visaNumber,
                         'file' => $filePath,
                         'start_date' => \Carbon::now(),
-                        'operation_order_id' => $request->input('id'),
+                        'operation_order_id' => $request->input('id') ?? null,
                         'transaction_sell_line_id' => $sellLines->id,
                     ];
 
                     DB::table('ir_visa_cards')->insert($visaDetails);
                 }
+
 
                 SalesOrdersOperation::where('id', $request->input('id'))->update(['has_visa' => '1']);
             });
@@ -240,7 +282,50 @@ class VisaCardController extends Controller
             ];
         }
 
-        return redirect()->route('order_request')->with($output);
+        return redirect()->back()->with($output);
+    }
+    public function unSupportedVisaStore(Request $request)
+    {
+
+
+        try {
+            DB::transaction(function () use ($request) {
+                foreach ($request->input('visa_number') as $nationalityId => $visaNumber) {
+                    $filePath = null;
+                    if ($request->hasFile('file') && $request->hasFile("file.{$nationalityId}")) {
+                        $file = $request->file("file.{$nationalityId}");
+                        $filePath = $file->store('/visa_cards');
+                    }
+                    $order = SalesUnSupportedOperationOrder::where('id', $request->input('unSupported_operation_id'))->first();
+                    $visaDetails = [
+                        'visa_number' => $visaNumber,
+                        'file' => $filePath,
+                        'start_date' => \Carbon::now(),
+                        'unSupported_operation_id' => $request->input('unSupported_operation_id') ?? null,
+                        'unSupportedworker_order_id' => $order->workers_order_id ?? null
+                    ];
+
+                    DB::table('ir_visa_cards')->insert($visaDetails);
+                }
+
+
+                SalesUnSupportedOperationOrder::where('id', $request->input('unSupported_operation_id'))->update(['has_visa' => '1']);
+            });
+
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->back()->with($output);
     }
 
 
@@ -393,6 +478,152 @@ class VisaCardController extends Controller
             return response()->view('internationalrelations::visa.show', compact('visaId', 'workersOptions',));
 
             return response()->view('internationalrelations::visa.show', compact('visaId', 'workers',));
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function viewUnSuupportedVisaWorkers($visaId)
+    {
+
+
+
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_view_visa_workers = auth()->user()->can('internationalrelations.view_visa_workers');
+        $can_change_arrival_date = auth()->user()->can('internationalrelations.change_arrival_date');
+        if (!($is_admin || $can_view_visa_workers)) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+        try {
+            $nationalities = EssentialsCountry::nationalityForDropdown();
+            $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+            $professions = EssentialsProfession::all()->pluck('name', 'id');
+            $business_id = request()->session()->get('user.business_id');
+            $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+            $workers = IrProposedLabor::with('unSupportedworker_order', 'agency')->where('visa_id', $visaId)->select([
+                'id',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+                'is_price_offer_sent',
+                'is_accepted_by_worker',
+                'medical_examination', 'fingerprinting', 'is_passport_stamped', 'passport_number', 'date_of_offer',
+                'agency_id', 'unSupportedworker_order_id', 'arrival_date'
+            ]);
+
+
+            if (request()->ajax()) {
+
+                return Datatables::of($workers)
+
+                    ->addColumn('profession_id', function ($row) use ($professions) {
+                        $item = '';
+                        if ($row->unSupportedworker_order) {
+                            $item = $professions[$row->unSupportedworker_order->profession_id] ?? '';
+                        }
+                        return $item;
+                    })
+                    ->addColumn('nationality_id', function ($row) use ($nationalities) {
+                        $item = '';
+                        if ($row->unSupportedworker_order) {
+                            $item = $nationalities[$row->unSupportedworker_order->nationality_id] ?? '';
+                        }
+                        return $item;
+                    })
+                    ->addColumn('change_arrival_date', function ($row) use ($is_admin, $can_change_arrival_date) {
+                        if ($is_admin || $can_change_arrival_date) {
+                            if (!empty($row->arrival_date)) {
+                                return '<button type="button" class="btn btn-success change-arrival-date" 
+                                    data-worker-id="' . $row->id . '" 
+                                    data-arrival-date="' . $row->arrival_date . '" 
+                                    data-toggle="modal" 
+                                    data-target="#changeArrivalDateModal">' . $row->arrival_date . '</button>';
+                            } else {
+                                return " ";
+                            }
+                        } else {
+                            return  $row->arrival_date;
+                        }
+                    })
+                    ->editColumn('agency_id', function ($row) use ($agencys) {
+
+                        if ($row->agency_id) {
+                            return $agencys[$row->agency_id];
+                        } else {
+                            return '';
+                        }
+                    })
+                    ->editColumn('medical_examination', function ($row) {
+                        $text = $row->medical_examination == 1
+                            ? __('lang_v1.done')
+                            : __('lang_v1.not_yet');
+
+                        $color = $row->medical_examination == 1
+                            ? 'green'
+                            : 'red';
+
+                        return '<span style="color: ' . $color . ';">' . $text . '</span>';
+                    })
+                    ->editColumn('fingerprinting', function ($row) {
+                        $text = $row->fingerprinting == 1
+                            ? __('lang_v1.done')
+                            : __('lang_v1.not_yet');
+
+                        $color = $row->fingerprinting == 1
+                            ? 'green'
+                            : 'red';
+
+                        return '<span style="color: ' . $color . ';">' . $text . '</span>';
+                    })
+                    ->editColumn('is_passport_stamped', function ($row) {
+                        $text = $row->is_passport_stamped;
+                        return  $text;
+                    })
+                    ->rawColumns(['is_passport_stamped', 'fingerprinting', 'medical_examination', 'change_arrival_date'])
+
+                    ->make(true);
+            }
+            $visaCard = IrVisaCard::where('id', $visaId)->with('unSupported_operation')->first();
+
+            $agencyIds = [];
+
+
+            if ($visaCard && $visaCard->unSupported_operation) {
+                $operationOrderId = $visaCard->unSupported_operation->id;
+
+
+                $delegations = IrDelegation::where('unSupported_operation_id', $operationOrderId)->get();
+
+
+                $agencyIds = $delegations->pluck('agency_id')->unique()->toArray();
+            }
+
+            $workers = IrProposedLabor::where(function ($query) use ($agencyIds) {
+                $query->whereNull('agency_id')
+                    ->orWhereIn('agency_id', $agencyIds);
+            })
+                ->whereNull('visa_id')
+                ->where('is_accepted_by_worker', 1)
+                ->get();
+
+
+
+
+
+
+            $workersOptions = $workers->map(function ($worker) {
+                return [
+                    'id' => $worker->id,
+                    'full_name' => sprintf(
+                        '%s %s - %s',
+                        $worker->first_name ?? '',
+                        $worker->last_name ?? '',
+                        $worker->passport_number ?? ''
+                    ),
+                ];
+            })->pluck('full_name', 'id')->toArray();
+
+
+
+            return response()->view('internationalrelations::visa.show', compact('visaId', 'workersOptions'));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
