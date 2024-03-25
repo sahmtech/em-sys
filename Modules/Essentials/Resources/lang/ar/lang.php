@@ -1802,6 +1802,10 @@ return [
   'user_type.worker' => 'عمال',
   'user_type.remote_employee' => 'موظفين عن بعد',
   'late_hours' => 'تأخير',
-  'company_name'=>'اسم الشركة',
+
+  'company_name' => 'اسم الشركة',
+  'doc_exists_filter' => 'مرفق الوثيقة',
+  'doc_exists' => 'يوجد مرفق',
+  'doc_doesnt_exist' => 'لايوجد مرفق',
 ];
 
