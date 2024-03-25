@@ -7,6 +7,7 @@ use App\AccessRoleCompany;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use App\Utils\ModuleUtil;
 use App\BusinessLocation;
 use App\User;
@@ -666,8 +667,7 @@ class EssentialsManageEmployeeController extends Controller
 
                         $query->WhereNull('start_from')
                             ->orWhereNull('end_at')
-                            ->orWhereNull('profession_id')
-                            ->orWhereNull('specialization_id');
+                            ->orWhereNull('profession_id');
                     })
                     ->orWhereHas('essentials_qualification', function ($query) {
 
@@ -1125,7 +1125,7 @@ class EssentialsManageEmployeeController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_show_employee = auth()->user()->can('essentials.show_employee');
         $business_id = request()->session()->get('user.business_id');
-        $documents = null;
+        // $documents = null;
 
         if (!($is_admin || $can_show_employee)) {
             return redirect()->route('home')->with('status', [
@@ -1146,7 +1146,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $user = User::whereIn('users.id', $userIds)
-            ->with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
+            ->with(['contactAccess', 'OfficialDocument', 'proposal_worker', 'essentials_qualification'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))
             ->find($id);
@@ -1155,17 +1155,27 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-        if ($user) {
-            if ($user->user_type == 'employee' || $user->user_type == 'manager') {
-                $officialDocuments = $user->OfficialDocument;
-                $contract_doc = $user->contract()->where('is_active', 1)->first(); // Use ->first() to retrieve the contract
+        $documents = new Collection();
 
-                if ($contract_doc !== null) { // Check if a contract exists
-                    $documents = $officialDocuments->merge([$contract_doc]); // Wrap $contract_doc in an array since merge expects a collection
-                } else {
-                    $documents = $officialDocuments;
-                }
+        if (
+            $user && ($user->user_type == 'employee' || $user->user_type == 'manager')
+        ) {
+            $officialDocuments = $user->OfficialDocument;
+
+            // Retrieve contract document if it exists and add it to the collection
+            $contractDoc = $user->contract()->where('is_active', 1)->first();
+            if ($contractDoc) {
+                $documents->push($contractDoc);
             }
+
+            // Retrieve qualification document if it exists and add it to the collection
+            $qualificationDoc = $user->essentials_qualification()->first();
+            if ($qualificationDoc) {
+                $documents->push($qualificationDoc);
+            }
+
+            // Merge official documents with additional documents
+            $documents = $documents->merge($officialDocuments);
         }
 
 
@@ -1232,7 +1242,8 @@ class EssentialsManageEmployeeController extends Controller
             'Contract',
             'nationalities',
             'nationality',
-            'documents'
+            'documents',
+
         ));
     }
 

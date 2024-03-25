@@ -881,6 +881,7 @@ class EssentialsCardsController extends Controller
             ])
             ->get();
 
+
         if (request()->ajax()) {
             return DataTables::of($residencies)
                 ->addColumn('worker_name', function ($row) {

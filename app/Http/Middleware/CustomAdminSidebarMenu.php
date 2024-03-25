@@ -996,14 +996,6 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
-
-
-                $menu->url(
-
-                    route('connect_camera'),
-                    __('essentials::lang.connect_camera'),
-                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'connect_camera'],
-                );
             }
         });
     }

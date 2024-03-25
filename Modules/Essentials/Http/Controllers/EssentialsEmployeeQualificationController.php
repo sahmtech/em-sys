@@ -36,10 +36,11 @@ class EssentialsEmployeeQualificationController extends Controller
         $can_add_employee_qualifications = auth()->user()->can('essentials.add_employee_qualifications');
         $can_edit_employee_qualifications = auth()->user()->can('essentials.edit_employee_qualifications');
         $can_delete_employee_qualifications = auth()->user()->can('essentials.delete_employee_qualifications');
-
+        $can_show_qualification_file = auth()->user()->can('essentials.show_qualification_file');
         if (!$can_crud_employee_qualifications) {
             //temp  abort(403, 'Unauthorized action.');
         }
+
         $sub_spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $spacializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
 
@@ -63,9 +64,10 @@ class EssentialsEmployeeQualificationController extends Controller
                 'essentials_employees_qualifications.graduation_country',
                 'essentials_employees_qualifications.degree',
                 'essentials_employees_qualifications.great_degree',
+                'essentials_employees_qualifications.file_path',
                 'essentials_employees_qualifications.marksName',
 
-            ]);
+            ])->orderBy('essentials_employees_qualifications.id', 'desc');
 
         if (request()->ajax()) {
 
@@ -95,6 +97,23 @@ class EssentialsEmployeeQualificationController extends Controller
                     return $item;
                 })
                 ->addColumn(
+                    'qualification_file',
+                    function ($row)  use ($is_admin, $can_show_qualification_file) {
+                        $html = '';
+
+                        if ($is_admin || $can_show_qualification_file) {
+                            if (!empty($row->file_path)) {
+                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.qualification_file_view') . '</button>';
+                                '&nbsp;';
+                            } else {
+                                $html .= '<span class="text-warning">' . __('essentials::lang.no_qualification_file_exist') . '</span>';
+                            }
+                        }
+                        return $html;
+                    }
+
+                )
+                ->addColumn(
                     'action',
                     function ($row) use ($is_admin, $can_edit_employee_qualifications, $can_delete_employee_qualifications) {
                         $html = '';
@@ -113,7 +132,7 @@ class EssentialsEmployeeQualificationController extends Controller
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'qualification_file'])
                 ->make(true);
         }
         $query = User::whereIn('id', $userIds);

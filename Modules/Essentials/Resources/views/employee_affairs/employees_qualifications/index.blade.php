@@ -80,7 +80,7 @@
                                     <th class='table-td-width-40px'>@lang('essentials::lang.degree')</th>
                                     <th class='table-td-width-100px'>@lang('essentials::lang.great_degree')</th>
                                     <th class='table-td-width-60px'>@lang('essentials::lang.marksName')</th>
-
+                                    <th class='table-td-width-100px'>@lang('essentials::lang.qualification_file')</th>
                                     <th class='table-td-width-100px'>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -336,6 +336,8 @@
                     {
                         data: 'marksName'
                     },
+                    {
+                        data:'qualification_file'},
                     {
                         data: 'action'
                     },
