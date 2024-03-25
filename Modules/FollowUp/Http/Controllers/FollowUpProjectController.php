@@ -68,6 +68,7 @@ class FollowUpProjectController extends Controller
 
         $contacts2 = Contact::whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])
             ->pluck('supplier_business_name', 'id');
+        $salesProjects = SalesProject::with(['contact']);
 
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
@@ -80,7 +81,6 @@ class FollowUpProjectController extends Controller
         }
 
 
-        $salesProjects = SalesProject::with(['contact']);
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
