@@ -34,11 +34,15 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('proposed_laborIndex', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'proposed_laborIndex'])->name('proposed_laborIndex');
         Route::get('/createProposed_labor/{delegation_id}/{agency_id}/{transaction_sell_line_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'createProposed_labor'])->name('createProposed_labor');
+        Route::get('/createProposed_labor_unSupported/{delegation_id}/{agency_id}/{unSupportedworker_order_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'createProposed_labor_unSupported'])->name('createProposed_labor_unSupported');
+
         Route::post('/storeWorkerWithoutProject', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeWorkerWithoutProject'])->name('storeWorkerWithoutProject');
         Route::post('/storeProposed_labor', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeProposed_labor'])->name('storeProposed_labor');
         Route::get('/create_worker_without_project', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'create_worker_without_project'])->name('create_worker_without_project');
 
         Route::get('/importWorkers/{delegation_id}/{agency_id}/{transaction_sell_line_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'importWorkers'])->name('importWorkers');
+        Route::get('/importWorkers_unSupported/{delegation_id}/{agency_id}/{unSupportedworker_order_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'importWorkers_unSupported'])->name('importWorkers_unSupported');
+
         Route::post('/postImportWorkers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'postImportWorkers'])->name('postImportWorkers');
 
         Route::get('accepted_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'accepted_workers'])->name('accepted_workers');
@@ -55,12 +59,24 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('store/EmploymentCompanies', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'store'])->name('store.EmploymentCompanies');
 
         Route::get('/order_request', [Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'index'])->name('order_request');
+        Route::get('/orderOperationForUnsupportedWorkers', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'orderOperationForUnsupportedWorkers'])->name('ir.orderOperationForUnsupportedWorkers');
+
         Route::get('/order_request/Delegation/{id}', [Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'Delegation'])->name('order_request.Delegation');
+        Route::get('/order_request/unSupportedDelegation/{id}', [Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'unSupportedDelegation'])->name('order_request.unSupportedDelegation');
+
         Route::post('/save-data', [Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'saveRequest'])->name('save-data');
+        Route::post('/saveUbnSupportedRequest', [Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'saveUbnSupportedRequest'])->name('saveUbnSupportedRequest');
+
 
         Route::get('visa_cards', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'index'])->name('visa_cards');
+        Route::get('unSupported_visa_cards', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'unSupported_visa_cards'])->name('unSupported_visa_cards');
+
         Route::post('/storeVisa', [Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'store'])->name('storeVisa');
+        Route::post('/unSupportedVisaStore', [Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'unSupportedVisaStore'])->name('unSupportedVisaStore');
+
         Route::get('/ir/viewVisaWorkers/{id}', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'viewVisaWorkers'])->name('viewVisaWorkers');
+        Route::get('/ir/viewUnSuupportedVisaWorkers/{id}', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'viewUnSuupportedVisaWorkers'])->name('viewUnSuupportedVisaWorkers');
+
         Route::post('/change_arrival_date', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'changeArrivalDate'])->name('change_arrival_date');
         Route::get('/get-visa-report', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'getVisaReport'])->name('get-visa-report');
 
@@ -84,6 +100,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/search/byproof_number', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'search'])->name('ir.search_byproof_number');
 
         Route::get('/get_order_nationlities', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'getNationalities'])->name('get_order_nationlities');
+        Route::get('/getUnSupportedNationalities', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'getUnSupportedNationalities'])->name('getUnSupportedNationalities');
+
 
         Route::get('/get-Irsalary-requests', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index'])->name('get_Irsalary_requests');
 

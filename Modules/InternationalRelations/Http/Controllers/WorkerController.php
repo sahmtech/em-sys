@@ -27,6 +27,7 @@ use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use App\TransactionSellLine;
 use Modules\InternationalRelations\Entities\IrVisaCard;
+use Modules\Sales\Entities\SalesUnSupportedWorker;
 
 class WorkerController extends Controller
 {
@@ -72,7 +73,7 @@ class WorkerController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $business_id = request()->session()->get('user.business_id');
         $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')->where('interviewStatus', null)->select([
+        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency', 'unSupportedworker_order')->where('interviewStatus', null)->select([
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             'age',
@@ -86,21 +87,32 @@ class WorkerController extends Controller
             'permanent_address',
             'current_address',
             'interviewStatus',
-            'agency_id', 'transaction_sell_line_id'
+            'agency_id', 'transaction_sell_line_id', 'unSupportedworker_order_id'
         ]);
 
 
+
         if (!empty($request->input('specialization'))) {
-            $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
-                $query->where('specialization_id', $request->input('specialization'));
+            $workers->where(function ($query) use ($request) {
+                $query->whereHas('transactionSellLine.service', function ($subQuery) use ($request) {
+                    $subQuery->where('specialization_id', $request->input('specialization'));
+                })
+                    ->orWhereHas('unSupportedworker_order', function ($subQuery) use ($request) {
+                        $subQuery->where('specialization_id', $request->input('specialization'));
+                    });
+            });
+        }
+        if (!empty($request->input('profession'))) {
+            $workers->where(function ($query) use ($request) {
+                $query->whereHas('transactionSellLine.service', function ($subQuery) use ($request) {
+                    $subQuery->where('profession_id', $request->input('profession'));
+                })
+                    ->orWhereHas('unSupportedworker_order', function ($subQuery) use ($request) {
+                        $subQuery->where('profession_id', $request->input('profession'));
+                    });
             });
         }
 
-        if (!empty($request->input('profession'))) {
-            $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
-                $query->where('profession_id', $request->input('profession'));
-            });
-        }
 
         if (!empty($request->input('agency'))) {
             $workers->where('agency_id', $request->input('agency'));
@@ -113,18 +125,18 @@ class WorkerController extends Controller
 
 
                 ->addColumn('profession_id', function ($row) use ($professions) {
-                    $item = $professions[$row->transactionSellLine?->service?->profession_id] ?? '';
+                    $item = $professions[$row->transactionSellLine?->service?->profession_id] ?? $professions[$row->unSupportedworker_order?->profession_id] ?? '';
 
                     return $item;
                 })
                 ->addColumn('specialization_id', function ($row) use ($specializations) {
-                    $item = $specializations[$row->transactionSellLine?->service?->specialization_id] ?? '';
+                    $item = $specializations[$row->transactionSellLine?->service?->specialization_id] ?? $specializations[$row->unSupportedworker_order?->specialization_id] ?? '';
 
                     return $item;
                 })
 
                 ->addColumn('nationality_id', function ($row) use ($nationalities) {
-                    $item = $nationalities[$row->transactionSellLine?->service?->nationality_id] ?? '';
+                    $item = $nationalities[$row->transactionSellLine?->service?->nationality_id] ?? $nationalities[$row->unSupportedworker_order?->nationality_id] ?? '';
 
                     return $item;
                 })
@@ -132,24 +144,6 @@ class WorkerController extends Controller
 
                     return $agencys[$row->agency_id] ?? '';
                 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -782,20 +776,31 @@ class WorkerController extends Controller
     {
 
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_visa_worker = auth()->user()->can('internationalrelations.store_visa_worker');
         $visa_id = $request->visaId;
-        if (!($is_admin || $can_store_visa_worker)) {
-        }
+        // if (!($is_admin || $can_store_visa_worker)) {
+        // }
         try {
+
+
             $selectedWorkersCount = count($request->worker_id);
+
+
             $visaCard = IrVisaCard::where('id', $visa_id)
-                ->with('operationOrder.salesContract.transaction.sell_lines')
+                ->with('operationOrder.salesContract.transaction.sell_lines', 'delegation', 'unSupported_operation')
                 ->first();
-            $orderQuantity = $visaCard->operationOrder->orderQuantity;
+
+            if ($visaCard->operationOrder) {
+                $orderQuantity = $visaCard->operationOrder->orderQuantity;
+            }
+            if ($visaCard->unSupported_operation) {
+                $orderQuantity = $visaCard->unSupported_operation->orderQuantity;
+            }
+
             $proposed_workers_number = $visaCard->proposed_workers_number;
             $delegation_agency_targeted_count = null;
+
 
             if ($selectedWorkersCount > $orderQuantity) {
                 $output = [
@@ -811,11 +816,12 @@ class WorkerController extends Controller
                 });
 
                 foreach ($groupedWorkers as $agencyId => $workers) {
+                    error_log($visaCard->delegation);
 
                     if ($visaCard->delegation->agency()->whereIn('id', [$agencyId])->exists()) {
-
+                        error_log("4444444444444");
                         $delegation_agency_targeted_count = $visaCard->delegation->where('agency_id', [$agencyId])->first()->targeted_quantity;
-
+                        error_log($delegation_agency_targeted_count);
 
                         $workersCount = $workers->count();
 
@@ -826,7 +832,7 @@ class WorkerController extends Controller
                 }
             }
 
-
+            error_log("4444444444444");
 
             if (!empty($exceededAgencies)) {
                 $output = [
@@ -834,7 +840,7 @@ class WorkerController extends Controller
                     'msg' => __('internationalrelations::lang.workers_exceed_target_number'),
                 ];
             } else if ($proposed_workers_number + $selectedWorkersCount <=  $orderQuantity) {
-
+                error_log("5555555555555");
                 foreach ($request->worker_id as $workerId) {
                     if ($workerId !== null) {
                         IrProposedLabor::where('id', $workerId)
@@ -843,9 +849,11 @@ class WorkerController extends Controller
 
                             ]);
 
+
                         IrVisaCard::where('id', $visa_id)->increment('proposed_workers_number');
                     }
                 }
+
                 $output = [
                     'success' => true,
                     'msg' => __('lang_v1.added_success'),
@@ -994,6 +1002,53 @@ class WorkerController extends Controller
             ));
     }
 
+    public function createProposed_labor_unSupported($delegation_id, $agency_id, $unSupportedworker_order_id)
+    {
+
+
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
+
+        if (!($is_admin || $can_store_proposed_labor)) {
+        }
+
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
+
+        $blood_types = [
+            'A+' => 'A positive (A+).',
+            'A-' => 'A negative (A-).',
+            'B+' => 'B positive (B+)',
+            'B-' => 'B negative (B-).',
+            'AB+' => 'AB positive (AB+).',
+            'AB-' => 'AB negative (AB-).',
+            'O+' => 'O positive (O+).',
+            'O-' => 'O positive (O-).',
+        ];
+
+
+
+
+        $resident_doc = null;
+        $user = null;
+        return view('internationalrelations::worker.un_supported_proposed_laborCreate')
+            ->with(compact(
+                'nationalities',
+                'blood_types',
+                'contacts',
+                "specializations",
+                'professions',
+                'resident_doc',
+                'user',
+                'agency_id',
+                'unSupportedworker_order_id',
+                'delegation_id'
+            ));
+    }
     public function create_worker_without_project()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -1036,32 +1091,54 @@ class WorkerController extends Controller
     {
 
         try {
+
             $input = $request->only([
                 'first_name', 'mid_name', 'last_name',
                 'email', 'dob', 'gender',
                 'marital_status', 'blood_group', 'age',
                 'contact_number', 'alt_number', 'family_number', 'permanent_address',
-                'current_address', 'transaction_sell_line_id', 'agency_id',
+                'current_address', 'agency_id',
                 'profile_picture', 'delegation_id', 'passport_number'
             ]);
+            if ($request->input('transaction_sell_line_id')) {
+                $input['transaction_sell_line_id'] = $request->input('transaction_sell_line_id');
+            }
+            if ($request->input('unSupportedworker_order_id')) {
+
+
+                $input['unSupportedworker_order_id'] = $request->input('unSupportedworker_order_id');
+            }
 
             $passport_number = IrProposedLabor::where('passport_number', $request->input('passport_number'))->first();
+
+
             if ($passport_number) {
                 $output = [
                     'success' => false,
                     'msg' => __('lang_v1.the_passport_number_already_exists'),
                 ];
-                return redirect()->route('createProposed_labor', [
-                    'delegation_id' => $request->input('delegation_id'),
-                    'agency_id' => $request->input('agency_id'),
-                    'transaction_sell_line_id' => $request->input('transaction_sell_line_id'),
-                ])->with('status', $output);
+                if ($request->input('transaction_sell_line_id')) {
+                    return redirect()->route('createProposed_labor', [
+                        'delegation_id' => $request->input('delegation_id'),
+                        'agency_id' => $request->input('agency_id'),
+                        'transaction_sell_line_id' => $request->input('transaction_sell_line_id'),
+                    ])->with('status', $output);
+                }
+                if ($request->input('unSupportedworker_order_id')) {
+                    return redirect()->route('createProposed_labor', [
+                        'delegation_id' => $request->input('delegation_id'),
+                        'agency_id' => $request->input('agency_id'),
+                        'unSupportedworker_order_id' => $request->input('unSupportedworker_order_id'),
+                    ])->with('status', $output);
+                }
             }
             if ($request->hasFile('profile_picture')) {
                 $input['profile_image'] = $request->file('profile_picture')->store('/proposedLaborPicture');
             }
 
+
             IrProposedLabor::create($input);
+
 
             IrDelegation::where('id', $request->input('delegation_id'))->increment('proposed_labors_quantity', 1);
 
@@ -1071,7 +1148,7 @@ class WorkerController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log(print_r('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
@@ -1168,12 +1245,16 @@ class WorkerController extends Controller
     {
         return view('internationalrelations::worker.import')->with(compact('delegation_id', 'agency_id', 'transaction_sell_line_id'));
     }
-
+    public function importWorkers_unSupported($delegation_id, $agency_id, $unSupportedworker_order_id)
+    {
+        return view('internationalrelations::worker.un_supported_import')->with(compact('delegation_id', 'agency_id', 'unSupportedworker_order_id'));
+    }
     public function postImportWorkers(Request $request)
     {
         $delegation_id = $request->input('delegation_id');
         $agency_id = $request->input('agency_id');
         $transaction_sell_line_id = $request->input('transaction_sell_line_id');
+        $unSupportedworker_order_id = $request->input('unSupportedworker_order_id');
 
         try {
 
@@ -1295,21 +1376,40 @@ class WorkerController extends Controller
                         $worker_array['agency_id'] = null;
                     }
 
+                    if ($transaction_sell_line_id) {
+                        $worker_array['transaction_sell_line_id'] =   $transaction_sell_line_id;
+                        if ($worker_array['transaction_sell_line_id'] !== null) {
 
-                    $worker_array['transaction_sell_line_id'] =   $transaction_sell_line_id;
-                    if ($worker_array['transaction_sell_line_id'] !== null) {
+                            $business = TransactionSellLine::find($worker_array['transaction_sell_line_id']);
+                            if (!$business) {
 
-                        $business = TransactionSellLine::find($worker_array['transaction_sell_line_id']);
-                        if (!$business) {
-
+                                $is_valid = false;
+                                $error_msg = __('essentials::lang.contact_not_found') . $row_no;
+                                break;
+                            }
+                        } else {
                             $is_valid = false;
                             $error_msg = __('essentials::lang.contact_not_found') . $row_no;
                             break;
                         }
-                    } else {
-                        $is_valid = false;
-                        $error_msg = __('essentials::lang.contact_not_found') . $row_no;
-                        break;
+                    }
+
+                    if ($unSupportedworker_order_id) {
+                        $worker_array['unSupportedworker_order_id'] =   $unSupportedworker_order_id;
+                        if ($worker_array['unSupportedworker_order_id'] !== null) {
+
+                            $business = SalesUnSupportedWorker::find($worker_array['unSupportedworker_order_id']);
+                            if (!$business) {
+
+                                $is_valid = false;
+                                $error_msg = __('essentials::lang.contact_not_found') . $row_no;
+                                break;
+                            }
+                        } else {
+                            $is_valid = false;
+                            $error_msg = __('essentials::lang.contact_not_found') . $row_no;
+                            break;
+                        }
                     }
                     $formated_data[] = $worker_array;
                 }

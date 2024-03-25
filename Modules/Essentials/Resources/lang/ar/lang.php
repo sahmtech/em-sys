@@ -260,8 +260,9 @@ return [
   "todays_attendance" => "حضور اليوم",
   "already_clocked_in" => "تم تسجيل الدخول بالفعل",
   "not_clocked_in" => "لم يتم تسجيل الدخول",
-  "crud_leave_type" => "عرض نوع الإجازة",
+  "crud_leave_type" => "أنواع الإجازات",
   "crud_all_leave" => "عرض كل الإجازات",
+  'view_leave_balances' => 'عرض رصيد الإجازات',
   "crud_own_leave" => "إضافة / عرض الإجازة الخاصة",
   "crud_all_attendance" => "عرض كل الحضور",
   "view_own_attendance" => "عرض الحضور الخاص بي",
@@ -1794,6 +1795,9 @@ return [
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
 
+  'leave_balances' => 'رصيد الإجازات',
+
+
   'emp_number' => 'الرقم الوظيفي',
   'border_no_validated' => ' رقم الحدود موجود سابقا في السطر رقم ',
   'duplicate_border_no' => '  رقم الحدود مكرر في الملف في السطر رقم ',
@@ -1807,5 +1811,6 @@ return [
   'doc_exists_filter' => 'مرفق الوثيقة',
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
+
 ];
 
