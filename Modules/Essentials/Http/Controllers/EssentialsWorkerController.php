@@ -75,14 +75,15 @@ class EssentialsWorkerController extends Controller
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-        $users->select(
-            'users.*',
-            'users.id as worker_id',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, '' ,COALESCE(users.last_name,)) as worker"),
-            'sales_projects.name as contact_name'
-        )->orderBy('users.id', 'desc')
-            ->groupBy('users.id');
-
+            $users->select(
+                'users.*',
+                'users.id as worker_id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                'sales_projects.name as contact_name'
+            )
+                ->orderBy('users.id', 'desc')
+                ->groupBy('users.id');
+    
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
