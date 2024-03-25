@@ -21,8 +21,6 @@
                         <tr>
                             <th>@lang('internationalrelations::lang.visa_number')</th>
                             <th>@lang('internationalrelations::lang.operation_order_no')</th>
-                            <th>@lang('internationalrelations::lang.contact_name')</th>
-                            <th>@lang('internationalrelations::lang.number_of_contract')</th>
                             <th>@lang('internationalrelations::lang.agency_name')</th>
                             <th>@lang('internationalrelations::lang.professions')</th>
                             <th>@lang('internationalrelations::lang.nationalities')</th>
@@ -48,7 +46,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('visa_cards') }}",
+                    url: "{{ route('unSupported_visa_cards') }}",
                 },
                 columns: [{
                         data: 'visa_number',
@@ -59,14 +57,7 @@
                         data: 'operation_order_no',
                         name: 'operation_order_no'
                     },
-                    {
-                        data: 'supplier_business_name',
-                        name: 'supplier_business_name'
-                    },
-                    {
-                        data: 'number_of_contract',
-                        name: 'number_of_contract'
-                    },
+
                     {
                         data: 'agency_name',
                         name: 'agency_name'
@@ -90,6 +81,7 @@
                             if (isAdmin || canViewVisaCardWorkers) {
                                 return '<button class="btn btn-primary view-visa">@lang('internationalrelations::lang.view_visa_workers')</button>';
                             }
+                            return '';
                         }
                     }
                 ],
@@ -99,7 +91,8 @@
                 var visaId = data.id;
 
                 if (visaId) {
-                    var viewUrl = '{{ route('viewVisaWorkers', ['id' => ':visaId']) }}'.replace(':visaId',
+                    var viewUrl = '{{ route('viewUnSuupportedVisaWorkers', ['id' => ':visaId']) }}'.replace(
+                        ':visaId',
                         visaId);
                     window.location.href = viewUrl;
                 }

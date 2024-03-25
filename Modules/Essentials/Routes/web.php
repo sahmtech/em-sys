@@ -21,6 +21,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/leave-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaveStatusData'])->name('leaveStatusData');
         Route::get('/getLeaves', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaves'])->name('getLeaves');
+
         Route::get('/contract-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getContractStatusData'])->name('contractStatusData');
         Route::get('/hr_department_employees', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'hr_department_employees'])->name('hr_department_employees');
     });
@@ -324,6 +325,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get-admission-date',  [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getAdmissionDate'])->name('get-admission-date');
 
 
+
+        Route::get('/users_leaves', [Modules\Essentials\Http\Controllers\UsersLeaveBalanceController::class, 'index'])->name('leaves_balance');
+        Route::get('/add_leave_balance', [Modules\Essentials\Http\Controllers\UsersLeaveBalanceController::class, 'populateLeaveBalances'])->name('add_leave_balance');
+
         Route::get('/fetch-user/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'fetch_user'])->name('fetch_user');
         Route::get('/settings', [Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']);
         Route::post('/settings', [Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'update']);
@@ -463,14 +468,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/sales-target', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']);
         Route::get('/set-sales-target/{id}', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'setSalesTarget']);
         Route::post('/save-sales-target', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'saveSalesTarget']);
-
-
-
-
-
-
-
-
 
 
 

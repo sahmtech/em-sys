@@ -448,6 +448,21 @@ return [
     'totalwithworkers' => 'الاجمالي مع عدد العمالة',
     'monthly_costs' => 'التكاليف الشهرية',
     'view & print' => 'عرض وطباعة',
+    'Unsupported_workers' => 'العمالة الغير تابعة لمشاريع',
+    'create_order' => 'إنشاء طلب',
+    'note' => 'ملاحظات',
+    'ended' => 'انتهت',
+    'pending' => 'قيد التنفيذ',
+    'orderOperations_for_contract' => 'أوامر التشغيل  لعقد معين',
+    'view_operations_order_for_contract' => 'استعراض أوامر التشغيل التابعة لعقد',
+    'view_operations_order_for_unSupported_workers' => 'استعراض أوامر التشغيل  لعمالة غير تابعة لمشروع',
+    'orderOperationForUnsupportedWorkers' => 'أوامر التشغيل لعمالة غير تابعة لمشروع',
+    'order_number' => 'رقم الطلب',
+    'select_order' => 'اختر طلب',
+    'not_started' => 'لم يبدأ التنفيذ',
+    'remaining_quantity' => 'الكمية المتبقية',
+    'worker_order_number' => 'رقم طلب العمالة',
+    'required_date' => 'التاريخ المطلوب'
 ];
 
 // ''=>'',

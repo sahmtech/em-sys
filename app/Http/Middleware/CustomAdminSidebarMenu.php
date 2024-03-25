@@ -1156,7 +1156,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('essentials.crud_all_leave')) {
+            if ($is_admin  || auth()->user()->can('essentials.view_leave_types')) {
 
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController::class, 'index']),
@@ -1165,13 +1165,13 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            // if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
-            //     $menu->url(
-            //         action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-            //         __('essentials::lang.payroll'),
-            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
-            //     );
-            // }
+            if ($is_admin  || auth()->user()->can('essentials.view_leave_balances')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\UsersLeaveBalanceController::class, 'index']),
+                    __('essentials::lang.leave_balances'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leaves_balance'],
+                );
+            }
 
             // if ($is_admin ) {
             //     $menu->url(
@@ -1459,6 +1459,15 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('sales.Unsupported_workers')) {
+
+                $menu->url(
+                    action([\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'index']),
+                    __('sales::lang.Unsupported_workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'Unsupported_workers']
+                );
+            }
+
             if ($is_admin || auth()->user()->can('sales.view_sale_operation_orders')) {
 
                 $menu->url(

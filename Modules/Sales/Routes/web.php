@@ -61,11 +61,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/viewClients', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'index'])->name('viewClients');
         Route::get('/getClientRow', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'getClientRow'])->name('getClientRow');
 
+        Route::get('/Unsupported_workers', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'index'])->name('Unsupported_workers');
+        Route::post('/storeUnsupported_workers', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'store'])->name('storeUnsupported_workers');
 
         Route::get('/clients', [\Modules\Sales\Http\Controllers\ClientsController::class, 'index'])->name('sale.clients');
         Route::get('/lead_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts'])->name('lead_contacts');
         Route::get('/draft_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'draft_contacts'])->name('draft_contacts');
-       
+
         Route::get('/qualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'qualified_contacts'])->name('qualified_contacts');
         Route::get('/unqualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'unqualified_contacts'])->name('unqualified_contacts');
         Route::get('/converted_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'converted_contacts'])->name('converted_contacts');
@@ -75,10 +77,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/change_to_converted_client', [\Modules\Sales\Http\Controllers\ClientsController::class, 'change_to_converted_client'])->name('change_to_converted_client');
         Route::post('/change-status-contact/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeStatusContact'])->name('changeStatusContact');
         Route::get('/change-contact-status', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeContact_Status_dialog'])->name('changeContactStatus');
-    
-       // Route::get('changeDraftStatus', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
 
-    //    Route::get('changeDraftStatus/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
+        // Route::get('changeDraftStatus', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
+
+        //    Route::get('changeDraftStatus/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
         Route::get('sale/changeDraftStatus/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
         Route::get('/changeDraftStatus/{contactId}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
 
@@ -105,6 +107,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index'])->name('sale.orderOperations');
+        Route::get('/orderOperationForUnsupportedWorkers', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'orderOperationForUnsupportedWorkers'])->name('sale.orderOperationForUnsupportedWorkers');
+        Route::post('/store/storeUnsupportedOrderOperation', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'storeOrderOperation'])->name('sale.storeUnsupportedOrderOperation');
+        Route::post('/get-order-details', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'getOrderDetails'])->name('get-order-details');
+
         Route::get('create/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'create'])->name('create.sale.orderOperations');
         Route::post('/get-contracts', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'getContracts'])->name('get-contracts');
         Route::post('/store/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.store.orderOperations');
