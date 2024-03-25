@@ -56,6 +56,11 @@ class DataController extends Controller
                         'label' => __('generalmanagement::lang.edit_notification_settings'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'generalmanagement.view_notifications',
+                        'label' => __('generalmanagement::lang.view_notifications'),
+                        'default' => false,
+                    ],
                 ],
             ],
         ];

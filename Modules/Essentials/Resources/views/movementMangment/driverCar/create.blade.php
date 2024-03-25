@@ -77,7 +77,7 @@
                                         'required',
                                         'placeholder' => __('housingmovements::lang.delivery_date'),
                                         'id' => 'delivery_date',
-                                        'min' => \Carbon\Carbon::now()->format('Y-m-d'),
+                                        // 'min' => \Carbon\Carbon::now()->format('Y-m-d'),
                                     ]) !!}
                                 </div>
                             </div>

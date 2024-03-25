@@ -81,7 +81,7 @@ class EssentialsWorkersAffairsController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
-        $fields = $this->moduleUtil->getWorkerFields();
+        $fields = $this->moduleUtil->getWorkerFields_hrm();
         $companies_ids = Company::pluck('id')->toArray();
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -168,6 +168,32 @@ class EssentialsWorkersAffairsController extends Controller
                         return ' ';
                     }
                 })
+                ->addColumn('passport_number', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->number ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+                ->addColumn('passport_expire_date', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })->addColumn('company_name', function ($user) {
+                    return optional($user->company)->name ?? ' ';
+                })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -205,6 +231,16 @@ class EssentialsWorkersAffairsController extends Controller
 
                     return $user->assignedTo->name ?? '';
                 })
+                ->addColumn('dob', function ($user) {
+
+                    return $user->dob ?? '';
+                })  ->addColumn('insurance', function ($user) {
+                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                        return __('followup::lang.has_insurance');
+                    } else {
+                        return __('followup::lang.has_not_insurance');
+                    }
+                })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -216,7 +252,7 @@ class EssentialsWorkersAffairsController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 

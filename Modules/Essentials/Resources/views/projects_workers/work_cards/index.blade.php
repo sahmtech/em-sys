@@ -4,6 +4,7 @@
 @section('content')
 
 
+
     <section class="content-header">
         <h1>
             <span>@lang('followup::lang.workers')</span>
@@ -61,7 +62,15 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
+                        $default_fields = [
+                            $fields[0],
+                            $fields[1],
+                            $fields[2],
+                            $fields[3],
+                            $fields[4],
+                            $fields[5],
+                            $fields[6],
+                        ];
 
                         $default = array_keys($default_fields);
 
@@ -97,29 +106,48 @@
                     <thead>
                         <tr>
 
-
+                            <td>#</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.employee_number')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
+
+
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
+
+
+                            <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
+
+
+
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
                             <td class="table-td-width-100px">@lang('business.email')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.department')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.specialization')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
+
+
 
 
 
@@ -172,6 +200,26 @@
                 },
 
                 columns: [{
+                        "data": "worker_id"
+                    },
+                    {
+                        "data": "profile_image",
+                        "render": function(data, type, row) {
+                            if (data) {
+
+                                var imageUrl = '/uploads/' + data;
+                                return '<img src="' + imageUrl +
+                                    '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                            } else {
+                                return '@lang('essentials::lang.no_image')';
+                            }
+                        }
+                    },
+                    {
+                        "data": "emp_number"
+                    },
+
+                    {
                         data: 'worker',
                         render: function(data, type, row) {
                             var link = '<a href="' +
@@ -184,11 +232,30 @@
                         data: 'id_proof_number'
                     },
                     {
+                        "data": "company_name"
+                    },
+                    {
+                        data: 'passport_number'
+                    },
+                    {
+                        data: 'passport_expire_date'
+                    },
+                    {
+                        data: 'border_no'
+                    }, {
+                        data: 'dob'
+                    },
+                    {
+                        data: 'insurance'
+                    },
+                    {
                         data: 'contact_name'
                     },
                     {
                         data: 'nationality'
                     },
+
+
                     {
                         data: 'residence_permit_expiration'
                     },
@@ -198,6 +265,7 @@
                     {
                         data: 'admissions_type',
                         render: function(data, type, row) {
+
                             if (data === 'first_time') {
                                 return '@lang('essentials::lang.first_time')';
                             } else if (data === 'after_vac') {
@@ -223,19 +291,17 @@
                         data: 'contract_end_date'
                     },
                     {
-                        "data": "contact_number"
-                    }, {
-                        "data": "email"
-                    }, {
-                        "data": "essentials_department_id"
-                    }, {
-                        "data": "profession",
-                        name: 'profession'
+                        data: "contact_number"
                     },
                     {
-                        "data": "specialization",
-                        name: 'specialization'
+                        data: "email"
                     },
+
+                    {
+                        data: "profession",
+                        name: 'profession'
+                    },
+
                     {
                         data: 'status',
                         render: function(data, type, row) {
