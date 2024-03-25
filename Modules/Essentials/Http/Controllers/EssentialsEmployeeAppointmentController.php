@@ -90,7 +90,7 @@ class EssentialsEmployeeAppointmentController extends Controller
             //->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employee_appointmets.id',
-                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ',COALESCE(u.mid_name, ''),' ', COALESCE(u.last_name, '')) as user"),
                 'u.id_proof_number',
                 'essentials_employee_appointmets.business_location_id',
                 'essentials_employee_appointmets.department_id',
@@ -397,7 +397,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
             //        $input2['superior'] = $input['superior'];
             $input2['profession_id'] = $input['profession'];
-           // $input2['specialization_id'] = $input['specialization'];
+            // $input2['specialization_id'] = $input['specialization'];
 
             User::where('id', $input['employee'])->update(['essentials_department_id' => $input['department']]);
 

@@ -128,7 +128,8 @@
                                             'sponsorship' => __('essentials::lang.sponsorship'),
                                         ],
                                         null,
-                                        ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                                        ['class' => 'form-control',
+                                         'required', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
                                     ) !!}
                                 </div>
                                 <div class="form-group col-md-6">
@@ -151,7 +152,7 @@
                                 </div>
                              
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
+                                    {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':*') !!}
                                     {!! Form::date('graduation_year', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.graduation_year'),
@@ -161,7 +162,7 @@
                                 <div class="clearfix"></div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
+                                    {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':*') !!}
                                     {!! Form::text('graduation_institution', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.graduation_institution'),
@@ -170,7 +171,7 @@
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
+                                    {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':*') !!}
                                     {!! Form::select('graduation_country', $countries, null, [
                                         'class' => 'form-control',
                                         'style' => 'height:40px',

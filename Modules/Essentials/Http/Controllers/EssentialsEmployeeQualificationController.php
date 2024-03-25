@@ -55,7 +55,7 @@ class EssentialsEmployeeQualificationController extends Controller
             ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employees_qualifications.id',
-                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' , COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_qualifications.qualification_type',
                 'essentials_employees_qualifications.sub_specialization',
                 'essentials_employees_qualifications.specialization',

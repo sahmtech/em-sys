@@ -562,16 +562,19 @@ class TravelersController extends Controller
                 $business_id = $request->session()->get('user.business_id');
                 $selectedData = json_decode($jsonData, true);
 
-                DB::beginTransaction();
+
                 foreach ($selectedData as $data) {
 
                     $worker = IrProposedLabor::with('visa')->find($data['worker_id']);
 
                     if ($worker) {
-                        $border_number = User::where('border_no', $data['border_no'])->get();
-                        if ($border_number) {
-                            $output = ['success' => 1, 'msg' => __('housingmovements.border_no_exist')];
+                        $border_number = User::where('border_no', $data['border_no'])->first();
+
+                        if ($border_number != null) {
+                            // dd($border_number);
+                            $output = ['success' => 0, 'msg' => __('housingmovements.border_no_exist')];
                         } else {
+
 
                             User::create([
                                 'first_name' => $worker->first_name,
@@ -596,8 +599,9 @@ class TravelersController extends Controller
                                 'proposal_worker_id' => $data['worker_id'],
 
                             ]);
-                            $worker->update(['arrival_status' => 1]);
-
+                            // $worker->update(['arrival_status' => 1]);
+                            $worker->arrival_status = 1;
+                            $worker->save();
 
                             $allWorkersArrived = IrProposedLabor::where('visa_id', $worker->visa_id)
                                 ->where('arrival_status', 1)
@@ -631,7 +635,7 @@ class TravelersController extends Controller
                 }
 
 
-                DB::commit();
+
 
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
             } else {
@@ -640,7 +644,7 @@ class TravelersController extends Controller
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => 0, 'msg' => $e->getMessage()];
+            $output = ['success' => 0, 'msg' => ('messages.somtheing_went_wrong')];
         }
 
         return redirect()->back()->with(['status' => $output]);

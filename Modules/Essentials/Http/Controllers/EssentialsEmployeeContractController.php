@@ -60,7 +60,7 @@ class EssentialsEmployeeContractController extends Controller
             ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employees_contracts.id',
-                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' ,COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_contracts.contract_number',
                 'essentials_employees_contracts.contract_start_date',
                 'essentials_employees_contracts.contract_end_date',
@@ -80,10 +80,10 @@ class EssentialsEmployeeContractController extends Controller
                     ELSE 'Null'
                 END as status
             "),
-            ])->where( 'essentials_employees_contracts.is_active', 1)
+            ])->where('essentials_employees_contracts.is_active', 1)
             ->orderby('id', 'desc');
 
-       // dd( $employees_contracts->where('employee_id',5385)->get());
+        // dd( $employees_contracts->where('employee_id',5385)->get());
         if (!empty(request()->input('contract_type')) && request()->input('contract_type') !== 'all') {
             $employees_contracts->where('essentials_employees_contracts.contract_type_id', request()->input('contract_type'));
         }

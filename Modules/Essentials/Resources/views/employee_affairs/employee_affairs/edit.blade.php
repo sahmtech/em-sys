@@ -281,7 +281,7 @@
                                     {!! Form::file('qualification_file', [
                                         'class' => 'form-control',
                                         'style' => 'height:36px; ',
-                                        'accept' => '.pdf,.doc,.docx',
+                                        'accept' => '*',
                                     ]) !!}
 
                                 </div>

@@ -1054,7 +1054,7 @@ return [
   'open_camera' => 'افتح الكاميرا',
   'capture_photo' => 'التقط صورة ',
   'residencyreports' => 'تقرير تكاليف الإقامات',
-  'sponsorship' => '(متوسط ( كفاءة',
+  'sponsorship' => 'كفاءة',
   'show_qualification_file' => 'رؤية ملف شهادة المؤهل العلمي',
   'no_qualification_file_exist' => 'لايوجد ملف شهادة المؤهل',
   'qualification_file_view' => 'عرض شهادة المؤهل ',
@@ -1154,7 +1154,7 @@ return [
   'special_not_found' => '  رقم التخصص غير موجود في السطر رقم ',
   'prof_not_found' => '  رقم المهنة  غير موجود في السطر رقم ',
   'nationality_not_found' => '  رقم الجنسية  غير موجود في السطر رقم ',
-  'user_with_same_id_proof_number_exists' => ' لا يمكن إضافة الموظف رقم  اثبات الهوية  المدخل موجود سابقا  ',
+  'user_with_same_id_proof_number_exists' => '     رقم  اثبات الهوية  المدخل موجود سابقا  ',
   'duplicate_id_proof_number' => 'رقم اثبات الهوية مكرر ضمن الملف',
   'employees_reports_view' => 'عرض تقرير الموظفين',
   'employees_information_report' => 'تقرير بيانات الموظفين',
@@ -1812,5 +1812,5 @@ return [
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
 
-];
 
+];
