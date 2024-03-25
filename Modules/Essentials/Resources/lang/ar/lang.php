@@ -1010,7 +1010,7 @@ return [
   'absentee_report' => 'بلاغ تغيب العمال ',
   'residency_Vacations' => 'إجازات المقيمين ',
   'late_empolyee' => 'الموظفين المتأخرين من الإجازات ',
-  'proof_number_validated' => 'رقم الاقامة موجود سابقا ًلا يمكن إضافة الموظف',
+  'proof_number_validated' => 'رقم الاقامة موجود سابقا ً في السطر رقم ',
   'visa_employee' => 'العمال الذين تم تصدير تأشيرة خروج نهائي',
   'is_profile_complete' => 'استكمال بيانات الموظف',
   'border_number' => 'رقم الحدود',
@@ -1794,4 +1794,6 @@ return [
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
   'emp_number' => 'الرقم الوظيفي',
+  'border_no_validated' => ' رقم الحدود موجود سابقا في السطر رقم ',
+  'duplicate_border_no' => '  رقم الحدود مكرر في الملف في السطر رقم ',
 ];

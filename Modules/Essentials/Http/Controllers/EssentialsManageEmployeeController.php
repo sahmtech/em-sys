@@ -1399,7 +1399,7 @@ class EssentialsManageEmployeeController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file'
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file', 'emp_number'
 
             ]);
             // dd($request->file('Iban_file'));
@@ -1410,6 +1410,10 @@ class EssentialsManageEmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
+            }
+
+            if ($user_data['emp_number'] == null) {
+                //auto generate
             }
 
 

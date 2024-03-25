@@ -879,6 +879,8 @@ class EssentialsCardsController extends Controller
                     ->addDays(15)
                     ->endOfDay(),
             ])
+            ->where('is_active', 1)
+            ->latest('created_at')
             ->get();
 
 
@@ -892,13 +894,13 @@ class EssentialsCardsController extends Controller
                 ->addColumn('residency', function ($row) {
                     return $row->number;
                 })
-                ->addColumn('project', function ($row) {
-                    return $row->employee->assignedTo?->contact
-                        ->supplier_business_name ?? null;
-                })
                 ->addColumn('customer_name', function ($row) {
                     return $row->employee->assignedTo?->contact
                         ->supplier_business_name ?? null;
+                })
+                ->addColumn('project', function ($row) {
+                    return $row->employee->assignedTo?->contact
+                        ->salesProjects()->first()->name ?? null;
                 })
                 ->addColumn('end_date', function ($row) {
                     return $row->expiration_date;
@@ -924,8 +926,11 @@ class EssentialsCardsController extends Controller
         $today = today()->format('Y-m-d');
         $residencies = EssentialsOfficialDocument::with(['employee'])
             ->where('type', 'residence_permit')
+            ->where('is_active', 1)
+
             ->whereDate('expiration_date', '<', $today)
             ->orderBy('id', 'desc')
+            ->latest('created_at')
             ->get();
 
         if (request()->ajax()) {
