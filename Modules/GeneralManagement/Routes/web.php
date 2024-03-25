@@ -18,6 +18,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             Route::get('/index', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
             Route::get('/create', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'create'])->name('notifications.create');
             Route::post('/store', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'storeAndSend'])->name('notifications.send');
+            Route::get('/settings', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'settings'])->name('notifications.settings');
+            Route::post('/settings.update', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
         });
         Route::get('/president_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index'])->name('president_requests');
         Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');

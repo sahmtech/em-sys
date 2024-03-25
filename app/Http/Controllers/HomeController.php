@@ -6,6 +6,7 @@ use App\BusinessLocation;
 use App\Charts\CommonChart;
 use App\Currency;
 use App\Media;
+use App\SentNotification;
 use App\SentNotificationsUser;
 use App\Transaction;
 use App\User;
@@ -18,6 +19,7 @@ use App\VariationLocationDetails;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Str;
@@ -366,7 +368,7 @@ class HomeController extends Controller
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => '	far fa-handshake', 'link' =>   route('essentials_word_cards_dashboard')],
             ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' =>   route('employee_affairs_dashboard')],
-            ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
+            ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls_management'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
@@ -430,48 +432,44 @@ class HomeController extends Controller
 
     public function getMyNotifications()
     {
-        $notifications = SentNotificationsUser::with(['sentNotification.createdBy'])->where('user_id', auth()->user()->id)->orderBy('created_at', 'DESC');
+        try {
+            $notifications = SentNotificationsUser::with(['sentNotification.createdBy'])->where('user_id', auth()->user()->id)->orderBy('created_at', 'DESC');
 
-        $notifications_data = [];
-        $icon_classes = ['GeneralManagement' => 'fas fa-user-tie'];
-        foreach ($notifications as $notification) {
-            $sent_notification = json_decode($notification)->sent_notification;
-            $notifications_data[] = [
-                'title' =>  $sent_notification->title ?? '',
-                'msg' => $sent_notification->msg ?? '',
-                'icon_class' =>  $icon_classes[$sent_notification->type] ?? '',
-                'link' => '',
-                'created_at' => Carbon::parse($sent_notification->created_at)->diffForHumans() ?? '',
-                'read_at' => $notification->read_at ?? '',
-            ];
-            //  $tmp = SentNotificationsUser::find($notification->id);
-            if (!($notification->read_at)) {
-                $notification->update(['read_at' => Carbon::now()]);
+            $nots = $notifications->get();
+
+            foreach ($nots as $notification) {
+                if (!($notification->read_at)) {
+                    $notification->update(['read_at' => Carbon::now()]);
+                }
             }
-        }
-        if (request()->ajax()) {
-            return DataTables::of($notifications)
-                ->addColumn('sender', function ($row) {
-                    $tmp =  json_decode($row)->sent_notification->created_by;
-                    return $tmp->first_name . ' ' . $tmp->last_name;
-                })
-                ->addColumn('type', function ($row) {
-                    return json_decode($row)->sent_notification->type;
-                })
-                ->addColumn('title', function ($row) {
-                    return json_decode($row)->sent_notification->title;
-                })
-                ->addColumn('msg', function ($row) {
-                    return json_decode($row)->sent_notification->msg;
-                })
-                ->addColumn('read_at', function ($row) {
-                    return Carbon::parse($row->read_at)->diffForHumans();
-                })
-                ->addColumn('created_at', function ($row) {
-                    return Carbon::parse($row->created_at)->diffForHumans();
-                })
-                ->rawColumns(['sender', 'title', 'msg', 'read_at', 'type', 'created_at'])
-                ->make(true);
+
+            if (request()->ajax()) {
+                return DataTables::of($notifications)
+                    ->addColumn('sender', function ($row) {
+                        $tmp =  json_decode($row)->sent_notification->created_by;
+                        return $tmp->first_name . ' ' . $tmp->last_name;
+                    })
+                    ->addColumn('type', function ($row) {
+                        return json_decode($row)->sent_notification->type;
+                    })
+                    ->addColumn('title', function ($row) {
+                        return json_decode($row)->sent_notification->title;
+                    })
+                    ->addColumn('msg', function ($row) {
+                        return json_decode($row)->sent_notification->msg;
+                    })
+                    ->addColumn('read_at', function ($row) {
+                        return Carbon::parse($row->read_at)->diffForHumans();
+                    })
+                    ->addColumn('created_at', function ($row) {
+                        return Carbon::parse($row->created_at)->diffForHumans();
+                    })
+                    ->rawColumns(['sender', 'title', 'msg', 'read_at', 'type', 'created_at'])
+                    ->make(true);
+            }
+        } catch (Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
         return view('custom_views.my_notifications');
     }
@@ -788,6 +786,7 @@ class HomeController extends Controller
                 'title' =>  $sent_notification->title ?? '',
                 'msg' => $sent_notification->msg ?? '',
                 'icon_class' =>  $icon_classes[$sent_notification->type] ?? '',
+                // 'link' => route('showNotificationModal'),
                 'link' => '',
                 'created_at' => Carbon::parse($sent_notification->created_at)->diffForHumans() ?? '',
                 'read_at' => $notification->read_at ?? '',
@@ -908,6 +907,11 @@ class HomeController extends Controller
         }
 
         return view('home.calendar')->with(compact('all_locations', 'users', 'event_types'));
+    }
+
+    public function showNotificationModal()
+    {
+        return view('custom_views.notification_modal', ['showModal' => true]);
     }
 
     public function showNotification($id)

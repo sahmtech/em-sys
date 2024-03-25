@@ -447,7 +447,7 @@ return [
     'administrative_fees' => 'رسوم إدارية',
     'totalwithworkers' => 'الاجمالي مع عدد العمالة',
     'monthly_costs' => 'التكاليف الشهرية',
-
+    'view & print' => 'عرض وطباعة',
 ];
 
 // ''=>'',

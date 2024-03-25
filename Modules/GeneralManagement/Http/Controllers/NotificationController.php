@@ -4,6 +4,8 @@ namespace Modules\GeneralManagement\Http\Controllers;
 
 use App\Notifications\GeneralNotification;
 use App\SentNotification;
+
+use App\SentNotificationsSetting;
 use App\SentNotificationsUser;
 use App\User;
 use App\Utils\ModuleUtil;
@@ -106,7 +108,7 @@ class NotificationController extends Controller
             }
             $sentNotification = SentNotification::create([
                 'via' => 'dashboard',
-                'type' => 'GeneralManagement',
+                'type' => 'GeneralManagementNotification',
                 'title' => $request->notification_title,
                 'msg' => $request->message,
                 'sender_id' => auth()->user()->id,
@@ -126,6 +128,51 @@ class NotificationController extends Controller
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
+
+    public function settings()
+    {
+        $notificatinoSettings = SentNotificationsSetting::all();
+        return view('generalmanagement::notifications.settings')->with(compact('notificatinoSettings'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $notificatinoSettings = SentNotificationsSetting::all();
+        try {
+            $settings = $request->settings;
+            foreach ($notificatinoSettings as $notificatinoSetting) {
+                $type = $notificatinoSetting->notification_type;
+                $email = $notificatinoSetting->email_enabled;
+                $dashboard = $notificatinoSetting->dashboard_enabled;
+                $new_setting = $settings[$type] ?? null;
+                $updates = [];
+                if ($new_setting) {
+                    $notificatinoSetting->update([
+                        'email_enabled' => isset($new_setting['email_enabled']) ? $new_setting['email_enabled'] : 0,
+                        'dashboard_enabled' => isset($new_setting['dashboard_enabled']) ? $new_setting['dashboard_enabled'] : 0,
+                    ]);
+                } else {
+                    $notificatinoSetting->update([
+                        'email_enabled' => 0,
+                        'dashboard_enabled' => 0,
+                    ]);
+                }
+            }
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
             ];
         } catch (Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

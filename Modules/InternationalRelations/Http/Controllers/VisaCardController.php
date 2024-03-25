@@ -91,16 +91,19 @@ class VisaCardController extends Controller
                 })
 
                 ->addColumn('agency_name', function ($row) {
-                    $sellLines = $row->operationOrder->salesContract->transaction->sell_lines;
+                    $irDelegations = IrDelegation::where('operation_order_id', $row->operationOrder->id)->get();
+                    $agencyNames = $irDelegations->flatMap(function ($delegation) {
+                        $agency = Contact::where('id', $delegation->agency_id)->first();
+                        if ($agency) {
+                            return ["<li>{$agency->supplier_business_name}</li>"];
+                        }
+                        return [];
+                    })->unique()->implode('');
 
-                    $agencyNames = $sellLines->flatMap(function ($sellLine) {
-                        return $sellLine->agencies->pluck('supplier_business_name')->map(function ($name) {
-                            return "<li>$name</li>";
-                        });
-                    })->implode('');
-
-                    return "<ul>$agencyNames</ul>";
+                    return "<ul>{$agencyNames}</ul>";
                 })
+
+
                 ->addColumn('orderQuantity', function ($row) {
                     return optional($row->operationOrder)->orderQuantity;
                 })
@@ -345,13 +348,24 @@ class VisaCardController extends Controller
 
                     ->make(true);
             }
-            $visaCards = IrVisaCard::where('id', $visaId)->with('operationOrder.salesContract.transaction.sell_lines')->first();
-            $sellLineIds = $visaCards->operationOrder->salesContract->transaction->sell_lines->pluck('id')->toArray();
-            // dd($sellLineIds);
+            $visaCard = IrVisaCard::where('id', $visaId)->with('operationOrder')->first();
 
-            $workers = IrProposedLabor::where(function ($query) use ($sellLineIds) {
-                $query->whereNull('transaction_sell_line_id')
-                    ->orWhereIn('transaction_sell_line_id', $sellLineIds);
+            $agencyIds = [];
+
+
+            if ($visaCard && $visaCard->operationOrder) {
+                $operationOrderId = $visaCard->operationOrder->id;
+
+
+                $delegations = IrDelegation::where('operation_order_id', $operationOrderId)->get();
+
+
+                $agencyIds = $delegations->pluck('agency_id')->unique()->toArray();
+            }
+
+            $workers = IrProposedLabor::where(function ($query) use ($agencyIds) {
+                $query->whereNull('agency_id')
+                    ->orWhereIn('agency_id', $agencyIds);
             })
                 ->whereNull('visa_id')
                 ->where('is_accepted_by_worker', 1)
