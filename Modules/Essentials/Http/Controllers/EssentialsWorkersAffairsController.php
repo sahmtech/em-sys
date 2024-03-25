@@ -498,8 +498,9 @@ class EssentialsWorkersAffairsController extends Controller
 
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->where('status', 'valid')
+            ->where('is_active', 1)->first();
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)->value('profession_id');
         // $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
         $deliveryDocument =  FollowupDeliveryDocument::where('user_id', $user->id)->get();
 
@@ -512,6 +513,7 @@ class EssentialsWorkersAffairsController extends Controller
                 $officialDocuments = $user->OfficialDocument;
                 $workerDocuments = $user->proposal_worker?->worker_documents;
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
+
                 if ($contract_doc !== false) {
 
                     $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
@@ -727,12 +729,14 @@ class EssentialsWorkersAffairsController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number',
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'emp_number'
 
             ]);
 
 
-
+            if ($user_data['emp_number'] == null) {
+                //auto generate
+            }
             $business_id = request()->session()->get('user.business_id');
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;

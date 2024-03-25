@@ -1168,19 +1168,18 @@ class EssentialsManageEmployeeController extends Controller
         ) {
             $officialDocuments = $user->OfficialDocument;
 
-            // Retrieve contract document if it exists and add it to the collection
             $contractDoc = $user->contract()->where('is_active', 1)->first();
             if ($contractDoc) {
                 $documents->push($contractDoc);
             }
 
-            // Retrieve qualification document if it exists and add it to the collection
+
             $qualificationDoc = $user->essentials_qualification()->first();
             if ($qualificationDoc) {
                 $documents->push($qualificationDoc);
             }
 
-            // Merge official documents with additional documents
+
             $documents = $documents->merge($officialDocuments);
         }
 
