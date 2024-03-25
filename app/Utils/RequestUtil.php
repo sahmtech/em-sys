@@ -19,6 +19,7 @@ use Modules\CEOManagment\Entities\RequestsType;
 use Modules\Essentials\Entities\ToDo;
 
 use Modules\Essentials\Notifications\NewTaskNotification;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
@@ -58,7 +59,7 @@ class RequestUtil extends Util
 
 
     ////// get requests /////////////////// 
-    public function getRequests($departmentIds, $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment = [])
+    public function getRequests($departmentIds, $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment = [], $isFollowup = false)
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -90,7 +91,17 @@ class RequestUtil extends Util
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->whereIn('employee_type', $ownerTypes)->pluck('reason', 'id');
+
+        if ($isFollowup) {
+            $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
+            if (!($is_admin || $is_manager)) {
+                $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+                $worker_ids = User::whereIn('id', $userIds)->whereIn('assigned_to',  $followupUserAccessProject)->pluck('id')->toArray();
+                $userIds = array_intersect($userIds, $worker_ids);
+            }
+        }
         $users = User::whereIn('id', $userIds)->whereIn('user_type', $ownerTypes)->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+
         $saleProjects = SalesProject::all()->pluck('name', 'id');
 
         $requestsProcess = null;

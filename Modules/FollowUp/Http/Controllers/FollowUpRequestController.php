@@ -61,7 +61,7 @@ class FollowUpRequestController extends Controller
         }
         $ownerTypes = ['worker'];
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'followup::requests.allRequest', $can_change_status, $can_return_request, $can_show_request);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'followup::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, true);
     }
 
     public function store(Request $request)
