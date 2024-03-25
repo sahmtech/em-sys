@@ -1793,5 +1793,5 @@ return [
   'user_type.worker' => 'عمال',
   'user_type.remote_employee' => 'موظفين عن بعد',
   'late_hours' => 'تأخير',
+  'company_name'=>'اسم الشركة',
 ];
-
