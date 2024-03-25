@@ -74,7 +74,15 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
+                        $default_fields = [
+                            $fields[0],
+                            $fields[1],
+                            $fields[2],
+                            $fields[3],
+                            $fields[4],
+                            $fields[5],
+                            $fields[6],
+                        ];
 
                         $default = array_keys($default_fields);
 
@@ -107,8 +115,7 @@
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
                 <div class="col-sm-3">
-                    @if (auth()->user()->hasRole('Admin#1') ||
-                            auth()->user()->can('essentials.add_essentials_workers'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_essentials_workers'))
                         @slot('tool')
                             <div class="box-tools">
                                 <a class="btn btn-block btn-primary" href="{{ route('add_workers_affairs') }}">
@@ -128,15 +135,20 @@
                             <td class="table-td-width-100px">@lang('essentials::lang.employee_number')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
+
+
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
+
+
                             <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
-                            
+                            <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
 
-                            {{--  <th class="table-td-width-100px">@lang('housingmovements::lang.building_name')</th>
-                            <th class="table-td-width-100px">@lang('housingmovements::lang.building_address')</th>
-                            <th class="table-td-width-100px">@lang('housingmovements::lang.room_number')</th>
---}}
 
 
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
@@ -147,13 +159,14 @@
                             <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
                             <td class="table-td-width-100px">@lang('business.email')</td>
-                         
+
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
 
                             <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
@@ -182,7 +195,7 @@
 
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
-                serverSide: false,
+                serverSide: true,
 
                 ajax: {
 
@@ -212,8 +225,7 @@
                     }
                 },
 
-                columns: [
-                    {
+                columns: [{
                         "data": "worker_id"
                     },
                     {
@@ -232,7 +244,8 @@
                     {
                         "data": "emp_number"
                     },
-                    
+
+
                     {
                         data: 'worker',
                         render: function(data, type, row) {
@@ -246,7 +259,21 @@
                         data: 'id_proof_number'
                     },
                     {
+                        "data": "company_name"
+                    },
+                    {
+                        data: 'passport_number'
+                    },
+                    {
+                        data: 'passport_expire_date'
+                    },
+                    {
                         data: 'border_no'
+                    }, {
+                        data: 'dob'
+                    },
+                    {
+                        data: 'insurance'
                     },
                     {
                         data: 'contact_name'
@@ -296,7 +323,7 @@
                     {
                         data: "email"
                     },
-                
+
                     {
                         data: "profession",
                         name: 'profession'
@@ -349,7 +376,9 @@
                     {
                         data: 'marital_status'
                     },
-
+                    {
+                        data: 'blood_group'
+                    },
                     {
                         data: 'bank_code',
 
@@ -373,10 +402,11 @@
                 $('#doc_filter_date_range').val('');
                 reloadDataTable();
             });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter,#select_company_id').on('change',
-                function() {
-                    workers_table.ajax.reload();
-                });
+            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter,#select_company_id')
+                .on('change',
+                    function() {
+                        workers_table.ajax.reload();
+                    });
         });
         chooseFields = function() {
             var selectedOptions = $('#choose_fields_select').val();

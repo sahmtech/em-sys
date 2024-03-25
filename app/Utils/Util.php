@@ -1287,45 +1287,118 @@ class Util
         ];
     }
 
-    public function getWorkerFields()
+    public function getWorkerFields_essentials()
     {
         return  [
             __('followup::lang.name'),
             __('followup::lang.eqama'),
             __('followup::lang.project_name'),
             __('followup::lang.nationality'),
+            __('followup::lang.passport_numer'),
+            __('followup::lang.passport_expire_date'),
+            __('followup::lang.border_no'),
             __('followup::lang.eqama_end_date'),
             __('followup::lang.admissions_date'),
             __('essentials::lang.admissions_type'),
-
-            __('essentials::lang.passport_expire_date'),
-            __('essentials::lang.passport_number'),
-            __('essentials::lang.company_id'),
-
-
-            __('essentials::lang.border_no'),
-            __('essentials::lang.insurance'),
-
-            __('followup::lang.profession'),
-            __('followup::lang.total_salary'),
+            __('essentials::lang.admissions_status'),
             __('followup::lang.contract_end_date'),
-            __('followup::lang.gender'),
-            __('followup::lang.bank_code'),
             __('essentials::lang.mobile_number'),
             __('business.email'),
-            __('essentials::lang.admissions_status'),
-
-
             __('followup::lang.department'),
-
+            __('followup::lang.profession'),
             __('followup::lang.specialization'),
             __('followup::lang.status'),
             __('followup::lang.Basic_salary'),
-
-
+            __('followup::lang.total_salary'),
+            __('followup::lang.gender'),
             __('followup::lang.marital_status'),
             __('followup::lang.blood_group'),
+            __('followup::lang.bank_code'),
+            __('essentials::lang.travel_categorie'),
 
+        ];
+    }
+
+    public function getWorkerFields_hrm()
+    {
+        return  [
+            __('#'),
+            __('essentials::lang.profile_image'),
+            __('essentials::lang.employee_number'),
+            __('followup::lang.name'),
+            __('followup::lang.eqama'),
+            __('essentials::lang.company_name'),
+
+            __('followup::lang.passport_numer'),
+            __('followup::lang.passport_expire_date'),
+            __('essentials::lang.border_number'),
+            __('essentials::lang.dob'),
+            __('followup::lang.insurance'),
+
+
+            __('followup::lang.project_name'),
+            __('followup::lang.nationality'),
+            __('followup::lang.eqama_end_date'),
+            __('followup::lang.admissions_date'),
+            __('essentials::lang.admissions_type'),
+            __('essentials::lang.admissions_status'),
+            __('followup::lang.contract_end_date'),
+            __('essentials::lang.mobile_number'),
+            __('business.email'),
+            __('followup::lang.profession'),
+            __('followup::lang.status'),
+            __('followup::lang.Basic_salary'),
+            __('followup::lang.total_salary'),
+            __('followup::lang.gender'),
+            __('followup::lang.marital_status'),
+
+            __('followup::lang.blood_group'),
+            __('followup::lang.bank_code'),
+            __('essentials::lang.travel_categorie'),
+
+        ];
+    }
+
+    public function getWorkerFields_housing()
+    {
+        return  [
+            __('#'),
+            __('essentials::lang.profile_image'),
+            __('essentials::lang.employee_number'),
+            __('followup::lang.name'),
+            __('followup::lang.eqama'),
+            __('essentials::lang.company_name'),
+
+            __('followup::lang.passport_numer'),
+            __('followup::lang.passport_expire_date'),
+            __('essentials::lang.border_number'),
+            __('essentials::lang.dob'),
+            __('followup::lang.insurance'),
+
+
+            __('followup::lang.project_name'),
+            __('followup::lang.nationality'),
+
+            __('housingmovements::lang.building_name'),
+            __('housingmovements::lang.building_address'),
+            __('housingmovements::lang.room_number'),
+
+            __('followup::lang.eqama_end_date'),
+            __('followup::lang.admissions_date'),
+            __('essentials::lang.admissions_type'),
+            __('essentials::lang.admissions_status'),
+            __('followup::lang.contract_end_date'),
+            __('essentials::lang.mobile_number'),
+            __('business.email'),
+            __('followup::lang.profession'),
+            __('followup::lang.status'),
+            __('followup::lang.Basic_salary'),
+            __('followup::lang.total_salary'),
+            __('followup::lang.gender'),
+            __('followup::lang.marital_status'),
+
+            __('followup::lang.blood_group'),
+            __('followup::lang.bank_code'),
             __('essentials::lang.travel_categorie'),
 
         ];

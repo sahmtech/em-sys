@@ -1405,6 +1405,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'essentials.show_qualification_file',
+                        'label' => __('essentials::lang.show_qualification_file'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.delete_employee_qualifications',
                         'label' => __('essentials::lang.delete_employee_qualifications'),
                         'default' => false,

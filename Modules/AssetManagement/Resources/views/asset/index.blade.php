@@ -13,7 +13,7 @@
 		@component('components.filters', ['title' => __('report.filters')])
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('asset_list_filter_location_id',  __('purchase.business_location') . ':') !!}
+                {!! Form::label('asset_list_filter_location_id',  __('assetmanagement::lang.companies') . ':') !!}
                 {!! Form::select('asset_list_filter_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
             </div>
         </div>

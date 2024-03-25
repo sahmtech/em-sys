@@ -305,6 +305,7 @@ $(document).ready(function () {
 
 //Default settings for daterangePicker
 var ranges = {};
+ranges[LANG.undefined] = [moment("1900-01-01"), moment("2099-12-31")];
 ranges[LANG.today] = [moment(), moment()];
 ranges[LANG.yesterday] = [moment().subtract(1, 'days'), moment().subtract(1, 'days')];
 ranges[LANG.last_7_days] = [moment().subtract(6, 'days'), moment()];
@@ -331,8 +332,8 @@ ranges[LANG.last_financial_year] = [
 
 var dateRangeSettings = {
     ranges: ranges,
-    startDate: financial_year.start,
-    endDate: financial_year.end,
+    startDate: moment("1900-01-01"),
+    endDate: moment("2099-12-31"),
     locale: {
         cancelLabel: LANG.clear,
         applyLabel: LANG.apply,

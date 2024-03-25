@@ -61,7 +61,15 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
+                        $default_fields = [
+                            $fields[0],
+                            $fields[1],
+                            $fields[2],
+                            $fields[3],
+                            $fields[4],
+                            $fields[5],
+                            $fields[6],
+                        ];
 
                         $default = array_keys($default_fields);
 
@@ -96,40 +104,44 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            {{-- <th>@lang('followup::lang.name')</th>
-                            <th>@lang('followup::lang.eqama')</th>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('followup::lang.essentials_salary')</th>
-
-                            <th>@lang('followup::lang.nationality')</th>
-                            <th>@lang('followup::lang.eqama_end_date')</th>
-                            <th>@lang('followup::lang.contract_end_date')</th> --}}
-
+                            <td>#</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.employee_number')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
+
+
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
+
+
+                            <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
-                            {{--  <th class="table-td-width-100px">@lang('housingmovements::lang.building_name')</th>
-                            <th class="table-td-width-100px">@lang('housingmovements::lang.building_address')</th>
-                            <th class="table-td-width-100px">@lang('housingmovements::lang.room_number')</th>
- --}}
+
+
 
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
                             <td class="table-td-width-100px">@lang('business.email')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.department')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.specialization')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
+
                             <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
 
@@ -158,7 +170,7 @@
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
                 serverSide: true,
-
+                
                 ajax: {
 
                     url: "{{ route('get-essentials-workers') }}",
@@ -185,7 +197,28 @@
                     }
                 },
 
-                columns: [{
+                columns: [
+                    {
+                        "data": "worker_id"
+                    },
+                    {
+                        "data": "profile_image",
+                        "render": function(data, type, row) {
+                            if (data) {
+
+                                var imageUrl = '/uploads/' + data;
+                                return '<img src="' + imageUrl +
+                                    '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                            } else {
+                                return '@lang('essentials::lang.no_image')';
+                            }
+                        }
+                    },
+                    {
+                        "data": "emp_number"
+                    },
+
+                     {
                         data: 'worker',
                         render: function(data, type, row) {
                             @can('essentials.show_essentials_worker')
@@ -200,7 +233,24 @@
                     },
 
                     {
-                        data: 'residence_permit'
+                        data: 'id_proof_number'
+                    },
+                    {
+                        "data": "company_name"
+                    },
+                    {
+                        data: 'passport_number'
+                    },
+                    {
+                        data: 'passport_expire_date'
+                    },
+                    {
+                        data: 'border_no'
+                    }, {
+                        data: 'dob'
+                    },
+                    {
+                        data: 'insurance'
                     },
                     {
                         data: 'contact_name'
@@ -208,15 +258,8 @@
                     {
                         data: 'nationality'
                     },
-                    // {
-                    //     data:'building'
-                    // },
-                    // {
-                    //     data:'building_address'
-                    // },
-                    // {
-                    //     data:'room_number'
-                    // },
+
+
                     {
                         data: 'residence_permit_expiration'
                     },
@@ -226,6 +269,7 @@
                     {
                         data: 'admissions_type',
                         render: function(data, type, row) {
+
                             if (data === 'first_time') {
                                 return '@lang('essentials::lang.first_time')';
                             } else if (data === 'after_vac') {
@@ -251,19 +295,17 @@
                         data: 'contract_end_date'
                     },
                     {
-                        "data": "contact_number"
-                    }, {
-                        "data": "email"
-                    }, {
-                        "data": "essentials_department_id"
-                    }, {
-                        "data": "profession",
-                        name: 'profession'
+                        data: "contact_number"
                     },
                     {
-                        "data": "specialization",
-                        name: 'specialization'
+                        data: "email"
                     },
+
+                    {
+                        data: "profession",
+                        name: 'profession'
+                    },
+
                     {
                         data: 'status',
                         render: function(data, type, row) {

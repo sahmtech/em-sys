@@ -81,7 +81,7 @@ class EssentialsWorkersAffairsController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
-        $fields = $this->moduleUtil->getWorkerFields();
+        $fields = $this->moduleUtil->getWorkerFields_hrm();
         $companies_ids = Company::pluck('id')->toArray();
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -168,6 +168,32 @@ class EssentialsWorkersAffairsController extends Controller
                         return ' ';
                     }
                 })
+                ->addColumn('passport_number', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->number ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+                ->addColumn('passport_expire_date', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })->addColumn('company_name', function ($user) {
+                    return optional($user->company)->name ?? ' ';
+                })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -205,6 +231,16 @@ class EssentialsWorkersAffairsController extends Controller
 
                     return $user->assignedTo->name ?? '';
                 })
+                ->addColumn('dob', function ($user) {
+
+                    return $user->dob ?? '';
+                })->addColumn('insurance', function ($user) {
+                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                        return __('followup::lang.has_insurance');
+                    } else {
+                        return __('followup::lang.has_not_insurance');
+                    }
+                })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -216,7 +252,7 @@ class EssentialsWorkersAffairsController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 
@@ -400,6 +436,12 @@ class EssentialsWorkersAffairsController extends Controller
             $request['user_type'] = 'worker';
             $existingprofnumber = null;
             $existingBordernumber = null;
+            $emp_number = request()->input('emp_number');
+            if ($emp_number) {
+                $request['emp_number'] = $emp_number;
+            } else {
+                //auto generate
+            }
 
             if ($request->input('id_proof_number')) {
                 $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
@@ -492,8 +534,9 @@ class EssentialsWorkersAffairsController extends Controller
 
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->where('status', 'valid')
+            ->where('is_active', 1)->first();
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)->value('profession_id');
         // $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
         $deliveryDocument =  FollowupDeliveryDocument::where('user_id', $user->id)->get();
 
@@ -503,28 +546,45 @@ class EssentialsWorkersAffairsController extends Controller
             if (!empty($user->proposal_worker_id)) {
 
 
-                $officialDocuments = $user->OfficialDocument;
+                $officialDocuments = $user->OfficialDocument()->where('is_active', 1);
                 $workerDocuments = $user->proposal_worker?->worker_documents;
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
+                $qualificationDoc = $user->essentials_qualification()->first();
+
                 if ($contract_doc !== false) {
 
                     $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
-                } else {
-
-                    $documents = $officialDocuments->merge($workerDocuments);
                 }
+
+                if ($qualificationDoc) {
+                    $documents = $officialDocuments->merge([$qualificationDoc])->merge($workerDocuments);
+                }
+
+
+                $documents = $officialDocuments->merge($workerDocuments);
             } else {
-                $officialDocuments = $user->OfficialDocument;
+
+                $officialDocuments = $user->OfficialDocument()->where('is_active', 1)->get(); // Load documents into a collection
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
+                $qualificationDoc = $user->essentials_qualification()->first();
 
+                $documents = collect(); // Create an empty collection
 
-                if ($contract_doc !== false) {
+                if (
+                    $contract_doc !== null
+                ) {
+                    $documents->push($contract_doc); // Push contract document into the collection
+                }
 
-                    $documents = $officialDocuments->merge([$contract_doc]);
-                } else {
-                    $documents = $user->OfficialDocument;
+                if ($qualificationDoc !== null) {
+                    $documents->push($qualificationDoc); // Push qualification document into the collection
+                }
+
+                if ($officialDocuments !== null) {
+                    $documents = $documents->merge($officialDocuments); // Merge official documents with other documents
                 }
             }
+            // dd($documents);
         }
 
 
@@ -721,12 +781,14 @@ class EssentialsWorkersAffairsController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number',
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'emp_number'
 
             ]);
 
 
-
+            if ($user_data['emp_number'] == null) {
+                //auto generate
+            }
             $business_id = request()->session()->get('user.business_id');
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
