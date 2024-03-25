@@ -107,7 +107,7 @@ return [
   "clock_in_clock_out" => "الحضور والانصراف",
   "profile_info" => "معلومات الملف الشخصي",
   "dob" => "تاريخ الميلاد",
-  'cancel_camera'=>'اغلاق الكاميرا',
+  'cancel_camera' => 'اغلاق الكاميرا',
   "married" => "متزوج",
   "unmarried" => "اعزب",
   "marital_status" => "الحالة الإجتماعية",
@@ -1793,5 +1793,8 @@ return [
   'user_type.worker' => 'عمال',
   'user_type.remote_employee' => 'موظفين عن بعد',
   'late_hours' => 'تأخير',
-  'company_name'=>'اسم الشركة',
+  'company_name' => 'اسم الشركة',
+  'doc_exists_filter' => 'مرفق الوثيقة',
+  'doc_exists' => 'يوجد مرفق',
+  'doc_doesnt_exist' => 'لايوجد مرفق',
 ];

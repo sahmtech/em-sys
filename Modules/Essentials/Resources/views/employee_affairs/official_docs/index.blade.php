@@ -76,6 +76,17 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="doc_exists_filter">@lang('essentials::lang.doc_exists_filter'):</label>
+                            <select class="form-control select2" name="doc_exists_filter" id="doc_exists_filter"
+                                style="width: 100%;">
+                                <option value="all">@lang('lang_v1.all')</option>
+                                <option value="exists">@lang('essentials::lang.doc_exists')</option>
+                                <option value="dosent_exist">@lang('essentials::lang.doc_doesnt_exist')</option>
+                            </select>
+                        </div>
+                    </div>
                 @endcomponent
             </div>
         </div>
@@ -99,6 +110,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.doc_owner')</th>
+                                    <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('essentials::lang.doc_number')</th>
                                     <th>@lang('essentials::lang.doc_type')</th>
                                     <th>@lang('essentials::lang.issue_date')</th>
@@ -394,6 +406,9 @@
                         if ($('#status_filter').val() && $('#status_filter').val() != 'all') {
                             d.status = $('#status_filter').val();
                         }
+                        if ($('#doc_exists_filter').val() && $('#doc_exists_filter').val() != 'all') {
+                            d.doc_exists = $('#doc_exists_filter').val();
+                        }
                         if ($('#doc_type_filter').val() && $('#doc_type_filter').val() != 'all') {
                             d.doc_type = $('#doc_type_filter').val();
                         }
@@ -413,6 +428,9 @@
                 columns: [{
                         data: 'user',
 
+                    },
+                    {
+                        data: 'id_proof_number'
                     },
                     {
                         data: 'number'
@@ -478,8 +496,9 @@
             });
 
             $(document).on('change',
-                '#user_type_filter, #user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter',
+                '#doc_exists_filter, #user_type_filter, #user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter',
                 function() {
+
                     reloadDataTable();
                 });
 
