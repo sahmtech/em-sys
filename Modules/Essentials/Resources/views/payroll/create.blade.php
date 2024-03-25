@@ -70,9 +70,20 @@
                         <tr>
                             <th style="width: 50px;">#</th>
                             <th style="width:100px;">@lang('essentials::lang.name')</th>
+
                             <th style="width:75px;">@lang('essentials::lang.nationality')</th>
-                            <th style="width:100px;">@lang('essentials::lang.identity_card_number')</th>
-                            <th style="width:75px;">@lang('essentials::lang.profession')</th>
+
+                            @if ($user_type == 'worker')
+                                <th style="width:100px;">@lang('essentials::lang.residence_permit')</th>
+                                <th style="width:75px;">@lang('essentials::lang.project_name')</th>
+                                <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
+                            @endif
+                            @if ($user_type != 'worker')
+                                <th style="width:100px;">@lang('essentials::lang.identity_card_number')</th>
+                            @endif
+                            @if ($user_type != 'remote_employee' && $user_type != 'worker')
+                                <th style="width:75px;">@lang('essentials::lang.profession')</th>
+                            @endif
                             <th style="width:75px;">@lang('essentials::lang.work_days')</th>
                             <th style="width:75px;">@lang('essentials::lang.salary')</th>
                             <th style="width:75px;">@lang('essentials::lang.housing_allowance')</th>
@@ -81,15 +92,22 @@
                             <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total')</th>
                             <th style="width:75px;">@lang('essentials::lang.violations')</th>
                             <th style="width:75px;">@lang('essentials::lang.absence')</th>
+                            <th style="width:75px;">@lang('essentials::lang.late_hours')</th>
                             <th style="width:75px;">@lang('essentials::lang.other_deductions')</th>
                             <th style="width:75px;">@lang('essentials::lang.loan')</th>
                             <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_deduction')</th>
-                            <th style="width:75px;">@lang('essentials::lang.over_time_hours')</th>
-                            <th style="width:75px;">@lang('essentials::lang.additional_addition')</th>
-                            <th style="width:75px;">@lang('essentials::lang.other_additions')</th>
-                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_additions')</th>
+                            @if ($user_type != 'remote_employee')
+                                <th style="width:75px;">@lang('essentials::lang.over_time_hours')</th>
+                                <th style="width:75px;">@lang('essentials::lang.additional_addition')</th>
+                                @if ($user_type != 'worker')
+                                    <th style="width:75px;">@lang('essentials::lang.other_additions')</th>
+                                @endif
+                                <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_additions')</th>
+                            @endif
                             <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.final_salary')</th>
-                            <th style="width:75px;">@lang('essentials::lang.payment_method')</th>
+                            @if ($user_type != 'remote_employee')
+                                <th style="width:75px;">@lang('essentials::lang.payment_method')</th>
+                            @endif
                             <th style="width:75px;">@lang('essentials::lang.notes')</th>
                         </tr>
                     </thead>
@@ -124,13 +142,31 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                <td name="profession">{{ $payroll['profession'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][profession]', $payroll['profession'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'profession',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
+                                @if ($user_type == 'worker')
+                                    <td name="project_name">{{ $payroll['project_name'] }}
+                                        {!! Form::hidden('payrolls[' . $index . '][project_name]', $payroll['project_name'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'project_name',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                    </td>
+                                    <td name="region">{{ $payroll['region'] }}
+                                        {!! Form::hidden('payrolls[' . $index . '][region]', $payroll['region'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'region',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                    </td>
+                                @endif
+                                @if ($user_type != 'remote_employee' && $user_type != 'worker')
+                                    <td name="profession">{{ $payroll['profession'] }}
+                                        {!! Form::hidden('payrolls[' . $index . '][profession]', $payroll['profession'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'profession',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                    </td>
+                                @endif
                                 <td class="editable" name="work_days"> <span contenteditable="true"
                                         data-index="{{ $index }}"
                                         data-field="work_days">{{ $payroll['work_days'] }}</span>
@@ -202,6 +238,19 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
+                                <td class="editable" name="late"> <span contenteditable="true"
+                                        data-index="{{ $index }}" data-field="late">{{ $payroll['late'] }}</span>
+                                    {!! Form::hidden('payrolls[' . $index . '][late]', $payroll['late'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'late',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                    {!! Form::hidden('payrolls[' . $index . '][late_deduction]', $payroll['late_deduction'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'late_deduction',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
                                 <td class="editable" name="other_deductions"> <span contenteditable="true"
                                         data-index="{{ $index }}"
                                         data-field="other_deductions">{{ $payroll['other_deductions'] }}</span>
@@ -228,47 +277,52 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                <td class="editable" name="over_time_hours"> <span contenteditable="true"
-                                        data-index="{{ $index }}"
-                                        data-field="over_time_hours">{{ $payroll['over_time_hours'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][over_time_hours]', $payroll['over_time_hours'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'over_time_hours',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                    {!! Form::hidden('payrolls[' . $index . '][over_time_hours_addition]', $payroll['over_time_hours_addition'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'over_time_hours_addition',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td class="editable" name="additional_addition"> <span contenteditable="true"
-                                        data-index="{{ $index }}"
-                                        data-field="additional_addition">{{ $payroll['additional_addition'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][additional_addition]', $payroll['additional_addition'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'additional_addition',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td class="editable" name="other_additions"> <span contenteditable="true"
-                                        data-index="{{ $index }}"
-                                        data-field="other_additions">{{ $payroll['other_additions'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][other_additions]', $payroll['other_additions'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'other_additions',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td style="background-color: rgb(185, 182, 182);" name="total_additions"><span
-                                        data-index="{{ $index }}"
-                                        data-field="total_additions">{{ $payroll['total_additions'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][total_additions]', $payroll['total_additions'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'total_additions',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
+                                @if ($user_type != 'remote_employee')
+                                    <td class="editable" name="over_time_hours"> <span contenteditable="true"
+                                            data-index="{{ $index }}"
+                                            data-field="over_time_hours">{{ $payroll['over_time_hours'] }}</span>
+                                        {!! Form::hidden('payrolls[' . $index . '][over_time_hours]', $payroll['over_time_hours'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'over_time_hours',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                        {!! Form::hidden('payrolls[' . $index . '][over_time_hours_addition]', $payroll['over_time_hours_addition'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'over_time_hours_addition',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                    </td>
+
+                                    <td class="editable" name="additional_addition"> <span contenteditable="true"
+                                            data-index="{{ $index }}"
+                                            data-field="additional_addition">{{ $payroll['additional_addition'] }}</span>
+                                        {!! Form::hidden('payrolls[' . $index . '][additional_addition]', $payroll['additional_addition'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'additional_addition',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                    </td>
+                                    @if ($user_type != 'worker')
+                                        <td class="editable" name="other_additions"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="other_additions">{{ $payroll['other_additions'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][other_additions]', $payroll['other_additions'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'other_additions',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                    @endif
+                                    <td style="background-color: rgb(185, 182, 182);" name="total_additions"><span
+                                            data-index="{{ $index }}"
+                                            data-field="total_additions">{{ $payroll['total_additions'] }}</span>
+                                        {!! Form::hidden('payrolls[' . $index . '][total_additions]', $payroll['total_additions'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'total_additions',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                    </td>
+                                @endif
                                 <td style="background-color: rgb(185, 182, 182);" name="final_salary"><span
                                         data-index="{{ $index }}"
                                         data-field="final_salary">{{ $payroll['final_salary'] }}</span>
@@ -278,15 +332,17 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                <td class="editable" name="payment_method"> <span contenteditable="true"
-                                        data-index="{{ $index }}"
-                                        data-field="payment_method">{{ $payroll['payment_method'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][payment_method]', $payroll['payment_method'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'payment_method',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
+                                @if ($user_type != 'remote_employee')
+                                    <td class="editable" name="payment_method"> <span contenteditable="true"
+                                            data-index="{{ $index }}"
+                                            data-field="payment_method">{{ $payroll['payment_method'] }}</span>
+                                        {!! Form::hidden('payrolls[' . $index . '][payment_method]', $payroll['payment_method'], [
+                                            'data-index' => $index,
+                                            'data-field' => 'payment_method',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+                                    </td>
+                                @endif
                                 <td class="editable" name="notes"> <span contenteditable="true"
                                         data-index="{{ $index }}" data-field="notes">{{ $payroll['notes'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][notes]', $payroll['notes'], [
@@ -303,8 +359,16 @@
                             <td colspan="2">
                                 @lang('essentials::lang.the_total')
                             </td>
-                            <td>
-                            </td>
+                            @if ($user_type != 'remote_employee' && $user_type != 'worker')
+                                <td>
+                                </td>
+                            @endif
+                            @if ($user_type == 'worker')
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                            @endif
                             <td>
                             </td>
                             <td>
@@ -327,25 +391,33 @@
                             </td>
                             <td name="the_total_absence">
                             </td>
+                            <td name="the_total_late">
+                            </td>
                             <td name="the_total_other_deductions">
                             </td>
                             <td name="the_total_loan">
                             </td>
                             <td name="the_total_total_deduction">
                             </td>
-                            <td name="the_total_over_time_hours">
-                            </td>
-                            <td name="the_total_additional_addition">
-                            </td>
-                            <td name="the_total_other_additions">
-                            </td>
-                            <td name="the_total_total_additions">
-                            </td>
+                            @if ($user_type != 'remote_employee')
+                                <td name="the_total_over_time_hours">
+                                </td>
+                                <td name="the_total_additional_addition">
+                                </td>
+                                @if ($user_type != 'worker')
+                                    <td name="the_total_other_additions">
+                                    </td>
+                                @endif
+                                <td name="the_total_total_additions">
+                                </td>
+                            @endif
                             <td style="  color: red;" name="the_total_final_salary">
 
                             </td>
-                            <td>
-                            </td>
+                            @if ($user_type != 'remote_employee')
+                                <td>
+                                </td>
+                            @endif
                             <td>
                             </td>
                         </tr>
@@ -365,6 +437,8 @@
 
 @section('javascript')
     <script>
+        var is_remote = {!! json_encode($user_type) !!} == "remote_employee" ? true : false;
+        var is_worker = {!! json_encode($user_type) !!} == "worker" ? true : false;
         $(document).ready(function() {
 
             $('td.editable span[contenteditable="true"]').on('input', function() {
@@ -376,6 +450,9 @@
                     newValue);
                 if (field == 'absence') {
                     updateAbsenceDeduction(index);
+                }
+                if (field == 'late') {
+                    updateLateDeduction(index);
                 }
                 if (field == 'over_time_hours') {
                     updateOverTimeHoursAddition(index);
@@ -416,9 +493,22 @@
                 "'][data-field='total']").val()) || 0;
             var work_days = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='work_days']").val()) || 0;
-            var absence_deduction = absence * (total / work_days / 8);
+            var absence_deduction = absence * (total / work_days);
             $("span[data-index='" + index + "'][data-field='absence_deduction']").text(absence_deduction.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='absence_deduction']").val(absence_deduction
+                .toFixed(0));
+        }
+
+        function updateLateDeduction(index) {
+            var late = parseFloat($("input.form-hidden[data-index='" + index +
+                "'][data-field='late']").val()) || 0;
+            var total = parseFloat($("input.form-hidden[data-index='" + index +
+                "'][data-field='total']").val()) || 0;
+            var work_days = parseFloat($("input.form-hidden[data-index='" + index +
+                "'][data-field='work_days']").val()) || 0;
+            var late_deduction = late * (total / work_days / 8);
+            $("span[data-index='" + index + "'][data-field='late_deduction']").text(late_deduction.toFixed(0));
+            $("input.form-hidden[data-index='" + index + "'][data-field='late_deduction']").val(late_deduction
                 .toFixed(0));
         }
 
@@ -473,33 +563,40 @@
 
             var absence_deduction = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='absence_deduction']").val()) || 0;
-
+            var late_deduction = parseFloat($("input.form-hidden[data-index='" + index +
+                "'][data-field='late_deduction']").val()) || 0;
             var other_deductions = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='other_deductions']").val()) || 0;
             var loan = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='loan']").val()) || 0;
 
-            var total_deduction = violations + absence_deduction + other_deductions + loan;
+            var total_deduction = violations + absence_deduction + late_deduction + other_deductions + loan;
             $("span[data-index='" + index + "'][data-field='total_deduction']").text(total_deduction.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='total_deduction']").val(total_deduction.toFixed(
                 0));
         }
 
         function updateTotalAdditions(index) {
-            var over_time_hours_addition = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='over_time_hours_addition']").val()) || 0;
+            if (!is_remote) {
+                var over_time_hours_addition = parseFloat($("input.form-hidden[data-index='" + index +
+                    "'][data-field='over_time_hours_addition']").val()) || 0;
 
-            var additional_addition = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='additional_addition']").val()) || 0;
+                var additional_addition = parseFloat($("input.form-hidden[data-index='" + index +
+                    "'][data-field='additional_addition']").val()) || 0;
+                var other_additions = 0;
+                if (!is_worker) {
+                    other_additions = parseFloat($("input.form-hidden[data-index='" + index +
+                        "'][data-field='other_additions']").val()) || 0;
+                }
 
-            var other_additions = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='other_additions']").val()) || 0;
 
 
-            var total_additions = over_time_hours_addition + additional_addition + other_additions;
-            $("span[data-index='" + index + "'][data-field='total_additions']").text(total_additions.toFixed(0));
-            $("input.form-hidden[data-index='" + index + "'][data-field='total_additions']").val(total_additions.toFixed(
-                0));
+                var total_additions = over_time_hours_addition + additional_addition + other_additions;
+                $("span[data-index='" + index + "'][data-field='total_additions']").text(total_additions.toFixed(0));
+                $("input.form-hidden[data-index='" + index + "'][data-field='total_additions']").val(total_additions
+                    .toFixed(
+                        0));
+            }
         }
 
         function updateFinalSalary(index) {
@@ -602,35 +699,43 @@
         };
 
         function updateTheTotalOverTimeHours() {
-            var value = 0;
-            $("input.form-hidden[data-field='over_time_hours']").each(function() {
-                value += parseFloat($(this).val()) || 0;
-            });
-            $('td[name="the_total_over_time_hours"]').text(value);
+            if (!is_remote) {
+                var value = 0;
+                $("input.form-hidden[data-field='over_time_hours']").each(function() {
+                    value += parseFloat($(this).val()) || 0;
+                });
+                $('td[name="the_total_over_time_hours"]').text(value);
+            }
         };
 
         function updateTheTotalAdditionalAddition() {
-            var value = 0;
-            $("input.form-hidden[data-field='additional_addition']").each(function() {
-                value += parseFloat($(this).val()) || 0;
-            });
-            $('td[name="the_total_additional_addition"]').text(value);
+            if (!is_remote) {
+                var value = 0;
+                $("input.form-hidden[data-field='additional_addition']").each(function() {
+                    value += parseFloat($(this).val()) || 0;
+                });
+                $('td[name="the_total_additional_addition"]').text(value);
+            }
         };
 
         function updateTheTotalOtherAdditions() {
-            var value = 0;
-            $("input.form-hidden[data-field='other_additions']").each(function() {
-                value += parseFloat($(this).val()) || 0;
-            });
-            $('td[name="the_total_other_additions"]').text(value);
+            if (!is_remote && !is_worker) {
+                var value = 0;
+                $("input.form-hidden[data-field='other_additions']").each(function() {
+                    value += parseFloat($(this).val()) || 0;
+                });
+                $('td[name="the_total_other_additions"]').text(value);
+            }
         };
 
         function updateTheTotalTotalAdditions() {
-            var value = 0;
-            $("input.form-hidden[data-field='total_additions']").each(function() {
-                value += parseFloat($(this).val()) || 0;
-            });
-            $('td[name="the_total_total_additions"]').text(value);
+            if (!is_remote) {
+                var value = 0;
+                $("input.form-hidden[data-field='total_additions']").each(function() {
+                    value += parseFloat($(this).val()) || 0;
+                });
+                $('td[name="the_total_total_additions"]').text(value);
+            }
         };
 
         function updateTheTotalFinalSalary() {

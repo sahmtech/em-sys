@@ -1793,7 +1793,15 @@ return [
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
+
   'emp_number' => 'الرقم الوظيفي',
   'border_no_validated' => ' رقم الحدود موجود سابقا في السطر رقم ',
   'duplicate_border_no' => '  رقم الحدود مكرر في الملف في السطر رقم ',
+
+  'user_type.employee' => 'موظفين',
+  'user_type.worker' => 'عمال',
+  'user_type.remote_employee' => 'موظفين عن بعد',
+  'late_hours' => 'تأخير',
+  'company_name'=>'اسم الشركة',
 ];
+
