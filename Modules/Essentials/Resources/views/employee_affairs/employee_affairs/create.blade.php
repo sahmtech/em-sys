@@ -51,8 +51,30 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('email', __('essentials::lang.emp_numer') . ':') !!}
-                            {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.emp_numer')]) !!}
+                            {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
+                            {!! Form::text('emp_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.emp_number')]) !!}
+                        </div>
+                    </div>
+
+                     <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('user_type', __('user.user_type') . ':*') !!}
+                            {!! Form::select(
+                                'user_type',
+                                [
+                                    'manager' => __('user.manager'),
+                                    'employee' => __('user.employee'),
+                                   
+                                ],
+                                null,
+                                [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px',
+                                    'required',
+                                    'id' => 'userTypeSelect',
+                                    'placeholder' => __('user.user_type'),
+                                ],
+                            ) !!}
                         </div>
                     </div>
 
@@ -71,27 +93,7 @@
                
                 </div>
 @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('user_type', __('user.user_type') . ':*') !!}
-                            {!! Form::select(
-                                'user_type',
-                                [
-                                    'manager' => __('user.manager'),
-                                    'employee' => __('user.employee'),
-                                   
-                                ],
-                                null,
-                                [
-                                    'class' => 'form-control',
-                                    'style' => 'height:40px',
-                                    'required',
-                                    'id' => 'userTypeSelect',
-                                    'placeholder' => __('user.user_type'),
-                                ],
-                            ) !!}
-                        </div>
-                    </div>
+                   
 
                   
                 </div>

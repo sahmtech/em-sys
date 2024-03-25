@@ -1000,6 +1000,12 @@ class EssentialsManageEmployeeController extends Controller
 
             $com_id = request()->input('company_id');
             error_log($com_id);
+            $emp_number = request()->input('emp_number');
+            if ($emp_number) {
+                $request['emp_number'] = $emp_number;
+            } else {
+                //auto generate
+            }
 
             // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
             //     ->first();
@@ -1016,7 +1022,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-            // dd($existingprofnumber);
+
             if ($existingprofnumber) {
 
                 $output = [
