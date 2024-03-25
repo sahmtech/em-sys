@@ -5,6 +5,13 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
+         <head>
+                <style>
+                #video {
+                    transform: scaleX(-1); /* Flip the video horizontally */
+                }
+            </style>
+        </head>
     <h1>@lang('lang_v1.my_profile')</h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>

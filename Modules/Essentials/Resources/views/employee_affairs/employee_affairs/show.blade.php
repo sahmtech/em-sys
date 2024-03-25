@@ -5,6 +5,13 @@
 @section('content')
     <!-- Main content -->
     <section class="content">
+        <head>
+                <style>
+                #video {
+                    transform: scaleX(-1); /* Flip the video horizontally */
+                }
+            </style>
+        </head>
         <div class="row">
             <div class="col-md-4">
                 <h3>@lang('essentials::lang.view_employee')</h3>
