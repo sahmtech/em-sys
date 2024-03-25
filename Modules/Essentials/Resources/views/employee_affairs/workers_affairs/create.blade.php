@@ -16,6 +16,12 @@
             <div class="col-md-12">
                 <div class="col-md-12 box box-primary">
                     <h4>@lang('essentials::lang.basic_info'):</h4>
+                     <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
+                            {!! Form::text('emp_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.emp_number')]) !!}
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('first_name', __('business.first_name') . ':*') !!}

@@ -400,6 +400,12 @@ class EssentialsWorkersAffairsController extends Controller
             $request['user_type'] = 'worker';
             $existingprofnumber = null;
             $existingBordernumber = null;
+            $emp_number = request()->input('emp_number');
+            if ($emp_number) {
+                $request['emp_number'] = $emp_number;
+            } else {
+                //auto generate
+            }
 
             if ($request->input('id_proof_number')) {
                 $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();

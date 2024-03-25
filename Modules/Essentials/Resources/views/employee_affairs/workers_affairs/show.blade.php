@@ -31,7 +31,7 @@
                                 alt="User profile picture" id="profileImage">
                         </a>
                         <h3 class="profile-username text-center">
-                            {{ $user->user_full_name }}
+                            {{ $user->first_name . ' ' .$user->mid_name .' '. $user->last_name }}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
