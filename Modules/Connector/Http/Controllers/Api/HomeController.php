@@ -122,7 +122,7 @@ class HomeController extends ApiController
             }
 
 
-            $attendanceList = EssentialsAttendance::where('user_id', $user->id)->whereDate('clock_in_time', Carbon::now()->toDateString())->latest();
+            $attendanceList = EssentialsAttendance::where('user_id', $user->id)->whereDate('clock_in_time', Carbon::now()->toDateString())->latest()->first();
             $signed_in = $attendanceList ? ($attendanceList?->clock_out_time != null ?? false ? false : true) : false;
             $signed_out = $signed_in ? ($attendanceList->clock_out_time ? true : false) : false;
 
@@ -146,8 +146,7 @@ class HomeController extends ApiController
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            //   return $this->otherExceptions($e);
-            return 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage();
+            return $this->otherExceptions($e);
         }
     }
 
