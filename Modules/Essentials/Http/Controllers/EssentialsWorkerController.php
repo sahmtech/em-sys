@@ -75,14 +75,14 @@ class EssentialsWorkerController extends Controller
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-            $users->select(
-                'users.*',
-                'users.id as worker_id',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'sales_projects.name as contact_name'
-            )->orderBy('users.id', 'desc')
-                ->groupBy('users.id');
-    
+        $users->select(
+            'users.*',
+            'users.id as worker_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, '' ,COALESCE(users.last_name,)) as worker"),
+            'sales_projects.name as contact_name'
+        )->orderBy('users.id', 'desc')
+            ->groupBy('users.id');
+
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -196,7 +196,7 @@ class EssentialsWorkerController extends Controller
                 ->addColumn('dob', function ($user) {
 
                     return $user->dob ?? '';
-                })  ->addColumn('insurance', function ($user) {
+                })->addColumn('insurance', function ($user) {
                     if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
                         return __('followup::lang.has_insurance');
                     } else {
@@ -209,7 +209,7 @@ class EssentialsWorkerController extends Controller
                     return $item;
                 })
                 ->filterColumn('worker', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);

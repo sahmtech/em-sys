@@ -69,7 +69,7 @@
                                 null,
                                 [
                                     'class' => 'form-control',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'required',
                                     'id' => 'userTypeSelect',
                                     'placeholder' => __('user.user_type'),
@@ -142,7 +142,7 @@
                                 <div class="form-group">
                                     {!! Form::file('contract_file', [
                                         'class' => 'form-control',
-                                        'style' => 'height:36px; ',
+                                        'style' => 'height:40px; ',
                                         'accept' => '.*',
                                     ]) !!}
 

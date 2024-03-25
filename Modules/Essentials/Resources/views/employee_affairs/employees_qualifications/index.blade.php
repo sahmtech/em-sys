@@ -647,4 +647,39 @@
     </script>
 
 
+  <script type="text/javascript">
+        $(document).ready(function() {
+            console.log('done');
+
+            var professionSelect = $('#editprofessionSelect');
+            console.log(professionSelect );           
+             var specializationSelect = $('#editspecializationSelect');
+
+
+            professionSelect.on('change', function() {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function(data) {
+                        specializationSelect.empty();
+                        $.each(data, function(id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+
 @endsection

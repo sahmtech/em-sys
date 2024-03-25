@@ -44,7 +44,7 @@
                         {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
                         {!! Form::select('general_specialization', $spacializations, null, [
                             'class' => 'form-control',
-                            'style' => 'height:40px',   'id' => 'professionSelect',
+                            'style' => 'height:40px',   'id' => 'editprofessionSelect',
                             'placeholder' => __('essentials::lang.select_specialization'),
                         ]) !!}
                     </div>
@@ -54,7 +54,7 @@
                         {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
                         {!! Form::select('sub_specialization', $sub_spacializations, null, [
                             'class' => 'form-control',
-                            'style' => 'height:40px','id' => 'specializationSelect',
+                            'style' => 'height:40px','id' => 'editspecializationSelect',
                           
                         ]) !!}
                     </div>
@@ -140,39 +140,7 @@
     </div>
 </div>
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-
-
-            var professionSelect = $('#professionSelect');
-            var specializationSelect = $('#specializationSelect');
-
-
-            professionSelect.on('change', function() {
-                var selectedProfession = $(this).val();
-                console.log(selectedProfession);
-                var csrfToken = $('meta[name="csrf-token"]').attr('content');
-                $.ajax({
-                    url: '{{ route('specializations') }}',
-                    type: 'POST',
-                    data: {
-                        _token: csrfToken,
-                        profession_id: selectedProfession
-                    },
-                    success: function(data) {
-                        specializationSelect.empty();
-                        $.each(data, function(id, name) {
-                            specializationSelect.append($('<option>', {
-                                value: id,
-                                text: name
-                            }));
-                        });
-                    }
-                });
-            });
-
-        });
-    </script>
+  
 
 <script>
     function getGPAFUn() {

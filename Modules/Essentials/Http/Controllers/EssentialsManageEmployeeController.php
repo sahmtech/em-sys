@@ -1166,7 +1166,7 @@ class EssentialsManageEmployeeController extends Controller
         if (
             $user && ($user->user_type == 'employee' || $user->user_type == 'manager')
         ) {
-            $officialDocuments = $user->OfficialDocument;
+            $officialDocuments = $user->OfficialDocument()->where('is_active', 1)->get();
 
             $contractDoc = $user->contract()->where('is_active', 1)->first();
             if ($contractDoc) {
@@ -1180,7 +1180,9 @@ class EssentialsManageEmployeeController extends Controller
             }
 
 
-            $documents = $documents->merge($officialDocuments);
+            if ($officialDocuments !== null) {
+                $documents = $documents->merge($officialDocuments); // Merge official documents with other documents
+            }
         }
 
 

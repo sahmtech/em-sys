@@ -234,7 +234,7 @@ class EssentialsWorkersAffairsController extends Controller
                 ->addColumn('dob', function ($user) {
 
                     return $user->dob ?? '';
-                })  ->addColumn('insurance', function ($user) {
+                })->addColumn('insurance', function ($user) {
                     if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
                         return __('followup::lang.has_insurance');
                     } else {
@@ -546,7 +546,7 @@ class EssentialsWorkersAffairsController extends Controller
             if (!empty($user->proposal_worker_id)) {
 
 
-                $officialDocuments = $user->OfficialDocument;
+                $officialDocuments = $user->OfficialDocument()->where('is_active', 1);
                 $workerDocuments = $user->proposal_worker?->worker_documents;
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
                 $qualificationDoc = $user->essentials_qualification()->first();
@@ -564,21 +564,27 @@ class EssentialsWorkersAffairsController extends Controller
                 $documents = $officialDocuments->merge($workerDocuments);
             } else {
 
-                $officialDocuments = $user->OfficialDocument;
+                $officialDocuments = $user->OfficialDocument()->where('is_active', 1)->get(); // Load documents into a collection
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
                 $qualificationDoc = $user->essentials_qualification()->first();
 
-                if ($contract_doc !== false) {
+                $documents = collect(); // Create an empty collection
 
-                    $documents = $officialDocuments->merge([$contract_doc]);
+                if (
+                    $contract_doc !== null
+                ) {
+                    $documents->push($contract_doc); // Push contract document into the collection
                 }
 
-                if ($qualificationDoc) {
-                    $documents = $officialDocuments->merge([$qualificationDoc]);
+                if ($qualificationDoc !== null) {
+                    $documents->push($qualificationDoc); // Push qualification document into the collection
                 }
 
-                $documents = $user->OfficialDocument;
+                if ($officialDocuments !== null) {
+                    $documents = $documents->merge($officialDocuments); // Merge official documents with other documents
+                }
             }
+            // dd($documents);
         }
 
 

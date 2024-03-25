@@ -65,36 +65,34 @@ class EssentailsworkersController extends Controller
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields_hrm();
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $users = User::whereIn('users.id',$userIds)
-        ->with(['assignedTo'])
+        $users = User::whereIn('users.id', $userIds)
+            ->with(['assignedTo'])
             ->where('user_type', 'worker')
-           ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
+            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
         $users->select(
             'users.*',
             'users.id as worker_id',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, '')  ,' ' ,COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )
-        ->orderBy('users.id', 'desc')
-        ->groupBy('users.id');
-      
+            ->orderBy('users.id', 'desc')
+            ->groupBy('users.id');
+
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-       
-            if(request()->input('project_name')=='none'){
+
+            if (request()->input('project_name') == 'none') {
                 $users = $users->whereNull('users.assigned_to');
-            }
-            else{
+            } else {
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
-            
         }
 
         if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
@@ -117,111 +115,111 @@ class EssentailsworkersController extends Controller
         }
 
         if (request()->ajax()) {
- 
+
             return DataTables::of($users)
 
-            ->addColumn('nationality', function ($user) {
-                return optional($user->country)->nationality ?? ' ';
-            })
+                ->addColumn('nationality', function ($user) {
+                    return optional($user->country)->nationality ?? ' ';
+                })
 
-            ->addColumn('residence_permit_expiration', function ($user) {
-                $residencePermitDocument = $user->OfficialDocument
-                    ->where('type', 'residence_permit')
-                    ->first();
-                if ($residencePermitDocument) {
+                ->addColumn('residence_permit_expiration', function ($user) {
+                    $residencePermitDocument = $user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
+                    if ($residencePermitDocument) {
 
-                    return optional($residencePermitDocument)->expiration_date ?? ' ';
-                } else {
+                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                    } else {
 
-                    return ' ';
-                }
-            })
-            ->addColumn('passport_number', function ($user) {
-                $passportDocument = $user->OfficialDocument
-                    ->where('type', 'passport')
-                    ->first();
-                if ($passportDocument) {
+                        return ' ';
+                    }
+                })
+                ->addColumn('passport_number', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
 
-                    return optional($passportDocument)->number ?? ' ';
-                } else {
+                        return optional($passportDocument)->number ?? ' ';
+                    } else {
 
-                    return ' ';
-                }
-            })
-            ->addColumn('passport_expire_date', function ($user) {
-                $passportDocument = $user->OfficialDocument
-                    ->where('type', 'passport')
-                    ->first();
-                if ($passportDocument) {
+                        return ' ';
+                    }
+                })
+                ->addColumn('passport_expire_date', function ($user) {
+                    $passportDocument = $user->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
 
-                    return optional($passportDocument)->expiration_date ?? ' ';
-                } else {
+                        return optional($passportDocument)->expiration_date ?? ' ';
+                    } else {
 
-                    return ' ';
-                }
-            })->addColumn('company_name', function ($user) {
-                return optional($user->company)->name ?? ' ';
-            })
+                        return ' ';
+                    }
+                })->addColumn('company_name', function ($user) {
+                    return optional($user->company)->name ?? ' ';
+                })
 
-            ->addColumn('residence_permit', function ($user) {
-                return $this->getDocumentnumber($user, 'residence_permit');
-            })
-            ->addColumn('admissions_date', function ($user) {
+                ->addColumn('residence_permit', function ($user) {
+                    return $this->getDocumentnumber($user, 'residence_permit');
+                })
+                ->addColumn('admissions_date', function ($user) {
 
-                return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
-            })
-            ->addColumn('admissions_type', function ($user) {
+                    return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
+                })
+                ->addColumn('admissions_type', function ($user) {
 
-                return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
-            })
-            ->addColumn('admissions_status', function ($user) {
+                    return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
+                })
+                ->addColumn('admissions_status', function ($user) {
 
-                return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
-            })
-            ->addColumn('contract_end_date', function ($user) {
-                return optional($user->contract)->contract_end_date ?? ' ';
-            })
+                    return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
+                })
+                ->addColumn('contract_end_date', function ($user) {
+                    return optional($user->contract)->contract_end_date ?? ' ';
+                })
 
-            ->addColumn('profession', function ($row) use ($appointments, $job_titles) {
-                $professionId = $appointments[$row->id] ?? '';
+                ->addColumn('profession', function ($row) use ($appointments, $job_titles) {
+                    $professionId = $appointments[$row->id] ?? '';
 
-                $professionName = $job_titles[$professionId] ?? '';
+                    $professionName = $job_titles[$professionId] ?? '';
 
-                return $professionName;
-            })
+                    return $professionName;
+                })
 
-            ->addColumn('bank_code', function ($user) {
+                ->addColumn('bank_code', function ($user) {
 
-                $bank_details = json_decode($user->bank_details);
-                return $bank_details->bank_code ?? ' ';
-            })
-            ->addColumn('contact_name', function ($user) {
+                    $bank_details = json_decode($user->bank_details);
+                    return $bank_details->bank_code ?? ' ';
+                })
+                ->addColumn('contact_name', function ($user) {
 
-                return $user->assignedTo->name ?? '';
-            })
-            ->addColumn('dob', function ($user) {
+                    return $user->assignedTo->name ?? '';
+                })
+                ->addColumn('dob', function ($user) {
 
-                return $user->dob ?? '';
-            })  ->addColumn('insurance', function ($user) {
-                if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
-                    return __('followup::lang.has_insurance');
-                } else {
-                    return __('followup::lang.has_not_insurance');
-                }
-            })
-            ->addColumn('categorie_id', function ($row) use ($travelCategories) {
-                $item = $travelCategories[$row->categorie_id] ?? '';
+                    return $user->dob ?? '';
+                })->addColumn('insurance', function ($user) {
+                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                        return __('followup::lang.has_insurance');
+                    } else {
+                        return __('followup::lang.has_not_insurance');
+                    }
+                })
+                ->addColumn('categorie_id', function ($row) use ($travelCategories) {
+                    $item = $travelCategories[$row->categorie_id] ?? '';
 
-                return $item;
-            })
-            ->filterColumn('worker', function ($query, $keyword) {
-                $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
-            })
-            ->filterColumn('residence_permit', function ($query, $keyword) {
-                $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
-            })
-            ->rawColumns(['contact_name', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
-            ->make(true);
+                    return $item;
+                })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('residence_permit', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                })
+                ->rawColumns(['contact_name', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->make(true);
         }
 
 
@@ -280,8 +278,7 @@ class EssentailsworkersController extends Controller
         if ($user->user_type == 'employee') {
 
             $documents = $user->OfficialDocument;
-        } 
-        else if ($user->user_type == 'worker') {
+        } else if ($user->user_type == 'worker') {
 
             if (!empty($user->proposal_worker_id)) {
 
@@ -327,7 +324,7 @@ class EssentailsworkersController extends Controller
 
 
         $user->profession = $profession;
-      //  $user->specialization = $specialization;
+        //  $user->specialization = $specialization;
 
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);

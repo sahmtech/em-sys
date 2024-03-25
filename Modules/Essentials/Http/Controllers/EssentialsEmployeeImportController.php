@@ -841,7 +841,7 @@ class EssentialsEmployeeImportController extends Controller
 
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
 
 
