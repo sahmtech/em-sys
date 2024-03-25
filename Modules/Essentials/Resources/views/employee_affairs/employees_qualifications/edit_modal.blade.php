@@ -7,9 +7,7 @@
 
             <div class="modal-header">
                 <h5 class="modal-title" id="editQualificationModalLabel">@lang('messages.edit')</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+               
             </div>
             <div class="modal-body">
 
@@ -54,7 +52,7 @@
                
                 <div class="form-group col-md-6">
                         {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
-                        {!! Form::select('sub_specialization', [], null, [
+                        {!! Form::select('sub_specialization', $sub_spacializations, null, [
                             'class' => 'form-control',
                             'style' => 'height:40px','id' => 'specializationSelect',
                           
@@ -141,6 +139,40 @@
         </div>
     </div>
 </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+
+            var professionSelect = $('#professionSelect');
+            var specializationSelect = $('#specializationSelect');
+
+
+            professionSelect.on('change', function() {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function(data) {
+                        specializationSelect.empty();
+                        $.each(data, function(id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
 
 <script>
     function getGPAFUn() {

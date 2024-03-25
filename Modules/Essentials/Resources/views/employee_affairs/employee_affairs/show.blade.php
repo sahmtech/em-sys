@@ -114,7 +114,7 @@
 
                                                @if ($document->file_path)
                                                <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}">
-                                                         @if ($document instanceof \Modules\Essentials\Entities\EssentialsOfficialDocument)
+                                                        @if ($document instanceof \Modules\Essentials\Entities\EssentialsOfficialDocument)
                                                             {{ trans('followup::lang.' .$document->type) }}
                                                         @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesContract)
                                                             {{ trans('followup::lang.contract_file') }}

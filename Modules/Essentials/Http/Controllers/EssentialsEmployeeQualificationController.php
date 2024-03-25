@@ -140,10 +140,11 @@ class EssentialsEmployeeQualificationController extends Controller
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
+
         $countries = EssentialsCountry::forDropdown();
 
         return view('essentials::employee_affairs.employees_qualifications.index')
-            ->with(compact('users', 'countries', 'spacializations'));
+            ->with(compact('users', 'countries', 'spacializations', 'sub_spacializations'));
     }
 
     public function updateEmployeeQualificationAttachement(Request $request, $user_id)

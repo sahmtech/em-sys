@@ -513,25 +513,35 @@ class EssentialsWorkersAffairsController extends Controller
                 $officialDocuments = $user->OfficialDocument;
                 $workerDocuments = $user->proposal_worker?->worker_documents;
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
+                $qualificationDoc = $user->essentials_qualification()->first();
 
                 if ($contract_doc !== false) {
 
                     $documents = $officialDocuments->merge([$contract_doc])->merge($workerDocuments);
-                } else {
-
-                    $documents = $officialDocuments->merge($workerDocuments);
                 }
+
+                if ($qualificationDoc) {
+                    $documents = $officialDocuments->merge([$qualificationDoc])->merge($workerDocuments);
+                }
+
+
+                $documents = $officialDocuments->merge($workerDocuments);
             } else {
+
                 $officialDocuments = $user->OfficialDocument;
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
-
+                $qualificationDoc = $user->essentials_qualification()->first();
 
                 if ($contract_doc !== false) {
 
                     $documents = $officialDocuments->merge([$contract_doc]);
-                } else {
-                    $documents = $user->OfficialDocument;
                 }
+
+                if ($qualificationDoc) {
+                    $documents = $officialDocuments->merge([$qualificationDoc]);
+                }
+
+                $documents = $user->OfficialDocument;
             }
         }
 
