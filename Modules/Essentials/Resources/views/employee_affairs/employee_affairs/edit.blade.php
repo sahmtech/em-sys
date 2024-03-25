@@ -23,7 +23,12 @@
 
         <div class="col-md-12 box box-primary">
             <h4>@lang('essentials::lang.basic_info'):</h4>
-
+              <div class="col-md-3" >
+                        <div class="form-group" >
+                            {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
+                            {!! Form::text('emp_number', $user->emp_number, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('essentials::lang.emp_number')]) !!}
+                        </div>
+             </div>
 
             <div class="col-md-3">
                 <div class="form-group">
@@ -56,7 +61,8 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="col-md-3">
+            
+            <div class="col-md-3"  >
                 <div class="form-group">
                     {!! Form::label('user_type', __('user.user_type') . ':*') !!}
                     {!! Form::select(
@@ -76,6 +82,8 @@
                     ) !!}
                 </div>
             </div>
+
+            
 
         </div>
 

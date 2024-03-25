@@ -31,7 +31,7 @@
                                 alt="User profile picture" id="profileImage">
                         </a>
                         <h3 class="profile-username text-center">
-                            {{ $user->user_full_name }}
+                            {{ $user->first_name . ' ' .$user->mid_name .' '. $user->last_name }}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
@@ -126,7 +126,14 @@
                                                 @if ($document->file_path || $document->attachment)
                                                     <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
                                                         data-file-url="{{ $document->file_path ?? $document->attachment }}">
-                                                       {{ trans('followup::lang.' . ($document->type ?? 'contract_file')) }}
+                                                       
+                                                        @if ($document instanceof \Modules\Essentials\Entities\EssentialsOfficialDocument)
+                                                            {{ trans('followup::lang.' .$document->type) }}
+                                                        @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesContract)
+                                                            {{ trans('followup::lang.contract_file') }}
+                                                        @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesQualification)
+                                                            {{ trans('essentials::lang.qualification_file') }}
+                                                        @endif
                                                     </a>
                                                 @else
                                                     {{ trans('followup::lang.' . $document->type) }}

@@ -1010,7 +1010,7 @@ return [
   'absentee_report' => 'بلاغ تغيب العمال ',
   'residency_Vacations' => 'إجازات المقيمين ',
   'late_empolyee' => 'الموظفين المتأخرين من الإجازات ',
-  'proof_number_validated' => 'رقم الاقامة موجود سابقا ًلا يمكن إضافة الموظف',
+  'proof_number_validated' => 'رقم الاقامة موجود سابقا ً في السطر رقم ',
   'visa_employee' => 'العمال الذين تم تصدير تأشيرة خروج نهائي',
   'is_profile_complete' => 'استكمال بيانات الموظف',
   'border_number' => 'رقم الحدود',
@@ -1053,7 +1053,11 @@ return [
   'open_camera' => 'افتح الكاميرا',
   'capture_photo' => 'التقط صورة ',
   'residencyreports' => 'تقرير تكاليف الإقامات',
-  'sponsorship' => 'كفالة',
+  'sponsorship' => '(متوسط ( كفاءة',
+  'show_qualification_file' => 'رؤية ملف شهادة المؤهل العلمي',
+  'no_qualification_file_exist' => 'لايوجد ملف شهادة المؤهل',
+  'qualification_file_view' => 'عرض شهادة المؤهل ',
+  'qualification_file' => 'شهادة المؤهل',
   'minor' => 'ثانوي',
   'company_name' => 'اسم الشركة',
   'create_work_cards' => 'إضافة رخصة عمل',
@@ -1789,12 +1793,19 @@ return [
   'draft_payroll' => 'مسودة',
   'final_payroll' => 'مسير نهائي',
   'user_type' => 'الفئة',
+
+  'emp_number' => 'الرقم الوظيفي',
+  'border_no_validated' => ' رقم الحدود موجود سابقا في السطر رقم ',
+  'duplicate_border_no' => '  رقم الحدود مكرر في الملف في السطر رقم ',
+
   'user_type.employee' => 'موظفين',
   'user_type.worker' => 'عمال',
   'user_type.remote_employee' => 'موظفين عن بعد',
   'late_hours' => 'تأخير',
+
   'company_name' => 'اسم الشركة',
   'doc_exists_filter' => 'مرفق الوثيقة',
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
 ];
+

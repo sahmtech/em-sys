@@ -7,6 +7,7 @@ use App\AccessRoleCompany;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use App\Utils\ModuleUtil;
 use App\BusinessLocation;
 use App\User;
@@ -666,8 +667,7 @@ class EssentialsManageEmployeeController extends Controller
 
                         $query->WhereNull('start_from')
                             ->orWhereNull('end_at')
-                            ->orWhereNull('profession_id')
-                            ->orWhereNull('specialization_id');
+                            ->orWhereNull('profession_id');
                     })
                     ->orWhereHas('essentials_qualification', function ($query) {
 
@@ -1000,6 +1000,12 @@ class EssentialsManageEmployeeController extends Controller
 
             $com_id = request()->input('company_id');
             error_log($com_id);
+            $emp_number = request()->input('emp_number');
+            if ($emp_number) {
+                $request['emp_number'] = $emp_number;
+            } else {
+                //auto generate
+            }
 
             // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
             //     ->first();
@@ -1016,7 +1022,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-            // dd($existingprofnumber);
+
             if ($existingprofnumber) {
 
                 $output = [
@@ -1125,7 +1131,7 @@ class EssentialsManageEmployeeController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_show_employee = auth()->user()->can('essentials.show_employee');
         $business_id = request()->session()->get('user.business_id');
-        $documents = null;
+        // $documents = null;
 
         if (!($is_admin || $can_show_employee)) {
             return redirect()->route('home')->with('status', [
@@ -1146,7 +1152,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $user = User::whereIn('users.id', $userIds)
-            ->with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
+            ->with(['contactAccess', 'OfficialDocument', 'proposal_worker', 'essentials_qualification'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))
             ->find($id);
@@ -1155,16 +1161,27 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-        if ($user) {
-            if ($user->user_type == 'employee' || $user->user_type == 'manager') {
-                $officialDocuments = $user->OfficialDocument;
-                $contract_doc = $user->contract()->where('is_active', 1)->first(); // Use ->first() to retrieve the contract
+        $documents = new Collection();
 
-                if ($contract_doc !== null) { // Check if a contract exists
-                    $documents = $officialDocuments->merge([$contract_doc]); // Wrap $contract_doc in an array since merge expects a collection
-                } else {
-                    $documents = $officialDocuments;
-                }
+        if (
+            $user && ($user->user_type == 'employee' || $user->user_type == 'manager')
+        ) {
+            $officialDocuments = $user->OfficialDocument()->where('is_active', 1)->get();
+
+            $contractDoc = $user->contract()->where('is_active', 1)->first();
+            if ($contractDoc) {
+                $documents->push($contractDoc);
+            }
+
+
+            $qualificationDoc = $user->essentials_qualification()->first();
+            if ($qualificationDoc) {
+                $documents->push($qualificationDoc);
+            }
+
+
+            if ($officialDocuments !== null) {
+                $documents = $documents->merge($officialDocuments); // Merge official documents with other documents
             }
         }
 
@@ -1232,7 +1249,8 @@ class EssentialsManageEmployeeController extends Controller
             'Contract',
             'nationalities',
             'nationality',
-            'documents'
+            'documents',
+
         ));
     }
 
@@ -1382,7 +1400,7 @@ class EssentialsManageEmployeeController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file'
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file', 'emp_number'
 
             ]);
             // dd($request->file('Iban_file'));
@@ -1393,6 +1411,10 @@ class EssentialsManageEmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
+            }
+
+            if ($user_data['emp_number'] == null) {
+                //auto generate
             }
 
 
