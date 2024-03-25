@@ -1153,7 +1153,7 @@ return [
   'special_not_found' => '  رقم التخصص غير موجود في السطر رقم ',
   'prof_not_found' => '  رقم المهنة  غير موجود في السطر رقم ',
   'nationality_not_found' => '  رقم الجنسية  غير موجود في السطر رقم ',
-  'user_with_same_id_proof_number_exists' => ' لا يمكن إضافة الموظف رقم  اثبات الهوية  المدخل موجود سابقا  ',
+  'user_with_same_id_proof_number_exists' => '     رقم  اثبات الهوية  المدخل موجود سابقا  ',
   'duplicate_id_proof_number' => 'رقم اثبات الهوية مكرر ضمن الملف',
   'employees_reports_view' => 'عرض تقرير الموظفين',
   'employees_information_report' => 'تقرير بيانات الموظفين',
@@ -1802,6 +1802,5 @@ return [
   'user_type.worker' => 'عمال',
   'user_type.remote_employee' => 'موظفين عن بعد',
   'late_hours' => 'تأخير',
-  'company_name'=>'اسم الشركة',
+  'company_name' => 'اسم الشركة',
 ];
-
