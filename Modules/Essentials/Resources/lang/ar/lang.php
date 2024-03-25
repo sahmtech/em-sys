@@ -1053,7 +1053,7 @@ return [
   'open_camera' => 'افتح الكاميرا',
   'capture_photo' => 'التقط صورة ',
   'residencyreports' => 'تقرير تكاليف الإقامات',
-  'sponsorship' => '(متوسط ( كفاءة',
+  'sponsorship' => 'كفاءة',
   'show_qualification_file' => 'رؤية ملف شهادة المؤهل العلمي',
   'no_qualification_file_exist' => 'لايوجد ملف شهادة المؤهل',
   'qualification_file_view' => 'عرض شهادة المؤهل ',

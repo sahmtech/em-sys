@@ -687,7 +687,7 @@ class EssentialsManageEmployeeController extends Controller
                 ->addColumn(
                     'worker_name',
                     function ($row) {
-                        return $row->first_name . ' ' . $row->last_name ?? '';
+                        return $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name  ?? '';
                     }
                 )
 
