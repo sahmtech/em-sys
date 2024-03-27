@@ -15,10 +15,16 @@ use App\TransactionSellLine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\InternationalRelations\Entities\IrDelegation;
 
 use Modules\InternationalRelations\Entities\Ir_delegation;
 use Modules\Sales\Entities\SalesOrdersOperation;
+use Modules\Sales\Entities\SalesProject;
+use Modules\Sales\Entities\SalesUnSupportedOperationOrder;
+use Modules\Sales\Entities\SalesUnSupportedWorker;
 
 class OrderRequestController extends Controller
 {
@@ -171,6 +177,25 @@ class OrderRequestController extends Controller
         return view('internationalrelations::orderRequest.Delegation')->with(compact('query', 'agencies', 'id'));
     }
 
+    public function unSupportedDelegation($id)
+    {
+
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $operation = SalesUnSupportedOperationOrder::where('id', $id)->first();
+
+
+        $query = SalesUnSupportedWorker::where('id', $operation->workers_order_id)->get()[0];
+
+        $agencies = Contact::where('type', '=', 'recruitment')->get();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+
+        return view('internationalrelations::orderRequest.unSupportedDelegation')->with(compact('query', 'operation', 'specializations', 'professions', 'nationalities', 'agencies', 'id'));
+    }
     public function viewDelegation($id)
     {
 
@@ -199,10 +224,106 @@ class OrderRequestController extends Controller
         return view('internationalrelations::orderRequest.viewDelegation')->with(compact('irDelegations'));
     }
 
-
-    public function saveRequest(Request $request)
+    public function saveUbnSupportedRequest(Request $request)
     {
 
+        try {
+
+
+            $order_id = isset($request->order_id) ? $request->order_id : null;
+            $order = SalesUnSupportedOperationOrder::find($order_id);
+            $today = \Carbon::now()->format('Y-m-d H:i:s');
+
+            if (!$order) {
+                return response()->json(['success' => false, 'message' => __('lang_v1.order_not_found')]);
+            }
+
+            $data_array = $request->input('data_array');
+            $sumTargetQuantity = 0;
+
+            foreach ($data_array as $item) {
+
+                $sumTargetQuantity += $item['target_quantity'];
+            }
+
+            if ($sumTargetQuantity > $order->orderQuantity - $order->DelegatedQuantity) {
+                return response()->json(['success' => false, 'message' => __('lang_v1.Sum_of_target_quantity_is_greater_than_order_quantity')]);
+            }
+
+            if ($sumTargetQuantity < $order->orderQuantity - $order->DelegatedQuantity) {
+                $order->status = 'under_process';
+                $order->save();
+            }
+
+            foreach ($data_array as $index => $item) {
+                if (isset($item['target_quantity'])) {
+                    $filePath = null;
+
+
+                    if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
+
+                        $file = $request->file('attachments')[$index];
+                        $filePath = $file->store('/delegations_validation_files');
+                    }
+                    $sellLine = SalesUnSupportedWorker::where('id', $item['worker_order_id'])->first();
+
+                    $delegation = IrDelegation::where('unSupportedworker_order_id', $sellLine->id)
+                        ->where('agency_id', $item['agency_name'])
+                        ->first();
+
+                    if ($delegation) {
+                        IrDelegation::where('unSupportedworker_order_id', $sellLine->id)
+                            ->where('agency_id', $item['agency_name'])
+                            ->update([
+                                'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
+                                'validationFile' => $filePath ?? null
+                            ]);
+
+                        SalesUnSupportedWorker::where('id', $sellLine->id)->update([
+                            'remaining_quantity_for_delegation' => \DB::raw('remaining_quantity_for_delegation - ' . $item['target_quantity']),
+
+                        ]);
+                    } else {
+
+
+                        IrDelegation::create([
+                            'unSupportedworker_order_id' =>  $sellLine->id,
+                            'unSupported_operation_id' => $order_id,
+                            'agency_id' => $item['agency_name'],
+                            'targeted_quantity' => $item['target_quantity'],
+                            'validationFile' => $filePath ?? null,
+                            'start_date' => $today
+                        ]);
+
+                        SalesUnSupportedWorker::where('id', $sellLine->id)->update([
+                            'remaining_quantity_for_delegation' => \DB::raw('remaining_quantity_for_delegation - ' . $item['target_quantity']),
+
+                        ]);
+                    }
+                }
+            }
+
+            $order->DelegatedQuantity = $order->DelegatedQuantity + $sumTargetQuantity;
+            $order->save();
+
+            // $output = [
+            //     'success' => true,
+            //     'msg' => __('lang_v1.added_success'),
+            // ];
+
+            return response()->json(['success' => true, 'message' =>  __('lang_v1.saved_successfully')]);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return redirect()->route('order_request')->with($output);
+        }
+    }
+    public function saveRequest(Request $request)
+    {
 
         try {
 
@@ -303,6 +424,104 @@ class OrderRequestController extends Controller
     public function store(Request $request)
     {
     }
+    public function orderOperationForUnsupportedWorkers()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $orders = SalesUnSupportedWorker::where('status', '!=', 'ended')->pluck('order_no', 'id');
+
+        $can_add_operation_order_visa = auth()->user()->can('internationalrelations.add_operation_order_visa');
+        $can_delegate_operation_order = auth()->user()->can('internationalrelations.delegate_operation_order');
+        $can_view_order_delegations = auth()->user()->can('internationalrelations.view_order_delegations');
+
+
+        $operations =
+            DB::table('sales_un_supported_operation_orders')
+            ->join('sales_un_supported_workers', 'sales_un_supported_operation_orders.workers_order_id', 'sales_un_supported_workers.id')
+            ->select(
+                'sales_un_supported_operation_orders.id as id',
+                'sales_un_supported_operation_orders.operation_order_no as operation_order_no',
+                'sales_un_supported_operation_orders.orderQuantity as orderQuantity',
+                'sales_un_supported_operation_orders.DelegatedQuantity as DelegatedQuantity',
+                'sales_un_supported_operation_orders.Interview as Interview',
+                'sales_un_supported_operation_orders.Industry as Industry',
+                'sales_un_supported_operation_orders.Location as Location',
+                'sales_un_supported_operation_orders.Delivery as Delivery',
+                'sales_un_supported_operation_orders.status as Status',
+                'sales_un_supported_operation_orders.has_visa as has_visa',
+                'sales_un_supported_workers.profession_id',
+                'sales_un_supported_workers.specialization_id',
+                'sales_un_supported_workers.nationality_id',
+                'sales_un_supported_workers.salary',
+                'sales_un_supported_workers.date',
+            )->orderby('id', 'desc');
+
+
+        if (request()->ajax()) {
+
+
+            return Datatables::of($operations)
+                ->addColumn('Status', function ($row) {
+
+                    return __('sales::lang.' . $row->Status);
+                })
+                ->editColumn('orderQuantity', function ($row) use ($nationalities) {
+                    $item = $row->orderQuantity - $row->DelegatedQuantity ?? '';
+
+                    return $item;
+                })
+                ->editColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item = $nationalities[$row->nationality_id] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('profession_id', function ($row) use ($professions) {
+                    $item = $professions[$row->profession_id] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('specialization_id', function ($row) use ($specializations) {
+                    $item = $specializations[$row->specialization_id] ?? '';
+
+                    return $item;
+                })
+                ->addColumn('Delegation', function ($row) use ($is_admin, $can_view_order_delegations, $can_delegate_operation_order,   $can_add_operation_order_visa) {
+                    $html = '';
+
+                    if ($row->orderQuantity - $row->DelegatedQuantity != 0) {
+                        if ($is_admin || $can_delegate_operation_order) {
+                            $html .= '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'unSupportedDelegation'], [$row->id]) . '" class="btn btn-xs btn-warning btn-modal" data-container=".view_modal"><i class="fas fa-plus" aria-hidden="true"></i> ' . __('internationalrelations::lang.Delegation') . '</a>&nbsp;';
+                        }
+                    }
+                    //  else {
+                    //     if ($is_admin || $can_view_order_delegations) {
+                    //         $html .= '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'viewDelegation'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('internationalrelations::lang.viewDelegation') . '</a>&nbsp;';
+                    //     }
+                    // }
+
+                    if ($row->has_visa != 1) {
+                        if ($is_admin || $can_add_operation_order_visa) {
+                            $html .= '<button data-id="' . $row->id . '" class="btn btn-xs btn-info btn-add-visa" data-toggle="modal" data-target="#addVisaModal">
+                                    <i class="fas fa-plus" aria-hidden="true"></i> ' . __('internationalrelations::lang.addvisa') . '
+                                </button>';
+                        }
+                    }
+                    return $html;
+                })
+
+                ->removeColumn('id')
+                ->rawColumns(['Delegation'])
+                ->make(true);
+        }
+
+
+        return view('internationalrelations::orderRequest.un_supported')->with(compact('orders'));
+    }
 
     /**
      * Show the specified resource.
@@ -317,48 +536,12 @@ class OrderRequestController extends Controller
      * @return Renderable
      */
 
-    // public function getNationalities(Request $request)
-    // {
-    //     $orderId = $request->input('orderId');
 
-    //     $delegation = IrDelegation::where('operation_order_id', $orderId)->get();
-
-    //     $operation = SalesOrdersOperation::with('salesContract.transaction')
-    //         ->where('id', $orderId)
-    //         ->first();
-
-    //     $businessId = request()->session()->get('user.business_id');
-    //     $transactionId = $operation->salesContract->transaction->id;
-
-
-    //     $transaction = Transaction::where('business_id', $businessId)
-    //         ->where('id', $transactionId)
-    //         ->with([
-    //             'sell_lines' => function ($query) {
-    //                 $query->with([
-    //                     'service' => function ($query) {
-    //                         $query->with('nationality');
-    //                     }
-    //                 ]);
-    //             }
-    //         ])
-    //         ->first();
-
-
-    //     $nationalities = collect($transaction->sell_lines)
-    //         ->pluck('service.nationality')
-    //         ->unique()
-    //         ->values()
-    //         ->all();
-
-    //     return response()->json(['success' => true, 'data' => ['nationalities' => $nationalities]]);
-    // }
     public function getNationalities(Request $request)
     {
         $orderId = $request->input('orderId');
 
         $delegations = IrDelegation::where('operation_order_id', $orderId)->get();
-
 
         $transactionSellLineIds = $delegations->pluck('transaction_sell_line_id')->unique();
 
@@ -376,6 +559,23 @@ class OrderRequestController extends Controller
         return response()->json(['success' => true, 'data' => ['nationalities' => $nationalities]]);
     }
 
+    public function getUnSupportedNationalities(Request $request)
+    {
+        $orderId = $request->input('orderId');
+
+        $nationality = IrDelegation::where('unSupported_operation_id', $orderId)
+            ->with('unSupported_operation.unSupported_worker.nationality')
+            ->first();
+
+        $nationalities = [];
+
+        if ($nationality && $nationality->unSupported_operation && $nationality->unSupported_operation->unSupported_worker && $nationality->unSupported_operation->unSupported_worker->nationality) {
+
+            $nationalities[] = $nationality->unSupported_operation->unSupported_worker->nationality;
+        }
+
+        return response()->json(['success' => true, 'data' => ['nationalities' => $nationalities]]);
+    }
 
     /**
      * Update the specified resource in storage.

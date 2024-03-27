@@ -60,7 +60,7 @@ class HomeController extends ApiController
             $business_id = $user->business_id;
             $business = Business::where('id', $business_id)->first();
             $shift = EssentialsUserShift::where('user_id', $user->id)->first()?->shift ?? null;
-       
+
             $lastRequest = UserRequest::select([
                 'request_no',
                 'requests.id',
@@ -122,8 +122,8 @@ class HomeController extends ApiController
             }
 
 
-            $attendanceList = EssentialsAttendance::where('user_id', $user->id)->whereDate('clock_in_time', Carbon::now()->toDateString())->first();
-            $signed_in = $attendanceList ? true : false;
+            $attendanceList = EssentialsAttendance::where('user_id', $user->id)->whereDate('clock_in_time', Carbon::now()->toDateString())->latest()->first();
+            $signed_in = $attendanceList ? ($attendanceList?->clock_out_time  ? false : true) : false;
             $signed_out = $signed_in ? ($attendanceList->clock_out_time ? true : false) : false;
 
 

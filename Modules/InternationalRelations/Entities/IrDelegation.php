@@ -7,6 +7,8 @@ use App\TransactionSellLine;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\InternationalRelations\Entities\IrVisaCard;
+use Modules\Sales\Entities\SalesUnSupportedOperationOrder;
+use Modules\Sales\Entities\SalesUnSupportedWorker;
 
 class IrDelegation extends Model
 {
@@ -16,6 +18,10 @@ class IrDelegation extends Model
     public function transactionSellLine()
     {
         return $this->belongsTo(TransactionSellLine::class, 'transaction_sell_line_id');
+    }
+    public function unSupported_operation()
+    {
+        return $this->belongsTo(SalesUnSupportedOperationOrder::class, 'unSupported_operation_id');
     }
 
     public function agency()

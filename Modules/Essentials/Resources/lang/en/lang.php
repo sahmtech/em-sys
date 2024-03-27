@@ -710,4 +710,6 @@ return [
     'select_document_type' => 'Select Document Type',
     'qualification_attachements' => 'Qualification Attachements',
     'visa' => 'VISA',
+    'company_name' => 'Company name',
+
 ];

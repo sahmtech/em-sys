@@ -7,9 +7,11 @@ use App\AccessRoleBusiness;
 use App\AccessRoleCompany;
 use App\AccessRoleCompanyUserType;
 use App\AccessRoleProject;
+use App\AccessRoleReport;
 use App\Business;
 use App\Company;
 use App\Contact;
+use App\Report;
 use App\SellingPriceGroup;
 use App\User;
 use App\Utils\ModuleUtil;
@@ -60,7 +62,11 @@ class RoleController extends Controller
                     if (!$row->is_default || $row->name == 'Cashier#' . $row->business_id) {
                         $action = '';
                         if ($is_admin  || $can_role_update) {
-                            $action .= '<a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateAccessRole'], [$row->id]) . '" class="btn btn-success btn-xs">' . __('messages.update_access_role') . '</a>';
+                            $action .= '
+                            <a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateReportAccessRole'], [$row->id]) . '" class="btn btn-warning btn-xs">' . __('messages.update_access_role_report') . '</a>';
+
+                            $action .= '&nbsp
+                            <a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateAccessRole'], [$row->id]) . '" class="btn btn-success btn-xs">' . __('messages.update_access_role') . '</a>';
 
                             $action .= '&nbsp
                             <a href="' . action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
@@ -124,6 +130,42 @@ class RoleController extends Controller
             ->with(compact('userTypesNames', 'userTypes', 'selectedUserTypes', 'accessRole', 'companies', 'accessRoleCompanies'));
     }
 
+    public function editOrCreateReportAccessRole($id)
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin  || auth()->user()->can('roles.create'))) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+        $accessRole = AccessRole::where('role_id', $id)->first();
+        if (!$accessRole) {
+            $accessRole = new AccessRole();
+            $accessRole->role_id = $id;
+            $accessRole->save();
+        }
+
+        $accessRoleReports = AccessRoleReport::where('access_role_id', $accessRole->id)->pluck('report_id')->unique()->toArray();
+        $reports = Report::all();
+
+        return view('role.edit_create_access_role_report')
+            ->with(compact('reports', 'accessRoleReports', 'accessRole',));
+    }
+    public function updateAccessRoleReport(Request $request, $roleId)
+    {
+        $reports = $request->reports;
+        AccessRoleReport::where('access_role_id', $roleId)->delete();
+        foreach ($reports as  $report) {
+            AccessRoleReport::create([
+                'access_role_id' =>  $roleId,
+                'report_id' => $report,
+            ]);
+        }
+        $output = [
+            'success' => 1,
+            'msg' => __('user.role_updated'),
+        ];
+        return redirect('roles')->with('status', $output);
+    }
 
     public function updateAccessRole(Request $request, $roleId)
     {

@@ -73,7 +73,7 @@ class DriverCarController extends Controller
             return DataTables::of($carDrivers)
 
                 ->editColumn('driver', function ($row) {
-                    return $row->user->id_proof_number . ' - ' . $row->user->first_name . ' ' . $row->user->last_name . ' - ' . $row->user->essentialsEmployeeAppointmets->specialization->name ?? '';
+                    return $row->user?->id_proof_number . ' - ' . $row->user?->first_name . ' ' . $row->user?->last_name . ' - ' . $row->user?->essentialsEmployeeAppointmets?->specialization?->name ?? '';
                 })
 
                 ->editColumn('car_typeModel', function ($row) {

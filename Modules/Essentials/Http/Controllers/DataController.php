@@ -684,14 +684,13 @@ class DataController extends Controller
 
 
                     [
-                        'value' => 'essentials.crud_all_leave',
-                        'label' => __('essentials::lang.crud_all_leave'),
+                        'value' => 'essentials.view_leave_types',
+                        'label' => __('essentials::lang.crud_leave_type'),
                         'default' => false,
                     ],
-
                     [
-                        'value' => 'essentials.crud_leave_type',
-                        'label' => __('essentials::lang.crud_leave_type'),
+                        'value' => 'essentials.view_leave_balances',
+                        'label' => __('essentials::lang.view_leave_balances'),
                         'default' => false,
                     ],
                     [
@@ -1403,6 +1402,11 @@ class DataController extends Controller
                     [
                         'value' => 'essentials.edit_employee_qualifications',
                         'label' => __('essentials::lang.edit_employee_qualifications'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_qualification_file',
+                        'label' => __('essentials::lang.show_qualification_file'),
                         'default' => false,
                     ],
                     [

@@ -42,6 +42,8 @@ class CustomAdminSidebarMenu
             $this->employeeAffairsMenu();
         } elseif (Str::startsWith($currentPath, ['payrolls'])) {
             $this->payrollsMenu();
+        } elseif (Str::startsWith($currentPath, ['reports'])) {
+            $this->reportsMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
@@ -1001,13 +1003,21 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
+            }
+        });
+    }
+    public function reportsMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
 
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            if ($is_admin) {
                 $menu->url(
-
-                    route('connect_camera'),
-                    __('essentials::lang.connect_camera'),
-                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'connect_camera'],
+                    route('reports.landing'),
+                    __('report.reports'),
+                    ['icon' => 'fa fas fa-file-alt', 'active' => request()->segment(1) == 'reports' && request()->segment(2) == 'reports'],
                 );
             }
         });
@@ -1164,7 +1174,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('essentials.crud_all_leave')) {
+            if ($is_admin  || auth()->user()->can('essentials.view_leave_types')) {
 
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController::class, 'index']),
@@ -1173,13 +1183,13 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            // if ($is_admin  || auth()->user()->can('essentials.view_all_payroll')) {
-            //     $menu->url(
-            //         action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-            //         __('essentials::lang.payroll'),
-            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
-            //     );
-            // }
+            if ($is_admin  || auth()->user()->can('essentials.view_leave_balances')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\UsersLeaveBalanceController::class, 'index']),
+                    __('essentials::lang.leave_balances'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leaves_balance'],
+                );
+            }
 
             // if ($is_admin ) {
             //     $menu->url(
@@ -1467,6 +1477,15 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('sales.Unsupported_workers')) {
+
+                $menu->url(
+                    action([\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'index']),
+                    __('sales::lang.Unsupported_workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'Unsupported_workers']
+                );
+            }
+
             if ($is_admin || auth()->user()->can('sales.view_sale_operation_orders')) {
 
                 $menu->url(

@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
+use App\AccessRoleReport;
 use App\Account;
 use App\BusinessLocation;
 use App\Product;
@@ -408,12 +409,12 @@ class ModuleUtil extends Util
         }
     }
 
-    public function accountsDropdown($business_id,$company_id=null ,$prepend_none = false, $closed = false, $show_balance = false)
+    public function accountsDropdown($business_id, $company_id = null, $prepend_none = false, $closed = false, $show_balance = false)
     {
         $dropdown = [];
 
         if ($this->isModuleEnabled('account')) {
-            $dropdown = Account::forDropdown($business_id,$company_id, $prepend_none, $closed, $show_balance);
+            $dropdown = Account::forDropdown($business_id, $company_id, $prepend_none, $closed, $show_balance);
         }
 
         return $dropdown;
@@ -550,6 +551,16 @@ class ModuleUtil extends Util
         }
 
         return $module_data;
+    }
+    public function allowedReports()
+    {
+        $roles = auth()->user()->roles;
+        $reports = [];
+
+        foreach ($roles as $role) {
+            $reports = array_merge($reports, AccessRoleReport::where('access_role_id', $role->id)->pluck('report_id')->toArray());
+        }
+        return $reports;
     }
 
 

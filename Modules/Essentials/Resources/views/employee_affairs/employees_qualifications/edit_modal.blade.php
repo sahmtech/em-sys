@@ -7,9 +7,7 @@
 
             <div class="modal-header">
                 <h5 class="modal-title" id="editQualificationModalLabel">@lang('messages.edit')</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+               
             </div>
             <div class="modal-body">
 
@@ -46,7 +44,7 @@
                         {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
                         {!! Form::select('general_specialization', $spacializations, null, [
                             'class' => 'form-control',
-                            'style' => 'height:40px',   'id' => 'professionSelect',
+                            'style' => 'height:40px',   'id' => 'editprofessionSelect',
                             'placeholder' => __('essentials::lang.select_specialization'),
                         ]) !!}
                     </div>
@@ -54,9 +52,9 @@
                
                 <div class="form-group col-md-6">
                         {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
-                        {!! Form::select('sub_specialization', [], null, [
+                        {!! Form::select('sub_specialization', $sub_spacializations, null, [
                             'class' => 'form-control',
-                            'style' => 'height:40px','id' => 'specializationSelect',
+                            'style' => 'height:40px','id' => 'editspecializationSelect',
                           
                         ]) !!}
                     </div>
@@ -141,6 +139,8 @@
         </div>
     </div>
 </div>
+
+  
 
 <script>
     function getGPAFUn() {

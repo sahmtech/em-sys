@@ -54,7 +54,9 @@ class EssentialsOfficialDocumentController extends Controller
             ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_official_documents.id',
-                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+
                 'essentials_official_documents.type',
                 'essentials_official_documents.status',
                 'essentials_official_documents.file_path',
@@ -63,6 +65,7 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.number',
                 'essentials_official_documents.expiration_date',
                 'u.user_type',
+                'u.id_proof_number as id_proof_number'
             ])->orderby('id', 'desc');
 
 
@@ -78,6 +81,13 @@ class EssentialsOfficialDocumentController extends Controller
 
         if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
             $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
+        }
+        if (!empty(request()->input('doc_exists')) && request()->input('doc_exists') !== 'all') {
+            if (request()->input('doc_exists') == "exists") {
+                $official_documents->whereNotNull('file_path');
+            } else {
+                $official_documents->whereNull('file_path');
+            }
         }
 
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
@@ -121,7 +131,10 @@ class EssentialsOfficialDocumentController extends Controller
                 )
 
                 ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->where("u.id_proof_number", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
                 ->rawColumns(['action'])

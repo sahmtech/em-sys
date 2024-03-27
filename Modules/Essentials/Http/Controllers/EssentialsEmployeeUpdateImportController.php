@@ -285,6 +285,16 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
 
                     $emp_array['border_no'] = $value[32];
+                    if ($emp_array['border_no'] !== null) {
+                        $border_no = user::where('border_no', $emp_array['border_no'])
+                            ->first();
+
+                        if ($border_no) {
+                            $is_valid = false;
+                            $error_msg = __('essentials::lang.border_no_validated') . $row_no + 1;
+                            break;
+                        }
+                    }
 
 
                     $emp_array['nationality_id'] = $value[33];
@@ -448,6 +458,9 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $emp_array['total_salary'] = $value[48];
                     $emp_array['company_id'] = $value[49];
                     $emp_array['english_name'] = $value[50];
+                    if ($emp_array['english_name'] == null) {
+                        $emp_array['english_name'] == null;
+                    }
                     $formated_data[] = $emp_array;
                 }
 
@@ -521,9 +534,19 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
 
                             foreach ($fieldsToUpdate as $field) {
-
                                 if (array_key_exists($field, $emp_data) && $emp_data[$field] !== null) {
-                                    $existingEmployee->$field = $emp_data[$field];
+                                    if ($field === 'emp_number') {
+
+                                        if ($existingEmployee->emp_number) {
+                                            $existingEmployee->$field = $emp_data[$field];
+                                        } else {
+                                            // Generate a new emp_number
+
+                                        }
+                                    } else {
+
+                                        $existingEmployee->$field = $emp_data[$field];
+                                    }
                                 }
                             }
 

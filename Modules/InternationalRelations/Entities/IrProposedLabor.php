@@ -8,6 +8,7 @@ use Modules\InternationalRelations\Entities\IrVisaCard;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Sales\Entities\SalesUnSupportedWorker;
 
 class IrProposedLabor extends Model
 {
@@ -16,9 +17,12 @@ class IrProposedLabor extends Model
 
     public function transactionSellLine()
     {
-        return $this->belongsTo(TransactionSellLine::class,'transaction_sell_line_id');
+        return $this->belongsTo(TransactionSellLine::class, 'transaction_sell_line_id');
     }
-
+    public function unSupportedworker_order()
+    {
+        return $this->belongsTo(SalesUnSupportedWorker::class, 'unSupportedworker_order_id');
+    }
 
     public function user()
     {
@@ -43,5 +47,4 @@ class IrProposedLabor extends Model
     {
         return $this->hasMany(IrWorkersDocument::class, 'worker_id');
     }
-  
 }
