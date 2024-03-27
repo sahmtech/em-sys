@@ -45,6 +45,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequisitionController;
 use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\Restaurant;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalesCommissionAgentController;
@@ -417,7 +418,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles');
 
     Route::get('/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
+    Route::get('/roles/editOrCreateReportAccessRole/{id}', [RoleController::class, 'editOrCreateReportAccessRole'])->name('editOrCreateReportAccessRole');
     Route::post('/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
+    Route::post('/roles/updateAccessRoleReport/{roleId}', [RoleController::class, 'updateAccessRoleReport'])->name('updateAccessRoleReport');
+    Route::prefix('reports')->group(function () {
+        Route::get('/reports', [ReportsController::class, 'landing'])->name('reports.landing');
+        Route::get('expired_residencies', [ReportsController::class, 'expired_residencies'])->name('expired_residencies');
+    });
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);
