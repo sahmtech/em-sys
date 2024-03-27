@@ -42,6 +42,8 @@ class CustomAdminSidebarMenu
             $this->employeeAffairsMenu();
         } elseif (Str::startsWith($currentPath, ['payrolls'])) {
             $this->payrollsMenu();
+        } elseif (Str::startsWith($currentPath, ['reports'])) {
+            $this->reportsMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
@@ -1001,6 +1003,22 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
+            }
+        });
+    }
+    public function reportsMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            if ($is_admin) {
+                $menu->url(
+                    route('reports.landing'),
+                    __('report.reports'),
+                    ['icon' => 'fa fas fa-file-alt', 'active' => request()->segment(1) == 'reports' && request()->segment(2) == 'reports'],
+                );
             }
         });
     }
