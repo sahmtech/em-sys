@@ -711,5 +711,13 @@ return [
     'qualification_attachements' => 'Qualification Attachements',
     'visa' => 'VISA',
     'company_name' => 'Company name',
+    'residencies_almost_finished' => 'Residencies that expire after 15 days',
+    'contracts_almost_finished' => 'Contracts that expire after 15 days',
+    'rooms_and_beds' => 'Rooms and beds',
+    'building' => 'Building',
+    'employee_medical_insurance' => 'Medical Insurance'
+
+
+
 
 ];

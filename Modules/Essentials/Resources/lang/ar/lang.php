@@ -1811,6 +1811,11 @@ return [
   'doc_exists_filter' => 'مرفق الوثيقة',
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
+  'residencies_almost_finished' => 'الإقامات التي تنتهي بعد 15 يوم',
+  'contracts_almost_finished'=>'العقود التي تنتهي بعد 15 يوم',
+  'rooms_and_beds'=>'الغرف والأسرة',
+  'building'=>'المباني',
+  'employee_medical_insurance'=>'التأمين الطبي',
 
 
 ];
