@@ -1809,6 +1809,10 @@ return [
 
   'company_name' => 'اسم الشركة',
 
+  'doc_exists_filter' => 'مرفق الوثيقة',
+  'doc_exists' => 'يوجد مرفق',
+  'doc_doesnt_exist' => 'لايوجد مرفق',
+
 
 
 ];
