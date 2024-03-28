@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.cars_change_oil'))
+@section('title', __('essentials::lang.car_maintenances'))
 
 @section('content')
 
     <section class="content-header">
 
-        <h1>@lang('essentials::lang.cars_change_oil')
+        <h1>@lang('essentials::lang.car_maintenances')
         </h1>
 
         <section class="content">
@@ -14,16 +14,16 @@
                 <div class="col-md-12">
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="cars_change_oil">
+                            <table class="table table-bordered table-striped" id="car_maintenances">
                                 <thead>
                                     <tr>
-
                                         <th style="text-align: center;">@lang('housingmovements::lang.car')</th>
                                         <th style="text-align: center;">@lang('housingmovements::lang.current_speedometer')</th>
-                                        <th style="text-align: center;">@lang('housingmovements::lang.next_change_oil')</th>
+                                        <th style="text-align: center;">@lang('housingmovements::lang.maintenance_type')</th>
+                                        <th style="text-align: center;">@lang('housingmovements::lang.maintenance_description')</th>
                                         <th style="text-align: center;">@lang('housingmovements::lang.invoice_no')</th>
                                         <th style="text-align: center;">@lang('housingmovements::lang.date')</th>
-
+                                    
                                     </tr>
                                 </thead>
                             </table>
@@ -41,35 +41,38 @@
             $(document).ready(function() {
 
 
-                var cars_change_oil;
+                var car_maintenances;
 
                 function reloadDataTable() {
-                    cars_change_oil.ajax.reload();
+                    car_maintenances.ajax.reload();
                 }
 
-                cars_change_oil = $('#cars_change_oil').DataTable({
+                car_maintenances = $('#car_maintenances').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{ route('cars_change_oil') }}",
+                        url: "{{ route('car_maintenances') }}",
 
                     },
 
                     columns: [{
-                            "data": "car"
-                        },
-                        {
-                            "data": "current_speedometer"
-                        },
-                        {
-                            "data": "next_change_oil"
-                        },
-                        {
-                            "data": "invoice_no"
-                        },
-                        {
-                            "data": "date"
-                        }
+                        "data": "car"
+                    },
+                    {
+                        "data": "current_speedometer"
+                    },
+                    {
+                        "data": "maintenance_type"
+                    },
+                    {
+                        "data": "maintenance_description"
+                    },
+                    {
+                        "data": "invoice_no"
+                    },
+                    {
+                        "data": "date"
+                    }
                     ],
                 });
 
