@@ -173,8 +173,9 @@ class EmploymentCompaniesController extends Controller
 
 
                     if ($is_admin || $can_view_employment_company_delegation_requests) {
-                        $html .= '<a href="' . route('companyRequests', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('internationalrelations::lang.company_requests') . '</a>&nbsp;';
+                        $html .= '<a href="' . route('companyRequests', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('internationalrelations::lang.company_requests_for_workers_supported') . '</a>&nbsp;';
                     }
+
 
                     if ($is_admin || $can_edit_employee_company) {
                         $html .= '<button class="btn btn-xs btn-success  open-edition-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-eye-edit"></i> ' . __('internationalrelations::lang.edit') . '</button>';
@@ -205,7 +206,7 @@ class EmploymentCompaniesController extends Controller
         if (!($is_admin || $can_view_company_requests)) {
         }
 
-        $irDelegations = IrDelegation::where('agency_id', $id)->with(['transactionSellLine.service'])->get();
+        $irDelegations = IrDelegation::where('agency_id', $id)->whereNotNull('operation_order_id')->with(['transactionSellLine.service'])->get();
 
         return view('internationalrelations::EmploymentCompanies.companyRequests')->with(compact('irDelegations'));
     }

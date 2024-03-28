@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('internationalrelations::lang.Delegation'))
+@section('title', __('sales::lang.orderOperationForUnsupportedWorkers'))
 
 @section('content')
 
 
     <section class="content-header">
         <h1>
-            <span>@lang('internationalrelations::lang.all_Delegation')</span>
+            <span>@lang('internationalrelations::lang.orderOperationForUnsupportedWorkers')</span>
         </h1>
     </section>
 
@@ -15,20 +15,6 @@
     <section class="content">
         @include('internationalrelations::layouts.nav_operation_orders')
 
-        @component('components.filters', ['title' => __('report.filters')])
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
-                    {!! Form::select('contract-select', $contracts->pluck('contract_number', 'contract_number'), null, [
-                        'class' => 'form-control',
-                        'style' => 'height:40px',
-                        'placeholder' => __('lang_v1.all'),
-                        'required',
-                        'id' => 'contract-select',
-                    ]) !!}
-                </div>
-            </div>
-        @endcomponent
 
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
@@ -37,11 +23,15 @@
                         <tr>
 
                             <th>@lang('sales::lang.operation_order_number')</th>
-                            <th>@lang('sales::lang.customer_name')</th>
-                            <th>@lang('sales::lang.contract_number')</th>
+                            <th>@lang('sales::lang.profession')</th>
+                            <th>@lang('sales::lang.specialization')</th>
+                            <th>@lang('sales::lang.nationality')</th>
+                            <th>@lang('sales::lang.salary')</th>
+                            <th>@lang('sales::lang.date')</th>
                             <th>@lang('sales::lang.orderQuantity')</th>
+
                             <th>@lang('sales::lang.Status')</th>
-                            <th>@lang('messages.action')</th>
+                            <th>@lang('sales::lang.action')</th>
 
 
                         </tr>
@@ -50,10 +40,11 @@
             </div>
         @endcomponent
 
+
         <div class="modal fade" id="addVisaModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'storeVisa', 'enctype' => 'multipart/form-data', 'id' => 'addVisaForm']) !!}
+                    {!! Form::open(['route' => 'unSupportedVisaStore', 'enctype' => 'multipart/form-data', 'id' => 'addVisaForm']) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -64,7 +55,7 @@
                     <div class="modal-body">
                         <div class="row">
                             @csrf
-                            <input type="hidden" name="id" id="visaOrderId" value="">
+                            <input type="hidden" name="unSupported_operation_id" id="visaOrderId" value="">
                             <div class="col-md-10" id="nationalityInputsContainer"></div>
                         </div>
                     </div>
@@ -87,19 +78,15 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
-            var customers_table = $('#operation_table').DataTable({
+            var operation_table = $('#operation_table').DataTable({
 
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('order_request') }}",
-                    data: function(d) {
+                    url: "{{ route('ir.orderOperationForUnsupportedWorkers') }}",
 
-                        d.number_of_contract = $('#contract-select').val();
-
-
-                    }
                 },
+
 
 
                 columns: [
@@ -110,28 +97,33 @@
                         name: 'operation_order_no'
                     },
                     {
-                        data: 'contact_name',
-                        name: 'contact_name'
-                    },
-                    {
-                        data: 'contract_number',
-                        name: 'contract_number'
+                        data: 'profession_id',
+                        name: 'profession_id'
+                    }, {
+                        data: 'specialization_id',
+                        name: 'specialization_id'
+                    }, {
+                        data: 'nationality_id',
+                        name: 'nationality_id'
+                    }, {
+                        data: 'salary',
+                        name: 'salary'
+                    }, {
+                        data: 'date',
+                        name: 'date'
                     },
                     {
                         data: 'orderQuantity',
                         name: 'orderQuantity'
                     },
 
-
                     {
                         data: 'Status',
                         name: 'Status'
                     },
-
                     {
                         data: 'Delegation',
-                        name: 'Delegation',
-
+                        name: 'Delegation'
                     },
 
 
@@ -145,9 +137,10 @@
 
                 $.ajax({
                     type: 'GET',
-                    url: '{{ route('get_order_nationlities') }}',
+                    url: '{{ route('getUnSupportedNationalities') }}',
                     data: {
                         orderId: orderId
+
                     },
                     dataType: 'json',
                     success: function(response) {
@@ -217,14 +210,6 @@
                     }
                 });
             });
-
-
-
-            $('#contract-select, #status_filter').change(function() {
-                customers_table.ajax.reload();
-            });
-
-
         });
     </script>
 

@@ -182,8 +182,19 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.view_sale_operation_orders',
-                        'label' => __('sales::lang.view_sale_operation_orders'),
+                        'value' => 'sales.Unsupported_workers',
+                        'label' => __('sales::lang.Unsupported_workers'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'sales.view_operations_order_for_contract',
+                        'label' => __('sales::lang.view_operations_order_for_contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_operations_order_for_unSupported_workers',
+                        'label' => __('sales::lang.view_operations_order_for_unSupported_workers'),
                         'default' => false,
                     ],
                     [
