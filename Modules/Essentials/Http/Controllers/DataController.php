@@ -2468,6 +2468,7 @@ class DataController extends Controller
                     $doc->type = 'residence_permit';
                     $doc->status = 'vaild';
                     $doc->employee_id = $user->id;
+                    $doc->is_active = $user->id;
                     $doc->number = request()->input('id_proof_number');
                     $doc->expiration_date = request()->input('expiration_date');
                     $doc->save();

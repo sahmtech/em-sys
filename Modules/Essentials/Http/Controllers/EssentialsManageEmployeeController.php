@@ -1408,16 +1408,12 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-            $existingProfNumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+            $existing_user = User::where('id_proof_number', $request->input('id_proof_number'))
+                ->where('id', '!=', $id)
+                ->first();
 
-            if ($existingProfNumber) {
-                $output = [
-                    'success' => 0,
-                    'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
-                ];
-                // throw new \Exception(__('essentials::lang.user_with_same_id_proof_number_exists'));
-            } else {
-                $business_id = request()->session()->get('user.business_id');
+            if (!$existing_user || $existing_user->id == $id) {
+
                 if (!isset($user_data['selected_contacts'])) {
                     $user_data['selected_contacts'] = 0;
                 }
@@ -1588,6 +1584,11 @@ class EssentialsManageEmployeeController extends Controller
                 ];
 
                 DB::commit();
+            } else {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                ];
             }
         } catch (\Exception $e) {
             DB::rollBack();
