@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.expired_contracts'))
+@section('title', __('essentials::lang._expired_contracts'))
 
 @section('content')
 
     <section class="content-header">
 
-        <h1>@lang('essentials::lang.expired_contracts')
+        <h1>@lang('essentials::lang._expired_contracts')
         </h1>
 
         <section class="content">

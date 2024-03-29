@@ -18,12 +18,24 @@
                                 <thead>
                                     <tr>
 
-                                        <th>@lang('followup::lang.worker_name')</th>
+                                        <th>@lang('followup::lang.name')</th>
                                         <th>@lang('followup::lang.residency')</th>
+                                        <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
+
+
+                                        <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
+
+
+                                        <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
+                                        <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
                                         <th>@lang('followup::lang.project')</th>
                                         <th>@lang('followup::lang.customer_name')</th>
+
                                         <th>@lang('followup::lang.end_date')</th>
-                                        <th></th>
+                                        <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
+
 
                                     </tr>
                                 </thead>
@@ -58,11 +70,26 @@
 
                     columns: [
 
-                        {
+                     
+                    {
                             data: 'worker_name'
                         },
                         {
                             data: 'residency'
+                        },
+                        {
+                            "data": "company_name"
+                        },
+                        {
+                            data: 'passport_number'
+                        },
+                        {
+                            data: 'passport_expire_date'
+                        },
+                        {
+                            data: 'border_no'
+                        }, {
+                            data: 'dob'
                         },
                         {
                             data: 'project'
@@ -70,11 +97,15 @@
                         {
                             data: 'customer_name'
                         },
+
                         {
                             data: 'end_date'
                         },
                         {
-                            data: 'action'
+                            data: 'nationality'
+                        }, {
+                            data: "profession",
+                            name: 'profession'
                         },
                     ],
                 });

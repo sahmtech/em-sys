@@ -718,6 +718,10 @@ return [
     'employee_medical_insurance' => 'Medical Insurance',
     'cars_change_oil' => 'Change Oil',
     'car_maintenances' => 'Car Maintenances',
+    '_expired_contracts' => 'Expired customer contracts',
+    'worker_without_medical_insurance' => 'Uninsured workers',
+    'employee_without_medical_insurance' =>'Uninsured employees',
+
 
 
 
