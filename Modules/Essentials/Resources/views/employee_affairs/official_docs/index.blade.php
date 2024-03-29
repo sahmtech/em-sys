@@ -411,6 +411,8 @@
                         }
                         if ($('#doc_type_filter').val() && $('#doc_type_filter').val() != 'all') {
                             d.doc_type = $('#doc_type_filter').val();
+                            console.log( $('#doc_type_filter').val());
+
                         }
 
                         if ($('#doc_filter_date_range').val() && $('#doc_filter_date_range').val() !=

@@ -51,12 +51,12 @@ class EssentialsOfficialDocumentController extends Controller
 
         $official_documents = EssentialsOfficialDocument::leftjoin('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
 
-            ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
+            ->whereIn('u.id', $userIds)
+            ->where('u.status', '!=', 'inactive')
+
             ->select([
                 'essentials_official_documents.id',
-
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-
                 'essentials_official_documents.type',
                 'essentials_official_documents.status',
                 'essentials_official_documents.file_path',
@@ -66,41 +66,42 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.expiration_date',
                 'u.user_type',
                 'u.id_proof_number as id_proof_number'
-            ])->orderby('id', 'desc');
+            ])->orderby('essentials_official_documents.id', 'desc');
 
+        // dd($official_documents->where('essentials_official_documents.type', "national_id")->get());
 
-        if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
-            $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
-        }
-        if (!empty(request()->input('user_type')) && request()->input('user_type') !== 'all') {
-            $official_documents->where('u.user_type', request()->input('user_type'));
-        }
-        if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-            $official_documents->where('essentials_official_documents.status', request()->input('status'));
-        }
-
-        if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
-            $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
-        }
-        if (!empty(request()->input('doc_exists')) && request()->input('doc_exists') !== 'all') {
-            if (request()->input('doc_exists') == "exists") {
-                $official_documents->whereNotNull('file_path');
-            } else {
-                $official_documents->whereNull('file_path');
-            }
-        }
-
-        if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            $start = request()->start_date;
-            $end = request()->end_date;
-            $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
-                ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
-        }
-        if (!empty(request()->isForHome)) {
-            $official_documents->where('essentials_official_documents.type', 'residence_permit');
-        }
 
         if (request()->ajax()) {
+            if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
+                $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
+            }
+            if (!empty(request()->input('user_type')) && request()->input('user_type') !== 'all') {
+                $official_documents->where('u.user_type', request()->input('user_type'));
+            }
+            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                $official_documents->where('essentials_official_documents.status', request()->input('status'));
+            }
+
+            if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
+                $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
+            }
+            if (!empty(request()->input('doc_exists')) && request()->input('doc_exists') !== 'all') {
+                if (request()->input('doc_exists') == "exists") {
+                    $official_documents->whereNotNull('file_path');
+                } else {
+                    $official_documents->whereNull('file_path');
+                }
+            }
+
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end = request()->end_date;
+                $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
+                    ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
+            }
+            if (!empty(request()->isForHome)) {
+                $official_documents->where('essentials_official_documents.type', 'residence_permit');
+            }
 
 
             return Datatables::of($official_documents)
@@ -136,7 +137,7 @@ class EssentialsOfficialDocumentController extends Controller
                 ->filterColumn('id_proof_number', function ($query, $keyword) {
                     $query->where("u.id_proof_number", ["%{$keyword}%"]);
                 })
-                ->removeColumn('id')
+
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -206,7 +207,13 @@ class EssentialsOfficialDocumentController extends Controller
                 ]
             );
 
-
+            $previous_doc = EssentialsOfficialDocument::where('employee_id', $request->input('employees2'))
+                ->where('type', $input['doc_type'])->where('is_active', 1)->first();
+            if ($previous_doc) {
+                $previous_doc->is_active = 0;
+                $previous_doc->status = 'expired';
+                $previous_doc->save();
+            }
 
             $input2['type'] = $input['doc_type'];
             $input2['number'] = $input['doc_number'];
@@ -216,13 +223,13 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['issue_place'] = $input['issue_place'];
             $input2['is_active'] = 1;
             $input2['status'] = 'valid';
+
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
 
                 $input2['file_path'] = $filePath;
             }
-
 
             $doc = EssentialsOfficialDocument::create($input2);
 
@@ -324,11 +331,7 @@ class EssentialsOfficialDocumentController extends Controller
 
             $input2['expiration_date'] = $request->expiration_date;
             $input2['status'] = $request->status;
-            // if ($request->input('docfile') != null) {
-            //     $file = $request->file('docfile');
-            //     $filePath = $file->store('/officialDocuments');
-            //     $input2['file_path'] = $filePath;
-            // }
+
             EssentialsOfficialDocument::where('id', $docId)->update($input2);
             $output = [
                 'success' => 1,

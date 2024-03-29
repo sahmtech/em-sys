@@ -184,6 +184,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         // Route::get('/preview-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'preview'])->name('preview.file');
+        Route::get('/getwithinTwoMonthExpiryContracts', [\Modules\Sales\Http\Controllers\SalesController::class, 'withinTwoMonthExpiryContracts'])->name('sales.withinTwoMonthExpiryContracts');
+        Route::get('/all-workers', [\Modules\Sales\Http\Controllers\SalesController::class, 'get_all_workers'])->name('sales.get_all_workers');
+        Route::get('/all-active-workers', [\Modules\Sales\Http\Controllers\SalesController::class, 'get_active_workers'])->name('sales.get_active_workers');
+        Route::get('/all-inactive-workers', [\Modules\Sales\Http\Controllers\SalesController::class, 'get_inactive_workers'])->name('sales.get_inactive_workers');
+
 
         Route::get('/download-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'])->name('download.file');
         Route::get('/download-contract/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'print'])->name('download.contract');

@@ -21,11 +21,10 @@
                                 <thead>
                                     <tr>
 
-                                    <th>@lang('followup::lang.worker_name')</th>
-                                    <th>@lang('followup::lang.residency')</th>
+                                    <th>@lang('essentials::lang.name')</th>
+                                    <th>@lang('followup::lang.eqama')</th>
                                     <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.project')</th>
-                                  
                                     <th>@lang('followup::lang.end_date')</th>
                                     <th></th>
 

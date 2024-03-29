@@ -8,7 +8,7 @@
         <br>
         <div class="row">
             <div class="col-md-3">
-                <a href="{{ route('filteredRequests', ['filter' => 'new']) }}">
+                <a href="{{ route('sales.get_all_workers') }}">
                     <div class="custom_card">
 
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -32,7 +32,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('filteredRequests', ['filter' => 'under_process']) }}">
+                <a href="{{ route('sales.get_active_workers', ['filter' => 'under_process']) }}">
                     <div class="custom_card">
 
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -55,7 +55,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('filteredRequests', ['filter' => 'finished']) }}">
+                <a href="{{ route('sales.get_inactive_workers') }}">
                     <div class="custom_card">
 
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -78,7 +78,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="">
+                 <a href="{{ route('under_study_offer_prices') }}">
                     <div class="custom_card">
 
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -142,7 +142,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('followup::lang.worker_name')</th>
-                                    <th>@lang('followup::lang.residency')</th>
+                                    <th>@lang('followup::lang.eqama')</th>
                                     <th>@lang('followup::lang.project')</th>
                                     <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.end_date')</th>
@@ -210,7 +210,7 @@
                 serverSide: true,
                 pageLength: 10,
                 ajax: {
-                    url: "{{ route('withinTwoMonthExpiryContracts') }}",
+                    url: "{{ route('sales.withinTwoMonthExpiryContracts') }}",
                 },
                 columns: [{
                         data: 'worker_name'
