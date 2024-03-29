@@ -1821,5 +1821,6 @@ return [
   'worker_medical_insurance' => 'العمال المؤمن لهم',
   '_expired_contracts' => 'عقود العملاء المنتهية',
   'worker_without_medical_insurance' => 'العمال غير المؤمن لهم',
-  'employee_without_medical_insurance' => 'الموظفين غير المؤمن لهم'
+  'employee_without_medical_insurance' => 'الموظفين غير المؤمن لهم',
+  'final_exit' => 'الخروج النهائي',
 ];

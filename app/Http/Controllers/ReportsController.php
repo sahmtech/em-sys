@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Contact;
+use App\ContactLocation;
 use App\Report;
 use App\Transaction;
 use App\User;
@@ -11,6 +12,7 @@ use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
@@ -27,6 +29,7 @@ use Modules\HousingMovements\Entities\HousingMovementsMaintenance;
 use Modules\HousingMovements\Entities\HtrBuilding;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
+use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -1095,5 +1098,98 @@ class ReportsController extends Controller
 
 
         return view('reports.worker_medical_insurance');
+    }
+
+
+    public function final_exit()
+    {
+
+
+      
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
+        $users = User::whereIn('id', $userIds)->whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
+
+
+
+        if (request()->ajax()) {
+
+            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+
+                $users = $users->where('users.assigned_to', request()->input('project_name'));
+            }
+
+            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+                $start = request()->filter_start_date;
+                $end = request()->filter_end_date;
+
+                $users->whereHas('contract', function ($query) use ($start, $end) {
+                    $query->whereDate('contract_end_date', '>=', $start)
+                        ->whereDate('contract_end_date', '<=', $end);
+                });
+            }
+            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
+
+                $users = $users->where('users.nationality_id', request()->nationality);
+            }
+
+            return Datatables::of($users)
+
+                ->addColumn('nationality', function ($user) {
+                    return optional($user->country)->nationality ?? ' ';
+                })
+                ->addColumn('worker', function ($user) {
+                    return $user->first_name . ' ' . $user->last_name;
+                })
+                ->addColumn('contact_name', function ($user) {
+                    return $user->assignedTo?->name;
+                })
+
+
+                ->addColumn('building', function ($user) {
+                    return $user->rooms?->building->name;
+                })
+
+                ->addColumn('building_address', function ($user) {
+                    return $user->rooms?->building->address;
+                })
+
+                ->addColumn('room_number', function ($user) {
+                    return $user->rooms?->room_number;
+                })
+
+
+                ->addColumn('residence_permit_expiration', function ($user) {
+                    $residencePermitDocument = $user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
+                    if ($residencePermitDocument) {
+
+                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+
+                ->addColumn('contract_end_date', function ($user) {
+                    return optional($user->contract)->contract_end_date ?? ' ';
+                })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->where('first_name', 'LIKE', "%{$keyword}%")->orWhere('last_name', 'LIKE', "%{$keyword}%");
+                })
+
+                ->rawColumns(['nationality', 'worker', 'residence_permit_expiration', 'contract_end_date'])
+                ->make(true);
+        }
+
+        return view('reports.final_exit');
     }
 }

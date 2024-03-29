@@ -437,9 +437,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('worker-medical-insurance', [ReportsController::class, 'worker_medical_insurance'])->name('worker_medical_insurance');
         Route::get('worker-without-medical-insurance', [ReportsController::class, 'worker_without_medical_insurance'])->name('worker_without_medical_insurance');
         Route::get('employee-without-medical-insurance', [ReportsController::class, 'employee_without_medical_insurance'])->name('employee_without_medical_insurance');
+        Route::get('final-exit', [ReportsController::class, 'final_exit'])->name('final_exit');
     });
 
-
+    
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);
