@@ -715,7 +715,11 @@ return [
     'contracts_almost_finished' => 'Contracts that expire after 15 days',
     'rooms_and_beds' => 'Rooms and beds',
     'building' => 'Building',
-    'employee_medical_insurance' => 'Medical Insurance'
+    'employee_medical_insurance' => 'Medical Insurance',
+    'cars_change_oil' => 'Change Oil',
+    'car_maintenances' => 'Car Maintenances',
+
+
 
 
 

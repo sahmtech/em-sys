@@ -1816,6 +1816,8 @@ return [
   'rooms_and_beds'=>'الغرف والأسرة',
   'building'=>'المباني',
   'employee_medical_insurance'=>'التأمين الطبي',
+  'cars_change_oil'=>'تغيير الزيت',
+  'car_maintenances'=>'صيانة السيارات',
 
 
 ];

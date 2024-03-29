@@ -432,8 +432,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('rooms-and-beds', [ReportsController::class, 'rooms_and_beds'])->name('rooms_and_beds');
         Route::get('building', [ReportsController::class, 'building'])->name('building');
         Route::get('employee-medical-insurance', [ReportsController::class, 'employee_medical_insurance'])->name('employee_medical_insurance');
+        Route::get('cars-change-oil', [ReportsController::class, 'cars_change_oil'])->name('cars_change_oil');
+        Route::get('car-maintenances', [ReportsController::class, 'car_maintenances'])->name('car_maintenances');
     });
-
+    
     
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');

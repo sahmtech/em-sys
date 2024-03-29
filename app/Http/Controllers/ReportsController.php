@@ -21,6 +21,9 @@ use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\HousingMovements\Entities\Car;
+use Modules\HousingMovements\Entities\HousingMovementsCarsChangeOil;
+use Modules\HousingMovements\Entities\HousingMovementsMaintenance;
 use Modules\HousingMovements\Entities\HtrBuilding;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
@@ -271,7 +274,7 @@ class ReportsController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-      
+
 
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -280,7 +283,7 @@ class ReportsController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-      
+
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
 
         $rooms = DB::table('htr_rooms')
@@ -299,7 +302,7 @@ class ReportsController extends Controller
                 ->addColumn('checkbox', function ($row) {
                     return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
                 })
-           
+
                 ->filterColumn('number', function ($query, $keyword) {
                     $query->where('number', 'like', "%{$keyword}%");
                 })
@@ -309,17 +312,17 @@ class ReportsController extends Controller
         }
 
         $workers = User::whereIn('users.id', $userIds)
-        ->whereNot('status', 'inactive')
-        ->whereDoesntHave('htrRoomsWorkersHistories', function($query) {
-            $query->where('still_housed', '=', 1);
-        })
-        ->select(
-            'users.id',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''), ' - ',COALESCE(users.id_proof_number,'')) as full_name")
-        )
-        ->pluck('full_name', 'users.id');
+            ->whereNot('status', 'inactive')
+            ->whereDoesntHave('htrRoomsWorkersHistories', function ($query) {
+                $query->where('still_housed', '=', 1);
+            })
+            ->select(
+                'users.id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''), ' - ',COALESCE(users.id_proof_number,'')) as full_name")
+            )
+            ->pluck('full_name', 'users.id');
 
-    
+
         $roomStatusOptions = [
             'busy' => __('housingmovements::lang.busy_rooms'),
             'available' => __('housingmovements::lang.available_rooms'),
@@ -330,11 +333,11 @@ class ReportsController extends Controller
     public function building()
     {
 
-      
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-      
 
-      
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
@@ -349,15 +352,16 @@ class ReportsController extends Controller
         $cities = EssentialsCity::forDropdown();
 
         $buildings = HtrBuilding::select([
-        'id', 'name', 'city_id', 'address',
-        'guard_ids_data',
-        'supervisor_ids_data','cleaner_ids_data',
-        'building_contract_end_date'])
-        ->orderBy('id','desc');
+            'id', 'name', 'city_id', 'address',
+            'guard_ids_data',
+            'supervisor_ids_data', 'cleaner_ids_data',
+            'building_contract_end_date'
+        ])
+            ->orderBy('id', 'desc');
 
         if (request()->ajax()) {
-            
-           
+
+
             return Datatables::of($buildings)
                 ->editColumn('city_id', function ($row) use ($cities) {
                     $item = $cities[$row->city_id] ?? '';
@@ -387,7 +391,6 @@ class ReportsController extends Controller
                     } else {
                         return '';
                     }
-                  
                 })
                 ->editColumn('cleaner_id', function ($row) use ($users) {
                     if ($row->cleaner_ids_data != null) {
@@ -401,18 +404,106 @@ class ReportsController extends Controller
                         return '';
                     }
                 })
-                
-         
+
+
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
-                ->rawColumns(['action' ,'guard_id' ,'supervisor_id','cleaner_id'])
+                ->rawColumns(['action', 'guard_id', 'supervisor_id', 'cleaner_id'])
                 ->make(true);
         }
 
-      
+
         return view('reports.building');
     }
+
+
+    public function cars_change_oil()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $CarsChangeOil = HousingMovementsCarsChangeOil::all();
+        if (request()->ajax()) {
+            return DataTables::of($CarsChangeOil)
+
+
+                ->editColumn('car', function ($row) {
+                    return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
+                })
+
+                ->editColumn('current_speedometer', function ($row) {
+                    return $row->current_speedometer ?? '';
+                })
+
+                ->editColumn('next_change_oil', function ($row) {
+                    return  $row->next_change_oil ?? '';
+                })
+                ->editColumn('invoice_no', function ($row) {
+                    return $row->invoice_no ?? '';
+                })
+                ->editColumn('date', function ($row) {
+                    return  Carbon::parse($row->date)->format('Y-m-d') ?? '';
+                })
+                ->rawColumns(['action', 'car'])
+                ->make(true);
+        }
+        return view('reports.movment_changeOil');
+    }
+
+    public function car_maintenances(Request $request)
+    {
+
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $carsMaintenance = HousingMovementsMaintenance::all();
+
+        if (request()->ajax()) {
+
+            if (!empty(request()->input('carSelect')) && request()->input('carSelect') !== 'all') {
+
+
+                $carsMaintenance = $carsMaintenance->where('car_id', request()->input('carSelect'));
+            }
+
+
+            return DataTables::of($carsMaintenance)
+
+
+                ->editColumn('car', function ($row) {
+                    return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
+                })
+
+                ->editColumn('current_speedometer', function ($row) {
+                    return $row->current_speedometer ?? '';
+                })
+                ->editColumn('maintenance_type', function ($row) {
+                    return $row->maintenance_type ?? '';
+                })
+                ->editColumn('maintenance_description', function ($row) {
+                    return $row->maintenance_description ?? '';
+                })
+                ->editColumn('invoice_no', function ($row) {
+                    return $row->invoice_no ?? '';
+                })
+                ->editColumn('date', function ($row) {
+                    return  Carbon::parse($row->date)->format('Y-m-d') ?? '';
+                })
+
+
+                ->filter(function ($query) use ($request) {
+
+                    // if (!empty($request->input('full_name'))) {
+                    //     $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('driver')}%"]);
+                    // }
+                })
+
+                ->rawColumns(['action', 'car'])
+                ->make(true);
+        }
+
+        return view('reports.car_maintenances');
+    }
+
 
     public function employee_medical_insurance()
     {
@@ -524,7 +615,7 @@ class ReportsController extends Controller
 
                     return $item;
                 })
-       
+
 
                 ->filterColumn('user', function ($query, $keyword) {
 
@@ -554,7 +645,7 @@ class ReportsController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-     
+
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -579,15 +670,15 @@ class ReportsController extends Controller
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-            $users->select(
-                'users.*',
-                'users.id as worker_id',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'sales_projects.name as contact_name'
-            )
-                ->orderBy('users.id', 'desc')
-                ->groupBy('users.id');
-    
+        $users->select(
+            'users.*',
+            'users.id as worker_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            'sales_projects.name as contact_name'
+        )
+            ->orderBy('users.id', 'desc')
+            ->groupBy('users.id');
+
 
         if (request()->ajax()) {
             return DataTables::of($users)
@@ -698,5 +789,4 @@ class ReportsController extends Controller
 
         return view('essentials::projects_workers.medicalInsurance.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
-
 }
