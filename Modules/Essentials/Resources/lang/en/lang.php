@@ -722,6 +722,8 @@ return [
     'worker_without_medical_insurance' => 'Uninsured workers',
     'employee_without_medical_insurance' => 'Uninsured employees',
     'final_exit' => 'Final exit',
+    'projects'=>'Projects',
+    'projects_workers'=>'Projects worker',
 
 
 

@@ -1198,6 +1198,11 @@ class ReportsController extends Controller
     public function projects()
     {
 
+     
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
+      
+
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
             ->with([
@@ -1209,11 +1214,15 @@ class ReportsController extends Controller
 
         $salesProjects = SalesProject::with(['contact']);
 
-        $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
-        $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
-        $contacts->whereIn('id',   $contacts_ids);
-        $salesProjects =   $salesProjects->whereIn('id', $followupUserAccessProject);
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
+            $contacts->whereIn('id',   $contacts_ids);
+            $salesProjects =   $salesProjects->whereIn('id', $followupUserAccessProject);
+           }
 
+
+      
         if (request()->ajax()) {
 
 
@@ -1288,6 +1297,7 @@ class ReportsController extends Controller
                 ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
+       
 
         return view('reports.projects');
     }

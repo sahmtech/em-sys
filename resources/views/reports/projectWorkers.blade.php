@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('followup::lang.reports.projectWorkersReports'))
+@section('title', __('essentials::lang.projects_workers'))
 
 @section('content')
 
@@ -24,9 +24,9 @@
 
 
         <div class="modal-header">
-            <h2>
-                <span>@lang('followup::lang.reports.projectWorkersReports')</span>
-            </h2>
+         
+        <h1>@lang('essentials::lang.projects_workers')
+        </h1>
         </div>
 
         <div class="modal-body">

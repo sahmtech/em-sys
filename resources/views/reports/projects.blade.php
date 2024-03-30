@@ -57,10 +57,10 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{ route('projects') }}",
+                        url: "{{ route('reports-projects') }}",
 
                     },
-                    projects
+                    
                     columns: [
 
                     {
