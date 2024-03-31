@@ -45,6 +45,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequisitionController;
 use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\Restaurant;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalesCommissionAgentController;
@@ -417,7 +418,31 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles');
 
     Route::get('/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
+    Route::get('/roles/editOrCreateReportAccessRole/{id}', [RoleController::class, 'editOrCreateReportAccessRole'])->name('editOrCreateReportAccessRole');
     Route::post('/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
+    Route::post('/roles/updateAccessRoleReport/{roleId}', [RoleController::class, 'updateAccessRoleReport'])->name('updateAccessRoleReport');
+
+
+    Route::prefix('reports')->group(function () {
+        Route::get('/reports', [ReportsController::class, 'landing'])->name('reports.landing');
+        Route::get('expired_residencies', [ReportsController::class, 'expired_residencies'])->name('expired_residencies');
+        Route::get('residencies-almost-finished', [ReportsController::class, 'residencies_almost_finished'])->name('residencies_almost_finished');
+        Route::get('contracts-almost-finished', [ReportsController::class, 'contracts_almost_finished'])->name('contracts_almost_finished');
+        Route::get('expired-contracts', [ReportsController::class, 'expired_contracts'])->name('expired_contracts');
+        Route::get('rooms-and-beds', [ReportsController::class, 'rooms_and_beds'])->name('rooms_and_beds');
+        Route::get('building', [ReportsController::class, 'building'])->name('building');
+        Route::get('employee-medical-insurance', [ReportsController::class, 'employee_medical_insurance'])->name('employee_medical_insurance');
+        Route::get('cars-change-oil', [ReportsController::class, 'cars_change_oil'])->name('cars_change_oil');
+        Route::get('car-maintenances', [ReportsController::class, 'car_maintenances'])->name('car_maintenances');
+        Route::get('worker-medical-insurance', [ReportsController::class, 'worker_medical_insurance'])->name('worker_medical_insurance');
+        Route::get('worker-without-medical-insurance', [ReportsController::class, 'worker_without_medical_insurance'])->name('worker_without_medical_insurance');
+        Route::get('employee-without-medical-insurance', [ReportsController::class, 'employee_without_medical_insurance'])->name('employee_without_medical_insurance');
+        Route::get('final-exit', [ReportsController::class, 'final_exit'])->name('final_exit');
+        Route::get('projects', [ReportsController::class, 'projects'])->name('reports-projects');
+        Route::get('project-workers', [ReportsController::class, 'project_workers'])->name('project_workers');
+    });
+
+
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);

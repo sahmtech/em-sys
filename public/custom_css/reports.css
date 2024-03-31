@@ -1,0 +1,47 @@
+.reports-card-grid {
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); */
+    gap: 10%;
+    padding: 2%;
+
+}
+
+.reports-card-link {
+    text-decoration: none;
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.reports-card {
+    background-color: #fff;
+    border-radius: 10px;
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    margin: 5%;
+    text-align: center;
+    height: 15vh;
+    width: 100%;
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+.reports-card i {
+    color: black;
+    /* Set the icon color to black */
+    font-size: 300%;
+    /* Adjust the icon size as desired */
+}
+
+.reports-card h3 {
+
+    font-size: 125%;
+    /* Adjust the icon size as desired */
+}
+
+.reports-card:hover {
+    transform: scale(1.05);
+}
