@@ -711,5 +711,24 @@ return [
     'qualification_attachements' => 'Qualification Attachements',
     'visa' => 'VISA',
     'company_name' => 'Company name',
+    'residencies_almost_finished' => 'Residencies that expire after 15 days',
+    'contracts_almost_finished' => 'Contracts that expire after 15 days',
+    'rooms_and_beds' => 'Rooms and beds',
+    'building' => 'Building',
+    'employee_medical_insurance' => 'Medical Insurance',
+    'cars_change_oil' => 'Change Oil',
+    'car_maintenances' => 'Car Maintenances',
+    '_expired_contracts' => 'Expired customer contracts',
+    'worker_without_medical_insurance' => 'Uninsured workers',
+    'employee_without_medical_insurance' => 'Uninsured employees',
+    'final_exit' => 'Final exit',
+    'projects'=>'Projects',
+    'projects_workers'=>'Projects worker',
+
+
+
+
+
+
 
 ];

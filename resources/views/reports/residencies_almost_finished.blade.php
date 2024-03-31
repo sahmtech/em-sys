@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.expired_residencies'))
+@section('title', __('essentials::lang.residencies_almost_finished'))
 
 @section('content')
 
     <section class="content-header">
 
-        <h1>@lang('essentials::lang.expired_residencies')
+        <h1>@lang('essentials::lang.residencies_almost_finished')
         </h1>
 
         <section class="content">
@@ -14,11 +14,9 @@
                 <div class="col-md-12">
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="expired_residencies">
+                            <table class="table table-bordered table-striped" id="residencies_almost_finished">
                                 <thead>
                                     <tr>
-
-
 
                                         <th>@lang('followup::lang.name')</th>
                                         <th>@lang('followup::lang.residency')</th>
@@ -39,7 +37,6 @@
                                         <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
 
 
-
                                     </tr>
                                 </thead>
                             </table>
@@ -57,23 +54,24 @@
             $(document).ready(function() {
 
 
-                var expired_residencies;
+                var residencies_almost_finished;
 
                 function reloadDataTable() {
-                    expired_residencies.ajax.reload();
+                    residencies_almost_finished.ajax.reload();
                 }
 
-                expired_residencies = $('#expired_residencies').DataTable({
+                residencies_almost_finished = $('#residencies_almost_finished').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{ route('expired.residencies') }}",
+                        url: "{{ route('residencies_almost_finished') }}",
 
                     },
 
                     columns: [
 
-                        {
+                     
+                    {
                             data: 'worker_name'
                         },
                         {

@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.expired_residencies'))
+@section('title', __('essentials::lang.allexpired_residencies'))
 
 @section('content')
 
     <section class="content-header">
 
-        <h1>@lang('essentials::lang.expired_residencies')
+        <h1>@lang('essentials::lang.allexpired_residencies')
         </h1>
 
         <section class="content">
@@ -17,8 +17,6 @@
                             <table class="table table-bordered table-striped" id="expired_residencies">
                                 <thead>
                                     <tr>
-
-
 
                                         <th>@lang('followup::lang.name')</th>
                                         <th>@lang('followup::lang.residency')</th>
@@ -67,7 +65,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{ route('expired.residencies') }}",
+                        url: "{{ route('expired_residencies') }}",
 
                     },
 

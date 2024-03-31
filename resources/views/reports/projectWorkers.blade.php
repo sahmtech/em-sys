@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('followup::lang.reports.projectWorkersReports'))
+@section('title', __('essentials::lang.projects_workers'))
 
 @section('content')
 
@@ -24,75 +24,26 @@
 
 
         <div class="modal-header">
-            <h2>
-                <span>@lang('followup::lang.reports.projectWorkersReports')</span>
-            </h2>
+         
+        <h1>@lang('essentials::lang.projects_workers')
+        </h1>
         </div>
 
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
                     @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-
-                                {!! Form::select('project_name_filter', $contacts_fillter, null, [
-                                    'class' => 'form-control select2',
-                                
-                                    'style' => 'width:100%;padding:2px;',
-                                    'placeholder' => __('lang_v1.all'),
-                                ]) !!}
-
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                {!! Form::label('nationality_filter', __('followup::lang.nationality') . ':') !!}
-                                {!! Form::select('nationality_filter', $nationalities, null, [
-                                    'class' => 'form-control select2',
-                                    'style' => 'width:100%;padding:2px;',
-                                    'placeholder' => __('lang_v1.all'),
-                                ]) !!}
-
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                {!! Form::label('status_label', __('followup::lang.status') . ':') !!}
-
-                                <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
-                                    <option value="all" selected>@lang('lang_v1.all')</option>
-                                    @foreach ($status_filltetr as $key => $value)
-                                        <option value="{{ $key }}">{{ $value }}</option>
-                                    @endforeach
-                                    {{-- <option value="vecation">@lang('essentials::lang.vecation')</option>
-                                    <option value="inactive">@lang('essentials::lang.inactive')</option>
-                                    <option value="terminated">@lang('essentials::lang.terminated')</option> --}}
-
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
-                                {!! Form::text('doc_filter_date_range', null, [
-                                    'placeholder' => __('lang_v1.select_a_date_range'),
-                                
-                                    'class' => 'form-control',
-                                
-                                    'readonly',
-                                ]) !!}
-                            </div>
-                        </div>
-
-
-
                         @php
 
-                            $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
+                            $default_fields = [
+                                $fields[0],
+                                $fields[1],
+                                $fields[2],
+                                $fields[3],
+                                $fields[4],
+                                $fields[5],
+                                $fields[6],
+                            ];
 
                             $default = array_keys($default_fields);
 
@@ -120,9 +71,6 @@
                             </div>
                         </div>
                     @endcomponent
-                    <div class="modal fade" id="chooseFields_projectsworker" tabindex="-1" role="dialog">
-                        @include('followup::reports.chooseFields')
-                    </div>
                     @component('components.widget', ['class' => 'box-primary'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="workers_table"
@@ -137,30 +85,30 @@
                                         <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
                                         <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
-            
-            
+
+
                                         <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
-            
-            
+
+
                                         <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
                                         <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
-            
+
                                         <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
-            
-            
-            
+
+
+
                                         <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
-            
+
                                         <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                                         <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                                         <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
                                         <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
                                         <td class="table-td-width-100px">@lang('business.email')</td>
-            
+
                                         <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
@@ -168,12 +116,12 @@
                                         <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
-            
+
                                         <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
                                         <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
-            
-            
-            
+
+
+
 
 
                                     </tr>
@@ -213,33 +161,14 @@
 
                 ajax: {
 
-                    url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']) }}",
-                    // url: "{{ route('projectWorkers') }}",
+                    url: "{{ route('project_workers') }}",
 
-                    data: function(d) {
-                        if ($('#project_name_filter').val()) {
-                            d.project_name = $('#project_name_filter').val();
-                        }
-                        if ($('#nationality_filter').val()) {
-                            d.nationality = $('#nationality_filter').val();
-                        }
-                        if ($('#status_fillter').val()) {
-                            d.status_fillter = $('#status_fillter').val();
-                        }
-                        if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
-                            d.start_date = start;
-                            d.end_date = end;
-                        }
-                    }
+                  
                 },
 
-                
+
                 columns: [
-                   
+
                     {
                         "data": "worker_id"
                     },
