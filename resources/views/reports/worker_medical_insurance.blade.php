@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.employee_medical_insurance'))
+@section('title', __('essentials::lang.worker_medical_insurance'))
 
 @section('content')
 
 <section class="content-header">
 
-    <h1>@lang('essentials::lang.employee_medical_insurance')
+    <h1>@lang('essentials::lang.worker_medical_insurance')
     </h1>
 
     <section class="content">
@@ -14,7 +14,7 @@
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="employee_medical_insurance">
+                    <table class="table table-bordered table-striped" id="worker_medical_insurance">
                         <thead>
                             <tr>
 
@@ -43,17 +43,17 @@
     $(document).ready(function() {
 
 
-        var employee_medical_insurance;
+        var worker_medical_insurance;
 
         function reloadDataTable() {
-            employee_medical_insurance.ajax.reload();
+            worker_medical_insurance.ajax.reload();
         }
 
-        employee_medical_insurance = $('#employee_medical_insurance').DataTable({
+        worker_medical_insurance = $('#worker_medical_insurance').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('employee_medical_insurance') }}",
+                url: "{{ route('worker_medical_insurance') }}",
 
             },
 

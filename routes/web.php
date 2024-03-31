@@ -434,9 +434,15 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('employee-medical-insurance', [ReportsController::class, 'employee_medical_insurance'])->name('employee_medical_insurance');
         Route::get('cars-change-oil', [ReportsController::class, 'cars_change_oil'])->name('cars_change_oil');
         Route::get('car-maintenances', [ReportsController::class, 'car_maintenances'])->name('car_maintenances');
+        Route::get('worker-medical-insurance', [ReportsController::class, 'worker_medical_insurance'])->name('worker_medical_insurance');
+        Route::get('worker-without-medical-insurance', [ReportsController::class, 'worker_without_medical_insurance'])->name('worker_without_medical_insurance');
+        Route::get('employee-without-medical-insurance', [ReportsController::class, 'employee_without_medical_insurance'])->name('employee_without_medical_insurance');
+        Route::get('final-exit', [ReportsController::class, 'final_exit'])->name('final_exit');
+        Route::get('projects', [ReportsController::class, 'projects'])->name('reports-projects');
+        Route::get('project-workers', [ReportsController::class, 'project_workers'])->name('project_workers');
     });
-    
-    
+
+
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);

@@ -869,6 +869,10 @@ class EssentialsCardsController extends Controller
 
     public function expired_residencies()
     {
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+
+        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+     
         $residencies = EssentialsOfficialDocument::where(
             'type',
             'residence_permit'
@@ -887,25 +891,77 @@ class EssentialsCardsController extends Controller
         if (request()->ajax()) {
             return DataTables::of($residencies)
                 ->addColumn('worker_name', function ($row) {
-                    return $row->employee->first_name .
+                    return $row->employee?->first_name .
                         ' ' .
-                        $row->employee->last_name;
+                        $row->employee?->last_name;
                 })
                 ->addColumn('residency', function ($row) {
                     return $row->number;
                 })
                 ->addColumn('customer_name', function ($row) {
-                    return $row->employee->assignedTo?->contact
-                        ->supplier_business_name ?? null;
+
+                    if ($row->employee->user_type == 'employee' || $row->employee->user_type == 'manager') {
+                        return __('essentials::lang.management');
+                    } else {
+                        return $row->employee->assignedTo?->contact
+                            ->supplier_business_name ?? null;
+                    }
                 })
                 ->addColumn('project', function ($row) {
-                    return $row->employee->assignedTo?->contact
-                        ->salesProjects()->first()->name ?? null;
+                    if ($row->employee->user_type == 'employee' || $row->employee->user_type == 'manager') {
+                        return __('essentials::lang.management');
+                    } else {
+                        return $row->employee->assignedTo?->contact
+                            ->salesProjects()->first()->name ?? null;
+                    }
                 })
                 ->addColumn('end_date', function ($row) {
                     return $row->expiration_date;
                 })
-                ->addColumn('action', '')
+                ->addColumn('nationality', function ($row) {
+                    return optional($row->employee->country)->nationality ?? ' ';
+                })
+                ->addColumn('company_name', function ($row) {
+                    return optional($row->employee->company)->name ?? ' ';
+                })
+                ->addColumn('dob', function ($row) {
+                    return $row->employee->dob ?? '';
+                })->addColumn('passport_number', function ($row) {
+                    $passportDocument = $row->employee->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->number ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+                ->addColumn('passport_expire_date', function ($row) {
+                    $passportDocument = $row->employee->OfficialDocument
+                        ->where('type', 'passport')
+                        ->first();
+                    if ($passportDocument) {
+
+                        return optional($passportDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })->addColumn('profession', function ($row) use ($appointments, $job_titles) {
+                    $professionId = $appointments[$row->employee->id] ?? '';
+
+                    $professionName = $job_titles[$professionId] ?? '';
+
+                    return $professionName;
+                })
+                ->addColumn('border_no', function ($row) {
+                    return $row->employee->border_no ?? ' ';
+                })
+
+
+                ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
 
                 ->removeColumn('id')
                 ->rawColumns([
