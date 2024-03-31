@@ -13,6 +13,8 @@ use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
+
+use Modules\Essentials\Entities\EssentialsWorkCard;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Yajra\DataTables\Facades\DataTables;
@@ -32,6 +34,8 @@ class FollowUpController extends Controller
      */
     public function index()
     {
+
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_followup_dashboard = auth()->user()->can('followup.followup_dashboard');
         if (!($is_admin || $can_followup_dashboard)) {
@@ -42,6 +46,7 @@ class FollowUpController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
+
         $business = Business::where('id', $business_id)->first();
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
@@ -184,11 +189,12 @@ class FollowUpController extends Controller
 
         $contracts = User::whereIn('id', $userIds)->where('user_type', 'worker')
             ->whereHas('contract', function ($qu) use ($business) {
-                $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
+                $qu->where('is_active', 1)
+                    ->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
                     ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
             })
             ->whereHas('OfficialDocument', function ($query) {
-                $query->where('type', 'residence_permit');
+                $query->where('type', 'residence_permit')->where('is_active', 1);
             });
 
 
@@ -197,7 +203,7 @@ class FollowUpController extends Controller
             ->addColumn(
                 'worker_name',
                 function ($row) {
-                    return $row->first_name . ' ' . $row->last_name;
+                    return $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name;
                 }
             )
             ->addColumn(
@@ -272,18 +278,19 @@ class FollowUpController extends Controller
             $userIds = User::whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
         }
 
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
-            ->whereDate('expiration_date', '>=', Carbon::now($business->time_zone))
-            ->whereDate('expiration_date', '<=', Carbon::now($business->time_zone)->addMonths(2))
-            ->whereHas('employee', function ($qu) use ($userIds) {
-                $qu->where('user_type', 'worker')->whereIn('id', $userIds);
+        $residencies = EssentialsOfficialDocument::where('is_active', 1)
+            ->where('type', 'residence_permit')
+            ->whereDate('expiration_date', '>=', Carbon::now()->setTimezone($business->time_zone))
+            ->whereDate('expiration_date', '<=', Carbon::now()->addMonths(2)->setTimezone($business->time_zone))
+            ->whereHas('employee', function ($query) use ($userIds) {
+                $query->where('user_type', 'worker')->whereIn('id', $userIds);
             });
 
         return DataTables::of($residencies)
             ->addColumn(
                 'worker_name',
                 function ($row) {
-                    return $row->employee->first_name . ' ' . $row->employee->last_name;
+                    return $row->employee->first_name . ' ' . $row->employee->mid_name . ' ' . $row->employee->last_name;
                 }
             )
             ->addColumn(
@@ -340,7 +347,7 @@ class FollowUpController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $business = Business::where('id', $business_id)->first();
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -354,58 +361,65 @@ class FollowUpController extends Controller
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
         }
-        $contracts = User::whereIn('id', $userIds)
-            ->where('user_type', 'worker')
-            ->whereHas('contract', function ($qu) use ($business) {
-                $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
-                    ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
-            })
-            ->whereHas('essentialsworkCard', function ($qu) {
+
+        $business = Business::where('id', $business_id)->first();
+
+        $work_cards = EssentialsWorkCard::with(['user', 'user.officialDocument' => function ($query) use ($business) {
+            $query->where('is_active', 1)
+                ->where('type', 'residence_permit')
+                ->whereDate('expiration_date', '>=', Carbon::now()->setTimezone($business->time_zone))
+                ->whereDate('expiration_date', '<=', Carbon::now()->addMonths(2)->setTimezone($business->time_zone));
+        }])->where('is_active', 1)
+            ->whereHas('user', function ($query) use ($business) {
+                $query->whereHas('officialDocument', function ($query) use ($business) {
+                    $query->where('is_active', 1)
+                        ->where('type', 'residence_permit')
+                        ->whereDate('expiration_date', '>=', Carbon::now()->setTimezone($business->time_zone))
+                        ->whereDate('expiration_date', '<=', Carbon::now()->addMonths(2)->setTimezone($business->time_zone));
+                });
             });
 
 
-
-        return DataTables::of($contracts)
+        return DataTables::of($work_cards)
             ->addColumn(
                 'worker_name',
                 function ($row) {
-                    return $row->first_name . ' ' . $row->last_name;
+                    return $row->user->first_name . ' ' . $row->user->mid_name . " " . $row->user->last_name ?? " ";
                 }
             )
-            ->addColumn(
-                'residency',
-                function ($row) {
-                    return $row->OfficialDocument->number;
-                }
-            )
+            ->addColumn('residency', function ($row) {
+                return $row->user->id_proof_number ?? "";
+            })
+
             ->addColumn(
                 'sponser',
                 function ($row) {
-                    return $row->company?->name ?? null;
+                    return $row->user->company?->name ?? null;
                 }
             )
             ->addColumn(
                 'work_card_no',
                 function ($row) {
-                    return $row->essentialsworkCard->work_card_no;
+                    return $row->work_card_no ?? " ";
                 }
             )
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->assignedTo->name;
+                    return $row->user->assignedTo?->name ?? "";
                 }
             )
             ->addColumn(
                 'customer_name',
                 function ($row) {
-                    return $row->assignedTo->contact->supplier_business_name;
+                    return $row->user->assignedTo?->contact?->supplier_business_name ??
+                        "";
                 }
             )
             ->addColumn(
                 'end_date',
                 function ($row) {
-                    return $row->contract->contract_end_date;
+                    return $row->user->officialDocument()->where('is_active', 1)->where('type', 'residence_permit')->first()->expiration_date ?? "";
                 }
             )
 

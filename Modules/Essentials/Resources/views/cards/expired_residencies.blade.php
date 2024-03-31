@@ -19,6 +19,7 @@
                                     <tr>
 
 
+
                                         <th>@lang('followup::lang.name')</th>
                                         <th>@lang('followup::lang.residency')</th>
                                         <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
@@ -36,6 +37,7 @@
                                         <th>@lang('followup::lang.end_date')</th>
                                         <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
+
 
 
                                     </tr>

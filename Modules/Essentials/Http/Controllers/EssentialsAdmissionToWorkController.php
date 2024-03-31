@@ -42,42 +42,44 @@ class EssentialsAdmissionToWorkController extends Controller
         }
 
         $departments =  EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $admissionToWork = EssentialsAdmissionToWork::whereIn('employee_id', $userIds)
-        ->with('user')
+            ->with('user')
+            ->leftJoin('users', 'users.id', '=', 'essentials_admission_to_works.employee_id')
             ->select(
-                'id',
-                'employee_id',
-                'admissions_type as admissions_type',
-                'admissions_status as admissions_status',
-                'admissions_date as admissions_date',
-                'is_active as is_active',
+                'essentials_admission_to_works.id',
+                'essentials_admission_to_works.employee_id',
+                'essentials_admission_to_works.admissions_type as admissions_type',
+                'essentials_admission_to_works.admissions_status as admissions_status',
+                'essentials_admission_to_works.admissions_date as admissions_date',
+                'essentials_admission_to_works.is_active as is_active',
+                'users.id_proof_number'
 
-            )->where('is_active',1);
+            )->where('essentials_admission_to_works.is_active', 1);
 
-            
-            
-            if (!empty(request()->input('admissions_status')) && request()->input('admissions_status') !== 'all') {
-                $admissionToWork->where('essentials_admission_to_works.admissions_status', request()->input('admissions_status'));
-            }
 
-            if (!empty(request()->input('admissions_type')) && request()->input('admissions_type') !== 'all') {
-                $admissionToWork->where('essentials_admission_to_works.admissions_type', request()->input('admissions_type'));
-            }
 
-          
+        if (!empty(request()->input('admissions_status')) && request()->input('admissions_status') !== 'all') {
+            $admissionToWork->where('essentials_admission_to_works.admissions_status', request()->input('admissions_status'));
+        }
 
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
-                $admissionToWork->whereDate('essentials_admission_to_works.admissions_date', '>=', $start)
+        if (!empty(request()->input('admissions_type')) && request()->input('admissions_type') !== 'all') {
+            $admissionToWork->where('essentials_admission_to_works.admissions_type', request()->input('admissions_type'));
+        }
+
+
+
+        if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            $start = request()->start_date;
+            $end = request()->end_date;
+            $admissionToWork->whereDate('essentials_admission_to_works.admissions_date', '>=', $start)
                 ->whereDate('essentials_admission_to_works.admissions_date', '<=', $end);
-            }
-    
+        }
+
 
         if (request()->ajax()) {
 
@@ -95,7 +97,7 @@ class EssentialsAdmissionToWorkController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_edit_employee_work_admissions, $can_delete_employee_work_admissions ,$can_activate_employee_admission) {
+                    function ($row) use ($is_admin, $can_edit_employee_work_admissions, $can_delete_employee_work_admissions, $can_activate_employee_admission) {
                         $html = '';
                         if ($is_admin || $can_edit_employee_work_admissions) {
                             $html .= '<a href="' . route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
@@ -144,17 +146,17 @@ class EssentialsAdmissionToWorkController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-       
+
         try {
             $input = $request->only(['origValue']);
-           
-            $admission = EssentialsAdmissionToWork::where('id',$admissionId)->first();
-            
+
+            $admission = EssentialsAdmissionToWork::where('id', $admissionId)->first();
+
             if ($admission) {
                 $admission->is_active = $input['origValue'];
                 $admission->admissions_date = now();
                 $admission->save();
-                
+
                 $output = [
                     'success' => true,
                     'msg' => __('lang_v1.updated_success'),
@@ -169,7 +171,7 @@ class EssentialsAdmissionToWorkController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = ['success' => false, 'msg' => $e->getMessage()];
         }
-    
+
         return $output;
     }
 
@@ -198,17 +200,15 @@ class EssentialsAdmissionToWorkController extends Controller
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];
 
-            $previous_admission = EssentialsAdmissionToWork::where('employee_id',$input2['employee_id'])
-            ->latest('created_at')
-            ->first();
-           
+            $previous_admission = EssentialsAdmissionToWork::where('employee_id', $input2['employee_id'])
+                ->latest('created_at')
+                ->first();
 
-            if( $previous_admission )
-            {
-                $previous_admission->is_active= 0;
-                $previous_admission->admissions_date= $input2['admissions_date'];
+
+            if ($previous_admission) {
+                $previous_admission->is_active = 0;
+                $previous_admission->admissions_date = $input2['admissions_date'];
                 $previous_admission->save();
-              
             }
 
             EssentialsAdmissionToWork::create($input2);

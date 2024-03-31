@@ -893,7 +893,9 @@ class EssentialsCardsController extends Controller
                 ->addColumn('worker_name', function ($row) {
                     return $row->employee?->first_name .
                         ' ' .
-                        $row->employee?->last_name;
+
+                        $row->employee->mid_name . ' ' . $row->employee->last_name;
+
                 })
                 ->addColumn('residency', function ($row) {
                     return $row->number;
@@ -994,6 +996,8 @@ class EssentialsCardsController extends Controller
                 ->addColumn('worker_name', function ($row) {
                     return $row->employee?->first_name .
                         ' ' .
+                        $row->employee?->mid_name
+                        . ' ' .
                         $row->employee?->last_name;
                 })
                 ->addColumn('residency', function ($row) {
@@ -1053,16 +1057,18 @@ class EssentialsCardsController extends Controller
                     $query->where('status', 'vecation');
                 })
                 ->where('end_date', '<', now())
-                ->select('end_date')
-                ->count();
+                ->select('end_date');
         }
 
         if (request()->ajax()) {
             return DataTables::of($late_vacation)
                 ->addColumn('worker_name', function ($row) {
-                    return $row->user->first_name . ' ' . $row->user->last_name;
+                    return $row->user->first_name . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? "";
                 })
 
+                ->addColumn('eqama', function ($row) {
+                    return $row->user->id_proof_number ?? "";
+                })
                 ->addColumn('project', function ($row) {
                     return $row->user->assignedTo?->contact
                         ->supplier_business_name ?? null;
@@ -1106,10 +1112,12 @@ class EssentialsCardsController extends Controller
         if (request()->ajax()) {
             return DataTables::of($final_visa)
                 ->addColumn('worker_name', function ($row) {
-                    return $row->user?->first_name .
-                        ' ' .
-                        $row->user?->last_name ??
+                    return $row->user?->first_name . ' ' . $row->user?->mid_name
+                        . ' ' . $row->user?->last_name ??
                         '';
+                })
+                ->addColumn('eqama', function ($row) {
+                    return $row->user->id_proof_number ?? "";
                 })
 
                 ->addColumn('project', function ($row) {
