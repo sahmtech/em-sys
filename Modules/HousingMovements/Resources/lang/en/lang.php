@@ -166,7 +166,9 @@ return [
     'change_status' => 'Change request status ',
     'all_request' => ' Request index',
     'housed_in_room' => 'Housed in Rooms',
-    'no_project'=>'No project',
+    'no_project' => 'No project',
+    'car_info' => 'Car information',
+    'show' => 'show',
 
 
 

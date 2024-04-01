@@ -18,12 +18,14 @@
                         {!! Form::open([
                             'url' => action('\Modules\Essentials\Http\Controllers\CarController@store'),
                             'method' => 'post',
+                            'enctype' => 'multipart/form-data',
+                        
                             'id' => 'carType_add_form',
                         ]) !!}
 
 
                         <div class="row">
-                         
+
 
                             <div class="col-sm-6">
                                 {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}<span style="color: red; font-size:10px"> *</span>
@@ -81,12 +83,12 @@
                                     </select>
                                 </div>
                             </div>
-                           
+
 
 
 
                         </div>
-                        
+
                         <div class="row">
 
 
@@ -186,7 +188,7 @@
                                     {!! Form::label('number_seats', __('housingmovements::lang.number_seats') . '  ') !!}
                                     {!! Form::number('number_seats', '', [
                                         'class' => 'form-control',
-                                       
+                                    
                                         'placeholder' => __('housingmovements::lang.number_seats'),
                                         'id' => 'number_seats',
                                     ]) !!}
@@ -217,22 +219,16 @@
                                     ]) !!}
                                 </div>
                             </div>
-                            {{-- <div class="col-sm-6">
+
+                            <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('insurance_status', __('housingmovements::lang.insurance_status') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::label('car_image', __('housingmovements::lang.car_image') . '  ') !!}
+                                    {!! Form::file('car_image[]', ['class' => 'form-control', 'accept' => 'image/*', 'multiple' => 'multiple']) !!}
 
-                                    <select class="form-control" id="insurance_status" name="insurance_status"
-                                        style="padding: 2px;" required>
-                                        <option value="">@lang('messages.please_select')</option>
-                                        <option value="not_expired">{{ __('housingmovements::lang.not_expired') }}
-                                        </option>
-                                        <option value="expired">{{ __('housingmovements::lang.expired') }}</option>
-
-
-                                    </select>
 
                                 </div>
                             </div>
+                            {{-- 
                             <div class="col-sm-6">
 
                                 <div class="form-group">
