@@ -146,6 +146,8 @@ return [
   "payroll" => " مسير الرواتب",
   "payrolls" => " مسيرات الرواتب",
   "payrolls_management" => 'إدارة الرواتب',
+
+
   "payroll_create_edit" => "الراتب",
   "all_payrolls" => "كل مسيرات الرواتب",
   "proceed" => "إكمال",
@@ -1292,7 +1294,7 @@ return [
   'index_workers' => ' عمال المشاريع',
   'workcards_indexWorkerProjects' => ' عمال المشاريع',
   'showWorkerProjects' => 'عرض معلومات العامل',
-
+  'sales_projects' => 'المشاريع',
   'delete_wishes' => 'حذف الرغبات',
   'delete_leave' => 'حذف الاجازات',
   'edit_leave' => ' النشاط للإجازات',
@@ -1825,7 +1827,6 @@ return [
   'worker_without_medical_insurance' => 'العمال غير المؤمن لهم',
   'employee_without_medical_insurance' => 'الموظفين غير المؤمن لهم',
   'final_exit' => 'الخروج النهائي',
-  'projects'=>'مشاريع العملاء',
-  'projects_workers'=>'عمال المشاريع',
+  'projects' => 'مشاريع العملاء',
+  'projects_workers' => 'عمال المشاريع',
 ];
-
