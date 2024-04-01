@@ -9,6 +9,7 @@ class CarImage extends Model
 {
     use HasFactory;
 
+    
     protected $fillable = [ 'car_image', 'car_id'];
 
     public function car()

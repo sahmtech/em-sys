@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('car_image');
         
+            
             $table->unsignedBigInteger('car_id');
             $table->foreign('car_id')->references('id')->on('housing_movements_cars');
 
