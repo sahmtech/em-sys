@@ -7,7 +7,14 @@
 
         <h1>@lang('essentials::lang.contracts_almost_finished')
         </h1>
-
+<head>
+<style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
         <section class="content">
 
             <div class="row">
@@ -15,7 +22,7 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="contracts_almost_finished">
-                                <thead>
+                                <thead class="gb-green">
                                     <tr>
 
                                         <th>@lang('sales::lang.number_of_contract')</th>

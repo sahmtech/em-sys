@@ -7,7 +7,14 @@
 
         <h1>@lang('essentials::lang.car_maintenances')
         </h1>
-
+<head>
+<style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
         <section class="content">
 
             <div class="row">
@@ -15,7 +22,7 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="car_maintenances">
-                                <thead>
+                                <thead class="bg-green">
                                     <tr>
                                         <th style="text-align: center;">@lang('housingmovements::lang.car')</th>
                                         <th style="text-align: center;">@lang('housingmovements::lang.current_speedometer')</th>
