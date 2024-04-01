@@ -17,6 +17,7 @@ use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -158,6 +159,9 @@ class ReportsController extends Controller
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
+                ->addColumn('gender', function ($row) {
+                    return $row->employee->gender ?? ' ';
+                })
 
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
@@ -167,7 +171,7 @@ class ReportsController extends Controller
                     'worker_name',
                     'residency',
                     'project',
-                    'end_date',
+                    'end_date', 'gender',
                     'action',
                 ])
                 ->make(true);
@@ -264,6 +268,9 @@ class ReportsController extends Controller
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
+                ->addColumn('gender', function ($row) {
+                    return $row->employee->gender ?? ' ';
+                })
 
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
@@ -273,7 +280,7 @@ class ReportsController extends Controller
                     'worker_name',
                     'residency',
                     'project',
-                    'end_date',
+                    'end_date', 'gender',
                     'action',
                 ])
                 ->make(true);
@@ -636,7 +643,7 @@ class ReportsController extends Controller
             ->pluck('name', 'id');
 
 
-        $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
+        $insurances = EssentialsEmployeesInsurance::with('user ', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
@@ -733,7 +740,7 @@ class ReportsController extends Controller
 
                 ->filterColumn('user', function ($query, $keyword) {
 
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
+                    $query->whereRaw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) LIKE ?", ["%$keyword%"])
                         ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
                 })
 
@@ -1198,10 +1205,10 @@ class ReportsController extends Controller
     public function projects()
     {
 
-     
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
-      
+
 
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
@@ -1219,10 +1226,10 @@ class ReportsController extends Controller
             $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
             $contacts->whereIn('id',   $contacts_ids);
             $salesProjects =   $salesProjects->whereIn('id', $followupUserAccessProject);
-           }
+        }
 
 
-      
+
         if (request()->ajax()) {
 
 
@@ -1297,7 +1304,7 @@ class ReportsController extends Controller
                 ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
-       
+
 
         return view('reports.projects');
     }
@@ -1479,5 +1486,134 @@ class ReportsController extends Controller
         }
 
         return ' ';
+    }
+
+
+
+    public function employee_almost_finish_contracts()
+    {
+        $today = now();
+        $after_15_days = $today->copy()->addDays(15);
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with(['user'])
+            // ->whereDate('contract_end_date', '<=', $endDateThreshold)
+            ->whereBetween('contract_end_date', [$today, $after_15_days])
+
+            ->select('contract_end_date', 'employee_id');
+
+        //  dd( $contract_end_date->first());
+
+        if (request()->ajax()) {
+
+            return DataTables::of($contract_end_date)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
+                    }
+                )
+
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->contract_end_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                )
+
+
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
+
+        return view('reports.employee_almost_finish_contracts');
+    }
+
+
+    public function employee_finish_contracts()
+    {
+        $today = now();
+        $after_15_days = $today->copy()->addDays(15);
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with(['user'])
+            ->whereDate('contract_end_date', '<=', $today)
+            // ->whereBetween('contract_end_date', [$today, $after_15_days])
+
+            ->select('contract_end_date', 'employee_id');
+
+        //  dd( $contract_end_date->first());
+
+        if (request()->ajax()) {
+
+            return DataTables::of($contract_end_date)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
+                    }
+                )
+
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->contract_end_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                )
+
+
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
+
+        return view('reports.employee_finish_contracts');
     }
 }

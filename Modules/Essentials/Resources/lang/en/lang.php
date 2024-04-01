@@ -722,8 +722,10 @@ return [
     'worker_without_medical_insurance' => 'Uninsured workers',
     'employee_without_medical_insurance' => 'Uninsured employees',
     'final_exit' => 'Final exit',
-    'projects'=>'Projects',
-    'projects_workers'=>'Projects worker',
+    'projects' => 'Projects',
+    'projects_workers' => 'Projects worker',
+    'employee_finish_contracts' => 'Employees whose contract has expired',
+    'employee_almost_finish_contracts' => 'Employees whose contract expires within 15 days',
 
 
 
