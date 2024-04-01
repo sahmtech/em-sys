@@ -146,6 +146,8 @@ return [
   "payroll" => " مسير الرواتب",
   "payrolls" => " مسيرات الرواتب",
   "payrolls_management" => 'إدارة الرواتب',
+
+
   "payroll_create_edit" => "الراتب",
   "all_payrolls" => "كل مسيرات الرواتب",
   "proceed" => "إكمال",
@@ -1293,7 +1295,7 @@ return [
   'index_workers' => ' عمال المشاريع',
   'workcards_indexWorkerProjects' => ' عمال المشاريع',
   'showWorkerProjects' => 'عرض معلومات العامل',
-
+  'sales_projects' => 'المشاريع',
   'delete_wishes' => 'حذف الرغبات',
   'delete_leave' => 'حذف الاجازات',
   'edit_leave' => ' النشاط للإجازات',
@@ -1829,7 +1831,9 @@ return [
   'projects' => 'مشاريع العملاء',
   'projects_workers' => 'عمال المشاريع',
 
+
   'employee_finish_contracts' => 'موظفين انتهى عقدهم',
   'employee_almost_finish_contracts' => 'موظفين ينتهي عقدهم خلال 15 يوم',
+
 
 ];

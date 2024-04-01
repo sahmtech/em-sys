@@ -897,6 +897,19 @@ class DataController extends Controller
 
             ],
 
+            //payrolls
+            [
+                'group_name' => __('essentials::lang.payrolls_management'),
+                'group_permissions' => [
+                    [
+                        'value' => 'essentials.payrolls_management',
+                        'label' => __('essentials::lang.payrolls_management'),
+                        'default' => false,
+                    ],
+                ]
+
+            ],
+
             //todo
             [
                 'group_name' => __('essentials::lang.todo'),
@@ -1230,6 +1243,7 @@ class DataController extends Controller
                 ]
 
             ],
+
             //employees_affairs
             [
                 'group_name' => __('essentials::lang.employees_affairs'),
@@ -1603,6 +1617,7 @@ class DataController extends Controller
                 ]
 
             ],
+
             //workcard
             [
                 'group_name' => __('essentials::lang.work_cards'),
@@ -1807,8 +1822,6 @@ class DataController extends Controller
                 ],
 
             ],
-
-
 
             //housing
             [
