@@ -73,32 +73,32 @@
                     columns: [
 
                         {
-                            data: 'worker_name'
+                            data: 'worker_name', searchable: true 
                         },
                         {
-                            data: 'residency'
+                            data: 'residency', searchable: true 
                         },
                         
                         {
-                            data: 'end_date'
+                            data: 'end_date', searchable: true 
                         },
                         {
-                            "data": "company_name"
+                            "data": "company_name", searchable: true 
                         },
                         {
-                            data: 'passport_number'
+                            data: 'passport_number', searchable: true 
                         },
                         {
-                            data: 'passport_expire_date'
+                            data: 'passport_expire_date', searchable: true 
                         },
                         {
-                            data: 'border_no'
+                            data: 'border_no', searchable: true 
                         },
                         {
-                            data: 'dob'
+                            data: 'dob', searchable: true 
                         },
                          {
-                            data: 'gender',
+                            data: 'gender',, searchable: true ,
                              render: function(data, type, row) {
                             if (data === 'male') {
                                 return '@lang('lang_v1.male')';
@@ -111,18 +111,18 @@
                         }
                         },
                         {
-                            data: 'customer_name'
+                            data: 'customer_name', searchable: true 
                         },
                         {
-                            data: 'project'
+                            data: 'project', searchable: true 
                         },
                         
 
                         {
-                            data: 'nationality'
+                            data: 'nationality', searchable: true 
                         }, {
-                            data: "profession",
-                            name: 'profession'
+                            data: "profession", searchable: true 
+                            name: 'profession', searchable: true 
                         },
                     ],
                 });

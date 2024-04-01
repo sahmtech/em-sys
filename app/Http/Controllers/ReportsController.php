@@ -159,11 +159,30 @@ class ReportsController extends Controller
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('employee', function ($q) use ($keyword) {
+                        $q->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
+                })
+
 
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
 
-                ->removeColumn('id')
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('employee', function ($q) use ($keyword) {
+                        $q->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('residency', function ($query, $keyword) {
+                    $query->where('number', 'like', "%$keyword%");
+                })
+
+
                 ->rawColumns([
                     'worker_name',
                     'residency',
@@ -323,6 +342,14 @@ class ReportsController extends Controller
                 ->filterColumn('number_of_contract', function ($query, $keyword) {
                     $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
                 })
+                ->filterColumn('contract_form', function ($query, $keyword) {
+                    $query->whereRaw("transactions.contract_form like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('supplier_business_name', function ($query, $keyword) {
+                    $query->whereHas('contact', function ($q) use ($keyword) {
+                        $q->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
+                })
 
 
                 ->make(true);
@@ -340,34 +367,45 @@ class ReportsController extends Controller
 
             $today = Carbon::now();
 
-            $contracts = salesContract::whereDate('end_date', '<', $today)
+            $contracts = salesContract::with(['transaction', 'transaction.contact'])
+                ->whereDate('end_date', '<', $today)
                 ->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
                 ->select([
-                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
+                    'sales_contracts.number_of_contract',
+                    'sales_contracts.id',
+                    'sales_contracts.offer_price_id',
+                    'sales_contracts.start_date',
+                    'sales_contracts.end_date',
+                    'sales_contracts.status',
+                    'sales_contracts.file',
+                    'sales_contracts.contract_duration',
                     'sales_contracts.contract_per_period',
-                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                    'transactions.contract_form as contract_form',
+                    'transactions.contact_id',
+                    'transactions.id as tra'
                 ]);
 
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $contracts->where('sales_contracts.status', request()->input('status'));
-            }
-            if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
-                $contracts->where('transactions.contract_form', request()->input('contract_form'));
-            }
+
 
             return Datatables::of($contracts)
 
 
                 ->editColumn('sales_project_id', function ($row) use ($contacts) {
                     $item = $contacts[$row->contact_id] ?? '';
-
                     return $item;
                 })
-                ->filterColumn('number_of_contract', function ($query, $keyword) {
-                    $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
-                })
 
+
+                ->filterColumn('sales_project_id', function ($query, $keyword) {
+                    $query->whereHas('transaction.contact', function ($q) use ($keyword) {
+                        $q->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('contract_form', function ($query, $keyword) {
+                    $query->whereHas('transaction', function ($q) use ($keyword) {
+                        $q->where('contract_form', 'like', "%{$keyword}%");
+                    });
+                })
 
                 ->make(true);
         }
@@ -403,6 +441,13 @@ class ReportsController extends Controller
 
                 ->filterColumn('number', function ($query, $keyword) {
                     $query->where('number', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('htr_building_id', function ($query, $keyword) use ($buildings) {
+                    $query->whereIn('htr_building_id', function ($q) use ($buildings, $keyword) {
+                        $q->select('id')
+                            ->from('htr_buildings')
+                            ->where('name', 'like', "%{$keyword}%");
+                    });
                 })
 
 
