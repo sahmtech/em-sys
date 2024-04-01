@@ -89,10 +89,11 @@
 
 
                     <div class="modal fade" id="add_car_model" tabindex="-1" role="dialog"></div>
-                    <div class="modal fade" id="edit_car_model" tabindex="-1" role="dialog">
-                    </div>
-                @endcomponent
-            </div>
+                    <div class="modal fade" id="edit_car_model" tabindex="-1" role="dialog"></div>
+                        <div class="modal fade" id="show_car_model" tabindex="-1" role="dialog"></div>
+                        {{-- </div> --}}
+                    @endcomponent
+                </div>
 
 
     </section>
@@ -204,6 +205,28 @@
 
 
             $(document).on('click', 'button.edit_car_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "get",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
+
+            $(document).on('click', 'button.show_car_button', function() {
 
                 var href = $(this).data('href');
                 var data = $(this).serialize();

@@ -18,6 +18,8 @@
                         {!! Form::open([
                             'url' => action('\Modules\Essentials\Http\Controllers\CarController@update', $car->id),
                             'method' => 'put',
+                            'enctype' => 'multipart/form-data',
+                        
                             'id' => 'carType_add_form',
                         ]) !!}
 
@@ -128,11 +130,18 @@
                                     <select class="form-control" name="manufacturing_year" id="manufacturing_year">
                                         @php
                                             $currentYear = date('Y');
-                                            $carbonDate = \Carbon\Carbon::createFromFormat('Y-m-d', $car->manufacturing_year);
+                                            $carbonDate = \Carbon\Carbon::createFromFormat(
+                                                'Y-m-d',
+                                                $car->manufacturing_year,
+                                            );
                                             $year_stored = $carbonDate->year;
                                             for ($year = $currentYear; $year >= 1900; $year--) {
                                                 if ($year_stored == $year) {
-                                                    echo '<option value="' . $year . '" selected>' . $year . '</option>';
+                                                    echo '<option value="' .
+                                                        $year .
+                                                        '" selected>' .
+                                                        $year .
+                                                        '</option>';
                                                 } else {
                                                     echo '<option value="' . $year . '">' . $year . '</option>';
                                                 }
@@ -207,7 +216,7 @@
                                     {!! Form::label('number_seats', __('housingmovements::lang.number_seats') . '  ') !!}
                                     {!! Form::number('number_seats', $car->number_seats, [
                                         'class' => 'form-control',
-                                      
+                                    
                                         'placeholder' => __('housingmovements::lang.number_seats'),
                                         'id' => 'number_seats',
                                     ]) !!}
@@ -230,7 +239,14 @@
                                     ]) !!}
                                 </div>
                             </div>
-                         
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('car_image', __('housingmovements::lang.car_image') . '  ') !!}
+                                    {!! Form::file('car_image[]', ['class' => 'form-control', 'accept' => 'image/*', 'multiple' => 'multiple']) !!}
+
+
+                                </div>
+                            </div>
                             <div class="row" style="margin-top: 220px;">
                                 <div class="col-sm-12"
                                     style="display: flex;

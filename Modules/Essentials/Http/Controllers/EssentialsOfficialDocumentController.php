@@ -50,7 +50,6 @@ class EssentialsOfficialDocumentController extends Controller
 
 
         $official_documents = EssentialsOfficialDocument::leftjoin('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
-
             ->whereIn('u.id', $userIds)
             ->where('u.status', '!=', 'inactive')
 
@@ -66,9 +65,10 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.expiration_date',
                 'u.user_type',
                 'u.id_proof_number as id_proof_number'
-            ])->orderby('essentials_official_documents.id', 'desc');
+            ])
+            ->orderby('essentials_official_documents.id', 'desc');
 
-        // dd($official_documents->where('essentials_official_documents.type', "national_id")->get());
+        // dd($official_documents->where('essentials_official_documents.employee_id', 1270)->get());
 
 
         if (request()->ajax()) {

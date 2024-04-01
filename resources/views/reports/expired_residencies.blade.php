@@ -4,7 +4,14 @@
 @section('content')
 
     <section class="content-header">
-
+<head>
+    <style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
         <h1>@lang('essentials::lang.allexpired_residencies')
         </h1>
 
@@ -15,29 +22,22 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="expired_residencies">
-                                <thead>
+                                <thead class="bg-green">
                                     <tr>
 
                                         <th>@lang('followup::lang.name')</th>
                                         <th>@lang('followup::lang.residency')</th>
-                                        <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
-
-
-                                        <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
-                                        <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
-
-
-                                        <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
-                                        <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
-                                        <th>@lang('followup::lang.project')</th>
+                                        <th>@lang('followup::lang.eqama_end_date')</th>
+                                        <th>@lang('essentials::lang.company_name')</th>
+                                        <th>@lang('followup::lang.passport_numer')</th>
+                                        <th>@lang('followup::lang.passport_expire_date')</th>
+                                        <th>@lang('essentials::lang.border_number')</th>
+                                        <th>@lang('essentials::lang.dob')</th>
+                                        <th>@lang('essentials::lang.gender')</th>
                                         <th>@lang('followup::lang.customer_name')</th>
-
-                                        <th>@lang('followup::lang.end_date')</th>
-                                        <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
-                                        <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
-
-                                        <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
-
+                                        <th>@lang('followup::lang.project')</th>
+                                        <th>@lang('followup::lang.nationality')</th>
+                                        <th>@lang('followup::lang.profession')</th>
 
                                     </tr>
                                 </thead>
@@ -73,42 +73,56 @@
                     columns: [
 
                         {
-                            data: 'worker_name'
+                            data: 'worker_name', searchable: true 
                         },
                         {
-                            data: 'residency'
+                            data: 'residency', searchable: true 
+                        },
+                        
+                        {
+                            data: 'end_date', searchable: true 
                         },
                         {
-                            "data": "company_name"
+                            "data": "company_name", searchable: true 
                         },
                         {
-                            data: 'passport_number'
+                            data: 'passport_number', searchable: true 
                         },
                         {
-                            data: 'passport_expire_date'
+                            data: 'passport_expire_date', searchable: true 
                         },
                         {
-                            data: 'border_no'
-                        }, {
-                            data: 'dob'
+                            data: 'border_no', searchable: true 
                         },
                         {
-                            data: 'project'
+                            data: 'dob', searchable: true 
+                        },
+                         {
+                            data: 'gender',, searchable: true ,
+                             render: function(data, type, row) {
+                            if (data === 'male') {
+                                return '@lang('lang_v1.male')';
+                            } else if (data === 'female') {
+                                return '@lang('lang_v1.female')';
+
+                            } else {
+                                return '@lang('lang_v1.others')';
+                            }
+                        }
                         },
                         {
-                            data: 'customer_name'
+                            data: 'customer_name', searchable: true 
                         },
+                        {
+                            data: 'project', searchable: true 
+                        },
+                        
 
                         {
-                            data: 'end_date'
-                        },
-                        {
-                            data: 'nationality'
+                            data: 'nationality', searchable: true 
                         }, {
-                            data: "profession",
-                            name: 'profession'
-                        }, {
-                            data: "gender",
+                            data: "profession", searchable: true 
+                            name: 'profession', searchable: true 
                         },
                     ],
                 });

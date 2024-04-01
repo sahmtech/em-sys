@@ -8,6 +8,14 @@
         <h1>@lang('essentials::lang.cars_change_oil')
         </h1>
 
+<head>
+<style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
         <section class="content">
 
             <div class="row">
@@ -15,7 +23,7 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="cars_change_oil">
-                                <thead>
+                                <thead class="bg-green">
                                     <tr>
 
                                         <th style="text-align: center;">@lang('housingmovements::lang.car')</th>

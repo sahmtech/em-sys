@@ -555,6 +555,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/cars', [\Modules\Essentials\Http\Controllers\CarController::class, 'index'])->name('essentials.cars');
         Route::get('/cars-create', [\Modules\Essentials\Http\Controllers\CarController::class, 'create'])->name('essentials.car-create');
         Route::get('/cars-edit/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'edit'])->name('essentials.car.edit');
+        Route::get('/cars-show/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'show'])->name('essentials.car.show');
         Route::post('/cars-store', [\Modules\Essentials\Http\Controllers\CarController::class, 'store'])->name('essentials.car-store');
         Route::post('/cars-search', [\Modules\Essentials\Http\Controllers\CarController::class, 'search'])->name('essentials.car-search');
         Route::put('/cars-update/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'update'])->name('essentials.car-update');

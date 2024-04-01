@@ -7,7 +7,14 @@
 
     <h1>@lang('essentials::lang.employee_medical_insurance')
     </h1>
-
+<head>
+<style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
     <section class="content">
 
         <div class="row">
@@ -15,10 +22,10 @@
                 @component('components.widget', ['class' => 'box-solid'])
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="employee_medical_insurance">
-                        <thead>
+                        <thead class="bg-green">
                             <tr>
 
-                                <th>@lang('followup::lang.name')</th>
+                                    <th>@lang('followup::lang.name')</th>
                                     <th>@lang('essentials::lang.english_name')</th>
                                     <th>@lang('essentials::lang.Birth_date')</th>
                                    
