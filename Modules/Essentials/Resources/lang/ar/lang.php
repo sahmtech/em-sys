@@ -1814,7 +1814,7 @@ return [
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
 
-  'residencies_almost_finished' => 'الإقامات التي تنتهي بعد 15 يوم',
+  'residencies_almost_finished' => 'الإقامات التي تنتهي خلال 15 يوم',
   'contracts_almost_finished' => ' عقود العملاء التي تنتهي خلال 15 يوم ',
   'rooms_and_beds' => 'الغرف والأسرة',
   'building' => 'المباني',

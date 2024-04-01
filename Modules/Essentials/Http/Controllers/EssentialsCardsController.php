@@ -884,8 +884,7 @@ class EssentialsCardsController extends Controller
                     ->endOfDay(),
             ])
             ->where('is_active', 1)
-            ->latest('created_at')
-            ->get();
+            ->latest('created_at');
 
 
         if (request()->ajax()) {
@@ -995,8 +994,7 @@ class EssentialsCardsController extends Controller
 
             ->whereDate('expiration_date', '<', $today)
             ->orderBy('id', 'desc')
-            ->latest('created_at')
-            ->get();
+            ->latest('created_at');
 
         if (request()->ajax()) {
             return DataTables::of($all_expired_residencies)

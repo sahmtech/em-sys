@@ -17,7 +17,6 @@ use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -53,12 +52,6 @@ class ReportsController extends Controller
         $reports = Report::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        // if (!($is_admin)) {
-        //     return redirect()->route('home')->with('status', [
-        //         'success' => false,
-        //         'msg' => __('message.unauthorized'),
-        //     ]);
-        // }
         if (!$is_admin) {
             $reports = Report::whereIn('id', $this->moduleUtil->allowedReports())->get();
         }
@@ -79,24 +72,27 @@ class ReportsController extends Controller
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
 
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
-        $residencies = EssentialsOfficialDocument::with(['employee'])
+        $all_expired_residencies = EssentialsOfficialDocument::with(['employee'])
             ->where('type', 'residence_permit')
             ->where('is_active', 1)
 
             ->whereDate('expiration_date', '<', $today)
             ->orderBy('id', 'desc')
-            ->latest('created_at')
-            ->get();
+            ->latest('created_at');
 
         if (request()->ajax()) {
-            return DataTables::of($residencies)
+            return DataTables::of($all_expired_residencies)
                 ->addColumn('worker_name', function ($row) {
                     return $row->employee?->first_name .
                         ' ' .
-                        $row->employee?->last_name;
+
+                        $row->employee->mid_name . ' ' . $row->employee->last_name;
                 })
                 ->addColumn('residency', function ($row) {
                     return $row->number;
+                })
+                ->addColumn('gender', function ($row) {
+                    return $row->employee->gender ?? " ";
                 })
                 ->addColumn('customer_name', function ($row) {
 
@@ -126,21 +122,23 @@ class ReportsController extends Controller
                 })
                 ->addColumn('dob', function ($row) {
                     return $row->employee->dob ?? '';
-                })->addColumn('passport_number', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                })
+                ->addColumn('passport_number', function ($row) {
+                    $passportDocument = $row->employee->OfficialDocument()
                         ->where('type', 'passport')
+                        ->where('is_active', 1)
                         ->first();
                     if ($passportDocument) {
 
                         return optional($passportDocument)->number ?? ' ';
                     } else {
-
                         return ' ';
                     }
                 })
                 ->addColumn('passport_expire_date', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                    $passportDocument = $row->employee->OfficialDocument()
                         ->where('type', 'passport')
+                        ->where('is_active', 1)
                         ->first();
                     if ($passportDocument) {
 
@@ -159,9 +157,6 @@ class ReportsController extends Controller
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
-                ->addColumn('gender', function ($row) {
-                    return $row->employee->gender ?? ' ';
-                })
 
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
@@ -171,7 +166,7 @@ class ReportsController extends Controller
                     'worker_name',
                     'residency',
                     'project',
-                    'end_date', 'gender',
+                    'end_date',
                     'action',
                 ])
                 ->make(true);
@@ -180,22 +175,25 @@ class ReportsController extends Controller
         return view('reports.expired_residencies');
     }
 
-
-
     public function residencies_almost_finished()
     {
-        $today = Carbon::now();
-        $after_15_days = Carbon::now()->addDays(15);
+
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
 
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
+        $residencies = EssentialsOfficialDocument::with(['employee'])->where(
+            'type',
+            'residence_permit'
+        )
+            ->whereBetween('expiration_date', [
+                now(),
+                now()
+                    ->addDays(15)
+                    ->endOfDay(),
+            ])
             ->where('is_active', 1)
-            ->whereBetween('expiration_date', [$today, $after_15_days])
-            ->orderBy('id', 'desc')
-            ->latest('created_at')
-            ->get();
+            ->latest('created_at');
 
         if (request()->ajax()) {
             return DataTables::of($residencies)
@@ -235,8 +233,13 @@ class ReportsController extends Controller
                 })
                 ->addColumn('dob', function ($row) {
                     return $row->employee->dob ?? '';
-                })->addColumn('passport_number', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                })
+                ->addColumn('gender', function ($row) {
+                    return $row->employee->gender ?? '';
+                })
+                ->addColumn('passport_number', function ($row) {
+                    $passportDocument = $row->employee->OfficialDocument()
+                        ->where('is_active', 1)
                         ->where('type', 'passport')
                         ->first();
                     if ($passportDocument) {
@@ -248,7 +251,8 @@ class ReportsController extends Controller
                     }
                 })
                 ->addColumn('passport_expire_date', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                    $passportDocument = $row->employee->OfficialDocument()
+                        ->where('is_active', 1)
                         ->where('type', 'passport')
                         ->first();
                     if ($passportDocument) {
@@ -268,9 +272,6 @@ class ReportsController extends Controller
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
-                ->addColumn('gender', function ($row) {
-                    return $row->employee->gender ?? ' ';
-                })
 
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
@@ -280,7 +281,7 @@ class ReportsController extends Controller
                     'worker_name',
                     'residency',
                     'project',
-                    'end_date', 'gender',
+                    'end_date',
                     'action',
                 ])
                 ->make(true);
@@ -294,9 +295,6 @@ class ReportsController extends Controller
     public function contracts_almost_finished()
     {
 
-        $business_id = request()->session()->get('user.business_id');
-
-
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
 
         if (request()->ajax()) {
@@ -304,12 +302,15 @@ class ReportsController extends Controller
             $today = Carbon::now();
             $after_15_days = Carbon::now()->addDays(15);
 
-            $contracts = salesContract::whereBetween('end_date', [$today, $after_15_days])->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')->select([
-                'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
-                'sales_contracts.contract_per_period',
-                'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
-            ]);
+            $contracts = salesContract::whereBetween('end_date', [$today, $after_15_days])
+                ->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                ->select([
+                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
+                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
+                    'sales_contracts.contract_per_period',
+                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                ]);
+
 
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $contracts->where('sales_contracts.status', request()->input('status'));
@@ -330,14 +331,9 @@ class ReportsController extends Controller
                     $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
                 })
 
-                ->rawColumns(['action'])
+
                 ->make(true);
         }
-
-
-
-
-
 
         return view('reports.contracts_almost_finished');
     }
@@ -345,23 +341,20 @@ class ReportsController extends Controller
 
     public function expired_contracts()
     {
-
-        $business_id = request()->session()->get('user.business_id');
-
-
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
 
         if (request()->ajax()) {
 
             $today = Carbon::now();
 
-
-            $contracts = salesContract::whereDate('end_date', '<', $today)->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')->select([
-                'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
-                'sales_contracts.contract_per_period',
-                'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
-            ]);
+            $contracts = salesContract::whereDate('end_date', '<', $today)
+                ->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                ->select([
+                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
+                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
+                    'sales_contracts.contract_per_period',
+                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                ]);
 
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $contracts->where('sales_contracts.status', request()->input('status'));
@@ -382,7 +375,7 @@ class ReportsController extends Controller
                     $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
                 })
 
-                ->rawColumns(['action'])
+
                 ->make(true);
         }
         return view('reports.expired_contracts');
@@ -392,12 +385,7 @@ class ReportsController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
@@ -406,7 +394,6 @@ class ReportsController extends Controller
         }
 
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
-
         $rooms = DB::table('htr_rooms')
             ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents', 'total_beds'])
             ->orderBy('id', 'desc');
@@ -428,7 +415,7 @@ class ReportsController extends Controller
                     $query->where('number', 'like', "%{$keyword}%");
                 })
 
-                ->rawColumns(['action'])
+
                 ->make(true);
         }
 
@@ -456,9 +443,6 @@ class ReportsController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
@@ -643,7 +627,7 @@ class ReportsController extends Controller
             ->pluck('name', 'id');
 
 
-        $insurances = EssentialsEmployeesInsurance::with('user ', 'user.business')
+        $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
@@ -740,7 +724,7 @@ class ReportsController extends Controller
 
                 ->filterColumn('user', function ($query, $keyword) {
 
-                    $query->whereRaw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) LIKE ?", ["%$keyword%"])
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
                         ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
                 })
 
@@ -1111,9 +1095,6 @@ class ReportsController extends Controller
 
     public function final_exit()
     {
-
-
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -1486,134 +1467,5 @@ class ReportsController extends Controller
         }
 
         return ' ';
-    }
-
-
-
-    public function employee_almost_finish_contracts()
-    {
-        $today = now();
-        $after_15_days = $today->copy()->addDays(15);
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with(['user'])
-            // ->whereDate('contract_end_date', '<=', $endDateThreshold)
-            ->whereBetween('contract_end_date', [$today, $after_15_days])
-
-            ->select('contract_end_date', 'employee_id');
-
-        //  dd( $contract_end_date->first());
-
-        if (request()->ajax()) {
-
-            return DataTables::of($contract_end_date)
-                ->addColumn(
-                    'worker_name',
-                    function ($row) {
-                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
-                    }
-                )
-
-                ->addColumn(
-                    'project',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'customer_name',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'end_date',
-                    function ($row) {
-                        return $row->contract_end_date;
-                    }
-                )
-                ->addColumn(
-                    'action',
-                    ''
-                )
-
-
-                ->removeColumn('id')
-                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-                ->make(true);
-        }
-
-        return view('reports.employee_almost_finish_contracts');
-    }
-
-
-    public function employee_finish_contracts()
-    {
-        $today = now();
-        $after_15_days = $today->copy()->addDays(15);
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with(['user'])
-            ->whereDate('contract_end_date', '<=', $today)
-            // ->whereBetween('contract_end_date', [$today, $after_15_days])
-
-            ->select('contract_end_date', 'employee_id');
-
-        //  dd( $contract_end_date->first());
-
-        if (request()->ajax()) {
-
-            return DataTables::of($contract_end_date)
-                ->addColumn(
-                    'worker_name',
-                    function ($row) {
-                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
-                    }
-                )
-
-                ->addColumn(
-                    'project',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'customer_name',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'end_date',
-                    function ($row) {
-                        return $row->contract_end_date;
-                    }
-                )
-                ->addColumn(
-                    'action',
-                    ''
-                )
-
-
-                ->removeColumn('id')
-                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-                ->make(true);
-        }
-
-        return view('reports.employee_finish_contracts');
     }
 }
