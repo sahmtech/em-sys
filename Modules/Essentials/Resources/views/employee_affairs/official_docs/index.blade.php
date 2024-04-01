@@ -329,6 +329,7 @@
                 // Open the modal
                 $('#addDocFileModal').modal('show');
             });
+
             $('#addDocFileModal').on('hidden.bs.modal', function() {
                 $('#iframeDocViewer').attr('src', '');
             });
@@ -376,6 +377,8 @@
                 enableSaveButton();
             });
 
+            
+
             $('#addDocModal').on('shown.bs.modal', function(e) {
                 $('#employees_select').select2({
                     dropdownParent: $(
@@ -385,6 +388,8 @@
 
 
             });
+
+
             var official_documents_table;
 
             function reloadDataTable() {
