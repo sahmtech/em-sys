@@ -329,6 +329,7 @@
                 // Open the modal
                 $('#addDocFileModal').modal('show');
             });
+
             $('#addDocFileModal').on('hidden.bs.modal', function() {
                 $('#iframeDocViewer').attr('src', '');
             });
@@ -376,6 +377,8 @@
                 enableSaveButton();
             });
 
+            
+
             $('#addDocModal').on('shown.bs.modal', function(e) {
                 $('#employees_select').select2({
                     dropdownParent: $(
@@ -385,6 +388,8 @@
 
 
             });
+
+
             var official_documents_table;
 
             function reloadDataTable() {
@@ -411,6 +416,8 @@
                         }
                         if ($('#doc_type_filter').val() && $('#doc_type_filter').val() != 'all') {
                             d.doc_type = $('#doc_type_filter').val();
+                            console.log( $('#doc_type_filter').val());
+
                         }
 
                         if ($('#doc_filter_date_range').val() && $('#doc_filter_date_range').val() !=

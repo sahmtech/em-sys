@@ -897,6 +897,19 @@ class DataController extends Controller
 
             ],
 
+            //payrolls
+            [
+                'group_name' => __('essentials::lang.payrolls_management'),
+                'group_permissions' => [
+                    [
+                        'value' => 'essentials.payrolls_management',
+                        'label' => __('essentials::lang.payrolls_management'),
+                        'default' => false,
+                    ],
+                ]
+
+            ],
+
             //todo
             [
                 'group_name' => __('essentials::lang.todo'),
@@ -1230,6 +1243,7 @@ class DataController extends Controller
                 ]
 
             ],
+
             //employees_affairs
             [
                 'group_name' => __('essentials::lang.employees_affairs'),
@@ -1603,6 +1617,7 @@ class DataController extends Controller
                 ]
 
             ],
+
             //workcard
             [
                 'group_name' => __('essentials::lang.work_cards'),
@@ -1807,8 +1822,6 @@ class DataController extends Controller
                 ],
 
             ],
-
-
 
             //housing
             [
@@ -2451,27 +2464,56 @@ class DataController extends Controller
 
             $user->save();
 
-            if (!empty(request()->input('expiration_date'))) {
+            if (request()->input('id_proof_name') == "national_id") {
                 $id = $data['model_instance']['id'];
-                $doc = EssentialsOfficialDocument::where('employee_id', $id)->first();
-
-                if ($doc) {
-                    $doc->type = 'residence_permit';
-                    $doc->status = 'vaild';
-                    $doc->employee_id = $user->id;
-                    $doc->number = request()->input('id_proof_number');
-                    $doc->expiration_date = request()->input('expiration_date');
-                    $doc->update();
-                } else {
-                    $doc = new EssentialsOfficialDocument();
-                    $doc->type = 'residence_permit';
-                    $doc->status = 'vaild';
-                    $doc->employee_id = $user->id;
-                    $doc->number = request()->input('id_proof_number');
-                    $doc->expiration_date = request()->input('expiration_date');
-                    $doc->save();
+                $existing_doc = EssentialsOfficialDocument::where('number', request()->input('id_proof_number'))
+                    ->where('type', 'national_id')
+                    ->where('employee_id', '=', $id)
+                    ->first();
+                if (!$existing_doc) {
+                    $national_id_doc = EssentialsOfficialDocument::where('is_active', 1)->where('type', 'national_id')
+                        ->where('employee_id', $id)->first();
+                    if ($national_id_doc) {
+                        $national_id_doc->is_active = 0;
+                        $national_id_doc->status = 'expired';
+                        $national_id_doc->save();
+                    }
+                    $new_national_id = new EssentialsOfficialDocument();
+                    $new_national_id->type = 'national_id';
+                    $new_national_id->status = 'valid';
+                    $new_national_id->is_active = 1;
+                    $new_national_id->issue_date = \Carbon::now();
+                    $new_national_id->employee_id = $user->id;
+                    $new_national_id->save();
+                }
+            } else if (request()->input('id_proof_name') == "eqama") {
+                $id = $data['model_instance']['id'];
+                $existing_doc = EssentialsOfficialDocument::where('number', request()->input('id_proof_number'))
+                    ->where('type', 'residence_permit')
+                    ->where('employee_id', '=', $id)
+                    ->first();
+                if (!$existing_doc) {
+                    $residence_permit_doc = EssentialsOfficialDocument::where('is_active', 1)
+                        ->where('type', 'residence_permit')
+                        ->where('employee_id', $id)->first();
+                    if ($residence_permit_doc) {
+                        $residence_permit_doc->is_active = 0;
+                        $residence_permit_doc->status = 'expired';
+                        $residence_permit_doc->save();
+                    }
+                    $new_residence_permit = new EssentialsOfficialDocument();
+                    $new_residence_permit->type = 'residence_permit';
+                    $new_residence_permit->status = 'valid';
+                    $new_residence_permit->is_active = 1;
+                    $new_residence_permit->issue_date = \Carbon::now();
+                    $new_residence_permit->employee_id = $user->id;
+                    $new_residence_permit->number = request()->input('id_proof_number');
+                    $new_residence_permit->expiration_date = request()->input('expiration_date');
+                    $new_residence_permit->save();
                 }
             }
+
+
 
             $id = $data['model_instance']['id'];
             if (

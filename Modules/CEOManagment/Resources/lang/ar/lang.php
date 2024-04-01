@@ -20,6 +20,8 @@ return [
     'add_departments' => 'اضافة ادارات واقسام',
     'delete_depatments' => 'حذف ادارات واقسام',
     'edit_depatments' => 'تعديل ادارات واقسام',
+    'view_procedures_for_employee' => 'عرض الاجراءات للموظفين',
+    'view_procedures_for_workers' => 'عرض الاجراءات للعمال',
     'show_depatments' => 'عرض ادارات واقسام',
     'add_deputy' => 'إضافة نائب',
     'delete_procedure' => 'حذف إجراءات سير العمل',

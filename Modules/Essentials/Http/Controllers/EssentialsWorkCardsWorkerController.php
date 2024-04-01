@@ -75,15 +75,15 @@ class EssentialsWorkCardsWorkerController extends Controller
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-            $users->select(
-                'users.*',
-                'users.id as worker_id',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'sales_projects.name as contact_name'
-            )
-                ->orderBy('users.id', 'desc')
-                ->groupBy('users.id');
-    
+        $users->select(
+            'users.*',
+            'users.id as worker_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            'sales_projects.name as contact_name'
+        )
+            ->orderBy('users.id', 'desc')
+            ->groupBy('users.id');
+
 
         if (request()->ajax()) {
 
@@ -117,6 +117,9 @@ class EssentialsWorkCardsWorkerController extends Controller
 
             return DataTables::of($users)
 
+                ->addColumn('worker_id', function ($user) {
+                    return $user->worker_id ?? ' ';
+                })
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
@@ -199,7 +202,7 @@ class EssentialsWorkCardsWorkerController extends Controller
                 ->addColumn('dob', function ($user) {
 
                     return $user->dob ?? '';
-                })  ->addColumn('insurance', function ($user) {
+                })->addColumn('insurance', function ($user) {
                     if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
                         return __('followup::lang.has_insurance');
                     } else {
@@ -217,7 +220,7 @@ class EssentialsWorkCardsWorkerController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker_id','company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 

@@ -21,7 +21,8 @@
                                 <thead>
                                     <tr>
 
-                                    <th>@lang('followup::lang.worker_name')</th>
+                                    <th>@lang('essentials::lang.name')</th>
+                                    <th>@lang('followup::lang.eqama')</th>
                                 
                                     <th>@lang('followup::lang.project')</th>
                                     <th>@lang('followup::lang.customer_name')</th>
@@ -64,6 +65,7 @@
                         {
                             data: 'worker_name'
                         },
+                        {data:"eqama"},
                        
                         {
                             data: 'project'

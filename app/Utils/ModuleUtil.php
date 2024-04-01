@@ -49,6 +49,23 @@ class ModuleUtil extends Util
     {
         return $this->isModuleInstalled('Superadmin');
     }
+    public function generalPermissions()
+    {
+        return [
+
+            [
+                'group_name' => __('report.reports'),
+                'group_permissions' => [
+                    [
+                        'value' => 'report.reports',
+                        'label' => __('report.reports'),
+                        'default' => false,
+                    ],
+                ]
+
+            ],
+        ];
+    }
 
     /**
      * This function check if a function provided exist in all modules

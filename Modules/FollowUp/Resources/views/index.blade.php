@@ -114,7 +114,7 @@
                                 <tr>
                                      <th>@lang('followup::lang.sponsor')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
-                                    <th>@lang('followup::lang.residency')</th>
+                                    <th>@lang('followup::lang.eqama')</th>
                                     <th>@lang('followup::lang.project')</th>
                                     <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.end_date')</th>
@@ -141,7 +141,7 @@
                                 <tr>
                                     <th>@lang('followup::lang.sponsor')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
-                                    <th>@lang('followup::lang.residency')</th>
+                                    <th>@lang('followup::lang.eqama')</th>
                                     <th>@lang('followup::lang.project')</th>
                                     <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.end_date')</th>
@@ -170,7 +170,7 @@
                                     <th>@lang('followup::lang.worker_name')</th>
                                  
 
-                                    <th>@lang('followup::lang.residency')</th>
+                                    <th>@lang('followup::lang.eqama')</th>
                                     <th>@lang('followup::lang.work_card')</th>
                                     <th>@lang('followup::lang.project')</th>
                                     <th>@lang('followup::lang.customer_name')</th>

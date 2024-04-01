@@ -739,6 +739,28 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                     $previous_contract->contract_type_id =  $emp_data["contract_type_id"];;
                                     $previous_contract->contract_duration = null;
                                     $previous_contract->save();
+                                } else {
+
+                                    $contract = new EssentialsEmployeesContract();
+                                    $contract->employee_id  = $existingEmployee->id;
+                                    if ($emp_data['contract_number'] == null) {
+                                        $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+                                        if ($latestRecord) {
+                                            $latestRefNo = $latestRecord->contract_number;
+                                            $numericPart = (int)substr($latestRefNo, 3);
+                                            $numericPart++;
+                                            $emp_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                                        } else {
+                                            $emp_data['contract_number'] = 'EC0001';
+                                        }
+                                        $contract->contract_number = $emp_data['contract_number'];
+                                    } else {
+                                        $contract->contract_number = $emp_data['contract_number'];
+                                    }
+                                    $contract->contract_type_id  = $emp_data["contract_type_id"];
+                                    $contract->is_active  = 1;
+                                    $contract->status = "valid";
+                                    $contract->save();
                                 }
                             }
 

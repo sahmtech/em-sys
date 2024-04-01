@@ -146,6 +146,8 @@ return [
   "payroll" => " مسير الرواتب",
   "payrolls" => " مسيرات الرواتب",
   "payrolls_management" => 'إدارة الرواتب',
+
+
   "payroll_create_edit" => "الراتب",
   "all_payrolls" => "كل مسيرات الرواتب",
   "proceed" => "إكمال",
@@ -762,7 +764,7 @@ return [
   'passport' => 'جواز سفر ',
   'passport_expire_date' => 'تاريخ  انتهاء جواز السفر',
   'border_no' => 'رقم الحدود',
-  'passport_number' => 'رقم الجواز',
+  'passport_number' => 'رقم جواز السفر',
   'company_id' => 'الكفيل',
   'residence_permit' => 'إقامة',
   'drivers_license' => 'رخصة قيادة',
@@ -996,12 +998,13 @@ return [
   'expired_residencies' => 'الاقامات التي شارفت على الانتهاء خلال 15 يوم  ',
   'allexpired_residencies' => 'جميع الاقامات المنتهية ',
   'lateforvaction' => 'الموظفين المتاخرين من الإجازات',
-  'final_visa_index' => 'العمال الذين تم تصدير تاشيرة خروج نهائي ',
+  'final_visa_index' => 'المقمين الذين تم تصدير تاشيرة خروج نهائي ',
   'finsish_contract_duration' => 'انتهاء الفترة  التجريبية',
   'finsish_contract_date' => 'عقود تنتهي قريبا ',
   'late_admission' => 'مباشرة عمل متأخرة',
-  'uncomplemete_profiles' => 'نواقص الموظفين',
+  'uncomplemete_profiles' => 'نواقص الموظفين والعمال ',
   'emp_name' => 'اسم الموظف',
+  'eqama_end_date' => 'تاريخ انتهاء الإقامة ',
 
   'absent_report' => 'رفع بلاغ هروب',
   'final_visa' => 'تأشيرة خروج نهائي ',
@@ -1206,7 +1209,7 @@ return [
   'other_allowance_id_not_found' => 'رقم البدل أخرى غير موجود',
   'no_wish_file_to_show' => 'لايوجد مرفق للرغبة ',
   'view_wish_file' => 'عرض ملف المرفق للرغبة',
-  'passport_number' => 'جواز السفر',
+
   'single' => 'عازب',
   'english_name_for_city' => 'اسم المدينة بالانكليزية',
   'crud_attendance_status' => 'إدارة حالات الحضور والانصراف',
@@ -1292,7 +1295,7 @@ return [
   'index_workers' => ' عمال المشاريع',
   'workcards_indexWorkerProjects' => ' عمال المشاريع',
   'showWorkerProjects' => 'عرض معلومات العامل',
-
+  'sales_projects' => 'المشاريع',
   'delete_wishes' => 'حذف الرغبات',
   'delete_leave' => 'حذف الاجازات',
   'edit_leave' => ' النشاط للإجازات',
@@ -1500,7 +1503,7 @@ return [
   'show_employee_operation' => 'عرض الموظف في العمليات',
   'view_contract_period_ending' => 'عرض  انتهاء الفترة التجريبية',
   'view_late_work_admission' => 'عرض مباشرة العمل المتأخرة',
-  'view_missing_employees_info' => 'عرض نواقص الموظفين',
+  'view_missing_employees_info' => 'عرض نواقص الموظفين والعمال',
   'view_contract_ending' => 'عرض العقود المنتهية',
   'edit_Insurance' => 'تعديل التأمين الطبي',
   'activate_employee_admission' => 'تفعيل مباشرة العمل',
@@ -1538,7 +1541,7 @@ return [
   'show_employee_operation' => 'عرض الموظف في العمليات',
   'view_contract_period_ending' => 'عرض  انتهاء الفترة التجريبية',
   'view_late_work_admission' => 'عرض مباشرة العمل المتأخرة',
-  'view_missing_employees_info' => 'عرض نواقص الموظفين',
+  'view_missing_employees_info' => 'عرض نواقص الموظفين والعمال',
   'view_contract_ending' => 'عرض العقود المنتهية',
   'edit_Insurance' => 'تعديل التأمين الطبي',
   'activate_employee_admission' => 'تفعيل مباشرة العمل',
@@ -1808,9 +1811,29 @@ return [
   'late_hours' => 'تأخير',
 
   'company_name' => 'اسم الشركة',
+
   'doc_exists_filter' => 'مرفق الوثيقة',
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
+
+  'residencies_almost_finished' => 'الإقامات التي تنتهي بعد 15 يوم',
+  'contracts_almost_finished' => ' عقود العملاء التي تنتهي خلال 15 يوم ',
+  'rooms_and_beds' => 'الغرف والأسرة',
+  'building' => 'المباني',
+  'employee_medical_insurance' => 'الموظفين المؤمن لهم',
+  'cars_change_oil' => 'تغيير الزيت',
+  'car_maintenances' => 'صيانة السيارات',
+  'worker_medical_insurance' => 'العمال المؤمن لهم',
+  '_expired_contracts' => 'عقود العملاء المنتهية',
+  'worker_without_medical_insurance' => 'العمال غير المؤمن لهم',
+  'employee_without_medical_insurance' => 'الموظفين غير المؤمن لهم',
+  'final_exit' => 'الخروج النهائي',
+  'projects' => 'مشاريع العملاء',
+  'projects_workers' => 'عمال المشاريع',
+
+
+  'employee_finish_contracts' => 'موظفين انتهى عقدهم',
+  'employee_almost_finish_contracts' => 'موظفين ينتهي عقدهم خلال 15 يوم',
 
 
 ];

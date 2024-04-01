@@ -67,6 +67,7 @@
     63 => 'Nwidart\\Menus\\MenusServiceProvider',
     64 => 'Knox\\Pesapal\\PesapalServiceProvider',
     65 => 'Modules\\Accounting\\Providers\\AccountingServiceProvider',
+    66 => 'Barryvdh\\Debugbar\\ServiceProvider',
   ),
   'eager' => 
   array (
@@ -118,6 +119,7 @@
     45 => 'Nwidart\\Menus\\MenusServiceProvider',
     46 => 'Knox\\Pesapal\\PesapalServiceProvider',
     47 => 'Modules\\Accounting\\Providers\\AccountingServiceProvider',
+    48 => 'Barryvdh\\Debugbar\\ServiceProvider',
   ),
   'deferred' => 
   array (

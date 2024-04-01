@@ -29,13 +29,14 @@
                                 'expired' => __('essentials::lang.expired'),
                             ],
                             null,
-                            ['class' => 'form-control', 'placeholder' => 'Select status'],
+                            ['class' => 'form-control','style'=>'height:40px','required'],
                         ) !!}
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
                         {!! Form::date('expiration_date', null, [
                             'class' => 'form-control',
+                            'style'=>'height:40px',
                             'placeholder' => __('essentials::lang.expiration_date'),
                         ]) !!}
                     </div>
