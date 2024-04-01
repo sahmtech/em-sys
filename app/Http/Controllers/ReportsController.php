@@ -767,6 +767,28 @@ class ReportsController extends Controller
                             });
                     });
                 })
+                ->filterColumn('fixnumber', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user.business.documents', function ($query) use ($keyword) {
+                            $query->where('licence_type', 'COMMERCIALREGISTER')
+                                ->where('unified_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily.user.business.documents', function ($query) use ($keyword) {
+                                $query->where('licence_type', 'COMMERCIALREGISTER')
+                                    ->where('unified_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('dob', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->whereDate('dob', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->whereDate('dob', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
 
 
                 ->rawColumns(['action'])
@@ -856,18 +878,49 @@ class ReportsController extends Controller
                 ->addColumn('company_name', function ($row) {
                     return optional($row->company)->name ?? ' ';
                 })
+
                 ->filterColumn('user', function ($query, $keyword) {
-
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', "%{$keyword}%")
+                                ->orWhere('last_name', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('full_name', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
                 ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('id_proof_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('eqama_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('fixnumber', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user.business.documents', function ($query) use ($keyword) {
+                            $query->where('licence_type', 'COMMERCIALREGISTER')
+                                ->where('unified_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily.user.business.documents', function ($query) use ($keyword) {
+                                $query->where('licence_type', 'COMMERCIALREGISTER')
+                                    ->where('unified_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('dob', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->whereDate('dob', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->whereDate('dob', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
 
                 ->make(true);
@@ -956,19 +1009,51 @@ class ReportsController extends Controller
                 ->addColumn('company_name', function ($row) {
                     return optional($row->company)->name ?? ' ';
                 })
+
                 ->filterColumn('user', function ($query, $keyword) {
-
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', "%{$keyword}%")
+                                ->orWhere('last_name', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('full_name', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
                 ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('id_proof_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('eqama_number', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
+                ->filterColumn('fixnumber', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user.business.documents', function ($query) use ($keyword) {
+                            $query->where('licence_type', 'COMMERCIALREGISTER')
+                                ->where('unified_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily.user.business.documents', function ($query) use ($keyword) {
+                                $query->where('licence_type', 'COMMERCIALREGISTER')
+                                    ->where('unified_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('dob', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->whereDate('dob', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->whereDate('dob', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+
 
                 ->make(true);
         }
@@ -1093,19 +1178,51 @@ class ReportsController extends Controller
 
 
 
+
                 ->filterColumn('user', function ($query, $keyword) {
-
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', "%{$keyword}%")
+                                ->orWhere('last_name', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('full_name', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
                 ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('id_proof_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('eqama_number', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
+                ->filterColumn('fixnumber', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user.business.documents', function ($query) use ($keyword) {
+                            $query->where('licence_type', 'COMMERCIALREGISTER')
+                                ->where('unified_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily.user.business.documents', function ($query) use ($keyword) {
+                                $query->where('licence_type', 'COMMERCIALREGISTER')
+                                    ->where('unified_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('dob', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->whereDate('dob', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->whereDate('dob', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+
 
 
 
@@ -1534,6 +1651,26 @@ class ReportsController extends Controller
                         return $row->contract_end_date ?? "";
                     }
                 )
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('user', function ($query) use ($keyword) {
+                        $query->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('project', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact.salesProjects', function ($query) use ($keyword) {
+                        $query->where('name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('customer_name', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact', function ($query) use ($keyword) {
+                        $query->where('supplier_business_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('end_date', function ($query, $keyword) {
+                    $query->whereDate('contract_end_date', 'like', "%$keyword%");
+                })
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date'])
                 ->make(true);
         }
@@ -1592,6 +1729,26 @@ class ReportsController extends Controller
                         return $row->contract_end_date ?? "";
                     }
                 )
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('user', function ($query) use ($keyword) {
+                        $query->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('project', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact.salesProjects', function ($query) use ($keyword) {
+                        $query->where('name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('customer_name', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact', function ($query) use ($keyword) {
+                        $query->where('supplier_business_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('end_date', function ($query, $keyword) {
+                    $query->whereDate('contract_end_date', 'like', "%$keyword%");
+                })
 
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date'])
                 ->make(true);
