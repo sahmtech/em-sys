@@ -747,19 +747,26 @@ class ReportsController extends Controller
 
 
                 ->filterColumn('user', function ($query, $keyword) {
-
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', "%{$keyword}%")
+                                ->orWhere('last_name', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('full_name', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
                 ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('id_proof_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('eqama_number', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
 
 
                 ->rawColumns(['action'])
