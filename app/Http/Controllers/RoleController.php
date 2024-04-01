@@ -215,11 +215,18 @@ class RoleController extends Controller
         $temp = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
 
+        $general_permissions =  $this->moduleUtil->generalPermissions();
+        foreach ($general_permissions as $general_permission) {
+            $module_permissions[] = $general_permission;
+        }
+
+
         foreach ($temp as $temp_item) {
             foreach ($temp_item as $permission_item) {
                 $module_permissions[] = $permission_item;
             }
         }
+
         //  return $module_permissions;
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
@@ -343,6 +350,10 @@ class RoleController extends Controller
             // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
             $temp = $this->moduleUtil->getModuleData('user_permissions');
             $module_permissions = [];
+            $general_permissions =  $this->moduleUtil->generalPermissions();
+            foreach ($general_permissions as $general_permission) {
+                $module_permissions[] = $general_permission;
+            }
 
             foreach ($temp as $temp_item) {
                 foreach ($temp_item as $permission_item) {
