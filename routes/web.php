@@ -440,6 +440,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('final-exit', [ReportsController::class, 'final_exit'])->name('final_exit');
         Route::get('projects', [ReportsController::class, 'projects'])->name('reports-projects');
         Route::get('project-workers', [ReportsController::class, 'project_workers'])->name('project_workers');
+        Route::get('employee-almost-finish-contracts', [ReportsController::class, 'employee_almost_finish_contracts'])->name('employee_almost_finish_contracts');
+        Route::get('employee-finish-contracts', [ReportsController::class, 'employee_finish_contracts'])->name('employee_finish_contracts');
     });
 
 

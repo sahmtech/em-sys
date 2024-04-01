@@ -1823,6 +1823,8 @@ return [
   'worker_without_medical_insurance' => 'العمال غير المؤمن لهم',
   'employee_without_medical_insurance' => 'الموظفين غير المؤمن لهم',
   'final_exit' => 'الخروج النهائي',
-  'projects'=>'مشاريع العملاء',
-  'projects_workers'=>'عمال المشاريع',
+  'projects' => 'مشاريع العملاء',
+  'projects_workers' => 'عمال المشاريع',
+  'employee_finish_contracts' => 'موظفين انتهى عقدهم',
+  'employee_almost_finish_contracts' => 'موظفين ينتهي عقدهم خلال 15 يوم',
 ];

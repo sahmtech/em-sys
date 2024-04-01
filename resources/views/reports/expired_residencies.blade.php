@@ -36,6 +36,7 @@
                                         <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
                                         <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
 
+                                        <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
 
 
                                     </tr>
@@ -106,6 +107,8 @@
                         }, {
                             data: "profession",
                             name: 'profession'
+                        }, {
+                            data: "gender",
                         },
                     ],
                 });
