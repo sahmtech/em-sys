@@ -121,7 +121,7 @@
 
 
                                                @if ($document->file_path)
-                                               <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                               <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}" target="_blank" >
                                                         @if ($document instanceof \Modules\Essentials\Entities\EssentialsOfficialDocument)
                                                             {{ trans('followup::lang.' .$document->type) }}
                                                         @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesContract)
@@ -218,18 +218,7 @@
                                         <p><strong>@lang('lang_v1.mobile_number'):</strong> {{ $user->contact_number ?? '' }}</p>
 
                                     </div>
-                                    {{-- <div class="col-md-4">
-                                <p><strong>@lang( 'lang_v1.fb_link' ):</strong> {{$user->fb_link ?? ''}}</p>
-                                <p><strong>@lang( 'lang_v1.twitter_link' ):</strong> {{$user->twitter_link ?? ''}}</p>
-                                <p><strong>@lang( 'lang_v1.social_media', ['number' => 1] ):</strong> {{$user->social_media_1 ?? ''}}</p>
-                                <p><strong>@lang( 'lang_v1.social_media', ['number' => 2] ):</strong> {{$user->social_media_2 ?? ''}}</p>
-                            </div> --}}
-                                    {{-- <div class="col-md-4">
-                                <p><strong>{{ $custom_labels['user']['custom_field_1'] ?? __('lang_v1.user_custom_field1' )}}:</strong> {{$user->custom_field_1 ?? ''}}</p>
-                                <p><strong>{{ $custom_labels['user']['custom_field_2'] ?? __('lang_v1.user_custom_field2' )}}:</strong> {{$user->custom_field_2 ?? ''}}</p>
-                                <p><strong>{{ $custom_labels['user']['custom_field_3'] ?? __('lang_v1.user_custom_field3' )}}:</strong> {{$user->custom_field_3 ?? ''}}</p>
-                                <p><strong>{{ $custom_labels['user']['custom_field_4'] ?? __('lang_v1.user_custom_field4' )}}:</strong> {{$user->custom_field_4 ?? ''}}</p>
-                            </div> --}}
+                                   
 
 
                                     <div class="clearfix"></div>
@@ -252,6 +241,27 @@
                                         <p><strong>@lang('lang_v1.id_proof_number'):</strong>
                                             {{ $user->id_proof_number ?? '' }}</p>
                                     </div>
+
+                                    @if(isset($user->nationality_id) && $user->nationality_id != 5)
+                                    <div class="clearfix"></div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.passport_number'):</strong>
+                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->number ?? '' }}</p>
+                                    </div>
+
+                                     <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.passport_expire_date'):</strong>
+                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->expiration_date ?? '' }}</p>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                      <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.border_number'):</strong>
+                                            {{ $user->border_no ?? '' }}</p>
+                                    </div>
+                                    @endif
+
+
 
                                     <div class="clearfix"></div>
                                     <hr>
@@ -351,7 +361,19 @@
 
                         </div>
 
-                        <div class="modal fade" id="imagePopupModal" tabindex="-1" role="dialog"
+                      
+
+
+                        <div class="tab-pane" id="activities_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @include('activity_log.activities')
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                      <div class="modal fade" id="imagePopupModal" tabindex="-1" role="dialog"
                             aria-labelledby="gridSystemModalLabel">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -551,19 +573,9 @@
                                 </div>
                             </div>
 
-
-
-                            <div class="tab-pane" id="activities_tab">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        @include('activity_log.activities')
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+        </div>
     </section>
 @endsection
 @section('javascript')

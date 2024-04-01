@@ -279,6 +279,23 @@
                                             {{ $user->id_proof_number ?? ($user->border_no ?? '') }}</p>
 
                                     </div>
+                                       <div class="clearfix"></div>
+                                    <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.passport_number'):</strong>
+                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->number ?? '' }}</p>
+                                    </div>
+
+                                     <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.passport_expire_date'):</strong>
+                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->expiration_date ?? '' }}</p>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                      <div class="col-md-4">
+                                        <p><strong>@lang('essentials::lang.border_number'):</strong>
+                                            {{ $user->border_no ?? '' }}</p>
+                                    </div>
+                                  
 
                                     <div class="clearfix"></div>
                                     <hr>
@@ -302,6 +319,8 @@
                                         @endif
 
                                     </div>
+                                    
+                                 
 
                                     <div class="col-md-4">
                                         <p><strong>@lang('followup::lang.customer_name'):</strong>
