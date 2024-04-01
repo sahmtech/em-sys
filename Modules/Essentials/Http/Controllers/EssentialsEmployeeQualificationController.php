@@ -100,13 +100,11 @@ class EssentialsEmployeeQualificationController extends Controller
                     'qualification_file',
                     function ($row)  use ($is_admin, $can_show_qualification_file) {
                         $html = '';
-
                         if ($is_admin || $can_show_qualification_file) {
-                            if (!empty($row->file_path)) {
-                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.qualification_file_view') . '</button>';
-                                '&nbsp;';
+                            if ($row->file_path) {
+                                $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal view_qualification_file_modal" data-id="' . $row->id . '" data-href="/uploads/' . $row->file_path . '"> ' . __('essentials::lang.qualification_file_view') . '</button>  &nbsp;';
                             } else {
-                                $html .= '<span class="text-warning">' . __('essentials::lang.no_qualification_file_exist') . '</span>';
+                                $html .= ' &nbsp; <button class="btn btn-xs btn-secondary btn-modal view_qualification_file_modal" data-id="' . $row->id . '" > ' . __('essentials::lang.qualification_file_view') . '</button>  &nbsp;';
                             }
                         }
                         return $html;
@@ -145,6 +143,31 @@ class EssentialsEmployeeQualificationController extends Controller
 
         return view('essentials::employee_affairs.employees_qualifications.index')
             ->with(compact('users', 'countries', 'spacializations', 'sub_spacializations'));
+    }
+
+    public function storeQualDocFile(Request $request)
+    {
+        try {
+            if (request()->hasFile('file')) {
+                $file = request()->file('file');
+                $filePath = $file->store('/officialDocuments');
+                EssentialsEmployeesQualification::where('id', $request->doc_id)->update(['file_path' => $filePath]);
+            } else if (request()->input('delete_file') == 1) {
+                EssentialsEmployeesQualification::where('id', $request->doc_id)->update(['file_path' => Null]);
+            }
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
     }
 
     public function updateEmployeeQualificationAttachement(Request $request, $user_id)

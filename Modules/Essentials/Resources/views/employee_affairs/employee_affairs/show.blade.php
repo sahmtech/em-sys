@@ -241,6 +241,8 @@
                                         <p><strong>@lang('lang_v1.id_proof_number'):</strong>
                                             {{ $user->id_proof_number ?? '' }}</p>
                                     </div>
+
+                                    @if(isset($user->nationality_id) && $user->nationality_id != 5)
                                     <div class="clearfix"></div>
                                     <div class="col-md-4">
                                         <p><strong>@lang('essentials::lang.passport_number'):</strong>
@@ -251,15 +253,13 @@
                                         <p><strong>@lang('essentials::lang.passport_expire_date'):</strong>
                                             {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->expiration_date ?? '' }}</p>
                                     </div>
+
                                     <div class="clearfix"></div>
                                       <div class="col-md-4">
                                         <p><strong>@lang('essentials::lang.border_number'):</strong>
                                             {{ $user->border_no ?? '' }}</p>
                                     </div>
-                                     <div class="col-md-4">
-                                        <p><strong>@lang('essentials::lang.total_salary'):</strong>
-                                            {{ $user->calculateTotalSalary() ?? '' }}</p>
-                                    </div>
+                                    @endif
 
 
 

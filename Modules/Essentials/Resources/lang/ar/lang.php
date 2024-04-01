@@ -996,12 +996,13 @@ return [
   'expired_residencies' => 'الاقامات التي شارفت على الانتهاء خلال 15 يوم  ',
   'allexpired_residencies' => 'جميع الاقامات المنتهية ',
   'lateforvaction' => 'الموظفين المتاخرين من الإجازات',
-  'final_visa_index' => 'العمال الذين تم تصدير تاشيرة خروج نهائي ',
+  'final_visa_index' => 'المقمين الذين تم تصدير تاشيرة خروج نهائي ',
   'finsish_contract_duration' => 'انتهاء الفترة  التجريبية',
   'finsish_contract_date' => 'عقود تنتهي قريبا ',
   'late_admission' => 'مباشرة عمل متأخرة',
   'uncomplemete_profiles' => 'نواقص الموظفين والعمال ',
   'emp_name' => 'اسم الموظف',
+  'eqama_end_date' => 'تاريخ انتهاء الإقامة ',
 
   'absent_report' => 'رفع بلاغ هروب',
   'final_visa' => 'تأشيرة خروج نهائي ',
@@ -1825,7 +1826,6 @@ return [
   'worker_without_medical_insurance' => 'العمال غير المؤمن لهم',
   'employee_without_medical_insurance' => 'الموظفين غير المؤمن لهم',
   'final_exit' => 'الخروج النهائي',
-  'projects'=>'مشاريع العملاء',
-  'projects_workers'=>'عمال المشاريع',
+  'projects' => 'مشاريع العملاء',
+  'projects_workers' => 'عمال المشاريع',
 ];
-

@@ -26,7 +26,14 @@
             @endif
         @endif
     </p>
+    
+     <p><strong>@lang('essentials::lang.total_salary'):</strong>
+        {{ $user->calculateTotalSalary() ?? '' }}
+    </p>
+                                   
 
+
+   
     <p><strong>@lang('essentials::lang.pay_cycle'):</strong>
         @if (!empty($user->essentials_pay_period))
             @if ($user->essentials_pay_period == 'week')
