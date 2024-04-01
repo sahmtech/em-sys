@@ -22,13 +22,12 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="contracts_almost_finished">
-                                <thead class="gb-green">
+                                <thead class="bg-green">
                                     <tr>
 
                                         <th>@lang('sales::lang.number_of_contract')</th>
                                         <th>@lang('sales::lang.customer_name')</th>
                                         <th>@lang('sales::lang.contract_status')</th>
-
                                         <th>@lang('sales::lang.start_date')</th>
                                         <th>@lang('sales::lang.contract_duration')</th>
                                         <th>@lang('sales::lang.end_date')</th>

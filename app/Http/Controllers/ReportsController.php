@@ -312,14 +312,6 @@ class ReportsController extends Controller
                     'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
                 ]);
 
-
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $contracts->where('sales_contracts.status', request()->input('status'));
-            }
-            if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
-                $contracts->where('transactions.contract_form', request()->input('contract_form'));
-            }
-
             return Datatables::of($contracts)
 
 
@@ -611,23 +603,30 @@ class ReportsController extends Controller
 
 
         $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
+            ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
+
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
                     $query1->whereIn('users.id', $userIds)
                         ->where('users.user_type', 'employee')
                         ->where('users.status', '!=', 'inactive');
-                });
+                })
+                    ->orWhereHas('essentialsEmployeesFamily', function ($query2) use ($userIds) {
+                        $query2->whereIn('essentials_employees_families.employee_id', $userIds);
+                    });
             })
+
             ->where('essentials_employees_insurances.is_deleted', 0)
-            ->whereNotNull('essentials_employees_insurances.employee_id')
             ->select(
                 'essentials_employees_insurances.employee_id',
+                'essentials_employees_insurances.family_id',
+                'essentials_employees_families.employee_id as family_employee_id',
                 'essentials_employees_insurances.id as id',
                 'essentials_employees_insurances.insurance_company_id',
                 'essentials_employees_insurances.insurance_classes_id'
             )
             ->orderBy('essentials_employees_insurances.employee_id');
-
+        //dd($insurances->get());
 
         if (request()->ajax()) {
 
@@ -636,7 +635,10 @@ class ReportsController extends Controller
                     $item = '';
 
                     if ($row->employee_id != null) {
-                        $item = $row->user->first_name  . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
+                        $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
+                        //  $item = $row->english_name;
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->full_name ?? '';
                     }
 
                     return $item;
@@ -656,6 +658,8 @@ class ReportsController extends Controller
                     $item = '';
                     if ($row->employee_id != null) {
                         $item = $row->user->dob ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->dob ?? '';
                     }
                     return $item;
                 })
@@ -663,7 +667,10 @@ class ReportsController extends Controller
                 ->editColumn('fixnumber', function ($row) {
                     $item = '';
                     if ($row->employee_id != null) {
-                        $item = $row->user->business?->documents()?->where('licence_type', 'COMMERCIALREGISTER')
+                        $item = $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
+                            ->first()->unified_number ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
                             ->first()->unified_number ?? '';
                     }
                     return  $item;
@@ -674,6 +681,8 @@ class ReportsController extends Controller
                     $item = '';
                     if ($row->employee_id != null) {
                         $item = $row->user->id_proof_number ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->eqama_number ?? '';
                     }
 
                     return $item;
@@ -691,6 +700,7 @@ class ReportsController extends Controller
                 })
 
 
+
                 ->filterColumn('user', function ($query, $keyword) {
 
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
@@ -705,8 +715,12 @@ class ReportsController extends Controller
                                         END LIKE ?", ["%$keyword%"]);
                 })
 
+
+
+                ->rawColumns(['action'])
                 ->make(true);
         }
+
 
 
         return view('reports.employee_medical_insurance');
@@ -929,24 +943,30 @@ class ReportsController extends Controller
 
 
         $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
+            ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
+
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
                     $query1->whereIn('users.id', $userIds)
                         ->where('users.user_type', 'worker')
                         ->where('users.status', '!=', 'inactive');
-                });
+                })
+                    ->orWhereHas('essentialsEmployeesFamily', function ($query2) use ($userIds) {
+                        $query2->whereIn('essentials_employees_families.employee_id', $userIds);
+                    });
             })
+
             ->where('essentials_employees_insurances.is_deleted', 0)
-            ->whereNotNull('essentials_employees_insurances.employee_id')
             ->select(
                 'essentials_employees_insurances.employee_id',
                 'essentials_employees_insurances.family_id',
+                'essentials_employees_families.employee_id as family_employee_id',
                 'essentials_employees_insurances.id as id',
                 'essentials_employees_insurances.insurance_company_id',
                 'essentials_employees_insurances.insurance_classes_id'
             )
-
             ->orderBy('essentials_employees_insurances.employee_id');
+        //dd($insurances->get());
 
         if (request()->ajax()) {
 
@@ -955,7 +975,10 @@ class ReportsController extends Controller
                     $item = '';
 
                     if ($row->employee_id != null) {
-                        $item = $row->user->first_name  . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
+                        $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
+                        //  $item = $row->english_name;
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->full_name ?? '';
                     }
 
                     return $item;
@@ -975,6 +998,8 @@ class ReportsController extends Controller
                     $item = '';
                     if ($row->employee_id != null) {
                         $item = $row->user->dob ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->dob ?? '';
                     }
                     return $item;
                 })
@@ -983,6 +1008,9 @@ class ReportsController extends Controller
                     $item = '';
                     if ($row->employee_id != null) {
                         $item = $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
+                            ->first()->unified_number ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
                             ->first()->unified_number ?? '';
                     }
                     return  $item;
@@ -993,6 +1021,8 @@ class ReportsController extends Controller
                     $item = '';
                     if ($row->employee_id != null) {
                         $item = $row->user->id_proof_number ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->eqama_number ?? '';
                     }
 
                     return $item;
@@ -1010,6 +1040,7 @@ class ReportsController extends Controller
                 })
 
 
+
                 ->filterColumn('user', function ($query, $keyword) {
 
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
@@ -1024,8 +1055,12 @@ class ReportsController extends Controller
                                         END LIKE ?", ["%$keyword%"]);
                 })
 
+
+
+                ->rawColumns(['action'])
                 ->make(true);
         }
+
 
 
         return view('reports.worker_medical_insurance');
