@@ -7,7 +7,14 @@
 
         <h1>@lang('essentials::lang.building')
         </h1>
-
+<head>
+<style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
         <section class="content">
 
             <div class="row">
@@ -15,10 +22,9 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="building">
-                                <thead>
+                                <thead class="bg-green">
                                     <tr>
 
-                                        <th>@lang('housingmovements::lang.id')</th>
                                         <th>@lang('housingmovements::lang.building_name')</th>
                                         <th>@lang('housingmovements::lang.address')</th>
                                         <th>@lang('housingmovements::lang.building_end_date')</th>
@@ -60,9 +66,7 @@
 
                     columns: [
 
-                        {
-                            data: 'id'
-                        },
+                       
                         {
                             data: 'name'
                         },

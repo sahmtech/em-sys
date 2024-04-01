@@ -7,6 +7,14 @@
 
         <h1>@lang('essentials::lang.employee_finish_contracts')
         </h1>
+<head>
+<style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
 
         <section class="content">
 
@@ -15,14 +23,14 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="employee_finish_contracts">
-                                <thead>
+                                <thead class="bg-green">
                                     <tr>
-                                        <th>@lang('essentials::lang.emp_name')</th>
-                                
-                                        <th>@lang('followup::lang.project')</th>
+                                        
+                                        <th>@lang('essentials::lang.name')</th>
                                         <th>@lang('followup::lang.customer_name')</th>
+                                        <th>@lang('followup::lang.project')</th>
                                         <th>@lang('followup::lang.end_date')</th>
-                                        <th></th>
+                                        
     
                                     </tr>
                                 </thead>
@@ -60,13 +68,14 @@
                     {
                             data: 'worker_name'
                         },
+                         {
+                            data: 'customer_name'
+                        },
                        
                         {
                             data: 'project'
                         },
-                        {
-                            data: 'customer_name'
-                        },
+                       
                         {
                             data: 'end_date'
                         },
