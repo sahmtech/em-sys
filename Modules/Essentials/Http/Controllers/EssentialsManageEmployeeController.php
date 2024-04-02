@@ -1004,7 +1004,7 @@ class EssentialsManageEmployeeController extends Controller
             if ($emp_number) {
                 $request['emp_number'] = $emp_number;
             } else {
-                //auto generate
+                $request['emp_number'] = $this->moduleUtil->generateEmpNumber($com_id);
             }
 
             // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
