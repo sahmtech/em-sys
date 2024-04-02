@@ -1593,6 +1593,7 @@ class EssentialsManageEmployeeController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             error_log($e->getMessage());
+            return 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
