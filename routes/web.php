@@ -223,8 +223,9 @@ Route::get('/fix_emp', function () {
                 $companySequences[$user->company_id]++;
             }
 
-            $sequencePart = str_pad($companySequences[$user->company_id], 6, '0', STR_PAD_LEFT);
-            $newEmpNumber = $user->company_id . $sequencePart;
+            $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
+            $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
+            $newEmpNumber = $companyPart . $sequencePart;
 
             $user->emp_number = $newEmpNumber;
             $user->save();
@@ -240,9 +241,9 @@ Route::get('/fix_emp', function () {
 Route::get('/swap_k', function () {
     DB::beginTransaction();
     try {
-        $tmp = User::where('emp_number', 1000001)->first();
+        $tmp = User::where('emp_number', "0100001")->first();
         $kh = User::where('id', 5901)->first();
-        User::where('emp_number', 1000001)->update(['emp_number' => $kh->emp_number]);
+        User::where('emp_number', "0100001")->update(['emp_number' => $kh->emp_number]);
         User::where('id', 5901)->first()->update(['emp_number' => $tmp->emp_number]);
         DB::commit();
         return response()->json(['message' => 'Success',]);
