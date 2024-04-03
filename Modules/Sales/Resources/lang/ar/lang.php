@@ -218,7 +218,7 @@ return [
     'sales_projects' => 'مشاريع العملاء',
     'contact_name' => 'العميل',
     'contact_location_name' => 'اسم المشروع',
-    'contact_location_city' => 'المدينة',
+    'contact_location_city' => 'المنطقة',
     'contact_location_name_in_charge' => 'اسم المسؤول',
     'contact_location_phone_in_charge' => 'هاتف',
     'contact_location_email_in_charge' => 'بريد الكتروني',

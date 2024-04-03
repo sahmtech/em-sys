@@ -76,7 +76,7 @@ class EssentialsEmployeeQualificationController extends Controller
             }
 
             if (!empty(request()->input('major')) && request()->input('major') !== 'all') {
-                $employees_qualifications->where('essentials_employees_qualifications.major', request()->input('major'));
+                $employees_qualifications->where('essentials_employees_qualifications.specialization', request()->input('major'));
             }
 
 

@@ -90,15 +90,17 @@
                                         'id' => 'contact_location_city',
                                     ]) !!}
                                 </div>
+                               
                                 <div class="form-group col-md-6">
                                     {!! Form::label('contact_location_name_in_charge', __('sales::lang.contact_location_name_in_charge')) !!}
                                     {!! Form::select('contact_location_name_in_charge', $name_in_charge_choices, null, [
                                         'class' => 'form-control',
-                                        'style' => ' height: 40px',
+                                      
                                         'placeholder' => __('sales::lang.contact_location_name_in_charge'),
                                         'id' => 'contact_location_name_in_charge',
                                     ]) !!}
                                 </div>
+                                 <div class="clearfix"></div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('contact_location_phone_in_charge', __('sales::lang.contact_location_phone_in_charge')) !!}
                                     {!! Form::text('contact_location_phone_in_charge', null, [
