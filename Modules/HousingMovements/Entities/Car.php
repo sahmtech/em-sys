@@ -32,4 +32,8 @@ class Car extends Model
     public function insurance(){
         return $this->hasOne(HousingMovmentInsurance::class,'car_id');
     }
+
+    public function images(){
+        return $this->hasMany(CarImage::class,'car_id');
+    }
 }

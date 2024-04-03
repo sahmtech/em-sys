@@ -337,7 +337,7 @@ class HomeController extends Controller
             ['value' => 'legalaffairs.legalAffairs_dashboard'],
         ];
         $payrollsPermissions = [
-            ['value' => 'essentials.payrolls_dashboard'],
+            ['value' => 'essentials.payrolls_management'],
         ];
         $reportsPermissions = [["value" => 'report.reports'],];
 

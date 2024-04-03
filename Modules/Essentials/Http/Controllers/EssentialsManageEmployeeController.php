@@ -1004,7 +1004,7 @@ class EssentialsManageEmployeeController extends Controller
             if ($emp_number) {
                 $request['emp_number'] = $emp_number;
             } else {
-                //auto generate
+                $request['emp_number'] = $this->moduleUtil->generateEmpNumber($com_id);
             }
 
             // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
@@ -1591,7 +1591,7 @@ class EssentialsManageEmployeeController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            error_log($e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
