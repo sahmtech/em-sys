@@ -597,7 +597,7 @@ class EssentialsEmployeeImportController extends Controller
 
                         if ($emp_data['emp_number'] == null) {
                             //auto generate
-
+                            $emp_data['emp_number'] = $this->moduleUtil->generateEmpNumber($emp_data['company_id']);
                         }
 
                         $emp = User::create($emp_data);

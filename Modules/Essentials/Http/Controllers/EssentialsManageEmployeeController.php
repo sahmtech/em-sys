@@ -1399,7 +1399,7 @@ class EssentialsManageEmployeeController extends Controller
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file', 'emp_number'
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file', 'emp_number', 'company_id'
 
             ]);
 
@@ -1418,7 +1418,9 @@ class EssentialsManageEmployeeController extends Controller
                 }
 
                 if ($user_data['emp_number'] == null) {
-                    //auto generate
+                    $comp_id = request()->input('company_id');
+                    //dd($comp_id);
+                    $user_data['emp_number'] = $this->moduleUtil->generateEmpNumber($comp_id);
                 }
 
                 $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;

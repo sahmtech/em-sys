@@ -540,8 +540,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                         if ($existingEmployee->emp_number) {
                                             $existingEmployee->$field = $emp_data[$field];
                                         } else {
-                                            // Generate a new emp_number
-
+                                            $existingEmployee->$field = $this->moduleUtil->generateEmpNumber($emp_data['company_id']);
                                         }
                                     }
                                     //other
@@ -551,9 +550,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                     }
                                 }
                             }
-
-
-
 
                             $existingEmployee->save();
 
