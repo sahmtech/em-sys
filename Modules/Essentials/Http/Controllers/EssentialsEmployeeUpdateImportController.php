@@ -543,7 +543,9 @@ class EssentialsEmployeeUpdateImportController extends Controller
                                             // Generate a new emp_number
 
                                         }
-                                    } else {
+                                    }
+                                    //other
+                                    else {
 
                                         $existingEmployee->$field = $emp_data[$field];
                                     }

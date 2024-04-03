@@ -597,6 +597,7 @@ class EssentialsEmployeeImportController extends Controller
 
                         if ($emp_data['emp_number'] == null) {
                             //auto generate
+
                         }
 
                         $emp = User::create($emp_data);

@@ -1393,7 +1393,6 @@ class EssentialsManageEmployeeController extends Controller
                 'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status', 'border_no', 'bank_details',
                 'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1', 'location_id',
                 'social_media_2', 'permanent_address', 'current_address', 'profession', 'specialization',
-
                 'guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
                 'contract_duration', 'probation_period',
                 'is_renewable', 'contract_file', 'essentials_salary', 'essentials_pay_period',
