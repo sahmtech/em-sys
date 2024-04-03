@@ -46,7 +46,9 @@ use App\Request as UserRequest;
 use App\RequestProcess;
 use Modules\CEOManagment\Entities\RequestsType;
 
-
+use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\EmployeesNotFoundExport;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -74,6 +76,8 @@ class EssentialsManageEmployeeController extends Controller
         return response()->json($categories);
     }
 
+
+
     public function fetch_user($id)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -96,6 +100,7 @@ class EssentialsManageEmployeeController extends Controller
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
+
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
@@ -1393,14 +1398,13 @@ class EssentialsManageEmployeeController extends Controller
                 'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status', 'border_no', 'bank_details',
                 'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1', 'location_id',
                 'social_media_2', 'permanent_address', 'current_address', 'profession', 'specialization',
-
                 'guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
                 'contract_duration', 'probation_period',
                 'is_renewable', 'contract_file', 'essentials_salary', 'essentials_pay_period',
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file', 'emp_number'
+                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file', 'emp_number', 'company_id'
 
             ]);
 
@@ -1419,7 +1423,9 @@ class EssentialsManageEmployeeController extends Controller
                 }
 
                 if ($user_data['emp_number'] == null) {
-                    //auto generate
+                    $comp_id = request()->input('company_id');
+                    //dd($comp_id);
+                    $user_data['emp_number'] = $this->moduleUtil->generateEmpNumber($comp_id);
                 }
 
                 $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;

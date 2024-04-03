@@ -13,6 +13,7 @@ use App\Transaction;
 use App\User;
 use Composer\Semver\Comparator;
 use Module;
+use Maatwebsite\Excel\Excel;
 
 class ModuleUtil extends Util
 {
@@ -49,6 +50,8 @@ class ModuleUtil extends Util
         $newEmpNumber = $companyPart . $sequencePart;
         return $newEmpNumber;
     }
+
+
 
     /**
      * This function check if superadmin module is installed or not.
