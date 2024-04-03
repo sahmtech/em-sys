@@ -46,7 +46,9 @@ use App\Request as UserRequest;
 use App\RequestProcess;
 use Modules\CEOManagment\Entities\RequestsType;
 
-
+use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\EmployeesNotFoundExport;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -74,6 +76,8 @@ class EssentialsManageEmployeeController extends Controller
         return response()->json($categories);
     }
 
+
+
     public function fetch_user($id)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -96,6 +100,7 @@ class EssentialsManageEmployeeController extends Controller
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
+
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
