@@ -61,16 +61,17 @@
                                         {!! Form::select('employee', $users, null, [
                                             'class' => 'form-control',
                                             'placeholder' => __('essentials::lang.select_employee'),
-                                           
+                                             'id'=>'managerEmployee',
                                             'required',
                                         ]) !!}
                                     </div>
 
                                     <div class="form-group  col-md-6">
                                         {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
-                                        {!! Form::select('profession', [], null, [
+                                        {!! Form::select('profession', $professions, null, [
                                             'class' => 'form-control profession-select',
-                                            'required','id'=>'appointment_profession_selector',
+                                            'required',
+                                            'id'=>'appointment_profession_selector',
                                             'placeholder' => __('essentials::lang.job_title'),
                                            
                                         ]) !!}
@@ -120,7 +121,7 @@
                                         {!! Form::select('employee', $users, null, [
                                             'class' => 'form-control',
                                             'placeholder' => __('essentials::lang.select_employee'),
-                                            
+                                             'id' => 'delegationemployeeSelect',
                                             'required',
                                         ]) !!}
                                     </div>
@@ -454,24 +455,96 @@
              var professionSelect = $(this).closest('form').find('.profession-select');
             if (selectedEmployee) {
                 $.ajax({
-                    url: '{{ route("get_professions_for_employee") }}', // Replace with your route
+                    url: '{{ route("get_professions_for_employee") }}', 
                     type: 'POST',
                     data: {
                         employee_id: selectedEmployee
                     },
                     success: function(response) {
-    // Clear existing options
-    console.log(response);
-    professionSelect.empty(); // Changed selector to professionSelect
-    
-    // Iterate through response.professions
-    $.each(response.professions, function(index, profession) {
-        professionSelect.append($('<option>', {
-            value: profession.id,
-            text: profession.name
-        }));
+                        
+                        console.log(response);
+                        professionSelect.empty(); 
+                        
+                        
+                        $.each(response.professions, function(index, profession) {
+                            professionSelect.append($('<option>', {
+                                value: profession.id,
+                                text: profession.name
+                            }));
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error occurred while fetching professions:', error);
+                    }
+                });
+            }
+        });
     });
-},
+</script>
+
+
+
+<script>
+    $(document).ready(function() {
+        $('#delegationemployeeSelect').change(function() {
+            var selectedEmployee = $(this).val();
+            console.log(selectedEmployee);
+             var professionSelect = $(this).closest('form').find('#delegating_profession_selector');
+            if (selectedEmployee) {
+                $.ajax({
+                    url: '{{ route("get_professions_for_employee") }}', 
+                    type: 'POST',
+                    data: {
+                        employee_id: selectedEmployee
+                    },
+                    success: function(response) {
+                        
+                        console.log(response);
+                        professionSelect.empty(); 
+                        
+                        
+                        $.each(response.professions, function(index, profession) {
+                            professionSelect.append($('<option>', {
+                                value: profession.id,
+                                text: profession.name
+                            }));
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error occurred while fetching professions:', error);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#managerEmployee').change(function() {
+            var selectedEmployee = $(this).val();
+            console.log(selectedEmployee);
+             var professionSelect = $(this).closest('form').find('#appointment_profession_selector');
+            if (selectedEmployee) {
+                $.ajax({
+                    url: '{{ route("get_professions_for_employee") }}', 
+                    type: 'POST',
+                    data: {
+                        employee_id: selectedEmployee
+                    },
+                    success: function(response) {
+                        
+                        console.log(response);
+                        professionSelect.empty(); 
+                        
+                        
+                        $.each(response.professions, function(index, profession) {
+                            professionSelect.append($('<option>', {
+                                value: profession.id,
+                                text: profession.name
+                            }));
+                        });
+                    },
                     error: function(xhr, status, error) {
                         console.error('Error occurred while fetching professions:', error);
                     }
