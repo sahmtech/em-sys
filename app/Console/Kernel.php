@@ -33,14 +33,13 @@ class Kernel extends ConsoleKernel
         if ($env === 'demo') {
             //IMPORTANT NOTE: This command will delete all business details and create dummy business, run only in demo server.
             $schedule->command('pos:dummyBusiness')
-                    ->cron('0 */3 * * *')
-                    //->everyThirtyMinutes()
-                    ->emailOutputTo($email);
+                ->cron('0 */3 * * *')
+                //->everyThirtyMinutes()
+                ->emailOutputTo($email);
         }
-  
-      $schedule->command('escalate:pending-requests')->dailyAt('16:27')->timezone('Asia/Riyadh');
-    
 
+        $schedule->command('escalate:pending-requests')->dailyAt('16:27')->timezone('Asia/Riyadh');
+        $schedule->command('populate:userleavebalances')->dailyAt('16:27')->timezone('Asia/Riyadh');
     }
 
     /**
@@ -50,9 +49,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
         require base_path('routes/console.php');
     }
-
-   
 }

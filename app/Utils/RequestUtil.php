@@ -22,6 +22,7 @@ use Modules\Essentials\Notifications\NewTaskNotification;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 
@@ -329,8 +330,19 @@ class RequestUtil extends Util
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
+            $startDateCarbon = Carbon::parse($startDate);
+            $endDateCarbon = Carbon::parse($end_date);
+            $today = Carbon::today();
+            if ($startDateCarbon->lt($today)) {
+                $message = __('request.time_is_gone');
+                return redirect()->back()->withErrors([$message]);
+            }
+            if ($startDateCarbon->gt($endDateCarbon)) {
+                $message = __('request.start_date_after_end_date');
+                return redirect()->back()->withErrors([$message]);
+            }
             $type = RequestsType::where('id', $request->type)->first()->type;
-            error_log($type);
+
             if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
 
                 $contract = EssentialsEmployeesContract::where('employee_id', $request->worker_id)->firstOrFail();
@@ -401,14 +413,35 @@ class RequestUtil extends Util
                         $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $userId)->first()->contract_end_date ?? null;
                     }
                     if ($type == "leavesAndDepartures") {
+                        $leaveBalance = UserLeaveBalance::where([
+                            'user_id' => $userId,
+                            'essentials_leave_type_id' => $request->leaveType,
+                        ])->first();
 
-                        $validationResult = $this->validateLeaveRequirements($request, $userId, $count_of_users);
-                        if ($validationResult !== true) {
+                        if (!$leaveBalance || $leaveBalance->amount == 0) {
+                            if ($count_of_users == 1) {
+                                $messageKey = !$leaveBalance ? 'this_user_cant_ask_for_leave_request' : 'this_user_has_not_enough_leave_balance';
+                                $message = __("request.$messageKey");
+                                DB::rollBack();
+                                return redirect()->back()->withErrors([$message]);
+                            }
+                            continue;
+                        } else {
 
-                            return $validationResult;
+                            $startDate = Carbon::parse($startDate);
+                            $endDate = Carbon::parse($end_date);
+                            $daysRequested = $startDate->diffInDays($endDate) + 1;
+
+                            if ($daysRequested > $leaveBalance->amount) {
+                                if ($count_of_users == 1) {
+                                    $message = __("request.this_user_has_not_enough_leave_balance");
+                                    DB::rollBack();
+                                    return redirect()->back()->withErrors([$message]);
+                                }
+                                continue;
+                            }
                         }
                     }
-
                     $Request = new UserRequest;
 
                     $Request->request_no = $this->generateRequestNo($request->type);
@@ -708,6 +741,28 @@ class RequestUtil extends Util
                 if ($procedure && $procedure->end == 1) {
                     $requestProcess->request->status = 'approved';
                     $requestProcess->request->save();
+
+
+                    $types = RequestsType::where('type', 'leavesAndDepartures')->pluck('id')->toArray();
+
+
+                    if (in_array($requestProcess->request->request_type_id, $types)) {
+                        $startDate = Carbon::parse($requestProcess->request->start_date);
+                        $endDate = Carbon::parse($requestProcess->request->end_date);
+
+
+                        $daysDifference = $startDate->diffInDays($endDate) + 1;
+
+
+                        $leaveBalance = UserLeaveBalance::where([
+                            'user_id' => $requestProcess->request->related_to,
+                            'essentials_leave_type_id' => $requestProcess->request->essentials_leave_type_id,
+                        ])->first();
+
+
+                        $leaveBalance->amount -= $daysDifference;
+                        $leaveBalance->save();
+                    }
                 } else {
                     $nextDepartmentId = $procedure->next_department_id;
                     $nextProcedure = WkProcedure::where('department_id', $nextDepartmentId)
