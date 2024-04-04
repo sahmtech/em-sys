@@ -151,6 +151,9 @@ class EssentialsWorkersAffairsController extends Controller
         if (request()->ajax()) {
 
             return DataTables::of($users)
+                ->addColumn('worker_id', function ($user) {
+                    return $user->worker_id ?? ' ';
+                })
 
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
@@ -252,7 +255,7 @@ class EssentialsWorkersAffairsController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker_id', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 
@@ -440,7 +443,9 @@ class EssentialsWorkersAffairsController extends Controller
             if ($emp_number) {
                 $request['emp_number'] = $emp_number;
             } else {
-                //auto generate
+                if ($request['emp_number'] == null) {
+                    $request['emp_number'] = $this->moduleUtil->generateEmpNumber($request['company_id']);
+                }
             }
 
             if ($request->input('id_proof_number')) {
@@ -568,20 +573,20 @@ class EssentialsWorkersAffairsController extends Controller
                 $contract_doc = $user->contract()->where('is_active', 1)->first();
                 $qualificationDoc = $user->essentials_qualification()->first();
 
-                $documents = collect(); // Create an empty collection
+                $documents = collect();
 
                 if (
                     $contract_doc !== null
                 ) {
-                    $documents->push($contract_doc); // Push contract document into the collection
+                    $documents->push($contract_doc);
                 }
 
                 if ($qualificationDoc !== null) {
-                    $documents->push($qualificationDoc); // Push qualification document into the collection
+                    $documents->push($qualificationDoc);
                 }
 
                 if ($officialDocuments !== null) {
-                    $documents = $documents->merge($officialDocuments); // Merge official documents with other documents
+                    $documents = $documents->merge($officialDocuments);
                 }
             }
             // dd($documents);
@@ -599,18 +604,7 @@ class EssentialsWorkersAffairsController extends Controller
         } else {
             $profession = "";
         }
-
-
-        // if ($specializationId !== null) {
-        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
-        // } else {
-        //     $specialization = "";
-        // }
-
-
         $user->profession = $profession;
-        // $user->specialization = $specialization;
-
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
         $query = User::whereIn('id', $userIds);
@@ -787,11 +781,16 @@ class EssentialsWorkersAffairsController extends Controller
 
             $existingprofnumber = null;
             $existingBordernumber = null;
+
             if ($request->input('id_proof_number')) {
-                $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+                $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))
+                    ->where('id', '!=', $id)
+                    ->first();
             }
             if ($request->input('border_no')) {
-                $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
+                $existingBordernumber = User::where('border_no', $request->input('border_no'))
+                    ->where('id', '!=', $id)
+                    ->first();
             }
 
 
@@ -811,7 +810,7 @@ class EssentialsWorkersAffairsController extends Controller
                 }
             } else {
                 if ($user_data['emp_number'] == null) {
-                    //auto generate
+                    $user_data['emp_number'] = $this->moduleUtil->generateEmpNumber($user_data['company_id']);
                 }
                 $business_id = request()->session()->get('user.business_id');
                 if (!isset($user_data['selected_contacts'])) {
@@ -823,9 +822,6 @@ class EssentialsWorkersAffairsController extends Controller
                 }
 
                 $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
-
-
-
                 $user_data['max_sales_discount_percent'] = null;
                 if (!empty($request->input('dob'))) {
                     $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
@@ -854,13 +850,21 @@ class EssentialsWorkersAffairsController extends Controller
                     $bank_details = $request->input('bank_details');
                     $bank_details['Iban_file'] = $path;
                     $user_data['bank_details'] = json_encode($bank_details);
-
-
-                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
                     $bankCode = $bank_details['bank_code'];
                     $input['number'] = $bankCode;
                     $input['file_path'] =  $path;
-                    $Iban_doc->update($input);
+
+                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                    if ($Iban_doc) {
+                        $Iban_doc->update([$input]);
+                    } else {
+                        $new_Iban_doc = new EssentialsOfficialDocument();
+                        $new_Iban_doc->number = $input['number'];
+                        $new_Iban_doc->file_path = $input['file_path'];
+                        $new_Iban_doc->employee_id = $user->id;
+                        $new_Iban_doc->type = "Iban";
+                        $new_Iban_doc->save();
+                    }
                 }
 
                 $delete_iban_file = $request->delete_iban_file ?? null;

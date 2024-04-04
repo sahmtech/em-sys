@@ -337,8 +337,9 @@ class HomeController extends Controller
             ['value' => 'legalaffairs.legalAffairs_dashboard'],
         ];
         $payrollsPermissions = [
-            ['value' => 'essentials.payrolls_dashboard'],
+            ['value' => 'essentials.payrolls_management'],
         ];
+        $reportsPermissions = [["value" => 'report.reports'],];
 
         // $settingsPermissions = [
         //     ['value' => 'business_settings.access'],
@@ -371,6 +372,7 @@ class HomeController extends Controller
             ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls_management'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
+            ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
             ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
             ['id' => 'FollowUp',  'permissions' => $followupDashPermission, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
             ['id' => 'houseingMovements',  'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],

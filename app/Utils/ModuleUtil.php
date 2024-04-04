@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
+use App\AccessRoleReport;
 use App\Account;
 use App\BusinessLocation;
 use App\Product;
@@ -12,6 +13,7 @@ use App\Transaction;
 use App\User;
 use Composer\Semver\Comparator;
 use Module;
+use Maatwebsite\Excel\Excel;
 
 class ModuleUtil extends Util
 {
@@ -38,6 +40,18 @@ class ModuleUtil extends Util
 
         return false;
     }
+    public function generateEmpNumber($company_id)
+    {
+        $last_emp_number = User::where('company_id', $company_id)->latest()->first()->emp_number;
+        $emp_number = intval(substr($last_emp_number, 2));
+        $emp_number++;
+        $sequencePart = str_pad($emp_number, 5, '0', STR_PAD_LEFT);
+        $companyPart = str_pad($company_id, 2, '0', STR_PAD_LEFT);
+        $newEmpNumber = $companyPart . $sequencePart;
+        return $newEmpNumber;
+    }
+
+
 
     /**
      * This function check if superadmin module is installed or not.
@@ -47,6 +61,23 @@ class ModuleUtil extends Util
     public function isSuperadminInstalled()
     {
         return $this->isModuleInstalled('Superadmin');
+    }
+    public function generalPermissions()
+    {
+        return [
+
+            [
+                'group_name' => __('report.reports'),
+                'group_permissions' => [
+                    [
+                        'value' => 'report.reports',
+                        'label' => __('report.reports'),
+                        'default' => false,
+                    ],
+                ]
+
+            ],
+        ];
     }
 
     /**
@@ -408,12 +439,12 @@ class ModuleUtil extends Util
         }
     }
 
-    public function accountsDropdown($business_id,$company_id=null ,$prepend_none = false, $closed = false, $show_balance = false)
+    public function accountsDropdown($business_id, $company_id = null, $prepend_none = false, $closed = false, $show_balance = false)
     {
         $dropdown = [];
 
         if ($this->isModuleEnabled('account')) {
-            $dropdown = Account::forDropdown($business_id,$company_id, $prepend_none, $closed, $show_balance);
+            $dropdown = Account::forDropdown($business_id, $company_id, $prepend_none, $closed, $show_balance);
         }
 
         return $dropdown;
@@ -550,6 +581,16 @@ class ModuleUtil extends Util
         }
 
         return $module_data;
+    }
+    public function allowedReports()
+    {
+        $roles = auth()->user()->roles;
+        $reports = [];
+
+        foreach ($roles as $role) {
+            $reports = array_merge($reports, AccessRoleReport::where('access_role_id', $role->id)->pluck('report_id')->toArray());
+        }
+        return $reports;
     }
 
 

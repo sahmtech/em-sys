@@ -45,6 +45,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequisitionController;
 use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\Restaurant;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalesCommissionAgentController;
@@ -206,6 +207,51 @@ include_once 'install_r.php';
 //         }
 //     }
 // });
+
+Route::get('/fix_emp', function () {
+    DB::beginTransaction();
+    try {
+
+        $companySequences = [];
+
+        $users = User::whereNot('company_id', 2)->get();
+
+        foreach ($users as $user) {
+            if (!isset($companySequences[$user->company_id])) {
+                $companySequences[$user->company_id] = 1;
+            } else {
+                $companySequences[$user->company_id]++;
+            }
+
+            $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
+            $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
+            $newEmpNumber = $companyPart . $sequencePart;
+
+            $user->emp_number = $newEmpNumber;
+            $user->save();
+        }
+        DB::commit();
+        return response()->json(['message' => 'Success',]);
+    } catch (Exception $e) {
+        DB::rollback();
+        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+    }
+});
+
+Route::get('/swap_k', function () {
+    DB::beginTransaction();
+    try {
+        $tmp = User::where('emp_number', "0100001")->first();
+        $kh = User::where('id', 5901)->first();
+        User::where('emp_number', "0100001")->update(['emp_number' => $kh->emp_number]);
+        User::where('id', 5901)->first()->update(['emp_number' => $tmp->emp_number]);
+        DB::commit();
+        return response()->json(['message' => 'Success',]);
+    } catch (Exception $e) {
+        DB::rollback();
+        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+    }
+});
 
 
 Route::get('/clear_cache', function () {
@@ -417,7 +463,33 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles');
 
     Route::get('/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
+    Route::get('/roles/editOrCreateReportAccessRole/{id}', [RoleController::class, 'editOrCreateReportAccessRole'])->name('editOrCreateReportAccessRole');
     Route::post('/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
+    Route::post('/roles/updateAccessRoleReport/{roleId}', [RoleController::class, 'updateAccessRoleReport'])->name('updateAccessRoleReport');
+
+
+    Route::prefix('reports')->group(function () {
+        Route::get('/reports', [ReportsController::class, 'landing'])->name('reports.landing');
+        Route::get('expired_residencies', [ReportsController::class, 'expired_residencies'])->name('expired_residencies');
+        Route::get('residencies-almost-finished', [ReportsController::class, 'residencies_almost_finished'])->name('residencies_almost_finished');
+        Route::get('contracts-almost-finished', [ReportsController::class, 'contracts_almost_finished'])->name('contracts_almost_finished');
+        Route::get('expired-contracts', [ReportsController::class, 'expired_contracts'])->name('expired_contracts');
+        Route::get('rooms-and-beds', [ReportsController::class, 'rooms_and_beds'])->name('rooms_and_beds');
+        Route::get('building', [ReportsController::class, 'building'])->name('building');
+        Route::get('employee-medical-insurance', [ReportsController::class, 'employee_medical_insurance'])->name('employee_medical_insurance');
+        Route::get('cars-change-oil', [ReportsController::class, 'cars_change_oil'])->name('cars_change_oil');
+        Route::get('car-maintenances', [ReportsController::class, 'car_maintenances'])->name('car_maintenances');
+        Route::get('worker-medical-insurance', [ReportsController::class, 'worker_medical_insurance'])->name('worker_medical_insurance');
+        Route::get('worker-without-medical-insurance', [ReportsController::class, 'worker_without_medical_insurance'])->name('worker_without_medical_insurance');
+        Route::get('employee-without-medical-insurance', [ReportsController::class, 'employee_without_medical_insurance'])->name('employee_without_medical_insurance');
+        Route::get('final-exit', [ReportsController::class, 'final_exit'])->name('final_exit');
+        Route::get('projects', [ReportsController::class, 'projects'])->name('reports-projects');
+        Route::get('project-workers', [ReportsController::class, 'project_workers'])->name('project_workers');
+        Route::get('employee-almost-finish-contracts', [ReportsController::class, 'employee_almost_finish_contracts'])->name('employee_almost_finish_contracts');
+        Route::get('employee-finish-contracts', [ReportsController::class, 'employee_finish_contracts'])->name('employee_finish_contracts');
+    });
+
+
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);

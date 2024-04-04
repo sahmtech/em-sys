@@ -238,8 +238,9 @@
                     </div>
                 </div>
             </div>
-
+            
             @include('essentials::employee_affairs.employees_qualifications.edit_modal')
+             @include('essentials::employee_affairs.employees_qualifications.add_qualification_file_modal')
         </div>
     </section>
 @endsection
@@ -249,7 +250,6 @@
 
 
             $('#major_filter_select').select2();
-
             $('#addQualificationModal').on('shown.bs.modal', function(e) {
                 $('#employee').select2({
                     dropdownParent: $(
@@ -270,8 +270,77 @@
                 });
             });
 
-            var qualifications_table;
 
+            //----------------------------------------------------------------------------------
+             $(document).on('click', '.view_qualification_file_modal', function(e) {
+                e.preventDefault();
+
+              
+                var fileUrl = $(this).data('href') ?? null;
+                var doc_id = $(this).data('id');
+                $('#doc_id').val(doc_id);
+                if (fileUrl != null) {
+                    console.log(fileUrl);
+                    $('#iframeQualDocViewer').attr('src', fileUrl);
+                    $('#iframeQualDocViewer').show();
+
+                } else {
+                    
+                    $('#iframeQualDocViewer').hide();
+
+                }
+                $('#addQualificationFileModal').modal('show');
+            });
+
+            $('#addQualificationFileModal').on('hidden.bs.modal', function() {
+                $('#iframeQualDocViewer').attr('src', '');
+            });
+
+            let fileChanged = false;
+            $('.deleteFile').on('click', function() {
+                $('#iframeQualDocViewer').attr('src', ''); 
+                $('input[type="file"]').val(''); 
+                $('#delete_file_input').val('1'); 
+                $('#iframeQualDocViewer').hide();
+                fileChanged = true;
+                enableSaveButton();
+            });
+            
+            function enableSaveButton() {
+                $('.saveFile').prop('disabled', !fileChanged);
+            }
+            
+            $('input[type="file"]').on('change', function(event) {
+                var file = event.target.files[0];
+
+                if (file) {
+                    var fileType = file.type;
+                    var url = '';
+
+                    
+                    if (fileType.match(/image.*/)) {
+                        
+                        url = URL.createObjectURL(file);
+                    } else if (fileType === 'application/pdf') {
+                        
+                        url = URL.createObjectURL(file);
+                    } else {
+                        
+                        alert('File type not supported for preview');
+                        return;
+                    }
+
+                    
+                    $('#iframeQualDocViewer').attr('src', url).show();
+                } else {
+
+                }
+                fileChanged = true;
+                enableSaveButton();
+            });
+            
+            //-----------------------------------------------------------------------------
+            var qualifications_table;
             function reloadDataTable() {
                 qualifications_table.ajax.reload();
             }
@@ -436,7 +505,7 @@
                 e.preventDefault();
 
                 var qualificationId = $('#qualificationIdInput')
-                    .val(); // Retrieve qualificationId from the hidden input
+                    .val(); 
                 console.log(qualificationId);
 
                 var urlWithId = '{{ route('updateQualification', ':qualificationId') }}';
@@ -461,30 +530,30 @@
                     },
                     error: function(error) {
                         console.error('Error submitting form:', error);
-                        // Show a generic error message
+                        
                         toastr.error('An error occurred while submitting the form.', 'Error');
                     },
                 });
             });
 
-            // Trigger DataTable reload after modal is completely hidden
+            
             $('#editQualificationModal').on('hidden.bs.modal', function() {
                 qualifications_table.ajax.reload();
             });
 
 
-            // $('#editQualificationModal select[name="employee"]').val(data.employee).trigger('change');
-            // $('#editQualificationModal select[name="qualification_type"]').val(data.qualification_type).trigger(
-            //     'change');
-            // $('#editQualificationModal select[name="specialization"]').val(data.specialization).trigger('change');
-            // $('#editQualificationModal select[name="sub_specialization"]').val(data.sub_specialization).trigger(
-            //     'change');
+            
+            
+            
+            
+            
+            
 
-            // $('#editQualificationModal input[name="graduation_year"]').val(data.graduation_year);
-            // $('#editQualificationModal input[name="graduation_institution"]').val(data.graduation_institution);
-            // $('#editQualificationModal select[name="graduation_country"]').val(data.graduation_country).trigger(
-            //     'change');
-            // $('#editQualificationModal input[name="degree"]').val(data.degree);
+            
+            
+            
+            
+            
            
         });
 
@@ -516,12 +585,12 @@
                 },
                 error: function(error) {
                     console.error('Error submitting form:', error);
-                    // Show a generic error message
+                    
                     toastr.error('An error occurred while submitting the form.', 'Error');
                 },
             });
         });
-        // >>> > ae2c5759c84d16e9dcca8931d6a28a670bda3ab5
+        
 
         function getGPA() {
             const GPA = [{

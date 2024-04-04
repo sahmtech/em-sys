@@ -70,5 +70,7 @@ return [
     "profit_loss_report.view" => "عرض تقرير الربح / الخسارة",
     "direct_sell.access" => "الوصول إلى البيع",
     "access_contact_locations" => 'صلاحيات الوصول',
+    'report_access' => 'صلاحية التقارير',
     'add_access_role' => 'إضافة صلاحية وصول',
+    'add_report_access_role' => 'إضافة صلاحية تقارير',
 ];

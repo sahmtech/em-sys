@@ -284,7 +284,9 @@ return [
     'this user does not exist' => 'هذا المستخدم غير موجود',
     'border_no_exist' => 'رقم الحدود موجود سابقا',
     'create_worker' => 'إضافة عامل',
-    'the number of users is more the number of available beds in this room' => 'عدد العمالة المحددة أكبر من عدد الأسرة المتاحة في الغرفة المحددة'
+    'the number of users is more the number of available beds in this room' => 'عدد العمالة المحددة أكبر من عدد الأسرة المتاحة في الغرفة المحددة',
 
+    'car_info' => 'معلومات المركبة',
+    'show' => 'عرض',
 
 ];

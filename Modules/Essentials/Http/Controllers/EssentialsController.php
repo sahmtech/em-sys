@@ -376,12 +376,16 @@ class EssentialsController extends Controller
         $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
         $sixtyday = Carbon::now()->addDays(60)->toDateString();
 
-        $last15_expire_date_residence = EssentialsOfficialDocument::where('type', 'residence_permit')
+
+        $last15_expire_date_residence = EssentialsOfficialDocument::where('is_active', 1)->where('type', 'residence_permit')
+
             ->whereBetween('expiration_date', [now(), now()->addDays(15)->endOfDay()])
             ->count();
 
         $today = today()->format('Y-m-d');
-        $all_ended_residency_date = EssentialsOfficialDocument::with(['employee'])
+
+        $all_ended_residency_date = EssentialsOfficialDocument::where('is_active', 1)->with(['employee'])
+
             ->where('type', 'residence_permit')
             ->whereDate('expiration_date', '<', $today)
             ->count();

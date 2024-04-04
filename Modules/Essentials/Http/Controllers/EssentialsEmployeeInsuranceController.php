@@ -716,7 +716,8 @@ class EssentialsEmployeeInsuranceController extends Controller
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
-                    $query1->whereIn('users.id', $userIds)->where('users.status', '!=', 'inactive');
+                    $query1->whereIn('users.id', $userIds)
+                        ->where('users.status', '!=', 'inactive');
                 })
                     ->orWhereHas('essentialsEmployeesFamily', function ($query2) use ($userIds) {
                         $query2->whereIn('essentials_employees_families.employee_id', $userIds);

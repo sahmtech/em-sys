@@ -150,7 +150,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/import-employees', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index'])->name('import-employees');
         Route::post('/send-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee'])->name('send-employee-file');
-        Route::post('/send-update-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee'])->name('send-update-employee-file');
+        Route::post('/send-update-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee_v2'])->name('send-update-employee-file');
+        Route::get('/download-employees-not-found', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'downloadEmployeesNotFound'])->name('download-employees-not-found');
+        Route::get('download-non-employees/{filename}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'downloadFile'])->name('download-file');
 
 
 
@@ -189,7 +191,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/updateQualification/{qualificationId}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'updateQualification'])->name('updateQualification');
         Route::get('/qualifications/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'edit'])->name('qualification.edit');
         Route::put('/updateEmployeeQualificationAttachement/{user_id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'updateEmployeeQualificationAttachement'])->name('updateEmployeeQualificationAttachement');
-
+        Route::post('/storeQualDocFile', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'storeQualDocFile'])->name('storeQualDocFile');
 
         Route::get('/official_documents', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index'])->name('official_documents');
         Route::post('/storeOfficialDoc', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'store'])->name('storeOfficialDoc');
@@ -555,6 +557,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/cars', [\Modules\Essentials\Http\Controllers\CarController::class, 'index'])->name('essentials.cars');
         Route::get('/cars-create', [\Modules\Essentials\Http\Controllers\CarController::class, 'create'])->name('essentials.car-create');
         Route::get('/cars-edit/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'edit'])->name('essentials.car.edit');
+        Route::get('/cars-show/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'show'])->name('essentials.car.show');
         Route::post('/cars-store', [\Modules\Essentials\Http\Controllers\CarController::class, 'store'])->name('essentials.car-store');
         Route::post('/cars-search', [\Modules\Essentials\Http\Controllers\CarController::class, 'search'])->name('essentials.car-search');
         Route::put('/cars-update/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'update'])->name('essentials.car-update');

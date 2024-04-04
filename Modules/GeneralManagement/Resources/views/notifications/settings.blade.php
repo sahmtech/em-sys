@@ -29,7 +29,7 @@
 
                         <div class="row check_group">
                             <div class="col-md-12">
-                                <div class="col-md-3">
+                                <div class="col-md-12">
                                     <h4>{{ __('lang_v1.' . $notificatinoSetting['notification_type'] . '') }}</h4>
                                 </div>
                                 <div class="col-md-12">

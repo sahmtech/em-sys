@@ -107,7 +107,6 @@ class EssentialsEmployeeContractController extends Controller
             return Datatables::of($employees_contracts)
                 ->editColumn('contract_type_id', function ($row) use ($contract_types) {
                     $item = $contract_types[$row->contract_type_id] ?? '';
-
                     return $item;
                 })
 
@@ -118,7 +117,7 @@ class EssentialsEmployeeContractController extends Controller
 
                         if ($is_admin || $can_show_employee_contracts) {
                             if (!empty($row->file_path)) {
-                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
+                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.open(\'/uploads/' . $row->file_path . '\', \'_blank\')"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
                                 '&nbsp;';
                             } else {
                                 $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
