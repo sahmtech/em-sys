@@ -1812,5 +1812,6 @@ return [
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
 
+  'show_Leave_Balances' => 'عرض رصيد الاجازات'
 
 ];
