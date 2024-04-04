@@ -75,6 +75,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id')->where('is_active', 1);
     }
+
+    public function userLeaveBalances()
+    {
+        return $this->hasMany(UserLeaveBalance::class, 'user_id');
+    }
+
     public function business()
     {
         return $this->belongsTo(\App\Business::class);
