@@ -14,6 +14,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Modules\Sales\Entities\salesContract;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\salesContractAppendic;
 use Modules\Sales\Entities\SalesProject;
@@ -105,13 +106,25 @@ class ContractsController extends Controller
                 ->make(true);
         }
 
-        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%مبيعات%');
+            })->pluck('id')->toArray();
+
+        $query = User::whereHas('appointment', function ($query) use ($departmentIds) {
+            $query->whereIn('department_id', $departmentIds)
+                ->where('is_active', 1);
+        })
+            ->where('business_id', $business_id)
+            ->where('users.user_type', 'employee');
+
+        $all_users = $query->where('status', '!=', 'inactive')
+            ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
 
-        
+
         $contracts = DB::table('sales_contracts')
 
             ->select('sales_contracts.number_of_contract as contract_number', 'sales_contracts.id')
