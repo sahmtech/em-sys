@@ -253,10 +253,12 @@ class RequestUtil extends Util
                                     }
                                 }
                             } elseif ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
+
                                 if ($tasksDetails) {
                                     $status = '<ul style="list-style-type:none; padding-left: 0;">';
 
                                     foreach ($tasksDetails as $taskDetail) {
+
                                         $checkmark = $taskDetail->isDone ? '&#9989;' : '';
 
                                         $taskLink = $taskDetail->link;
@@ -330,17 +332,25 @@ class RequestUtil extends Util
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
-            $startDateCarbon = Carbon::parse($startDate);
-            $endDateCarbon = Carbon::parse($end_date);
             $today = Carbon::today();
-            if ($startDateCarbon->lt($today)) {
-                $message = __('request.time_is_gone');
-                return redirect()->back()->withErrors([$message]);
+
+            if ($startDate) {
+                $startDateCarbon = Carbon::parse($startDate);
+                if ($startDateCarbon->lt($today)) {
+                    $message = __('request.time_is_gone');
+                    return redirect()->back()->withErrors([$message]);
+                }
+                if ($end_date) {
+
+                    $endDateCarbon = Carbon::parse($end_date);
+                    error_log($endDateCarbon);
+                    if ($startDateCarbon->gt($endDateCarbon)) {
+                        $message = __('request.start_date_after_end_date');
+                        return redirect()->back()->withErrors([$message]);
+                    }
+                }
             }
-            if ($startDateCarbon->gt($endDateCarbon)) {
-                $message = __('request.start_date_after_end_date');
-                return redirect()->back()->withErrors([$message]);
-            }
+
             $type = RequestsType::where('id', $request->type)->first()->type;
 
             if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
