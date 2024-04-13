@@ -800,7 +800,7 @@ class RequestUtil extends Util
                     }
                     $business_id = request()->session()->get('user.business_id');
                     $userRequest = UserRequest::where('id', $requestProcess->request_id)->first();
-                    $this->makeToDo($userRequest, $business_id);
+                    //  $this->makeToDo($userRequest, $business_id);
                 }
             }
             if ($request->status  == 'rejected') {
@@ -896,7 +896,7 @@ class RequestUtil extends Util
                 $business_id = request()->session()->get('user.business_id');
 
                 $userRequest = UserRequest::where('id',  $process->request_id)->first();
-                $this->makeToDo($userRequest, $business_id);
+                //  $this->makeToDo($userRequest, $business_id);
             }
 
 
