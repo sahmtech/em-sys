@@ -218,6 +218,7 @@ return [
   'this_user_has_not_enough_leave_balance' => 'هذا المستخدم ليس لديه رصيد إجازات كافي من هذا النوع',
   'start_date_after_end_date' => 'تاريخ بداية الطلب بعد تاريخ النهاية',
   'time_is_gone' => 'لقد مضى هذا الوقت لبداية الطلب',
+  'finish_operation' => 'إنهاء العملية',
   '' => '',
   '' => '',
 

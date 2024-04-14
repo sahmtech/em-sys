@@ -1837,5 +1837,10 @@ return [
   'employee_finish_contracts' => 'موظفين انتهى عقدهم',
   'employee_almost_finish_contracts' => 'موظفين ينتهي عقدهم خلال 15 يوم',
 
+  'view_requests_operations' => ' عمليات الطلبات',
+  'finish_request_operation' => 'إنهاء عمليات الطلبات',
+  'finish_operation' => 'إنهاء العملية'
+
+
 
 ];
