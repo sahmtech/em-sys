@@ -53,9 +53,14 @@
                         {!! Form::label('dob', __('lang_v1.dob') . ':') !!}
                         {!! Form::date('dob', null, ['class' => 'form-control', 'style' => 'height:40px']); !!}
                     </div>
-                    <div class="form-group col-md-3">
-                        {!! Form::label('gender', __( 'lang_v1.gender' ) . ':*') !!}
-                        {!! Form::select('gender', ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')], !empty($user->gender) ? $user->gender : null, ['class' => 'form-control','style'=>'height:40px','required', 'id' => 'gender', 'placeholder' => __( 'messages.please_select') ]); !!}
+                  <div class="form-group col-md-3">
+                        {!! Form::label('gender', __('lang_v1.gender') . ':*') !!}
+                        {!! Form::select('gender', 
+                            ($worker_gender === 'female') ? 
+                                ['female' => __('lang_v1.female')] : 
+                                ['male' => __('lang_v1.male')], 
+                            !empty($user->gender) ? $user->gender : null, 
+                            ['class' => 'form-control', 'style' => 'height:40px', 'required', 'id' => 'gender', ]); !!}
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('marital_status', __( 'lang_v1.marital_status' ) . ':') !!}
