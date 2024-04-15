@@ -807,7 +807,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     route('work_cards_operation'),
                     __('essentials::lang.work_cards_operation'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'work_cards' && request()->segment(2) == 'work_cards_operation'],
                 );
             }
 

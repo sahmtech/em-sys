@@ -1816,6 +1816,8 @@ return [
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
 
+
+  'show_Leave_Balances' => 'عرض رصيد الاجازات',
   'residencies_almost_finished' => 'الإقامات التي تنتهي خلال 15 يوم',
   'contracts_almost_finished' => ' عقود العملاء التي تنتهي خلال 15 يوم ',
   'rooms_and_beds' => 'الغرف والأسرة',
@@ -1834,6 +1836,11 @@ return [
 
   'employee_finish_contracts' => 'موظفين انتهى عقدهم',
   'employee_almost_finish_contracts' => 'موظفين ينتهي عقدهم خلال 15 يوم',
+
+  'view_requests_operations' => ' عمليات الطلبات',
+  'finish_request_operation' => 'إنهاء عمليات الطلبات',
+  'finish_operation' => 'إنهاء العملية'
+
 
 
 ];
