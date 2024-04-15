@@ -118,12 +118,18 @@ class VisaCardController extends Controller
                 ->addColumn(
                     'agency_name',
                     function ($row) {
-                        // $trnsaction = $row->delegation;
-                        // $delegation = IrDelegation::where('operation_order_id', $row->operationOrder->id)
-                        //     ->where('transaction_sell_line_id', $trnsaction)
-                        //     ->first();
+                        $operationOrderId = $row->operationOrder->id;
+                        error_log($operationOrderId);
+                        $visa_transaction_sell_line_id = $row->transaction_sell_line_id;
+                        error_log($visa_transaction_sell_line_id);
+                        $delegation = IrDelegation::where('operation_order_id', $operationOrderId)
+                            ->where('transaction_sell_line_id', $visa_transaction_sell_line_id)
+                            ->first();
+                        error_log($delegation);
+                        $agency = null;
 
-                        $agency = Contact::where('id', $row->delegation?->agency_id)->first();
+                        $agency = Contact::where('id', $delegation->agency_id)->first();
+                        error_log('agency', $agency->id);
                         return $agency?->supplier_business_name ?? null;
 
 
