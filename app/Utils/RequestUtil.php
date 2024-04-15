@@ -1397,7 +1397,7 @@ class RequestUtil extends Util
     }
 
 
-    private function generateRequestNo($request_type_id)
+    public function generateRequestNo($request_type_id)
     {
         $type = RequestsType::where('id', $request_type_id)->first()->type;
         $RequestsTypes = RequestsType::where('type', $type)->pluck('id')->toArray();
