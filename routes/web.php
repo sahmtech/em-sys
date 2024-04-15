@@ -559,6 +559,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/get-non-saudi-users', [\App\Utils\RequestUtil::class, 'getNonSaudiUsers'])->name('getNonSaudiUsers');
     Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');
     Route::post('/update-task-status', [\App\Utils\RequestUtil::class, 'updateStatus'])->name('tasks.updateStatus');
+    Route::get('/work_cards/view_requests_operations', [\App\Utils\RequestUtil::class, 'viewRequestsOperations'])->name('view_requests_operations');
+    Route::get('/finish_operation/{requestId}', [\App\Utils\RequestUtil::class,  'finish_operation'])->name('finish_operation');
 
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {

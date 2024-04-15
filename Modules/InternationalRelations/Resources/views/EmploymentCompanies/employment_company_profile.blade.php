@@ -1,22 +1,23 @@
 @extends('layouts.app')
 
 @section('title', __('internationalrelations::lang.show_employment_company_profile'))
+
 <head>
-        <style>
+    <style>
         .profile-info {
-            font-size: 18px; 
-            font-weight: bold; 
-            margin-bottom: 10px; 
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .profile-info ul {
-            list-style-type: none; 
+            list-style-type: none;
             margin: 0;
             padding: 0;
         }
 
         .profile-info ul li {
-            font-size: 16px; 
+            font-size: 16px;
             margin-bottom: 5px;
         }
     </style>
@@ -29,7 +30,7 @@
                 <h3>@lang('internationalrelations::lang.show_employment_company_profile')</h3>
             </div>
         </div>
-<br>
+        <br>
         <div class="row">
             <div class="col-md-12">
                 <div class="nav-tabs-custom">
@@ -43,7 +44,7 @@
                         <li>
                             <a href="#employment_requests_tab" data-toggle="tab">
                                 <i class="fas fa-briefcase" aria-hidden="true"></i>
-                                @lang('internationalrelations::lang.employment_comp_requests')
+                                @lang('internationalrelations::lang.company_requests_for_workers_supported')
                             </a>
                         </li>
                     </ul>
@@ -66,7 +67,7 @@
                                     <p class="profile-info"><strong>@lang('internationalrelations::lang.email'):</strong>
                                         {{ $employment_companies->email ?? '' }}
                                     </p>
-                                  <p class="profile-info"><strong>@lang('internationalrelations::lang.Evaluation'):</strong>
+                                    <p class="profile-info"><strong>@lang('internationalrelations::lang.Evaluation'):</strong>
                                         @if ($employment_companies->evaluation)
                                             @if ($employment_companies->evaluation === 'good')
                                                 @lang('internationalrelations::lang.good')
@@ -75,7 +76,7 @@
                                             @else
                                                 {{ $employment_companies->evaluation }}
                                             @endif
-                                      
+
                                         @endif
                                     </p>
                                     <p class="profile-info"><strong>@lang('internationalrelations::lang.adderss'):</strong>
@@ -98,12 +99,12 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="employment_requests_tab">
-                             <div class="row">
+                            <div class="row">
                                 <div class="col-md-12">
                                     @include('internationalrelations::EmploymentCompanies.employment_requests_tab')
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
