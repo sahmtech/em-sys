@@ -128,9 +128,12 @@ class VisaCardController extends Controller
                         error_log($delegation);
                         $agency = null;
 
-                        $agency = Contact::where('id', $delegation->agency_id)->first();
-                        error_log('agency', $agency->id);
-                        return $agency?->supplier_business_name ?? null;
+                        if ($delegation) {
+                            $agency = Contact::where('id', $delegation->agency_id)->first();
+                            error_log('agency', $agency->id);
+                            return $agency?->supplier_business_name ?? null;
+                        }
+
 
 
                         // if ($irDelegations) {
@@ -154,8 +157,15 @@ class VisaCardController extends Controller
                 //     return $row->delegation ? $row->delegation->targeted_quantity : null;
                 // })
                 ->addColumn('orderQuantity', function ($row) {
+                    $operationOrderId = $row->operationOrder->id;
 
-                    return $row->delegation->targeted_quantity ?? null;
+                    $visa_transaction_sell_line_id = $row->transaction_sell_line_id;
+
+                    $delegation = IrDelegation::where('operation_order_id', $operationOrderId)
+                        ->where('transaction_sell_line_id', $visa_transaction_sell_line_id)
+                        ->first();
+
+                    return $delegation->targeted_quantity ?? null;
                 })
                 ->rawColumns(['nationality_list', 'agency_name', 'profession_list'])
                 ->make(true);
