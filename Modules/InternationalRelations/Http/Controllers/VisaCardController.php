@@ -482,32 +482,31 @@ class VisaCardController extends Controller
                     ->make(true);
             }
             $visaCard = IrVisaCard::where('id', $visaId)->with('operationOrder')->first();
-
+            error_log($visaCard);
             $agencyId = null;
 
 
             if ($visaCard && $visaCard->operationOrder) {
-                // $operationOrderId = $visaCard->operationOrder->id;
-                // $visa_transaction_sell_line_id = $visaCard->transaction_sell_line_id;
+                $operationOrderId = $visaCard->operationOrder->id;
+                $visa_transaction_sell_line_id = $visaCard->transaction_sell_line_id;
+                error_log($operationOrderId);
+                error_log($visa_transaction_sell_line_id);
 
+                $delegations = IrDelegation::where('operation_order_id', $operationOrderId)
+                    ->where('transaction_sell_line_id', $visa_transaction_sell_line_id)
+                    ->get();
+                error_log($delegations);
 
-                // $delegations = IrDelegation::where('operation_order_id', $operationOrderId)
-                //     ->where('transaction_sell_line_id', $visa_transaction_sell_line_id)
-                //     ->get();
-
-
-                // $agencyId = $delegations->pluck('agency_id')->unique()->toArray();
-                $agencyId
-                    =  $visaCard->delegation->agency_id;
+                $agencyId = $delegations->pluck('agency_id')->unique();
             }
             error_log($agencyId);
 
-            $workers = IrProposedLabor::Where('agency_id', $agencyId)
+            $workers = IrProposedLabor::where('agency_id', 71)
                 ->whereNull('visa_id')
-                ->where('interviewStatus', 'acceptable')
-                //->where('is_accepted_by_worker', 1)
+                ->where('interviewStatus', 'acceptable') // 'acceptable' should be a string
+                ->where('is_accepted_by_worker', 1)
                 ->get();
-            error_log($workers);
+
 
             $workersOptions = $workers->map(function ($worker) {
                 return [
