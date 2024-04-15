@@ -24,12 +24,16 @@ use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 
 
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Sales\Entities\SalesProject;
+
+use Modules\CEOManagment\Entities\Task;
+
 
 
 class RequestUtil extends Util
@@ -253,10 +257,12 @@ class RequestUtil extends Util
                                     }
                                 }
                             } elseif ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
+
                                 if ($tasksDetails) {
                                     $status = '<ul style="list-style-type:none; padding-left: 0;">';
 
                                     foreach ($tasksDetails as $taskDetail) {
+
                                         $checkmark = $taskDetail->isDone ? '&#9989;' : '';
 
                                         $taskLink = $taskDetail->link;
@@ -330,17 +336,25 @@ class RequestUtil extends Util
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
-            $startDateCarbon = Carbon::parse($startDate);
-            $endDateCarbon = Carbon::parse($end_date);
             $today = Carbon::today();
-            if ($startDateCarbon->lt($today)) {
-                $message = __('request.time_is_gone');
-                return redirect()->back()->withErrors([$message]);
+
+            if ($startDate) {
+                $startDateCarbon = Carbon::parse($startDate);
+                if ($startDateCarbon->lt($today)) {
+                    $message = __('request.time_is_gone');
+                    return redirect()->back()->withErrors([$message]);
+                }
+                if ($end_date) {
+
+                    $endDateCarbon = Carbon::parse($end_date);
+                    error_log($endDateCarbon);
+                    if ($startDateCarbon->gt($endDateCarbon)) {
+                        $message = __('request.start_date_after_end_date');
+                        return redirect()->back()->withErrors([$message]);
+                    }
+                }
             }
-            if ($startDateCarbon->gt($endDateCarbon)) {
-                $message = __('request.start_date_after_end_date');
-                return redirect()->back()->withErrors([$message]);
-            }
+
             $type = RequestsType::where('id', $request->type)->first()->type;
 
             if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
@@ -790,7 +804,7 @@ class RequestUtil extends Util
                     }
                     $business_id = request()->session()->get('user.business_id');
                     $userRequest = UserRequest::where('id', $requestProcess->request_id)->first();
-                    $this->makeToDo($userRequest, $business_id);
+                    //  $this->makeToDo($userRequest, $business_id);
                 }
             }
             if ($request->status  == 'rejected') {
@@ -886,7 +900,7 @@ class RequestUtil extends Util
                 $business_id = request()->session()->get('user.business_id');
 
                 $userRequest = UserRequest::where('id',  $process->request_id)->first();
-                $this->makeToDo($userRequest, $business_id);
+                //  $this->makeToDo($userRequest, $business_id);
             }
 
 
@@ -1503,5 +1517,125 @@ class RequestUtil extends Util
             }
         }
         return 'success';
+    }
+
+    public function viewRequestsOperations()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        if ($is_admin  || auth()->user()->can('essentials.view_requests_operations')) {
+
+            $types = RequestsType::whereIn('type', ['exitRequest', 'returnRequest', 'escapeRequest'])->pluck('id')->toArray();
+
+            $tasks = Task::whereIn('request_type_id', $types)->pluck('id')->toArray();
+
+            $procedure_tasks = ProcedureTask::whereIn('task_id', $tasks)->pluck('id')->toArray();
+
+            $requests = UserRequest::whereIn('request_type_id', $types)->pluck('id')->toArray();
+
+            //   $request_procedure_tasks = RequestProcedureTask::whereIn('request_id', $requests)->whereIn('procedure_task_id', $procedure_tasks)->where('isDone', 0)->pluck('request_id')->toArray();
+
+            $requestsProcess =  RequestProcedureTask::whereIn('request_id', $requests)->whereIn('procedure_task_id', $procedure_tasks)->where('isDone', 0)->join('requests', 'requests.id', 'request_procedure_tasks.request_id')->select([
+                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.status', 'requests.note as note',
+
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+
+                'users.status as userStatus', 'request_procedure_tasks.id as request_procedure_task',
+
+            ])->leftJoin('users', 'users.id', '=', 'requests.related_to')
+
+
+                ->whereIn('requests.related_to', $userIds);
+            // ->where('users.status', 'active')
+
+
+            if (request()->ajax()) {
+                return DataTables::of($requestsProcess ?? [])
+                    ->editColumn('created_at', function ($row) {
+                        return Carbon::parse($row->created_at);
+                    })
+                    ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                        if ($row->request_type_id) {
+                            return $allRequestTypes[$row->request_type_id];
+                        }
+                    })
+                    ->make(true);
+            }
+
+            return view('request.requests_operations');
+        }
+    }
+
+    public function finish_operation($id)
+    {
+
+        try {
+            $request_procedure_task = RequestProcedureTask::find($id);
+            $userRequest = UserRequest::find($request_procedure_task->request_id);
+
+
+            if (!$userRequest) {
+                return ['success' => false, 'msg' => __('messages.not_found')];
+            }
+            $type = RequestsType::where('id', $userRequest->request_type_id)->first()->type;
+
+            if ($type == 'exitRequest') {
+                $operation_type = 'final_visa';
+            }
+            if ($type == 'returnRequest') {
+                $operation_type = 'return_visa';
+            }
+            if ($type == 'escapeRequest') {
+                $operation_type = 'absent_report';
+            }
+
+
+            $user = User::find($userRequest->related_to);
+            if (!$user) {
+                return ['success' => false, 'msg' => __('messages.user_not_found')];
+            }
+            $user->update([
+                'status' => 'inactive',
+                'allow_login' => '0'
+            ]);
+            $appointment = EssentialsEmployeeAppointmet::where('employee_id', $userRequest->related_to)->where('is_active', '1')->first();
+            if ($appointment) {
+                $appointment->update([
+                    'is_active' => '0'
+                ]);
+            }
+
+            $work = EssentialsAdmissionToWork::where('employee_id', $userRequest->related_to)->where('is_active', '1')->first();
+            if ($work) {
+                $work->update([
+                    'is_active' => '0'
+                ]);
+            }
+
+            DB::table('essentails_employee_operations')->insert([
+                'operation_type' => $operation_type,
+                'employee_id' => $userRequest->related_to,
+                'start_date' => $userRequest->start_date,
+                'end_date' =>  $userRequest->end_date,
+            ]);
+            $request_procedure_task->update([
+                'isDone' => '1'
+            ]);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.finished_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
+        }
+
+        return $output;
     }
 }

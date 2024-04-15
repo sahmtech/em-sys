@@ -1799,6 +1799,16 @@ class DataController extends Controller
                     ],
 
                     [
+                        'value' => 'essentials.view_requests_operations',
+                        'label' => __('essentials::lang.view_requests_operations'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.finish_request_operation',
+                        'label' => __('essentials::lang.finish_request_operation'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.renewal_residence',
                         'label' => __('essentials::lang.renewal_residence'),
                         'default' => false,
