@@ -2,6 +2,8 @@ function submittedDataFunc(response) {
 
     if (response.success) {
 
+
+
         var submittedData = response.client;
 
         var resultItem = response.selectedData;
@@ -11,12 +13,14 @@ function submittedDataFunc(response) {
 
         var newTotal2 = submittedData.monthly_cost_for_one * quantity;
         var newTotal = submittedData.monthly_cost_for_one;
+        var translatedGender = genderTranslations[submittedData.gender];
+        console.log(translatedGender);
         var newRow = '<tr class="product_row">' +
 
             '<td class="text-center">' + response.profession + '</td>' +
             '<td class="text-center">' + response.specialization + '</td>' +
             '<td class="text-center">' + response.nationality + '</td>' +
-            '<td class="text-center">' + submittedData.gender + '</td>' +
+            '<td class="text-center">' + translatedGender + '</td>' +
 
             // '<td class="text-center">' + submittedData.monthly_cost_for_one + '</td>' +
             '<td class="text-center">' + quantity + '</td>' +

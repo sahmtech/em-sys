@@ -391,21 +391,6 @@
 
             
 
-           
-
-
-            
-
-
-   
-
-
-
-
-
-
-
-
             $('#return_visa_selected').on('click', function(e) {
                 e.preventDefault();
 
@@ -469,6 +454,35 @@
 
 
             
+             $('#final_visa_selected').on('click', function(e) {
+                e.preventDefault();
+
+                var selectedRows = getCheckRecords();
+                console.log(selectedRows);
+
+                if (selectedRows.length > 0) {
+
+                    $('#finalVisaModal').modal('show');
+
+                    $('#bulk_final_edit_form').find('input[name="worker_id[]"]').remove();
+
+                    $.each(selectedRows, function(index, workerId) {
+                        var workerIdInput = $('<input>', {
+                            type: 'hidden',
+                            name: 'worker_id[]',
+                            value: workerId
+                        });
+
+
+                        $('#bulk_final_edit_form').append(workerIdInput);
+                    });
+                } 
+                
+                else {
+                    $('input#selected_rows').val('');
+                    swal('@lang('lang_v1.no_row_selected')');
+                }
+            });
             $('#bulk_final_edit_form').submit(function(e) {
 
                     e.preventDefault();
@@ -501,6 +515,36 @@
             });
 
             
+
+              $('#absent_report_selected').on('click', function(e) {
+                e.preventDefault();
+
+                var selectedRows = getCheckRecords();
+                console.log(selectedRows);
+
+                if (selectedRows.length > 0) {
+
+                    $('#absentreportModal').modal('show');
+
+                    $('#bulk_absent_edit_form').find('input[name="worker_id[]"]').remove();
+
+                    $.each(selectedRows, function(index, workerId) {
+                        var workerIdInput = $('<input>', {
+                            type: 'hidden',
+                            name: 'worker_id[]',
+                            value: workerId
+                        });
+
+
+                        $('#bulk_absent_edit_form').append(workerIdInput);
+                    });
+                } 
+                
+                else {
+                    $('input#selected_rows').val('');
+                    swal('@lang('lang_v1.no_row_selected')');
+                }
+            });
 
             $('#bulk_absent_edit_form').submit(function(e) {
 
