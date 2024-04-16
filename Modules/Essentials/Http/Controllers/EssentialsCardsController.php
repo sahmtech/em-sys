@@ -1430,7 +1430,12 @@ class EssentialsCardsController extends Controller
         $can_change_status = auth()
             ->user()
             ->can('essentials.workcards_requests_change_status');
-
+        $can_return_request = auth()
+            ->user()
+            ->can('essentials.return_workcards_request');
+        $can_show_request = auth()
+            ->user()
+            ->can('essentials.show_workcards_request');
         $departmentIds = EssentialsDepartment::where(
             'business_id',
             $business_id
@@ -1455,8 +1460,10 @@ class EssentialsCardsController extends Controller
         return $this->requestUtil->getRequests(
             $departmentIds,
             $ownerTypes,
-            'essentials::cards.vactionrequest',
-            $can_change_status
+            'essentials::cards.allrequest',
+            $can_change_status,
+            $can_return_request,
+            $can_show_request
         );
     }
 
