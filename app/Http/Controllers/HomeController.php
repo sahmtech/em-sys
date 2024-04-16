@@ -408,6 +408,7 @@ class HomeController extends Controller
                 ['id' => 'housing_movement_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.housing_movement_management'), 'icon' => 'fa fas fa-home', 'link' => route('generalmanagement.housing_movement_management')],
                 ['id' => 'sells_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.sells_management'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
                 ['id' => 'legal_affairs_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.legal_affairs_management'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
+                ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
             ];
         } else {
             foreach ($cardsPack as $card) {

@@ -19,6 +19,7 @@ class GeneralManagementController extends Controller
             ['id' => 'payrolls',  'permissions' => [], 'title' => __('essentials::lang.payrolls_management'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
             ['id' => 'medical_insurance',  'permissions' => [], 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
             ['id' => 'essentials',  'permissions' => [], 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
+            ['id' => 'assetManagement',  'permissions' => [], 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
         ];
         return view('custom_views.custom_home', compact('cards'));
     }
