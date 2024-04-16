@@ -1549,4 +1549,9 @@ return [
     'pills' => 'Pills',
     'create_pill' => 'create pill',
     'all_notifications' => 'All Notifications',
+    'helloAgain' => 'Hello Again',
+    'emdadatalatta_comp'=>'Emdata Alatta Company',
+    'provide_gifts'=>'We always provide you with gifts',
+
+
 ];
