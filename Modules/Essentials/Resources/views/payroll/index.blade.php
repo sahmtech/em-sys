@@ -128,7 +128,7 @@
                                         'class' => 'form-control select2',
                                         'style' => 'width: 100%;',
                                         'id' => 'projects',
-                                        'required',
+                                        
                                         'multiple',
                                         // 'placeholder' => __('lang_v1.all'),
                                     ]) !!}
@@ -141,7 +141,7 @@
                                         'class' => 'form-control select2',
                                         'style' => 'width: 100%;',
                                         'id' => 'companies',
-                                        'required',
+                                       
                                         'multiple',
                                         // 'placeholder' => __('lang_v1.all'),
                                     ]) !!}
@@ -205,14 +205,18 @@
                 var selectedUserType = $('#user_type').val();
 
                 if (selectedUserType === 'worker') {
-                    // If the user is a worker, show projects and hide companies
-                    $('#projects').closest('.col-md-12').show();
-                    $('#companies').closest('.col-md-12').hide();
-                } else {
-                    // For any other user type, show companies and hide projects
-                    $('#projects').closest('.col-md-12').hide();
-                    $('#companies').closest('.col-md-12').show();
-                }
+        // If the user is a worker, show projects and hide companies
+        $('#projects').closest('.col-md-12').show();
+        $('#projects').attr('required', 'required'); // Add required attribute to projects
+        $('#companies').closest('.col-md-12').hide();
+        $('#companies').removeAttr('required'); // Remove required attribute from companies
+    } else {
+        // For any other user type, show companies and hide projects
+        $('#projects').closest('.col-md-12').hide();
+        $('#projects').removeAttr('required'); // Remove required attribute from projects
+        $('#companies').closest('.col-md-12').show();
+        $('#companies').attr('required', 'required'); // Add required attribute to companies
+    }
             }
 
             // Call the function on page load in case there's a pre-selected value
