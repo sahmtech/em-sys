@@ -63,7 +63,7 @@
                         <!-- Wrapper for slides -->
                         <div class="carousel-inner">
                             <div class="item active"
-                                style="background-image:url(/uploads/slide1.png);width:100%;height: 64rem;background-size: cover;    background-color: #000;
+                                style="background-image:url(/uploads/slide1.png);width:100%;height: 100vh;background-size: cover;    background-color: #000;
                                 opacity: var(--header-image-opacity);">
                                 <div style="margin: 0px">
                                     <h2 style="color: #f5c21c;margin: 0px;padding-top:250px">@lang('lang_v1.emdadatalatta_comp')</h2>
@@ -74,7 +74,7 @@
                             </div>
 
                             <div class="item"
-                                style="background-image:url(/uploads/emdatat_flaq.webp);width:100%;height: 64rem;background-size: cover;    background-color: #000;
+                                style="background-image:url(/uploads/emdatat_flaq.webp);width:100%;height: 100vh;background-size: cover;    background-color: #000;
                                 opacity: var(--header-image-opacity);">
                                 <div style="margin: 0px">
 
@@ -83,7 +83,7 @@
 
                             </div>
                             <div class="item"
-                                style="background-image:url(/uploads/slide3.webp);width:100%;height: 64rem;background-size: cover;    background-color: #000;
+                                style="background-image:url(/uploads/slide3.webp);width:100%;height: 100vh;background-size: cover;    background-color: #000;
                             opacity: var(--header-image-opacity);">
                                 <div style="margin: 0px">
 
