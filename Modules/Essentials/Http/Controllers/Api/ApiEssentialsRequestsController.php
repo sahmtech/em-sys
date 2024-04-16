@@ -276,9 +276,16 @@ class ApiEssentialsRequestsController extends ApiController
 
     public function getRequestTypes()
     {
-        $allRequestTypes = RequestsType::where('for', 'employee')->pluck('type', 'id');
+        $allRequestTypes = RequestsType::where('for', 'employee')->get();
+        $res = [];
+        foreach ($allRequestTypes as $tmp) {
+            $res[] = [
+                'id' => $tmp->id,
+                'name' => __('request.' . $tmp->type),
+            ];
+        }
         return new CommonResource([
-            'request_types' => $allRequestTypes
+            'request_types' => $res
         ]);
     }
 
