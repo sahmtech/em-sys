@@ -4,6 +4,7 @@
 @section('content')
     <section class="content"
         style="   
+        height:88.5vh;
     background: url('{{ asset('img/emdadat-bg-img.jpg') }}');
     background:#b4b4b4, url('{{ asset('img/emdadat-bg-img.jpg') }}');
     background-size: cover;">
@@ -11,59 +12,7 @@
             {{-- Single Column --}}
             <div class="col-md-12">
 
-                {{-- <div class="row">
-
-
-                    {{-- <div class="col-md-5">
-                        <div class="custom_table_card">
-
-                            <h4> @lang('followup::lang.requests')</h4>
-                            <div class="table-responsive custom_table2">
-                                <table class="table table-bordered table-striped" id="requests_table">
-                                    <thead>
-                                        <tr>
-                                            <th>@lang('followup::lang.request_number')</th>
-                                            <th>@lang('followup::lang.worker_name')</th>
-                                            <th>@lang('followup::lang.eqama_number')</th>
-                                            <th>@lang('followup::lang.project_name')</th>
-                                            <th>@lang('followup::lang.request_type')</th>
-                                            <th>@lang('followup::lang.request_date')</th>
-                                            <th>@lang('followup::lang.status')</th>
-                                            <th>@lang('followup::lang.note')</th>
-                                            <th>@lang('followup::lang.action')</th>
-
-
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="custom_table_card">
-                            <h5>@lang('essentials::lang.todo_list')</h5>
-                            <div class="table-responsive custom_table2">
-                                <table class="table table-bordered table-striped" id="task_table">
-                                    <thead>
-                                        <tr>
-                                            <th>@lang('lang_v1.added_on')</th>
-                                            <th> @lang('essentials::lang.task_id')</th>
-                                            <th class="col-md-2"> @lang('essentials::lang.task')</th>
-                                            <th> @lang('sale.status')</th>
-
-                                            <th> @lang('essentials::lang.estimated_hours')</th>
-                                            <th> @lang('essentials::lang.assigned_by')</th>
-                                            <th> @lang('essentials::lang.assigned_to')</th>
-
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-
-                        </div>
-                    </div> --}}
-
+              
                 <div class="col-md-10">
                     <div class="card-grid">
 
@@ -105,14 +54,14 @@
                 </div> --}}
 
         </div>
-        @if (count($cards) < 5)
+        {{-- @if (count($cards) < 5)
             <div class="card-grid">
             </div>
             <div class="card-grid">
             </div>
             <div class="card-grid">
             </div>
-        @endif
+        @endif --}}
         </div>
     </section>
     <!-- Main content -->
