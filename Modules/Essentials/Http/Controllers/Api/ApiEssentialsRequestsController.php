@@ -46,7 +46,7 @@ class ApiEssentialsRequestsController extends ApiController
 
 
 
-    protected function storeApiRequest($request, $requestType = null)
+    public function storeApiRequest(Request $request, $requestType = null)
     {
         $user = User::where('id', Auth::user()->id)->first();
         try {
@@ -58,16 +58,18 @@ class ApiEssentialsRequestsController extends ApiController
             if ($startDate) {
                 $startDateCarbon = Carbon::parse($startDate);
                 if ($startDateCarbon->lt($today)) {
-                    $message = __('request.time_is_gone');
-                    return redirect()->back()->withErrors([$message]);
+                    return new CommonResource([
+                        'msg' => "تاريخ البداية يجب أن يكون لاحق"
+                    ]);
                 }
                 if ($end_date) {
 
                     $endDateCarbon = Carbon::parse($end_date);
                     error_log($endDateCarbon);
                     if ($startDateCarbon->gt($endDateCarbon)) {
-                        $message = __('request.start_date_after_end_date');
-                        return redirect()->back()->withErrors([$message]);
+                        return new CommonResource([
+                            'msg' => "تاريخ البداية يجب أن يسبق تاريخ النهاية"
+                        ]);
                     }
                 }
             }
@@ -78,7 +80,9 @@ class ApiEssentialsRequestsController extends ApiController
 
                 $isExists = UserRequest::where('related_to', $user->id)->where('request_type_id', $type_id)->where('status', 'pending')->first();
                 if ($isExists) {
-                    //return theres already a leave request in process
+                    return new CommonResource([
+                        'msg' => "يوجد طلب سابق قيد المعالجة"
+                    ]);
                 } else {
                     $leaveBalance = UserLeaveBalance::where([
                         'user_id' => $user->id,
@@ -87,7 +91,9 @@ class ApiEssentialsRequestsController extends ApiController
 
                     if (!$leaveBalance || $leaveBalance->amount == 0) {
 
-                        //return that the user doesnt have enough balance 
+                        return new CommonResource([
+                            'msg' => "ليس لديك رصيد كاف"
+                        ]);
                     } else {
 
                         $startDate = Carbon::parse($startDate);
@@ -95,7 +101,9 @@ class ApiEssentialsRequestsController extends ApiController
                         $daysRequested = $startDate->diffInDays($endDate) + 1;
 
                         if ($daysRequested > $leaveBalance->amount) {
-                            //return that the user doesnt have enough balance 
+                            return new CommonResource([
+                                'msg' => "ليس لديك رصيد كاف"
+                            ]);
                         }
                     }
                     $Request = new UserRequest;
@@ -128,7 +136,7 @@ class ApiEssentialsRequestsController extends ApiController
 
                         if ($department_id) {
                             $process = RequestProcess::create([
-                                'started_department_id' => $departmentIds[0],
+                                'started_department_id' => $department_id,
                                 'request_id' => $Request->id,
                                 'superior_department_id' => $department_id,
                                 'status' => 'pending'
@@ -138,7 +146,9 @@ class ApiEssentialsRequestsController extends ApiController
 
                             RequestAttachment::where('request_id', $Request->id)->delete();
                             $Request->delete();
-                            //return use has no department
+                            return new CommonResource([
+                                'msg' => "يجب أن ينتمي الموظف لاحد الأقسام"
+                            ]);
                         }
 
                         if (!$process) {
@@ -148,9 +158,15 @@ class ApiEssentialsRequestsController extends ApiController
                         }
 
 
-                        // return success
+
+
+                        return new CommonResource([
+                            'msg' => "تم رفع الطلب بنجاح"
+                        ]);
                     }
-                    //return 
+                    return new CommonResource([
+                        'msg' => "تعذر رفع الطلب، حاول مجددا في وقت لاحق"
+                    ]);
                 }
             } else {
                 $type = RequestsType::where('id', $request->type)->first()->type;
@@ -158,16 +174,22 @@ class ApiEssentialsRequestsController extends ApiController
 
                     $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->firstOrFail();
                     if (is_null($contract->wish_id)) {
-                        //return there must be a wish
+                        return new CommonResource([
+                            'msg' => "يجب تحديد رغبة"
+                        ]);
                     }
                     if (now()->diffInMonths($contract->contract_end_date) > 1) {
-                        //return contrct expireds
+                        return new CommonResource([
+                            'msg' => "العقد منتهي"
+                        ]);
                     }
                 }
 
                 $isExists = UserRequest::where('related_to', $user->id)->where('request_type_id', $request->type)->where('status', 'pending')->first();
                 if ($isExists) {
-                    // there's already a request in process
+                    return new CommonResource([
+                        'msg' => "يوجد طلب سابق قيد المعالجة"
+                    ]);
                 } else {
                     if ($type == "exitRequest") {
 
@@ -213,7 +235,7 @@ class ApiEssentialsRequestsController extends ApiController
 
                         if ($department_id) {
                             $process = RequestProcess::create([
-                                'started_department_id' => $departmentIds[0],
+                                'started_department_id' => $department_id,
                                 'request_id' => $Request->id,
                                 'superior_department_id' => $department_id,
                                 'status' => 'pending'
@@ -223,7 +245,9 @@ class ApiEssentialsRequestsController extends ApiController
 
                             RequestAttachment::where('request_id', $Request->id)->delete();
                             $Request->delete();
-                            // return use has no departemnt
+                            return new CommonResource([
+                                'msg' => "يجب أن ينتمي الموظف لاحد الأفسام"
+                            ]);
                         }
 
                         if (!$process) {
@@ -231,6 +255,9 @@ class ApiEssentialsRequestsController extends ApiController
                             RequestAttachment::where('request_id', $Request->id)->delete();
                             $Request->delete();
                         }
+                        return new CommonResource([
+                            'msg' => "تم رفع الطلب بنجاح"
+                        ]);
                     }
                 }
             }
@@ -240,8 +267,20 @@ class ApiEssentialsRequestsController extends ApiController
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
+            return $this->otherExceptions($e);
         }
     }
+
+
+
+    public function getRequestTypes()
+    {
+        $allRequestTypes = RequestsType::where('for', 'employee')->pluck('type', 'id');
+        return new CommonResource([
+            'request_types' => $allRequestTypes
+        ]);
+    }
+
 
 
     /**
