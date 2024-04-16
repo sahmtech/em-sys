@@ -46,9 +46,10 @@ class ApiEssentialsRequestsController extends ApiController
 
 
 
-    public function storeApiRequest(Request $request, $requestType = null)
+    public function storeApiRequest(Request $request,)
     {
         $user = User::where('id', Auth::user()->id)->first();
+        $requestType = $request->requestType ?? null;
         try {
 
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
@@ -75,7 +76,7 @@ class ApiEssentialsRequestsController extends ApiController
             }
 
 
-            if ($requestType) {
+            if (!$requestType || $requestType == null) {
                 $type_id = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
 
                 $isExists = UserRequest::where('related_to', $user->id)->where('request_type_id', $type_id)->where('status', 'pending')->first();
@@ -169,7 +170,7 @@ class ApiEssentialsRequestsController extends ApiController
                     ]);
                 }
             } else {
-                $type = RequestsType::where('id', $request->type)->first()->type;
+                $type = RequestsType::where('id', $requestType)->first()->type;
                 if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
 
                     $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->firstOrFail();
@@ -185,7 +186,7 @@ class ApiEssentialsRequestsController extends ApiController
                     }
                 }
 
-                $isExists = UserRequest::where('related_to', $user->id)->where('request_type_id', $request->type)->where('status', 'pending')->first();
+                $isExists = UserRequest::where('related_to', $user->id)->where('request_type_id', $requestType)->where('status', 'pending')->first();
                 if ($isExists) {
                     return new CommonResource([
                         'msg' => "يوجد طلب سابق قيد المعالجة"
@@ -197,9 +198,9 @@ class ApiEssentialsRequestsController extends ApiController
                     }
                     $Request = new UserRequest;
 
-                    $Request->request_no = $this->requestUtil->generateRequestNo($request->type);
+                    $Request->request_no = $this->requestUtil->generateRequestNo($requestType);
                     $Request->related_to = $user->id;
-                    $Request->request_type_id = $request->type;
+                    $Request->request_type_id = $requestType;
                     $Request->start_date = $startDate;
                     $Request->end_date = $end_date;
                     $Request->reason = $request->reason;
