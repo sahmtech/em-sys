@@ -110,7 +110,11 @@ class TravelCategorieController extends Controller
             $travelRequest->tripTime = $tripTime;
             $travelRequest->save();
 
-            UserRequest::where('id', $request->requestId)->update(['has_travel_categorie' => 1]);
+
+            UserRequest::where('id', $request->requestId)->update([
+                'has_travel_categorie' => 1,
+                'is_done' => '1',
+            ]);
             $output = [
                 'success' => 1,
                 'msg' => __('messages.added_success'),

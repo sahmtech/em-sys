@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Modules\CEOManagment\Entities\RequestsType;
 use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -15,6 +16,13 @@ use Modules\Essentials\Entities\EssentialsWkProcedure;
 use Modules\Essentials\Entities\ToDo;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
+use App\Request as UserRequest;
+use App\RequestAttachment;
+use App\RequestProcess;
+use App\User;
+use App\Utils\RequestUtil;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\UserLeaveBalance;
 
 class ApiEssentialsRequestsController extends ApiController
 {
@@ -22,16 +30,258 @@ class ApiEssentialsRequestsController extends ApiController
      * All Utils instance.
      */
     protected $moduleUtil;
+    protected $requestUtil;
 
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->requestUtil = $requestUtil;
     }
+
+
+
+
+    public function storeApiRequest(Request $request, $requestType = null)
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+        try {
+
+            $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+            $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
+            $end_date = $request->end_date ?? $request->return_date;
+            $today = Carbon::today();
+            if ($startDate) {
+                $startDateCarbon = Carbon::parse($startDate);
+                if ($startDateCarbon->lt($today)) {
+                    return new CommonResource([
+                        'msg' => "تاريخ البداية يجب أن يكون لاحق"
+                    ]);
+                }
+                if ($end_date) {
+
+                    $endDateCarbon = Carbon::parse($end_date);
+                    error_log($endDateCarbon);
+                    if ($startDateCarbon->gt($endDateCarbon)) {
+                        return new CommonResource([
+                            'msg' => "تاريخ البداية يجب أن يسبق تاريخ النهاية"
+                        ]);
+                    }
+                }
+            }
+
+
+            if ($requestType) {
+                $type_id = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
+
+                $isExists = UserRequest::where('related_to', $user->id)->where('request_type_id', $type_id)->where('status', 'pending')->first();
+                if ($isExists) {
+                    return new CommonResource([
+                        'msg' => "يوجد طلب سابق قيد المعالجة"
+                    ]);
+                } else {
+                    $leaveBalance = UserLeaveBalance::where([
+                        'user_id' => $user->id,
+                        'essentials_leave_type_id' => $request->leaveType,
+                    ])->first();
+
+                    if (!$leaveBalance || $leaveBalance->amount == 0) {
+
+                        return new CommonResource([
+                            'msg' => "ليس لديك رصيد كاف"
+                        ]);
+                    } else {
+
+                        $startDate = Carbon::parse($startDate);
+                        $endDate = Carbon::parse($end_date);
+                        $daysRequested = $startDate->diffInDays($endDate) + 1;
+
+                        if ($daysRequested > $leaveBalance->amount) {
+                            return new CommonResource([
+                                'msg' => "ليس لديك رصيد كاف"
+                            ]);
+                        }
+                    }
+                    $Request = new UserRequest;
+
+                    $Request->request_no = $this->requestUtil->generateRequestNo($type_id);
+                    $Request->related_to = $user->id;
+                    $Request->request_type_id = $type_id;
+                    $Request->start_date = $startDate;
+                    $Request->end_date = $end_date;
+                    $Request->reason = $request->reason;
+                    $Request->note = $request->note;
+                    $Request->attachment = $attachmentPath;
+                    $Request->essentials_leave_type_id = $request->leaveType;
+                    $Request->created_by = $user->id;
+                    $Request->save();
+
+
+
+                    if ($attachmentPath) {
+                        RequestAttachment::create([
+                            'request_id' => $Request->id,
+                            'file_path' => $attachmentPath,
+                        ]);
+                    }
+                    if ($Request) {
+                        $process = null;
+
+                        $department_id = $user->essentials_department_id;
+
+
+                        if ($department_id) {
+                            $process = RequestProcess::create([
+                                'started_department_id' => $department_id,
+                                'request_id' => $Request->id,
+                                'superior_department_id' => $department_id,
+                                'status' => 'pending'
+                            ]);
+                        } else {
+
+
+                            RequestAttachment::where('request_id', $Request->id)->delete();
+                            $Request->delete();
+                            return new CommonResource([
+                                'msg' => "يجب أن ينتمي الموظف لاحد الأقسام"
+                            ]);
+                        }
+
+                        if (!$process) {
+
+                            RequestAttachment::where('request_id', $Request->id)->delete();
+                            $Request->delete();
+                        }
+
+
+
+
+                        return new CommonResource([
+                            'msg' => "تم رفع الطلب بنجاح"
+                        ]);
+                    }
+                    return new CommonResource([
+                        'msg' => "تعذر رفع الطلب، حاول مجددا في وقت لاحق"
+                    ]);
+                }
+            } else {
+                $type = RequestsType::where('id', $request->type)->first()->type;
+                if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
+
+                    $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->firstOrFail();
+                    if (is_null($contract->wish_id)) {
+                        return new CommonResource([
+                            'msg' => "يجب تحديد رغبة"
+                        ]);
+                    }
+                    if (now()->diffInMonths($contract->contract_end_date) > 1) {
+                        return new CommonResource([
+                            'msg' => "العقد منتهي"
+                        ]);
+                    }
+                }
+
+                $isExists = UserRequest::where('related_to', $user->id)->where('request_type_id', $request->type)->where('status', 'pending')->first();
+                if ($isExists) {
+                    return new CommonResource([
+                        'msg' => "يوجد طلب سابق قيد المعالجة"
+                    ]);
+                } else {
+                    if ($type == "exitRequest") {
+
+                        $startDate = DB::table('essentials_employees_contracts')->where('employee_id',  $user->id)->first()->contract_end_date ?? null;
+                    }
+                    $Request = new UserRequest;
+
+                    $Request->request_no = $this->requestUtil->generateRequestNo($request->type);
+                    $Request->related_to = $user->id;
+                    $Request->request_type_id = $request->type;
+                    $Request->start_date = $startDate;
+                    $Request->end_date = $end_date;
+                    $Request->reason = $request->reason;
+                    $Request->note = $request->note;
+                    $Request->attachment = $attachmentPath;
+                    $Request->escape_time = $request->escape_time;
+                    $Request->installmentsNumber = $request->installmentsNumber;
+                    $Request->monthlyInstallment = $request->monthlyInstallment;
+                    $Request->advSalaryAmount = $request->amount;
+                    $Request->created_by =  $user->id;
+                    $Request->insurance_classes_id = $request->ins_class;
+                    $Request->baladyCardType = $request->baladyType;
+                    $Request->resCardEditType = $request->resEditType;
+                    $Request->workInjuriesDate = $request->workInjuriesDate;
+                    $Request->contract_main_reason_id = $request->main_reason;
+                    $Request->contract_sub_reason_id = $request->sub_reason;
+                    $Request->visa_number = $request->visa_number;
+                    $Request->atmCardType = $request->atmType;
+                    $Request->save();
+                    if ($attachmentPath) {
+                        RequestAttachment::create([
+                            'request_id' => $Request->id,
+                            'file_path' => $attachmentPath,
+                        ]);
+                    }
+                    if ($Request) {
+                        $process = null;
+
+                        $department_id = $user->id->essentials_department_id;
+
+
+
+
+                        if ($department_id) {
+                            $process = RequestProcess::create([
+                                'started_department_id' => $department_id,
+                                'request_id' => $Request->id,
+                                'superior_department_id' => $department_id,
+                                'status' => 'pending'
+                            ]);
+                        } else {
+
+
+                            RequestAttachment::where('request_id', $Request->id)->delete();
+                            $Request->delete();
+                            return new CommonResource([
+                                'msg' => "يجب أن ينتمي الموظف لاحد الأفسام"
+                            ]);
+                        }
+
+                        if (!$process) {
+
+                            RequestAttachment::where('request_id', $Request->id)->delete();
+                            $Request->delete();
+                        }
+                        return new CommonResource([
+                            'msg' => "تم رفع الطلب بنجاح"
+                        ]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return $this->otherExceptions($e);
+        }
+    }
+
+
+
+    public function getRequestTypes()
+    {
+        $allRequestTypes = RequestsType::where('for', 'employee')->pluck('type', 'id');
+        return new CommonResource([
+            'request_types' => $allRequestTypes
+        ]);
+    }
+
+
 
     /**
      * Display a listing of the resource.

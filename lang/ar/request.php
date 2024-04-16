@@ -213,7 +213,14 @@ return [
   'travel_categorie' => 'فئة تذكرة السفر',
   'book_visa' => 'حجز تذكرة سفر',
   'view_visa_data' => 'عرض معلومات الرحلة',
-  'please select the type of leave' => 'الرجاء اختيار نوع إجازة'
+  'please select the type of leave' => 'الرجاء اختيار نوع إجازة',
+  'this_user_cant_ask_for_leave_request' => 'لا يمكن تقديم طلب إجازة لعدم الاستحقاق',
+  'this_user_has_not_enough_leave_balance' => 'هذا المستخدم ليس لديه رصيد إجازات كافي من هذا النوع',
+  'start_date_after_end_date' => 'تاريخ بداية الطلب بعد تاريخ النهاية',
+  'time_is_gone' => 'لقد مضى هذا الوقت لبداية الطلب',
+  'finish_operation' => 'إنهاء العملية',
+  '' => '',
+  '' => '',
 
 
 

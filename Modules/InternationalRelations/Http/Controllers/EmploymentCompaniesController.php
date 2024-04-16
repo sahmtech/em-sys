@@ -312,7 +312,7 @@ class EmploymentCompaniesController extends Controller
                 ->pluck('nationality', 'id');
         }
 
-        $company_requests = IrDelegation::with(['transactionSellLine.service', 'visaCard'])
+        $company_requests = IrDelegation::whereNotNull('operation_order_id')->with(['transactionSellLine.service', 'visaCard'])
             ->where('agency_id', $id)->get();
         // dd($company_requests[0]->lastArrivalproposedLabors($company_requests[0]->agency_id)->first()->arrival_date);
 

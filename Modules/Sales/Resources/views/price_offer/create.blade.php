@@ -301,9 +301,7 @@
                                         <th class="text-center">
                                             @lang('sales::lang.gender')
                                         </th>
-                                        {{-- <th class="text-center">
-                                            @lang('sales::lang.monthly_cost')
-                                        </th> --}}
+                                       
                                         <th class="text-center">
                                             @lang('sales::lang.number_of_clients')
                                         </th>
@@ -629,6 +627,12 @@
     <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
 
 
+    <script>
+     var genderTranslations = {
+            male: "{{ __('sales::lang.male') }}",
+
+        };
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
             console.log("Document ready");
