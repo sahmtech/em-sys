@@ -1839,7 +1839,13 @@ return [
 
   'view_requests_operations' => ' عمليات الطلبات',
   'finish_request_operation' => 'إنهاء عمليات الطلبات',
-  'finish_operation' => 'إنهاء العملية'
+  'finish_operation' => 'إنهاء العملية',
+
+  'sponsor_name' => 'اسم الكفيل',
+  'sponsor' => 'الكفيل',
+  'No_Sponsor' => 'بدون كفيل',
+  'other_suponser' => 'كفيل آخر ',
+  'Enter new sponsor name' => ' اسم كفيلك'
 
 
 
