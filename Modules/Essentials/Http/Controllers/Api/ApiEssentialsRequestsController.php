@@ -276,12 +276,15 @@ class ApiEssentialsRequestsController extends ApiController
 
     public function getRequestTypes()
     {
-        $allRequestTypes = RequestsType::where('for', 'employee')->get();
+        $allRequestTypes = RequestsType::with('requestsTypesField')->where('for', 'employee')->whereNot('type', 'leavesAndDepartures')->get();
         $res = [];
         foreach ($allRequestTypes as $tmp) {
+
             $res[] = [
                 'id' => $tmp->id,
                 'name' => __('request.' . $tmp->type),
+                'required_fields' => $tmp->requestsTypesField->required_fields ?? '',
+                'optional_fields' => $tmp->requestsTypesField->optional_fields ?? '',
             ];
         }
         return new CommonResource([

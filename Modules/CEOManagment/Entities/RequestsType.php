@@ -14,4 +14,8 @@ class RequestsType extends Model
   {
     return $this->hasMany(Task::class, 'request_type_id');
   }
+  public function requestsTypesField()
+  {
+    return $this->hasOne(RequestsTypesField::class, 'request_type_id');
+  }
 }
