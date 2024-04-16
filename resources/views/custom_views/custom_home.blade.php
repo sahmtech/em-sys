@@ -4,7 +4,7 @@
 @section('content')
     <section class="content"
         style="   
-        height:88.5vh;
+        min-height:88.5vh;
     background: url('{{ asset('img/emdadat-bg-img.jpg') }}');
     background:#b4b4b4, url('{{ asset('img/emdadat-bg-img.jpg') }}');
     background-size: cover;">
