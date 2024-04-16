@@ -1627,6 +1627,61 @@ class RequestUtil extends Util
             $request_procedure_task->update([
                 'isDone' => '1'
             ]);
+
+            $requestProcess = RequestProcess::where('request_id', $userRequest->id)->where('status', 'pending')->where('sub_status', null)->first();
+            // $procedure = WkProcedure::where('id', $requestProcess->procedure_id)->first()->can_reject;
+
+
+            // if ($procedure == 0 && $request->status == 'rejected') {
+            //     $output = [
+            //         'success' => false,
+            //         'msg' => __('request.this_department_cant_reject_this_request'),
+            //     ];
+            //     return $output;
+            // }
+
+            $requestProcess->status = 'approved';
+            $requestProcess->updated_by = auth()->user()->id;
+
+            $requestProcess->save();
+
+
+            $procedure = WkProcedure::find($requestProcess->procedure_id);
+
+
+            if ($procedure && $procedure->end == 1) {
+                $requestProcess->request->status = 'approved';
+                $requestProcess->request->save();
+            } else {
+                $nextDepartmentId = $procedure->next_department_id;
+                $nextProcedure = WkProcedure::where('department_id', $nextDepartmentId)
+                    ->where('request_type_id', $requestProcess->request->request_type_id)
+                    ->first();
+
+                if ($nextProcedure) {
+                    $newRequestProcess = new RequestProcess();
+
+                    $newRequestProcess->request_id = $requestProcess->request_id;
+                    $newRequestProcess->started_department_id = $requestProcess->started_department_id;
+                    $newRequestProcess->procedure_id = $nextProcedure->id;
+                    $newRequestProcess->status = 'pending';
+                    $newRequestProcess->save();
+
+                    if ($nextProcedure->action_type = 'task') {
+                        $procedureTasks = ProcedureTask::where('procedure_id', $nextProcedure->id)->get();
+                        foreach ($procedureTasks as $task) {
+                            $requestTasks = new RequestProcedureTask();
+                            $requestTasks->request_id = $requestProcess->request_id;
+                            $requestTasks->procedure_task_id = $task->id;
+                            $requestTasks->save();
+                        }
+                    }
+                }
+            }
+
+
+
+
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.finished_success'),
