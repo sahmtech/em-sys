@@ -385,7 +385,7 @@ class HomeController extends Controller
             ['id' => 'assetManagement',  'permissions' => $assetPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
             //  ['id' => 'crm',  'permissions' => $CRMPermissions, 'title' => __('crm::lang.crm'),'icon' =>'fas fa fa-broadcast-tower', 'link' => action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']),],
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
-            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
+            // ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
             //  ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fas fa-user-circle', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
             ['id' => 'settings',  'permissions' => [], 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
         ];
