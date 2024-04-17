@@ -1487,9 +1487,9 @@ class RequestUtil extends Util
         $task->save();
         $request_id = $task->request_id;
         $anotherTask = RequestProcedureTask::where('request_id', $request_id)->where('isDone', '0')->first();
-        error_log($anotherTask);
+
         if (!$anotherTask) {
-            error_log('11111111111111111111111');
+
             $requestProcess = RequestProcess::where('request_id',  $request_id)->where('status', 'pending')->where('sub_status', null)->first();
 
             $requestProcess->status = 'approved';
