@@ -65,6 +65,7 @@ class ReportsController extends Controller
                 'link' => $report->link ? route($report->link) : '',
             ];
         }
+
         return view('reports.reports_landing_page')->with(compact('cardsOfReports'));
     }
 
