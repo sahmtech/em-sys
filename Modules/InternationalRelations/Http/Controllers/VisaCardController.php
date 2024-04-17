@@ -517,13 +517,12 @@ class VisaCardController extends Controller
             }
             error_log($agencyId);
 
-            $workers = IrProposedLabor::where('agency_id', 71)
+            $workers = IrProposedLabor::where('agency_id', $agencyId)
                 ->whereNull('visa_id')
-                ->where('interviewStatus', 'acceptable') // 'acceptable' should be a string
                 ->where('is_accepted_by_worker', 1)
                 ->get();
 
-
+            error_log($workers);
             $workersOptions = $workers->map(function ($worker) {
                 return [
                     'id' => $worker->id,
