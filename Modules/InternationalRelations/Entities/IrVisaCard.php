@@ -45,7 +45,6 @@ class IrVisaCard extends Model
     }
 
 
-
     // public function delegation()
     // {
     //     $foreignKey = $this->transaction_sell_line_id !== null ? 'transaction_sell_line_id' : 'unSupportedworker_order_id';
