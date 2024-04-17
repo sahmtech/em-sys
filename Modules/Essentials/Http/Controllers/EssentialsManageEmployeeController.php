@@ -988,6 +988,7 @@ class EssentialsManageEmployeeController extends Controller
     public function store(Request $request)
     {
 
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -1210,15 +1211,28 @@ class EssentialsManageEmployeeController extends Controller
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
             ->value('profession_id');
 
+        $sponsor_company = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
+            ->value('sponsor_company');
+        $sponsor_name = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
+            ->value('sponsor_name');
+
+
         if ($professionId !== null) {
             $profession = EssentialsProfession::find($professionId)->name;
         } else {
             $profession = "";
         }
-
+        if ($sponsor_company !== null) {
+            $sponsor = Company::find($sponsor_company)->name;
+        } elseif ($sponsor_name !== null) {
+            $sponsor = $sponsor_name;
+        } else {
+            $sponsor = '';
+        }
 
 
         $user->profession = $profession;
+        $user->sponsor_company = $sponsor;
 
 
 
@@ -1271,6 +1285,7 @@ class EssentialsManageEmployeeController extends Controller
     }
     public function edit($id)
     {
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1285,14 +1300,16 @@ class EssentialsManageEmployeeController extends Controller
         $projects = SalesProject::pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::select([
 
-            'profession_id',
+            'profession_id', 'sponsor_company'
 
         ])->where('employee_id', $id)->where('is_active', 1)
             ->first();
         if ($appointments !== null) {
             $user->profession_id = $appointments['profession_id'];
+            $user->sponsor = $appointments['sponsor_company'];
         } else {
             $user->profession_id = null;
+            $user->sponsor = 'other_suponser';
         }
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -1330,10 +1347,24 @@ class EssentialsManageEmployeeController extends Controller
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
+        $sponsor_company = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
+            ->value('sponsor_company');
+        $sponsor_name = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
+            ->value('sponsor_name');
         if ($user->status == 'active') {
             $is_checked_checkbox = true;
         } else {
             $is_checked_checkbox = false;
+        }
+
+        if ($sponsor_company !== null) {
+            $sponsor = Company::find($sponsor_company)->name;
+        } elseif ($sponsor_name !== null) {
+
+            $user->sponsor = 'other_suponser';
+            $user->sponsor_name = $sponsor_name;
+        } else {
+            $user->sponsor = '';
         }
 
         $locations = BusinessLocation::where('business_id', $business_id)

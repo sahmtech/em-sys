@@ -588,7 +588,8 @@ class ModuleUtil extends Util
         $reports = [];
 
         foreach ($roles as $role) {
-            $reports = array_merge($reports, AccessRoleReport::where('access_role_id', $role->id)->pluck('report_id')->toArray());
+            $access_role_id = AccessRole::where('role_id', $role->id)->first()->id;
+            $reports = array_merge($reports, AccessRoleReport::where('access_role_id', $access_role_id)->pluck('report_id')->toArray());
         }
         return $reports;
     }

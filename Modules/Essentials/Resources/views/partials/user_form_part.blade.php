@@ -14,6 +14,41 @@
     </div>
     <div class="col-md-3">
         <div class="form-group">
+            {!! Form::label('sponsor_id', __('essentials::lang.sponsor') . ':') !!}
+            {!! Form::select(
+                'sponsor_id',
+                $companies->toArray() + ['other_suponser' => __('essentials::lang.other_suponser')],
+                !empty($user->sponsor) ? $user->sponsor : null,
+                [
+                    'class' => 'form-control select2',
+                    'style' => 'height:40px',
+                    'placeholder' => __('messages.please_select'),
+                    'id' => 'sponsor_select',
+                ],
+            ) !!}
+            @if ($user)
+                @if ($user->sponsor == 'other_suponser')
+                    <input type="text" id="new_sponsor_name" class="form-control" name="new_sponsor_name"
+                        style="margin-top: 10px;" placeholder="{{ __('essentials::lang.Enter new sponsor name') }}"
+                        value="{{ old('new_sponsor_name', $user->sponsor_name ?? '') }}">
+                @else
+                    <input type="text" id="new_sponsor_name" class="form-control" name="new_sponsor_name"
+                        style="margin-top: 10px; display: none;"
+                        placeholder="{{ __('essentials::lang.Enter new sponsor name') }}">
+                @endif
+            @else
+                <input type="text" id="new_sponsor_name" class="form-control" name="new_sponsor_name"
+                    style="margin-top: 10px; display: none;"
+                    placeholder="{{ __('essentials::lang.Enter new sponsor name') }}">
+            @endif
+
+        </div>
+    </div>
+
+
+
+    <div class="col-md-3">
+        <div class="form-group">
             {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':*') !!}
             <div class="form-group">
                 {!! Form::select(
@@ -67,19 +102,19 @@
                 ['class' => 'form-control select', 'style' => 'height:40px', 'placeholder' => __('messages.please_select')],
             ) !!}
         </div>
-    </div>
-    <div class="form-group col-md-3">
-        {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
-        {!! Form::date(
-            'contract_start_date',
-            !empty($contract->contract_start_date) ? $contract->contract_start_date : null,
-            [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-                'id' => 'contract_start_date',
-                'placeholder' => __('essentials::lang.contract_start_date'),
-            ],
-        ) !!}
+        <div class="form-group">
+            {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
+            {!! Form::date(
+                'contract_start_date',
+                !empty($contract->contract_start_date) ? $contract->contract_start_date : null,
+                [
+                    'class' => 'form-control',
+                    'style' => 'height:40px',
+                    'id' => 'contract_start_date',
+                    'placeholder' => __('essentials::lang.contract_start_date'),
+                ],
+            ) !!}
+        </div>
     </div>
 
     <div class="form-group col-md-3">
@@ -341,6 +376,16 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        $('#sponsor_select').change(function() {
+
+            if ($(this).val() == 'other_suponser') {
+
+                $('#new_sponsor_name').show();
+            } else {
+
+                $('#new_sponsor_name').hide();
+            }
+        });
         $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function() {
             updateContractEndDate();
         });

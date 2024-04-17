@@ -411,7 +411,7 @@ class PayrollController extends Controller
         $user_type = request()->input('user_type');
         $employee_ids = User::with('contract');
         if ($user_type == "worker") {
-            $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'worker');
+            $employee_ids = $employee_ids->whereIn('company_id', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
         }
@@ -529,6 +529,7 @@ class PayrollController extends Controller
             $transaction_ids = [];
             $employees_details = $request->payrolls;
             foreach ($employees_details as $employee_details) {
+                error_log($employee_details['final_salary'] ?? 1263761253761);
                 $payroll['expense_for'] = $employee_details['id'];
                 $payroll['transaction_date'] = $transaction_date;
                 $payroll['business_id'] = $business_id;
@@ -536,13 +537,13 @@ class PayrollController extends Controller
                 $payroll['type'] = 'payroll';
                 $payroll['payment_status'] = 'due';
                 $payroll['status'] = $request->input('payroll_group_status');
-                $payroll['total_before_tax'] = $employee_details['final_salary'];
+                $payroll['total_before_tax'] = $employee_details['final_salary'] ?? 0;
                 $payroll['essentials_amount_per_unit_duration'] = $employee_details['salary'];
 
                 $allowances_and_deductions = $this->getAllowanceAndDeductionJson($employee_details);
                 $payroll['essentials_allowances'] = $allowances_and_deductions['essentials_allowances'];
                 $payroll['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
-                $payroll['final_total'] = $employee_details['final_salary'];
+                $payroll['final_total'] = $employee_details['final_salary'] ?? 0;
                 //Update reference count
                 $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
 

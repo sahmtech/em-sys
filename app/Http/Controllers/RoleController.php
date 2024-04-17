@@ -153,6 +153,7 @@ class RoleController extends Controller
     public function updateAccessRoleReport(Request $request, $roleId)
     {
         $reports = $request->reports;
+
         AccessRoleReport::where('access_role_id', $roleId)->delete();
         foreach ($reports as  $report) {
             AccessRoleReport::create([

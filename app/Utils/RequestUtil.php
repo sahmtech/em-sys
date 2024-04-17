@@ -1519,9 +1519,14 @@ class RequestUtil extends Util
         return 'success';
     }
 
-    public function viewRequestsOperations()
+    public function viewRequestsOperations() //only for workcard operations
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id = request()->session()->get('user.business_id');
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%حكومية%')
+            ->pluck('id')
+            ->toArray();
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -1533,9 +1538,11 @@ class RequestUtil extends Util
 
             $types = RequestsType::whereIn('type', ['exitRequest', 'returnRequest', 'escapeRequest'])->pluck('id')->toArray();
 
+            $procedures = WkProcedure::whereIn('department_id', $departmentIds)->pluck('id')->toArray();
+
             $tasks = Task::whereIn('request_type_id', $types)->pluck('id')->toArray();
 
-            $procedure_tasks = ProcedureTask::whereIn('task_id', $tasks)->pluck('id')->toArray();
+            $procedure_tasks = ProcedureTask::whereIn('task_id', $tasks)->whereIn('procedure_id', $procedures)->pluck('id')->toArray();
 
             $requests = UserRequest::whereIn('request_type_id', $types)->pluck('id')->toArray();
 
@@ -1551,8 +1558,8 @@ class RequestUtil extends Util
             ])->leftJoin('users', 'users.id', '=', 'requests.related_to')
 
 
-                ->whereIn('requests.related_to', $userIds);
-            // ->where('users.status', 'active')
+                ->whereIn('requests.related_to', $userIds)
+                ->where('users.status', 'active');
 
 
             if (request()->ajax()) {

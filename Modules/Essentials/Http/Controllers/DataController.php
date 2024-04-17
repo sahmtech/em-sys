@@ -2393,12 +2393,19 @@ class DataController extends Controller
                 $travel_ticket_categorie->save();
             }
 
-
+            //sponsor_id
+            //new_sponsor_name
             if (request()->input('profession')) {
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id = $user->id;
                 $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                 $essentials_employee_appointmets->is_active = 1;
+                if (request()->input('sponsor_id') != 'other_suponser') {
+                    $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
+                } else {
+                    $essentials_employee_appointmets->sponsor_name =  request()->input('new_sponsor_name');
+                }
+
                 $essentials_employee_appointmets->type = 'appoint';
                 $essentials_employee_appointmets->profession_id = request()->input('profession');
                 $essentials_employee_appointmets->save();
@@ -2678,6 +2685,11 @@ class DataController extends Controller
                     $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                     $essentials_employee_appointmets->is_active = 1;
                     $essentials_employee_appointmets->type = 'appoint';
+                    if (request()->input('sponsor_id') != 'other_suponser') {
+                        $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
+                    } else {
+                        $essentials_employee_appointmets->sponsor_name =  request()->input('new_sponsor_name');
+                    }
                     $essentials_employee_appointmets->profession_id = request()->input('profession');
                     $essentials_employee_appointmets->save();
                     error_log("saved new appoinment");
