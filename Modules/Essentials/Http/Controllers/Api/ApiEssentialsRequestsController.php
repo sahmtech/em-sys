@@ -364,7 +364,7 @@ class ApiEssentialsRequestsController extends ApiController
                 $count =  $requests->where('leave_type_id', $leave->essentials_leave_type_id)->count();
                 $statistics[] = [
                     'leave_type_id' => $leave->essentials_leave_type_id,
-                    'leave_type' => $leave->leave_type->leave_type,
+                    'leave_type' => $leave?->leave_type?->leave_type ?? '',
                     'max_leave_count' => (int)($leave->amount),
                     'taken_leave_count' => $count,
                 ];
@@ -382,7 +382,7 @@ class ApiEssentialsRequestsController extends ApiController
                     "id" => $request->id,
                     "request_no" => $request->request_no,
                     "duration" => $duration,
-                    "type" => json_decode($request)->leave_type->leave_type,
+                    "type" => json_decode($request)->leave_type?->leave_type ?? '',
                     "user" => $request->user,
                     "status" => __('api.' . $request['status']),
                     "note" => $request->note,
