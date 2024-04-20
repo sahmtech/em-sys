@@ -37,6 +37,7 @@ class ApiFollowUpRequestController extends ApiController
 
     public function __construct(ModuleUtil $moduleUtil)
     {
+        $this->middleware('localization');
         $this->moduleUtil = $moduleUtil;
         $this->statuses = [
             'approved' => [

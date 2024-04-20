@@ -39,6 +39,7 @@ class ApiEssentialsRequestsController extends ApiController
      */
     public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
+        $this->middleware('localization');
         $this->moduleUtil = $moduleUtil;
         $this->requestUtil = $requestUtil;
     }

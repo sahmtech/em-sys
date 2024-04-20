@@ -12,6 +12,7 @@ class ApiController extends Controller
 
     public function __construct()
     {
+
         $this->perPage = 10;
     }
 
@@ -77,9 +78,9 @@ class ApiController extends Controller
     {
         $client = request()->user()->token()->client;
 
-        if(!empty($client) && !empty($client->name)){
+        if (!empty($client) && !empty($client->name)) {
             return $client->name;
-        } else{
+        } else {
             return '';
         }
     }

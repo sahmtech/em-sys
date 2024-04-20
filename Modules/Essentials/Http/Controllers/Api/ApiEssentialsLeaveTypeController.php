@@ -26,6 +26,7 @@ class ApiEssentialsLeaveTypeController extends ApiController
      */
     public function __construct(ModuleUtil $moduleUtil)
     {
+        $this->middleware('localization');
         $this->moduleUtil = $moduleUtil;
     }
 
@@ -39,7 +40,7 @@ class ApiEssentialsLeaveTypeController extends ApiController
 
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -70,7 +71,7 @@ class ApiEssentialsLeaveTypeController extends ApiController
     {
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
