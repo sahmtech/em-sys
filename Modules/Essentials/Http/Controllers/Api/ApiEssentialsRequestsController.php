@@ -413,4 +413,94 @@ class ApiEssentialsRequestsController extends ApiController
             return $this->otherExceptions($e);
         }
     }
+
+
+
+    public function getMyRequests()
+    {
+
+
+
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $status_filter = request()->status;
+            $user = Auth::user();
+
+
+            // $requests = FollowupWorkerRequest::select([
+            //     'followup_worker_requests.request_no',
+            //     'followup_worker_requests.id',
+            //     'followup_worker_requests.type as type',
+            //     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            //     'followup_worker_requests.created_at',
+            //     'followup_worker_requests_process.status',
+            //     'followup_worker_requests_process.status_note as note',
+            //     'followup_worker_requests.reason',
+            //     'essentials_wk_procedures.department_id as department_id',
+            //     'users.id_proof_number',
+            //     'followup_worker_requests.start_date',
+            //     'followup_worker_requests.end_date',
+
+
+            // ])
+            //     ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+            //     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+            //     ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+            //     ->where('users.id', $user->id);
+            $leaveRequestType = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
+            $requests = UserRequest::with('requestType')->select([
+
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'request_processes.note as note',
+                'wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'requests.*',
+            ])
+
+                ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+                ->whereNot('requests.request_type_id', $leaveRequestType)
+                ->where('users.id', $user->id);
+
+            if ($status_filter) {
+
+                $requests = $requests->where('followup_worker_requests_process.status', $status_filter);
+            }
+
+            $requests = $requests->get();
+            $result = [];
+            foreach ($requests as $request) {
+                $request['status'] = __('api.' . $request['status']);
+                $type = json_decode($request)->request_type->type;
+                $request['type'] = __('api.' . $type);
+                $result[] = [
+
+                    'request_no' => $request->request_no,
+                    'id' => $request->id,
+                    'type' => $request['type'],
+                    'user' => $request->user,
+                    'created_at' => $request->created_at,
+                    'status' => $request->status,
+                    'note' => $request->note,
+                    'reason' => $request->reason,
+                    'department_id' => $request->department_id,
+                    'id_proof_number' => $request->id_proof_number,
+                ];
+            }
+            $res = [
+                'requests' =>  $result,
+            ];
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
 }
