@@ -478,7 +478,6 @@ class ApiEssentialsRequestsController extends ApiController
                 $type = json_decode($request)->request_type->type;
                 $request['type'] = __('api.' . $type);
                 $result[] = [
-
                     'request_no' => $request->request_no,
                     'id' => $request->id,
                     'type' => $request['type'],
