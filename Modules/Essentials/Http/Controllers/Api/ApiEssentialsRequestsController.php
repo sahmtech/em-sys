@@ -87,7 +87,7 @@ class ApiEssentialsRequestsController extends ApiController
                 } else {
                     $leaveBalance = UserLeaveBalance::where([
                         'user_id' => $user->id,
-                        'essentials_leave_type_id' => $request->leaveType,
+                        'essentials_leave_type_id' => $request->leaveTypeId,
                     ])->first();
 
                     if (!$leaveBalance || $leaveBalance->amount == 0) {

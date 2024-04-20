@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\UserLeaveBalance;
 
 class ApiFollowUpRequestController extends ApiController
 {
@@ -70,7 +71,7 @@ class ApiFollowUpRequestController extends ApiController
 
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -101,15 +102,21 @@ class ApiFollowUpRequestController extends ApiController
                 ->where('users.id', $user->id)->get();
 
             $business_id = $user->business_id;
-            $leave_types = EssentialsLeaveType::where('business_id', $business_id)
-                ->select(['id', 'leave_type', 'duration', 'max_leave_count',])->get();
+            // $leave_types = EssentialsLeaveType::where('business_id', $business_id)
+            //     ->select(['id', 'leave_type', 'duration', 'max_leave_count',])->get();
+
+            $leaves = UserLeaveBalance::with(['leave_type' => function ($query) use ($business_id) {
+                $query->where('business_id', $business_id)
+                    ->select(['id', 'leave_type', 'duration', 'max_leave_count']);
+            }])->where('user_id', $user->id)->get();
 
             $statistics = [];
-            foreach ($leave_types as  $leave) {
-                $count =  $requests->where('leave_type_id', $leave->id)->count();
+            foreach ($leaves as  $leave) {
+                $count =  $requests->where('leave_type_id', $leave->essentials_leave_type_id)->count();
                 $statistics[] = [
-                    'leave_type' => $leave->leave_type,
-                    'max_leave_count' => $leave->max_leave_count,
+                    'leave_type_id' => $leave->essentials_leave_type_id,
+                    'leave_type' => $leave->leave_type->leave_type,
+                    'max_leave_count' => (int)($leave->amount),
                     'taken_leave_count' => $count,
                 ];
             }
@@ -163,7 +170,7 @@ class ApiFollowUpRequestController extends ApiController
 
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -193,7 +200,7 @@ class ApiFollowUpRequestController extends ApiController
                 ->where('users.id', $user->id);
 
             if ($status_filter) {
-             
+
                 $requests = $requests->where('followup_worker_requests_process.status', $status_filter);
             }
 
