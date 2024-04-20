@@ -229,7 +229,7 @@ class ApiEssentialsRequestsController extends ApiController
                     if ($Request) {
                         $process = null;
 
-                        $department_id = $user->id->essentials_department_id;
+                        $department_id = $user->essentials_department_id;
 
 
 
