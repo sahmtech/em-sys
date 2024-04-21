@@ -108,11 +108,11 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     //get request types
     Route::get('getRequestTypes', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getRequestTypes']);
 
-    Route::get('getMyRequests', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyRequests']);
+    Route::get('getMyRequests',  [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getMyRequests']);
     Route::get('getMyToDo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getMyToDo']);
     //make request / leave request
     Route::post('makeRequest', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'storeApiRequest']);
-    Route::get('getMyLeaves', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyLeaves']);
+    Route::get('getMyLeaves', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getMyLeaves']);
     Route::get('getEditUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getEditUserInfo']);
     Route::post('updateUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'updateUserInfo']);
 

@@ -1804,7 +1804,7 @@ return [
   'emp_number' => 'الرقم الوظيفي',
   'border_no_validated' => ' رقم الحدود موجود سابقا في السطر رقم ',
   'duplicate_border_no' => '  رقم الحدود مكرر في الملف في السطر رقم ',
-
+  'sacnDoc' => 'مسح وثيقة',
   'user_type.employee' => 'موظفين',
   'user_type.worker' => 'عمال',
   'user_type.remote_employee' => 'موظفين عن بعد',

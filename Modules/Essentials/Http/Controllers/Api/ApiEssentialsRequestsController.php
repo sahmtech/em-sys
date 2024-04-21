@@ -31,6 +31,8 @@ class ApiEssentialsRequestsController extends ApiController
      */
     protected $moduleUtil;
     protected $requestUtil;
+    protected $statuses;
+    protected $statuses2;
 
     /**
      * Constructor
@@ -39,8 +41,34 @@ class ApiEssentialsRequestsController extends ApiController
      */
     public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
+        $this->middleware('localization');
         $this->moduleUtil = $moduleUtil;
         $this->requestUtil = $requestUtil;
+        $this->statuses = [
+            'approved' => [
+                'name' => __('api.approved'),
+                'class' => 'bg-green',
+            ],
+            'rejected' => [
+                'name' => __('fapi.rejected'),
+                'class' => 'bg-red',
+            ],
+            'pending' => [
+                'name' => __('api.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+        $this->statuses2 = [
+            'approved' => [
+                'name' => __('api.approved'),
+                'class' => 'bg-green',
+            ],
+
+            'pending' => [
+                'name' => __('api.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
     }
 
 
@@ -66,7 +94,7 @@ class ApiEssentialsRequestsController extends ApiController
                 if ($end_date) {
 
                     $endDateCarbon = Carbon::parse($end_date);
-                    error_log($endDateCarbon);
+
                     if ($startDateCarbon->gt($endDateCarbon)) {
                         return new CommonResource([
                             'msg' => "تاريخ البداية يجب أن يسبق تاريخ النهاية"
@@ -87,7 +115,7 @@ class ApiEssentialsRequestsController extends ApiController
                 } else {
                     $leaveBalance = UserLeaveBalance::where([
                         'user_id' => $user->id,
-                        'essentials_leave_type_id' => $request->leaveType,
+                        'essentials_leave_type_id' => $request->leaveTypeId,
                     ])->first();
 
                     if (!$leaveBalance || $leaveBalance->amount == 0) {
@@ -113,11 +141,11 @@ class ApiEssentialsRequestsController extends ApiController
                     $Request->related_to = $user->id;
                     $Request->request_type_id = $type_id;
                     $Request->start_date = $startDate;
-                    $Request->end_date = $end_date;
+                    $Request->end_date = $endDate;
                     $Request->reason = $request->reason;
                     $Request->note = $request->note;
                     $Request->attachment = $attachmentPath;
-                    $Request->essentials_leave_type_id = $request->leaveType;
+                    $Request->essentials_leave_type_id = $request->leaveTypeId;
                     $Request->created_by = $user->id;
                     $Request->save();
 
@@ -229,7 +257,7 @@ class ApiEssentialsRequestsController extends ApiController
                     if ($Request) {
                         $process = null;
 
-                        $department_id = $user->id->essentials_department_id;
+                        $department_id = $user->essentials_department_id;
 
 
 
@@ -293,69 +321,78 @@ class ApiEssentialsRequestsController extends ApiController
     }
 
 
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function makeRequest(Request $request)
+    public function getMyLeaves()
     {
+
+
+
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
         try {
             $user = Auth::user();
+            $leaveRequestType = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
+
+            $requests = UserRequest::with('leaveType')->select([
+
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'request_processes.note as note',
+                'wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'requests.*',
+            ])
+
+                ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+                ->where('requests.request_type_id', $leaveRequestType)
+                ->where('users.id', $user->id)->get();
+
+
+
+
             $business_id = $user->business_id;
 
+            $leaves = UserLeaveBalance::with(['leave_type' => function ($query) use ($business_id) {
+                $query->where('business_id', $business_id)
+                    ->select(['id', 'leave_type', 'duration', 'max_leave_count']);
+            }])->where('user_id', $user->id)->get();
 
-            $attachmentPath = null;
-            if (isset($request->attachment) && !empty($request->attachment)) {
-                $attachmentPath = $request->attachment->store('/requests_attachments');
+            $statistics = [];
+            foreach ($leaves as  $leave) {
+                $count =  $requests->where('leave_type_id', $leave->essentials_leave_type_id)->count();
+                $statistics[] = [
+                    'leave_type_id' => $leave->essentials_leave_type_id,
+                    'leave_type' => $leave?->leave_type?->leave_type ?? '',
+                    'max_leave_count' => (int)($leave->amount),
+                    'taken_leave_count' => $count,
+                ];
             }
-            $start_date = Carbon::parse($request->start_date)->format('Y-m-d');
-            $end_date = Carbon::parse($request->end_date)->format('Y-m-d');
-            ////////////////////////
-            // make sure the request has a procesure
-            ////////////////
-            $workerRequest = new FollowupWorkerRequest;
+            $requestsArr = [];
+            foreach ($requests as  $request) {
 
-            $workerRequest->request_no = $this->generateRequestNo("leavesAndDepartures");
-            $workerRequest->worker_id =  $user->id;
-            $workerRequest->type = "leavesAndDepartures";
-            $workerRequest->start_date = $start_date;
-            $workerRequest->end_date = $end_date;
-            $workerRequest->note = $request->note;
-            $workerRequest->attachment = $attachmentPath;
-            $workerRequest->essentials_leave_type_id = $request->leaveTypeId;
-            $workerRequest->save();
-            $success = 1;
-            if ($workerRequest) {
-                $process = FollowupWorkerRequestProcess::create([
-                    'worker_request_id' => $workerRequest->id,
-                    'procedure_id' => $this->getProcedureIdForType("leavesAndDepartures"),
-                    'status' => 'pending',
-                    'reason' => null,
-                    'status_note' => null,
-                ]);
 
-                if (!$process) {
-
-                    $workerRequest->delete();
-                    // $output = [
-                    //     'success' => 0,
-                    //     'msg' => __('messages.something_went_wrong'),
-                    // ];
-                    // return redirect()->route('allRequests')->withErrors([$output['msg']]);
-                    $success = 0;
-                }
-            } else {
-
-                $success = 0;
-                // $output = [
-                //     'success' => 0,
-                //     'msg' => __('messages.something_went_wrong'),
-                // ];
-                // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+                $startDate = Carbon::parse($request->start_date);
+                $endDate = Carbon::parse($request->start_date);
+                error_log($startDate);
+                error_log($endDate);
+                $duration = $startDate->diffInDays($endDate);
+                $requestsArr[] = [
+                    "id" => $request->id,
+                    "request_no" => $request->request_no,
+                    "duration" => $duration,
+                    "type" => json_decode($request)->leave_type?->leave_type ?? '',
+                    "user" => $request->user,
+                    "status" => __('api.' . $request['status']),
+                    "note" => $request->note,
+                    "reason" => $request->reason,
+                    "department_id" => $request->department_id,
+                    "id_proof_number" => $request->id_proof_number,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                ];
             }
-
 
 
 
@@ -364,7 +401,8 @@ class ApiEssentialsRequestsController extends ApiController
 
 
             $res = [
-                'msg' => "تم رفع الطلب بنجاح"
+                'statistics' => $statistics,
+                'requests' =>  $requestsArr
             ];
 
 
@@ -376,72 +414,84 @@ class ApiEssentialsRequestsController extends ApiController
         }
     }
 
-    public function makeLeaves(Request $request)
+
+
+    public function getMyRequests()
     {
+
+
+
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
         try {
+            $status_filter = request()->status;
             $user = Auth::user();
-            $business_id = $user->business_id;
 
 
-            $attachmentPath = null;
-            if (isset($request->attachment) && !empty($request->attachment)) {
-                $attachmentPath = $request->attachment->store('/requests_attachments');
-            }
-            $start_date = Carbon::parse($request->start_date)->format('Y-m-d');
-            $end_date = Carbon::parse($request->end_date)->format('Y-m-d');
-            ////////////////////////
-            // make sure the request has a procesure
-            ////////////////
-            $workerRequest = new FollowupWorkerRequest;
+            // $requests = FollowupWorkerRequest::select([
+            //     'followup_worker_requests.request_no',
+            //     'followup_worker_requests.id',
+            //     'followup_worker_requests.type as type',
+            //     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            //     'followup_worker_requests.created_at',
+            //     'followup_worker_requests_process.status',
+            //     'followup_worker_requests_process.status_note as note',
+            //     'followup_worker_requests.reason',
+            //     'essentials_wk_procedures.department_id as department_id',
+            //     'users.id_proof_number',
+            //     'followup_worker_requests.start_date',
+            //     'followup_worker_requests.end_date',
 
-            $workerRequest->request_no = $this->generateRequestNo("leavesAndDepartures");
-            $workerRequest->worker_id =  $user->id;
-            $workerRequest->type = "leavesAndDepartures";
-            $workerRequest->start_date = $start_date;
-            $workerRequest->end_date = $end_date;
-            $workerRequest->note = $request->note;
-            $workerRequest->attachment = $attachmentPath;
-            $workerRequest->essentials_leave_type_id = $request->leaveTypeId;
-            $workerRequest->save();
-            $success = 1;
-            if ($workerRequest) {
-                $process = FollowupWorkerRequestProcess::create([
-                    'worker_request_id' => $workerRequest->id,
-                    'procedure_id' => $this->getProcedureIdForType("leavesAndDepartures"),
-                    'status' => 'pending',
-                    'reason' => null,
-                    'status_note' => null,
-                ]);
 
-                if (!$process) {
+            // ])
+            //     ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+            //     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+            //     ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+            //     ->where('users.id', $user->id);
+            $leaveRequestType = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
+            $requests = UserRequest::with('requestType')->select([
 
-                    $workerRequest->delete();
-                    // $output = [
-                    //     'success' => 0,
-                    //     'msg' => __('messages.something_went_wrong'),
-                    // ];
-                    // return redirect()->route('allRequests')->withErrors([$output['msg']]);
-                    $success = 0;
-                }
-            } else {
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'request_processes.note as note',
+                'wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'requests.*',
+            ])
 
-                $success = 0;
-                // $output = [
-                //     'success' => 0,
-                //     'msg' => __('messages.something_went_wrong'),
-                // ];
-                // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+                ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+                ->whereNot('requests.request_type_id', $leaveRequestType)
+                ->where('users.id', $user->id);
+
+            if ($status_filter) {
+
+                $requests = $requests->where('followup_worker_requests_process.status', $status_filter);
             }
 
-
-
-
-
-
-
-
+            $requests = $requests->get();
+            $result = [];
+            foreach ($requests as $request) {
+                $request['status'] = __('api.' . $request['status']);
+                $type = json_decode($request)->request_type->type;
+                $request['type'] = __('api.' . $type);
+                $result[] = [
+                    'request_no' => $request->request_no,
+                    'id' => $request->id,
+                    'type' => $request['type'],
+                    'user' => $request->user,
+                    'created_at' => $request->created_at,
+                    'status' => $request->status,
+                    'note' => $request->note,
+                    'reason' => $request->reason,
+                    'department_id' => $request->department_id,
+                    'id_proof_number' => $request->id_proof_number,
+                ];
+            }
             $res = [
-                'msg' => "تم رفع الطلب بنجاح"
+                'requests' =>  $result,
             ];
 
 
@@ -451,56 +501,5 @@ class ApiEssentialsRequestsController extends ApiController
 
             return $this->otherExceptions($e);
         }
-    }
-    private function getProcedureIdForType($type)
-    {
-
-        $procedure = EssentialsWkProcedure::where('type', $type)->where('start', 1)->first();
-
-        return $procedure ? $procedure->id : null;
-    }
-
-    private function generateRequestNo($type)
-    {
-        $latestRecord = FollowupWorkerRequest::where('type', $type)->orderBy('request_no', 'desc')->first();
-
-        if ($latestRecord) {
-            $latestRefNo = $latestRecord->request_no;
-            $prefix = $this->getTypePrefix($type);
-            $numericPart = (int)substr($latestRefNo, strlen($prefix));
-            $numericPart++;
-            $input['request_no'] = $prefix . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-        } else {
-            $input['request_no'] = $this->getTypePrefix($type) . '0001';
-        }
-
-        return $input['request_no'];
-    }
-
-    private function getTypePrefix($type)
-    {
-
-        $typePrefixMap = [
-            'exitRequest' => 'ex',
-            'returnRequest' => 'ret',
-            'leavesAndDepartures' => 'lev',
-            'residenceRenewal' => 'resRe',
-            'escapeRequest' => 'escRe',
-            'advanceSalary' => 'advRe',
-            'atmCard' => 'atm',
-            'residenceCard' => 'res',
-            'workerTransfer' => 'wT',
-            'workInjuriesRequest' => 'wIng',
-            'residenceEditRequest' => 'resEd',
-            'baladyCardRequest' => 'bal',
-            'insuranceUpgradeRequest' => 'insUp',
-            'mofaRequest' => 'mofa',
-            'chamberRequest' => 'ch',
-            'cancleContractRequest' => 'con',
-            'WarningRequest' => 'WR'
-
-        ];
-
-        return $typePrefixMap[$type];
     }
 }

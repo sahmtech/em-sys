@@ -34,7 +34,6 @@ class EssentialsOfficialDocumentController extends Controller
         $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
         if (!$can_crud_official_documents) {
             error_log("2222");
-            //temp  abort(403, 'Unauthorized action.');
         }
         $can_add_official_documents = auth()->user()->can('essentials.add_official_documents');
         $can_edit_official_documents = auth()->user()->can('essentials.edit_official_documents');
@@ -68,7 +67,7 @@ class EssentialsOfficialDocumentController extends Controller
             ])
             ->orderby('essentials_official_documents.id', 'desc');
 
-        // dd($official_documents->where('essentials_official_documents.employee_id', 1270)->get());
+
 
 
         if (request()->ajax()) {
@@ -119,7 +118,6 @@ class EssentialsOfficialDocumentController extends Controller
                             } else {
                                 $html .= ' &nbsp; <button class="btn btn-xs btn-secondary btn-modal view_doc_file_modal" data-id="' . $row->id . '" > ' . __('essentials::lang.doc_file') . '</button>  &nbsp;';
                             }
-                            // $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         }
                         if ($is_admin || $can_delete_official_documents) {
                             $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
@@ -203,7 +201,9 @@ class EssentialsOfficialDocumentController extends Controller
                     'issue_date',
                     'issue_place',
                     'expiration_date',
-                    'file'
+                    'file',
+                    'scannedDoc'
+
                 ]
             );
 
@@ -224,10 +224,22 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['is_active'] = 1;
             $input2['status'] = 'valid';
 
-            if (request()->hasFile('file')) {
+            if ($request->has('image')) {
+                $image = $request->input('image');
+
+                $file = base64_decode($image);
+
+                $filename = 'scanned_document_' . time() . '.png';
+
+                $filePath = 'officialDocuments/' . $filename;
+
+                file_put_contents(storage_path('app/public/' . $filePath), $file);
+
+
+                $input2['file_path'] = $filePath;
+            } else  if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
-
                 $input2['file_path'] = $filePath;
             }
 
@@ -252,7 +264,7 @@ class EssentialsOfficialDocumentController extends Controller
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
-        // return $output;
+
         return redirect()->route('official_documents')->with(compact('users'));
     }
 
@@ -268,7 +280,6 @@ class EssentialsOfficialDocumentController extends Controller
     public function show($id)
     {
         if (!auth()->user()->can('user.view')) {
-            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -345,7 +356,7 @@ class EssentialsOfficialDocumentController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        // return response()->json($output);
+
         return redirect()->back()->with('status', $output);
     }
 
