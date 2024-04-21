@@ -193,7 +193,7 @@ class SaleWorkerController extends Controller
     {
 
         try {
-            $input = $request->only(['nationlity', 'quantity', 'date', 'profession', 'salary', 'specialization', 'note']);
+            $input = $request->only(['nationlity', 'quantity', 'date', 'attachment', 'profession', 'salary', 'specialization', 'note']);
 
             $input2['nationality_id'] = $input['nationlity'];
             $input2['date'] = $input['date'];
@@ -215,10 +215,10 @@ class SaleWorkerController extends Controller
                 $input2['order_no'] = 'USW1111';
             }
 
-            // if (isset($request->attachment) && !empty($request->attachment)) {
-            //     $attachmentPath = $request->attachment->store('/recruitmentRequests');
-            //     $input2['attachment'] = $attachmentPath;
-            // }
+            if (isset($request->attachment) && !empty($request->attachment)) {
+                $attachmentPath = $request->attachment->store('/unsupportedWorkersRequests');
+                $input2['attachment'] = $attachmentPath;
+            }
 
             SalesUnSupportedWorker::create($input2);
 

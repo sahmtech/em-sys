@@ -1486,14 +1486,14 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin || auth()->user()->can('sales.view_sale_operation_orders')) {
-
+            if ($is_admin || auth()->user()->can('sales.view_operations_order_for_contract')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
                     __('sales::lang.sale_operation_orders'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'orderOperations'],
                 );
             }
+
             if ($is_admin || auth()->user()->can('sales.view_sales_requests')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\RequestController::class, 'index']),
