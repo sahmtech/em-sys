@@ -1038,6 +1038,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('essentials.view_payroll_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'requests']),
+                    __('essentials::lang.requests'),
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'allPayrollRequests')]
+                );
+            }
         });
     }
 
