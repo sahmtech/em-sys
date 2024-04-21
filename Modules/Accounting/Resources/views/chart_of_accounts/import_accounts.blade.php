@@ -77,16 +77,16 @@
                         </tr>
                         <tr>
                             <td>1</td>
-                            <td>@lang('accounting::lang.account_name_en') <small class="text-muted">(@lang('lang_v1.required'))</small>
+                            <td>@lang('accounting::lang.account_level') <small class="text-muted"></small>
                             </td>
-                            <td>Accounts Receivable (A/R)</td>
+                            <td></td>
                         </tr>
 
                         <tr>
                             <td>2</td>
-                            <td>@lang('accounting::lang.account_name_ar') <small class="text-muted">(@lang('lang_v1.required'))</small>
+                            <td>@lang('accounting::lang.account_type') <small class="text-muted"></small>
                             </td>
-                            <td>المدينونيات التجارية (A/R)</td>
+                            <td></td>
                         </tr>
 
 
@@ -94,26 +94,17 @@
 
                         <tr>
                             <td>3</td>
-                            <td>@lang('accounting::lang.account_primary_type') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
-                            <td>@lang('accounting::lang.liability'):liability, @lang('accounting::lang.income'):income, @lang('accounting::lang.expenses'):expenses,
-                                @lang('accounting::lang.asset'):asset</td>
+                            <td>@lang('accounting::lang.account_name_ar') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>4</td>
                             <td>@lang('accounting::lang.gl_code') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                             <td>&nbsp;</td>
                         </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>@lang('accounting::lang.gl_code_mainaccount') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
-                            <td>@lang('accounting::lang.gl_code_mainaccount_nots')</td>
-                        </tr>
+                      
 
-                        <tr>
-                            <td>6</td>
-                            <td>@lang('accounting::lang.account_category') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
-                            <td>@lang('accounting::lang.balance_sheet'):balance_sheet, @lang('accounting::lang.income_list'):income_list</td>
-                        </tr>
+                      
 
 
 

@@ -158,6 +158,8 @@ class CoaController extends Controller
         $user_id = request()->session()->get('user.id');
 
         $default_accounts = AccountingUtil::Default_Accounts($business_id, $user_id, $company_id);
+        // $default_accounts = AccountingUtil::default_accounting_account_types($business_id);
+        // AccountingAccountType::insert($default_accounts);
 
 
         if (AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)->doesntExist()) {
@@ -348,7 +350,7 @@ class CoaController extends Controller
          $company_id = Session::get('selectedCompanyId');
 
 
-        try {
+        // try {
             DB::beginTransaction();
 
             $input = $request->only([
@@ -369,7 +371,8 @@ class CoaController extends Controller
 
             $input['status'] = 'active';
             $input['gl_code'] = AccountingUtil::next_GLC($input['parent_account_id'], $business_id, $company_id);
-            $account_type = AccountingAccountType::find($input['account_sub_type_id']);
+            // dd($input['account_sub_type_id'],$input['parent_account_id']);
+            $account_type = AccountingAccountType::find($input['account_sub_type_id']??$input['parent_account_id']);
             $account = AccountingAccount::create($input);
             // return $input;
             if ($account_type->show_balance == 1 && !empty($request->input('balance'))) {
@@ -399,11 +402,11 @@ class CoaController extends Controller
             }
 
             DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
-        }
+        //     \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+        // }
 
         return redirect()->back();
     }
@@ -714,21 +717,24 @@ class CoaController extends Controller
 
                     $user_id = request()->session()->get('user.id');
 
-                    if (!$value[0] || !$value[1] || !$value[2]  || !$value[3] || !$value[4]) {
+                    if ( !$value[2]  || !$value[3]) {
                         continue;
                     } else {
-                        $accountingAccountType = AccountingAccountType::where('name', $value[4])->first();
-                        if (!$accountingAccountType || AccountingAccount::where('gl_code', $value[3])->where('company_id', $company_id)->first()) {
+                        // dd($value[2],$value[3],substr_replace($value[3] ,"", -2));
+                        // $accountingAccountType = AccountingAccountType::where('gl_code',substr_replace($value[3] ,"", -2))->first();
+                        $AccountingAccount = AccountingAccount::where('gl_code', substr_replace($value[3] ,"", -2))->first();
+                        if (!$AccountingAccount) {
                             continue;
                         } else {
 
                             AccountingAccount::create([
-                                'name' => $value[0],
+                                'name' => $value[2],
                                 'business_id' => $business_id,
                                 'company_id' => $company_id,
-                                'account_primary_type' => $value[2],
-                                'account_sub_type_id' => $accountingAccountType->id,
-                                'detail_type_id' =>  $accountingAccountType->account_type == 'sub_type' ? null : AccountingAccountType::find($accountingAccountType->parent_id)->id,
+                                'account_primary_type' => $AccountingAccount->account_primary_type,
+                                'parent_account_id' => $AccountingAccount->id,
+                                'account_sub_type_id'=>$AccountingAccount->account_sub_type_id,
+                                // 'detail_type_id' =>  $accountingAccountType->account_type == 'sub_type' ? null : AccountingAccountType::find($accountingAccountType->parent_id)->id,
                                 'gl_code' => $value[3],
                                 'status' => 'active',
                                 'created_by' => $user_id,

@@ -148,118 +148,276 @@ class CreateAccountingAccountTypesTable extends Migration
         //         'parent_id' => null
         //     ],
         // ];
+        $business_id = request()->session()->get('user.business_id');
         $account_sub_types = [
            
-            [
-                'id' => 1,
+            // [
+            //     'id' => 1,
+            //     'name' => 'current_assets',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'asset',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 2,
+            //     'name' => 'cash_and_cash_equivalents',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'asset',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 3,
+            //     'name' => 'fixed_assets',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'asset',
+            //     'parent_id' => null,
+            // ],
+            // [
+            //     'id' => 4,
+            //     'name' => 'non_current_assets',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'asset',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 5,
+            //     'name' => 'accounts_payable',
+            //     'show_balance' => 0,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'liability',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 6,
+            //     'name' => 'credit_card',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'liability',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 7,
+            //     'name' => 'current_liabilities',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'liability',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 8,
+            //     'name' => 'non_current_liabilities',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'liability',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 9,
+            //     'name' => 'owners_equity',
+            //     'show_balance' => 1,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'equity',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 10,
+            //     'name' => 'income',
+            //     'show_balance' => 0,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'income',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 11,
+            //     'name' => 'other_income',
+            //     'show_balance' => 0,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'income',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 12,
+            //     'name' => 'cost_of_sale',
+            //     'show_balance' => 0,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'expenses',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 13,
+            //     'name' => 'expenses',
+            //     'show_balance' => 0,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'expenses',
+            //     'parent_id' => null
+            // ],
+            // [
+            //     'id' => 14,
+            //     'name' => 'other_expense',
+            //     'show_balance' => 0,
+            //     'account_type' => 'sub_type',
+            //     'account_primary_type' => 'expenses',
+            //     'parent_id' => null
+            // ],
+            
+              // asset
+              [
+                'id'=>1,
                 'name' => 'current_assets',
+                'business_id' => $business_id,
+                'gl_code' => '1.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
                 'account_primary_type' => 'asset',
                 'parent_id' => null
             ],
             [
-                'id' => 2,
-                'name' => 'cash_and_cash_equivalents',
-                'show_balance' => 1,
-                'account_type' => 'sub_type',
-                'account_primary_type' => 'asset',
-                'parent_id' => null
-            ],
-            [
-                'id' => 3,
-                'name' => 'fixed_assets',
-                'show_balance' => 1,
-                'account_type' => 'sub_type',
-                'account_primary_type' => 'asset',
-                'parent_id' => null,
-            ],
-            [
-                'id' => 4,
+                'id'=>2,
                 'name' => 'non_current_assets',
+                'business_id' => $business_id,
+                'gl_code' => '1.2',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
                 'account_primary_type' => 'asset',
                 'parent_id' => null
             ],
             [
-                'id' => 5,
-                'name' => 'accounts_payable',
-                'show_balance' => 0,
-                'account_type' => 'sub_type',
-                'account_primary_type' => 'liability',
-                'parent_id' => null
-            ],
-            [
-                'id' => 6,
-                'name' => 'credit_card',
+                'id'=>3,
+                'name' => 'other_assets',
+                'business_id' => $business_id,
+                'gl_code' => '1.3',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
-                'account_primary_type' => 'liability',
+                'account_primary_type' => 'asset',
                 'parent_id' => null
             ],
+            // commitments
             [
-                'id' => 7,
-                'name' => 'current_liabilities',
+                'id'=>4,
+                'name' => 'Current liabilities',
+                'business_id' => $business_id,
+                'gl_code' => '2.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
-                'account_primary_type' => 'liability',
+                'account_primary_type' => 'commitments',
                 'parent_id' => null
             ],
             [
-                'id' => 8,
-                'name' => 'non_current_liabilities',
+                'id'=>5,
+                'name' => 'Non-current liabilities',
+                'business_id' => $business_id,
+                'gl_code' => '2.2',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
-                'account_primary_type' => 'liability',
+                'account_primary_type' => 'commitments',
                 'parent_id' => null
             ],
+            //property rights
             [
-                'id' => 9,
-                'name' => 'owners_equity',
+                'id'=>6,
+                'name' => 'capital',
+                'business_id' => $business_id,
+                'gl_code' => '3.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
-                'account_primary_type' => 'equity',
+                'account_primary_type' => 'property_rights',
                 'parent_id' => null
             ],
             [
-                'id' => 10,
-                'name' => 'income',
-                'show_balance' => 0,
+                'id'=>7,
+                'name' => 'retained earnings',
+                'business_id' => $business_id,
+                'gl_code' => '3.2',
+                'show_balance' => 1,
                 'account_type' => 'sub_type',
-                'account_primary_type' => 'income',
+                'account_primary_type' => 'property_rights',
                 'parent_id' => null
             ],
             [
-                'id' => 11,
-                'name' => 'other_income',
-                'show_balance' => 0,
+                'id'=>8,
+                'name' => 'Reserves',
+                'business_id' => $business_id,
+                'gl_code' => '3.3',
+                'show_balance' => 1,
                 'account_type' => 'sub_type',
-                'account_primary_type' => 'income',
+                'account_primary_type' => 'property_rights',
                 'parent_id' => null
             ],
             [
-                'id' => 12,
-                'name' => 'cost_of_sale',
-                'show_balance' => 0,
+                'id'=>9,
+                'name' => 'Retained profits and losses',
+                'business_id' => $business_id,
+                'gl_code' => '3.4',
+                'show_balance' => 1,
                 'account_type' => 'sub_type',
-                'account_primary_type' => 'expenses',
+                'account_primary_type' => 'property_rights',
                 'parent_id' => null
             ],
             [
-                'id' => 13,
+                'id'=>10,
+                'name' => 'Partners are underway',
+                'business_id' => $business_id,
+                'gl_code' => '3.5',
+                'show_balance' => 1,
+                'account_type' => 'sub_type',
+                'account_primary_type' => 'property_rights',
+                'parent_id' => null
+            ],
+            // cost of goods sold
+            [
+                'id'=>11,
+                'name' => 'Cost of goods sold',
+                'business_id' => $business_id,
+                'gl_code' => '4.1',
+                'show_balance' => 1,
+                'account_type' => 'sub_type',
+                'account_primary_type' => 'cost_goods_sold',
+                'parent_id' => null
+            ],
+            // expenses
+            [
+                'id'=>12,
                 'name' => 'expenses',
-                'show_balance' => 0,
+                'business_id' => $business_id,
+                'gl_code' => '5.1',
+                'show_balance' => 1,
                 'account_type' => 'sub_type',
                 'account_primary_type' => 'expenses',
                 'parent_id' => null
             ],
             [
-                'id' => 14,
-                'name' => 'other_expense',
-                'show_balance' => 0,
+                'id'=>13,
+                'name' => 'Expenses outside the activity',
+                'business_id' => $business_id,
+                'gl_code' => '5.2',
+                'show_balance' => 1,
                 'account_type' => 'sub_type',
                 'account_primary_type' => 'expenses',
+                'parent_id' => null
+            ],
+            // income
+            [
+                'id'=>14,
+                'name' => 'income',
+                'business_id' => $business_id,
+                'gl_code' => '6.1',
+                'show_balance' => 1,
+                'account_type' => 'sub_type',
+                'account_primary_type' => 'income',
+                'parent_id' => null
+            ],
+            [
+                'id'=>15,
+                'name' => 'Income outside the activity',
+                'business_id' => $business_id,
+                'gl_code' => '6.2',
+                'show_balance' => 1,
+                'account_type' => 'sub_type',
+                'account_primary_type' => 'income',
                 'parent_id' => null
             ],
         ];
