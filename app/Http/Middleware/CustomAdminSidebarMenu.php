@@ -668,6 +668,13 @@ class CustomAdminSidebarMenu
 
                 // $menu->url(route('legalAffairs.contracts_management'),  __('legalaffairs::lang.contracts_management'), ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'contracts_management']);
             }
+            if ($is_admin  || auth()->user()->can('legalaffairs.view_legalaffairs_requests')) {
+                $menu->url(
+                    action([\Modules\LegalAffairs\Http\Controllers\RequestController::class, 'index']),
+                    __('legalaffairs::lang.requests'),
+                    ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' &&  request()->segment(2) == 'legalrequests']
+                );
+            }
         });
     }
 
