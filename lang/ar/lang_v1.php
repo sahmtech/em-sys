@@ -1478,5 +1478,7 @@ return [
     'helloAgain' => 'مرحبا مجدداً',
     'emdadatalatta_comp'=>'شركة إمدادات العطاء',
     'provide_gifts'=>'دائما نمدكم بالعطاء',
-
+     'report'=>'تقرير',
+     
+    
 ];

@@ -77,9 +77,14 @@ class ReportsController extends Controller
     {
         $today = today()->format('Y-m-d');
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
-        $residencies = EssentialsOfficialDocument::with(['employee'])
+        $residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id',$userIds)
             ->where('type', 'residence_permit')
             ->where('is_active', 1)
 
@@ -187,10 +192,15 @@ class ReportsController extends Controller
         $today = Carbon::now();
         $after_15_days = Carbon::now()->addDays(15);
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
+        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')->whereIn('employee_id',$userIds)
             ->where('is_active', 1)
             ->whereBetween('expiration_date', [$today, $after_15_days])
             ->orderBy('id', 'desc')
@@ -295,7 +305,12 @@ class ReportsController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
 
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
 
@@ -453,15 +468,8 @@ class ReportsController extends Controller
 
     public function building()
     {
-
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
-
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -642,8 +650,7 @@ class ReportsController extends Controller
         $insurance_classes = EssentialsInsuranceClass::all()
             ->pluck('name', 'id');
 
-
-        $insurances = EssentialsEmployeesInsurance::with('user ', 'user.business')
+            $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
@@ -669,90 +676,96 @@ class ReportsController extends Controller
         if (request()->ajax()) {
 
             return Datatables::of($insurances)
-                ->addColumn('user', function ($row) {
-                    $item = '';
+            ->addColumn('user', function ($row) {
+                $item = '';
 
-                    if ($row->employee_id != null) {
-                        $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
-                        //  $item = $row->english_name;
-                    } else if ($row->employee_id == null) {
-                        $item = $row->essentialsEmployeesFamily->full_name ?? '';
-                    }
+                if ($row->employee_id != null) {
+                    $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
+                    //  $item = $row->english_name;
+                } else if ($row->employee_id == null) {
+                    $item = $row->essentialsEmployeesFamily->full_name ?? '';
+                }
 
-                    return $item;
-                })
+                return $item;
+            })
 
-                ->addColumn('english_name', function ($row) {
-                    $item = '';
+            ->addColumn('english_name', function ($row) {
+                $item = '';
 
-                    if ($row->employee_id != null) {
-                        $item = $row->user->english_name  ?? '';
-                    }
+                if ($row->employee_id != null) {
+                    $item = $row->user->english_name  ?? '';
+                }
 
-                    return $item;
-                })
+                return $item;
+            })
 
-                ->addColumn('dob', function ($row) {
-                    $item = '';
-                    if ($row->employee_id != null) {
-                        $item = $row->user->dob ?? '';
-                    } else if ($row->employee_id == null) {
-                        $item = $row->essentialsEmployeesFamily->dob ?? '';
-                    }
-                    return $item;
-                })
+            ->addColumn('dob', function ($row) {
+                $item = '';
+                if ($row->employee_id != null) {
+                    $item = $row->user->dob ?? '';
+                } else if ($row->employee_id == null) {
+                    $item = $row->essentialsEmployeesFamily->dob ?? '';
+                }
+                return $item;
+            })
 
-                ->editColumn('fixnumber', function ($row) {
-                    $item = '';
-                    if ($row->employee_id != null) {
-                        $item = $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
-                            ->first()->unified_number ?? '';
-                    } else if ($row->employee_id == null) {
-                        $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
-                            ->first()->unified_number ?? '';
-                    }
-                    return  $item;
-                })
-
-
-                ->addColumn('proof_number', function ($row) {
-                    $item = '';
-                    if ($row->employee_id != null) {
-                        $item = $row->user->id_proof_number ?? '';
-                    } else if ($row->employee_id == null) {
-                        $item = $row->essentialsEmployeesFamily->eqama_number ?? '';
-                    }
-
-                    return $item;
-                })
-
-                ->editColumn('insurance_company_id', function ($row) use ($insurance_companies) {
-                    $item = $insurance_companies[$row->insurance_company_id] ?? '';
-
-                    return $item;
-                })
-                ->editColumn('insurance_classes_id', function ($row) use ($insurance_classes) {
-                    $item = $insurance_classes[$row->insurance_classes_id] ?? '';
-
-                    return $item;
-                })
+            ->editColumn('fixnumber', function ($row) {
+                $item = '';
+                if ($row->employee_id != null) {
+                    $item = $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
+                        ->first()->unified_number ?? '';
+                } else if ($row->employee_id == null) {
+                    $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
+                        ->first()->unified_number ?? '';
+                }
+                return  $item;
+            })
 
 
-                ->filterColumn('user', function ($query, $keyword) {
+            ->addColumn('proof_number', function ($row) {
+                $item = '';
+                if ($row->employee_id != null) {
+                    $item = $row->user->id_proof_number ?? '';
+                } else if ($row->employee_id == null) {
+                    $item = $row->essentialsEmployeesFamily->eqama_number ?? '';
+                }
 
-                    $query->whereRaw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
-                })
+                return $item;
+            })
 
-                ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
-                })
+            ->editColumn('insurance_company_id', function ($row) use ($insurance_companies) {
+                $item = $insurance_companies[$row->insurance_company_id] ?? '';
 
-                ->make(true);
+                return $item;
+            })
+            ->editColumn('insurance_classes_id', function ($row) use ($insurance_classes) {
+                $item = $insurance_classes[$row->insurance_classes_id] ?? '';
+
+                return $item;
+            })
+          
+
+
+            ->filterColumn('user', function ($query, $keyword) {
+
+                $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
+                    ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+            })
+
+            ->filterColumn('proof_number', function ($query, $keyword) {
+                $query->whereRaw("CASE
+                                        WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
+                                      
+                                        ELSE ''
+                                    END LIKE ?", ["%$keyword%"]);
+            })
+
+
+
+           
+            ->make(true);
+    
+
         }
 
 
