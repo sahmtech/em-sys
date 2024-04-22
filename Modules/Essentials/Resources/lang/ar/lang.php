@@ -1845,7 +1845,13 @@ return [
   'sponsor' => 'الكفيل',
   'No_Sponsor' => 'بدون كفيل',
   'other_suponser' => 'كفيل آخر ',
-  'Enter new sponsor name' => ' اسم كفيلك'
+  'Enter new sponsor name' => ' اسم كفيلك',
+  'view_payroll_requests' => 'عرض طلبات إدارة الراوتب',
+  'change_payroll_request_status' => 'تغيير حالة الطلب',
+  'return_payroll_request' => 'إرجاع طلب إدارة الرواتب',
+  'show_payroll_request' => 'استعراض الطلب',
+  'there_is_no_payroll_dep' => 'لا يوجد إدارة رواتب ',
+  'add_payroll_request' => 'إضافة طلب'
 
 
 

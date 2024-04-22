@@ -69,6 +69,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/draft_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'draft_contacts'])->name('draft_contacts');
 
         Route::get('/qualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'qualified_contacts'])->name('qualified_contacts');
+        Route::get('/change_contact_status_api', [\Modules\Sales\Http\Controllers\ClientsController::class, 'change_contact_status_api'])->name('change_contact_status_api');
         Route::get('/unqualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'unqualified_contacts'])->name('unqualified_contacts');
         Route::get('/converted_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'converted_contacts'])->name('converted_contacts');
 
