@@ -35,4 +35,14 @@ return [
     'notification_recievers' => 'المرسل لهم',
     'edit_notification_settings' => 'تعديل إعدادات الإشعارات',
     'notification_settings' => 'إعدادات الإشعارات',
+    'human_resources_management' => 'إدارة الموارد البشرية',
+    'housing_movement_management' => 'إدارة السكن والحركة',
+    'financial_accounting_management' => 'إدارة المالية والمحاسبة',
+    'follow_up_management' => 'إدارة المتابعة',
+    'international_relations_management' => 'إدارة العلاقات الدولية',
+    'sells_management' => 'إدارة المبيعات',
+    'legal_affairs_management' => 'إدارة الشؤون القانونية',
+    '' => '',
+    '' => '',
+
 ];

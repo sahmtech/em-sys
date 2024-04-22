@@ -37,6 +37,7 @@ class ApiEssentialsController extends ApiController
      */
     public function __construct(ModuleUtil $moduleUtil, EssentialsUtil $essentialsUtil, Util $commonUtil)
     {
+        $this->middleware('localization');
         $this->moduleUtil = $moduleUtil;
         $this->essentialsUtil = $essentialsUtil;
         $this->commonUtil = $commonUtil;
@@ -113,11 +114,11 @@ class ApiEssentialsController extends ApiController
         }
 
         try {
-          //  $user = Auth::user();
+            //  $user = Auth::user();
 
             if ($request->otp == '1111') {
                 $user = User::where('contact_number', $request->phone)->first();
-                if(!$user){
+                if (!$user) {
                     throw new \Exception("no such user, register first.");
                 }
                 $user->update(['password' => Hash::make($request->new_password)]);

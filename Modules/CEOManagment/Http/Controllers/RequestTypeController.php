@@ -182,7 +182,7 @@ class RequestTypeController extends Controller
     public function update(Request $request)
 
     {
-        // return $request;
+
         try {
 
             $requests = WkProcedure::where('request_type_id', $request->request_type_id)->get();
@@ -192,8 +192,9 @@ class RequestTypeController extends Controller
                     'success' => false,
                     'msg' => __('ceomanagment::lang.cant_edit_type_it_have_procedures'),
                 ];
-                return $output;
+                return redirect()->back()->with($output);
             }
+
             Task::where('request_type_id', $request->request_type_id)->delete();
 
             if (isset($request->tasks)) {

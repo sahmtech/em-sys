@@ -20,6 +20,7 @@ use Modules\InternationalRelations\Entities\IrVisaCard;
 
 use Modules\InternationalRelations\Entities\IrDelegation;
 use DB;
+use Illuminate\Support\Facades\DB as FacadesDB;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 
 class VisaCardController extends Controller
@@ -46,11 +47,16 @@ class VisaCardController extends Controller
         if (!($is_admin || $can_crud_visa_card)) {
             //temp  abort(403, 'Unauthorized action.');
         }
-        $visaCards = IrVisaCard::whereNotNull('operation_order_id')->with(
-            'operationOrder.contact',
-            'operationOrder.salesContract.transaction.sell_lines.agencies',
-            'operationOrder.salesContract.transaction.sell_lines.service'
-        );
+        $visaCards = IrVisaCard::whereNotNull('operation_order_id')
+            ->with(
+                'operationOrder.contact',
+                'delegation',
+                'transaction_sell_line',
+                'operationOrder.salesContract.transaction.sell_lines.agencies',
+                'operationOrder.salesContract.transaction.sell_lines.service'
+            )->get();
+        //dd($visaCards[1]->transaction_sell_line_id);
+        // dd($visaCards[1]->delegation($visaCards[1]->transaction_sell_line_id)->targeted_quantity);
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
@@ -67,44 +73,99 @@ class VisaCardController extends Controller
                     return optional($row->operationOrder->salesContract)->number_of_contract;
                 })
                 ->addColumn('nationality_list', function ($row) use ($nationalities) {
-                    $sellLines = optional($row->operationOrder->salesContract->transaction->sell_lines);
+                    $nationalityId = "";
+                    $transactionSellLine = $row->transaction_sell_line;
+                    if ($transactionSellLine) {
+                        $service = $transactionSellLine->service;
+                        if ($service) {
+                            $nationalityId = $service->nationality_id;
+                            return $nationalities[$nationalityId];
+                        } else {
+                            return $nationalityId;
+                        }
+                    }
+                    // $nationalityNames = $sellLines->map(function ($sellLine) use ($nationalities) {
+                    //     return optional($sellLine->service)->nationality_id;
+                    // })->filter()->map(function ($nationalityId) use ($nationalities) {
+                    //     return '<li>' . $nationalities[$nationalityId] . '</li>';
+                    // })->implode('');
+                    // return '<ul>' . $nationalityNames . '</ul>';
 
-                    $nationalityNames = $sellLines->map(function ($sellLine) use ($nationalities) {
-                        return optional($sellLine->service)->nationality_id;
-                    })->filter()->map(function ($nationalityId) use ($nationalities) {
-                        return '<li>' . $nationalities[$nationalityId] . '</li>';
-                    })->implode('');
-
-                    return '<ul>' . $nationalityNames . '</ul>';
                 })
                 ->addColumn('profession_list', function ($row) use ($professions) {
-                    $sellLines = optional($row->operationOrder->salesContract->transaction->sell_lines);
 
-                    $professionsNames = $sellLines->map(function ($sellLine) use ($professions) {
-                        return optional($sellLine->service)->profession_id;
-                    })->filter()->map(function ($professionId) use ($professions) {
-                        return '<li>' . $professions[$professionId] . '</li>';
-                    })->implode('');
+                    // $professionsNames = $sellLines->map(function ($sellLine) use ($professions) {
+                    //     return optional($sellLine->service)->profession_id;
+                    // })->filter()->map(function ($professionId) use ($professions) {
+                    //     return '<li>' . $professions[$professionId] . '</li>';
+                    // })->implode('');
+                    // return '<ul>' . $professionsNames . '</ul>';
+                    // $professionId = "";
 
-                    return '<ul>' . $professionsNames . '</ul>';
-                })
-
-                ->addColumn('agency_name', function ($row) {
-                    $irDelegations = IrDelegation::where('operation_order_id', $row->operationOrder->id)->get();
-                    $agencyNames = $irDelegations->flatMap(function ($delegation) {
-                        $agency = Contact::where('id', $delegation->agency_id)->first();
-                        if ($agency) {
-                            return ["<li>{$agency->supplier_business_name}</li>"];
+                    $professionId = "";
+                    $transactionSellLine = $row->transaction_sell_line;
+                    if ($transactionSellLine) {
+                        $service = $transactionSellLine->service;
+                        if ($service) {
+                            $professionId = $service->profession_id;
+                            return $professions[$professionId];
+                        } else {
+                            return $professionId;
                         }
-                        return [];
-                    })->unique()->implode('');
-
-                    return "<ul>{$agencyNames}</ul>";
+                    }
                 })
 
+                ->addColumn(
+                    'agency_name',
+                    function ($row) {
+                        $operationOrderId = $row->operationOrder->id;
+                        error_log($operationOrderId);
+                        $visa_transaction_sell_line_id = $row->transaction_sell_line_id;
+                        error_log($visa_transaction_sell_line_id);
+                        $delegation = IrDelegation::where('operation_order_id', $operationOrderId)
+                            ->where('transaction_sell_line_id', $visa_transaction_sell_line_id)
+                            ->first();
+                        error_log($delegation);
+                        $agency = null;
 
+                        if ($delegation) {
+                            $agency = Contact::where('id', $delegation->agency_id)->first();
+                            error_log('agency', $agency->id);
+                            return $agency?->supplier_business_name ?? null;
+                        }
+
+
+
+                        // if ($irDelegations) {
+                        //     $agencyNames = $irDelegations->flatMap(function ($delegation) {
+                        //         $agency = Contact::where('id', $delegation->agency_id)->first();
+                        //         if ($agency) {
+                        //             return ["<li>{$agency->supplier_business_name}</li>"];
+                        //         }
+                        //         return [];
+                        //     })->unique()->implode('');
+
+                        //     return "<ul>{$agencyNames}</ul>";
+                        // } else {
+                        //     return '';
+                        // }
+                    }
+                )
+
+
+                // ->addColumn('orderQuantity', function ($row) {
+                //     return $row->delegation ? $row->delegation->targeted_quantity : null;
+                // })
                 ->addColumn('orderQuantity', function ($row) {
-                    return optional($row->operationOrder)->orderQuantity;
+                    $operationOrderId = $row->operationOrder->id;
+
+                    $visa_transaction_sell_line_id = $row->transaction_sell_line_id;
+
+                    $delegation = IrDelegation::where('operation_order_id', $operationOrderId)
+                        ->where('transaction_sell_line_id', $visa_transaction_sell_line_id)
+                        ->first();
+
+                    return $delegation->targeted_quantity ?? null;
                 })
                 ->rawColumns(['nationality_list', 'agency_name', 'profession_list'])
                 ->make(true);
@@ -352,14 +413,17 @@ class VisaCardController extends Controller
             $professions = EssentialsProfession::all()->pluck('name', 'id');
             $business_id = request()->session()->get('user.business_id');
             $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-            $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')->where('visa_id', $visaId)->select([
-                'id',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-                'is_price_offer_sent',
-                'is_accepted_by_worker',
-                'medical_examination', 'fingerprinting', 'is_passport_stamped', 'passport_number', 'date_of_offer',
-                'agency_id', 'transaction_sell_line_id', 'arrival_date'
-            ]);
+
+            $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')
+                ->where('visa_id', $visaId)
+                ->select([
+                    'id',
+                    FacadesDB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+                    'is_price_offer_sent',
+                    'is_accepted_by_worker',
+                    'medical_examination', 'fingerprinting', 'is_passport_stamped', 'passport_number', 'date_of_offer',
+                    'agency_id', 'transaction_sell_line_id', 'arrival_date'
+                ]);
 
 
             if (request()->ajax()) {
@@ -434,33 +498,31 @@ class VisaCardController extends Controller
                     ->make(true);
             }
             $visaCard = IrVisaCard::where('id', $visaId)->with('operationOrder')->first();
-
-            $agencyIds = [];
+            error_log($visaCard);
+            $agencyId = null;
 
 
             if ($visaCard && $visaCard->operationOrder) {
                 $operationOrderId = $visaCard->operationOrder->id;
+                $visa_transaction_sell_line_id = $visaCard->transaction_sell_line_id;
+                error_log($operationOrderId);
+                error_log($visa_transaction_sell_line_id);
 
+                $delegations = IrDelegation::where('operation_order_id', $operationOrderId)
+                    ->where('transaction_sell_line_id', $visa_transaction_sell_line_id)
+                    ->get();
+                error_log($delegations);
 
-                $delegations = IrDelegation::where('operation_order_id', $operationOrderId)->get();
-
-
-                $agencyIds = $delegations->pluck('agency_id')->unique()->toArray();
+                $agencyId = $delegations->pluck('agency_id')->unique();
             }
+            error_log($agencyId);
 
-            $workers = IrProposedLabor::where(function ($query) use ($agencyIds) {
-                $query->whereNull('agency_id')
-                    ->orWhereIn('agency_id', $agencyIds);
-            })
+            $workers = IrProposedLabor::where('agency_id', $agencyId)
                 ->whereNull('visa_id')
                 ->where('is_accepted_by_worker', 1)
                 ->get();
 
-
-
-
-
-
+            error_log($workers);
             $workersOptions = $workers->map(function ($worker) {
                 return [
                     'id' => $worker->id,

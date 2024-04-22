@@ -35,6 +35,8 @@ use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\Sales\Entities\SalesProject;
 use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 use Yajra\DataTables\Facades\DataTables;
+use App\Utils\RequestUtil;
+use Modules\Essentials\Entities\EssentialsDepartment;
 
 class PayrollController extends Controller
 {
@@ -51,23 +53,35 @@ class PayrollController extends Controller
 
     protected $businessUtil;
 
+    protected $requestUtil;
     /**
      * Constructor
      *
      * @param  ProductUtils  $product
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil, EssentialsUtil $essentialsUtil, Util $commonUtil, TransactionUtil $transactionUtil, BusinessUtil $businessUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil, EssentialsUtil $essentialsUtil, Util $commonUtil, TransactionUtil $transactionUtil, BusinessUtil $businessUtil)
     {
         $this->moduleUtil = $moduleUtil;
         $this->essentialsUtil = $essentialsUtil;
         $this->commonUtil = $commonUtil;
         $this->transactionUtil = $transactionUtil;
         $this->businessUtil = $businessUtil;
+        $this->requestUtil = $requestUtil;
     }
 
     public function dashboard()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_access_payrolls_management = auth()->user()->can('essentials.payrolls_management');
+
+        if (!($is_admin || $can_access_payrolls_management)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
         return view('essentials::payroll.dashboard');
     }
 
@@ -93,6 +107,7 @@ class PayrollController extends Controller
             }
         }
         $companies = Company::whereIn('id',  $companies_ids)->pluck('name', 'id')->toArray();
+        $projects = SalesProject::all()->pluck('name', 'id')->toArray();
         $employees = User::where('user_type', 'employee')->whereIn('id', $userIds)->select(
             'users.*',
             DB::raw("CONCAT(COALESCE(users.first_name, ''),  ' ', COALESCE(users.last_name, '')) as name"),
@@ -103,9 +118,44 @@ class PayrollController extends Controller
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
 
-        return view('essentials::payroll.index')->with(compact('companies', 'employees', 'user_types'));
+        return view('essentials::payroll.index')->with(compact('projects', 'companies', 'employees', 'user_types'));
+    }
+    public function requests()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $can_change_status = auth()->user()->can('essentials.change_payroll_request_status');
+        $can_return_request = auth()->user()->can('essentials.return_payroll_request');
+        $can_show_request = auth()->user()->can('essentials.show_payroll_request');
+
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%رواتب%')
+            ->pluck('id')->toArray();
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_payroll_dep'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
+
+        $ownerTypes = ['employee', 'manager', 'worker'];
+
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::payroll.payrollRequests', $can_change_status, $can_return_request, $can_show_request);
     }
 
+    public function storePayrollRequest(Request $request)
+    {
+
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%رواتب%')
+            ->pluck('id')->toArray();
+
+        return $this->requestUtil->storeRequest($request, $departmentIds);
+    }
     public function getEmployeesBasedOnCompany(Request $request)
     {
 
@@ -396,12 +446,13 @@ class PayrollController extends Controller
     public function create()
     {
         $companies_ids = request()->input('companies');
+        $projects_ids = request()->input('projects');
         $user_type = request()->input('user_type');
-        $employee_ids = User::with('contract')->whereIn('company_id', $companies_ids);
+        $employee_ids = User::with('contract');
         if ($user_type == "worker") {
-            $employee_ids = $employee_ids->where('user_type', 'worker');
+            $employee_ids = $employee_ids->whereIn('company_id', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
-            $employee_ids = $employee_ids->where('user_type', 'employee');
+            $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
         }
         if ($user_type == "remote_employee") {
             $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
@@ -517,6 +568,7 @@ class PayrollController extends Controller
             $transaction_ids = [];
             $employees_details = $request->payrolls;
             foreach ($employees_details as $employee_details) {
+                error_log($employee_details['final_salary'] ?? 1263761253761);
                 $payroll['expense_for'] = $employee_details['id'];
                 $payroll['transaction_date'] = $transaction_date;
                 $payroll['business_id'] = $business_id;
@@ -524,13 +576,13 @@ class PayrollController extends Controller
                 $payroll['type'] = 'payroll';
                 $payroll['payment_status'] = 'due';
                 $payroll['status'] = $request->input('payroll_group_status');
-                $payroll['total_before_tax'] = $employee_details['final_salary'];
+                $payroll['total_before_tax'] = $employee_details['final_salary'] ?? 0;
                 $payroll['essentials_amount_per_unit_duration'] = $employee_details['salary'];
 
                 $allowances_and_deductions = $this->getAllowanceAndDeductionJson($employee_details);
                 $payroll['essentials_allowances'] = $allowances_and_deductions['essentials_allowances'];
                 $payroll['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
-                $payroll['final_total'] = $employee_details['final_salary'];
+                $payroll['final_total'] = $employee_details['final_salary'] ?? 0;
                 //Update reference count
                 $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
 

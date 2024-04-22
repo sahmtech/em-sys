@@ -36,6 +36,29 @@ class DataController extends Controller
                         'label' => __('legalaffairs::lang.sales_contracts'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'legalaffairs.view_legalaffairs_requests',
+                        'label' => __('legalaffairs::lang.view_legalaffairs_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'legalaffairs.change_request_status',
+                        'label' => __('legalaffairs::lang.change_request_status'),
+                        'default' => false,
+                    ],   [
+                        'value' => 'legalaffairs.return_request',
+                        'label' => __('legalaffairs::lang.return_request'),
+                        'default' => false,
+                    ],   [
+                        'value' => 'legalaffairs.show_request',
+                        'label' => __('legalaffairs::lang.show_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'legalaffairs.add_request',
+                        'label' => __('legalaffairs::lang.add_request'),
+                        'default' => false,
+                    ],
                 ],
             ],
         ];

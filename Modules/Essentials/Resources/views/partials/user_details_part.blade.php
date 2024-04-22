@@ -11,6 +11,8 @@
     @endif
 
     <p><strong>@lang('essentials::lang.profession'):</strong> {{ $user->profession ?? '' }}</p>
+    <p><strong>@lang('essentials::lang.sponsor_name'):</strong> {{ $user->sponsor_company ?? '' }}</p>
+
 
 
 </div>
@@ -26,14 +28,14 @@
             @endif
         @endif
     </p>
-    
-     <p><strong>@lang('essentials::lang.total_salary'):</strong>
+
+    <p><strong>@lang('essentials::lang.total_salary'):</strong>
         {{ $user->calculateTotalSalary() ?? '' }}
     </p>
-                                   
 
 
-   
+
+
     <p><strong>@lang('essentials::lang.pay_cycle'):</strong>
         @if (!empty($user->essentials_pay_period))
             @if ($user->essentials_pay_period == 'week')

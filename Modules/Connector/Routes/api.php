@@ -104,13 +104,18 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->group(function () {
     // Route::post('/checkPointInPolygon', [Modules\Connector\Http\Controllers\Api\ApiAttendanceController::class, 'checkPointInPolygon']);
     Route::get('getLeaveTypes', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getLeaveTypes']);
-    Route::get('getMyRequests', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyRequests']);
+
+    //get request types
+    Route::get('getRequestTypes', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getRequestTypes']);
+
+    Route::get('getMyRequests',  [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getMyRequests']);
     Route::get('getMyToDo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getMyToDo']);
-    Route::post('makeRequest', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'makeRequest']);
-    Route::get('getMyLeaves', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyLeaves']);
+    //make request / leave request
+    Route::post('makeRequest', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'storeApiRequest']);
+    Route::get('getMyLeaves', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getMyLeaves']);
     Route::get('getEditUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getEditUserInfo']);
     Route::post('updateUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'updateUserInfo']);
-  
+
     Route::post('changeToDoStatus/{id}', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'changeToDoStatus']);
     Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
     Route::post('clock-in', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'clockin']);

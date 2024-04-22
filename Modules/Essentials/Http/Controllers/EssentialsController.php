@@ -376,12 +376,16 @@ class EssentialsController extends Controller
         $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
         $sixtyday = Carbon::now()->addDays(60)->toDateString();
 
+
         $last15_expire_date_residence = EssentialsOfficialDocument::where('is_active', 1)->where('type', 'residence_permit')
+
             ->whereBetween('expiration_date', [now(), now()->addDays(15)->endOfDay()])
             ->count();
 
         $today = today()->format('Y-m-d');
+
         $all_ended_residency_date = EssentialsOfficialDocument::where('is_active', 1)->with(['employee'])
+
             ->where('type', 'residence_permit')
             ->whereDate('expiration_date', '<', $today)
             ->count();
@@ -535,55 +539,61 @@ class EssentialsController extends Controller
             ->pluck('id')->toArray();
 
         $allRequestTypes = RequestsType::pluck('type', 'id');
-        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
-            ->groupBy('request_id');
+        $types = RequestsType::where('type', 'leavesAndDepartures')
+            ->pluck('id')->toArray();
 
-        $requestsProcess = UserRequest::select([
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+        if ($types) {
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
+                ->groupBy('request_id');
 
-            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+            $requestsProcess = UserRequest::select([
+                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason', 'requests.start_date',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+                'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
 
-        ])
-            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
-                $join->on('requests.id', '=', 'latest_process.request_id');
-            })
-            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
-            // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
-            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
-            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
-            ->where(function ($query) use ($departmentIds) {
-                $query->whereIn('wk_procedures.department_id', $departmentIds)
-                    ->orWhereIn('process.superior_department_id', $departmentIds);
-            })
+                'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
 
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
 
-            ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
-            ->where('users.status', '!=', 'inactive');
-
-
-        if (request()->ajax()) {
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('created_at', function ($row) {
-                    return Carbon::parse($row->created_at);
+            ])
+                ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                    $join->on('requests.id', '=', 'latest_process.request_id');
                 })
-                ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
-                    return $allRequestTypes[$row->request_type_id];
-                })
-                ->editColumn('status', function ($row) {
-                    $status = trans('request.' . $row->status);
-
-                    return $status;
+                ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+                // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+                ->where(function ($query) use ($departmentIds) {
+                    $query->whereIn('wk_procedures.department_id', $departmentIds)
+                        ->orWhereIn('process.superior_department_id', $departmentIds);
                 })
 
-                ->rawColumns(['status', 'request_type_id'])
+
+                ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
+                ->where('users.status', '!=', 'inactive')->whereIn('requests.request_type_id', $types);
 
 
-                ->make(true);
+            if (request()->ajax()) {
+
+                return DataTables::of($requestsProcess ?? [])
+                    ->editColumn('created_at', function ($row) {
+                        return Carbon::parse($row->created_at);
+                    })
+                    ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                        return $allRequestTypes[$row->request_type_id];
+                    })
+                    ->editColumn('status', function ($row) {
+                        $status = trans('request.' . $row->status);
+
+                        return $status;
+                    })
+
+                    ->rawColumns(['status', 'request_type_id'])
+
+
+                    ->make(true);
+            }
         }
     }
 

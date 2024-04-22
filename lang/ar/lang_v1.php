@@ -1467,6 +1467,29 @@ return [
     'GeneralManagementNotification' => 'إشعار المدير العام',
     'email_enabled' => 'البريد الالكتروني',
     'dashboard_enabled' => 'لوحة التحكم',
+    'annual_vecation_availabe_in_3_months' => 'اشعار استحقاق موظف لاجازة سنوية (قبل 3 أشهر من الاستحقاق)',
+    'insurance_company_contract_expires_in_2_months' => 'عقود شركات تأمين تنتهي خلال شهرين',
+    'insurance_company_contract_expired' => 'انتهاء عقود شركات تأمين',
+    'employee_contract_expires_in_2_months' => 'عقود موظفين تنتهي خلال شهرين',
+    'employee_contract_expired' => 'انتهاء عقود موظفين',
+    'work_card_expires_in_2_months' => 'كروت عمل تنتهي خلال شهرين',
+    'work_card_expired' => 'انتهاء كروت عمل',
+    'residency_expires_in_2_months' => 'اقامات تنتهي خلال شهرين',
+    'residency_expired' => 'انتهاء اقامات',
+    'new_operational_order' => 'امر تشغيل جديد',
+    'housing_new_arrival' => 'وصول جديد في السكن',
+    'new_order_request' => 'امر طلب جديد',
+    'traveling_ticket_request' => 'طلب تذكرة سفر',
+    'movement_form_expires_in_15_days' => 'استمارات ادارة حركة تنتهي خلال 15 يوم',
+    'movement_form_expired' => 'انتهاء استمارات ادارة الحركة ',
+    'vehicle_insurance_expires_in_15_days' => 'تأمين مركبات ينتهي خلال 15 يوم',
+    'vehicle_insurance_expired' => 'انتهاء تأمين مركبات',
+
+
+
+
+
+
     'ResidencyExpiration_15_D' => 'إشعار إقامة تنتهي خلال 15 يوما',
     'ExpiredResidency' => 'إشعار انتهاء إقامة',
     'Subscription_1' => 'إشعار انتهاء اشتراك',

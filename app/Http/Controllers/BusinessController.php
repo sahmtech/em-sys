@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Business;
+use App\Company;
 use App\Currency;
 use App\Notifications\TestEmailNotification;
 use App\System;
@@ -372,8 +375,23 @@ class BusinessController extends Controller
             'activity',
 
         ];
+
+        //  $business = DB::table('business')->select(['business.id', 'business.name', 'business.en_name', 'business.start_date', 'business.tax_label_1', 'business.tax_number_1']);
+        $companies_ids = Company::pluck('id')->unique()->toArray();
+        if (!$is_admin) {
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+        }
+        $business = DB::table('companies')->whereIn('id', $companies_ids)->select(['id', 'name', 'en_name', 'start_date', 'tax_label_1', 'tax_number_1']);
+
         if (request()->ajax()) {
-            $business = DB::table('business')->select(['business.id', 'business.name', 'business.en_name', 'business.start_date', 'business.tax_label_1', 'business.tax_number_1']);
 
             return Datatables::of($business)
                 ->addColumn('missing_license_types', function ($row) use ($allLicenseTypes) {

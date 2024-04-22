@@ -39,12 +39,12 @@ class EssentialsDepartmentsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        // $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
-        // $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
 
-        // if (!$can_crud_organizational_structure) {
-        //     //temp  abort(403, 'Unauthorized action.');
-        // }
+
+
+
+
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
@@ -126,7 +126,7 @@ class EssentialsDepartmentsController extends Controller
         }
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////
+
     public function index()
     {
 
@@ -141,9 +141,9 @@ class EssentialsDepartmentsController extends Controller
         $can_add_deputy = auth()->user()->can('ceomanagment.add_deputy');
         $can_delegatingManager_name = auth()->user()->can('ceomanagment.delegatingManager_name');
 
-        // if (!$can_crud_depatments) {
-        //     //temp  abort(403, 'Unauthorized action.');
-        // }
+
+
+
 
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $parent_departments = EssentialsDepartment::where('is_main', '1')->pluck('name', 'id');
@@ -213,7 +213,7 @@ class EssentialsDepartmentsController extends Controller
                         $html = '';
                         if ($is_admin || $can_edit_depatments) {
 
-                            //   $html .='<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+
                             $html .= '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '" data-info-route="' . route('getDepartmentInfo', $row->id) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
 
                             '&nbsp;';
@@ -248,6 +248,38 @@ class EssentialsDepartmentsController extends Controller
         $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         return view('essentials::settings.partials.departments.index')->with(compact('parent_departments', 'users', 'departments', 'business_locations', 'professions'));
     }
+
+
+    public function getProfessionsForEmployee(Request $request)
+    {
+        $employeeId = $request->input('employee_id');
+        $appointments = EssentialsEmployeeAppointmet::where('employee_id', $employeeId)
+            ->where('is_active', 1)->get();
+        $professions = [];
+
+        if ($appointments->isEmpty()) {
+
+            $allProfessions = EssentialsProfession::all();
+            foreach ($allProfessions as $profession) {
+                $professions[] = [
+                    'id' => $profession->id,
+                    'name' => $profession->name
+                ];
+            }
+        } else {
+
+            foreach ($appointments as $appointment) {
+                $professionId = $appointment->profession_id;
+                $professions[] = [
+                    'id' => $professionId,
+                    'name' => $appointment->profession?->name
+                ];
+            }
+        }
+
+        return response()->json(['professions' => $professions]);
+    }
+
 
     public function destroy($id)
     {

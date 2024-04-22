@@ -337,7 +337,7 @@ class HomeController extends Controller
             ['value' => 'legalaffairs.legalAffairs_dashboard'],
         ];
         $payrollsPermissions = [
-            ['value' => 'essentials.payrolls_dashboard'],
+            ['value' => 'essentials.payrolls_management'],
         ];
         $reportsPermissions = [["value" => 'report.reports'],];
 
@@ -385,7 +385,7 @@ class HomeController extends Controller
             ['id' => 'assetManagement',  'permissions' => $assetPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
             //  ['id' => 'crm',  'permissions' => $CRMPermissions, 'title' => __('crm::lang.crm'),'icon' =>'fas fa fa-broadcast-tower', 'link' => action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']),],
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
-            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
+            // ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
             //  ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fas fa-user-circle', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
             ['id' => 'settings',  'permissions' => [], 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
         ];
@@ -393,37 +393,51 @@ class HomeController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+        $is_general_manager = auth()->user()->hasRole('الإدارة العليا#1') ? true : false;
+
         $user_id = auth()->user()->id;
 
-
-        foreach ($cardsPack as $card) {
-            if (!empty($card['permissions'])) {
-                $canAccessCard = false;
-                foreach ($card['permissions'] as $permission) {
-                    if ($isSuperAdmin || $is_admin || auth()->user()->can($permission['value'])) {
-                        $canAccessCard = true;
-                        break;
+        if ($is_general_manager) {
+            $cards = [
+                ['id' => 'general_management',  'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
+                ['id' => 'ceo_management',  'permissions' => $CEODashPermission, 'title' => __('ceomanagment::lang.CEO_Managment'), 'icon' => "fas fa-chart-line", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
+                ['id' => 'human_resources_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.human_resources_management'), 'icon' => 'fa fas fa-users', 'link' => route('generalmanagement.human_resources_management')],
+                ['id' => 'financial_accounting_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.financial_accounting_management'), 'icon' => 'fas fa-money-check fa', 'link' => route('accountingLanding'),],
+                ['id' => 'follow_up_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.follow_up_management'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
+                ['id' => 'international_relations_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.international_relations_management'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
+                ['id' => 'housing_movement_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.housing_movement_management'), 'icon' => 'fa fas fa-home', 'link' => route('generalmanagement.housing_movement_management')],
+                ['id' => 'sells_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.sells_management'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
+                ['id' => 'legal_affairs_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.legal_affairs_management'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
+                ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
+            ];
+        } else {
+            foreach ($cardsPack as $card) {
+                if (!empty($card['permissions'])) {
+                    $canAccessCard = false;
+                    foreach ($card['permissions'] as $permission) {
+                        if ($isSuperAdmin || $is_admin || auth()->user()->can($permission['value'])) {
+                            $canAccessCard = true;
+                            break;
+                        }
                     }
-                }
 
-                if ($canAccessCard) {
-                    $cards[] = $card;
+                    if ($canAccessCard) {
+                        $cards[] = $card;
 
-                    error_log($card['title']);
+                        error_log($card['title']);
+                    } else {
+                        error_log("cant " . $card['title']);
+                    }
                 } else {
-                    error_log("cant " . $card['title']);
+                    if (($is_admin &&  $user_id == 1) || $isSuperAdmin) {
+                        $cards[] = $card;
+                    }
+                    //$cards[] = $card;
+                    error_log("empty " . $card['title']);
                 }
-            } else {
-                if (($is_admin &&  $user_id == 1) || $isSuperAdmin) {
-                    $cards[] = $card;
-                }
-                //$cards[] = $card;
-                error_log("empty " . $card['title']);
             }
         }
-
-
-        return view('custom_views.custom_home', compact('cards',  'widgets', 'common_settings', 'is_admin'));
+        return view('custom_views.custom_home', compact('cards'));
 
         // return view('custom_views.custom_home', compact('cards', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
 

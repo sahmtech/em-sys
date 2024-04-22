@@ -13,6 +13,7 @@ use App\Transaction;
 use App\User;
 use Composer\Semver\Comparator;
 use Module;
+use Maatwebsite\Excel\Excel;
 
 class ModuleUtil extends Util
 {
@@ -39,6 +40,18 @@ class ModuleUtil extends Util
 
         return false;
     }
+    public function generateEmpNumber($company_id)
+    {
+        $last_emp_number = User::where('company_id', $company_id)->latest()->first()->emp_number;
+        $emp_number = intval(substr($last_emp_number, 2));
+        $emp_number++;
+        $sequencePart = str_pad($emp_number, 5, '0', STR_PAD_LEFT);
+        $companyPart = str_pad($company_id, 2, '0', STR_PAD_LEFT);
+        $newEmpNumber = $companyPart . $sequencePart;
+        return $newEmpNumber;
+    }
+
+
 
     /**
      * This function check if superadmin module is installed or not.
@@ -575,7 +588,8 @@ class ModuleUtil extends Util
         $reports = [];
 
         foreach ($roles as $role) {
-            $reports = array_merge($reports, AccessRoleReport::where('access_role_id', $role->id)->pluck('report_id')->toArray());
+            $access_role_id = AccessRole::where('role_id', $role->id)->first()->id;
+            $reports = array_merge($reports, AccessRoleReport::where('access_role_id', $access_role_id)->pluck('report_id')->toArray());
         }
         return $reports;
     }
