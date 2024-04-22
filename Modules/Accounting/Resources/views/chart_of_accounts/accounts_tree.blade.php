@@ -33,10 +33,10 @@
                         <ul>
                             @foreach ($account_sub_types->where('account_primary_type', $key)->all() as $sub_type)
                                 <li @if ($loop->index == 0) data-jstree='{ "opened" : true }' @endif>
-                                    ({{ $account_GLC[$key] . $loop->index + 1 }})
-                                    - {{ $sub_type->account_type_name }}
+                                    ({{ $sub_type->gl_code }})
+                                    - @lang('accounting::lang.'.$sub_type->account_type_name) 
                                     <ul>
-                                        @foreach ($accounts->where('account_sub_type_id', $sub_type->id)->sortBy('name')->all() as $account)
+                                        @foreach ($accounts->where('account_sub_type_id', $sub_type->id)->all() as $account)
                                             <li
                                                 @if (count($account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right" }' @endif>
                                                 @if (app()->getLocale() == 'ar')
@@ -44,9 +44,9 @@
                                                         ({{ $account->gl_code }})
                                                         -
                                                     @endif
-                                                    @lang('accounting::lang.accounts_name.' . $account->name)
+                                                    @lang('accounting::lang.' . $account->name)
                                                 @else
-                                                    @lang('accounting::lang.accounts_name.' . $account->name) @if (!empty($account->gl_code))
+                                                    @lang('accounting::lang.' . $account->name) @if (!empty($account->gl_code))
                                                         - ({{ $account->gl_code }})
                                                     @endif
                                                 @endif
