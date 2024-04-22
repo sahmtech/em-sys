@@ -45,10 +45,10 @@
                     <div class="tab-pane active" id="account_setting"> 
                         <div class="row mb-12">
                             <div class="col-md-4">
-                                <button class="btn btn-danger accounting_reset_data" 
+                                <a class="btn btn-danger accounting_reset_data" href="{{action('\Modules\Accounting\Http\Controllers\SettingsController@resetData')}}"
                                     data-href="{{action('\Modules\Accounting\Http\Controllers\SettingsController@resetData')}}">
                                     @lang('accounting::lang.reset_data')
-                                </button>
+                                </a>
                             </div>
                         </div>
                         <br>
