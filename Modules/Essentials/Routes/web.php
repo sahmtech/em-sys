@@ -150,7 +150,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/import-employees', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index'])->name('import-employees');
         Route::post('/send-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee'])->name('send-employee-file');
-        Route::post('/send-update-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee_v2'])->name('send-update-employee-file');
+        Route::post('/send-update-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee'])->name('send-update-employee-file');
         Route::get('/download-employees-not-found', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'downloadEmployeesNotFound'])->name('download-employees-not-found');
         Route::get('download-non-employees/{filename}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'downloadFile'])->name('download-file');
 
