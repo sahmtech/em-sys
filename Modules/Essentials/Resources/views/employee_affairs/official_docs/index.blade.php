@@ -276,14 +276,14 @@
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div class="row" id="file_input_row">
                                 {!! Form::hidden('delete_file', '0', ['id' => 'delete_file_input']) !!}
                                 {!! Form::hidden('doc_id', null, ['id' => 'doc_id']) !!}
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('essentials::lang.file') . ':') !!}
                                     
                                     {!! Form::file('file', null, [
-                                        'class' => 'form-control file_input',
+                                        'class' => 'form-control',
                                     
                                         'style' => 'height:40px',
                                     ]) !!}
@@ -357,39 +357,39 @@
     };
         $(document).ready(function() {
 
-            $(document).on('click', '.view_doc_file_modal', function(e) {
-                e.preventDefault();
+                $(document).on('click', '.view_doc_file_modal', function(e) {
+                    e.preventDefault();
 
-                var fileUrl = $(this).data('href') ?? null;
-                var doc_id = $(this).data('id');
-                $('#doc_id').val(doc_id);
-                if (fileUrl != null) {
-                    console.log(fileUrl);
-                    $('#iframeDocViewer').attr('src', fileUrl);
-                   
-                        if(userPermissions.isAdmin || userPermissions.canEdit){
-                            
-                            $('.file_input').css('display', 'block');
-                        } else {
-                            $('.file_input').css('display', 'none'); 
-                        }
-                    $('#iframeDocViewer').show();
+                    var fileUrl = $(this).data('href') ?? null;
+                    var doc_id = $(this).data('id');
+                    $('#doc_id').val(doc_id);
+                    if (fileUrl != null) {
+                        console.log(fileUrl);
+                        $('#iframeDocViewer').attr('src', fileUrl);
+                    
+                            if(userPermissions.isAdmin || userPermissions.canEdit){
+                                
+                                $('#file_input_row').show();
+                            } else {
+                                $('#file_input_row').hide(); 
+                            }
+                        $('#iframeDocViewer').show();
 
-                } else {
-                    if(userPermissions.isAdmin || userPermissions.canAdd)
-                    {
-                        $('.file_input').css('display', 'block');
-                        } else {
-                            $('.file_input').css('display', 'none'); 
-                        }
-                    $('#iframeDocViewer').hide();
+                    } else {
+                        if(userPermissions.isAdmin || userPermissions.canAdd)
+                        {
+                            $('#file_input_row').show();
+                            } else {
+                                $('#file_input_row').hide(); 
+                            }
+                        $('#iframeDocViewer').hide();
 
-                }
+                    }
 
 
-                // Open the modal
-                $('#addDocFileModal').modal('show');
-            });
+                    // Open the modal
+                    $('#addDocFileModal').modal('show');
+                });
 
             $('#addDocFileModal').on('hidden.bs.modal', function() {
                 $('#iframeDocViewer').attr('src', '');
