@@ -80,24 +80,29 @@ class ReportsController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
-        $residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id',$userIds)
+
+        $all_expired_residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id',$userIds)
+
             ->where('type', 'residence_permit')
             ->where('is_active', 1)
 
             ->whereDate('expiration_date', '<', $today)
             ->orderBy('id', 'desc')
-            ->latest('created_at')
-            ->get();
+            ->latest('created_at');
 
         if (request()->ajax()) {
-            return DataTables::of($residencies)
+            return DataTables::of($all_expired_residencies)
                 ->addColumn('worker_name', function ($row) {
                     return $row->employee?->first_name .
                         ' ' .
-                        $row->employee?->last_name;
+
+                        $row->employee->mid_name . ' ' . $row->employee->last_name;
                 })
                 ->addColumn('residency', function ($row) {
                     return $row->number;
+                })
+                ->addColumn('gender', function ($row) {
+                    return $row->employee->gender ?? " ";
                 })
                 ->addColumn('customer_name', function ($row) {
 
@@ -127,21 +132,23 @@ class ReportsController extends Controller
                 })
                 ->addColumn('dob', function ($row) {
                     return $row->employee->dob ?? '';
-                })->addColumn('passport_number', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                })
+                ->addColumn('passport_number', function ($row) {
+                    $passportDocument = $row->employee->OfficialDocument()
                         ->where('type', 'passport')
+                        ->where('is_active', 1)
                         ->first();
                     if ($passportDocument) {
 
                         return optional($passportDocument)->number ?? ' ';
                     } else {
-
                         return ' ';
                     }
                 })
                 ->addColumn('passport_expire_date', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                    $passportDocument = $row->employee->OfficialDocument()
                         ->where('type', 'passport')
+                        ->where('is_active', 1)
                         ->first();
                     if ($passportDocument) {
 
@@ -160,19 +167,35 @@ class ReportsController extends Controller
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
-                ->addColumn('gender', function ($row) {
-                    return $row->employee->gender ?? ' ';
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('employee', function ($q) use ($keyword) {
+                        $q->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
                 })
+
 
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
 
-                ->removeColumn('id')
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('employee', function ($q) use ($keyword) {
+                        $q->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('residency', function ($query, $keyword) {
+                    $query->where('number', 'like', "%$keyword%");
+                })
+
+
                 ->rawColumns([
                     'worker_name',
                     'residency',
                     'project',
-                    'end_date', 'gender',
+                    'end_date',
                     'action',
                 ])
                 ->make(true);
@@ -193,7 +216,18 @@ class ReportsController extends Controller
         }
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
+
+        $residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id',$userIds)->where(
+            'type',
+            'residence_permit'
+        )
+            ->whereBetween('expiration_date', [
+                now(),
+                now()
+                    ->addDays(15)
+                    ->endOfDay(),
+            ])
+
             ->where('is_active', 1)
             ->latest('created_at');
 
