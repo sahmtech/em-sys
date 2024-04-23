@@ -49,6 +49,7 @@ use Modules\CEOManagment\Entities\RequestsType;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeesNotFoundExport;
+use Exception;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -662,30 +663,106 @@ class EssentialsManageEmployeeController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $usersWithNullAdmission = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+        $usersWithNullAdmission = User::whereIn('id', $userIds)
+            ->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification', 'contract', 'OfficialDocument'])
             ->where(function ($query) {
-                $query->whereHas('essentials_admission_to_works', function ($query) {
+                $query->where(function ($q1) {
+                    $q1->whereIn('user_type', ['employee', 'manager'])
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('contract')
+                                ->orWhereHas('contract', function ($q3) {
+                                    $q3->whereNotExists(function ($q4) {
+                                        $q4->where('is_active', 1);
+                                    });
+                                })
+                                ->orWhereDoesntHave('OfficialDocument')
+                                ->orWhereHas('OfficialDocument', function ($q3) {
+                                    $q3->where('is_active', 1)->where(function ($q4) {
+                                        $q4->whereNotExists(
+                                            function ($q5) {
+                                                $q5->where('type', 'passport');
+                                            }
 
-                    $query->whereNull('admissions_date');
-                })
-                    ->orWhereHas('essentialsEmployeeAppointmets', function ($query) {
+                                        )
+                                            ->orWhereNotExists(
+                                                function ($q5) {
+                                                    $q5->where('type', 'residence_permit');
+                                                }
+                                            )
+                                            ->orWhereNotExists(
+                                                function ($q5) {
+                                                    $q5->where('type', 'Iban');
+                                                }
+                                            )
+                                            ->whereNotExists(
+                                                function ($q5) {
+                                                    $q5->where('type', 'national_id');
+                                                }
+                                            )
+                                            ->whereNotExists(function ($q5) {
+                                                $q5->where('type', 'drivers_license');
+                                            })
 
-                        $query->WhereNull('start_from')
-                            ->orWhereNull('end_at')
-                            ->orWhereNull('profession_id');
-                    })
-                    ->orWhereHas('essentials_qualification', function ($query) {
+                                            ->whereNotExists(
+                                                function ($q5) {
+                                                    $q5->where('type', 'car_registration');
+                                                }
+                                            )
 
-                        $query->WhereNull('graduation_year')
-                            ->orWhereNull('graduation_institution')
-                            ->orWhereNull('graduation_country')
-                            ->orWhereNull('degree');
-                    });
+
+                                            ->whereNotExists(
+                                                function ($q5) {
+                                                    $q5->where('type', 'international_certificate');
+                                                }
+                                            );
+                                    });
+                                });
+                        });
+                })->orWhere(function ($q1) {
+                    $q1->where('user_type', 'worker')
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('contract')
+                                ->orWhereHas('contract', function ($q3) {
+                                    $q3->whereNotExists(
+                                        function ($q4) {
+                                            $q4->where('is_active', 1);
+                                        }
+
+                                    );
+                                })
+                                ->orWhereDoesntHave('OfficialDocument')
+                                ->orWhereHas('OfficialDocument', function ($q3) {
+                                    $q3->whereNotExists(
+                                        function ($q4) {
+                                            $q4->where('is_active', 1)->where('type', 'passport');
+                                        }
+
+                                    )->orWhereNotExists(
+                                        function ($q5) {
+                                            $q5->where('is_active', 1)->where('type', 'residence_permit');
+                                        }
+                                    );
+                                });
+                        });
+                });
             })
+
 
             ->get();
         // dd($usersWithNullAdmission);
+        // $row = $usersWithNullAdmission->first();
+        // $sponsor_company = $row->essentialsEmployeeAppointmets->sponsor_company;
+        // $sponsor_name = $row->essentialsEmployeeAppointmets->sponsor_name;
 
+
+        // $sponsor = '';
+        // if ($sponsor_company !== null) {
+        //     $sponsor = Company::find($sponsor_company)->name;
+        // } elseif ($sponsor_name !== null) {
+        //     $sponsor = $sponsor_name;
+        // }
+
+        // return $row->essentialsEmployeeAppointmets;
         if (request()->ajax()) {
 
             return DataTables::of($usersWithNullAdmission)
@@ -703,12 +780,122 @@ class EssentialsManageEmployeeController extends Controller
                     }
                 )
                 ->addColumn(
-                    'customer_name',
+                    'sponsor',
                     function ($row) {
-                        return $row->assignedTo?->contact->supplier_business_name ?? null;
+
+                        $sponsor_company = $row?->essentialsEmployeeAppointmets?->sponsor_company ?? null;
+                        $sponsor_name = $row?->essentialsEmployeeAppointmets?->sponsor_name ?? null;
+
+
+                        $sponsor = '';
+                        if ($sponsor_company !== null) {
+                            $sponsor = Company::find($sponsor_company)->name;
+                        } elseif ($sponsor_name !== null) {
+                            $sponsor = $sponsor_name;
+                        }
+
+                        return $sponsor;
                     }
                 )
+                ->addColumn(
+                    'missings_files',
+                    function ($row) {
+                        $missings = '';
+                        try {
+                            $row->contract->id;
+                        } catch (Exception $e) {
+                            $missings .= __('essentials::lang.contract') . '\n';
+                        }
+                        if ($row->user_type == 'worker') {
+                            try {
+                                $offical_docs = $row->OfficialDocument->id;
+                                $has_passport = false;
+                                $has_residence_permit = false;
+                                foreach ($offical_docs as $offical_doc) {
+                                    if ($offical_doc->is_active == 1 && $offical_doc->type == 'passport') {
+                                        $has_passport = true;
+                                    }
+                                    if ($offical_doc->is_active == 1 && $offical_doc->type == 'residence_permit') {
+                                        $has_residence_permit = true;
+                                    }
+                                }
+                                if ($has_passport == false) {
+                                    $missings .= __('essentials::lang.passport') . '\n';
+                                }
+                                if ($has_residence_permit == false) {
+                                    $missings .= __('essentials::lang.residence_permit') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings .= __('essentials::lang.passport') . '\n' . __('essentials::lang.residence_permit') . '\n';
+                            }
+                        }
+                        if ($row->user_type == 'employee' || $row->user_type == 'manager') {
+                            try {
+                                $offical_docs = $row->OfficialDocument;
+                                $has_passport = false;
+                                $has_residence_permit = false;
+                                $has_Iban = false;
+                                $has_national_id = false;
+                                $has_drivers_license = false;
+                                $has_car_registration = false;
+                                $has_international_certificate = false;
 
+                                foreach ($offical_docs as $offical_doc) {
+                                    if ($offical_doc->is_active == 1) {
+                                        if ($offical_doc->type == 'passport') {
+                                            $has_passport = true;
+                                        }
+                                        if ($offical_doc->type == 'residence_permit') {
+                                            $has_residence_permit = true;
+                                        }
+                                        if ($offical_doc->type == 'Iban') {
+                                            $has_Iban = true;
+                                        }
+                                        if ($offical_doc->type == 'national_id') {
+                                            $has_national_id = true;
+                                        }
+                                        if ($offical_doc->type == 'drivers_license') {
+                                            $has_drivers_license = true;
+                                        }
+                                        if ($offical_doc->type == 'car_registration') {
+                                            $has_car_registration = true;
+                                        }
+                                        if ($offical_doc->type == 'international_certificate') {
+                                            $has_international_certificate = true;
+                                        }
+                                    }
+                                }
+
+                                if ($has_passport == false) {
+                                    $missings .= __('essentials::lang.passport') . '\n';
+                                }
+                                if ($has_residence_permit == false) {
+                                    $missings .= __('essentials::lang.residence_permit') . '\n';
+                                }
+                                if ($has_Iban == false) {
+                                    $missings .= __('essentials::lang.Iban') . '\n';
+                                }
+                                if ($has_national_id == false) {
+                                    $missings .= __('essentials::lang.national_id') . '\n';
+                                }
+                                if ($has_drivers_license == false) {
+                                    $missings .= __('essentials::lang.drivers_license') . '\n';
+                                }
+                                if ($has_car_registration == false) {
+                                    $missings .= __('essentials::lang.car_registration') . '\n';
+                                }
+                                if ($has_international_certificate == false) {
+                                    $missings .= __('essentials::lang.international_certificate') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings .= 'passport residence_permit international_certificate car_registration drivers_license national_id Iban';
+                            }
+                        }
+
+
+                        return $missings;
+                    }
+                )
                 ->addColumn(
                     'action',
                     ''

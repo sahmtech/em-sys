@@ -482,7 +482,7 @@ class User extends Authenticatable
 
     public function essentialsEmployeeAppointmets()
     {
-        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
+        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id')->where('is_active', 1);
     }
     public function essentialsworkCard()
     {

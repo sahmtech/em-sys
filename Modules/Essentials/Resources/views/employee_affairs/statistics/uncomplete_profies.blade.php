@@ -22,11 +22,10 @@
                                     <tr>
 
                                     <th>@lang('essentials::lang.emp_name')</th>
-                                
+                                    <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('followup::lang.project')</th>
-                                    <th>@lang('followup::lang.customer_name')</th>
-                                   
-                                    <th></th>
+                                    <th>@lang('essentials::lang.sponsor')</th>
+                                    <th>@lang('followup::lang.missings_files')</th>
 
                                     </tr>
                                 </thead>
@@ -64,17 +63,24 @@
                         {
                             data: 'worker_name'
                         },
-                       
+                        {
+                            data: 'id_proof_number'
+                        },
                         {
                             data: 'project'
                         },
                         {
-                            data: 'customer_name'
+                            data: 'sponsor'
                         },
                        
                         {
-                            data: 'action'
+                            data: 'missings_files',
+                            render: function (data, type, row) {
+      
+                    return type === 'display' && data != null ? data.replace(/\\n/g, '<br>') : data;
+                }
                         },
+                       
                     ],
                 });
 
