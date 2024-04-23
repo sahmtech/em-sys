@@ -361,8 +361,8 @@
                 if (fileUrl != null) {
                     console.log(fileUrl);
                     $('#iframeDocViewer').attr('src', fileUrl);
-                    if ($(this).is(':checked')) {
-                        if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.edit_official_documents'))
+                   
+                        if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.edit_official_documents')){
                             $('#file_input').show(); 
                         } else {
                             $('#file_input').hide(); 
@@ -371,6 +371,7 @@
 
                 } else {
                     if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_official_documents'))
+                    {
                             $('#file_input').show(); 
                         } else {
                             $('#file_input').hide(); 
