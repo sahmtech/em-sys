@@ -281,14 +281,17 @@
                                 {!! Form::hidden('doc_id', null, ['id' => 'doc_id']) !!}
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('essentials::lang.file') . ':') !!}
+                                    
                                     {!! Form::file('file', null, [
                                         'class' => 'form-control',
-                                    
+                                        'id' => 'file_input', 
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
                                 <div class="col-md-3">
+                                    @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_official_documents'))
                                     <button type="button" class="btn btn-danger deleteFile">@lang('messages.delete')</button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -352,19 +355,26 @@
             $(document).on('click', '.view_doc_file_modal', function(e) {
                 e.preventDefault();
 
-                // Get the data-href attribute containing the URL
                 var fileUrl = $(this).data('href') ?? null;
                 var doc_id = $(this).data('id');
                 $('#doc_id').val(doc_id);
                 if (fileUrl != null) {
                     console.log(fileUrl);
                     $('#iframeDocViewer').attr('src', fileUrl);
-
-                    // Show the iframe and hide any other content
+                    if ($(this).is(':checked')) {
+                        if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.edit_official_documents'))
+                            $('#file_input').show(); 
+                        } else {
+                            $('#file_input').hide(); 
+                        }
                     $('#iframeDocViewer').show();
 
                 } else {
-                    // Hide the iframe and show other content
+                    if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_official_documents'))
+                            $('#file_input').show(); 
+                        } else {
+                            $('#file_input').hide(); 
+                        }
                     $('#iframeDocViewer').hide();
 
                 }
