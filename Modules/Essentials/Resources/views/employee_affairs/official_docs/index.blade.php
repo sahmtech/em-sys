@@ -350,6 +350,11 @@
         }
     </script>
     <script type="text/javascript">
+       var userPermissions = {
+        isAdmin:{{ json_encode(auth()->user()->hasRole('Admin#1'))}},
+        canEdit: {{ json_encode(auth()->user()->can('essentials.edit_official_documents')) }},
+        canAdd: {{ json_encode(auth()->user()->can('essentials.add_official_documents')) }}
+    };
         $(document).ready(function() {
 
             $(document).on('click', '.view_doc_file_modal', function(e) {
@@ -362,7 +367,7 @@
                     console.log(fileUrl);
                     $('#iframeDocViewer').attr('src', fileUrl);
                    
-                        if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.edit_official_documents')){
+                        if(userPermissions.isAdmin || userPermissions.canEdit){
                             $('#file_input').show(); 
                         } else {
                             $('#file_input').hide(); 
@@ -370,7 +375,7 @@
                     $('#iframeDocViewer').show();
 
                 } else {
-                    if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_official_documents'))
+                    if(userPermissions.isAdmin || userPermissions.canAdd)
                     {
                             $('#file_input').show(); 
                         } else {
