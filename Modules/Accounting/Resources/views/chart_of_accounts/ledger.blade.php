@@ -35,7 +35,7 @@
                             </tr>
 
                             <tr>
-                                <th>@lang('accounting::lang.account_type'):</th>
+                                <th>@lang('accounting::lang.account_primary_type'):</th>
                                 <td>
                                     @if (!empty($account->account_primary_type))
                                         {{ __('accounting::lang.' . $account->account_primary_type) }}
@@ -65,6 +65,14 @@
                                 <td>
                                     @if (!empty($account->account_category))
                                         {{ __('accounting::lang.' . $account->account_category) }}
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>@lang('accounting::lang.account_type'):</th>
+                                <td>
+                                    @if (!empty($account->account_type))
+                                        {{ __('accounting::lang.' . $account->account_type) }}
                                     @endif
                                 </td>
                             </tr>
