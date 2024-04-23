@@ -375,7 +375,7 @@
                     $('#iframeDocViewer').show();
 
                 } else {
-                    if(userPermissions.isAdmin || userPermissions.canA)
+                    if(userPermissions.isAdmin || userPermissions.canAdd)
                     {
                             $('.file_input').show(); 
                         } else {
