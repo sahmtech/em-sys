@@ -1854,6 +1854,8 @@ return [
   'there_is_no_payroll_dep' => 'لا يوجد إدارة رواتب ',
   'add_payroll_request' => 'إضافة طلب',
   'missing_file' => 'الملف الناقص',
+  'missings_files' => 'نواقص الملفات',
+  'missings_info' => 'نواقص البيانات',
 
 
 

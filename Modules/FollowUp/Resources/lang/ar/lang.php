@@ -355,8 +355,7 @@ return [
     'canceled_date' => 'تاريخ الإلغاء',
     'notes' => 'ملاحظات',
     'please_select_rows' => 'الرجاء اختيار عمالة',
-    'missings_files' => 'نواقص الملفات',
-    'missings_info' => 'نواقص البيانات',
+
     //''=>''
 
 ];

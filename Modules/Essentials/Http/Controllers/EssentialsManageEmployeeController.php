@@ -680,76 +680,75 @@ class EssentialsManageEmployeeController extends Controller
         $usersWithNullAdmission = User::whereIn('id', $userIds)
             ->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification', 'contract', 'OfficialDocument'])
             ->where(function ($query) {
-                $query->where(function ($q1) {
-                    $q1->whereDoesntHave('contract')
-                        ->orWhereHas('contract', function ($q3) {
-                            $q3->whereNotExists(function ($q4) {
-                                $q4->where('is_active', 1);
+                $query->whereDoesntHave('contract')
+                    ->orWhereHas('contract', function ($q3) {
+                        $q3->whereNotExists(function ($q4) {
+                            $q4->where('is_active', 1);
+                        });
+                    })->orWhere(function ($q1) {
+                        $q1->whereIn('user_type', ['employee', 'manager'])
+                            ->where(function ($q2) {
+                                $q2->whereDoesntHave('OfficialDocument')
+                                    ->orWhereHas('OfficialDocument', function ($q3) {
+                                        $q3->where('is_active', 1)->where(function ($q4) {
+                                            $q4->whereNotExists(
+                                                function ($q5) {
+                                                    $q5->where('type', 'passport');
+                                                }
+
+                                            )
+                                                ->orWhereNotExists(
+                                                    function ($q5) {
+                                                        $q5->where('type', 'residence_permit');
+                                                    }
+                                                )
+                                                ->orWhereNotExists(
+                                                    function ($q5) {
+                                                        $q5->where('type', 'Iban');
+                                                    }
+                                                )
+                                                ->whereNotExists(
+                                                    function ($q5) {
+                                                        $q5->where('type', 'national_id');
+                                                    }
+                                                )
+                                                ->whereNotExists(function ($q5) {
+                                                    $q5->where('type', 'drivers_license');
+                                                })
+
+                                                ->whereNotExists(
+                                                    function ($q5) {
+                                                        $q5->where('type', 'car_registration');
+                                                    }
+                                                )
+
+
+                                                ->whereNotExists(
+                                                    function ($q5) {
+                                                        $q5->where('type', 'international_certificate');
+                                                    }
+                                                );
+                                        });
+                                    });
                             });
-                        })
-                        ->orWhereIn('user_type', ['employee', 'manager'])
-                        ->where(function ($q2) {
-                            $q2->whereDoesntHave('OfficialDocument')
-                                ->orWhereHas('OfficialDocument', function ($q3) {
-                                    $q3->where('is_active', 1)->where(function ($q4) {
-                                        $q4->whereNotExists(
-                                            function ($q5) {
-                                                $q5->where('type', 'passport');
+                    })->orWhere(function ($q1) {
+                        $q1->where('user_type', 'worker')
+                            ->where(function ($q2) {
+                                $q2->whereDoesntHave('OfficialDocument')
+                                    ->orWhereHas('OfficialDocument', function ($q3) {
+                                        $q3->whereNotExists(
+                                            function ($q4) {
+                                                $q4->where('is_active', 1)->where('type', 'passport');
                                             }
 
-                                        )
-                                            ->orWhereNotExists(
-                                                function ($q5) {
-                                                    $q5->where('type', 'residence_permit');
-                                                }
-                                            )
-                                            ->orWhereNotExists(
-                                                function ($q5) {
-                                                    $q5->where('type', 'Iban');
-                                                }
-                                            )
-                                            ->whereNotExists(
-                                                function ($q5) {
-                                                    $q5->where('type', 'national_id');
-                                                }
-                                            )
-                                            ->whereNotExists(function ($q5) {
-                                                $q5->where('type', 'drivers_license');
-                                            })
-
-                                            ->whereNotExists(
-                                                function ($q5) {
-                                                    $q5->where('type', 'car_registration');
-                                                }
-                                            )
-
-
-                                            ->whereNotExists(
-                                                function ($q5) {
-                                                    $q5->where('type', 'international_certificate');
-                                                }
-                                            );
+                                        )->orWhereNotExists(
+                                            function ($q5) {
+                                                $q5->where('is_active', 1)->where('type', 'residence_permit');
+                                            }
+                                        );
                                     });
-                                });
-                        });
-                })->orWhere(function ($q1) {
-                    $q1->where('user_type', 'worker')
-                        ->where(function ($q2) {
-                            $q2->whereDoesntHave('OfficialDocument')
-                                ->orWhereHas('OfficialDocument', function ($q3) {
-                                    $q3->whereNotExists(
-                                        function ($q4) {
-                                            $q4->where('is_active', 1)->where('type', 'passport');
-                                        }
-
-                                    )->orWhereNotExists(
-                                        function ($q5) {
-                                            $q5->where('is_active', 1)->where('type', 'residence_permit');
-                                        }
-                                    );
-                                });
-                        });
-                });
+                            });
+                    });
             });
         if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
             error_log(request()->input('user_type_filter'));
@@ -825,6 +824,12 @@ class EssentialsManageEmployeeController extends Controller
                         }
 
                         return $sponsor;
+                    }
+                )
+                ->addColumn(
+                    'missings_info',
+                    function ($row) {
+                        return '';
                     }
                 )
                 ->addColumn(

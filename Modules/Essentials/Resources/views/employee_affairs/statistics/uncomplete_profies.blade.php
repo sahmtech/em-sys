@@ -82,8 +82,8 @@
                                         <th>@lang('essentials::lang.eqama_number')</th>
                                         <th>@lang('followup::lang.project')</th>
                                         <th>@lang('essentials::lang.sponsor')</th>
-                                        <th>@lang('followup::lang.missings_files')</th>
-
+                                        <th>@lang('essentials::lang.missings_files')</th>
+                                        <th>@lang('essentials::lang.missings_info')</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -153,6 +153,14 @@
 
                         {
                             data: 'missings_files',
+                            render: function(data, type, row) {
+
+                                return type === 'display' && data != null ? data.replace(/\\n/g,
+                                    '<br>') : data;
+                            }
+                        },
+                        {
+                            data: 'missings_info',
                             render: function(data, type, row) {
 
                                 return type === 'display' && data != null ? data.replace(/\\n/g,
