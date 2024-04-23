@@ -67,6 +67,18 @@
 
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('missing_info_filter', __('essentials::lang.missing_info') . ':') !!}
+                                {!! Form::select('missing_info_filter', $missing_info, null, [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%',
+                                    'id' => 'missing_info_filter',
+                                    'placeholder' => __('lang_v1.all'),
+                                ]) !!}
+
+                            </div>
+                        </div>
                     @endcomponent
                 </div>
             </div>
@@ -107,7 +119,7 @@
                     expired_residencies.ajax.reload();
                 }
                 $(document).on('change',
-                    '#user_type_filter, #company_filter, #project_filter, #missing_files_filter',
+                    '#user_type_filter, #company_filter, #project_filter, #missing_files_filter, #missing_info_filter',
                     function() {
 
                         reloadDataTable();
@@ -132,7 +144,10 @@
                                 'all') {
                                 d.missing_files_filter = $('#missing_files_filter').val();
                             }
-
+                            if ($('#missing_info_filter').val() && $('#missing_info_filter').val() !=
+                                'all') {
+                                d.missing_info_filter = $('#missing_info_filter').val();
+                            }
                         }
                     },
 
