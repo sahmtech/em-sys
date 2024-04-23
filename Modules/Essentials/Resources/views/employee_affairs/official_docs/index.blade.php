@@ -283,8 +283,8 @@
                                     {!! Form::label('file', __('essentials::lang.file') . ':') !!}
                                     
                                     {!! Form::file('file', null, [
-                                        'class' => 'form-control',
-                                        'id' => 'file_input', 
+                                        'class' => 'form-control file_input',
+                                    
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
@@ -368,23 +368,23 @@
                     $('#iframeDocViewer').attr('src', fileUrl);
                    
                         if(userPermissions.isAdmin || userPermissions.canEdit){
-                            $('#file_input').show(); 
+                            $('.file_input').show(); 
                         } else {
-                            $('#file_input').hide(); 
+                            $('.file_input').hide(); 
                         }
                     $('#iframeDocViewer').show();
 
                 } else {
-                    if(userPermissions.isAdmin || userPermissions.canAdd)
+                    if(userPermissions.isAdmin || userPermissions.canA)
                     {
-                            $('#file_input').show(); 
+                            $('.file_input').show(); 
                         } else {
-                            $('#file_input').hide(); 
+                            $('.file_input').hide(); 
                         }
                     $('#iframeDocViewer').hide();
 
                 }
-                $('#file_input').hide(); 
+
 
                 // Open the modal
                 $('#addDocFileModal').modal('show');
