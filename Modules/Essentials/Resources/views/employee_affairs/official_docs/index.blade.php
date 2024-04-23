@@ -368,8 +368,10 @@
                     $('#iframeDocViewer').attr('src', fileUrl);
                    
                         if(userPermissions.isAdmin || userPermissions.canEdit){
+                            alert("show");
                             $('.file_input').show(); 
                         } else {
+                            alert("hide");
                             $('.file_input').hide(); 
                         }
                     $('#iframeDocViewer').show();
@@ -377,8 +379,10 @@
                 } else {
                     if(userPermissions.isAdmin || userPermissions.canAdd)
                     {
+                        alert("show");
                             $('.file_input').show(); 
                         } else {
+                            alert("hide");
                             $('.file_input').hide(); 
                         }
                     $('#iframeDocViewer').hide();
