@@ -384,7 +384,7 @@
                     $('#iframeDocViewer').hide();
 
                 }
-
+                $('#file_input').hide(); 
 
                 // Open the modal
                 $('#addDocFileModal').modal('show');
