@@ -8,7 +8,12 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('accounting::lang.ledger') - @lang('accounting::lang.' . $account->name)</h1>
+        <h1>@lang('accounting::lang.ledger') - @if (Lang::has('accounting::lang.' . $account->name))
+                @lang('accounting::lang.' . $account->name)
+            @else
+                {{ $account->name }}
+            @endif
+        </h1>
     </section>
 
     <section class="content">
@@ -25,12 +30,20 @@
                                             ({{ $account->gl_code }})
                                             -
                                         @endif
-                                        @lang('accounting::lang.' . $account->name)
-                                    @else
-                                        @lang('accounting::lang.' . $account->name) @if (!empty($account->gl_code))
-                                            - ({{ $account->gl_code }})
+                                        @if (Lang::has('accounting::lang.' . $account->name))
+                                            @lang('accounting::lang.' . $account->name)
+                                        @else
+                                            {{ $account->name }}
                                         @endif
-                                    @endif
+                                    @else
+                                        @if (Lang::has('accounting::lang.' . $account->name))
+                                            @lang('accounting::lang.' . $account->name)
+                                        @else
+                                            {{ $account->name }}
+                                            @endif @if (!empty($account->gl_code))
+                                                - ({{ $account->gl_code }})
+                                            @endif
+                                        @endif
                                 </td>
                             </tr>
 
