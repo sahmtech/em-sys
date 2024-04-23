@@ -368,22 +368,19 @@
                     $('#iframeDocViewer').attr('src', fileUrl);
                    
                         if(userPermissions.isAdmin || userPermissions.canEdit){
-                            alert("show");
-                            $('.file_input').show(); 
+                            
+                            $('.file_input').css('display', 'block');
                         } else {
-                            alert("hide");
-                            $('.file_input').hide(); 
+                            $('.file_input').css('display', 'none'); 
                         }
                     $('#iframeDocViewer').show();
 
                 } else {
                     if(userPermissions.isAdmin || userPermissions.canAdd)
                     {
-                        alert("show");
-                            $('.file_input').show(); 
+                        $('.file_input').css('display', 'block');
                         } else {
-                            alert("hide");
-                            $('.file_input').hide(); 
+                            $('.file_input').css('display', 'none'); 
                         }
                     $('#iframeDocViewer').hide();
 
