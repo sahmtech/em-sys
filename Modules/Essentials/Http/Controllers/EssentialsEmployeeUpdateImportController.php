@@ -286,16 +286,16 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
 
                     $emp_array['border_no'] = $value[32];
-                    if ($emp_array['border_no'] !== null) {
-                        $border_no = user::where('border_no', $emp_array['border_no'])
-                            ->first();
+                    // if ($emp_array['border_no'] !== null) {
+                    //     $border_no = user::where('border_no', $emp_array['border_no'])
+                    //         ->first();
 
-                        if ($border_no) {
-                            $is_valid = false;
-                            $error_msg = __('essentials::lang.border_no_validated') . $row_no + 1;
-                            break;
-                        }
-                    }
+                    //     if ($border_no) {
+                    //         $is_valid = false;
+                    //         $error_msg = __('essentials::lang.border_no_validated') . $row_no + 1;
+                    //         break;
+                    //     }
+                    // }
 
 
                     $emp_array['nationality_id'] = $value[33];

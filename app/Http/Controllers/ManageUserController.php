@@ -58,7 +58,7 @@ class ManageUserController extends Controller
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
                     'id', 'username', 'user_type',
-                    DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
+                    DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
                 ]);
 
 
