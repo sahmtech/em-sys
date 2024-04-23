@@ -1852,7 +1852,8 @@ return [
   'return_payroll_request' => 'إرجاع طلب إدارة الرواتب',
   'show_payroll_request' => 'استعراض الطلب',
   'there_is_no_payroll_dep' => 'لا يوجد إدارة رواتب ',
-  'add_payroll_request' => 'إضافة طلب'
+  'add_payroll_request' => 'إضافة طلب',
+  'missing_file' => 'الملف الناقص',
 
 
 

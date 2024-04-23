@@ -654,28 +654,42 @@ class EssentialsManageEmployeeController extends Controller
 
     public function uncomplete_profiles()
     {
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
         }
 
         $usersWithNullAdmission = User::whereIn('id', $userIds)
             ->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification', 'contract', 'OfficialDocument'])
             ->where(function ($query) {
                 $query->where(function ($q1) {
-                    $q1->whereIn('user_type', ['employee', 'manager'])
+                    $q1->whereDoesntHave('contract')
+                        ->orWhereHas('contract', function ($q3) {
+                            $q3->whereNotExists(function ($q4) {
+                                $q4->where('is_active', 1);
+                            });
+                        })
+                        ->orWhereIn('user_type', ['employee', 'manager'])
                         ->where(function ($q2) {
-                            $q2->whereDoesntHave('contract')
-                                ->orWhereHas('contract', function ($q3) {
-                                    $q3->whereNotExists(function ($q4) {
-                                        $q4->where('is_active', 1);
-                                    });
-                                })
-                                ->orWhereDoesntHave('OfficialDocument')
+                            $q2->whereDoesntHave('OfficialDocument')
                                 ->orWhereHas('OfficialDocument', function ($q3) {
                                     $q3->where('is_active', 1)->where(function ($q4) {
                                         $q4->whereNotExists(
@@ -721,16 +735,7 @@ class EssentialsManageEmployeeController extends Controller
                 })->orWhere(function ($q1) {
                     $q1->where('user_type', 'worker')
                         ->where(function ($q2) {
-                            $q2->whereDoesntHave('contract')
-                                ->orWhereHas('contract', function ($q3) {
-                                    $q3->whereNotExists(
-                                        function ($q4) {
-                                            $q4->where('is_active', 1);
-                                        }
-
-                                    );
-                                })
-                                ->orWhereDoesntHave('OfficialDocument')
+                            $q2->whereDoesntHave('OfficialDocument')
                                 ->orWhereHas('OfficialDocument', function ($q3) {
                                     $q3->whereNotExists(
                                         function ($q4) {
@@ -745,30 +750,55 @@ class EssentialsManageEmployeeController extends Controller
                                 });
                         });
                 });
-            })
+            });
+        if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
+            error_log(request()->input('user_type_filter'));
+            $usersWithNullAdmission->where('users.user_type', request()->input('user_type_filter'));
+        }
+        if (!empty(request()->input('company_filter')) && request()->input('company_filter') !== 'all') {
+            error_log(request()->input('company_filter'));
+            $usersWithNullAdmission->where('users.company_id', request()->input('company_filter'));
+        }
+        if (!empty(request()->input('project_filter')) && request()->input('project_filter') !== 'all') {
+            error_log(request()->input('useproject_filterr_type_filter'));
+            $usersWithNullAdmission->where('users.assigned_to', request()->input('project_filter'));
+        }
+        if (!empty(request()->input('missing_files_filter')) && request()->input('missing_files_filter') !== 'all') {
+            error_log(request()->input('missing_files_filter'));
+            $missing_files_filter = request()->input('missing_files_filter');
+            if ($missing_files_filter == 'contract') {
+                $usersWithNullAdmission->where(function ($query) {
+                    $query->whereDoesntHave('contract')
+                        ->orWhereHas('contract', function ($q3) {
+                            $q3->whereNotExists(function ($q4) {
+                                $q4->where('is_active', 1);
+                            });
+                        });
+                });
+            } else {
+                $usersWithNullAdmission->where(function ($query) use ($missing_files_filter) {
+                    $query->whereDoesntHave('OfficialDocument')
+                        ->orWhereHas('OfficialDocument', function ($q1) use ($missing_files_filter) {
+                            $q1->where('is_active', 1)->whereNotExists(
+                                function ($q2) use ($missing_files_filter) {
+                                    $q2->where('type', $missing_files_filter);
+                                }
 
-
-            ->get();
-        // dd($usersWithNullAdmission);
-        // $row = $usersWithNullAdmission->first();
-        // $sponsor_company = $row->essentialsEmployeeAppointmets->sponsor_company;
-        // $sponsor_name = $row->essentialsEmployeeAppointmets->sponsor_name;
-
-
-        // $sponsor = '';
-        // if ($sponsor_company !== null) {
-        //     $sponsor = Company::find($sponsor_company)->name;
-        // } elseif ($sponsor_name !== null) {
-        //     $sponsor = $sponsor_name;
-        // }
-
-        // return $row->essentialsEmployeeAppointmets;
+                            );
+                        });
+                });
+            }
+        }
         if (request()->ajax()) {
+
 
             return DataTables::of($usersWithNullAdmission)
                 ->addColumn(
                     'worker_name',
                     function ($row) {
+                        if ($row->id == 1270) {
+                            error_log($row->user_type);
+                        }
                         return $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name  ?? '';
                     }
                 )
@@ -802,7 +832,9 @@ class EssentialsManageEmployeeController extends Controller
                     function ($row) {
                         $missings = '';
                         try {
-                            $row->contract->id;
+                            if ($row->contract->is_active == 0) {
+                                $missings .= __('essentials::lang.contract') . '\n';
+                            }
                         } catch (Exception $e) {
                             $missings .= __('essentials::lang.contract') . '\n';
                         }
@@ -914,8 +946,20 @@ class EssentialsManageEmployeeController extends Controller
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
                 ->make(true);
         }
+        $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id')->toArray();
+        $projects =  SalesProject::pluck('name', 'id')->toArray();
+        $missing_files = [
+            'contract' => __('essentials::lang.contract'),
+            'passport' => __('essentials::lang.passport'),
+            'residence_permit' => __('essentials::lang.residence_permit'),
+            'Iban' => __('essentials::lang.Iban'),
+            'national_id' => __('essentials::lang.national_id'),
+            'drivers_license' => __('essentials::lang.drivers_license'),
+            'car_registration' => __('essentials::lang.car_registration'),
+            'international_certificate' => __('essentials::lang.international_certificate')
 
-        return view('essentials::employee_affairs.statistics.uncomplete_profies');
+        ];
+        return view('essentials::employee_affairs.statistics.uncomplete_profies')->with(compact('companies', 'projects', 'missing_files'));
     }
 
 
