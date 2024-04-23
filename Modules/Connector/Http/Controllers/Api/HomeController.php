@@ -42,6 +42,7 @@ class HomeController extends ApiController
      */
     public function __construct(ModuleUtil $moduleUtil, Util $commonUtil)
     {
+        $this->middleware('localization');
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
     }
@@ -64,10 +65,10 @@ class HomeController extends ApiController
             $lastRequest = UserRequest::select([
                 'request_no',
                 'requests.id',
-                'requests.request_type_id as type',
+                'requests_types.type',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
                 'requests.created_at',
-                'request_processes.status',
+                'requests.status',
                 'request_processes.note as note',
                 'requests.reason',
                 'wk_procedures.department_id as department_id',
@@ -75,6 +76,7 @@ class HomeController extends ApiController
 
 
             ])
+                ->leftjoin('requests_types', 'requests_types.id', '=', 'requests.request_type_id')
                 ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
                 ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'requests.related_to')
@@ -82,6 +84,8 @@ class HomeController extends ApiController
 
                 ->first();
 
+            $lastRequest['type'] = __('api.' . $lastRequest['type']);
+            $lastRequest['status'] = __('api.' . $lastRequest['status']);
 
             $todo = ToDo::where('business_id', $business_id)
                 ->with(['assigned_by'])

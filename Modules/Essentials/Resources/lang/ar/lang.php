@@ -146,6 +146,8 @@ return [
   "payroll" => " مسير الرواتب",
   "payrolls" => " مسيرات الرواتب",
   "payrolls_management" => 'إدارة الرواتب',
+
+
   "payroll_create_edit" => "الراتب",
   "all_payrolls" => "كل مسيرات الرواتب",
   "proceed" => "إكمال",
@@ -1293,7 +1295,7 @@ return [
   'index_workers' => ' عمال المشاريع',
   'workcards_indexWorkerProjects' => ' عمال المشاريع',
   'showWorkerProjects' => 'عرض معلومات العامل',
-
+  'sales_projects' => 'المشاريع',
   'delete_wishes' => 'حذف الرغبات',
   'delete_leave' => 'حذف الاجازات',
   'edit_leave' => ' النشاط للإجازات',
@@ -1802,7 +1804,7 @@ return [
   'emp_number' => 'الرقم الوظيفي',
   'border_no_validated' => ' رقم الحدود موجود سابقا في السطر رقم ',
   'duplicate_border_no' => '  رقم الحدود مكرر في الملف في السطر رقم ',
-
+  'sacnDoc' => 'مسح وثيقة',
   'user_type.employee' => 'موظفين',
   'user_type.worker' => 'عمال',
   'user_type.remote_employee' => 'موظفين عن بعد',
@@ -1814,7 +1816,9 @@ return [
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
 
-  'residencies_almost_finished' => 'الإقامات التي تنتهي بعد 15 يوم',
+
+  'show_Leave_Balances' => 'عرض رصيد الاجازات',
+  'residencies_almost_finished' => 'الإقامات التي تنتهي خلال 15 يوم',
   'contracts_almost_finished' => ' عقود العملاء التي تنتهي خلال 15 يوم ',
   'rooms_and_beds' => 'الغرف والأسرة',
   'building' => 'المباني',
@@ -1829,7 +1833,26 @@ return [
   'projects' => 'مشاريع العملاء',
   'projects_workers' => 'عمال المشاريع',
 
+
   'employee_finish_contracts' => 'موظفين انتهى عقدهم',
   'employee_almost_finish_contracts' => 'موظفين ينتهي عقدهم خلال 15 يوم',
+
+  'view_requests_operations' => ' عمليات الطلبات',
+  'finish_request_operation' => 'إنهاء عمليات الطلبات',
+  'finish_operation' => 'إنهاء العملية',
+
+  'sponsor_name' => 'اسم الكفيل',
+  'sponsor' => 'الكفيل',
+  'No_Sponsor' => 'بدون كفيل',
+  'other_suponser' => 'كفيل آخر ',
+  'Enter new sponsor name' => ' اسم كفيلك',
+  'view_payroll_requests' => 'عرض طلبات إدارة الراوتب',
+  'change_payroll_request_status' => 'تغيير حالة الطلب',
+  'return_payroll_request' => 'إرجاع طلب إدارة الرواتب',
+  'show_payroll_request' => 'استعراض الطلب',
+  'there_is_no_payroll_dep' => 'لا يوجد إدارة رواتب ',
+  'add_payroll_request' => 'إضافة طلب'
+
+
 
 ];

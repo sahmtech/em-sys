@@ -21,7 +21,7 @@ class SalesTargetedClientController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-   
+
 
     /**
      * Show the form for creating a new resource.
@@ -29,30 +29,30 @@ class SalesTargetedClientController extends Controller
      */
     public function create()
     {
-       
     }
     public function clientAdd()
     {
-        
-        if (! auth()->user()->can('product.create')) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
-      $specializations=EssentialsSpecialization::all()->pluck('name','id');
-        $professions=EssentialsProfession::where('type','job_title')->pluck('name','id');
-      //  $specializations=EssentialsProfession::where('type','academic')->pluck('name','id');
-        $nationalities=EssentialsCountry::nationalityForDropdown();
 
-        return view('sales::targetedClient.client_add')->with(compact('specializations','professions','nationalities'));
+        if (!auth()->user()->can('product.create')) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        //  $specializations=EssentialsProfession::where('type','academic')->pluck('name','id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+
+        return view('sales::targetedClient.client_add')->with(compact('specializations', 'professions', 'nationalities'));
     }
 
 
-    public function saveQuickClient(Request $request) {
-     
+    public function saveQuickClient(Request $request)
+    {
+
         try {
-       
+
             $business_id = $request->session()->get('user.business_id');
             $input = $request->only(['profession', 'specialization', 'nationality', 'gender', 'monthly_cost', 'number', 'essentials_salary']);
-          
+
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
             $input2['nationality_id'] = $input['nationality'];
@@ -62,26 +62,28 @@ class SalesTargetedClientController extends Controller
             $input2['business_id'] = $business_id;
             $input2['created_by'] = $request->session()->get('user.id');
 
-           
-            $client = salesService::create($input2);
-            $profession=DB::table('essentials_professions')->where('id',$client->profession_id)->first()->name;
-            $specialization=DB::table('essentials_specializations')->where('id',$client->specialization_id)->first()->name;
-            $nationality=DB::table('essentials_countries')->where('id',$client->nationality_id)->first()->nationality;
 
-            $output = ['success' => 1,
+            $client = salesService::create($input2);
+            $profession = DB::table('essentials_professions')->where('id', $client->profession_id)->first()->name;
+            $specialization = DB::table('essentials_specializations')->where('id', $client->specialization_id)->first()->name;
+            $nationality = DB::table('essentials_countries')->where('id', $client->nationality_id)->first()->nationality;
+
+            $output = [
+                'success' => 1,
                 'client' => $client,
-                'profession'=>$profession,
-                'specialization'=>$specialization,
-                'nationality'=>$nationality,
-                'quantity'=>request()->number,
-                'selectedData'=>json_decode(request()->selectedData, true)
-               
+                'profession' => $profession,
+                'specialization' => $specialization,
+                'nationality' => $nationality,
+                'quantity' => request()->number,
+                'selectedData' => json_decode(request()->selectedData, true)
+
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }

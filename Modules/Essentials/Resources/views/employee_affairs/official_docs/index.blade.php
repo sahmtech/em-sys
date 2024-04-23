@@ -229,6 +229,12 @@
                                     ]) !!}
                                 </div>
 
+                                
+                                    <div class="form-group col-md-6">
+                                        <button  class="btn btn-primary" onclick="scanDocument()">@lang('essentials::lang.sacnDoc')</button>
+                                    </div>
+                            
+
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('essentials::lang.file') . ':') !!}
                                     {!! Form::file('file', null, [
@@ -237,8 +243,10 @@
                                     
                                         'style' => 'height:40px',
                                     ]) !!}
-                                </div>
-                            </div>
+
+                                    
+                                    </div>
+                                         </div>
                         </div>
 
                         <div class="modal-footer">
@@ -302,6 +310,42 @@
 @endsection
 
 @section('javascript')
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/scanner.js/1.0.29/scanner.js"></script>
+    <script>
+        function scanDocument() {
+            Scanner.scan(displayScannedImage);
+        }
+
+        function displayScannedImage(success, response) {
+            if (success) {
+             
+                sendImage(response);
+            } else {
+                console.error('Scanning failed:', response);
+            }
+        }
+
+        function sendImage(imageData) {
+            fetch('/official_documents/scan', {
+                method: 'POST',
+                body: JSON.stringify({ scannedDoc: imageData }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Image scanned and saved successfully.');
+                } else {
+                    console.error('Failed to save image.');
+                }
+            })
+            .catch(error => {
+                console.error('Error occurred:', error);
+            });
+        }
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
 

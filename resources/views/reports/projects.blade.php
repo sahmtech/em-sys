@@ -8,6 +8,14 @@
         <h1>@lang('essentials::lang.projects')
         </h1>
 
+        <head>
+<style>
+    .bg-green {
+        background-color: #28a745; 
+        color: #ffffff; 
+    }
+</style>
+</head>
         <section class="content">
 
             <div class="row">
@@ -15,7 +23,7 @@
                     @component('components.widget', ['class' => 'box-solid'])
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="projects">
-                                <thead>
+                                <thead class="bg-green">
                                     <tr>
                                         <th>#</th>
                                         <th class="table-td-width-100px">@lang('sales::lang.contact_name')</th>

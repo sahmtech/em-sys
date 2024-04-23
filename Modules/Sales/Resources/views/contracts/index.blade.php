@@ -200,7 +200,7 @@
 
                                             </div>
                                             <div class="form-group col-md-6" style="float:left;">
-                                                {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
+                                                {!! Form::label('file', __('essentials::lang.file') . ':') !!}
                                                 {!! Form::file('file', null, [
                                                     'class' => 'form-control',
                                                     'placeholder' => __('essentials::lang.file'),

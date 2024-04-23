@@ -206,13 +206,14 @@ class WorkerController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $business_id = request()->session()->get('user.business_id');
         $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')->where('interviewStatus', 'acceptable')->where('arrival_status', '!=', 1)->select([
-            'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            'age', 'gender', 'email', 'profile_image', 'dob', 'marital_status', 'blood_group',
-            'contact_number', 'permanent_address', 'current_address', 'is_price_offer_sent',
-            'is_accepted_by_worker', 'agency_id', 'transaction_sell_line_id'
-        ]);
+        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')
+            ->where('interviewStatus', 'acceptable')->where('arrival_status', '!=', 1)->select([
+                'id',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+                'age', 'gender', 'email', 'profile_image', 'dob', 'marital_status', 'blood_group',
+                'contact_number', 'permanent_address', 'current_address', 'is_price_offer_sent',
+                'is_accepted_by_worker', 'agency_id', 'transaction_sell_line_id'
+            ]);
 
         if (!empty($request->input('specialization'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
@@ -783,9 +784,9 @@ class WorkerController extends Controller
         // }
         try {
 
-
+            error_log("888888888888888");
             $selectedWorkersCount = count($request->worker_id);
-
+            error_log($selectedWorkersCount);
 
             $visaCard = IrVisaCard::where('id', $visa_id)
                 ->with('operationOrder.salesContract.transaction.sell_lines', 'delegation', 'unSupported_operation')
@@ -981,9 +982,18 @@ class WorkerController extends Controller
             'O+' => 'O positive (O+).',
             'O-' => 'O positive (O-).',
         ];
+        $irDelegations = IrDelegation::query()
+            ->where(function ($query) {
+                $query->whereNotNull('operation_order_id')
+                    ->orWhereNotNull('unSupported_operation_id');
+            })
+            ->where('id', $delegation_id)
+            ->with(['agency', 'transactionSellLine.service', 'unSupported_operation.unSupported_worker'])
+            ->first();
 
 
 
+        $worker_gender = $irDelegations->transactionSellLine->service->gender;
 
         $resident_doc = null;
         $user = null;
@@ -998,7 +1008,8 @@ class WorkerController extends Controller
                 'user',
                 'agency_id',
                 'transaction_sell_line_id',
-                'delegation_id'
+                'delegation_id',
+                'worker_gender'
             ));
     }
 

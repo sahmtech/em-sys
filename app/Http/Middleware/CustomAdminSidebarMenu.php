@@ -668,6 +668,13 @@ class CustomAdminSidebarMenu
 
                 // $menu->url(route('legalAffairs.contracts_management'),  __('legalaffairs::lang.contracts_management'), ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'contracts_management']);
             }
+            if ($is_admin  || auth()->user()->can('legalaffairs.view_legalaffairs_requests')) {
+                $menu->url(
+                    action([\Modules\LegalAffairs\Http\Controllers\RequestController::class, 'index']),
+                    __('legalaffairs::lang.requests'),
+                    ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' &&  request()->segment(2) == 'legalrequests']
+                );
+            }
         });
     }
 
@@ -807,7 +814,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     route('work_cards_operation'),
                     __('essentials::lang.work_cards_operation'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'work_cards' && request()->segment(2) == 'work_cards_operation'],
                 );
             }
 
@@ -1036,6 +1043,14 @@ class CustomAdminSidebarMenu
                     route('payrolls.index'),
                     __('essentials::lang.payroll'),
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
+                );
+            }
+
+            if ($is_admin  || auth()->user()->can('essentials.view_payroll_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'requests']),
+                    __('essentials::lang.requests'),
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'allPayrollRequests')]
                 );
             }
         });
@@ -1486,14 +1501,14 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin || auth()->user()->can('sales.view_sale_operation_orders')) {
-
+            if ($is_admin || auth()->user()->can('sales.view_operations_order_for_contract')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
                     __('sales::lang.sale_operation_orders'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'orderOperations'],
                 );
             }
+
             if ($is_admin || auth()->user()->can('sales.view_sales_requests')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\RequestController::class, 'index']),

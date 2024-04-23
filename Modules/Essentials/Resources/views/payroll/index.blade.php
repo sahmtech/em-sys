@@ -94,19 +94,7 @@
 
                     <div class="modal-body">
                         <div class="col-md-12">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
-                                    {!! Form::select('companies[]', $companies, null, [
-                                        'class' => 'form-control select2',
-                                        'style' => 'width: 100%;',
-                                        'id' => 'companies',
-                                        'required',
-                                        'multiple',
-                                        // 'placeholder' => __('lang_v1.all'),
-                                    ]) !!}
-                                </div>
-                            </div>
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('user_type', __('essentials::lang.user_type') . ':*') !!}
@@ -131,6 +119,32 @@
                                         ]) !!}
                                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {!! Form::label('projects', __('essentials::lang.sales_projects') . ':*') !!}
+                                    {!! Form::select('projects[]', $projects, null, [
+                                        'class' => 'form-control select2',
+                                        'style' => 'width: 100%;',
+                                        'id' => 'projects',
+                                        
+                                        'multiple',
+                                        // 'placeholder' => __('lang_v1.all'),
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
+                                    {!! Form::select('companies[]', $companies, null, [
+                                        'class' => 'form-control select2',
+                                        'style' => 'width: 100%;',
+                                        'id' => 'companies',
+                                       
+                                        'multiple',
+                                        // 'placeholder' => __('lang_v1.all'),
+                                    ]) !!}
                                 </div>
                             </div>
                         </div>
@@ -180,6 +194,41 @@
 @endsection
 
 @section('javascript')
+    <script>
+        $(document).ready(function() {
+            // Initially hide both to manage the correct display on load
+            $('#projects').closest('.col-md-12').hide();
+            $('#companies').closest('.col-md-12').hide();
+
+            // Function to show/hide projects or companies based on the user type
+            function toggleProjectsAndCompanies() {
+                var selectedUserType = $('#user_type').val();
+
+                if (selectedUserType === 'worker') {
+        // If the user is a worker, show projects and hide companies
+        $('#projects').closest('.col-md-12').show();
+        $('#projects').attr('required', 'required'); // Add required attribute to projects
+        $('#companies').closest('.col-md-12').hide();
+        $('#companies').removeAttr('required'); // Remove required attribute from companies
+    } else {
+        // For any other user type, show companies and hide projects
+        $('#projects').closest('.col-md-12').hide();
+        $('#projects').removeAttr('required'); // Remove required attribute from projects
+        $('#companies').closest('.col-md-12').show();
+        $('#companies').attr('required', 'required'); // Add required attribute to companies
+    }
+            }
+
+            // Call the function on page load in case there's a pre-selected value
+            toggleProjectsAndCompanies();
+
+            // Bind the function to the change event of the user_type select box
+            $('#user_type').change(function() {
+                toggleProjectsAndCompanies();
+            });
+        });
+    </script>
+
     <script type="text/javascript">
         $(document).ready(function() {
 

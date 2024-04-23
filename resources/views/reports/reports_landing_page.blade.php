@@ -4,7 +4,7 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    <section class="content-header" style="min-height: 90vh">
         <div class="reports-card-grid">
 
             @foreach ($cardsOfReports as $card)

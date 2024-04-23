@@ -218,7 +218,7 @@ return [
     'sales_projects' => 'مشاريع العملاء',
     'contact_name' => 'العميل',
     'contact_location_name' => 'اسم المشروع',
-    'contact_location_city' => 'المدينة',
+    'contact_location_city' => 'المنطقة',
     'contact_location_name_in_charge' => 'اسم المسؤول',
     'contact_location_phone_in_charge' => 'هاتف',
     'contact_location_email_in_charge' => 'بريد الكتروني',
@@ -331,7 +331,7 @@ return [
     'add_cost' => 'إضافة تكلفة',
     'fixed_costs' => 'التكاليف (المصاريف) الثابتة',
     'variable_costs' => 'التكاليف المتغيرة',
-    'add_element' => 'إضافة عنصر',
+
     'chang_the_amount_or_duration_if_needed' => 'قم بتغيير القيمة أو المدة إذا أردت',
     'requests' => 'الطلبات',
     'crud_contacts' => 'إدارة العملاء',
@@ -465,7 +465,13 @@ return [
     'not_started' => 'لم يبدأ التنفيذ',
     'remaining_quantity' => 'الكمية المتبقية',
     'worker_order_number' => 'رقم طلب العمالة',
-    'required_date' => 'التاريخ المطلوب'
+    'required_date' => 'التاريخ المطلوب',
+    'edit_draft_contact' => 'تعديل عميل مبدأي',
+    'change_to_lead' => 'تحويل إلى عميل محتمل',
+    'first_choice' => 'الخيار الأول',
+    'second_choice' => 'الخيار الثاني',
+    'attachment' => 'الملف'
+
 ];
 
 // ''=>'',

@@ -443,7 +443,9 @@ class EssentialsWorkersAffairsController extends Controller
             if ($emp_number) {
                 $request['emp_number'] = $emp_number;
             } else {
-                //auto generate
+                if ($request['emp_number'] == null) {
+                    $request['emp_number'] = $this->moduleUtil->generateEmpNumber($request['company_id']);
+                }
             }
 
             if ($request->input('id_proof_number')) {
@@ -602,18 +604,7 @@ class EssentialsWorkersAffairsController extends Controller
         } else {
             $profession = "";
         }
-
-
-        // if ($specializationId !== null) {
-        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
-        // } else {
-        //     $specialization = "";
-        // }
-
-
         $user->profession = $profession;
-        // $user->specialization = $specialization;
-
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
         $query = User::whereIn('id', $userIds);
@@ -819,7 +810,7 @@ class EssentialsWorkersAffairsController extends Controller
                 }
             } else {
                 if ($user_data['emp_number'] == null) {
-                    //auto generate
+                    $user_data['emp_number'] = $this->moduleUtil->generateEmpNumber($user_data['company_id']);
                 }
                 $business_id = request()->session()->get('user.business_id');
                 if (!isset($user_data['selected_contacts'])) {

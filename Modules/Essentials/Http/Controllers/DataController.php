@@ -716,58 +716,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    [
-                        'value' => 'essentials.view_all_payroll',
-                        'label' => __('essentials::lang.view_all_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.view_payroll_group',
-                        'label' => __('essentials::lang.view_payroll_group'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.edit_payroll_componenet',
-                        'label' => __('essentials::lang.edit_payroll_componenet'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.delete_payroll_componenet',
-                        'label' => __('essentials::lang.delete_payroll_componenet'),
-                        'default' => false,
-                    ],
-
-                    [
-                        'value' => 'essentials.essentials_requests_change_status',
-                        'label' => __('essentials::lang.essentials_requests_change_status'),
-                        'default' => false,
-                    ],
-
-
-
-
-                    [
-                        'value' => 'essentials.create_payroll',
-                        'label' => __('essentials::lang.add_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.update_payroll',
-                        'label' => __('essentials::lang.edit_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.delete_payroll',
-                        'label' => __('essentials::lang.delete_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.show_payroll',
-                        'label' => __('essentials::lang.show_payroll'),
-                        'default' => false,
-                    ],
-
-
 
                     [
                         'value' => 'essentials.view_employee_settings',
@@ -893,6 +841,91 @@ class DataController extends Controller
 
 
 
+                ]
+
+            ],
+
+            //payrolls
+            [
+                'group_name' => __('essentials::lang.payrolls_management'),
+                'group_permissions' => [
+                    [
+                        'value' => 'essentials.payrolls_management',
+                        'label' => __('essentials::lang.payrolls_management'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.view_all_payroll',
+                        'label' => __('essentials::lang.view_all_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_payroll_requests',
+                        'label' => __('essentials::lang.view_payroll_requests'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.view_payroll_group',
+                        'label' => __('essentials::lang.view_payroll_group'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_payroll_componenet',
+                        'label' => __('essentials::lang.edit_payroll_componenet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_payroll_componenet',
+                        'label' => __('essentials::lang.delete_payroll_componenet'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.change_payroll_request_status',
+                        'label' => __('essentials::lang.change_payroll_request_status'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.return_payroll_request',
+                        'label' => __('essentials::lang.return_payroll_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_payroll_request',
+                        'label' => __('essentials::lang.show_payroll_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_payroll_request',
+                        'label' => __('essentials::lang.add_payroll_request'),
+                        'default' => false,
+                    ],
+
+
+
+                    [
+                        'value' => 'essentials.create_payroll',
+                        'label' => __('essentials::lang.add_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.update_payroll',
+                        'label' => __('essentials::lang.edit_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_payroll',
+                        'label' => __('essentials::lang.delete_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_payroll',
+                        'label' => __('essentials::lang.show_payroll'),
+                        'default' => false,
+                    ],
                 ]
 
             ],
@@ -1230,6 +1263,7 @@ class DataController extends Controller
                 ]
 
             ],
+
             //employees_affairs
             [
                 'group_name' => __('essentials::lang.employees_affairs'),
@@ -1603,6 +1637,7 @@ class DataController extends Controller
                 ]
 
             ],
+
             //workcard
             [
                 'group_name' => __('essentials::lang.work_cards'),
@@ -1784,6 +1819,16 @@ class DataController extends Controller
                     ],
 
                     [
+                        'value' => 'essentials.view_requests_operations',
+                        'label' => __('essentials::lang.view_requests_operations'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.finish_request_operation',
+                        'label' => __('essentials::lang.finish_request_operation'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.renewal_residence',
                         'label' => __('essentials::lang.renewal_residence'),
                         'default' => false,
@@ -1807,8 +1852,6 @@ class DataController extends Controller
                 ],
 
             ],
-
-
 
             //housing
             [
@@ -2370,12 +2413,19 @@ class DataController extends Controller
                 $travel_ticket_categorie->save();
             }
 
-
+            //sponsor_id
+            //new_sponsor_name
             if (request()->input('profession')) {
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id = $user->id;
                 $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                 $essentials_employee_appointmets->is_active = 1;
+                if (request()->input('sponsor_id') != 'other_suponser') {
+                    $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
+                } else {
+                    $essentials_employee_appointmets->sponsor_name =  request()->input('new_sponsor_name');
+                }
+
                 $essentials_employee_appointmets->type = 'appoint';
                 $essentials_employee_appointmets->profession_id = request()->input('profession');
                 $essentials_employee_appointmets->save();
@@ -2655,6 +2705,11 @@ class DataController extends Controller
                     $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                     $essentials_employee_appointmets->is_active = 1;
                     $essentials_employee_appointmets->type = 'appoint';
+                    if (request()->input('sponsor_id') != 'other_suponser') {
+                        $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
+                    } else {
+                        $essentials_employee_appointmets->sponsor_name =  request()->input('new_sponsor_name');
+                    }
                     $essentials_employee_appointmets->profession_id = request()->input('profession');
                     $essentials_employee_appointmets->save();
                     error_log("saved new appoinment");

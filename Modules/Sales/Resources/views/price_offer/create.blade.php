@@ -114,7 +114,7 @@
                             {!! Form::label('contract_form', __('sales::lang.contract_form') . ':*') !!}
                             {!! Form::select(
                                 'contract_form',
-                                ['monthly_cost' => __('sales::lang.monthly_cost'), 'operating_fees' => __('sales::lang.operating_fees')],
+                                ['operating_fees' => __('sales::lang.first_choice'), 'monthly_cost' => __('sales::lang.second_choice')],
                                 null,
                                 [
                                     'id' => 'contract_form',
@@ -301,9 +301,7 @@
                                         <th class="text-center">
                                             @lang('sales::lang.gender')
                                         </th>
-                                        {{-- <th class="text-center">
-                                            @lang('sales::lang.monthly_cost')
-                                        </th> --}}
+
                                         <th class="text-center">
                                             @lang('sales::lang.number_of_clients')
                                         </th>
@@ -539,7 +537,11 @@
                                                 <i class="fas fa-money-bill-alt"></i>
                                             </span>
                                             @php
-                                                $_payment_method = empty($change_return['method']) && array_key_exists('cash', $payment_types) ? 'cash' : $change_return['method'];
+                                                $_payment_method =
+                                                    empty($change_return['method']) &&
+                                                    array_key_exists('cash', $payment_types)
+                                                        ? 'cash'
+                                                        : $change_return['method'];
 
                                                 $_payment_types = $payment_types;
                                                 if (isset($_payment_types['advance'])) {
@@ -629,6 +631,12 @@
     <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
 
 
+    <script>
+        var genderTranslations = {
+            male: "{{ __('sales::lang.male') }}",
+
+        };
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
             console.log("Document ready");

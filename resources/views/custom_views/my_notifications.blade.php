@@ -38,7 +38,6 @@
                         <tr>
                             <th class="table-td-width-25px">#</th>
                             <th class="table-td-width-100px">@lang('lang_v1.notification_sender')</th>
-                            <th class="table-td-width-100px">@lang('lang_v1.notification_type')</th>
                             <th class="table-td-width-100px">@lang('lang_v1.notification_title')</th>
                             <th class="table-td-width-200px">@lang('lang_v1.notification_msg')</th>
                             <th class="table-td-width-100px">@lang('lang_v1.notification_read_at')</th>
@@ -53,7 +52,26 @@
 
     </section>
     <!-- /.content -->
-
+    <div class="modal fade" id="notification_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h3 id="notification_modal_title" class="modal-title"></h3>
+                </div>
+    
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 style=" white-space: pre-wrap;" id="notification_modal_msg"></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 @endsection
 
 @section('javascript')
@@ -72,9 +90,7 @@
                     {
                         data: 'sender'
                     },
-                    {
-                        data: 'type'
-                    },
+                    
                     {
                         data: 'title'
                     },
@@ -90,6 +106,17 @@
                 ]
 
             });
+        });
+        $('#notifications_table tbody').on('click', 'tr', function () {
+            alert("asdasd");
+            var data = table.row(this).data();
+
+            // Set the values in the modal
+            $('#notification_modal_title').text(data.title);
+            $('#notification_modal_msg').text(data.msg);
+
+            // Show the modal
+            $('#notification_modal').modal('show');
         });
     </script>
 @endsection

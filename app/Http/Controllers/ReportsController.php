@@ -17,12 +17,13 @@ use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\HousingMovements\Entities\Car;
@@ -53,12 +54,6 @@ class ReportsController extends Controller
         $reports = Report::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        // if (!($is_admin)) {
-        //     return redirect()->route('home')->with('status', [
-        //         'success' => false,
-        //         'msg' => __('message.unauthorized'),
-        //     ]);
-        // }
         if (!$is_admin) {
             $reports = Report::whereIn('id', $this->moduleUtil->allowedReports())->get();
         }
@@ -70,6 +65,7 @@ class ReportsController extends Controller
                 'link' => $report->link ? route($report->link) : '',
             ];
         }
+
         return view('reports.reports_landing_page')->with(compact('cardsOfReports'));
     }
 
@@ -185,12 +181,9 @@ class ReportsController extends Controller
         return view('reports.expired_residencies');
     }
 
-
-
     public function residencies_almost_finished()
     {
-        $today = Carbon::now();
-        $after_15_days = Carbon::now()->addDays(15);
+
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -200,12 +193,9 @@ class ReportsController extends Controller
         }
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')->whereIn('employee_id',$userIds)
+        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
             ->where('is_active', 1)
-            ->whereBetween('expiration_date', [$today, $after_15_days])
-            ->orderBy('id', 'desc')
-            ->latest('created_at')
-            ->get();
+            ->latest('created_at');
 
         if (request()->ajax()) {
             return DataTables::of($residencies)
@@ -245,8 +235,13 @@ class ReportsController extends Controller
                 })
                 ->addColumn('dob', function ($row) {
                     return $row->employee->dob ?? '';
-                })->addColumn('passport_number', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                })
+                ->addColumn('gender', function ($row) {
+                    return $row->employee->gender ?? '';
+                })
+                ->addColumn('passport_number', function ($row) {
+                    $passportDocument = $row->employee->OfficialDocument()
+                        ->where('is_active', 1)
                         ->where('type', 'passport')
                         ->first();
                     if ($passportDocument) {
@@ -258,7 +253,8 @@ class ReportsController extends Controller
                     }
                 })
                 ->addColumn('passport_expire_date', function ($row) {
-                    $passportDocument = $row->employee->OfficialDocument
+                    $passportDocument = $row->employee->OfficialDocument()
+                        ->where('is_active', 1)
                         ->where('type', 'passport')
                         ->first();
                     if ($passportDocument) {
@@ -278,9 +274,6 @@ class ReportsController extends Controller
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
-                ->addColumn('gender', function ($row) {
-                    return $row->employee->gender ?? ' ';
-                })
 
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
@@ -290,7 +283,7 @@ class ReportsController extends Controller
                     'worker_name',
                     'residency',
                     'project',
-                    'end_date', 'gender',
+                    'end_date',
                     'action',
                 ])
                 ->make(true);
@@ -300,17 +293,11 @@ class ReportsController extends Controller
     }
 
 
-
     public function contracts_almost_finished()
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
+
 
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
 
@@ -319,19 +306,14 @@ class ReportsController extends Controller
             $today = Carbon::now();
             $after_15_days = Carbon::now()->addDays(15);
 
-            $contracts = salesContract::whereBetween('end_date', [$today, $after_15_days])->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')->select([
-                'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
-                'sales_contracts.contract_per_period',
-                'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
-            ]);
-
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $contracts->where('sales_contracts.status', request()->input('status'));
-            }
-            if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
-                $contracts->where('transactions.contract_form', request()->input('contract_form'));
-            }
+            $contracts = salesContract::whereBetween('end_date', [$today, $after_15_days])
+                ->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                ->select([
+                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
+                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
+                    'sales_contracts.contract_per_period',
+                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                ]);
 
             return Datatables::of($contracts)
 
@@ -344,15 +326,18 @@ class ReportsController extends Controller
                 ->filterColumn('number_of_contract', function ($query, $keyword) {
                     $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
                 })
+                ->filterColumn('contract_form', function ($query, $keyword) {
+                    $query->whereRaw("transactions.contract_form like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('supplier_business_name', function ($query, $keyword) {
+                    $query->whereHas('contact', function ($q) use ($keyword) {
+                        $q->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
+                })
 
-                ->rawColumns(['action'])
+
                 ->make(true);
         }
-
-
-
-
-
 
         return view('reports.contracts_almost_finished');
     }
@@ -360,44 +345,52 @@ class ReportsController extends Controller
 
     public function expired_contracts()
     {
-
-        $business_id = request()->session()->get('user.business_id');
-
-
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
 
         if (request()->ajax()) {
 
             $today = Carbon::now();
 
+            $contracts = salesContract::with(['transaction', 'transaction.contact'])
+                ->whereDate('end_date', '<', $today)
+                ->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                ->select([
+                    'sales_contracts.number_of_contract',
+                    'sales_contracts.id',
+                    'sales_contracts.offer_price_id',
+                    'sales_contracts.start_date',
+                    'sales_contracts.end_date',
+                    'sales_contracts.status',
+                    'sales_contracts.file',
+                    'sales_contracts.contract_duration',
+                    'sales_contracts.contract_per_period',
+                    'transactions.contract_form as contract_form',
+                    'transactions.contact_id',
+                    'transactions.id as tra'
+                ]);
 
-            $contracts = salesContract::whereDate('end_date', '<', $today)->join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')->select([
-                'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
-                'sales_contracts.contract_per_period',
-                'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
-            ]);
 
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $contracts->where('sales_contracts.status', request()->input('status'));
-            }
-            if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
-                $contracts->where('transactions.contract_form', request()->input('contract_form'));
-            }
 
             return Datatables::of($contracts)
 
 
                 ->editColumn('sales_project_id', function ($row) use ($contacts) {
                     $item = $contacts[$row->contact_id] ?? '';
-
                     return $item;
                 })
-                ->filterColumn('number_of_contract', function ($query, $keyword) {
-                    $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
+
+
+                ->filterColumn('sales_project_id', function ($query, $keyword) {
+                    $query->whereHas('transaction.contact', function ($q) use ($keyword) {
+                        $q->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('contract_form', function ($query, $keyword) {
+                    $query->whereHas('transaction', function ($q) use ($keyword) {
+                        $q->where('contract_form', 'like', "%{$keyword}%");
+                    });
                 })
 
-                ->rawColumns(['action'])
                 ->make(true);
         }
         return view('reports.expired_contracts');
@@ -407,12 +400,7 @@ class ReportsController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
@@ -421,7 +409,6 @@ class ReportsController extends Controller
         }
 
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
-
         $rooms = DB::table('htr_rooms')
             ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents', 'total_beds'])
             ->orderBy('id', 'desc');
@@ -435,35 +422,27 @@ class ReportsController extends Controller
                     return $item;
                 })
 
-                ->addColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
-                })
 
                 ->filterColumn('number', function ($query, $keyword) {
                     $query->where('number', 'like', "%{$keyword}%");
                 })
+                ->filterColumn('htr_building_id', function ($query, $keyword) use ($buildings) {
+                    $query->whereIn('htr_building_id', function ($q) use ($buildings, $keyword) {
+                        $q->select('id')
+                            ->from('htr_buildings')
+                            ->where('name', 'like', "%{$keyword}%");
+                    });
+                })
 
-                ->rawColumns(['action'])
+
                 ->make(true);
         }
 
-        $workers = User::whereIn('users.id', $userIds)
-            ->whereNot('status', 'inactive')
-            ->whereDoesntHave('htrRoomsWorkersHistories', function ($query) {
-                $query->where('still_housed', '=', 1);
-            })
-            ->select(
-                'users.id',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''), ' - ',COALESCE(users.id_proof_number,'')) as full_name")
-            )
-            ->pluck('full_name', 'users.id');
 
 
-        $roomStatusOptions = [
-            'busy' => __('housingmovements::lang.busy_rooms'),
-            'available' => __('housingmovements::lang.available_rooms'),
-        ];
-        return view('reports.rooms_and_beds')->with(compact('buildings', 'workers', 'roomStatusOptions'));
+
+        return view('reports.rooms_and_beds')
+            ->with(compact('buildings'));
     }
 
     public function building()
@@ -636,7 +615,7 @@ class ReportsController extends Controller
 
     public function employee_medical_insurance()
     {
-        $business_id = request()->session()->get('user.business_id');
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -649,6 +628,7 @@ class ReportsController extends Controller
 
         $insurance_classes = EssentialsInsuranceClass::all()
             ->pluck('name', 'id');
+
 
             $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
@@ -671,7 +651,8 @@ class ReportsController extends Controller
             )
 
             ->orderBy('essentials_employees_insurances.employee_id');
-        // dd($insurances->where('essentials_employees_insurances.employee_id', 1730)->get());
+
+        //dd($insurances->get());
 
         if (request()->ajax()) {
 
@@ -746,27 +727,23 @@ class ReportsController extends Controller
           
 
 
-            ->filterColumn('user', function ($query, $keyword) {
+                ->filterColumn('user', function ($query, $keyword) {
 
-                $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                    ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
-            })
+                    $query->whereRaw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) LIKE ?", ["%$keyword%"])
+                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                })
 
-            ->filterColumn('proof_number', function ($query, $keyword) {
-                $query->whereRaw("CASE
-                                        WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                      
-                                        ELSE ''
-                                    END LIKE ?", ["%$keyword%"]);
-            })
+                ->filterColumn('proof_number', function ($query, $keyword) {
+                    $query->whereRaw("CASE
+                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
+                                          
+                                            ELSE ''
+                                        END LIKE ?", ["%$keyword%"]);
+                })
 
-
-
-           
-            ->make(true);
-    
-
+                ->make(true);
         }
+
 
 
         return view('reports.employee_medical_insurance');
@@ -785,24 +762,21 @@ class ReportsController extends Controller
         // employee_id
 
         $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
-            ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
+
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
-                    $query1->whereIn('users.id', $userIds)->where('users.user_type', 'employee')->where('users.status', '!=', 'inactive');
-                })
-                    ->orWhereHas('essentialsEmployeesFamily', function ($query2) use ($userIds) {
-                        $query2->whereIn('essentials_employees_families.employee_id', $userIds);
-                    });
+                    $query1->whereIn('users.id', $userIds)
+                        ->where('users.user_type', 'employee')
+                        ->where('users.status', '!=', 'inactive');
+                });
             })
             ->where('essentials_employees_insurances.is_deleted', 0)
-            ->pluck(
-                'essentials_employees_insurances.employee_id',
-
-            )->toArray();
+            ->pluck('essentials_employees_insurances.employee_id')->toArray();
         $array = array_diff($userIds, $insurances);
 
-        $worker_uninsurances = User::whereIn('id', $array)->where('users.user_type', 'employee')->where('users.status', '!=', 'inactive');
-        // dd($insurances->where('essentials_employees_insurances.employee_id', 1730)->get());
+        $worker_uninsurances = User::whereIn('id', $array)
+            ->where('users.user_type', 'employee')
+            ->where('users.status', '!=', 'inactive');
 
         if (request()->ajax()) {
 
@@ -811,10 +785,7 @@ class ReportsController extends Controller
                     $item = '';
 
 
-                    $item = $row->first_name  . ' ' . $row->last_name ?? '';
-                    //  $item = $row->english_name;
-
-
+                    $item = $row->first_name  . ' ' . $row->mid_name . ' ' . $row->last_name ?? '';
 
                     return $item;
                 })
@@ -822,10 +793,7 @@ class ReportsController extends Controller
                 ->addColumn('english_name', function ($row) {
                     $item = '';
 
-
                     $item = $row->english_name  ?? '';
-
-
                     return $item;
                 })
 
@@ -859,30 +827,59 @@ class ReportsController extends Controller
                 ->addColumn('company_name', function ($row) {
                     return optional($row->company)->name ?? ' ';
                 })
+
                 ->filterColumn('user', function ($query, $keyword) {
-
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', "%{$keyword}%")
+                                ->orWhere('last_name', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('full_name', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
                 ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('id_proof_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('eqama_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('fixnumber', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user.business.documents', function ($query) use ($keyword) {
+                            $query->where('licence_type', 'COMMERCIALREGISTER')
+                                ->where('unified_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily.user.business.documents', function ($query) use ($keyword) {
+                                $query->where('licence_type', 'COMMERCIALREGISTER')
+                                    ->where('unified_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('dob', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->whereDate('dob', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->whereDate('dob', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
 
                 ->make(true);
         }
-
-
         return view('reports.employee_without_medical_insurance');
     }
 
     public function worker_without_medical_insurance()
     {
-        $business_id = request()->session()->get('user.business_id');
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -890,23 +887,17 @@ class ReportsController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        // employee_id
-
         $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
-            ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
+
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
-                    $query1->whereIn('users.id', $userIds)->where('users.user_type', 'worker')->where('users.status', '!=', 'inactive');
-                })
-                    ->orWhereHas('essentialsEmployeesFamily', function ($query2) use ($userIds) {
-                        $query2->whereIn('essentials_employees_families.employee_id', $userIds);
-                    });
+                    $query1->whereIn('users.id', $userIds)
+                        ->where('users.user_type', 'worker')
+                        ->where('users.status', '!=', 'inactive');
+                });
             })
             ->where('essentials_employees_insurances.is_deleted', 0)
-            ->pluck(
-                'essentials_employees_insurances.employee_id',
-
-            )->toArray();
+            ->pluck('essentials_employees_insurances.employee_id')->toArray();
         $array = array_diff($userIds, $insurances);
 
         $worker_uninsurances = User::whereIn('id', $array)->where('users.user_type', 'worker')->where('users.status', '!=', 'inactive');
@@ -967,19 +958,51 @@ class ReportsController extends Controller
                 ->addColumn('company_name', function ($row) {
                     return optional($row->company)->name ?? ' ';
                 })
+
                 ->filterColumn('user', function ($query, $keyword) {
-
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', "%{$keyword}%")
+                                ->orWhere('last_name', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('full_name', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
                 ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('id_proof_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('eqama_number', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
+                ->filterColumn('fixnumber', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user.business.documents', function ($query) use ($keyword) {
+                            $query->where('licence_type', 'COMMERCIALREGISTER')
+                                ->where('unified_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily.user.business.documents', function ($query) use ($keyword) {
+                                $query->where('licence_type', 'COMMERCIALREGISTER')
+                                    ->where('unified_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('dob', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->whereDate('dob', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->whereDate('dob', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+
 
                 ->make(true);
         }
@@ -990,7 +1013,7 @@ class ReportsController extends Controller
 
     public function worker_medical_insurance()
     {
-        $business_id = request()->session()->get('user.business_id');
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -1007,14 +1030,18 @@ class ReportsController extends Controller
 
         $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
+
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
-                    $query1->whereIn('users.id', $userIds)->where('users.user_type', 'worker')->where('users.status', '!=', 'inactive');
+                    $query1->whereIn('users.id', $userIds)
+                        ->where('users.user_type', 'worker')
+                        ->where('users.status', '!=', 'inactive');
                 })
                     ->orWhereHas('essentialsEmployeesFamily', function ($query2) use ($userIds) {
                         $query2->whereIn('essentials_employees_families.employee_id', $userIds);
                     });
             })
+
             ->where('essentials_employees_insurances.is_deleted', 0)
             ->select(
                 'essentials_employees_insurances.employee_id',
@@ -1024,9 +1051,8 @@ class ReportsController extends Controller
                 'essentials_employees_insurances.insurance_company_id',
                 'essentials_employees_insurances.insurance_classes_id'
             )
-
             ->orderBy('essentials_employees_insurances.employee_id');
-        // dd($insurances->where('essentials_employees_insurances.employee_id', 1730)->get());
+        //dd($insurances->get());
 
         if (request()->ajax()) {
 
@@ -1100,22 +1126,59 @@ class ReportsController extends Controller
                 })
 
 
+
+
                 ->filterColumn('user', function ($query, $keyword) {
-
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', "%{$keyword}%")
+                                ->orWhere('last_name', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('full_name', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
-
                 ->filterColumn('proof_number', function ($query, $keyword) {
-                    $query->whereRaw("CASE
-                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
-                                            ELSE ''
-                                        END LIKE ?", ["%$keyword%"]);
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->where('id_proof_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->where('eqama_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('fixnumber', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user.business.documents', function ($query) use ($keyword) {
+                            $query->where('licence_type', 'COMMERCIALREGISTER')
+                                ->where('unified_number', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily.user.business.documents', function ($query) use ($keyword) {
+                                $query->where('licence_type', 'COMMERCIALREGISTER')
+                                    ->where('unified_number', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
+                ->filterColumn('dob', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->whereHas('user', function ($query) use ($keyword) {
+                            $query->whereDate('dob', 'like', "%{$keyword}%");
+                        })
+                            ->orWhereHas('essentialsEmployeesFamily', function ($query) use ($keyword) {
+                                $query->whereDate('dob', 'like', "%{$keyword}%");
+                            });
+                    });
                 })
 
+
+
+
+                ->rawColumns(['action'])
                 ->make(true);
         }
+
 
 
         return view('reports.worker_medical_insurance');
@@ -1124,9 +1187,6 @@ class ReportsController extends Controller
 
     public function final_exit()
     {
-
-
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -1293,14 +1353,14 @@ class ReportsController extends Controller
                 })
 
                 ->addColumn('contract_form', function ($row) {
-                    return $row->salesContract?->transaction->contract_form ?? null;;
+                    return $row->salesContract?->transaction?->contract_form ?? null;;
                 })
 
                 ->addColumn('status', function ($row) {
                     return $row->salesContract?->status     ?? null;;
                 })
                 ->addColumn('type', function ($row) {
-                    return $row->salesContract->salesOrderOperation?->operation_order_type ?? null;;
+                    return $row->salesContract?->salesOrderOperation?->operation_order_type ?? null;;
                 })
                 ->filterColumn('contact_name', function ($query, $keyword) {
 
@@ -1489,7 +1549,162 @@ class ReportsController extends Controller
     }
 
 
+    public function employee_almost_finish_contracts()
+    {
 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $today = \Carbon::now();
+        $after_15_days = $today->copy()->addDays(15);
+        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)
+            ->with(['user'])
+            ->whereBetween('contract_end_date', [$today, $after_15_days])
+            ->select('contract_end_date', 'employee_id')
+            ->where('is_active', 1)
+            ->orderBy('id', 'desc')
+            ->latest('created_at');
+
+        if (request()->ajax()) {
+
+            return DataTables::of($contract_end_date)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user?->first_name . ' ' . $row->user?->mid_name . ' ' . $row->user?->last_name ?? '';
+                    }
+                )
+
+                ->addColumn('project', function ($row) {
+                    if ($row->user->user_type == 'employee' || $row->user->user_type == 'manager') {
+                        return __('essentials::lang.management');
+                    } else {
+                        return $row->user->assignedTo?->contact
+                            ->salesProjects()->first()->name ?? "";
+                    }
+                })
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? "";
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->contract_end_date ?? "";
+                    }
+                )
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('user', function ($query) use ($keyword) {
+                        $query->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('project', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact.salesProjects', function ($query) use ($keyword) {
+                        $query->where('name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('customer_name', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact', function ($query) use ($keyword) {
+                        $query->where('supplier_business_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('end_date', function ($query, $keyword) {
+                    $query->whereDate('contract_end_date', 'like', "%$keyword%");
+                })
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date'])
+                ->make(true);
+        }
+
+        return view('reports.employee_almost_finish_contracts');
+    }
+
+    public function employee_finish_contracts()
+    {
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $today = \Carbon::now();
+        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)
+            ->with(['user'])
+            ->whereDate('contract_end_date', '<=', $today)
+            ->select('contract_end_date', 'employee_id')->where('is_active', 1)
+            ->orderBy('id', 'desc')
+            ->latest('created_at');
+
+
+
+        if (request()->ajax()) {
+
+            return DataTables::of($contract_end_date)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user?->first_name . ' ' . $row->user?->mid_name . ' ' . $row->user?->last_name ?? '';
+                    }
+                )
+
+                ->addColumn('project', function ($row) {
+                    if ($row->user?->user_type == 'employee' || $row->user?->user_type == 'manager') {
+                        return __('essentials::lang.management');
+                    } else {
+                        return $row->user->assignedTo?->contact
+                            ->salesProjects()->first()->name ?? "";
+                    }
+                })
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? "";
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->contract_end_date ?? "";
+                    }
+                )
+                ->filterColumn('worker_name', function ($query, $keyword) {
+                    $query->whereHas('user', function ($query) use ($keyword) {
+                        $query->where('first_name', 'like', "%$keyword%")
+                            ->orWhere('mid_name', 'like', "%$keyword%")
+                            ->orWhere('last_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('project', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact.salesProjects', function ($query) use ($keyword) {
+                        $query->where('name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('customer_name', function ($query, $keyword) {
+                    $query->whereHas('user.assignedTo.contact', function ($query) use ($keyword) {
+                        $query->where('supplier_business_name', 'like', "%$keyword%");
+                    });
+                })
+                ->filterColumn('end_date', function ($query, $keyword) {
+                    $query->whereDate('contract_end_date', 'like', "%$keyword%");
+                })
+
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date'])
+                ->make(true);
+        }
+
+        return view('reports.employee_finish_contracts');
+    }
     private function getDocumentnumber($user, $documentType)
     {
         foreach ($user->OfficialDocument as $off) {
@@ -1499,134 +1714,5 @@ class ReportsController extends Controller
         }
 
         return ' ';
-    }
-
-
-
-    public function employee_almost_finish_contracts()
-    {
-        $today = now();
-        $after_15_days = $today->copy()->addDays(15);
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with(['user'])
-            // ->whereDate('contract_end_date', '<=', $endDateThreshold)
-            ->whereBetween('contract_end_date', [$today, $after_15_days])
-
-            ->select('contract_end_date', 'employee_id');
-
-        //  dd( $contract_end_date->first());
-
-        if (request()->ajax()) {
-
-            return DataTables::of($contract_end_date)
-                ->addColumn(
-                    'worker_name',
-                    function ($row) {
-                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
-                    }
-                )
-
-                ->addColumn(
-                    'project',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'customer_name',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'end_date',
-                    function ($row) {
-                        return $row->contract_end_date;
-                    }
-                )
-                ->addColumn(
-                    'action',
-                    ''
-                )
-
-
-                ->removeColumn('id')
-                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-                ->make(true);
-        }
-
-        return view('reports.employee_almost_finish_contracts');
-    }
-
-
-    public function employee_finish_contracts()
-    {
-        $today = now();
-        $after_15_days = $today->copy()->addDays(15);
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with(['user'])
-            ->whereDate('contract_end_date', '<=', $today)
-            // ->whereBetween('contract_end_date', [$today, $after_15_days])
-
-            ->select('contract_end_date', 'employee_id');
-
-        //  dd( $contract_end_date->first());
-
-        if (request()->ajax()) {
-
-            return DataTables::of($contract_end_date)
-                ->addColumn(
-                    'worker_name',
-                    function ($row) {
-                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
-                    }
-                )
-
-                ->addColumn(
-                    'project',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'customer_name',
-                    function ($row) {
-                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'end_date',
-                    function ($row) {
-                        return $row->contract_end_date;
-                    }
-                )
-                ->addColumn(
-                    'action',
-                    ''
-                )
-
-
-                ->removeColumn('id')
-                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-                ->make(true);
-        }
-
-        return view('reports.employee_finish_contracts');
     }
 }
