@@ -552,39 +552,39 @@ class User extends Authenticatable
 
     public function activeContract()
     {
-        return $this->hasOne(EssentialsEmployeesContract::class, 'employee_id')->where('is_active', 1);
+        return $this->hasOne(EssentialsEmployeesContract::class, 'employee_id')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeOfficialDocument()
     {
-        return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id')->where('is_active', 1);
+        return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activePassport()
     {
-        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'passport')->where('is_active', 1);
+        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'passport')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeResidencePermit()
     {
-        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'residence_permit')->where('is_active', 1);
+        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'residence_permit')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeIban()
     {
-        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'Iban')->where('is_active', 1);
+        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'Iban')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeNationalId()
     {
-        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'national_id')->where('is_active', 1);
+        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'national_id')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeDriversLicense()
     {
-        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'drivers_license')->where('is_active', 1);
+        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'drivers_license')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeCarRegistration()
     {
-        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'car_registration')->where('is_active', 1);
+        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'car_registration')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeInternationalCertificate()
     {
-        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'international_certificate')->where('is_active', 1);
+        return $this->hasOne(EssentialsOfficialDocument::class, 'employee_id')->where('type', 'international_certificate')->where('is_active', 1)->whereNotNull('file_path');
     }
     public function activeAppointmet()
     {
