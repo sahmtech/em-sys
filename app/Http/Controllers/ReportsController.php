@@ -571,7 +571,9 @@ class ReportsController extends Controller
                 ->editColumn('car', function ($row) {
                     return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
                 })
-
+                ->editColumn('plate_number', function ($row) {
+                    return $row->car->plate_number ?? '';
+                })
                 ->editColumn('current_speedometer', function ($row) {
                     return $row->current_speedometer ?? '';
                 })
@@ -613,6 +615,9 @@ class ReportsController extends Controller
 
                 ->editColumn('car', function ($row) {
                     return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
+                })
+                ->editColumn('plate_number', function ($row) {
+                    return $row->car->plate_number ?? '';
                 })
 
                 ->editColumn('current_speedometer', function ($row) {
