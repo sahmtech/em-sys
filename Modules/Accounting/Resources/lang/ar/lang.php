@@ -674,6 +674,28 @@ return [
     'operating expensesd' => 'مصاريف تشغيليه',
     'account_level' => 'مستوى الحساب',
     'account_type'=>'نوع الحساب',
+    'normal'=>'عادي',
+    'customer_receivables_main_account'=>'حساب رئيسي ذمم العملاء',
+    'suppliers_receivables_main_account'=>'حساب رئيسي ذمم موردين',
+    'main_account_employee_receivables'=>'حساب رئيسي ذمم موظفين',
+    'main_account_requests_approvals'=>'حساب رئيسي طلبات واعتماد',
+    'main_account_other_receivables'=>'حساب رئيسي ذمم اخرى',
+    'Boxes'=>'صناديق',
+    'Banks'=>'بنوك',
+    'Cheques'=>'شيكات',
+    'general'=>'عام',
+    'expenses'=>'مصاريف',
+    'Revenues'=>'ايرادات',
+    'Fixed assets'=>'موجودات ثابتة',
+    'Receivables'=>'ذمم',
+    'Liabilities'=>'مطلوبات',
+    'taxes'=>'ضرائب',
+    'Past due checks'=>'شيكات اجله',
+    'Warehouses'=>'مستودعات',
+    'Revenues received in advance'=>'ايرادات مقبوضة مقدماً',
+    'Prepaid expenses'=>'مصاريف مدفوعة مقدماً',
+   
+    
 
 
 ];

@@ -3208,4 +3208,39 @@ class AccountingUtil extends Util
             
         ];
     }
+
+
+    public static function account_type(){
+        return[
+            'normal'=>__('accounting::lang.normal'),
+            'customer_receivables_main_account'=>__('accounting::lang.customer_receivables_main_account'),
+            'suppliers_receivables_main_account'=>__('accounting::lang.suppliers_receivables_main_account'),
+            'main_account_employee_receivables'=>__('accounting::lang.main_account_employee_receivables'),
+            'main_account_requests_approvals'=>__('accounting::lang.main_account_requests_approvals'),
+            'main_account_other_receivables'=>__('accounting::lang.main_account_other_receivables'),
+        ];
+    }
+
+    public static function account_category(){
+        return [
+            'balance_sheet'=>__('accounting::lang.balance_sheet'),
+            'income_list'=>__('accounting::lang.income_list'),
+            'Boxes'=>__('accounting::lang.Boxes'),
+            'Banks'=>__('accounting::lang.Banks'),
+            'Cheques'=>__('accounting::lang.Cheques'),
+            'general'=>__('accounting::lang.general'),
+            'expenses'=>__('accounting::lang.expenses'),
+            'Revenues'=>__('accounting::lang.Revenues'),
+            'Fixed assets'=>__('accounting::lang.Fixed assets'),
+            'Receivables'=>__('accounting::lang.Receivables'),
+            'Liabilities'=>__('accounting::lang.Liabilities'),
+            'taxes'=>__('accounting::lang.taxes'),
+            'Past due checks'=>__('accounting::lang.Past due checks'),
+            'Warehouses'=>__('accounting::lang.Warehouses'),
+            'Revenues received in advance'=>__('accounting::lang.Revenues received in advance'),
+            'Prepaid expenses'=>__('accounting::lang.Prepaid expenses'),
+            
+        ];
+    }
+    
 }
