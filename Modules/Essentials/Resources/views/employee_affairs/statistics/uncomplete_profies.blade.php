@@ -89,7 +89,7 @@
                             <table class="table table-bordered table-striped" id="expired_residencies">
                                 <thead>
                                     <tr>
-
+                                        <th>#</th>
                                         <th>@lang('essentials::lang.emp_name')</th>
                                         <th>@lang('essentials::lang.eqama_number')</th>
                                         <th>@lang('followup::lang.project')</th>
@@ -151,8 +151,9 @@
                         }
                     },
 
-                    columns: [
-
+                    columns: [{
+                            data: 'id'
+                        },
                         {
                             data: 'worker_name'
                         },
