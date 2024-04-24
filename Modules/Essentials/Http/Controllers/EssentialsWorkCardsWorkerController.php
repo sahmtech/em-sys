@@ -220,7 +220,7 @@ class EssentialsWorkCardsWorkerController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker_id','company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker_id', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 

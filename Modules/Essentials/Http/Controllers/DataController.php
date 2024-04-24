@@ -716,58 +716,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    [
-                        'value' => 'essentials.view_all_payroll',
-                        'label' => __('essentials::lang.view_all_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.view_payroll_group',
-                        'label' => __('essentials::lang.view_payroll_group'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.edit_payroll_componenet',
-                        'label' => __('essentials::lang.edit_payroll_componenet'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.delete_payroll_componenet',
-                        'label' => __('essentials::lang.delete_payroll_componenet'),
-                        'default' => false,
-                    ],
-
-                    [
-                        'value' => 'essentials.essentials_requests_change_status',
-                        'label' => __('essentials::lang.essentials_requests_change_status'),
-                        'default' => false,
-                    ],
-
-
-
-
-                    [
-                        'value' => 'essentials.create_payroll',
-                        'label' => __('essentials::lang.add_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.update_payroll',
-                        'label' => __('essentials::lang.edit_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.delete_payroll',
-                        'label' => __('essentials::lang.delete_payroll'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.show_payroll',
-                        'label' => __('essentials::lang.show_payroll'),
-                        'default' => false,
-                    ],
-
-
 
                     [
                         'value' => 'essentials.view_employee_settings',
@@ -904,6 +852,78 @@ class DataController extends Controller
                     [
                         'value' => 'essentials.payrolls_management',
                         'label' => __('essentials::lang.payrolls_management'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.view_all_payroll',
+                        'label' => __('essentials::lang.view_all_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_payroll_requests',
+                        'label' => __('essentials::lang.view_payroll_requests'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.view_payroll_group',
+                        'label' => __('essentials::lang.view_payroll_group'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_payroll_componenet',
+                        'label' => __('essentials::lang.edit_payroll_componenet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_payroll_componenet',
+                        'label' => __('essentials::lang.delete_payroll_componenet'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.change_payroll_request_status',
+                        'label' => __('essentials::lang.change_payroll_request_status'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.return_payroll_request',
+                        'label' => __('essentials::lang.return_payroll_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_payroll_request',
+                        'label' => __('essentials::lang.show_payroll_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_payroll_request',
+                        'label' => __('essentials::lang.add_payroll_request'),
+                        'default' => false,
+                    ],
+
+
+
+                    [
+                        'value' => 'essentials.create_payroll',
+                        'label' => __('essentials::lang.add_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.update_payroll',
+                        'label' => __('essentials::lang.edit_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_payroll',
+                        'label' => __('essentials::lang.delete_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_payroll',
+                        'label' => __('essentials::lang.show_payroll'),
                         'default' => false,
                     ],
                 ]

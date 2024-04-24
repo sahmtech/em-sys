@@ -78,7 +78,7 @@
 
 
             <div class="update-existing-data" style="display: none;">
-            {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee_v2']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
+            {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="col-sm-8">
@@ -326,45 +326,46 @@
             }
         });
 
-$('.update-existing-data form').submit(function(event) {
-    event.preventDefault(); 
+// $('.update-existing-data form').submit(function(event) {
+//     event.preventDefault(); 
 
     
-    $.ajax({
-        url: $(this).attr('action'),
-        type: $(this).attr('method'),
-        data: new FormData(this),
-        processData: false,
-        contentType: false,
-        success: function(response) {
+//     $.ajax({
+//         url: $(this).attr('action'),
+//         type: $(this).attr('method'),
+//         data: new FormData(this),
+//         processData: false,
+//         contentType: false,
+//         success: function(response) {
             
-            if (response.success) {
+//             if (response.success) {
                 
               
-                 var downloadUrl = '/uploads/' + response.filename;
+//                  var downloadUrl = '/uploads/' + response.filename;
                 
-                var link = document.createElement('a');
-                link.href = downloadUrl;
-                link.download = response.filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+//                 var link = document.createElement('a');
+//                 link.href = downloadUrl;
+//                 link.download = response.filename;
+//                 document.body.appendChild(link);
+//                 link.click();
+//                 document.body.removeChild(link);
 
                 
-                setTimeout(function() {
-                    window.location.href = '/employee_affairs/employees/';
-                }, 1000); 
-            } else {
+//                 setTimeout(function() {
+//                     window.location.href = '/employee_affairs/employees/';
+//                 }, 1000); 
+//             } else {
                 
-                console.error('Error occurred');
-            }
-        },
-        error: function(xhr, status, error) {
+//                 console.log(response.filename);
+//             }
+//         },
+//         error: function(xhr, status, error) {
             
-            console.error('AJAX error:', error);
-        }
-    });
-});
+//             console.error('AJAX error:', error);
+         
+//         }
+//     });
+// });
 
 
     });

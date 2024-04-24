@@ -60,6 +60,16 @@
                 employee_without_medical_insurance = $('#employee_without_medical_insurance').DataTable({
                     processing: true,
                     serverSide: true,
+                    footer: true,
+                                    buttons: ['excel', {
+                                                extend: 'print',
+                                                title: ' ',
+                                                text: '<i class="glyphicon glyphicon-print" style="padding: 0px 7px"></i><span>Print</span>',
+                                                className: 'btn printclass textSan',
+                                                customize: function(win) {
+                                                        $(win.document.body).prepend('<div style="display: flex;justify-content: space-between;"><div class="row" style="padding: 5px 25px;"><h3>@lang('lang_v1.emdadatalatta_comp')</h3><h3>@lang('essentials::lang.health_insurance')</h3><h4>@lang('lang_v1.report') @lang('essentials::lang.employee_without_medical_insurance')</h4></div><img src="/uploads/custom_logo.png" class="img-rounded" alt="Logo" style="width: 175px;"> </div>');
+        }
+        }],
                     ajax: {
                         url: "{{ route('employee_without_medical_insurance') }}",
 

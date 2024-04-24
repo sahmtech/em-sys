@@ -140,13 +140,13 @@
                                         'rows' => 3,
                                     ]) !!}
                                 </div>
-                                {{-- <div class="form-group col-md-6">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('attachment', __('sales::lang.attachment') . ':') !!}
                                     {!! Form::file('attachment', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('sales::lang.attachment'),
                                     ]) !!}
-                                </div> --}}
+                                </div>
 
 
 

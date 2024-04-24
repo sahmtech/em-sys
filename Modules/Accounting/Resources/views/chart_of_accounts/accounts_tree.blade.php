@@ -33,10 +33,10 @@
                         <ul>
                             @foreach ($account_sub_types->where('account_primary_type', $key)->all() as $sub_type)
                                 <li @if ($loop->index == 0) data-jstree='{ "opened" : true }' @endif>
-                                    ({{ $account_GLC[$key] . $loop->index + 1 }})
-                                    - {{ $sub_type->account_type_name }}
+                                    ({{ $sub_type->gl_code }})
+                                    - @lang('accounting::lang.' . $sub_type->account_type_name)
                                     <ul>
-                                        @foreach ($accounts->where('account_sub_type_id', $sub_type->id)->sortBy('name')->all() as $account)
+                                        @foreach ($accounts->where('account_sub_type_id', $sub_type->id)->all() as $account)
                                             <li
                                                 @if (count($account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right" }' @endif>
                                                 @if (app()->getLocale() == 'ar')
@@ -44,114 +44,125 @@
                                                         ({{ $account->gl_code }})
                                                         -
                                                     @endif
-                                                    @lang('accounting::lang.accounts_name.' . $account->name)
+                                                    @if (Lang::has('accounting::lang.' . $account->name))
+                                                        @lang('accounting::lang.' . $account->name)
+                                                    @else
+                                                        {{ $account->name }}
+                                                    @endif
                                                 @else
-                                                    @lang('accounting::lang.accounts_name.' . $account->name) @if (!empty($account->gl_code))
-                                                        - ({{ $account->gl_code }})
+                                                    @if (Lang::has('accounting::lang.' . $account->name))
+                                                        @lang('accounting::lang.' . $account->name)
+                                                    @else
+                                                        {{ $account->name }}
+                                                        @endif @if (!empty($account->gl_code))
+                                                            - ({{ $account->gl_code }})
+                                                        @endif
                                                     @endif
-                                                @endif
 
 
-                                                - @format_currency($account->balance)
-                                                @if ($account->status == 'active')
-                                                    <span><i class="fas fa-check text-success"
-                                                            title="@lang('accounting::lang.active')"></i></span>
-                                                @elseif($account->status == 'inactive')
-                                                    <span><i class="fas fa-times text-danger" title="@lang('lang_v1.inactive')"
-                                                            style="font-size: 14px;"></i></span>
-                                                @endif
-                                                <span class="tree-actions">
-                                                    <a class="btn-modal btn-xs btn-default text-success ledger-link"
-                                                        style="margin: 2px;" title="@lang('accounting::lang.ledger')"
-                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@ledger', $account->id) }}">
-                                                        <i class="fas fa-file-alt"></i></a>
-                                                    @if (auth()->user()->hasRole('Admin#1') ||
-                                                            auth()->user()->can('accounting.account.edit'))
+                                                    - @format_currency($account->balance)
+                                                    @if ($account->status == 'active')
+                                                        <span><i class="fas fa-check text-success"
+                                                                title="@lang('accounting::lang.active')"></i></span>
+                                                    @elseif($account->status == 'inactive')
+                                                        <span><i class="fas fa-times text-danger"
+                                                                title="@lang('lang_v1.inactive')"
+                                                                style="font-size: 14px;"></i></span>
+                                                    @endif
+                                                    <span class="tree-actions">
+                                                        <a class="btn-modal btn-xs btn-default text-success ledger-link"
+                                                            style="margin: 2px;" title="@lang('accounting::lang.ledger')"
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@ledger', $account->id) }}">
+                                                            <i class="fas fa-file-alt"></i></a>
+                                                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.account.edit'))
+                                                            <a class="btn-modal btn-xs btn-default text-primary"
+                                                                style="margin: 2px;" title="@lang('messages.edit')"
+                                                                href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
+                                                                data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
+                                                                data-container="#create_account_modal">
+                                                                <i class="fas fa-edit"></i>
+
+                                                            </a>
+                                                        @endif
+
                                                         <a class="btn-modal btn-xs btn-default text-primary"
-                                                            style="margin: 2px;" title="@lang('messages.edit')"
-                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
-                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
+                                                            style="margin: 2px;" title="@lang('accounting::lang.add_account')"
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $account->id) }}"
+                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $account->id) }}"
                                                             data-container="#create_account_modal">
-                                                            <i class="fas fa-edit"></i>
-
+                                                            <i class="fas fa-plus"></i>
                                                         </a>
-                                                    @endif
 
-                                                    <a class="btn-modal btn-xs btn-default text-primary"
-                                                        style="margin: 2px;" title="@lang('accounting::lang.add_account')"
-                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $account->id) }}"
-                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $account->id) }}"
-                                                        data-container="#create_account_modal">
-                                                        <i class="fas fa-plus"></i>
-                                                    </a>
-
-                                                    <a class="activate-deactivate-btn text-warning  btn-xs btn-default"
-                                                        style="margin: 2px;"
-                                                        title="@if ($account->status == 'active') @lang('messages.deactivate') @else 
+                                                        <a class="activate-deactivate-btn text-warning  btn-xs btn-default"
+                                                            style="margin: 2px;"
+                                                            title="@if ($account->status == 'active') @lang('messages.deactivate') @else 
                                             @lang('messages.activate') @endif"
-                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@activateDeactivate', $account->id) }}">
-                                                        <i class="fas fa-power-off"></i>
-                                                    </a>
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@activateDeactivate', $account->id) }}">
+                                                            <i class="fas fa-power-off"></i>
+                                                        </a>
 
-                                                </span>
-                                                @if (count($account->child_accounts) > 0)
-                                                    <ul>
-                                                        @foreach ($account->child_accounts as $child_account)
-                                                            <li
-                                                                @if (count($child_account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right"}' @endif>
-                                                                {{ $child_account->name }}
+                                                    </span>
+                                                    @if (count($account->child_accounts) > 0)
+                                                        <ul>
+                                                            @foreach ($account->child_accounts as $child_account)
+                                                                <li
+                                                                    @if (count($child_account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right"}' @endif>
+                                                                    {{ $child_account->name }}
 
-                                                                @if (!empty($child_account->gl_code))
-                                                                    - ({{ $child_account->gl_code }})
-                                                                @endif
-                                                                - @format_currency($child_account->balance)
+                                                                    @if (!empty($child_account->gl_code))
+                                                                        - ({{ $child_account->gl_code }})
+                                                                    @endif
+                                                                    - @format_currency($child_account->balance)
 
-                                                                @if ($child_account->status == 'active')
-                                                                    <span><i class="fas fa-check text-success"
-                                                                            title="@lang('accounting::lang.active')"></i></span>
-                                                                @elseif($child_account->status == 'inactive')
-                                                                    <span><i class="fas fa-times text-danger"
-                                                                            title="@lang('lang_v1.inactive')"
-                                                                            style="font-size: 14px;"></i></span>
-                                                                @endif
-                                                                <span class="tree-actions">
-                                                                    <a class="btn-modal btn-xs btn-default text-success ledger-link"
-                                                                        style="margin: 2px;" title="@lang('accounting::lang.ledger')"
-                                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@ledger', $child_account->id) }}">
-                                                                        <i class="fas fa-file-alt"></i></a>
-                                                                    <a class="btn-modal btn-xs btn-default text-primary"
-                                                                        style="margin: 2px;" title="@lang('messages.edit')"
-                                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $child_account->id) }}"
-                                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $child_account->id) }}"
-                                                                        data-container="#create_account_modal">
-                                                                        <i class="fas fa-edit"></i></a>
+                                                                    @if ($child_account->status == 'active')
+                                                                        <span><i class="fas fa-check text-success"
+                                                                                title="@lang('accounting::lang.active')"></i></span>
+                                                                    @elseif($child_account->status == 'inactive')
+                                                                        <span><i class="fas fa-times text-danger"
+                                                                                title="@lang('lang_v1.inactive')"
+                                                                                style="font-size: 14px;"></i></span>
+                                                                    @endif
+                                                                    <span class="tree-actions">
+                                                                        <a class="btn-modal btn-xs btn-default text-success ledger-link"
+                                                                            style="margin: 2px;"
+                                                                            title="@lang('accounting::lang.ledger')"
+                                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@ledger', $child_account->id) }}">
+                                                                            <i class="fas fa-file-alt"></i></a>
+                                                                        <a class="btn-modal btn-xs btn-default text-primary"
+                                                                            style="margin: 2px;"
+                                                                            title="@lang('messages.edit')"
+                                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $child_account->id) }}"
+                                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $child_account->id) }}"
+                                                                            data-container="#create_account_modal">
+                                                                            <i class="fas fa-edit"></i></a>
 
-                                                                    <a class="btn-modal btn-xs btn-default text-primary"
-                                                                        style="margin: 2px;" title="@lang('accounting::lang.add_account')"
-                                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $child_account->id) }}"
-                                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $child_account->id) }}"
-                                                                        data-container="#create_account_modal">
-                                                                        <i class="fas fa-plus"></i>
-                                                                    </a>
+                                                                        <a class="btn-modal btn-xs btn-default text-primary"
+                                                                            style="margin: 2px;"
+                                                                            title="@lang('accounting::lang.add_account')"
+                                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $child_account->id) }}"
+                                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@open_create_dialog', $child_account->id) }}"
+                                                                            data-container="#create_account_modal">
+                                                                            <i class="fas fa-plus"></i>
+                                                                        </a>
 
-                                                                    <a class="activate-deactivate-btn text-warning  btn-xs btn-default"
-                                                                        style="margin: 2px;"
-                                                                        title="@if ($child_account->status == 'active') @lang('messages.deactivate') @else 
+                                                                        <a class="activate-deactivate-btn text-warning  btn-xs btn-default"
+                                                                            style="margin: 2px;"
+                                                                            title="@if ($child_account->status == 'active') @lang('messages.deactivate') @else 
                                                                        @lang('messages.activate') @endif"
-                                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@activateDeactivate', $child_account->id) }}">
-                                                                        <i class="fas fa-power-off"></i>
-                                                                    </a>
-                                                                </span>
-                                                                @if (count($child_account->child_accounts) > 0)
-                                                                    @include(
-                                                                        'accounting::chart_of_accounts.chiled_tree',
-                                                                        ['account' => $child_account]
-                                                                    )
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                @endif
+                                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@activateDeactivate', $child_account->id) }}">
+                                                                            <i class="fas fa-power-off"></i>
+                                                                        </a>
+                                                                    </span>
+                                                                    @if (count($child_account->child_accounts) > 0)
+                                                                        @include(
+                                                                            'accounting::chart_of_accounts.chiled_tree',
+                                                                            ['account' => $child_account]
+                                                                        )
+                                                                    @endif
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
                                             </li>
                                         @endforeach
                                     </ul>

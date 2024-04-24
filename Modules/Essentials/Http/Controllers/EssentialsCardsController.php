@@ -869,14 +869,24 @@ class EssentialsCardsController extends Controller
 
     public function expired_residencies()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
 
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $residencies = EssentialsOfficialDocument::with(['employee'])->where(
-            'type',
-            'residence_permit'
-        )
+        $residencies = EssentialsOfficialDocument::with(['employee'])
+            ->where(
+                'type',
+                'residence_permit'
+            )
+            ->whereIn('employee_id', $userIds)
             ->whereBetween('expiration_date', [
                 now(),
                 now()
@@ -984,6 +994,15 @@ class EssentialsCardsController extends Controller
 
     public function all_expired_residencies()
     {
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
         $today = today()->format('Y-m-d');
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -991,6 +1010,7 @@ class EssentialsCardsController extends Controller
         $all_expired_residencies = EssentialsOfficialDocument::with(['employee'])
             ->where('type', 'residence_permit')
             ->where('is_active', 1)
+            ->whereIn('employee_id', $userIds)
 
             ->whereDate('expiration_date', '<', $today)
             ->orderBy('id', 'desc')

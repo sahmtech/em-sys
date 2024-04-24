@@ -35,6 +35,8 @@ use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\Sales\Entities\SalesProject;
 use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 use Yajra\DataTables\Facades\DataTables;
+use App\Utils\RequestUtil;
+use Modules\Essentials\Entities\EssentialsDepartment;
 
 class PayrollController extends Controller
 {
@@ -51,19 +53,21 @@ class PayrollController extends Controller
 
     protected $businessUtil;
 
+    protected $requestUtil;
     /**
      * Constructor
      *
      * @param  ProductUtils  $product
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil, EssentialsUtil $essentialsUtil, Util $commonUtil, TransactionUtil $transactionUtil, BusinessUtil $businessUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil, EssentialsUtil $essentialsUtil, Util $commonUtil, TransactionUtil $transactionUtil, BusinessUtil $businessUtil)
     {
         $this->moduleUtil = $moduleUtil;
         $this->essentialsUtil = $essentialsUtil;
         $this->commonUtil = $commonUtil;
         $this->transactionUtil = $transactionUtil;
         $this->businessUtil = $businessUtil;
+        $this->requestUtil = $requestUtil;
     }
 
     public function dashboard()
@@ -116,7 +120,42 @@ class PayrollController extends Controller
 
         return view('essentials::payroll.index')->with(compact('projects', 'companies', 'employees', 'user_types'));
     }
+    public function requests()
+    {
+        $business_id = request()->session()->get('user.business_id');
 
+        $can_change_status = auth()->user()->can('essentials.change_payroll_request_status');
+        $can_return_request = auth()->user()->can('essentials.return_payroll_request');
+        $can_show_request = auth()->user()->can('essentials.show_payroll_request');
+
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%رواتب%')
+            ->pluck('id')->toArray();
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_payroll_dep'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
+
+        $ownerTypes = ['employee', 'manager', 'worker'];
+
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::payroll.payrollRequests', $can_change_status, $can_return_request, $can_show_request);
+    }
+
+    public function storePayrollRequest(Request $request)
+    {
+
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%رواتب%')
+            ->pluck('id')->toArray();
+
+        return $this->requestUtil->storeRequest($request, $departmentIds);
+    }
     public function getEmployeesBasedOnCompany(Request $request)
     {
 
