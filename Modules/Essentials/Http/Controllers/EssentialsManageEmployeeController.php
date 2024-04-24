@@ -415,25 +415,37 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-        $nullCount = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+        $nullCount = User::whereIn('id', $userIds)
+            ->with(['essentialsEmployeesInsurance', 'activeAdmission', 'activeAppointmet', 'activeInternationalCertificate', 'activeCarRegistration', 'activeDriversLicense', 'activeNationalId', 'activeIban', 'activeResidencePermit', 'activePassport', 'activeOfficialDocument', 'activeContract'])
             ->where(function ($query) {
-                $query->whereHas('essentials_admission_to_works', function ($query) {
-
-                    $query->whereNull('admissions_date');
-                })
-                    ->orWhereHas('essentialsEmployeeAppointmets', function ($query) {
-
-                        $query->WhereNull('start_from')
-                            ->orWhereNull('end_at')
-                            ->orWhereNull('profession_id');
-                    })
-                    ->orWhereHas('essentials_qualification', function ($query) {
-
-                        $query->WhereNull('graduation_year')
-                            ->orWhereNull('graduation_institution')
-                            ->orWhereNull('graduation_country')
-                            ->orWhereNull('degree');
-                    });
+                $query->where(function ($q1) {
+                    $q1->whereIn('user_type', ['employee', 'manager'])
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('activeContract')
+                                ->orWhereDoesntHave('activeOfficialDocument')
+                                ->orWhereDoesntHave('activePassport')
+                                ->orWhereDoesntHave('activeResidencePermit')
+                                ->orWhereDoesntHave('activeIban')
+                                ->orWhereDoesntHave('activeNationalId')
+                                ->orWhereDoesntHave('activeDriversLicense')
+                                ->orWhereDoesntHave('activeCarRegistration')
+                                ->orWhereDoesntHave('activeInternationalCertificate')
+                                ->orWhereDoesntHave('activeAppointmet')
+                                ->orWhereDoesntHave('activeAdmission')
+                                ->orWhereDoesntHave('essentialsEmployeesInsurance');
+                        });
+                })->orWhere(function ($q1) {
+                    $q1->where('user_type', 'worker')
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('activeContract')
+                                ->orWhereDoesntHave('activeOfficialDocument')
+                                ->orWhereDoesntHave('activePassport')
+                                ->orWhereDoesntHave('activeResidencePermit')
+                                ->orWhereDoesntHave('activeAppointmet')
+                                ->orWhereDoesntHave('activeAdmission')
+                                ->orWhereDoesntHave('essentialsEmployeesInsurance');
+                        });
+                });
             })
             ->count();
 
