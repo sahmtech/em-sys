@@ -1859,5 +1859,23 @@ return [
   'missings_info' => 'نواقص البيانات',
 
 
+  'iban_not_nuique' => 'رقم الايبان موجود سابقا',
+  'border_no_not_nuique' => 'رقم الحدود موجود سايقا',
+  'passport_number_not_nuique' => 'رقم جواز السفر موجود مسبقا',
+  'email_not_nuique' => 'الايميل موجود سابقا',
+  'emp_number_not_nuique' => 'رقم الموظف موجود سابقا',
+  'profession_id_not_found' => 'المهنة المدخلة غير موجودة ',
+  'sales_project_id_not_found' => 'المشروع التابع له العامل غير موجود',
+  'department_id_not_found' => 'القسم غير موجود',
+  'contact_location_id_not_found' => 'الفرع غير موجود',
+  'nationality_id_not_found' => 'الجنسية غير موجودة',
+  'other_id_not_found' => 'هذا البدل غير موجود',
+  'transportation_allowance_id_not_found' => 'بدل النقل غير موجود',
+  'housing_allowance_id_not_found' => 'بدل السكن غير موجود',
+  'company_id_not_found' => 'الشركة غير موجودة',
+  'contract_type_id_not_found' => 'نوع العقد غير موجود',
+  // ''=>'',
+  // ''=>'',
+
 
 ];

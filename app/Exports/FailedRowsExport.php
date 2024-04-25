@@ -32,7 +32,12 @@ class FailedRowsExport implements FromCollection, WithHeadings
 
 
             if (isset($row['Errors'])) {
-                $data['Errors'] = $row['Errors'];
+                $res = '';
+                foreach ($row['Errors'] as $error) {
+                    $res .= $error . ', ';
+                }
+
+                $data['Errors'] = $res;
             }
 
             return $data;
