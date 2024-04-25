@@ -1876,6 +1876,16 @@ return [
   'contract_type_id_not_found' => 'نوع العقد غير موجود',
   // ''=>'',
   // ''=>'',
+  'company_is_required' => 'خانة الشركة مطلوبة',
+  'first_name_is_required' => 'الاسم الأول مطلوب',
+  'employee_type_is_required' => 'نوع المستخدم مطلوب',
+  'employee_type_not_defined' => 'نوع المستخدم المدخل غير معرف',
+  'gender_not_defined' => 'الجنس المدخل غير معرف',
+  'id_proof_number_is_required' => 'رقم إثبات الهوية مطلوب',
+  'id_proof_name_is_required' => 'اسم إثبات الهوية مطلوب',
 
+  'employees_file' => 'ملف الموظفين',
+  'import_employees_file' => 'استيراد',
+  'download_employees_file_template' => 'تحميل القالب',
 
 ];

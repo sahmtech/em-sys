@@ -60,42 +60,41 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
                 foreach ($imported_data as $key => $row) {
                     $row_no = $key + 2;
-                    $emp_array = $this->prepareEmployeeData($row);
-                    // $validationResult = $this->validate($emp_array);
-
-                    $existingEmployee = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
-                    if ($existingEmployee) {
-                        $validationResult = $this->validate($emp_array);
-                        if ($validationResult['isValid'] == true) {
-                            $this->updateEmployee($existingEmployee, $emp_array);
-                        } else {
-
-                            $errors[] = "Validation failed for row $row_no";
-                            $failedRows[] = [
-                                'Row' => $row_no,
-                                'Data' => $emp_array,
-                                'Errors' => $validationResult['errors']
-                            ];
+                    $isEmptyRow = true;
+                    for ($i = 0; $i < 51; $i++) {
+                        if ($row[$i] != null) {
+                            $isEmptyRow = false;
                         }
-                    } else {
-                        $validationResult = $this->validate($emp_array, true);
-                        if ($validationResult['isValid'] == true) {
+                    }
+                    if ($isEmptyRow) {
+                        continue;
+                    }
+                    $emp_array = $this->prepareEmployeeData($row);
+                    $validationResult = $this->validate($emp_array);
+                    if ($validationResult['isValid'] == true) {
+                        if ($validationResult['isNew']) {
                             $user = $this->createUser($emp_array);
                             $this->createEmployee($user, $emp_array);
                         } else {
-                            $errors[] = "Validation failed for row $row_no";
-                            $failedRows[] = [
-                                'Row' => $row_no,
-                                'Data' => $emp_array,
-                                'Errors' => $validationResult['errors']
-                            ];
+                            $this->updateEmployee($emp_array);
                         }
+                    } else {
+                        $errors[] = "Validation failed for row $row_no";
+                        $failedRows[] = [
+                            'Row' => $row_no,
+                            'Data' => $emp_array,
+                            'Errors' => $validationResult['errors']
+                        ];
                     }
                 }
+                DB::commit();
                 if (count($failedRows) > 0) {
                     return $this->exportFailedRows($failedRows);
                 } else {
-                    return redirect()->back()->with('notification', ['success' => 1, 'msg' => ""]);
+                    return redirect()->back()->with('status',   [
+                        'success' => 1,
+                        'msg' => 'Success',
+                    ]);
                 }
             }
         } catch (\Exception $e) {
@@ -113,94 +112,44 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
     public function convertExcelDate($excelDate)
     {
-        if (empty($excelDate)) {
-            return null;
-        }
+        try {
+            if (empty($excelDate)) {
+                return null;
+            }
 
-        $unixDate = ($excelDate - 25569) * 86400;
-        return gmdate("Y-m-d", $unixDate);
+            $unixDate = ($excelDate - 25569) * 86400;
+            return gmdate("Y-m-d", $unixDate);
+        } catch (\Exception $e) {
+
+            return $excelDate;
+        }
     }
 
-    private function validate($emp_array, $is_new = false)
+    private function validate($emp_array)
     {
-
-        if ($is_new) {
-            $rules = [
-                'emp_number' => 'nullable|unique:users,emp_number',
-                'first_name' => 'required|string|max:255',
-                //midname
-                'employee_type' => 'required|in:worker,employee,manager',
-                'proof_end_date' =>   'nullable|date',
-                'passport_end_date' => 'nullable|date',
-                'last_name' => 'nullable|string|max:255',
-                'email' => 'nullable|email|unique:users,email',
-                'dob' => 'nullable|date',
-                'gender' => 'nullable|in:male,female',
-                'marital_status' => 'nullable|string',
-                'blood_group' => 'nullable|string',
-                'contact_number' => 'nullable|string|regex:/^5?0?\d{8}$/',
-                'alt_number' => 'nullable|string',
-                'family_number' => 'nullable|string',
-                'current_address' => 'nullable|string|max:500',
-                'permanent_address' => 'nullable|string|max:500',
-                'id_proof_name' => 'required|string',
-                'id_proof_number' => 'required|string|unique:users,id_proof_number',
-                'passport_number' => 'nullable|string|unique:essentials_official_documents,number',
-                'bank_details' => 'nullable',  // Assuming already json_encoded
-                'assigned_to' => 'nullable|exists:sales_projects,id',
-                'essentials_department_id' => 'nullable|exists:essentials_departments,id',
-                'admission_date' => 'nullable|date',
-                'profession_id' => 'nullable|exists:essentials_professions,id',
-                'border_no' => 'nullable|string|unique:users,border_no',
-                'IBN_code' => 'nullable|string|unique:essentials_official_documents,number',
-                'contact_location_id' => 'nullable|exists:business_locations',
-                'nationality_id' => 'nullable|exists:essentials_countries,id',
-                'contract_number' => 'nullable|string',
-                'contract_start_date' => 'nullable|date',
-                'contract_end_date' => 'nullable|date',
-                'contract_duration' => 'nullable|numeric',
-                'probation_period' => 'nullable|numeric',
-                'is_renewable' => 'nullable|boolean',
-                'contract_type_id' => 'nullable|exists:contract_types,id',
-                'essentials_salary' => 'nullable|numeric',
-                'total_salary' => 'nullable|numeric',
-                'company_id' => 'required|exists:companies,id',
-                'english_name' => 'nullable|string|max:255',
-                'housing_allowance_id' => 'nullable|exists:essentials_allowances_and_deductions,id',
-                'transportation_allowance_id' => 'nullable|exists:essentials_allowances_and_deductions,id',
-                'other_id' => 'nullable|exists:essentials_allowances_and_deductions,id',
-            ];
-            $validator = Validator::make($emp_array, $rules);
-            if ($validator->fails()) {
-
-                $errors = $validator->errors()->all();
-                return [
-                    'isValid' => false,
-                    'errors' => $errors
-                ];
-            }
-            return ['isValid' => true];
-        } else {
-            $errors = [];
-
-
-
-
-            $existingUser = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
-            if (isset($emp_array['IBN_code']) && $emp_array['IBN_code'] != null) {
-                $existing = json_decode($existingUser->bank_details)->bank_code ?? null;
-                if ($existing == null || $existing != $emp_array['IBN_code']) {
-                    $notUnique = EssentialsOfficialDocument::where('type', 'Iban')->where('number', $emp_array['IBN_code'])->first() != null;
+        $errors = [];
+        $proofNumberFound = true;
+        $proofNameFound = true;
+        if (!isset($emp_array['id_proof_number']) || $emp_array['id_proof_number'] == null) {
+            $errors[] = __('essentials::lang.id_proof_number_is_required');
+            $proofNumberFound = false;
+        }
+        if (!isset($emp_array['id_proof_name']) || $emp_array['id_proof_name'] == null) {
+            $errors[] = __('essentials::lang.id_proof_name_is_required');
+            $proofNameFound = false;
+        }
+        $isNew = User::where('id_proof_number', $emp_array['id_proof_number'])->first() == null;
+        if ($proofNumberFound && $proofNameFound) {
+            if ($isNew) {
+                if (isset($emp_array['IBN_code']) && $emp_array['IBN_code'] != null) {
+                    $notUnique = EssentialsOfficialDocument::where('type', 'Iban')->where('number', $emp_array['IBN_code'])->where('is_active', 1)->first() != null;
 
                     if ($notUnique) {
                         $errors[] = __('essentials::lang.iban_not_nuique');
                     }
                 }
-            }
 
-            if (isset($emp_array['border_no']) && $emp_array['border_no'] != null) {
-                $existing =  $existingUser->border_no ?? null;
-                if ($existing == null || $existing  != $emp_array['border_no']) {
+                if (isset($emp_array['border_no']) && $emp_array['border_no'] != null) {
                     $notUnique = User::where('border_no', $emp_array['border_no'])->first() != null;
 
                     if ($notUnique) {
@@ -208,37 +157,163 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $errors[] = __('essentials::lang.border_no_not_nuique');
                     }
                 }
-            }
-            if (isset($emp_array['passport_number']) && $emp_array['passport_number'] != null) {
-                $existing = EssentialsOfficialDocument::where('type', 'passport')->where('employee_id', $existingUser->id)->where('is_active', 1)->first()->number ?? null;
-                if ($existing == null || $existing != $emp_array['passport_number']) {
-                    $notUnique = EssentialsOfficialDocument::where('type', 'passport')->where('number', $emp_array['passport_number'])->first() != null;
+                if (isset($emp_array['passport_number']) && $emp_array['passport_number'] != null) {
+                    $notUnique = EssentialsOfficialDocument::where('type', 'passport')->where('number', $emp_array['passport_number'])->where('is_active', 1)->first() != null;
 
                     if ($notUnique) {
                         $errors[] = __('essentials::lang.passport_number_not_nuique');
                     }
                 }
-            }
-            if (isset($emp_array['email']) && $emp_array['email'] != null) {
-                $existing =  $existingUser->email ?? null;
-                if ($existing == null || $existing  != $emp_array['email']) {
+                if (isset($emp_array['email']) && $emp_array['email'] != null) {
                     $notUnique = User::where('email', $emp_array['email'])->first() != null;
 
                     if ($notUnique) {
                         $errors[] = __('essentials::lang.email_not_nuique');
                     }
                 }
-            }
-            if (isset($emp_array['emp_number']) && $emp_array['emp_number'] != null) {
-                $existing =  $existingUser->emp_number ?? null;
-                if ($existing == null || $existing  != $emp_array['emp_number']) {
+                if (isset($emp_array['emp_number']) && $emp_array['emp_number'] != null) {
                     $notUnique = User::where('emp_number', $emp_array['emp_number'])->first() != null;
 
                     if ($notUnique) {
                         $errors[] = __('essentials::lang.emp_number_not_nuique');
                     }
                 }
-            }
+
+                if (isset($emp_array['profession_id']) && $emp_array['profession_id'] != null) {
+                    $doesntExiste = EssentialsProfession::where('id', $emp_array['profession_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.profession_id_not_found');
+                    }
+                }
+                if (isset($emp_array['assigned_to']) && $emp_array['assigned_to'] != null) {
+                    $doesntExiste = SalesProject::where('id', $emp_array['assigned_to'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.sales_project_id_not_found');
+                    }
+                }
+                if (isset($emp_array['essentials_department_id']) && $emp_array['essentials_department_id'] != null) {
+                    $doesntExiste = EssentialsDepartment::where('id', $emp_array['essentials_department_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.department_id_not_found');
+                    }
+                }
+                if (isset($emp_array['contact_location_id']) && $emp_array['contact_location_id'] != null) {
+                    $doesntExiste = BusinessLocation::where('id', $emp_array['contact_location_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.contact_location_id_not_found');
+                    }
+                }
+                if (isset($emp_array['nationality_id']) && $emp_array['nationality_id'] != null) {
+                    $doesntExiste = EssentialsCountry::where('id', $emp_array['nationality_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.nationality_id_not_found');
+                    }
+                }
+                if (isset($emp_array['other_id']) && $emp_array['other_id'] != null) {
+                    $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['other_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.other_id_not_found');
+                    }
+                }
+                if (isset($emp_array['transportation_allowance_id']) && $emp_array['transportation_allowance_id'] != null) {
+                    $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['transportation_allowance_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.transportation_allowance_id_not_found');
+                    }
+                }
+                if (isset($emp_array['housing_allowance_id']) && $emp_array['housing_allowance_id'] != null) {
+                    $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['housing_allowance_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.housing_allowance_id_not_found');
+                    }
+                }
+                if (!(isset($emp_array['company_id'])) && $emp_array['company_id'] == null) {
+                    $errors[] = __('essentials::lang.company_is_required');
+                }
+                if (isset($emp_array['company_id']) && $emp_array['company_id'] != null) {
+                    $doesntExiste = Company::where('id', $emp_array['company_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.company_id_not_found');
+                    }
+                }
+                if (isset($emp_array['contract_type_id']) && $emp_array['contract_type_id'] != null) {
+                    $doesntExiste = EssentialsContractType::where('id', $emp_array['contract_type_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.contract_type_id_not_found');
+                    }
+                }
+                if (!(isset($emp_array['first_name'])) || $emp_array['first_name'] == null) {
+                    $errors[] = __('essentials::lang.first_name_is_required');
+                }
+                if (!(isset($emp_array['employee_type'])) || $emp_array['employee_type'] == null) {
+                    $errors[] = __('essentials::lang.employee_type_is_required');
+                }
+
+                if (isset($emp_array['employee_type']) && $emp_array['employee_type'] != null) {
+                    if ($emp_array['employee_type'] != 'worker' && $emp_array['employee_type'] != 'employee' && $emp_array['employee_type'] != 'manager') {
+                        $errors[] = __('essentials::lang.employee_type_not_defined');
+                    }
+                }
+                if (isset($emp_array['gender']) && $emp_array['gender'] != null) {
+                    if ($emp_array['gender'] != 'male' && $emp_array['gender'] != 'female') {
+                        $errors[] = __('essentials::lang.gender_not_defined');
+                    }
+                }
+            } else {
+
+                $existingUser = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
+                if (isset($emp_array['IBN_code']) && $emp_array['IBN_code'] != null) {
+                    $existing = json_decode($existingUser->bank_details)->bank_code ?? null;
+                    if ($existing == null || $existing != $emp_array['IBN_code']) {
+                        $notUnique = EssentialsOfficialDocument::where('type', 'Iban')->where('number', $emp_array['IBN_code'])->where('is_active', 1)->first() != null;
+
+                        if ($notUnique) {
+                            $errors[] = __('essentials::lang.iban_not_nuique');
+                        }
+                    }
+                }
+
+                if (isset($emp_array['border_no']) && $emp_array['border_no'] != null) {
+                    $existing =  $existingUser->border_no ?? null;
+                    if ($existing == null || $existing  != $emp_array['border_no']) {
+                        $notUnique = User::where('border_no', $emp_array['border_no'])->first() != null;
+
+                        if ($notUnique) {
+
+                            $errors[] = __('essentials::lang.border_no_not_nuique');
+                        }
+                    }
+                }
+                if (isset($emp_array['passport_number']) && $emp_array['passport_number'] != null) {
+                    $existing = EssentialsOfficialDocument::where('type', 'passport')->where('employee_id', $existingUser->id)->where('is_active', 1)->first()->number ?? null;
+                    if ($existing == null || $existing != $emp_array['passport_number']) {
+                        $notUnique = EssentialsOfficialDocument::where('type', 'passport')->where('number', $emp_array['passport_number'])->where('is_active', 1)->first() != null;
+
+                        if ($notUnique) {
+                            $errors[] = __('essentials::lang.passport_number_not_nuique');
+                        }
+                    }
+                }
+                if (isset($emp_array['email']) && $emp_array['email'] != null) {
+                    $existing =  $existingUser->email ?? null;
+                    if ($existing == null || $existing  != $emp_array['email']) {
+                        $notUnique = User::where('email', $emp_array['email'])->first() != null;
+
+                        if ($notUnique) {
+                            $errors[] = __('essentials::lang.email_not_nuique');
+                        }
+                    }
+                }
+                if (isset($emp_array['emp_number']) && $emp_array['emp_number'] != null) {
+                    $existing =  $existingUser->emp_number ?? null;
+                    if ($existing == null || $existing  != $emp_array['emp_number']) {
+                        $notUnique = User::where('emp_number', $emp_array['emp_number'])->first() != null;
+
+                        if ($notUnique) {
+                            $errors[] = __('essentials::lang.emp_number_not_nuique');
+                        }
+                    }
+                }
 
 
 
@@ -251,82 +326,75 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
 
 
-            if (isset($emp_array['profession_id']) && $emp_array['profession_id'] != null) {
-                $doesntExiste = EssentialsProfession::where('id', $emp_array['profession_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.profession_id_not_found');
+                if (isset($emp_array['profession_id']) && $emp_array['profession_id'] != null) {
+                    $doesntExiste = EssentialsProfession::where('id', $emp_array['profession_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.profession_id_not_found');
+                    }
+                }
+                if (isset($emp_array['assigned_to']) && $emp_array['assigned_to'] != null) {
+                    $doesntExiste = SalesProject::where('id', $emp_array['assigned_to'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.sales_project_id_not_found');
+                    }
+                }
+                if (isset($emp_array['essentials_department_id']) && $emp_array['essentials_department_id'] != null) {
+                    $doesntExiste = EssentialsDepartment::where('id', $emp_array['essentials_department_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.department_id_not_found');
+                    }
+                }
+                if (isset($emp_array['contact_location_id']) && $emp_array['contact_location_id'] != null) {
+                    $doesntExiste = BusinessLocation::where('id', $emp_array['contact_location_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.contact_location_id_not_found');
+                    }
+                }
+                if (isset($emp_array['nationality_id']) && $emp_array['nationality_id'] != null) {
+                    $doesntExiste = EssentialsCountry::where('id', $emp_array['nationality_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.nationality_id_not_found');
+                    }
+                }
+                if (isset($emp_array['other_id']) && $emp_array['other_id'] != null) {
+                    $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['other_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.other_id_not_found');
+                    }
+                }
+                if (isset($emp_array['transportation_allowance_id']) && $emp_array['transportation_allowance_id'] != null) {
+                    $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['transportation_allowance_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.transportation_allowance_id_not_found');
+                    }
+                }
+                if (isset($emp_array['housing_allowance_id']) && $emp_array['housing_allowance_id'] != null) {
+                    $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['housing_allowance_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.housing_allowance_id_not_found');
+                    }
+                }
+                if (isset($emp_array['company_id']) && $emp_array['company_id'] != null) {
+                    $doesntExiste = Company::where('id', $emp_array['company_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.company_id_not_found');
+                    }
+                }
+                if (isset($emp_array['contract_type_id']) && $emp_array['contract_type_id'] != null) {
+                    $doesntExiste = EssentialsContractType::where('id', $emp_array['contract_type_id'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.contract_type_id_not_found');
+                    }
                 }
             }
-            if (isset($emp_array['assigned_to']) && $emp_array['assigned_to'] != null) {
-                $doesntExiste = SalesProject::where('id', $emp_array['assigned_to'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.sales_project_id_not_found');
-                }
-            }
-            if (isset($emp_array['essentials_department_id']) && $emp_array['essentials_department_id'] != null) {
-                $doesntExiste = EssentialsDepartment::where('id', $emp_array['essentials_department_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.department_id_not_found');
-                }
-            }
-            if (isset($emp_array['contact_location_id']) && $emp_array['contact_location_id'] != null) {
-                $doesntExiste = BusinessLocation::where('id', $emp_array['contact_location_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.contact_location_id_not_found');
-                }
-            }
-            if (isset($emp_array['nationality_id']) && $emp_array['nationality_id'] != null) {
-                $doesntExiste = EssentialsCountry::where('id', $emp_array['nationality_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.nationality_id_not_found');
-                }
-            }
-            if (isset($emp_array['other_id']) && $emp_array['other_id'] != null) {
-                $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['other_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.other_id_not_found');
-                }
-            }
-            if (isset($emp_array['transportation_allowance_id']) && $emp_array['transportation_allowance_id'] != null) {
-                $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['transportation_allowance_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.transportation_allowance_id_not_found');
-                }
-            }
-            if (isset($emp_array['housing_allowance_id']) && $emp_array['housing_allowance_id'] != null) {
-                $doesntExiste = EssentialsAllowanceAndDeduction::where('id', $emp_array['housing_allowance_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.housing_allowance_id_not_found');
-                }
-            }
-            if (isset($emp_array['company_id']) && $emp_array['company_id'] != null) {
-                $doesntExiste = Company::where('id', $emp_array['company_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.company_id_not_found');
-                }
-            }
-            if (isset($emp_array['contract_type_id']) && $emp_array['contract_type_id'] != null) {
-                $doesntExiste = EssentialsContractType::where('id', $emp_array['contract_type_id'])->first() == null;
-                if ($doesntExiste) {
-                    $errors[] = __('essentials::lang.contract_type_id_not_found');
-                }
-            }
-
-
-
-
-
-
-
-
-            if (!empty($errors)) {
-                return [
-                    'isValid' => false,
-                    'errors' => $errors
-                ];
-            }
-            return ['isValid' => true];
         }
+        if (!empty($errors)) {
+            return [
+                'isValid' => false,
+                'errors' => $errors
+            ];
+        }
+        return ['isValid' => true, 'isNew' => $isNew];
     }
 
     private function prepareEmployeeData($row)
@@ -354,6 +422,10 @@ class EssentialsEmployeeUpdateImportController extends Controller
             'id_proof_number_expiration_date' => $row[17],
             'passport_number' => $row[18],
             'passport_expiration_date' => $row[19],
+            'account_holder_name' => $row[20],
+            'account_number' => $row[21],
+            'bank_name' => $row[22],
+            'bank_code' => $row[23],
             'bank_details' => json_encode([
                 'account_holder_name' => $row[20],
                 'account_number' => $row[21],
@@ -378,12 +450,28 @@ class EssentialsEmployeeUpdateImportController extends Controller
             'is_renewable' => $row[39],
             'contract_type_id' => $row[40],
             'essentials_salary' => $row[41],
+            'housing_allowance_id' => $row[42],
+            'housing_allowance_amount' => $row[43],
+            'transportation_allowance_id' => $row[44],
+            'transportation_allowance_amount' => $row[45],
+            'other_id' => $row[46],
+            'other_amount' => $row[47],
             'allowance_data' =>
             [
                 'housing_allowance' => json_encode(['id' => $row[42], 'amount' => $row[43]]),
                 'transportation_allowance' => json_encode(['id' => $row[44], 'amount' => $row[45]]),
                 'other' => json_encode(['id' => $row[46], 'amount' => $row[47]]),
             ],
+
+            // 'allowance_data' => [
+            //     'housing_allowance_id' => $row[42],
+            //     'housing_allowance_amount' => $row[43],
+            //     'transportation_allowance_id' => $row[44],
+            //     'transportation_allowance_amount' => $row[45],
+            //     'other_id' => $row[46],
+            //     'other_amount' => $row[47],
+            // ],
+
             // 'housing_allowance_id' => $row[42],
             // 'housing_allowance_amount' => $row[43],
             // 'transportation_allowance_id' => $row[44],
@@ -397,23 +485,27 @@ class EssentialsEmployeeUpdateImportController extends Controller
     }
 
     // update employee 
-    private function updateEmployee($existingEmployee, $emp_array)
+    private function updateEmployee($emp_array)
     {
-        // $emp_array['id_proof_number'] = null;
+        $existingEmployee = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
         $filtered_array = array_filter($emp_array, function ($value) {
             return !is_null($value);
         });
-        $this->updateUser($filtered_array, $existingEmployee);
-        $this->updateContract($filtered_array, $existingEmployee);
-        $this->updateAppointmet($filtered_array, $existingEmployee);
-        $this->updateAdmission($filtered_array, $existingEmployee);
-        $this->createOrUpdateAllowanceAndDeduction($filtered_array, $existingEmployee);
-        $this->updateOfficalDocument($filtered_array, $existingEmployee);
-        $this->updateQualification($filtered_array, $existingEmployee);
+        try {
 
 
-        // $existingEmployee->update($filtered_array);
+            $this->updateUser($filtered_array, $existingEmployee);
+            $this->updateContract($filtered_array, $existingEmployee);
+            $this->updateAppointmet($filtered_array, $existingEmployee);
+            $this->updateAdmission($filtered_array, $existingEmployee);
+            $this->createOrUpdateAllowanceAndDeduction($filtered_array, $existingEmployee);
+            $this->updateOfficalDocument($filtered_array, $existingEmployee);
+            $this->updateQualification($filtered_array, $existingEmployee);
+        } catch (\Exception $e) {
 
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return redirect()->route('import-employees')->with('notification', ['success' => 0, 'msg' => $e->getMessage()]);
+        }
     }
 
     private function updateQualification($formated_data, $existingEmployee)
@@ -494,6 +586,41 @@ class EssentialsEmployeeUpdateImportController extends Controller
             }
         }
     }
+
+    // private function createOrUpdateAllowanceAndDeduction($formated_data, $existingEmployee)
+    // {
+
+    //     $allowanceKeys = [
+    //         'housing_allowance_id' => 'housing_allowance_amount',
+    //         'transportation_allowance_id' => 'transportation_allowance_amount',
+    //         'other_id' => 'other_amount',
+    //     ];
+
+
+    //     foreach ($allowanceKeys as $idKey => $amountKey) {
+    //         if (isset($formated_data[$idKey], $formated_data[$amountKey])) {
+    //             $allowanceId = $formated_data[$idKey];
+    //             $allowanceAmount = $formated_data[$amountKey];
+
+    //             if ($allowanceId !== null && $allowanceAmount !== null) {
+    //                 try {
+    //                     EssentialsUserAllowancesAndDeduction::updateOrCreate(
+    //                         [
+    //                             'user_id' => $existingEmployee->id,
+    //                             'allowance_deduction_id' => (int)$allowanceId,
+    //                         ],
+    //                         [
+    //                             'amount' => $allowanceAmount,
+    //                         ]
+    //                     );
+    //                 } catch (\Exception $e) {
+    //                     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    //                     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     private function createOrUpdateAllowanceAndDeduction($formated_data, $existingEmployee)
     {
