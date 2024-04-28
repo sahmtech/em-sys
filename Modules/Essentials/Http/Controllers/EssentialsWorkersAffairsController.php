@@ -717,7 +717,7 @@ class EssentialsWorkersAffairsController extends Controller
         $qualification = EssentialsEmployeesQualification::where('employee_id', $id)->first();
         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
         $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
-        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
+        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)->where('is_active', 1)
             ->first();
         $officalDocuments = $user->OfficialDocument;
         return view('essentials::employee_affairs.workers_affairs.edit')
@@ -854,7 +854,7 @@ class EssentialsWorkersAffairsController extends Controller
                     $input['number'] = $bankCode;
                     $input['file_path'] =  $path;
 
-                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->where('is_active', 1)->first();
                     if ($Iban_doc) {
                         $Iban_doc->update([$input]);
                     } else {
@@ -884,7 +884,7 @@ class EssentialsWorkersAffairsController extends Controller
                     $user_data['bank_details'] = json_encode($bank_details);
 
 
-                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->where('is_active', 1)->first();
                     $bankCode = $bank_details['bank_code'];
                     $input['number'] = $bankCode;
                     $input['file_path'] =  $path;

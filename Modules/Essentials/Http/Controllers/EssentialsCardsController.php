@@ -1963,7 +1963,7 @@ class EssentialsCardsController extends Controller
                 'doc.employee_id',
                 '=',
                 'users.id'
-            )
+            )->where('doc.is_active', 1)
             ->select(
                 'doc.id',
                 'users.border_no as border_no',

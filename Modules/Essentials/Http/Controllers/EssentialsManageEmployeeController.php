@@ -1620,7 +1620,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $qualification = EssentialsEmployeesQualification::where('employee_id', $id)->first();
 
-        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
+        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)->where('is_active', 1)
             ->first();
         $officalDocuments = $user->OfficialDocument;
 
@@ -1747,7 +1747,7 @@ class EssentialsManageEmployeeController extends Controller
                         'file_path' => $path,
                     ];
 
-                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('is_active', 1)->where('type', 'Iban')->first();
 
 
                     if ($Iban_doc) {
@@ -1771,7 +1771,7 @@ class EssentialsManageEmployeeController extends Controller
                         'file_path' => $request->existing_iban_file,
                     ];
 
-                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
+                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('is_active', 1)->where('type', 'Iban')->first();
 
 
                     if ($Iban_doc) {

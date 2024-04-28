@@ -1026,8 +1026,8 @@ class RequestUtil extends Util
             'worker_full_name' => $request->related_to_user->first_name . ' ' . $request->related_to_user->last_name,
             'id_proof_number' => $request->related_to_user->id_proof_number,
             'contract_end_date' => optional(DB::table('essentials_employees_contracts')->where('employee_id', $request->related_to_user->id)->first())->contract_end_date,
-            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->first())->expiration_date,
-            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->first())->number,
+            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->where('is_active', 1)->first())->expiration_date,
+            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->where('is_active', 1)->first())->number,
 
         ];
 
@@ -1210,8 +1210,8 @@ class RequestUtil extends Util
             'worker_full_name' => $request->related_to_user->first_name . ' ' . $request->related_to_user->last_name,
             'id_proof_number' => $request->related_to_user->id_proof_number,
             'contract_end_date' => optional(DB::table('essentials_employees_contracts')->where('employee_id', $request->related_to_user->id)->first())->contract_end_date,
-            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->first())->expiration_date,
-            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->first())->number,
+            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->where('is_active', 1)->first())->expiration_date,
+            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->where('is_active', 1)->first())->number,
 
         ];
 
