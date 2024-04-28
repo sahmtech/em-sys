@@ -410,7 +410,7 @@ class User extends Authenticatable
 
     public function OfficialDocument()
     {
-        return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id');
+        return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id')->where('is_active', 1);
     }
 
 

@@ -2505,6 +2505,7 @@ class DataController extends Controller
                 $id = $data['model_instance']['id'];
                 $existing_doc = EssentialsOfficialDocument::where('number', request()->input('id_proof_number'))
                     ->where('type', 'national_id')
+                    ->where('is_active', 1)
                     ->where('employee_id', '=', $id)
                     ->first();
                 if (!$existing_doc) {
@@ -2527,6 +2528,7 @@ class DataController extends Controller
                 $id = $data['model_instance']['id'];
                 $existing_doc = EssentialsOfficialDocument::where('number', request()->input('id_proof_number'))
                     ->where('type', 'residence_permit')
+                    ->where('is_active', 1)
                     ->where('employee_id', '=', $id)
                     ->first();
                 if (!$existing_doc) {

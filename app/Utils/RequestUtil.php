@@ -618,7 +618,7 @@ class RequestUtil extends Util
             }
 
             if ($success) {
-                // $this->makeToDo($Request, $business_id);
+                $this->makeToDo($Request, $business_id);
                 $output = [
                     'success' => 1,
                     'msg' => __('messages.added_success'),
@@ -691,12 +691,21 @@ class RequestUtil extends Util
         $process = RequestProcess::where('request_id', $request->id)->latest()->first();
         $users = [];
         if ($process->superior_department_id) {
-            $users = User::where('essentials_department_id', $process->superior_department_id)->get();
+            $viewRequestPermission = $this->getViewRequestsPermission($process->superior_department_id);
+            if ($viewRequestPermission) {
+                $users = User::whereHas('permissions', function ($query) use ($viewRequestPermission) {
+                    $query->where('name', $viewRequestPermission);
+                })->where('essentials_department_id', $process->superior_department_id)->get();
+            }
         } else {
             $procedure = $process->procedure_id;
             $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
-
-            $users = User::where('essentials_department_id', $department_id)->get();
+            $viewRequestPermission = $this->getViewRequestsPermission($department_id);
+            if ($viewRequestPermission) {
+                $users = User::whereHas('permissions', function ($query) use ($viewRequestPermission) {
+                    $query->where('name', $viewRequestPermission);
+                })->where('essentials_department_id', $department_id)->get();
+            }
         }
 
 
@@ -804,7 +813,7 @@ class RequestUtil extends Util
                     }
                     $business_id = request()->session()->get('user.business_id');
                     $userRequest = UserRequest::where('id', $requestProcess->request_id)->first();
-                    //  $this->makeToDo($userRequest, $business_id);
+                    $this->makeToDo($userRequest, $business_id);
                 }
             }
             if ($request->status  == 'rejected') {
@@ -900,7 +909,7 @@ class RequestUtil extends Util
                 $business_id = request()->session()->get('user.business_id');
 
                 $userRequest = UserRequest::where('id',  $process->request_id)->first();
-                //  $this->makeToDo($userRequest, $business_id);
+                $this->makeToDo($userRequest, $business_id);
             }
 
 
@@ -1017,8 +1026,8 @@ class RequestUtil extends Util
             'worker_full_name' => $request->related_to_user->first_name . ' ' . $request->related_to_user->last_name,
             'id_proof_number' => $request->related_to_user->id_proof_number,
             'contract_end_date' => optional(DB::table('essentials_employees_contracts')->where('employee_id', $request->related_to_user->id)->first())->contract_end_date,
-            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->first())->expiration_date,
-            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->first())->number,
+            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->where('is_active', 1)->first())->expiration_date,
+            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->where('is_active', 1)->first())->number,
 
         ];
 
@@ -1201,8 +1210,8 @@ class RequestUtil extends Util
             'worker_full_name' => $request->related_to_user->first_name . ' ' . $request->related_to_user->last_name,
             'id_proof_number' => $request->related_to_user->id_proof_number,
             'contract_end_date' => optional(DB::table('essentials_employees_contracts')->where('employee_id', $request->related_to_user->id)->first())->contract_end_date,
-            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->first())->expiration_date,
-            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->first())->number,
+            'eqama_end_date' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'residence_permit')->where('is_active', 1)->first())->expiration_date,
+            'passport_number' => optional(DB::table('essentials_official_documents')->where('employee_id', $request->related_to_user->id)->where('type', 'passport')->where('is_active', 1)->first())->number,
 
         ];
 
@@ -1535,8 +1544,8 @@ class RequestUtil extends Util
         return response()->json(['success' => true]);
     }
 
-
-    public function test()  //test for requests process escalations
+    //test for requests process escalations
+    public function test()
     {
 
         $requests = RequestProcess::join('wk_procedures', 'request_processes.procedure_id', '=', 'wk_procedures.id')
@@ -1563,8 +1572,8 @@ class RequestUtil extends Util
         }
         return 'success';
     }
-
-    public function viewRequestsOperations() //only for workcard operations
+    //only for workcard operations
+    public function viewRequestsOperations()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
@@ -1744,5 +1753,125 @@ class RequestUtil extends Util
         }
 
         return $output;
+    }
+
+
+    // public function getViewRequestsPermission($department)
+    // {
+    //     $accountingDepartmentIds = EssentialsDepartment::where(function ($query) {
+    //         $query->where('name', 'like', '%حاسب%')
+    //             ->orWhere('name', 'like', '%مالي%');
+    //     })
+    //         ->pluck('id')->toArray();
+
+    //     $followupDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%متابعة%')
+    //         ->pluck('id')->toArray();
+
+    //     $workCardDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%حكومية%')
+    //         ->pluck('id')->toArray();
+
+    //     $hrDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')
+    //         ->pluck('id')->toArray();
+    //     $employeeAffairsDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
+    //         ->pluck('id')->toArray();
+    //     $InsuranceDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%تأمين%')
+    //         ->pluck('id')->toArray();
+    //     $payrollDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%رواتب%')
+    //         ->pluck('id')->toArray();
+    //     $HtrDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
+    //         ->pluck('id')->toArray();
+    //     $irDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%دولي%')
+    //         ->pluck('id')->toArray();
+    //     $legalDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%قانوني%')
+    //         ->pluck('id')->toArray();
+    //     $salesDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%مبيعات%')
+    //         ->pluck('id')->toArray();
+    //     $CeoDepartmentIds = EssentialsDepartment::where(function ($query) {
+    //         $query->where('name', 'like', '%تنفيذ%');
+    //     })
+    //         ->pluck('id')->toArray();
+
+    //     $generalDepartmentIds = EssentialsDepartment::where(function ($query) {
+    //         $query->Where('name', 'like', '%مجلس%')
+    //             ->orWhere('name', 'like', '%عليا%');
+    //     })
+    //         ->pluck('id')->toArray();
+
+
+    //     if (in_array($department, $followupDepartmentIds)) {
+    //         $viewRequestPermission = 'followup.view_followup_requests';
+    //     }
+    //     if (in_array($department, $accountingDepartmentIds)) {
+    //         $viewRequestPermission = 'accounting.view_accounting_requests';
+    //     }
+    //     if (in_array($department, $workCardDepartmentIds)) {
+    //         $viewRequestPermission = 'essentials.view_workcards_request';
+    //     }
+    //     if (in_array($department, $hrDepartmentIds)) {
+    //         $viewRequestPermission = 'essentials.view_HR_requests';
+    //     }
+    //     if (in_array($department, $employeeAffairsDepartmentIds)) {
+    //         $viewRequestPermission = 'essentials.view_employees_affairs_requests';
+    //     }
+
+    //     if (in_array($department, $generalDepartmentIds)) {
+    //         $viewRequestPermission = 'generalmanagement.view_president_requests';
+    //     }
+    //     if (in_array($department, $CeoDepartmentIds)) {
+    //         $viewRequestPermission = 'ceomanagment.view_CEO_requests';
+    //     }
+    //     if (in_array($department, $salesDepartmentIds)) {
+    //         $viewRequestPermission = 'sales.view_sales_requests';
+    //     }
+    //     if (in_array($department, $legalDepartmentIds)) {
+    //         $viewRequestPermission = 'legalaffairs.view_legalaffairs_requests';
+    //     }
+    //     if (in_array($department, $irDepartmentIds)) {
+    //         $viewRequestPermission = 'internationalrelations.view_ir_requests';
+    //     }
+    //     if (in_array($department, $HtrDepartmentIds)) {
+    //         $viewRequestPermission = 'housingmovements.crud_htr_requests';
+    //     }
+    //     if (in_array($department, $payrollDepartmentIds)) {
+    //         $viewRequestPermission = 'essentials.view_payroll_requests';
+    //     }
+    //     if (in_array($department, $InsuranceDepartmentIds)) {
+    //         $viewRequestPermission = 'essentials.crud_insurance_requests';
+    //     }
+
+    //     return  $viewRequestPermission;
+    // }
+
+    public function getViewRequestsPermission($department)
+    {
+        $departments = [
+            'followup' => ['names' => ['%متابعة%'], 'permission' => 'followup.view_followup_requests'],
+            'accounting' => ['names' => ['%حاسب%', '%مالي%'], 'permission' => 'accounting.view_accounting_requests'],
+            'workcard' => ['names' => ['%حكومية%'], 'permission' => 'essentials.view_workcards_request'],
+            'hr' => ['names' => ['%بشرية%'], 'permission' => 'essentials.view_HR_requests'],
+            'employee_affairs' => ['names' => ['%موظف%'], 'permission' => 'essentials.view_employees_affairs_requests'],
+            'insurance' => ['names' => ['%تأمين%'], 'permission' => 'essentials.crud_insurance_requests'],
+            'payroll' => ['names' => ['%رواتب%'], 'permission' => 'essentials.view_payroll_requests'],
+            'housing' => ['names' => ['%سكن%'], 'permission' => 'housingmovements.crud_htr_requests'],
+            'international_relations' => ['names' => ['%دولي%'], 'permission' => 'internationalrelations.view_ir_requests'],
+            'legal' => ['names' => ['%قانوني%'], 'permission' => 'legalaffairs.view_legalaffairs_requests'],
+            'sales' => ['names' => ['%مبيعات%'], 'permission' => 'sales.view_sales_requests'],
+            'ceo' => ['names' => ['%تنفيذ%'], 'permission' => 'ceomanagment.view_CEO_requests'],
+            'general' => ['names' => ['%مجلس%', '%عليا%'], 'permission' => 'generalmanagement.view_president_requests']
+        ];
+
+        foreach ($departments as $dept => $info) {
+            $deptIds = EssentialsDepartment::where(function ($query) use ($info) {
+                foreach ($info['names'] as $name) {
+                    $query->orWhere('name', 'like', $name);
+                }
+            })->pluck('id')->toArray();
+
+            if (in_array($department, $deptIds)) {
+                return $info['permission'];
+            }
+        }
+
+        return null;
     }
 }
