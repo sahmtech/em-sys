@@ -208,49 +208,86 @@ include_once 'install_r.php';
 //     }
 // });
 
-Route::get('/fix_emp', function () {
-    DB::beginTransaction();
-    try {
+// Route::get('/fix_emp', function () {
+//     DB::beginTransaction();
+//     try {
 
-        $companySequences = [];
+//         $companySequences = [];
 
-        $users = User::whereNot('company_id', 2)->get();
+//         $users = User::whereNot('company_id', 2)->get();
 
-        foreach ($users as $user) {
-            if (!isset($companySequences[$user->company_id])) {
-                $companySequences[$user->company_id] = 1;
-            } else {
-                $companySequences[$user->company_id]++;
-            }
+//         foreach ($users as $user) {
+//             if (!isset($companySequences[$user->company_id])) {
+//                 $companySequences[$user->company_id] = 1;
+//             } else {
+//                 $companySequences[$user->company_id]++;
+//             }
 
-            $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
-            $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
-            $newEmpNumber = $companyPart . $sequencePart;
+//             $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
+//             $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
+//             $newEmpNumber = $companyPart . $sequencePart;
 
-            $user->emp_number = $newEmpNumber;
-            $user->save();
+//             $user->emp_number = $newEmpNumber;
+//             $user->save();
+//         }
+//         DB::commit();
+//         return response()->json(['message' => 'Success',]);
+//     } catch (Exception $e) {
+//         DB::rollback();
+//         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+//     }
+// });
+
+// Route::get('/swap_k', function () {
+//     DB::beginTransaction();
+//     try {
+//         $tmp = User::where('emp_number', "0100001")->first();
+//         $kh = User::where('id', 5901)->first();
+//         User::where('emp_number', "0100001")->update(['emp_number' => $kh->emp_number]);
+//         User::where('id', 5901)->first()->update(['emp_number' => $tmp->emp_number]);
+//         DB::commit();
+//         return response()->json(['message' => 'Success',]);
+//     } catch (Exception $e) {
+//         DB::rollback();
+//         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+//     }
+// });
+
+
+Route::get('/getContractsByDate', function () {
+    $date = '2024-04-28';
+
+
+    DB::transaction(function () use ($date) {
+
+        $contracts = DB::table('essentials_employees_contracts as a')
+            ->select('a.id', 'a.employee_id', 'a.created_at')
+            ->whereDate('a.created_at', '=', $date)
+            ->whereExists(function ($query) use ($date) {
+                $query->select(DB::raw(1))
+                    ->from('essentials_employees_contracts as b')
+                    ->whereColumn('b.employee_id', 'a.employee_id')
+                    ->whereDate('b.updated_at', '=', $date)
+                    ->whereNotNull('b.updated_at');
+            })
+            ->get();
+
+        $Keep = $contracts->groupBy('employee_id')->map(function ($items) {
+            return $items->sortBy('created_at')->first()->id;
+        });
+        DB::table('essentials_employees_contracts')
+            ->whereIn('id', $Keep->all())
+            ->update(['is_active' => 1]);
+
+        if ($Keep->isNotEmpty()) {
+            DB::table('essentials_employees_contracts')
+                ->whereDate('created_at', '=', $date)
+                ->whereNotIn('id', $Keep->all())
+                ->delete();
         }
-        DB::commit();
-        return response()->json(['message' => 'Success',]);
-    } catch (Exception $e) {
-        DB::rollback();
-        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
-    }
-});
+    });
 
-Route::get('/swap_k', function () {
-    DB::beginTransaction();
-    try {
-        $tmp = User::where('emp_number', "0100001")->first();
-        $kh = User::where('id', 5901)->first();
-        User::where('emp_number', "0100001")->update(['emp_number' => $kh->emp_number]);
-        User::where('id', 5901)->first()->update(['emp_number' => $tmp->emp_number]);
-        DB::commit();
-        return response()->json(['message' => 'Success',]);
-    } catch (Exception $e) {
-        DB::rollback();
-        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
-    }
+    return response()->json(['message' => 'success']);
 });
 
 
@@ -273,22 +310,22 @@ Route::get('/privacy-policy', function () {
     return view('privacy_policy');
 });
 
-Route::get('/userFromContact', function () {
-    $contacts = Contact::where('type', 'lead')->get();
-    foreach ($contacts as $contact) {
-        $temp = User::where('first_name', $contact->supplier_business_name)->first();
-        if (!($temp  && $temp->user_type == 'customer')) {
-            $userInfo['user_type'] = 'customer';
-            $userInfo['first_name'] = $contact->supplier_business_name;
-            $userInfo['allow_login'] = 0;
-            $userInfo['business_id'] =  1;
-            $userInfo['crm_contact_id'] =  $contact->id;
-            $user = User::create($userInfo);
-            // error_log($user);
-            // error_log("********************************");
-        }
-    }
-});
+// Route::get('/userFromContact', function () {
+//     $contacts = Contact::where('type', 'lead')->get();
+//     foreach ($contacts as $contact) {
+//         $temp = User::where('first_name', $contact->supplier_business_name)->first();
+//         if (!($temp  && $temp->user_type == 'customer')) {
+//             $userInfo['user_type'] = 'customer';
+//             $userInfo['first_name'] = $contact->supplier_business_name;
+//             $userInfo['allow_login'] = 0;
+//             $userInfo['business_id'] =  1;
+//             $userInfo['crm_contact_id'] =  $contact->id;
+//             $user = User::create($userInfo);
+//             // error_log($user);
+//             // error_log("********************************");
+//         }
+//     }
+// });
 
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
