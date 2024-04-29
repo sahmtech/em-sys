@@ -275,4 +275,41 @@ class EssentialsEmployeeContractController extends Controller
 
         return $output;
     }
+
+    public function getContractsByDate()
+    {
+        $date = '2024-04-28';
+
+
+        DB::transaction(function () use ($date) {
+
+            $contracts = DB::table('essentials_employees_contracts as a')
+                ->select('a.id', 'a.employee_id', 'a.created_at')
+                ->whereDate('a.created_at', '=', $date)
+                ->whereExists(function ($query) use ($date) {
+                    $query->select(DB::raw(1))
+                        ->from('essentials_employees_contracts as b')
+                        ->whereColumn('b.employee_id', 'a.employee_id')
+                        ->whereDate('b.updated_at', '=', $date)
+                        ->whereNotNull('b.updated_at');
+                })
+                ->get();
+
+            $Keep = $contracts->groupBy('employee_id')->map(function ($items) {
+                return $items->sortBy('created_at')->first()->id;
+            });
+            DB::table('essentials_employees_contracts')
+                ->whereIn('id', $Keep->all())
+                ->update(['is_active' => 1]);
+
+            if ($Keep->isNotEmpty()) {
+                DB::table('essentials_employees_contracts')
+                    ->whereDate('created_at', '=', $date)
+                    ->whereNotIn('id', $Keep->all())
+                    ->delete();
+            }
+        });
+
+        return response()->json(['message' => 'success']);
+    }
 }
