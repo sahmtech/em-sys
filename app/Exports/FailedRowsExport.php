@@ -13,7 +13,7 @@ class FailedRowsExport implements FromCollection, WithHeadings
     {
 
         $this->rows = array_map(function ($row) {
-            error_log(json_encode($row['Data']));
+            // error_log(json_encode($row['Data']));
             $data = $row['Data'];
 
             foreach ($data as $key => $value) {

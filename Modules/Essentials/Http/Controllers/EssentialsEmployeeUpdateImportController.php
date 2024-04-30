@@ -117,6 +117,13 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 return null;
             }
 
+
+            if (is_numeric($excelDate)) {
+                $excelDate = (int)$excelDate;
+            } else {
+                return $excelDate;
+            }
+
             $unixDate = ($excelDate - 25569) * 86400;
             return gmdate("Y-m-d", $unixDate);
         } catch (\Exception $e) {
@@ -124,6 +131,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
             return $excelDate;
         }
     }
+
 
     private function validate($emp_array)
     {
@@ -316,16 +324,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 }
 
 
-
-
-
-
-
-
-
-
-
-
                 if (isset($emp_array['profession_id']) && $emp_array['profession_id'] != null) {
                     $doesntExiste = EssentialsProfession::where('id', $emp_array['profession_id'])->first() == null;
                     if ($doesntExiste) {
@@ -463,24 +461,11 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 'other' => json_encode(['id' => $row[46], 'amount' => $row[47]]),
             ],
 
-            // 'allowance_data' => [
-            //     'housing_allowance_id' => $row[42],
-            //     'housing_allowance_amount' => $row[43],
-            //     'transportation_allowance_id' => $row[44],
-            //     'transportation_allowance_amount' => $row[45],
-            //     'other_id' => $row[46],
-            //     'other_amount' => $row[47],
-            // ],
 
-            // 'housing_allowance_id' => $row[42],
-            // 'housing_allowance_amount' => $row[43],
-            // 'transportation_allowance_id' => $row[44],
-            // 'transportation_allowance_amount' => $row[45],
-            // 'other_id' => $row[46],
-            // 'other_amount' => $row[47],
             'total_salary' => $row[48],
             'company_id' => $row[49],
             'english_name' => $row[50],
+            'appointment_start_from' => $row[51],
         ];
     }
 
@@ -587,40 +572,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
         }
     }
 
-    // private function createOrUpdateAllowanceAndDeduction($formated_data, $existingEmployee)
-    // {
 
-    //     $allowanceKeys = [
-    //         'housing_allowance_id' => 'housing_allowance_amount',
-    //         'transportation_allowance_id' => 'transportation_allowance_amount',
-    //         'other_id' => 'other_amount',
-    //     ];
-
-
-    //     foreach ($allowanceKeys as $idKey => $amountKey) {
-    //         if (isset($formated_data[$idKey], $formated_data[$amountKey])) {
-    //             $allowanceId = $formated_data[$idKey];
-    //             $allowanceAmount = $formated_data[$amountKey];
-
-    //             if ($allowanceId !== null && $allowanceAmount !== null) {
-    //                 try {
-    //                     EssentialsUserAllowancesAndDeduction::updateOrCreate(
-    //                         [
-    //                             'user_id' => $existingEmployee->id,
-    //                             'allowance_deduction_id' => (int)$allowanceId,
-    //                         ],
-    //                         [
-    //                             'amount' => $allowanceAmount,
-    //                         ]
-    //                     );
-    //                 } catch (\Exception $e) {
-    //                     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    //                     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     private function createOrUpdateAllowanceAndDeduction($formated_data, $existingEmployee)
     {
@@ -685,8 +637,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
         if ($formated_data && ((isset($formated_data['essentials_department_id']) && $formated_data['essentials_department_id'] != null) || (isset($formated_data['profession_id']) && $formated_data['profession_id'] != null))) {
 
             $contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
-            $start_from = null;
-            if ($contract) {
+            $start_from = $formated_data['appointment_start_from'] ?? null;
+            if ($contract && $start_from === null) {
                 $start_from = $contract->contract_start_date;
             }
             $previous_appointment = EssentialsEmployeeAppointmet::where('employee_id',  $existingEmployee->id)->where('is_active', 1)->first();
@@ -969,8 +921,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
         if ($formated_data && ((isset($formated_data['essentials_department_id']) && $formated_data['essentials_department_id'] != null) || (isset($formated_data['profession_id']) && $formated_data['profession_id'] != null))) {
 
             $contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
-            $start_from = null;
-            if ($contract) {
+            $start_from = $formated_data['appointment_start_from'] ?? null;
+            if ($contract && $start_from === null) {
                 $start_from = $contract->contract_start_date;
             }
 
@@ -1096,6 +1048,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
             $formated_data['is_renewable'] = null;
             $formated_data['contract_type_id'] = null;
             $formated_data['allowance_data'] = null;
+            $formated_data['appointment_start_from'] = null;
 
 
 
