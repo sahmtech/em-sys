@@ -83,9 +83,9 @@ return [
     'task_link' => 'رابط الوصول للمهمة',
     'tasks' => 'المهمات',
     'edit_request_tasks' => 'تعديل مهمات الطلب',
-    'cant_edit_type_it_have_procedures' => 'لا يمكن تعديل هذا النوع من الطلبات لوجود إجراءات متعلقة به'
+    'cant_edit_type_it_have_procedures' => 'لا يمكن تعديل هذا النوع من الطلبات لوجود إجراءات متعلقة به',
 
-
+    'delete_request_type_tasks' => 'حذف مهمات الطلبات'
 
 
 
