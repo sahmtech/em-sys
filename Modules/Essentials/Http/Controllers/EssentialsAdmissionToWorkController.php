@@ -14,8 +14,8 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
-use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Illuminate\Support\Facades\Auth;
 
 class EssentialsAdmissionToWorkController extends Controller
 {
@@ -155,6 +155,7 @@ class EssentialsAdmissionToWorkController extends Controller
             if ($admission) {
                 $admission->is_active = $input['origValue'];
                 $admission->admissions_date = now();
+                $admission->updated_by = Auth::user()->id;
                 $admission->save();
 
                 $output = [
@@ -199,6 +200,8 @@ class EssentialsAdmissionToWorkController extends Controller
             $input2['admissions_type'] = $input['admissions_type'];
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];
+            $input2['created_by'] =  Auth::user()->id;
+
 
             $previous_admission = EssentialsAdmissionToWork::where('employee_id', $input2['employee_id'])
                 ->latest('created_at')
@@ -230,8 +233,7 @@ class EssentialsAdmissionToWorkController extends Controller
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
 
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as
- full_name"))->get();
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
         $departments = EssentialsDepartment::forDropdown();
@@ -246,11 +248,17 @@ class EssentialsAdmissionToWorkController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
-
         try {
-            EssentialsAdmissionToWork::where('id', $id)
-                ->delete();
 
+
+            $admission = EssentialsAdmissionToWork::where('id', $id)->where('is_active', 1)->first();
+
+            if ($admission) {
+                $admission->is_active = 0;
+                $admission->deleted_by = Auth::user()->id;
+                $admission->deleted_at = \Carbon::now();
+                $admission->save();
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
@@ -319,7 +327,7 @@ class EssentialsAdmissionToWorkController extends Controller
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];
 
-
+            $input2['updated_by'] =  Auth::user()->id;
 
             EssentialsAdmissionToWork::where('id', $id)->update($input2);
             $output = [
