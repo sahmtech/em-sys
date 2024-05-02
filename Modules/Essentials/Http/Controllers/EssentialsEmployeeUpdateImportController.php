@@ -70,6 +70,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         continue;
                     }
                     $emp_array = $this->prepareEmployeeData($row);
+                    error_log('***********************************');
                     $validationResult = $this->validate($emp_array);
                     if ($validationResult['isValid'] == true) {
                         if ($validationResult['isNew']) {
@@ -114,10 +115,16 @@ class EssentialsEmployeeUpdateImportController extends Controller
     public function convertExcelDate($excelDate)
     {
 
-        $excelDate = (int)$excelDate;
+        if (!$excelDate) {
+            error_log($excelDate);
+            return $excelDate;
+        } else {
+            $excelDate = (int)$excelDate;
 
-        $unixDate = ($excelDate - 25569) * 86400;
-        return gmdate("Y-m-d", $unixDate);
+            $unixDate = ($excelDate - 25569) * 86400;
+            error_log(gmdate("Y-m-d", $unixDate));
+            return gmdate("Y-m-d", $unixDate);
+        }
     }
 
 
