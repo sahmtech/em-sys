@@ -14,7 +14,7 @@ use App\Utils\ModuleUtil;
 use App\User;
 use App\Company;
 
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
@@ -284,18 +284,18 @@ class EssentialsWorkersAffairsController extends Controller
             }
 
             if ($request->hasFile('profile_picture')) {
-                // Handle file upload
+
                 $image = $request->file('profile_picture');
                 $profile = $image->store('/profile_images');
-                $user->update(['profile_image' => $profile]);
+                $user->update(['profile_image' => $profile, 'updated_by' => Auth::user()->id]);
                 error_log($profile);
             } elseif ($request->input('delete_image') == '1') {
                 $oldImage = $user->profile_image;
                 if ($oldImage) {
                     Storage::delete($oldImage);
                 }
-                $user->update(['profile_image' => null]);
-                // Make sure to reset the delete_image flag in case of future updates
+                $user->update(['profile_image' => null, 'updated_by' => Auth::user()->id]);
+
                 $request->request->remove('delete_image');
             }
 
@@ -890,6 +890,7 @@ class EssentialsWorkersAffairsController extends Controller
                     $input['file_path'] =  $path;
                     $Iban_doc->update($input);
                 }
+                $user_data['updated_by'] = Auth::user()->id;
                 $user->update($user_data);
 
 
@@ -907,9 +908,9 @@ class EssentialsWorkersAffairsController extends Controller
                         EssentialsOfficialDocument::where('id', $deleted_document)->delete();
                         if ($filePath) {
                             Storage::delete($filePath);
-                            // EssentialsOfficialDocument::where('id', $deleted_document)->update([
-                            //     'file_path' => Null,
-                            // ]);
+                            EssentialsOfficialDocument::where('id', $deleted_document)->update([
+                                'file_path' => Null, 'updated_by' => Auth::user()->id
+                            ]);
                         }
                     }
                 }
@@ -921,7 +922,7 @@ class EssentialsWorkersAffairsController extends Controller
                         if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
                             if (isset($files[$index])) {
                                 $filePath = $files[$index]->store('/officialDocuments');
-                                EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
+                                EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath, 'updated_by' => Auth::user()->id]);
                             }
                         } elseif ($offical_documents_choosen_files[$index]) {
                             $document2 = new EssentialsOfficialDocument();
@@ -931,7 +932,7 @@ class EssentialsWorkersAffairsController extends Controller
                                 $filePath = $files[$index]->store('/officialDocuments');
                                 $document2->file_path = $filePath;
                             }
-
+                            $document2->created_by = Auth::user()->id;
                             $document2->save();
                         }
                     }

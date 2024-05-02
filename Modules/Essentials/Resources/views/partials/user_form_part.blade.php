@@ -266,11 +266,13 @@
                             ]) !!}
 
                         </td>
-                        <td>
-                            <button type="button" id="remove-row"
-                                class="btn btn-danger remove-row">{{ __('messages.delete') }}
-                            </button>
-                        </td>
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_employee_features'))
+                            <td>
+                                <button type="button" id="remove-row"
+                                    class="btn btn-danger remove-row">{{ __('messages.delete') }}
+                                </button>
+                            </td>
+                        @endif
                     </tr>
                 </tbody>
             </table>

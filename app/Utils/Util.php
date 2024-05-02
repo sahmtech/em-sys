@@ -1752,6 +1752,7 @@ class Util
         }
         $business_id = Auth::user()->business_id;
         $user_details['business_id'] = $business_id;
+        $user_details['created_by'] = Auth::user()->id;
         $user_details['nationality_id'] = $request->input('nationality');
         $user_details['company_id'] = $request->input('company_id');
 

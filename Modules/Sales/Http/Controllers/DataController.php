@@ -325,7 +325,7 @@ class DataController extends Controller
                     ],
                     [
                         'value' => 'sales.delete_sale_cost',
-                        'label' => __('sales::lang.add_sale_cost'),
+                        'label' => __('sales::lang.delete_sale_cost'),
                         'default' => false,
                     ],
                     [

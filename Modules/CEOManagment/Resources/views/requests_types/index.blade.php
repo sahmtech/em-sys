@@ -365,11 +365,13 @@
                                             <div class="col-md-6">
                                                 <input type="text" name="tasks[link][]" class="form-control task-link" placeholder="${translations.task_link}" style="width:100%; height:40px;" value="${task.link}">
                                             </div>
+                                            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_request_type_tasks'))
                                             <span class="input-group-btn">
                                                 <button class="btn btn-danger remove-task-btn-edit" type="button" style="margin-left: 10px;">
                                                     ${translations.remove}
                                                 </button>
                                             </span>
+                                            @endif
                                         </div>
                                     </div>`;
                             tasksContainer.append(taskHtml);

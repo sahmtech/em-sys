@@ -11,10 +11,11 @@ use App\Utils\ModuleUtil;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
 use  Modules\Sales\Entities\salesCost;
+
 class SalesCostController extends Controller
 {
     protected $moduleUtil;
-   
+
 
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -35,38 +36,36 @@ class SalesCostController extends Controller
 
 
         $costs = salesCost::all();
-  
+
         if (request()->ajax()) {
-                    
+
 
             return Datatables::of($costs)
-        
-            ->addColumn(
-                'action',
-                function ($row) use ($is_admin,$crud_delete_sale_cost,$crud_edit_sale_cost) {
-                    $html = '';
-                    if ($is_admin || $crud_edit_sale_cost) {
-                        $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
-                         data-id="' . $row->id . '" data-description-value="' . $row->description . '" data-amount-value="' . $row->amount . '" data-duration_by_month-value="' . $row->duration_by_month. '" data-monthly_cost-value="' . $row->monthly_cost  . '">
-                         <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                    }
-                    if ($is_admin || $crud_delete_sale_cost) {
-                        $html .= '<button class="btn btn-xs btn-danger delete_item_button"
+
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin, $crud_delete_sale_cost, $crud_edit_sale_cost) {
+                        $html = '';
+                        if ($is_admin || $crud_edit_sale_cost) {
+                            $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
+                         data-id="' . $row->id . '" data-description-value="' . $row->description . '" data-amount-value="' . $row->amount . '" data-duration_by_month-value="' . $row->duration_by_month . '" data-monthly_cost-value="' . $row->monthly_cost  . '">
+                         <i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
+                        }
+                        if ($is_admin || $crud_delete_sale_cost) {
+                            $html .= '<button class="btn btn-xs btn-danger delete_item_button"
                             data-href="' . route('sales_costs_destroy', ['id' => $row->id]) . '">
-                            <i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                            <i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
+
+                        return $html;
                     }
-    
-        
-                    return $html;
-                }
-            )
-           
-          
-            ->rawColumns(['action'])
-            ->make(true);
-        
-        
-            }
+                )
+
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
         return view('sales::sales_costs.index');
     }
 
@@ -90,25 +89,27 @@ class SalesCostController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
- 
+
         try {
-            $input = $request->only(['description','amount','duration_by_month','monthly_cost']);
-           
+            $input = $request->only(['description', 'amount', 'duration_by_month', 'monthly_cost']);
+
             salesCost::create($input);
- 
-            $output = ['success' => true,
+
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
 
-     
-       return redirect()->route('sales_costs');
+
+        return redirect()->route('sales_costs');
     }
 
     /**
@@ -146,12 +147,12 @@ class SalesCostController extends Controller
 
 
         try {
-     
 
-       
-            $input = $request->only(['description2','cost_id','amount2','duration_by_month2','monthly_cost2']);
+
+
+            $input = $request->only(['description2', 'cost_id', 'amount2', 'duration_by_month2', 'monthly_cost2']);
             $salesCost = salesCost::find($input['cost_id']);
-           
+
             if (!$salesCost) {
                 abort(404, 'Sales Source not found');
             }
@@ -168,7 +169,7 @@ class SalesCostController extends Controller
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -177,7 +178,6 @@ class SalesCostController extends Controller
         }
 
         return redirect()->route('sales_costs')->with($output);
-     
     }
 
     /**
@@ -194,21 +194,21 @@ class SalesCostController extends Controller
 
         try {
             salesCost::where('id', $id)
-                        ->delete();
+                ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-       
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-       
-       return $output;
 
+        return $output;
     }
 }
