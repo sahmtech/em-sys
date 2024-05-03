@@ -151,9 +151,16 @@
                         data: 'id',
                         name: 'id'
                     },
+                    
                     {
                         data: 'contact_id',
-                        name: 'contact_id'
+                        name: 'contact_id',
+                        render: function(data, type, row) {
+                            var link = '<a href="' +
+                                '{{ route('contacts-profile', ['id' => ':id']) }}'
+                                .replace(':id', row.id) + '">' + data + '</a>';
+                            return link;
+                        }
                     },
                     {
                         data: 'supplier_business_name',

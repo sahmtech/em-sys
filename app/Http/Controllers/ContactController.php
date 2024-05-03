@@ -1607,6 +1607,7 @@ class ContactController extends Controller
                 ->select(
                     'transaction_payments.id',
                     'transaction_payments.amount',
+                    'transaction_payments.transfer_account',
                     'transaction_payments.is_return',
                     'transaction_payments.method',
                     'transaction_payments.paid_on',

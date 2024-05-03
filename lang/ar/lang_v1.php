@@ -1129,7 +1129,17 @@ return [
     "recomended_for_80mm" => "موصى به لطابعة استلام الخط الحراري , مقاس ورق 80 مم",
     "recomended_for_58mm" => "موصى به لطابعة إيصالات الخطوط الحرارية , مقاس ورق 80 مم و 58 مم",
     "classic" => "كلاسيك",
-    "mavlex" => "mavlex",
+    "emdadat_template" => "قالب امدادات العطاء",
+    'bank_accounts' => 'الحسابات البنكية',
+    'bank_name' => 'اسم البنك',
+    'account_number' => 'رقم الحساب',
+    'ibn' => 'الآيبان',
+    'account_name_' => 'اسم الحساب',
+    'add_BankAccounts' => 'إضافة حساب بنكي',
+    'deleted_success' => 'تم الحذف بنجاح',
+    'edit_BankAccounts' => 'تعديل معلومات الحساب',
+
+
     "elegant" => "أنيق",
     "slim" => "معتدل البنيه",
     "detailed" => "مفصلة",
@@ -1484,7 +1494,16 @@ return [
     'movement_form_expired' => 'انتهاء استمارات ادارة الحركة ',
     'vehicle_insurance_expires_in_15_days' => 'تأمين مركبات ينتهي خلال 15 يوم',
     'vehicle_insurance_expired' => 'انتهاء تأمين مركبات',
-
+    'account_name' => 'الصندوق',
+    'invoice_type' => 'نوع الفاتورة',
+    'due' => 'اجل',
+    'cash' => 'نقداً',
+    'cost_senter' => 'مركز التكلفة',
+    'purchase_order_number' => 'رقم امر الشراء',
+    'delegate' => 'المندوب',
+    'Ref' => 'المرجع ',
+    'adjustable' => 'يمكن التعديل بعد الاضافة',
+    'transfer_account' => 'حساب التحويل',
 
 
 
@@ -1499,9 +1518,15 @@ return [
     'Contract_ended' => 'اشعار انتهاء عقد موظف',
     'Contract_1' => 'اشعار قرب انتهاء عقد موظف',
     'helloAgain' => 'مرحبا مجدداً',
-    'emdadatalatta_comp'=>'شركة إمدادات العطاء',
-    'provide_gifts'=>'دائما نمدكم بالعطاء',
-     'report'=>'تقرير',
-     
-    
+    'emdadatalatta_comp' => 'شركة إمدادات العطاء',
+    'provide_gifts' => 'دائما نمدكم بالعطاء',
+    'report' => 'تقرير',
+    'format_3' => 'تصميم 3',
+    'paid_on_from' => 'من تاريخ',
+    'paid_on_to' => 'الى تاريخ',
+    'cost_center' => 'مركز التكلفة',
+    'select_transfer_account' => 'حدد حساب التحويل',
+    'delivery_note' => 'ملاحظات التوصيل',
+
+
 ];

@@ -1152,7 +1152,19 @@ return [
     'recomended_for_80mm' => 'Recommended for thermal line receipt printer, 80mm paper size',
     'recomended_for_58mm' => 'Recommended for thermal line receipt printer, 80mm and 58mm paper size',
     'classic' => 'Classic',
-    "mavlex" => "mavlex",
+    "emdadat_template" => "Emdadat Template",
+    'bank_accounts' => 'Bank accounts',
+    'bank_name' => 'Bank name',
+    'account_number' => 'Account number',
+    'ibn' => 'IBN',
+    'account_name_' => 'Account name',
+    'add_BankAccounts'=>'Add Bank account',
+    'deleted_success'=>'deleted success',
+    'edit_BankAccounts'=>'Edite account information',
+    'cost_center'=>'Cost Center',
+    'select_transfer_account'=>'select transfer account',
+
+
 
     'elegant' => 'Elegant',
     'slim' => 'Slim',

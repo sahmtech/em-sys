@@ -1783,7 +1783,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\App\Http\Controllers\SellController::class, 'index']),
                 __('lang_v1.pills'),
-                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'sells']
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
             );
             // }
             if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {

@@ -45,8 +45,16 @@
                         <th>@lang('sale.customer_name')</th>
                         <th>@lang('lang_v1.contact_no')</th>
                         <th>@lang('sale.location')</th>
+
                         <th>@lang('sale.payment_status')</th>
                         <th>@lang('lang_v1.payment_method')</th>
+                        <th>@lang('lang_v1.transfer_account')</th>
+                        <th>@lang('lang_v1.cost_center')</th>
+                        <th>@lang('lang_v1.account_name')</th>
+
+                        
+
+                        
                         <th>@lang('sale.total_amount')</th>
                         <th>@lang('sale.total_paid')</th>
                         <th>@lang('lang_v1.sell_due')</th>
@@ -166,6 +174,11 @@ $(document).ready( function(){
             { data: 'business_location', name: 'bl.name'},
             { data: 'payment_status', name: 'payment_status'},
             { data: 'payment_methods', orderable: false, "searchable": false},
+            { data: 'transfer_account', orderable: false, "searchable": false},
+            { data: 'cost_center', orderable: false, "searchable": false},
+            { data: 'account_name', orderable: false, "searchable": false},
+
+                  
             { data: 'final_total', name: 'final_total'},
             { data: 'total_paid', name: 'total_paid', "searchable": false},
             { data: 'total_remaining', name: 'total_remaining'},

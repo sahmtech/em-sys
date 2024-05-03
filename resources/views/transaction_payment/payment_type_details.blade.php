@@ -54,7 +54,15 @@
 	</div>
 </div>
 <div class="payment_details_div @if( $payment_line->method !== 'bank_transfer' ) {{ 'hide' }} @endif" data-type="bank_transfer" >
-	<div class="col-md-12">
+	<div class="col-md-6">
+		<div class="form-group">
+			{!! Form::label("transfer_account",__('lang_v1.transfer_account')) !!}
+			{{-- {!! Form::text( "payment[$row_index][transfer_account]", $payment_line['transfer_account'], ['class' => 'form-control', 'placeholder' => __('lang_v1.transfer_account'), 'id' => "transfer_account_$row_index"]); !!} --}}
+			{!! Form::select("transfer_account", $bankAccount, $payment_line->transfer_account,['class' => 'form-control', 'id' => "transfer_account" ,'style'=>'padding: 0px 5px;']); !!}
+			
+		</div>
+	</div>
+	<div class="col-md-6">
 		<div class="form-group">
 			{!! Form::label("bank_account_number",__('lang_v1.bank_account_number')) !!}
 			{!! Form::text( "bank_account_number", $payment_line->bank_account_number, ['class' => 'form-control', 'placeholder' => __('lang_v1.bank_account_number')]); !!}

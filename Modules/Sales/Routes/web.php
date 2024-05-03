@@ -11,7 +11,7 @@
 |
 */
 
-
+use App\Http\Controllers\ContactController;
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
@@ -19,6 +19,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
     Route::prefix('sale')->group(function () {
 
 
+        Route::get('contacts/{id}',[ ContactController::class,'show'])->name('contacts-profile');
+  
         Route::get('/', [\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->name('sales_landing');
         Route::get('/getOperationAvailableContracts', [\Modules\Sales\Http\Controllers\SalesController::class, 'getOperationAvailableContracts'])->name('getOperationAvailableContracts');
         Route::get('/sales_sources', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index'])->name('sales_sources');

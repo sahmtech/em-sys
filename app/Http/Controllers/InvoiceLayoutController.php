@@ -264,7 +264,7 @@ class InvoiceLayoutController extends Controller
         return [
             'classic' => __('lang_v1.classic') . ' (' . __('lang_v1.for_normal_printer') . ')',
             'elegant' => __('lang_v1.elegant') . ' (' . __('lang_v1.for_normal_printer') . ')',
-            'mavlex' => __('lang_v1.mavlex'),
+            'emdadat_template' => __('lang_v1.emdadat_template'),
             'detailed' => __('lang_v1.detailed') . ' (' . __('lang_v1.for_normal_printer') . ')',
             'columnize-taxes' => __('lang_v1.columnize_taxes') . ' (' . __('lang_v1.for_normal_printer') . ')',
             'slim' => __('lang_v1.slim') . ' (' . __('lang_v1.recomended_for_80mm') . ')',

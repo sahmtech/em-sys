@@ -225,9 +225,9 @@
           @include('product.partials.single_product_form_part', ['profit_percent' => $default_profit_percent, 'quick_add' => true ])
         </div>
       </div>
-      {{-- @if(!empty($product_for) && $product_for == 'pos')
+      {{-- @if(!empty($product_for) && $product_for == 'pos') --}}
         @include('product.partials.quick_product_opening_stock', ['locations' => $locations])
-      @endif --}}
+      {{-- @endif --}}
     </div>
     </div>
     <div class="modal-footer">

@@ -141,14 +141,15 @@ class Util
      *
      * @return array
      */
-    public function payment_types($location = null, $show_advance = false, $business_id = null, $company_id = null)
+    public function payment_types($location = null, $show_advance = true, $business_id = null, $company_id = null)
     {
         if (!empty($location)) {
             $location = is_object($location) ? $location : BusinessLocation::find($location);
+           
 
             //Get custom label from business settings
             // $custom_labels = Business::find($location->business_id)->custom_labels;
-            $custom_labels = Company::find($location->compay_id)->custom_labels;
+            $custom_labels = Company::find($location->company_id)->custom_labels;
             $custom_labels = json_decode($custom_labels, true);
         } else {
             if (!empty($company_id)) {
@@ -174,6 +175,7 @@ class Util
         $payment_types['custom_pay_5'] = !empty($custom_labels['payments']['custom_pay_5']) ? $custom_labels['payments']['custom_pay_5'] : __('lang_v1.custom_payment', ['number' => 5]);
         $payment_types['custom_pay_6'] = !empty($custom_labels['payments']['custom_pay_6']) ? $custom_labels['payments']['custom_pay_6'] : __('lang_v1.custom_payment', ['number' => 6]);
         $payment_types['custom_pay_7'] = !empty($custom_labels['payments']['custom_pay_7']) ? $custom_labels['payments']['custom_pay_7'] : __('lang_v1.custom_payment', ['number' => 7]);
+
 
         //Unset payment types if not enabled in business location
         if (!empty($location)) {
