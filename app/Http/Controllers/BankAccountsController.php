@@ -30,6 +30,7 @@ class BankAccountsController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
 
+        
         try {
             DB::beginTransaction();
             BankAccount::create([

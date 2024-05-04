@@ -1527,6 +1527,10 @@ return [
     'cost_center' => 'مركز التكلفة',
     'select_transfer_account' => 'حدد حساب التحويل',
     'delivery_note' => 'ملاحظات التوصيل',
+    'accounting_settings'=>'إعدادات الحسابات',
+    'public_accounting_settings'=>'إعدادات المحاسبة',
+
+    
 
 
 ];

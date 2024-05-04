@@ -1163,6 +1163,10 @@ return [
     'edit_BankAccounts'=>'Edite account information',
     'cost_center'=>'Cost Center',
     'select_transfer_account'=>'select transfer account',
+    'accounting_settings'=>'Accounts setting',
+    'public_accounting_settings'=>'Accounting Setting',
+
+
 
 
 
