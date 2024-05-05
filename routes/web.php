@@ -289,6 +289,43 @@ Route::get('/getContractsByDate', function () {
 
     return response()->json(['message' => 'success']);
 });
+Route::get('/updateContractsBetweenDates', function () {
+
+    $start_date = '2024-04-25';
+    $end_date = '2024-05-01';
+
+    DB::transaction(function () use ($start_date, $end_date) {
+
+        $contracts = DB::table('essentials_employees_contracts as a')
+            ->select('a.id', 'a.employee_id', 'a.created_at')
+            ->whereBetween('a.created_at', [$start_date, $end_date])
+            ->whereExists(function ($query) use ($start_date, $end_date) {
+                $query->select(DB::raw(1))
+                    ->from('essentials_employees_contracts as b')
+                    ->whereColumn('b.employee_id', 'a.employee_id')
+                    ->whereBetween('b.updated_at', [$start_date, $end_date])
+                    ->whereNotNull('b.updated_at');
+            })
+            ->get();
+
+        $Keep = $contracts->groupBy('employee_id')->map(function ($items) {
+            return $items->sortBy('created_at')->first()->id;
+        });
+
+        DB::table('essentials_employees_contracts')
+            ->whereIn('id', $Keep->all())
+            ->update(['is_active' => 1]);
+
+        if ($Keep->isNotEmpty()) {
+            DB::table('essentials_employees_contracts')
+                ->whereBetween('created_at', [$start_date, $end_date])
+                ->whereNotIn('id', $Keep->all())
+                ->delete();
+        }
+    });
+
+    return response()->json(['message' => 'success']);
+});
 
 
 Route::get('/clear_cache', function () {
