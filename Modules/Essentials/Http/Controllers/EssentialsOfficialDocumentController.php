@@ -49,9 +49,9 @@ class EssentialsOfficialDocumentController extends Controller
 
 
         $official_documents = EssentialsOfficialDocument::leftjoin('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
-            ->whereIn('u.id', $userIds)
+            ->whereIn('u.id',  $userIds)
             ->where('u.status', '!=', 'inactive')
-
+            ->where('essentials_official_documents.is_active', 1)
             ->select([
                 'essentials_official_documents.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -92,11 +92,21 @@ class EssentialsOfficialDocumentController extends Controller
                 }
             }
 
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
-                $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
-                    ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
+            // if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            //     $start = request()->start_date;
+            //     $end = request()->end_date;
+            //     $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
+            //         ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
+            // }
+            $start_date = request()->get('start_date');
+            $end_date = request()->get('end_date');
+
+            if (!is_null($start_date)) {
+                $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start_date);
+            }
+
+            if (!is_null($end_date)) {
+                $official_documents->whereDate('essentials_official_documents.expiration_date', '<=', $end_date);
             }
             if (!empty(request()->isForHome)) {
                 $official_documents->where('essentials_official_documents.type', 'residence_permit');

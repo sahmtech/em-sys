@@ -1886,5 +1886,8 @@ return [
   'employees_file' => 'ملف الموظفين',
   'import_employees_file' => 'استيراد',
   'download_employees_file_template' => 'تحميل القالب',
+  'expiration_date_from' => 'تاريخ الانتهاء (بعد)',
+  'expiration_date_to' => 'تاريخ الانتهاء (قبل)',
+
 
 ];
