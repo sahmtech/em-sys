@@ -27,7 +27,7 @@ use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Auth;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -49,6 +49,7 @@ use Modules\CEOManagment\Entities\RequestsType;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeesNotFoundExport;
+use Exception;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -67,9 +68,6 @@ class EssentialsManageEmployeeController extends Controller
 
     public function getAmount($salaryType)
     {
-
-
-
 
         $categories = EssentialsAllowanceAndDeduction::where('id', $salaryType)->select('amount')
             ->first();
@@ -414,25 +412,37 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-        $nullCount = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+        $nullCount = User::whereIn('id', $userIds)
+            ->with(['essentialsEmployeesInsurance', 'activeAdmission', 'activeAppointmet', 'activeInternationalCertificate', 'activeCarRegistration', 'activeDriversLicense', 'activeNationalId', 'activeIban', 'activeResidencePermit', 'activePassport', 'activeOfficialDocument', 'activeContract'])
             ->where(function ($query) {
-                $query->whereHas('essentials_admission_to_works', function ($query) {
-
-                    $query->whereNull('admissions_date');
-                })
-                    ->orWhereHas('essentialsEmployeeAppointmets', function ($query) {
-
-                        $query->WhereNull('start_from')
-                            ->orWhereNull('end_at')
-                            ->orWhereNull('profession_id');
-                    })
-                    ->orWhereHas('essentials_qualification', function ($query) {
-
-                        $query->WhereNull('graduation_year')
-                            ->orWhereNull('graduation_institution')
-                            ->orWhereNull('graduation_country')
-                            ->orWhereNull('degree');
-                    });
+                $query->where(function ($q1) {
+                    $q1->whereIn('user_type', ['employee', 'manager'])
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('activeContract')
+                                ->orWhereDoesntHave('activeOfficialDocument')
+                                ->orWhereDoesntHave('activePassport')
+                                ->orWhereDoesntHave('activeResidencePermit')
+                                ->orWhereDoesntHave('activeIban')
+                                ->orWhereDoesntHave('activeNationalId')
+                                ->orWhereDoesntHave('activeDriversLicense')
+                                ->orWhereDoesntHave('activeCarRegistration')
+                                ->orWhereDoesntHave('activeInternationalCertificate')
+                                ->orWhereDoesntHave('activeAppointmet')
+                                ->orWhereDoesntHave('activeAdmission')
+                                ->orWhereDoesntHave('essentialsEmployeesInsurance');
+                        });
+                })->orWhere(function ($q1) {
+                    $q1->where('user_type', 'worker')
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('activeContract')
+                                ->orWhereDoesntHave('activeOfficialDocument')
+                                ->orWhereDoesntHave('activePassport')
+                                ->orWhereDoesntHave('activeResidencePermit')
+                                ->orWhereDoesntHave('activeAppointmet')
+                                ->orWhereDoesntHave('activeAdmission')
+                                ->orWhereDoesntHave('essentialsEmployeesInsurance');
+                        });
+                });
             })
             ->count();
 
@@ -653,45 +663,244 @@ class EssentialsManageEmployeeController extends Controller
 
     public function uncomplete_profiles()
     {
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
         }
 
-        $usersWithNullAdmission = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+        $usersWithNullAdmission = User::whereIn('id', $userIds)
+            ->with(['essentialsEmployeesInsurance', 'activeAdmission', 'activeAppointmet', 'activeInternationalCertificate', 'activeCarRegistration', 'activeDriversLicense', 'activeNationalId', 'activeIban', 'activeResidencePermit', 'activePassport', 'activeOfficialDocument', 'activeContract'])
             ->where(function ($query) {
-                $query->whereHas('essentials_admission_to_works', function ($query) {
+                $query->where(function ($q1) {
+                    $q1->whereIn('user_type', ['employee', 'manager'])
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('activeContract')
+                                ->orWhereDoesntHave('activeOfficialDocument')
+                                ->orWhereDoesntHave('activePassport')
+                                ->orWhereDoesntHave('activeResidencePermit')
+                                ->orWhereDoesntHave('activeIban')
+                                ->orWhereDoesntHave('activeNationalId')
+                                ->orWhereDoesntHave('activeDriversLicense')
+                                ->orWhereDoesntHave('activeCarRegistration')
+                                ->orWhereDoesntHave('activeInternationalCertificate')
+                                ->orWhereDoesntHave('activeAppointmet')
+                                ->orWhereDoesntHave('activeAdmission')
+                                ->orWhereDoesntHave('essentialsEmployeesInsurance');
+                        });
+                })->orWhere(function ($q1) {
+                    $q1->where('user_type', 'worker')
+                        ->where(function ($q2) {
+                            $q2->whereDoesntHave('activeContract')
+                                ->orWhereDoesntHave('activeOfficialDocument')
+                                ->orWhereDoesntHave('activePassport')
+                                ->orWhereDoesntHave('activeResidencePermit')
+                                ->orWhereDoesntHave('activeAppointmet')
+                                ->orWhereDoesntHave('activeAdmission')
+                                ->orWhereDoesntHave('essentialsEmployeesInsurance');
+                        });
+                });
+            });
 
-                    $query->whereNull('admissions_date');
-                })
-                    ->orWhereHas('essentialsEmployeeAppointmets', function ($query) {
+        if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
+            $usersWithNullAdmission->where('users.user_type', request()->input('user_type_filter'));
+        }
+        if (!empty(request()->input('company_filter')) && request()->input('company_filter') !== 'all') {
+            $usersWithNullAdmission->where('users.company_id', request()->input('company_filter'));
+        }
+        if (!empty(request()->input('project_filter')) && request()->input('project_filter') !== 'all') {
+            $usersWithNullAdmission->where('users.assigned_to', request()->input('project_filter'));
+        }
+        if (!empty(request()->input('missing_info_filter')) && request()->input('missing_info_filter') !== 'all') {
+            $missing_info_filter = request()->input('missing_info_filter');
 
-                        $query->WhereNull('start_from')
-                            ->orWhereNull('end_at')
-                            ->orWhereNull('profession_id');
-                    })
-                    ->orWhereHas('essentials_qualification', function ($query) {
-
-                        $query->WhereNull('graduation_year')
-                            ->orWhereNull('graduation_institution')
-                            ->orWhereNull('graduation_country')
-                            ->orWhereNull('degree');
-                    });
-            })
-
-            ->get();
-        // dd($usersWithNullAdmission);
+            if ($missing_info_filter == 'appointment') {
+                $usersWithNullAdmission->whereDoesntHave('activeAppointmet');
+            } else if ($missing_info_filter == 'admissions_to_work') {
+                $usersWithNullAdmission->whereDoesntHave('activeAdmission');
+            } else if ($missing_info_filter == 'health_insurance') {
+                $usersWithNullAdmission->whereDoesntHave('essentialsEmployeesInsurance');
+            }
+        }
+        if (!empty(request()->input('missing_files_filter')) && request()->input('missing_files_filter') !== 'all') {
+            $missing_files_filter = request()->input('missing_files_filter');
+            if ($missing_files_filter == 'contract') {
+                $usersWithNullAdmission->whereDoesntHave('activeContract');
+            }
+            if ($missing_files_filter == 'passport') {
+                $usersWithNullAdmission->whereDoesntHave('activePassport');
+            }
+            if ($missing_files_filter == 'residence_permit') {
+                $usersWithNullAdmission->whereDoesntHave('activeResidencePermit');
+            }
+            if ($missing_files_filter == 'Iban') {
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeIban');
+            }
+            if ($missing_files_filter == 'national_id') {
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeNationalId');
+            }
+            if ($missing_files_filter == 'drivers_license') {
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeDriversLicense');
+            }
+            if ($missing_files_filter == 'car_registration') {
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeCarRegistration');
+            }
+            if ($missing_files_filter == 'international_certificate') {
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeInternationalCertificate');
+            }
+        }
 
         if (request()->ajax()) {
-
             return DataTables::of($usersWithNullAdmission)
+                ->addColumn(
+                    'missings_files',
+                    function ($row) {
+                        $missings_files = '';
+                        try {
+                            if ($row->activeContract->is_active == 0) {
+                                $missings_files .= __('essentials::lang.contract') . '\n';
+                            }
+                        } catch (Exception $e) {
+
+                            $missings_files .= __('essentials::lang.contract') . '\n';
+                        }
+                        if ($row->user_type == 'worker') {
+
+                            try {
+                                if ($row->activePassport->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.passport') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.passport') . '\n';
+                            }
+                            try {
+                                if ($row->activeResidencePermit->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.residence_permit') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.residence_permit') . '\n';
+                            }
+                            if ($missings_files == '') {
+                                try {
+                                    if ($row->activeOfficialDocument->first()->is_active == 0) {
+                                        $missings_files .= __('essentials::lang.passport') . '\n' . __('essentials::lang.residence_permit') . '\n';
+                                    }
+                                } catch (Exception $e) {
+                                    $missings_files .= __('essentials::lang.passport') . '\n' . __('essentials::lang.residence_permit') . '\n';
+                                }
+                            }
+                        }
+                        if ($row->user_type == 'employee' || $row->user_type == 'manager') {
+                            try {
+                                if ($row->activePassport->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.passport') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.passport') . '\n';
+                            }
+                            try {
+                                if ($row->activeResidencePermit->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.residence_permit') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.residence_permit') . '\n';
+                            }
+                            try {
+                                if ($row->activeIban->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.Iban') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.Iban') . '\n';
+                            }
+                            try {
+                                if ($row->activeNationalId->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.national_id') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.national_id') . '\n';
+                            }
+                            try {
+                                if ($row->activeDriversLicense->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.drivers_license') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.drivers_license') . '\n';
+                            }
+                            try {
+                                if ($row->activeCarRegistration->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.car_registration') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.car_registration') . '\n';
+                            }
+                            try {
+                                if ($row->activeInternationalCertificate->is_active == 0) {
+                                    $missings_files .= __('essentials::lang.international_certificate') . '\n';
+                                }
+                            } catch (Exception $e) {
+                                $missings_files .= __('essentials::lang.international_certificate') . '\n';
+                            }
+                            if ($missings_files == '') {
+                                try {
+                                    if ($row->activeOfficialDocument->first()->is_active == 0) {
+                                        $missings_files .= __('essentials::lang.passport') . '\n' . __('essentials::lang.residence_permit') . '\n' . __('essentials::lang.Iban') . '\n' . __('essentials::lang.national_id') . '\n' . __('essentials::lang.drivers_license') . '\n' . __('essentials::lang.car_registration') . '\n' . __('essentials::lang.international_certificate') . '\n';
+                                    }
+                                } catch (Exception $e) {
+                                    $missings_files .= __('essentials::lang.passport') . '\n' . __('essentials::lang.residence_permit') . '\n' . __('essentials::lang.Iban') . '\n' . __('essentials::lang.national_id') . '\n' . __('essentials::lang.drivers_license') . '\n' . __('essentials::lang.car_registration') . '\n' . __('essentials::lang.international_certificate') . '\n';
+                                }
+                            }
+                        }
+                        return $missings_files;
+                    }
+                )
+                ->addColumn(
+                    'missings_info',
+                    function ($row) {
+                        $missings_info = '';
+                        try {
+                            if ($row->activeAppointmet->is_active == 0) {
+                                $missings_info .= __('essentials::lang.appointment') . '\n';
+                            }
+                        } catch (Exception $e) {
+                            $missings_info .= __('essentials::lang.appointment') . '\n';
+                        }
+                        try {
+                            if ($row->activeAdmission->is_active == 0) {
+                                $missings_info .= __('essentials::lang.admissions_to_work') . '\n';
+                            }
+                        } catch (Exception $e) {
+                            $missings_info .= __('essentials::lang.admissions_to_work') . '\n';
+                        }
+                        try {
+                            $row->essentialsEmployeesInsurance->id;
+                        } catch (Exception $e) {
+                            $missings_info .= __('essentials::lang.health_insurance') . '\n';
+                        }
+
+                        return  $missings_info;
+                    }
+                )
                 ->addColumn(
                     'worker_name',
                     function ($row) {
+
                         return $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name  ?? '';
                     }
                 )
@@ -703,11 +912,24 @@ class EssentialsManageEmployeeController extends Controller
                     }
                 )
                 ->addColumn(
-                    'customer_name',
+                    'sponsor',
                     function ($row) {
-                        return $row->assignedTo?->contact->supplier_business_name ?? null;
+
+                        $sponsor_company = $row?->essentialsEmployeeAppointmets?->sponsor_company ?? null;
+                        $sponsor_name = $row?->essentialsEmployeeAppointmets?->sponsor_name ?? null;
+
+
+                        $sponsor = '';
+                        if ($sponsor_company !== null) {
+                            $sponsor = Company::find($sponsor_company)->name;
+                        } elseif ($sponsor_name !== null) {
+                            $sponsor = $sponsor_name;
+                        }
+
+                        return $sponsor;
                     }
                 )
+
 
                 ->addColumn(
                     'action',
@@ -723,12 +945,29 @@ class EssentialsManageEmployeeController extends Controller
                 )
 
 
-                ->removeColumn('id')
+
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
                 ->make(true);
         }
+        $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id')->toArray();
+        $projects =  SalesProject::pluck('name', 'id')->toArray();
+        $missing_files = [
+            'contract' => __('essentials::lang.contract'),
+            'passport' => __('essentials::lang.passport'),
+            'residence_permit' => __('essentials::lang.residence_permit'),
+            'Iban' => __('essentials::lang.Iban'),
+            'national_id' => __('essentials::lang.national_id'),
+            'drivers_license' => __('essentials::lang.drivers_license'),
+            'car_registration' => __('essentials::lang.car_registration'),
+            'international_certificate' => __('essentials::lang.international_certificate')
 
-        return view('essentials::employee_affairs.statistics.uncomplete_profies');
+        ];
+        $missing_info = [
+            'appointment' => __('essentials::lang.appointment'),
+            'admissions_to_work' => __('essentials::lang.admissions_to_work'),
+            'health_insurance' => __('essentials::lang.health_insurance'),
+        ];
+        return view('essentials::employee_affairs.statistics.uncomplete_profies')->with(compact('companies', 'projects', 'missing_files', 'missing_info'));
     }
 
 
@@ -891,14 +1130,14 @@ class EssentialsManageEmployeeController extends Controller
                 // Handle file upload
                 $image = $request->file('profile_picture');
                 $profile = $image->store('/profile_images');
-                $user->update(['profile_image' => $profile]);
+                $user->update(['profile_image' => $profile, 'updated_by' => Auth::user()->id]);
                 error_log($profile);
             } elseif ($request->input('delete_image') == '1') {
                 $oldImage = $user->profile_image;
                 if ($oldImage) {
                     Storage::delete($oldImage);
                 }
-                $user->update(['profile_image' => null]);
+                $user->update(['profile_image' => null, 'updated_by' => Auth::user()->id]);
                 // Make sure to reset the delete_image flag in case of future updates
                 $request->request->remove('delete_image');
             }
@@ -1378,7 +1617,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $qualification = EssentialsEmployeesQualification::where('employee_id', $id)->first();
 
-        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
+        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)->where('is_active', 1)
             ->first();
         $officalDocuments = $user->OfficialDocument;
 
@@ -1440,192 +1679,200 @@ class EssentialsManageEmployeeController extends Controller
             ]);
 
 
+            $existing_user =  User::findOrFail($id);
 
+            if (!$existing_user) {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('essentials::lang.user_not_found'),
+                ];
+            } else {
+                $is_unique = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+                if (!$is_unique || ($is_unique && $is_unique->id == $id)) {
 
-
-            $existing_user = User::where('id_proof_number', $request->input('id_proof_number'))
-                ->where('id', '!=', $id)
-                ->first();
-
-            if (!$existing_user || $existing_user->id == $id) {
-
-                if (!isset($user_data['selected_contacts'])) {
-                    $user_data['selected_contacts'] = 0;
-                }
-
-                if ($user_data['emp_number'] == null) {
-                    $comp_id = request()->input('company_id');
-                    //dd($comp_id);
-                    $user_data['emp_number'] = $this->moduleUtil->generateEmpNumber($comp_id);
-                }
-
-                $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
-
-                $user_data['max_sales_discount_percent'] = null;
-                if (!empty($request->input('dob'))) {
-                    $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
-                }
-                if (!empty($request->input('border_no'))) {
-                    $user_data['border_no'] = $request->input('border_no');
-                }
-                if (!empty($request->input('nationality'))) {
-                    $user_data['nationality_id'] = $request->input('nationality');
-                }
-                if (!empty($request->input('bank_details'))) {
-                    $user_data['bank_details'] = json_encode($request->input('bank_details'));
-                }
-                if (!empty($request->input('has_insurance'))) {
-                    $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
-                }
-
-                DB::beginTransaction();
-
-
-                $user = User::findOrFail($id);
-
-                $delete_iban_file = $request->delete_iban_file ?? null;
-                if ($delete_iban_file && $delete_iban_file == 1) {
-
-                    $filePath =  !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? null : null;
-                    if ($filePath) {
-                        Storage::delete($filePath);
+                    if (!isset($user_data['selected_contacts'])) {
+                        $user_data['selected_contacts'] = 0;
                     }
-                }
 
-                if ($request->hasFile('Iban_file')) {
-                    $file = $request->file('Iban_file');
-                    $path = $file->store('/officialDocuments');
-                    $bank_details = $request->input('bank_details');
-                    $bank_details['Iban_file'] = $path;
-                    $user_data['bank_details'] = json_encode($bank_details);
-
-                    $bankCode = $bank_details['bank_code'];
-                    $input = [
-                        'number' => $bankCode,
-                        'file_path' => $path,
-                    ];
-
-                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
-
-
-                    if ($Iban_doc) {
-
-                        $Iban_doc->update($input);
-                    } else {
-
-                        $input['employee_id'] = $user->id;
-                        $input['type'] = 'Iban';
-                        EssentialsOfficialDocument::create($input);
+                    if ($user_data['emp_number'] == null) {
+                        $comp_id = request()->input('company_id');
+                        //dd($comp_id);
+                        $user_data['emp_number'] = $this->moduleUtil->generateEmpNumber($comp_id);
                     }
-                } elseif ($request->existing_iban_file) {
 
-                    $bank_details = $request->input('bank_details');
-                    $bank_details['Iban_file'] = $request->existing_iban_file;
-                    $user_data['bank_details'] = json_encode($bank_details);
+                    $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
 
-                    $bankCode = $bank_details['bank_code'];
-                    $input = [
-                        'number' => $bankCode,
-                        'file_path' => $request->existing_iban_file,
-                    ];
-
-                    $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->first();
-
-
-                    if ($Iban_doc) {
-
-                        $Iban_doc->update($input);
+                    $user_data['max_sales_discount_percent'] = null;
+                    if (!empty($request->input('dob'))) {
+                        $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
                     }
-                }
+                    if (!empty($request->input('border_no'))) {
+                        $user_data['border_no'] = $request->input('border_no');
+                    }
+                    if (!empty($request->input('nationality'))) {
+                        $user_data['nationality_id'] = $request->input('nationality');
+                    }
+                    if (!empty($request->input('bank_details'))) {
+                        $user_data['bank_details'] = json_encode($request->input('bank_details'));
+                    }
+                    if (!empty($request->input('has_insurance'))) {
+                        $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
+                    }
+
+                    DB::beginTransaction();
 
 
-                $user->update($user_data);
 
-                $deleted_documents = $request->deleted_documents ?? null;
-                $offical_documents_types = $request->offical_documents_type;
-                $offical_documents_choosen_files = $request->offical_documents_choosen_files;
-                $offical_documents_previous_files = $request->offical_documents_previous_files;
-                $files = [];
-                if ($request->hasFile('offical_documents_files')) {
-                    $files = $request->file('offical_documents_files');
-                }
-                if ($deleted_documents) {
-                    foreach ($deleted_documents as $deleted_document) {
-                        $filePath = EssentialsOfficialDocument::where('id', $deleted_document)->first()->file_path;
+                    $delete_iban_file = $request->delete_iban_file ?? null;
+                    if ($delete_iban_file && $delete_iban_file == 1) {
+
+                        $filePath =  !empty($existing_user->bank_details) ? json_decode($existing_user->bank_details, true)['Iban_file'] ?? null : null;
                         if ($filePath) {
                             Storage::delete($filePath);
-                            EssentialsOfficialDocument::where('id', $deleted_document)->update([
-                                'file_path' => Null,
+                        }
+                    }
+
+                    if ($request->hasFile('Iban_file')) {
+                        $file = $request->file('Iban_file');
+                        $path = $file->store('/officialDocuments');
+                        $bank_details = $request->input('bank_details');
+                        $bank_details['Iban_file'] = $path;
+                        $user_data['bank_details'] = json_encode($bank_details);
+
+                        $bankCode = $bank_details['bank_code'];
+                        $input = [
+                            'number' => $bankCode,
+                            'file_path' => $path,
+                        ];
+
+                        $Iban_doc = EssentialsOfficialDocument::where('employee_id', $existing_user->id)->where('is_active', 1)->where('type', 'Iban')->first();
+
+
+                        if ($Iban_doc) {
+
+                            $Iban_doc->update($input);
+                        } else {
+
+                            $input['employee_id'] = $existing_user->id;
+                            $input['type'] = 'Iban';
+                            EssentialsOfficialDocument::create($input);
+                        }
+                    } elseif ($request->existing_iban_file) {
+
+                        $bank_details = $request->input('bank_details');
+                        $bank_details['Iban_file'] = $request->existing_iban_file;
+                        $user_data['bank_details'] = json_encode($bank_details);
+
+                        $bankCode = $bank_details['bank_code'];
+                        $input = [
+                            'number' => $bankCode,
+                            'file_path' => $request->existing_iban_file,
+                        ];
+
+                        $Iban_doc = EssentialsOfficialDocument::where('employee_id', $existing_user->id)->where('is_active', 1)->where('type', 'Iban')->first();
+
+
+                        if ($Iban_doc) {
+
+                            $Iban_doc->update($input);
+                        }
+                    }
+
+                    $user_data['updated_by'] = Auth::user()->id;
+                    $existing_user->update($user_data);
+
+                    $deleted_documents = $request->deleted_documents ?? null;
+                    $offical_documents_types = $request->offical_documents_type;
+                    $offical_documents_choosen_files = $request->offical_documents_choosen_files;
+                    $offical_documents_previous_files = $request->offical_documents_previous_files;
+                    $files = [];
+                    if ($request->hasFile('offical_documents_files')) {
+                        $files = $request->file('offical_documents_files');
+                    }
+                    if ($deleted_documents) {
+                        foreach ($deleted_documents as $deleted_document) {
+                            $filePath = EssentialsOfficialDocument::where('id', $deleted_document)->first()->file_path;
+                            if ($filePath) {
+                                Storage::delete($filePath);
+                                EssentialsOfficialDocument::where('id', $deleted_document)->update([
+                                    'file_path' => Null,
+                                    'updated_by' => Auth::user()->id,
+
+                                ]);
+                            }
+                        }
+                    }
+                    foreach ($offical_documents_types  as  $index => $offical_documents_type) {
+                        if (
+                            $offical_documents_type
+                        ) {
+                            if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
+                                if (isset($files[$index])) {
+                                    $filePath = $files[$index]->store('/officialDocuments');
+
+                                    EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath, 'updated_by' => Auth::user()->id]);
+                                }
+                            } elseif ($offical_documents_choosen_files[$index]) {
+                                $document2 = new EssentialsOfficialDocument();
+                                $document2->type = $offical_documents_type;
+                                $document2->employee_id = $id;
+                                $document2->created_by = Auth::user()->id;
+                                if (isset($files[$index])) {
+                                    $filePath = $files[$index]->store('/officialDocuments');
+                                    $document2->file_path = $filePath;
+                                }
+                                $document2->save();
+                            }
+                        }
+                    }
+
+                    $delete_qualification_file = $request->delete_qualification_file ?? null;
+                    if ($request->hasFile('qualification_file')) {
+
+                        $qual = EssentialsEmployeesQualification::where('employee_id', $id)->first();
+                        if (!$qual) {
+                            $qual = new EssentialsEmployeesQualification();
+                            $qual->created_by = Auth::user()->id;
+                        }
+                        $qual_file = request()->file('qualification_file');
+                        $qual_file_path = $qual_file->store('/employee_qualifications');
+
+                        $qual->file_path = $qual_file_path;
+                        $qual->updated_by = Auth::user()->id;
+
+                        $qual->save();
+                    }
+                    if ($delete_qualification_file && $delete_qualification_file == 1) {
+
+                        $filePath = EssentialsEmployeesQualification::where('employee_id', $id)->first()->file_path;
+                        if ($filePath) {
+                            Storage::delete($filePath);
+                            EssentialsEmployeesQualification::where('employee_id', $id)->update([
+                                'file_path' => Null, 'updated_by' => Auth::user()->id
                             ]);
                         }
                     }
+
+
+                    $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_updated', 'model_instance' => $existing_user, 'request' => $user_data]);
+
+                    $this->moduleUtil->activityLog($existing_user, 'edited', null, ['name' => $existing_user->user_full_name]);
+
+                    event(new UserCreatedOrModified($existing_user, 'updated'));
+
+                    $output = [
+                        'success' => 1,
+                        'msg' => __('user.user_update_success'),
+                    ];
+
+                    DB::commit();
                 }
-                foreach ($offical_documents_types  as  $index => $offical_documents_type) {
-                    if (
-                        $offical_documents_type
-                    ) {
-                        if ($offical_documents_previous_files[$index] && $offical_documents_choosen_files[$index]) {
-                            if (isset($files[$index])) {
-                                $filePath = $files[$index]->store('/officialDocuments');
-
-                                EssentialsOfficialDocument::where('id', $offical_documents_previous_files[$index])->update(['file_path' => $filePath]);
-                            }
-                        } elseif ($offical_documents_choosen_files[$index]) {
-                            $document2 = new EssentialsOfficialDocument();
-                            $document2->type = $offical_documents_type;
-                            $document2->employee_id = $id;
-                            if (isset($files[$index])) {
-                                $filePath = $files[$index]->store('/officialDocuments');
-                                $document2->file_path = $filePath;
-                            }
-                            $document2->save();
-                        }
-                    }
+                if (($is_unique && $is_unique->id != $id)) {
+                    $output = [
+                        'success' => 0,
+                        'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
+                    ];
                 }
-
-                $delete_qualification_file = $request->delete_qualification_file ?? null;
-                if ($request->hasFile('qualification_file')) {
-
-                    $qual = EssentialsEmployeesQualification::where('employee_id', $id)->first();
-                    if (!$qual) {
-                        $qual = new EssentialsEmployeesQualification();
-                    }
-                    $qual_file = request()->file('qualification_file');
-                    $qual_file_path = $qual_file->store('/employee_qualifications');
-
-                    $qual->file_path = $qual_file_path;
-
-                    $qual->save();
-                }
-                if ($delete_qualification_file && $delete_qualification_file == 1) {
-
-                    $filePath = EssentialsEmployeesQualification::where('employee_id', $id)->first()->file_path;
-                    if ($filePath) {
-                        Storage::delete($filePath);
-                        EssentialsEmployeesQualification::where('employee_id', $id)->update([
-                            'file_path' => Null,
-                        ]);
-                    }
-                }
-
-
-                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_updated', 'model_instance' => $user, 'request' => $user_data]);
-
-                $this->moduleUtil->activityLog($user, 'edited', null, ['name' => $user->user_full_name]);
-
-                event(new UserCreatedOrModified($user, 'updated'));
-
-                $output = [
-                    'success' => 1,
-                    'msg' => __('user.user_update_success'),
-                ];
-
-                DB::commit();
-            } else {
-                $output = [
-                    'success' => 0,
-                    'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
-                ];
             }
         } catch (\Exception $e) {
             DB::rollBack();

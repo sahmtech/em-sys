@@ -80,7 +80,8 @@ class EssentialsEmployeeContractController extends Controller
                     ELSE 'Null'
                 END as status
             "),
-            ])->where('essentials_employees_contracts.is_active', 1)
+            ])
+            //->where('essentials_employees_contracts.is_active', 1)
             ->orderby('id', 'desc');
 
         // dd( $employees_contracts->where('employee_id',5385)->get());

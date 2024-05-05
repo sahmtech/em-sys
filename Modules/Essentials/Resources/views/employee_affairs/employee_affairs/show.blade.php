@@ -345,7 +345,7 @@
                                     <div class="col-md-4">
 
                                         <p><strong>@lang('lang_v1.branch'):</strong> {{ $bank_details['branch'] ?? '' }}</p>
-                                        <p><strong>@lang('lang_v1.tax_payer_id'):</strong> {{ $bank_details['tax_payer_id'] ?? '' }}
+                                        {{-- <p><strong>@lang('lang_v1.tax_payer_id'):</strong> {{ $bank_details['tax_payer_id'] ?? '' }} --}}
                                         </p>
                                     </div>
 

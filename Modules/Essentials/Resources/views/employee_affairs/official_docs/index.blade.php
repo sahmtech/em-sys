@@ -229,11 +229,11 @@
                                     ]) !!}
                                 </div>
 
-                                
-                                    <div class="form-group col-md-6">
-                                        <button  class="btn btn-primary" onclick="scanDocument()">@lang('essentials::lang.sacnDoc')</button>
-                                    </div>
-                            
+
+                                <div class="form-group col-md-6">
+                                    <button class="btn btn-primary" onclick="scanDocument()">@lang('essentials::lang.sacnDoc')</button>
+                                </div>
+
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('essentials::lang.file') . ':') !!}
@@ -244,9 +244,9 @@
                                         'style' => 'height:40px',
                                     ]) !!}
 
-                                    
-                                    </div>
-                                         </div>
+
+                                </div>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
@@ -276,11 +276,12 @@
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div class="row" id="file_input_row">
                                 {!! Form::hidden('delete_file', '0', ['id' => 'delete_file_input']) !!}
                                 {!! Form::hidden('doc_id', null, ['id' => 'doc_id']) !!}
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('essentials::lang.file') . ':') !!}
+
                                     {!! Form::file('file', null, [
                                         'class' => 'form-control',
                                     
@@ -288,7 +289,10 @@
                                     ]) !!}
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="button" class="btn btn-danger deleteFile">@lang('messages.delete')</button>
+                                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_official_documents'))
+                                        <button type="button"
+                                            class="btn btn-danger deleteFile">@lang('messages.delete')</button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -311,7 +315,7 @@
 
 @section('javascript')
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/scanner.js/1.0.29/scanner.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/scanner.js/1.0.29/scanner.js"></script>
     <script>
         function scanDocument() {
             Scanner.scan(displayScannedImage);
@@ -319,7 +323,7 @@
 
         function displayScannedImage(success, response) {
             if (success) {
-             
+
                 sendImage(response);
             } else {
                 console.error('Scanning failed:', response);
@@ -328,31 +332,37 @@
 
         function sendImage(imageData) {
             fetch('/official_documents/scan', {
-                method: 'POST',
-                body: JSON.stringify({ scannedDoc: imageData }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Image scanned and saved successfully.');
-                } else {
-                    console.error('Failed to save image.');
-                }
-            })
-            .catch(error => {
-                console.error('Error occurred:', error);
-            });
+                    method: 'POST',
+                    body: JSON.stringify({
+                        scannedDoc: imageData
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Image scanned and saved successfully.');
+                    } else {
+                        console.error('Failed to save image.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error occurred:', error);
+                });
         }
     </script>
     <script type="text/javascript">
+        var userPermissions = {
+            isAdmin: {{ json_encode(auth()->user()->hasRole('Admin#1')) }},
+            canEdit: {{ json_encode(auth()->user()->can('essentials.edit_official_documents')) }},
+            canAdd: {{ json_encode(auth()->user()->can('essentials.add_official_documents')) }}
+        };
         $(document).ready(function() {
 
             $(document).on('click', '.view_doc_file_modal', function(e) {
                 e.preventDefault();
 
-                // Get the data-href attribute containing the URL
                 var fileUrl = $(this).data('href') ?? null;
                 var doc_id = $(this).data('id');
                 $('#doc_id').val(doc_id);
@@ -360,11 +370,20 @@
                     console.log(fileUrl);
                     $('#iframeDocViewer').attr('src', fileUrl);
 
-                    // Show the iframe and hide any other content
+                    if (userPermissions.isAdmin || userPermissions.canEdit) {
+
+                        $('#file_input_row').show();
+                    } else {
+                        $('#file_input_row').hide();
+                    }
                     $('#iframeDocViewer').show();
 
                 } else {
-                    // Hide the iframe and show other content
+                    if (userPermissions.isAdmin || userPermissions.canAdd) {
+                        $('#file_input_row').show();
+                    } else {
+                        $('#file_input_row').hide();
+                    }
                     $('#iframeDocViewer').hide();
 
                 }
@@ -421,7 +440,7 @@
                 enableSaveButton();
             });
 
-            
+
 
             $('#addDocModal').on('shown.bs.modal', function(e) {
                 $('#employees_select').select2({
@@ -460,7 +479,7 @@
                         }
                         if ($('#doc_type_filter').val() && $('#doc_type_filter').val() != 'all') {
                             d.doc_type = $('#doc_type_filter').val();
-                            console.log( $('#doc_type_filter').val());
+                            console.log($('#doc_type_filter').val());
 
                         }
 

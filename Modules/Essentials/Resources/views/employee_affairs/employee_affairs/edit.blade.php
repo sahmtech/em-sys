@@ -23,12 +23,16 @@
 
         <div class="col-md-12 box box-primary">
             <h4>@lang('essentials::lang.basic_info'):</h4>
-              <div class="col-md-3" >
-                        <div class="form-group" >
-                            {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
-                            {!! Form::text('emp_number', $user->emp_number, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('essentials::lang.emp_number')]) !!}
-                        </div>
-             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
+                    {!! Form::text('emp_number', $user->emp_number, [
+                        'class' => 'form-control',
+                        'style' => 'height:36px',
+                        'placeholder' => __('essentials::lang.emp_number'),
+                    ]) !!}
+                </div>
+            </div>
 
             <div class="col-md-3">
                 <div class="form-group">
@@ -61,8 +65,8 @@
                     ]) !!}
                 </div>
             </div>
-            
-            <div class="col-md-3"  >
+
+            <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('user_type', __('user.user_type') . ':*') !!}
                     {!! Form::select(
@@ -83,7 +87,7 @@
                 </div>
             </div>
 
-            
+
 
         </div>
 
@@ -175,11 +179,14 @@
                                                             'style' => 'height:36px; ',
                                                         ]) !!}
                                                     </div>
-                                                    <div class="col-md-1">
-                                                        <button type="button" style="height:36px"
-                                                            class="btn btn-danger remove_document">{{ __('messages.delete') }}
-                                                        </button>
-                                                    </div>
+
+                                                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_official_documents'))
+                                                        <div class="col-md-1">
+                                                            <button type="button" style="height:36px"
+                                                                class="btn btn-danger remove_document">{{ __('messages.delete') }}
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -201,10 +208,11 @@
                 </div>
             </div>
         </div>
-        
 
 
-        <div class="modal fade" data-file-path="{{ !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? '' : '' }}"
+
+        <div class="modal fade"
+            data-file-path="{{ !empty($user->bank_details) ? json_decode($user->bank_details, true)['Iban_file'] ?? '' : '' }}"
             id="ibanFilePopupModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -233,15 +241,18 @@
                                         'style' => 'height:36px; ',
                                         'accept' => '.*',
                                     ]) !!}
-                                      @if(!empty(json_decode($user->bank_details, true)['Iban_file']))
-                                        <input type="hidden" name="existing_iban_file" value="{{ json_decode($user->bank_details, true)['Iban_file'] }}">
+                                    @if (!empty(json_decode($user->bank_details, true)['Iban_file']))
+                                        <input type="hidden" name="existing_iban_file"
+                                            value="{{ json_decode($user->bank_details, true)['Iban_file'] }}">
                                     @endif
 
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <button type="button" class="btn btn-danger deleteIbanFile">@lang('messages.delete')</button>
-                            </div>
+                            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_official_documents'))
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-danger deleteIbanFile">@lang('messages.delete')</button>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -253,8 +264,8 @@
             </div>
         </div>
 
-        <div class="modal fade" data-file-path="{{ $qualification->file_path ?? '' }}" id="filePopupModal" tabindex="-1"
-            role="dialog" aria-labelledby="gridSystemModalLabel">
+        <div class="modal fade" data-file-path="{{ $qualification->file_path ?? '' }}" id="filePopupModal"
+            tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
 
@@ -286,9 +297,11 @@
 
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <button type="button" class="btn btn-danger deleteFile">@lang('messages.delete')</button>
-                            </div>
+                            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_employee_qualifications'))
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-danger deleteFile">@lang('messages.delete')</button>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -325,24 +338,28 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="form-group">
-                                    {!! Form::file('contract_file',
+                                    {!! Form::file(
+                                        'contract_file',
                                     
-
-                                     [
-                                        'class' => 'form-control',
-                                        'style' => 'height:36px; ',
-                                        'accept' => '.*',
-                                    ]) !!}
-                                     @if(!empty($contract->file_path))
-                                        <input type="hidden" name="existing_contract_file" value="{{ $contract->file_path }}">
+                                        [
+                                            'class' => 'form-control',
+                                            'style' => 'height:36px; ',
+                                            'accept' => '.*',
+                                        ],
+                                    ) !!}
+                                    @if (!empty($contract->file_path))
+                                        <input type="hidden" name="existing_contract_file"
+                                            value="{{ $contract->file_path }}">
                                     @endif
 
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <button type="button"
-                                    class="btn btn-danger deleteContractFile">@lang('messages.delete')</button>
-                            </div>
+                            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_employee_contracts'))
+                                <div class="col-md-3">
+                                    <button type="button"
+                                        class="btn btn-danger deleteContractFile">@lang('messages.delete')</button>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -353,15 +370,15 @@
                 </div>
             </div>
         </div>
- 
+
 
         {!! Form::close() !!}
-      
+
     @stop
     @section('javascript')
-    
-    <script>
-          $(document).ready(function() {
+
+        <script>
+            $(document).ready(function() {
                 let contractFileChanged = false;
 
                 $('#ContractFileLink').on('click', function(e) {
@@ -427,8 +444,7 @@
                         'none';
                 });
             });
-
-    </script>
+        </script>
         <script type="text/javascript">
             $(document).ready(function() {
                 let ibanFileChanged = false;
