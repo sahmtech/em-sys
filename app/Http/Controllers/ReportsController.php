@@ -81,7 +81,7 @@ class ReportsController extends Controller
         }
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $all_expired_residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id',$userIds)
+        $all_expired_residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id', $userIds)
 
             ->where('type', 'residence_permit')
             ->where('is_active', 1)
@@ -217,7 +217,7 @@ class ReportsController extends Controller
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
 
-        $residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id',$userIds)->where(
+        $residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id', $userIds)->where(
             'type',
             'residence_permit'
         )
@@ -669,7 +669,7 @@ class ReportsController extends Controller
             ->pluck('name', 'id');
 
 
-            $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
+        $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
             ->where(function ($query) use ($userIds) {
                 $query->whereHas('user', function ($query1) use ($userIds) {
@@ -696,74 +696,74 @@ class ReportsController extends Controller
         if (request()->ajax()) {
 
             return Datatables::of($insurances)
-            ->addColumn('user', function ($row) {
-                $item = '';
+                ->addColumn('user', function ($row) {
+                    $item = '';
 
-                if ($row->employee_id != null) {
-                    $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
-                    //  $item = $row->english_name;
-                } else if ($row->employee_id == null) {
-                    $item = $row->essentialsEmployeesFamily->full_name ?? '';
-                }
+                    if ($row->employee_id != null) {
+                        $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
+                        //  $item = $row->english_name;
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->full_name ?? '';
+                    }
 
-                return $item;
-            })
+                    return $item;
+                })
 
-            ->addColumn('english_name', function ($row) {
-                $item = '';
+                ->addColumn('english_name', function ($row) {
+                    $item = '';
 
-                if ($row->employee_id != null) {
-                    $item = $row->user->english_name  ?? '';
-                }
+                    if ($row->employee_id != null) {
+                        $item = $row->user->english_name  ?? '';
+                    }
 
-                return $item;
-            })
+                    return $item;
+                })
 
-            ->addColumn('dob', function ($row) {
-                $item = '';
-                if ($row->employee_id != null) {
-                    $item = $row->user->dob ?? '';
-                } else if ($row->employee_id == null) {
-                    $item = $row->essentialsEmployeesFamily->dob ?? '';
-                }
-                return $item;
-            })
+                ->addColumn('dob', function ($row) {
+                    $item = '';
+                    if ($row->employee_id != null) {
+                        $item = $row->user->dob ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->dob ?? '';
+                    }
+                    return $item;
+                })
 
-            ->editColumn('fixnumber', function ($row) {
-                $item = '';
-                if ($row->employee_id != null) {
-                    $item = $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
-                        ->first()->unified_number ?? '';
-                } else if ($row->employee_id == null) {
-                    $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
-                        ->first()->unified_number ?? '';
-                }
-                return  $item;
-            })
+                ->editColumn('fixnumber', function ($row) {
+                    $item = '';
+                    if ($row->employee_id != null) {
+                        $item = $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
+                            ->first()->unified_number ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
+                            ->first()->unified_number ?? '';
+                    }
+                    return  $item;
+                })
 
 
-            ->addColumn('proof_number', function ($row) {
-                $item = '';
-                if ($row->employee_id != null) {
-                    $item = $row->user->id_proof_number ?? '';
-                } else if ($row->employee_id == null) {
-                    $item = $row->essentialsEmployeesFamily->eqama_number ?? '';
-                }
+                ->addColumn('proof_number', function ($row) {
+                    $item = '';
+                    if ($row->employee_id != null) {
+                        $item = $row->user->id_proof_number ?? '';
+                    } else if ($row->employee_id == null) {
+                        $item = $row->essentialsEmployeesFamily->eqama_number ?? '';
+                    }
 
-                return $item;
-            })
+                    return $item;
+                })
 
-            ->editColumn('insurance_company_id', function ($row) use ($insurance_companies) {
-                $item = $insurance_companies[$row->insurance_company_id] ?? '';
+                ->editColumn('insurance_company_id', function ($row) use ($insurance_companies) {
+                    $item = $insurance_companies[$row->insurance_company_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('insurance_classes_id', function ($row) use ($insurance_classes) {
-                $item = $insurance_classes[$row->insurance_classes_id] ?? '';
+                    return $item;
+                })
+                ->editColumn('insurance_classes_id', function ($row) use ($insurance_classes) {
+                    $item = $insurance_classes[$row->insurance_classes_id] ?? '';
 
-                return $item;
-            })
-          
+                    return $item;
+                })
+
 
 
                 ->filterColumn('user', function ($query, $keyword) {
@@ -1289,6 +1289,7 @@ class ReportsController extends Controller
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
                         ->where('type', 'residence_permit')
+                        ->where('is_active', 1)
                         ->first();
                     if ($residencePermitDocument) {
 

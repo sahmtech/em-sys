@@ -17,7 +17,7 @@
 
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="expired_residencies">
+                            <table class="table table-bordered table-striped" id="late_for_vacation">
                                 <thead>
                                     <tr>
 
@@ -51,7 +51,7 @@
                     expired_residencies.ajax.reload();
                 }
 
-                expired_residencies = $('#expired_residencies').DataTable({
+                expired_residencies = $('#late_for_vacation').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {

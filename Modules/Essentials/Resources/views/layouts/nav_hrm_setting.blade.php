@@ -20,39 +20,39 @@
                 <ul class="nav navbar-nav">
 
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_countries') )
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_countries'))
                         <li @if (request()->segment(2) == 'countries') class="active" @endif>
                             <a href="{{ route('countries') }}">@lang('essentials::lang.countries')</a>
                         </li>
                     @endif
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_cities'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_cities'))
                         <li @if (request()->segment(2) == 'cities') class="active" @endif>
                             <a href="{{ route('cities') }}">@lang('essentials::lang.cities')</a>
                         </li>
                     @endif
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_regions'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_regions'))
                         <li @if (request()->segment(2) == 'regions') class="active" @endif>
                             <a href="{{ route('regions') }}">@lang('essentials::lang.regions')</a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_bank_accounts'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_bank_accounts'))
                         <li @if (request()->segment(2) == 'bank_accounts') class="active" @endif>
                             <a href="{{ route('bank_accounts') }}">@lang('essentials::lang.bank_accounts')</a>
                         </li>
                     @endif
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_holidays'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_holidays'))
                         <li @if (request()->segment(2) == 'holiday') class="active" @endif>
                             <a
                                 href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']) }}">@lang('essentials::lang.holiday')</a>
                         </li>
                     @endif
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_travel_categories'))
-                        <li @if (request()->segment(2) == 'travel_categories') class="active" @endif>
-                            <a href="{{ route('travel_categories') }}">@lang('essentials::lang.travel_ticket_categories')</a>
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_travel_categories'))
+                        <li @if (request()->segment(1) == 'hrm' && request()->segment(2) == 'travel_categories') class="active" @endif>
+                            <a href="{{ route('hrm.travel_categories') }}">@lang('essentials::lang.travel_ticket_categories')</a>
                         </li>
                     @endif
 
@@ -62,29 +62,25 @@
                         </li>
                     @endif --}}
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_academic_specializations')) 
-                   
-                   
-                    <li @if (request()->segment(2) == 'academic_specializations') class="active" @endif>
-                        <a href="{{ route('academic_specializations') }}">@lang('essentials::lang.academic_specializations')</a>
-                    </li>
-                    @endif 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_professions')) 
-                   
-                   
-                    <li @if (request()->segment(2) == 'professions') class="active" @endif>
-                        <a href="{{ route('professions') }}">@lang('essentials::lang.job_titles')</a>
-                    </li>
-                    @endif 
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_academic_specializations'))
+                        <li @if (request()->segment(2) == 'academic_specializations') class="active" @endif>
+                            <a href="{{ route('academic_specializations') }}">@lang('essentials::lang.academic_specializations')</a>
+                        </li>
+                    @endif
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_professions'))
+                        <li @if (request()->segment(2) == 'professions') class="active" @endif>
+                            <a href="{{ route('professions') }}">@lang('essentials::lang.job_titles')</a>
+                        </li>
+                    @endif
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.view_allowance_and_deduction'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_allowance_and_deduction'))
                         <li @if (request()->segment(2) == 'allowances_and_deductions') class="active" @endif>
                             <a
                                 href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'index']) }}">@lang('essentials::lang.allowances_and_deductions')</a>
                         </li>
                     @endif
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_contract_types'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_contract_types'))
                         <li @if (request()->segment(2) == 'contract_types') class="active" @endif>
                             <a href="{{ route('contract_types') }}">@lang('essentials::lang.contract_types')</a>
                         </li>
@@ -96,7 +92,7 @@
                         </li>
                     @endif --}}
 
-                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_attendance_status'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_attendance_status'))
                         <li @if (request()->segment(2) == 'attendanceStatus') class="active" @endif>
                             <a href="{{ route('attendanceStatus') }}">@lang('essentials::lang.attendance_status')</a>
                         </li>

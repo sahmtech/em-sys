@@ -26,7 +26,7 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.organizational_structure'),
                         'default' => false,
                     ],
-                    
+
                     [
                         'value' => 'ceomanagment.delegatingManager_name',
                         'label' => __('ceomanagment::lang.delegatingManager_name'),
@@ -67,17 +67,17 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.view_CEO_requests'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'ceomanagment.view_CEO_escalate_requests',
-                        'label' => __('ceomanagment::lang.view_CEO_escalate_requests'),
-                        'default' => false,
-                    ],
+                    // [
+                    //     'value' => 'ceomanagment.view_CEO_escalate_requests',
+                    //     'label' => __('ceomanagment::lang.view_CEO_escalate_requests'),
+                    //     'default' => false,
+                    // ],
                     [
                         'value' => 'ceomanagment.change_request_status',
                         'label' => __('ceomanagment::lang.change_request_status'),
                         'default' => false,
                     ],
-                 
+
                     [
                         'value' => 'ceomanagment.return_request',
                         'label' => __('ceomanagment::lang.return_request'),
@@ -121,7 +121,11 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.delete_requests_type'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'ceomanagment.delete_request_type_tasks',
+                        'label' => __('ceomanagment::lang.delete_request_type_tasks'),
+                        'default' => false,
+                    ],
 
                     [
                         'value' => 'ceomanagment.view_procedures_for_employee',
