@@ -625,10 +625,18 @@
 @stop
 
 @section('javascript')
-    <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/client.js') }}"></script>
-    <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
+    {{-- <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script> --}}
+    <script src="{{ asset('js/pos.js') }}?v={{ filemtime(public_path('js/pos.js')) }}"></script>
+
+    {{-- <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script> --}}
+    <script src="{{ asset('js/product.js') }}?v={{ filemtime(public_path('js/product.js')) }}"></script>
+
+    {{-- <script src="{{ asset('js/client.js') }}"></script> --}}
+    <script src="{{ asset('js/client.js') }}?v={{ filemtime(public_path('js/client.js')) }}"></script>
+
+    {{-- <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script> --}}
+    <script src="{{ asset('js/opening_stock.js') }}?v={{ filemtime(public_path('js/opening_stock.js')) }}"></script>
+
 
 
     <script>
