@@ -9,7 +9,7 @@
 	@endphp
 	<div class="{{$col_class}}">
 		<div class="form-group">
-			{!! Form::label("amount_$row_index" ,__('sale.amount') . ':*') !!}
+			{!! Form::label("amount_$row_index" ,__('sale.amount') . '  ') !!}  <span style="color: red; font-size:15px">*</span>
 			<div class="input-group">
 				<span class="input-group-addon">
 					<i class="fas fa-money-bill-alt"></i>
@@ -18,22 +18,24 @@
 			</div>
 		</div>
 	</div>
+	
 	@if(!empty($show_date))
 	<div class="{{$col_class}}">
 		<div class="form-group">
-			{!! Form::label("paid_on_$row_index" , __('lang_v1.paid_on') . ':*') !!}
+			{!! Form::label("paid_on_from_$row_index" , __('lang_v1.paid_on_from') . '  ') !!}  <span style="color: red; font-size:15px">*</span>
 			<div class="input-group">
               <span class="input-group-addon">
                 <i class="fa fa-calendar"></i>
               </span>
-              {!! Form::text("payment[$row_index][paid_on]", isset($payment_line['paid_on']) ? @format_datetime($payment_line['paid_on']) : @format_datetime('now'), ['class' => 'form-control paid_on', 'readonly', 'required']); !!}
+              {!! Form::text("payment[$row_index][paid_on_from]", isset($payment_line['paid_on_from']) ? @format_datetime($payment_line['paid_on_from']) : @format_datetime('now'), ['class' => 'form-control paid_on', 'readonly', 'required']); !!}
             </div>
 		</div>
 	</div>
+	
 	@endif
 	<div class="{{$col_class}}">
 		<div class="form-group">
-			{!! Form::label("method_$row_index" , __('lang_v1.payment_method') . ':*') !!}
+			{!! Form::label("method_$row_index" , __('lang_v1.payment_method') . '  ') !!} <span style="color: red; font-size:15px">*</span>
 			<div class="input-group">
 				<span class="input-group-addon">
 					<i class="fas fa-money-bill-alt"></i>
@@ -50,6 +52,21 @@
 		</div>
 	</div>
 
+
+	@if(!empty($show_date))
+	<div class="{{$col_class}}">
+		<div class="form-group">
+			{!! Form::label("paid_on_to_$row_index" , __('lang_v1.paid_on_to') . '  ') !!}  <span style="color: red; font-size:15px">*</span>
+			<div class="input-group">
+              <span class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </span>
+              {!! Form::text("payment[$row_index][paid_on_to]", isset($payment_line['paid_on_to']) ? @format_datetime($payment_line['paid_on_to']) : @format_datetime('now'), ['class' => 'form-control paid_on', 'readonly', 'required']); !!}
+            </div>
+		</div>
+	</div>
+	
+	@endif
 	@php
             $pos_settings = !empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
             $enable_cash_denomination_for_payment_methods = !empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];

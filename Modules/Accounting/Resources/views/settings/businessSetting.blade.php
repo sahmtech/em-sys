@@ -20,13 +20,13 @@
         <div class="col-xs-12 pos-tab-container">
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu">
                 <div class="list-group">
-                    <a href="#" class="list-group-item text-center active">@lang('business.business')</a>
+                    {{-- <a href="#" class="list-group-item text-center active">@lang('business.business')</a>
                     <a href="#" class="list-group-item text-center">@lang('business.tax') @show_tooltip(__('tooltip.business_tax'))</a>
                     <a href="#" class="list-group-item text-center">@lang('business.product')</a>
-                    <a href="#" class="list-group-item text-center">@lang('contact.contact')</a>
-                    <a href="#" class="list-group-item text-center">@lang('lang_v1.bank_accounts')</a>
+                    <a href="#" class="list-group-item text-center">@lang('contact.contact')</a> --}}
+                    <a href="#" class="list-group-item text-center active">@lang('lang_v1.bank_accounts')</a>
                     <a href="#" class="list-group-item text-center">@lang('business.sale')</a>
-                    <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a>
+                    {{-- <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a> 
                     <a href="#" class="list-group-item text-center">@lang('purchase.purchases')</a>
                     <a href="#" class="list-group-item text-center">@lang('lang_v1.payment')</a>
                     <a href="#" class="list-group-item text-center">@lang('business.dashboard')</a>
@@ -36,54 +36,54 @@
                     <a href="#" class="list-group-item text-center">@lang('lang_v1.sms_settings')</a>
                     <a href="#" class="list-group-item text-center">@lang('lang_v1.reward_point_settings')</a>
                     <a href="#" class="list-group-item text-center">@lang('lang_v1.modules')</a>
-                    <a href="#" class="list-group-item text-center">@lang('lang_v1.custom_labels')</a>
+                    <a href="#" class="list-group-item text-center">@lang('lang_v1.custom_labels')</a> --}}
                 </div>
             </div>
             <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                 <!-- tab 1 start -->
-                @include('business.partials.settings_business')
+                {{-- @include('business.partials.settings_business') --}}
                 <!-- tab 1 end -->
                 <!-- tab 2 start -->
-                @include('business.partials.settings_tax')
+                {{-- @include('business.partials.settings_tax') --}}
                 <!-- tab 2 end -->
                 <!-- tab 3 start -->
-                @include('business.partials.settings_product')
+                {{-- @include('business.partials.settings_product') --}}
 
-                @include('business.partials.settings_contact')
+                {{-- @include('business.partials.settings_contact') --}}
 
                 @include('business.partials.settings_bank_accounts')
                 <!-- tab 3 end -->
                 <!-- tab 4 start -->
                 @include('business.partials.settings_sales')
-                @include('business.partials.settings_pos')
+                {{-- @include('business.partials.settings_pos') --}}
                 <!-- tab 4 end -->
                 <!-- tab 5 start -->
-                @include('business.partials.settings_purchase')
+                {{-- @include('business.partials.settings_purchase') --}}
 
-                @include('business.partials.settings_payment')
+                {{-- @include('business.partials.settings_payment') --}}
                 <!-- tab 5 end -->
                 <!-- tab 6 start -->
-                @include('business.partials.settings_dashboard')
+                {{-- @include('business.partials.settings_dashboard') --}}
                 <!-- tab 6 end -->
                 <!-- tab 7 start -->
-                @include('business.partials.settings_system')
+                {{-- @include('business.partials.settings_system') --}}
                 <!-- tab 7 end -->
                 <!-- tab 8 start -->
-                @include('business.partials.settings_prefixes')
+                {{-- @include('business.partials.settings_prefixes') --}}
                 <!-- tab 8 end -->
                 <!-- tab 9 start -->
-                @include('business.partials.settings_email')
+                {{-- @include('business.partials.settings_email') --}}
                 <!-- tab 9 end -->
                 <!-- tab 10 start -->
-                @include('business.partials.settings_sms')
+                {{-- @include('business.partials.settings_sms') --}}
                 <!-- tab 10 end -->
                 <!-- tab 11 start -->
-                @include('business.partials.settings_reward_point')
+                {{-- @include('business.partials.settings_reward_point') --}}
                 <!-- tab 11 end -->
                 <!-- tab 12 start -->
-                @include('business.partials.settings_modules')
+                {{-- @include('business.partials.settings_modules') --}}
                 <!-- tab 12 end -->
-                @include('business.partials.settings_custom_labels')
+                {{-- @include('business.partials.settings_custom_labels') --}}
             </div>
         </div>
         <!--  </pos-tab-container> -->

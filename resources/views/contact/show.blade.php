@@ -26,7 +26,7 @@
             <div class="info_col">
                 @include('contact.contact_basic_info')
             </div>
-            <div class="info_col">
+            <div class="info_col" >
                 @include('contact.contact_more_info')
             </div>
             @if( $contact->type != 'customer')
@@ -146,7 +146,7 @@
                                     @php
                                         $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
                                     @endphp
-                                    @include($value['tab_menu_path'], $tab_data)
+                                    {{-- @include($value['tab_menu_path'], $tab_data) --}}
                                 @endif
                             @endforeach
                         @endforeach
@@ -289,7 +289,7 @@
                                     @php
                                         $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
                                     @endphp
-                                    @include($value['tab_content_path'], $tab_data)
+                                    {{-- @include($value['tab_content_path'], $tab_data) --}}
                                 @endif
                             @endforeach
                         @endforeach
@@ -371,7 +371,7 @@ $(document).ready( function(){
 
     $('#contact_id').change( function() {
         if ($(this).val()) {
-            window.location = "{{url('/contacts')}}/" + $(this).val();
+            window.location = "{{url('/sale/contacts')}}/" + $(this).val();
         }
     });
 
@@ -566,7 +566,7 @@ $(document).on('click', '#print_ledger_pdf', function() {
     @foreach($contact_view_tabs as $key => $tabs)
         @foreach ($tabs as $index => $value)
             @if(!empty($value['module_js_path']))
-                @include($value['module_js_path'])
+                {{-- @include($value['module_js_path']) --}}
             @endif
         @endforeach
     @endforeach

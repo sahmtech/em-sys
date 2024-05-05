@@ -5,6 +5,9 @@ use App\Contact;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountReportsController;
 use App\Http\Controllers\AccountTypeController;
+use App\Http\Controllers\BankAccountsController;
+
+
 // use App\Http\Controllers\Auth;
 use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BarcodeController;
@@ -421,6 +424,15 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/test-email', [BusinessController::class, 'testEmailConfiguration']);
     Route::post('/test-sms', [BusinessController::class, 'testSmsConfiguration']);
     Route::get('/business/settings', [BusinessController::class, 'getBusinessSettings'])->name('business.getBusinessSettings');
+    
+    
+    Route::get('/create-bank-account', [BankAccountsController::class, 'create'])->name('create-bank-account');
+    Route::post('/save-bank-account', [BankAccountsController::class, 'store']);
+    Route::get('/edit-bank-account/{id}', [BankAccountsController::class, 'edit']);
+    Route::post('/update-bank-account/{id}', [BankAccountsController::class, 'update']);
+    Route::get('/delete-bank-account/{id}', [BankAccountsController::class, 'delete']);
+
+    
     Route::post('/business/update', [BusinessController::class, 'postBusinessSettings'])->name('business.postBusinessSettings');
     Route::get('/user/profile', [UserController::class, 'getProfile'])->name('user.getProfile');
     Route::post('/user/update', [UserController::class, 'updateProfile'])->name('user.updateProfile');
@@ -482,7 +494,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/products/check_product_sku', [ProductController::class, 'checkProductSku']);
     Route::post('/products/validate_variation_skus', [ProductController::class, 'validateVaritionSkus']); //validates multiple skus at once
     Route::get('/products/quick_add', [ProductController::class, 'quickAdd']);
-    Route::post('/products/save_quick_product', [ProductController::class, 'saveQuickProduct']);
+    Route::post('/products/save_quick_product', [ProductController::class, 'saveQuickProduct'])->name('save_Quick_Product');
     Route::get('/products/get-combo-product-entry-row', [ProductController::class, 'getComboProductEntryRow']);
     Route::post('/products/toggle-woocommerce-sync', [ProductController::class, 'toggleWooCommerceSync']);
 
@@ -911,4 +923,5 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
         ->name('packing.downloadPdf');
     Route::get('/sells/invoice-url/{id}', [SellPosController::class, 'showInvoiceUrl']);
     Route::get('/show-notification/{id}', [HomeController::class, 'showNotification']);
+
 });

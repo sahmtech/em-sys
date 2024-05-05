@@ -24,21 +24,21 @@
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>
-                {{ $sell_line->product->name }}
-                @if( $sell_line->product->type == 'variable')
-                - {{ $sell_line->variations->product_variation->name ?? ''}}
-                - {{ $sell_line->variations->name ?? ''}},
+                {{ $sell_line?->product?->name }}
+                @if( $sell_line?->product?->type == 'variable')
+                - {{ $sell_line?->variations?->product_variation?->name ?? ''}}
+                - {{ $sell_line?->variations?->name ?? ''}},
                 @endif
-                {{ $sell_line->variations->sub_sku ?? ''}}
+                {{ $sell_line?->variations?->sub_sku ?? ''}}
                 @php
-                $brand = $sell_line->product->brand;
+                $brand = $sell_line?->product?->brand;
                 @endphp
-                @if(!empty($brand->name))
-                , {{$brand->name}}
+                @if(!empty($brand?->name))
+                , {{$brand?->name}}
                 @endif
 
-                @if(!empty($sell_line->sell_line_note))
-                <br> {{$sell_line->sell_line_note}}
+                @if(!empty($sell_line?->sell_line_note))
+                <br> {{$sell_line?->sell_line_note}}
                 @endif
                 @if($is_warranty_enabled && !empty($sell_line->warranties->first()) )
                     <br><small>{{$sell_line->warranties->first()->display_name ?? ''}} - {{ @format_date($sell_line->warranties->first()->getEndDate($sell->transaction_date))}}</small>
@@ -67,12 +67,12 @@
                 @else
                     <span class="display_currency" data-currency_symbol="false" data-is_quantity="true">{{ $sell_line->quantity }}</span> 
                 @endif
-                    @if(!empty($sell_line->sub_unit)) {{$sell_line->sub_unit->short_name}} @else {{$sell_line->product->unit->short_name}} @endif
+                    @if(!empty($sell_line?->sub_unit)) {{$sell_line?->sub_unit?->short_name}} @else {{$sell_line?->product?->unit?->short_name}} @endif
 
-                @if(!empty($sell_line->product->second_unit) && $sell_line->secondary_unit_quantity != 0)
+                @if(!empty($sell_line?->product?->second_unit) && $sell_line?->secondary_unit_quantity != 0)
                     <br>
                     @if(!empty($for_ledger))
-                        {{@format_quantity($sell_line->secondary_unit_quantity)}}
+                        {{@format_quantity($sell_line?->secondary_unit_quantity)}}
                     @else
                         <span class="display_currency" data-is_quantity="true" data-currency_symbol="false">{{ $sell_line->secondary_unit_quantity }}</span> 
                     @endif

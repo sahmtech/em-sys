@@ -76,6 +76,10 @@ class TransactionUtil extends Util
             'additional_notes' => !empty($input['sale_note']) ? $input['sale_note'] : null,
             'staff_note' => !empty($input['staff_note']) ? $input['staff_note'] : null,
             'created_by' => $user_id,
+            'invoice_type' => !empty($input['invoice_type']) ? $input['invoice_type'] : null,
+            'purchase_order_number' => !empty($input['purchase_order_number']) ? $input['purchase_order_number'] : null,
+            'delegate' => !empty($input['delegate']) ? $input['delegate'] : null,
+            'Ref' => !empty($input['Ref']) ? $input['Ref'] : null,
             'document' => !empty($input['document']) ? $input['document'] : null,
             'custom_field_1' => !empty($input['custom_field_1']) ? $input['custom_field_1'] : null,
             'custom_field_2' => !empty($input['custom_field_2']) ? $input['custom_field_2'] : null,
@@ -703,7 +707,7 @@ class TransactionUtil extends Util
      * @param  array  $payments
      * @return bool
      */
-    public function createOrUpdatePaymentLines($transaction, $payments, $business_id = null, $user_id = null, $uf_data = true)
+    public function createOrUpdatePaymentLines($transaction, $payments, $business_id = null, $user_id = null, $uf_data = true, $input = null)
     {
         $payments_formatted = [];
         $edit_ids = [0];
@@ -722,6 +726,8 @@ class TransactionUtil extends Util
         if ($transaction->type == 'purchase') {
             $prefix_type = 'purchase_payment';
         }
+
+
         $contact_balance = Contact::where('id', $transaction->contact_id)->value('balance');
         $denominations = [];
         foreach ($payments as $payment) {
@@ -750,6 +756,17 @@ class TransactionUtil extends Util
                         $paid_on = \Carbon::now()->toDateTimeString();
                     }
 
+                    if (!empty($payment['paid_on_from'])) {
+                        $paid_on_from = $uf_data ? $this->uf_date($payment['paid_on_from'], true) : $payment['paid_on_from'];
+                    } else {
+                        $paid_on_from = \Carbon::now()->toDateTimeString();
+                    }
+
+                    if (!empty($payment['paid_on_to'])) {
+                        $paid_on_to = $uf_data ? $this->uf_date($payment['paid_on_to'], true) : $payment['paid_on_to'];
+                    } else {
+                        $paid_on_to = \Carbon::now()->toDateTimeString();
+                    }
                     $payment_data = [
                         'amount' => $payment_amount,
                         'method' => $payment['method'],
@@ -765,10 +782,15 @@ class TransactionUtil extends Util
                         'bank_account_number' => isset($payment['bank_account_number']) ? $payment['bank_account_number'] : null,
                         'note' => isset($payment['note']) ? $payment['note'] : null,
                         'paid_on' => $paid_on,
+                        'paid_on_to' => $paid_on_to,
+                        'transfer_account' => isset($payment['transfer_account']) ? $payment['transfer_account'] : null,
+                        'paid_on_from' => $paid_on_from,
+                        'cost_center' => $input['cost_center_id'],
                         'created_by' => empty($user_id) ? auth()->user()->id : $user_id,
                         'payment_for' => $transaction->contact_id,
                         'payment_ref_no' => $payment_ref_no,
-                        'account_id' => !empty($payment['account_id']) && $payment['method'] != 'advance' ? $payment['account_id'] : null,
+                        // 'account_id' => !empty($payment['account_id']) && $payment['method'] != 'advance' ? $payment['account_id'] : null,
+                        'account_id' => !empty($input['account_id']) ? $input['account_id'] : null,
                     ];
 
                     for ($i = 1; $i < 8; $i++) {
@@ -811,7 +833,7 @@ class TransactionUtil extends Util
             $payment_lines = $transaction->payment_lines;
             foreach ($account_transactions as $account_transaction) {
                 $payment = $payment_lines->where('payment_ref_no', $account_transaction['payment_ref_no'])->first();
-
+               
                 if (!empty($payment)) {
                     event(new TransactionPaymentAdded($payment, $account_transaction));
                 }
@@ -5905,6 +5927,7 @@ class TransactionUtil extends Util
 
         $payment_types = $this->payment_types();
 
+        // dd($payment_types,$inputs);
         if (!array_key_exists($inputs['method'], $payment_types)) {
             throw new \Exception('Payment method not found');
         }

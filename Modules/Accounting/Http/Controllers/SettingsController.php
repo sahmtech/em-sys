@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\BankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -15,7 +16,11 @@ use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\ModuleUtil;
 use App\Business;
 use App\Company;
+use App\System;
+use App\TaxRate;
+use App\Unit;
 use App\User;
+use DateTimeZone;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -41,7 +46,7 @@ class SettingsController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_settings = auth()->user()->can('accounting.settings');
@@ -73,7 +78,7 @@ class SettingsController extends Controller
     public function resetData()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -119,7 +124,7 @@ class SettingsController extends Controller
     public function saveSettings(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -258,7 +263,7 @@ class SettingsController extends Controller
     protected function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -295,5 +300,77 @@ class SettingsController extends Controller
         ];
 
         return $output;
+    }
+
+
+    public function getBusinessSettings_accounting()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('business_settings.access'))) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+        $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+        $timezone_list = [];
+        foreach ($timezones as $timezone) {
+            $timezone_list[$timezone] = $timezone;
+        }
+        $company_id = Session::get('selectedCompanyId');
+
+        $business_id = request()->session()->get('user.business_id');
+        $business = Business::where('id', $business_id)->first();
+
+        // $currencies = $this->businessUtil->allCurrencies();
+        $tax_details = TaxRate::forBusinessDropdown($business_id);
+        $tax_rates = $tax_details['tax_rates'];
+
+        $months = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $months[$i] = __('business.months.' . $i);
+        }
+
+        $accounting_methods = [
+            'fifo' => __('business.fifo'),
+            'lifo' => __('business.lifo'),
+        ];
+        $commission_agent_dropdown = [
+            '' => __('lang_v1.disable'),
+            'logged_in_user' => __('lang_v1.logged_in_user'),
+            'user' => __('lang_v1.select_from_users_list'),
+            'cmsn_agnt' => __('lang_v1.select_from_commisssion_agents_list'),
+        ];
+
+        $units_dropdown = Unit::forDropdown($business_id, true);
+
+        $date_formats = Business::date_formats();
+
+        $shortcuts = json_decode($business->keyboard_shortcuts, true);
+
+        // $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business->pos_settings, true);
+
+        // $email_settings = empty($business->email_settings) ? $this->businessUtil->defaultEmailSettings() : $business->email_settings;
+
+        // $sms_settings = empty($business->sms_settings) ? $this->businessUtil->defaultSmsSettings() : $business->sms_settings;
+
+        $modules = $this->moduleUtil->availableModules();
+
+        // $theme_colors = $this->theme_colors;
+
+        // $mail_drivers = $this->mailDrivers;
+
+        $allow_superadmin_email_settings = System::getProperty('allow_email_settings_to_businesses');
+
+        $custom_labels = !empty($business->custom_labels) ? json_decode($business->custom_labels, true) : [];
+
+        $common_settings = !empty($business->common_settings) ? $business->common_settings : [];
+
+        $weighing_scale_setting = !empty($business->weighing_scale_setting) ? $business->weighing_scale_setting : [];
+
+        $payment_types = $this->moduleUtil->payment_types(null, false, $business_id);
+
+        $bankAccounts = BankAccount::where('business_id',$business_id)->where('company_id',$company_id)->get();
+
+        return view('accounting::settings.businessSetting', compact('business', 'bankAccounts', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts',  'modules', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
+        // return view('settings.businessSetting', compact('business','bankAccounts', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
     }
 }

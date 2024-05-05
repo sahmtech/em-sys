@@ -355,7 +355,8 @@ class ProductUtil extends Util
         $product = Product::find($product_id);
 
         //Check if stock is enabled or not.
-        if ($product->enable_stock == 1 && $qty_difference != 0) {
+ 
+            if ($product->enable_stock == 1 && $qty_difference != 0) {
             $variation = Variation::where('id', $variation_id)
                 ->where('product_id', $product_id)
                 ->first();
@@ -1102,6 +1103,7 @@ class ProductUtil extends Util
             $location_id = $key;
             $purchase_total = 0;
             //Check if valid location
+           
             if (array_key_exists($location_id, $locations)) {
                 $purchase_lines = [];
 

@@ -41,6 +41,8 @@
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">@lang('housingmovements::lang.car')</th>
+                                    <th style="text-align: center;">@lang('housingmovements::lang.plate_number')</th>
+                    
                                     <th style="text-align: center;">@lang('housingmovements::lang.current_speedometer')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.next_change_oil')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.invoice_no')</th>
@@ -92,6 +94,10 @@
                     {
                         "data": "car"
                     },
+                    {
+                        "data": "plate_number"
+                    },
+
                     {
                         "data": "current_speedometer"
                     },
