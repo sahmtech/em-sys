@@ -613,7 +613,7 @@
                             value="{{ $business_details->sell_price_tax }}">
 
                         <!-- Keeps count of product rows -->
-                        <input type="hidden" id="product_row_count" value="0">
+                        <input type="hidden" id="product_row_count" value="1">
                         @php
                             $hide_tax = '';
                             if (session()->get('business.enable_inline_tax') == 0) {
