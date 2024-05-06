@@ -537,9 +537,7 @@ class VisaCardController extends Controller
 
 
 
-            return response()->view('internationalrelations::visa.show', compact('visaId', 'workersOptions',));
-
-            return response()->view('internationalrelations::visa.show', compact('visaId', 'workers',));
+            return response()->view('internationalrelations::visa.show', compact('visaId', 'workers', 'workersOptions',));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

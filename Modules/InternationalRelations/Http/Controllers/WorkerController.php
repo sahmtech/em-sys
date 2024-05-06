@@ -791,12 +791,15 @@ class WorkerController extends Controller
             $visaCard = IrVisaCard::where('id', $visa_id)
                 ->with('operationOrder.salesContract.transaction.sell_lines', 'delegation', 'unSupported_operation')
                 ->first();
-
+            error_log($visaCard);
             if ($visaCard->operationOrder) {
+                error_log("11111111111111");
                 $orderQuantity = $visaCard->operationOrder->orderQuantity;
             }
             if ($visaCard->unSupported_operation) {
+                error_log("2222222222");
                 $orderQuantity = $visaCard->unSupported_operation->orderQuantity;
+                error_log($orderQuantity);
             }
 
             $proposed_workers_number = $visaCard->proposed_workers_number;
@@ -811,23 +814,39 @@ class WorkerController extends Controller
             } else {
                 $exceededAgencies = [];
 
-
+                error_log("33333333333");
                 $groupedWorkers = collect($request->worker_id)->groupBy(function ($workerId) {
                     return IrProposedLabor::where('id', $workerId)->first()->agency_id;
                 });
 
                 foreach ($groupedWorkers as $agencyId => $workers) {
-                    error_log($visaCard->delegation);
+                    error_log($visaCard->unSupporteddelegation);
+                    if ($visaCard->delegation) {
+                        if ($visaCard->delegation->agency()->whereIn('id', [$agencyId])->exists()) {
+                            error_log("4444444444444");
 
-                    if ($visaCard->delegation->agency()->whereIn('id', [$agencyId])->exists()) {
-                        error_log("4444444444444");
-                        $delegation_agency_targeted_count = $visaCard->delegation->where('agency_id', [$agencyId])->first()->targeted_quantity;
-                        error_log($delegation_agency_targeted_count);
+                            $delegation_agency_targeted_count = $visaCard->delegation->where('agency_id', [$agencyId])->first()->targeted_quantity;
+                            error_log($delegation_agency_targeted_count);
 
-                        $workersCount = $workers->count();
+                            $workersCount = $workers->count();
 
-                        if ($workersCount > $delegation_agency_targeted_count) {
-                            $exceededAgencies[] = $agencyId;
+                            if ($workersCount > $delegation_agency_targeted_count) {
+                                $exceededAgencies[] = $agencyId;
+                            }
+                        }
+                    }
+                    if ($visaCard->unSupporteddelegation) {
+                        if ($visaCard->unSupporteddelegation->agency()->whereIn('id', [$agencyId])->exists()) {
+                            error_log("4444444444444");
+
+                            $delegation_agency_targeted_count = $visaCard->unSupporteddelegation->where('agency_id', [$agencyId])->first()->targeted_quantity;
+                            error_log($delegation_agency_targeted_count);
+
+                            $workersCount = $workers->count();
+
+                            if ($workersCount > $delegation_agency_targeted_count) {
+                                $exceededAgencies[] = $agencyId;
+                            }
                         }
                     }
                 }
