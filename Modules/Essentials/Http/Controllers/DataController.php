@@ -927,6 +927,17 @@ class DataController extends Controller
                         'label' => __('essentials::lang.show_payroll'),
                         'default' => false,
                     ],
+
+                    [
+                        'value' => 'essentials.payroll_list_of_emp',
+                        'label' => __('essentials::lang.list_of_emp'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_salary_info',
+                        'label' => __('essentials::lang.view_salary_info'),
+                        'default' => false,
+                    ],
                 ]
 
             ],

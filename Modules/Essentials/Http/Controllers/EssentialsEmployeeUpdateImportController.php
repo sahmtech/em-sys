@@ -196,13 +196,13 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $errors[] = __('essentials::lang.email_not_nuique');
                     }
                 }
-                if (isset($emp_array['emp_number']) && $emp_array['emp_number'] != null) {
-                    $notUnique = User::where('emp_number', $emp_array['emp_number'])->first() != null;
+                // if (isset($emp_array['emp_number']) && $emp_array['emp_number'] != null) {
+                //     $notUnique = User::where('emp_number', $emp_array['emp_number'])->first() != null;
 
-                    if ($notUnique) {
-                        $errors[] = __('essentials::lang.emp_number_not_nuique');
-                    }
-                }
+                //     if ($notUnique) {
+                //         $errors[] = __('essentials::lang.emp_number_not_nuique');
+                //     }
+                // }
 
                 if (isset($emp_array['profession_id']) && $emp_array['profession_id'] != null) {
                     $doesntExiste = EssentialsProfession::where('id', $emp_array['profession_id'])->first() == null;

@@ -1053,6 +1053,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'allPayrollRequests')]
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('essentials.payroll_list_of_emp')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'list_of_employess']),
+                    __('essentials::lang.list_of_emp'),
+                    ['icon' => 'fas fa-users', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'payroll_list_of_emp')]
+                );
+            }
         });
     }
 
@@ -1899,23 +1907,21 @@ class CustomAdminSidebarMenu
                     __('messages.settings'),
                     function ($sub) {
                         // if ($is_admin  || auth()->user()->can('accounting.settings')) {
-                            $sub->url(
-                                action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
-                                __('lang_v1.accounting_settings'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
-                            );
+                        $sub->url(
+                            action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
+                            __('lang_v1.accounting_settings'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+                        );
 
-                            $sub->url(
-                                action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'getBusinessSettings_accounting']),
-                                __('lang_v1.public_accounting_settings'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-business-settings']
-                            );
+                        $sub->url(
+                            action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'getBusinessSettings_accounting']),
+                            __('lang_v1.public_accounting_settings'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-business-settings']
+                        );
                         // }
                     },
                     ['icon' => 'fa fas fa-plus-circle',]
                 );
-
-                
             }
         });
     }

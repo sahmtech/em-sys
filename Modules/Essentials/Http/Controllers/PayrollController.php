@@ -10,6 +10,7 @@ use App\Business;
 use App\BusinessLocation;
 use App\Category;
 use App\Company;
+use App\ContactLocation;
 use App\Events\TransactionPaymentAdded;
 use App\Transaction;
 use App\TransactionPayment;
@@ -37,6 +38,7 @@ use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\RequestUtil;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
 
 class PayrollController extends Controller
 {
@@ -85,6 +87,320 @@ class PayrollController extends Controller
         return view('essentials::payroll.dashboard');
     }
 
+    public function list_of_employess()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_payrolls_indexWorkerEmpProjects = auth()->user()->can('essentials.payroll_list_of_emp');
+        $can_view_worker_project = auth()->user()->can('essentials.view_worker_project');
+        $can_view_salary_info = auth()->user()->can('essentials.view_salary_info');
+
+        if (!($is_admin || $can_payrolls_indexWorkerEmpProjects)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
+        $user_types = [
+            "employee" => __('essentials::lang.user_type.employee'),
+            "worker" => __('essentials::lang.user_type.worker'),
+            "remote_employee" => __('essentials::lang.user_type.remote_employee'),
+        ];
+        $bank_names = EssentialsBankAccounts::all()->pluck('name', 'id');
+        error_log($bank_names[10]);
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::whereNotIn('id', [2, 7])->pluck('id')->toArray();
+        $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
+
+        $employee_ids = User::with('contract');
+        $projects_ids = SalesProject::all()->pluck('name', 'id')->toArray();
+
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+        }
+        $users = User::whereIn('users.id', $userIds)
+            ->whereIn('company_id', $companies_ids)
+            ->with(['assignedTo'])
+            ->whereIn('user_type', ['worker', 'employee'])
+            ->where('users.status', '!=', 'inactive')
+            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
+            ->with(['country', 'contract', 'OfficialDocument']);
+
+        $users->select(
+            'users.*',
+            'users.id as worker_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ',COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            'sales_projects.name as contact_name'
+        )
+            ->orderBy('users.id', 'desc')
+            ->groupBy('users.id');
+
+        if (!empty(request()->input('user_type')) && request()->input('user_type') !== 'all') {
+            $user_type = request()->input('user_type');
+            if ($user_type == "worker") {
+                $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'worker');
+            } elseif ($user_type == "employee" || $user_type == "remote_employee") {
+                $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
+            }
+            if ($user_type == "remote_employee") {
+                $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
+                $employee_ids = $employee_ids->whereHas('contract', function ($query) use ($remote_id) {
+                    $query->where('contract_type_id', $remote_id);
+                });
+            }
+            $employee_ids = $employee_ids->pluck('id')->toArray();
+            $users =  $users->whereIn('users.id',  $employee_ids);
+        }
+
+        if (!empty(request()->input('company')) && request()->input('company') !== 'all') {
+            $users =  $users->where('users.company_id', request()->input('company'));
+        }
+        if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+            if (request()->input('project_name') == 'none') {
+                $users = $users->whereNull('users.assigned_to');
+            } else {
+                $users = $users->where('users.assigned_to', request()->input('project_name'));
+            }
+        }
+
+        if (request()->ajax()) {
+
+            return DataTables::of($users)
+                ->addColumn('number', function ($user) {
+                    return $user->emp_number ?? ' ';
+                })
+
+                ->addColumn('residence_permit', function ($user) {
+                    return $user->id_proof_number ?? ' ';
+                })
+
+                ->addColumn('residence_permit_expiration', function ($user) {
+                    $residencePermitDocument = $user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
+                    if ($residencePermitDocument) {
+
+                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+                ->addColumn('border_no', function ($user) {
+                    return $user->border_no ?? ' ';
+                })
+
+                ->addColumn('nationality', function ($user) {
+                    return optional($user->country)->nationality ?? ' ';
+                })
+
+
+                ->addColumn('bank_code', function ($user) {
+
+                    $bank_details = json_decode($user->bank_details);
+                    return $bank_details->bank_code ?? ' ';
+                })
+
+                ->addColumn('bank_name', function ($user) use ($bank_names) {
+                    $bank_details = json_decode($user->bank_details);
+                    $bank_name = $bank_names[$bank_details->bank_code] ?? '';
+                    return  $bank_name;
+                })
+
+
+                ->addColumn('company_name', function ($user) {
+                    return optional($user->company)->name ?? ' ';
+                })
+
+
+                ->addColumn('contact_name', function ($user) {
+
+                    return $user->assignedTo->name ?? '';
+                })
+
+                ->addColumn('project_assigner', function ($user) {
+                    return $user->assignedTo->contact->name ?? '';
+                })
+                ->addColumn('salary_voucher', function ($user) {
+                    $voucherStatus = $user->salary_voucher ?? '';
+                    $buttonText = ($voucherStatus == 1) ? __("essentials::lang.yes") : __("essentials::lang.no");
+                    $button = '<button class="btn btn-sm btn-primary edit-salary-voucher" data-user-id="' . $user->id . '" data-toggle="modal" data-target="#editVoucherModal">' . $buttonText . '</button>';
+                    return $button;
+                })
+
+
+
+                ->addColumn(
+                    'actions',
+                    function ($row)  use ($is_admin, $can_view_worker_project, $can_view_salary_info) {
+                        $html = '';
+
+                        if ($is_admin || $can_view_worker_project) {
+                            if ($row->assigned_to) {
+                                $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_project" id="view_worker_project" data-href="' . route('payrolls.view_worker_project', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view_project') . '</button>';
+                            } else {
+                                $html .= "&nbsp; ";
+                            }
+                        }
+
+                        if ($is_admin || $can_view_salary_info) {
+
+
+                            $html .= '&nbsp; <button class="btn btn-xs btn-success view_salary_info" id="view_salary_info" data-href="' . route('payrolls.view_salary_info', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('essentials::lang.view_salary_info') . '</button>';
+                        }
+
+                        return $html;
+                    }
+                )
+
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('residence_permit', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                })
+                ->rawColumns(['contact_name', 'salary_voucher', 'actions', 'worker_id', 'company_name',  'worker',  'nationality', 'residence_permit_expiration', 'residence_permit',])
+                ->make(true);
+        }
+
+        return view('essentials::payroll.list_of_employess')
+            ->with(compact('companies', 'contacts_fillter', 'user_types'));
+    }
+
+
+    public function viewWorkerProject(Request $request)
+    {
+        $userId = $request->input('worker_id');
+        $user = User::with('assignedTo', 'contract')->find($userId);
+        $project = $user->assignedTo;
+        $contact_location_name = "";
+        if ($project) {
+            $contact_location = ContactLocation::where('sales_project_id', $project->id)->first() ?? '';
+            if ($contact_location) {
+                $contact_location_name =
+                    $contact_location->name;
+            }
+        }
+
+        $contract_start_date = $user->contract->contract_start_date ?? null;
+        $contract_end_date = $user->contract->contract_end_date ?? null;
+        $project = json_decode(SalesProject::with('followupUserAccessProjects')->where('id', $project->id)
+            ->first());
+        $followup_user_access_projects = $project->followup_user_access_projects;
+        $followup_project = $followup_user_access_projects[0];
+        $followup_user_id = $followup_project->user_id;
+        $project_manager = User::find($followup_user_id);
+        $project_manager_name = $project_manager->first_name . " " . $project_manager->last_name;
+
+        $data = [
+            'project' => $project,
+            'contract_start_date' => $contract_start_date,
+            'contract_end_date' => $contract_end_date,
+            'contact_location' => $contact_location_name,
+            'project_manager' => $project_manager_name,
+        ];
+        return response()->json(['data' => $data]);
+    }
+
+
+    public function viewSalaryInfo(Request $request)
+    {
+        $userId = $request->input('worker_id');
+        $user = User::with(['userAllowancesAndDeductions.essentialsAllowanceAndDeduction', 'essentialsUserShifts.shift'])->where('id', $userId)->first();
+        $housing_allowance = 0;
+        $transportation_allowance = 0;
+        $other_allowance = 0;
+
+        $allowances = json_decode($user)->user_allowances_and_deductions ?? [];
+
+        foreach ($allowances as $allowance) {
+            $allowance_dsc =   $allowance?->essentials_allowance_and_deduction?->description;
+            if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+                $housing_allowance = $allowance->amount;
+            } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+                $transportation_allowance = $allowance->amount;
+            } else if (stripos($allowance_dsc, 'other') !== false) {
+                $other_allowance += floatval($allowance->amount ?? "0");
+            }
+        }
+        $salary = $user->essentials_salary;
+
+        $data = [
+            'user_id' => $user->id,
+            'work_days' => 30,
+            'salary' => number_format($user->essentials_salary, 0, '.', ''),
+            'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
+            'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
+            'other_allowance' => number_format($other_allowance, 0, '.', ''),
+            'total' => number_format($salary, 0, '.', ''),
+        ];
+        return response()->json(['data' => $data]);
+    }
+
+    public function updateSalaryInfo(Request $request)
+    {
+
+        $userId = $request->input('user_id');
+        $updatedSalaryData = $request->except('_token', 'user_id');
+
+
+        $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
+        if ($user) {
+            foreach ($user->userAllowancesAndDeductions as $allowance) {
+                if ($allowance->allowance_deduction_id == 1) {
+                    error_log($updatedSalaryData['housing_allowance']);
+                    $allowance->amount = $updatedSalaryData['housing_allowance'];
+                    $allowance->save();
+                }
+
+                if ($allowance->allowance_deduction_id == 2) {
+                    $allowance->amount = $updatedSalaryData['transportation_allowance'];
+                    $allowance->save();
+                }
+
+                if ($allowance->allowance_deduction_id == 6) {
+                    error_log($updatedSalaryData['other_allowance']);
+                    $allowance->amount = $updatedSalaryData['other_allowance'];
+                    $allowance->save();
+                }
+            }
+            $user->essentials_salary = $updatedSalaryData['salary'];
+            $user->total_salary = $updatedSalaryData['total'];
+            $user->save();
+            return response()->json(['message' => 'Salary data updated successfully', $user], 200);
+        }
+    }
+
+    public function updateVoucherStatus(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $status = $request->input('status');
+        error_log($userId);
+
+
+
+        $user = User::find($userId);
+        $user->salary_voucher = $status;
+        $user->save();
+
+        return response()->json(['status' => ucfirst($status)]);
+    }
     public function index()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -107,6 +423,7 @@ class PayrollController extends Controller
             }
         }
         $companies = Company::whereIn('id',  $companies_ids)->pluck('name', 'id')->toArray();
+
         $projects = SalesProject::all()->pluck('name', 'id')->toArray();
         $employees = User::where('user_type', 'employee')->whereIn('id', $userIds)->select(
             'users.*',
@@ -449,6 +766,7 @@ class PayrollController extends Controller
         $projects_ids = request()->input('projects');
         $user_type = request()->input('user_type');
         $employee_ids = User::with('contract');
+
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
@@ -461,6 +779,7 @@ class PayrollController extends Controller
             });
         }
         $employee_ids = $employee_ids->pluck('id')->toArray();
+
         $month_year = request()->input('month_year');
         $employees = User::with(['appointment.profession', 'assignedTo', 'essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
             ->whereIn('users.id',  $employee_ids)
