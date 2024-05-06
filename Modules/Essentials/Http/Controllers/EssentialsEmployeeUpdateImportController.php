@@ -133,21 +133,36 @@ class EssentialsEmployeeUpdateImportController extends Controller
         $errors = [];
         $proofNumberFound = true;
         $proofNameFound = true;
+        $borderNumberFound = true;
+        error_log(json_encode($emp_array['border_no']));
         if (!isset($emp_array['id_proof_number']) || $emp_array['id_proof_number'] == null) {
-            $errors[] = __('essentials::lang.id_proof_number_is_required');
+            if (!isset($emp_array['border_no']) || $emp_array['border_no'] == null) {
+
+                $errors[] = __('essentials::lang.id_proof_number_or_border_number_is_required');
+
+                $borderNumberFound = false;
+            }
             $proofNumberFound = false;
         }
+
+
         if (!isset($emp_array['id_proof_name']) || $emp_array['id_proof_name'] == null) {
             $errors[] = __('essentials::lang.id_proof_name_is_required');
             $proofNameFound = false;
         }
-        $isNew = User::where('id_proof_number', $emp_array['id_proof_number'])->first() == null;
-        // if (isset($emp_array['border_no']) && $emp_array['border_no'] != null && $emp_array['id_proof_number'] == null) {
 
-        //     $isNew = User::where('border_no', $emp_array['border_no'])->first() == null;
-        // }
+        $isNew = null;
+        if ($proofNumberFound) {
+            $isNew = User::where('id_proof_number', $emp_array['id_proof_number'])->first() == null;
+        } else {
+            if ($borderNumberFound) {
+                $isNew = User::where('border_no', $emp_array['border_no'])->first() == null;
+            }
+        }
 
-        if ($proofNumberFound && $proofNameFound) {
+
+
+        if (($proofNumberFound || $borderNumberFound) && $proofNameFound) {
             if ($isNew) {
 
                 // error_log(json_encode($emp_array));
@@ -272,8 +287,15 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     }
                 }
             } else {
+                $existingUser = null;
+                if ($proofNumberFound) {
+                    $existingUser = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
+                } else {
+                    if ($borderNumberFound) {
+                        $existingUser = User::where('border_no', $emp_array['border_no'])->first();
+                    }
+                }
 
-                $existingUser = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
                 if (isset($emp_array['IBN_code']) && $emp_array['IBN_code'] != null) {
                     $existing = json_decode($existingUser->bank_details)->bank_code ?? null;
                     if ($existing == null || $existing != $emp_array['IBN_code']) {
@@ -486,7 +508,15 @@ class EssentialsEmployeeUpdateImportController extends Controller
     // update employee 
     private function updateEmployee($emp_array)
     {
-        $existingEmployee = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
+        $existingEmployee = null;
+        if (isset($emp_array['id_proof_number']) && $emp_array['id_proof_number'] != null) {
+            $existingEmployee = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
+        } else {
+            if (isset($emp_array['border_no']) && $emp_array['border_no'] != null) {
+                $existingEmployee = User::where('border_no', $emp_array['border_no'])->first();
+            }
+        }
+
         $filtered_array = array_filter($emp_array, function ($value) {
             return !is_null($value);
         });
@@ -523,35 +553,36 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
     private function updateOfficalDocument($formated_data, $existingEmployee)
     {
-        if (isset($formated_data['proof_end_date']) && $formated_data['proof_end_date'] != null) {
-            $previous_proof_date = EssentialsOfficialDocument::where('employee_id',  $existingEmployee->id)
-                ->where('type', 'residence_permit')
-                ->where('is_active', 1)
-                ->first();
+        if (isset($formated_data['id_proof_name']) && $formated_data['id_proof_name'] != null && $formated_data['id_proof_name'] == 'eqama') {
+            if (isset($formated_data['proof_end_date']) && $formated_data['proof_end_date'] != null) {
+                $previous_proof_date = EssentialsOfficialDocument::where('employee_id',  $existingEmployee->id)
+                    ->where('type', 'residence_permit')
+                    ->where('is_active', 1)
+                    ->first();
 
-            if ($previous_proof_date) {
-                $previous_proof_date->update(['is_active' => 0]);
-            }
+                if ($previous_proof_date) {
+                    $previous_proof_date->update(['is_active' => 0]);
+                }
 
-            $residencePermitData =
-                [
-                    'status' => 'valid',
-                    'is_active' => 1,
-                    'type' => 'residence_permit',
-                    'employee_id' => $existingEmployee->id,
-                    'number' => $formated_data['id_proof_number'],
-                    'expiration_date' => $formated_data['id_proof_number_expiration_date'],
-                ];
-            $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
-                return $value !== null;
-            });
+                $residencePermitData =
+                    [
+                        'status' => 'valid',
+                        'is_active' => 1,
+                        'type' => 'residence_permit',
+                        'employee_id' => $existingEmployee->id,
+                        'number' => $formated_data['id_proof_number'],
+                        'expiration_date' => $formated_data['id_proof_number_expiration_date'],
+                    ];
+                $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
+                    return $value !== null;
+                });
 
 
-            if (!empty($filteredResidencePermitData)) {
-                EssentialsOfficialDocument::Create($filteredResidencePermitData);
+                if (!empty($filteredResidencePermitData)) {
+                    EssentialsOfficialDocument::Create($filteredResidencePermitData);
+                }
             }
         }
-
         if (isset($formated_data['passport_end_date']) && $formated_data['passport_end_date'] != null) {
             $previous_passport_date = EssentialsOfficialDocument::where('employee_id',  $existingEmployee->id)
                 ->where('type', 'passport')
@@ -864,28 +895,29 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
     private function createOfficalDocument($formated_data, $existingEmployee)
     {
-        if (isset($formated_data['proof_end_date']) && $formated_data['proof_end_date'] != null) {
+        if (isset($formated_data['id_proof_name']) && $formated_data['id_proof_name'] != null && $formated_data['id_proof_name'] == 'eqama') {
+            if (isset($formated_data['proof_end_date']) && $formated_data['proof_end_date'] != null) {
 
 
-            $residencePermitData =
-                [
-                    'status' => 'valid',
-                    'is_active' => 1,
-                    'type' => 'residence_permit',
-                    'employee_id' => $existingEmployee->id,
-                    'number' => $formated_data['id_proof_number'],
-                    'expiration_date' => $formated_data['id_proof_number_expiration_date'],
-                ];
-            $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
-                return $value !== null;
-            });
+                $residencePermitData =
+                    [
+                        'status' => 'valid',
+                        'is_active' => 1,
+                        'type' => 'residence_permit',
+                        'employee_id' => $existingEmployee->id,
+                        'number' => $formated_data['id_proof_number'],
+                        'expiration_date' => $formated_data['id_proof_number_expiration_date'],
+                    ];
+                $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
+                    return $value !== null;
+                });
 
 
-            if (!empty($filteredResidencePermitData)) {
-                EssentialsOfficialDocument::Create($filteredResidencePermitData);
+                if (!empty($filteredResidencePermitData)) {
+                    EssentialsOfficialDocument::Create($filteredResidencePermitData);
+                }
             }
         }
-
         if (isset($formated_data['passport_end_date']) && $formated_data['passport_end_date'] != null) {
 
             $passportData =
