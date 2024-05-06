@@ -39,6 +39,10 @@ class IrVisaCard extends Model
         return $this->belongsTo(IrDelegation::class, 'transaction_sell_line_id', 'transaction_sell_line_id');
     }
 
+    public function unSupporteddelegation()
+    {
+        return $this->belongsTo(IrDelegation::class, 'unSupportedworker_order_id', 'unSupportedworker_order_id');
+    }
     public function transaction_sell_line()
     {
         return $this->belongsTo(TransactionSellLine::class, 'transaction_sell_line_id', 'id');
