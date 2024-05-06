@@ -9,6 +9,7 @@ return [
     "actions" => "خيارات",
     "view" => "عرض",
     "delete" => "حذف",
+    'view_project' => 'عرض المشروع',
     "close" => "إغلاق",
     "something_went_wrong" => "لقد حدث شيء خاطئ. شكرا على المحاولة لاحقا",
     "required" => "هذا الحقل مطلوب",

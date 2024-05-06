@@ -99,6 +99,7 @@ class EssentialsOfficialDocumentController extends Controller
             //     $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
             //         ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
             // }
+
             $start_date = request()->get('start_date');
             $end_date = request()->get('end_date');
 
