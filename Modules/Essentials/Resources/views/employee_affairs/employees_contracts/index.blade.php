@@ -9,13 +9,23 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                      <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('start_date_filter', __('essentials::lang.expiration_date_from') . ':') !!}
+                            {!! Form::date('start_date_filter', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.select_start_date'),
+                                'id' => 'start_date_filter',
+                            ]) !!}
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
-                            {!! Form::text('doc_filter_date_range', null, [
-                                'placeholder' => __('lang_v1.select_a_date_range'),
+                            {!! Form::label('end_date_filter', __('essentials::lang.expiration_date_to') . ':') !!}
+                            {!! Form::date('end_date_filter', null, [
                                 'class' => 'form-control',
-                                'readonly',
+                                'placeholder' => __('lang_v1.select_end_date'),
+                                'id' => 'end_date_filter',
                             ]) !!}
                         </div>
                     </div>
@@ -349,21 +359,21 @@
                     url: "{{ route('employeeContracts') }}",
                     data: function(d) {
 
-
+                        addDateFiltersToRequest(d);
                         d.contract_type = $('#contract_type_filter').val();
 
                         d.status = $('#status_filter').val();
 
                         console.log($('#doc_filter_date_range').val());
 
-                        if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
-                            d.contract_start_date = start;
-                            d.contract_end_date = end;
-                        }
+                        // if ($('#doc_filter_date_range').val()) {
+                        //     var start = $('#doc_filter_date_range').data('daterangepicker').startDate
+                        //         .format('YYYY-MM-DD');
+                        //     var end = $('#doc_filter_date_range').data('daterangepicker').endDate
+                        //         .format('YYYY-MM-DD');
+                        //     d.contract_start_date = start;
+                        //     d.contract_end_date = end;
+                        // }
 
                     }
                 },
@@ -435,6 +445,19 @@
                     },
                 ],
             });
+
+             function addDateFiltersToRequest(d) {
+                var start_date = $('#start_date_filter').val();
+                var end_date = $('#end_date_filter').val();
+
+                if (start_date) {
+                    d.start_date = start_date;
+                }
+
+                if (end_date) {
+                    d.end_date = end_date;
+                }
+            }
 
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,

@@ -91,11 +91,25 @@ class EssentialsEmployeeContractController extends Controller
         if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
             $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
         }
-        if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            $start = request()->start_date;
-            $end = request()->end_date;
-            $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
-                ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
+        // if (!empty(request()->start_date) && !empty(request()->end_date)) {
+        //     $start = request()->start_date;
+        //     $end = request()->end_date;
+        //     $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
+        //         ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
+        // }
+
+        $start_date = request()->get('start_date');
+        $end_date = request()->get('end_date');
+
+        if (!is_null($start_date)) {
+            $employees_contracts->whereDate('essentials_official_documents.expiration_date', '>=', $start_date);
+        }
+
+        if (!is_null($end_date)) {
+            $employees_contracts->whereDate('essentials_official_documents.expiration_date', '<=', $end_date);
+        }
+        if (!empty(request()->isForHome)) {
+            $employees_contracts->where('essentials_official_documents.type', 'residence_permit');
         }
 
 

@@ -2,6 +2,8 @@
 
 // use App\Http\Controllers\Modules;
 // use Illuminate\Support\Facades\Route;
+
+
 use Illuminate\Support\Facades\DB;
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
@@ -293,6 +295,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
     Route::prefix('payrolls')->group(function () {
         Route::get('/dashboard',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'dashboard'])->name('payrolls_dashboard');
+        Route::get('/list_of_employess',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'list_of_employess'])->name('list_of_employess');
+        Route::get('/view_worker_project',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewWorkerProject'])->name('payrolls.view_worker_project');
+        Route::get('/view_salary_info',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewSalaryInfo'])->name('payrolls.view_salary_info');
+        Route::post('/update_salary',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateSalaryInfo'])->name('payrolls.update.salary');
+        Route::post('/update-voucher-status',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateVoucherStatus'])->name('payrolls.update-voucher-status');
+
         Route::get('/location-employees', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnLocation']);
         Route::get('/my-payrolls', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getMyPayrolls']);
         Route::get('/get-allowance-deduction-row', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getAllowanceAndDeductionRow']);
