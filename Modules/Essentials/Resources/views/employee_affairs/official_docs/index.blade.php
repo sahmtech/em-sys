@@ -66,7 +66,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_filter_date_range', __('report.date_range') . ':') !!}
                             {!! Form::text('doc_filter_date_range', null, [
@@ -75,7 +75,28 @@
                                 'readonly',
                             ]) !!}
                         </div>
+                    </div> --}}
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('start_date_filter', __('essentials::lang.expiration_date_from') . ':') !!}
+                            {!! Form::date('start_date_filter', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.select_start_date'),
+                                'id' => 'start_date_filter',
+                            ]) !!}
+                        </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('end_date_filter', __('essentials::lang.expiration_date_to') . ':') !!}
+                            {!! Form::date('end_date_filter', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.select_end_date'),
+                                'id' => 'end_date_filter',
+                            ]) !!}
+                        </div>
+                    </div>
+
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="doc_exists_filter">@lang('essentials::lang.doc_exists_filter'):</label>
@@ -465,6 +486,7 @@
                 ajax: {
                     "url": "{{ action([\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index']) }}",
                     "data": function(d) {
+                        addDateFiltersToRequest(d);
                         if ($('#user_id_filter').val() && $('#user_id_filter').val() != 'all') {
                             d.user_id = $('#user_id_filter').val();
                         }
@@ -553,18 +575,33 @@
                 ],
             });
 
-            $('#doc_filter_date_range').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
-                        moment_date_format));
-                }
-            );
-            $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
-                $('#doc_filter_date_range').val('');
-                reloadDataTable();
+            // $('#doc_filter_date_range').daterangepicker(
+            //     dateRangeSettings,
+            //     function(start, end) {
+            //         $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
+            //             moment_date_format));
+            //     }
+            // );
+            // $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
+            //     $('#doc_filter_date_range').val('');
+            //     reloadDataTable();
+            // });
+            $('#start_date_filter, #end_date_filter').on('change', function() {
+                official_documents_table.ajax.reload(); // Reload table on filter changes
             });
 
+            function addDateFiltersToRequest(d) {
+                var start_date = $('#start_date_filter').val();
+                var end_date = $('#end_date_filter').val();
+
+                if (start_date) {
+                    d.start_date = start_date;
+                }
+
+                if (end_date) {
+                    d.end_date = end_date;
+                }
+            }
             $(document).on('change',
                 '#doc_exists_filter, #user_type_filter, #user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter',
                 function() {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
+use App\BankAccount;
 use App\Business;
 use App\Company;
 use App\Currency;
@@ -20,6 +21,7 @@ use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Essentials\Entities\EssentialsCountry;
@@ -351,7 +353,9 @@ class BusinessController extends Controller
 
         $payment_types = $this->moduleUtil->payment_types(null, false, $business_id);
 
-        return view('business.settings', compact('business', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
+        $bankAccounts = BankAccount::all();
+        
+        return view('business.settings', compact('business','bankAccounts', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
     }
 
     public function getBusiness()

@@ -330,6 +330,7 @@ class ProductController extends Controller
 
         $brands = Brands::forDropdown($business_id);
 
+       
         $units = Unit::forDropdown($business_id);
 
         $tax_dropdown = TaxRate::forBusinessDropdown($business_id, false);
@@ -1531,7 +1532,8 @@ class ProductController extends Controller
                 $request->input('single_dsp'),
                 $request->input('single_dsp_inc_tax')
             );
-
+            // ($product, $sku, $purchase_price, $dpp_inc_tax, $profit_percent, $selling_price, $selling_price_inc_tax, $combo_variations = [])
+    
             if ($product->enable_stock == 1 && !empty($request->input('opening_stock'))) {
                 $user_id = $request->session()->get('user.id');
 

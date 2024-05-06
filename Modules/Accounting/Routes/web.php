@@ -31,7 +31,11 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
 
     Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
+    Route::get('accounting-business-settings', 'SettingsController@getBusinessSettings_accounting')->name('accounting-business-settings');
 
+
+    
+    
     Route::get('open-create-dialog/{id}', 'CoaController@open_create_dialog')->name('open_create_dialog');
     Route::get('get-account-sub-types', 'CoaController@getAccountSubTypes');
     Route::get('get-account-details-types', 'CoaController@getAccountDetailsType');

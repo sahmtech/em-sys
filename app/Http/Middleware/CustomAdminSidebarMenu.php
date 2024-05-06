@@ -1783,7 +1783,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\App\Http\Controllers\SellController::class, 'index']),
                 __('lang_v1.pills'),
-                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'sells']
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
             );
             // }
             if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
@@ -1889,11 +1889,33 @@ class CustomAdminSidebarMenu
             }
             if ($is_admin  || auth()->user()->can('accounting.settings')) {
 
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
+                // $menu->url(
+                //     action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
+                //     __('messages.settings'),
+                //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+                // );
+
+                $menu->dropdown(
                     __('messages.settings'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+                    function ($sub) {
+                        // if ($is_admin  || auth()->user()->can('accounting.settings')) {
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
+                                __('lang_v1.accounting_settings'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+                            );
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'getBusinessSettings_accounting']),
+                                __('lang_v1.public_accounting_settings'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-business-settings']
+                            );
+                        // }
+                    },
+                    ['icon' => 'fa fas fa-plus-circle',]
                 );
+
+                
             }
         });
     }

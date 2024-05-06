@@ -69,3 +69,69 @@
         {{ $contact->custom_field10 }}
     </p>
 @endif
+
+<div class="col-md-12">
+    <strong>
+        <h4>@lang('sales::lang.Contract_signer_details'):</h4>
+    </strong>
+    <br>
+</div>
+
+<div class="col-md-4">
+
+    <p><strong>@lang('sales::lang.first_name_cs'):</strong>
+        @if (!empty($contactSigners->first_name))
+            {{ $contactSigners->first_name }}
+        @endif
+    </p>
+    <br>
+
+    <p><strong>@lang('sales::lang.last_name_cs'):</strong>
+        @if (!empty($contactSigners->last_name))
+            {{ $contactSigners->last_name }}
+        @endif
+    </p>
+    <br>
+    <p><strong>@lang('sales::lang.nationality_cs'):</strong>
+        @if (!empty($contactSigners->country->id))
+            {{ $contactSigners->country->nationality }}
+        @endif
+    </p>
+</div>
+
+<div class="col-md-4">
+    <p><strong>@lang('sales::lang.english_name_cs'):</strong>
+        @if (!empty($contactSigners->english_name))
+            {{ $contactSigners->english_name }}
+        @endif
+    </p>
+    <br>
+
+    <p><strong>@lang('sales::lang.identityNO_cs'):</strong>
+        @if (!empty($contactSigners->identity_number))
+            {{ $contactSigners->identity_number }}
+        @endif
+    </p>
+    {{-- <br>
+    <p>
+        <strong>@lang('sales::lang.allow_login'):</strong>
+        @if (!empty($contactSigners->allow_login))
+            <span>@lang('sales::lang.allowlogin')</span>
+        @else
+            <span>@lang('sales::lang.notallowlogin')</span>
+        @endif
+    </p> --}}
+
+</div>
+
+<div class="col-md-4">
+
+    <p><strong>@lang('sales::lang.email_cs'):</strong>
+        @if (!empty($contactSigners->email))
+            {{ $contactSigners->email }}
+        @endif
+    </p>
+</div>
+<br>
+
+

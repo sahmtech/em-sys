@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\BankAccount;
 use App\Contact;
 use App\Events\TransactionPaymentAdded;
 use App\Events\TransactionPaymentUpdated;
@@ -74,7 +75,7 @@ class TransactionPaymentController extends Controller
             if ($transaction->payment_status != 'paid') {
                 $inputs = $request->only(['amount', 'method', 'note', 'card_number', 'card_holder_name',
                     'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
-                    'cheque_number', 'bank_account_number', ]);
+                    'cheque_number', 'bank_account_number', 'transfer_account']);
                 $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
                 $inputs['transaction_id'] = $transaction->id;
                 $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
@@ -182,6 +183,7 @@ class TransactionPaymentController extends Controller
             }
 
             $payments = $payments_query->get();
+           
             $location_id = ! empty($transaction->location_id) ? $transaction->location_id : null;
             $payment_types = $this->transactionUtil->payment_types($location_id, true);
 
@@ -216,9 +218,10 @@ class TransactionPaymentController extends Controller
 
             //Accounts
             $accounts = $this->moduleUtil->accountsDropdown($business_id, true, false, true);
-
+            $bankAccount = BankAccount::forDropdown();
+            
             return view('transaction_payment.edit_payment_row')
-                        ->with(compact('transaction', 'payment_types', 'payment_line', 'accounts'));
+                        ->with(compact('transaction','bankAccount' ,'payment_types', 'payment_line', 'accounts'));
         }
     }
 
@@ -240,7 +243,7 @@ class TransactionPaymentController extends Controller
 
             $inputs = $request->only(['amount', 'method', 'note', 'card_number', 'card_holder_name',
                 'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
-                'cheque_number', 'bank_account_number', ]);
+                'cheque_number', 'bank_account_number','transfer_account' ]);
             $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
             $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
 

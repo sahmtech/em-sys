@@ -5,6 +5,8 @@ namespace App;
 use App\Events\TransactionPaymentDeleted;
 use App\Events\TransactionPaymentUpdated;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Entities\AccountingAccount;
+use Modules\Accounting\Entities\CostCenter;
 
 class TransactionPayment extends Model
 {
@@ -114,4 +116,18 @@ class TransactionPayment extends Model
     {
         return $this->morphMany(\App\CashDenomination::class, 'model');
     }
+
+    
+    public function bankAccounts(){
+        return $this->belongsTO(\App\BankAccount::class,'transfer_account');
+    }
+
+    public function costCenter(){
+        return $this->belongsTo(CostCenter::class,'cost_center');
+    }
+
+    public function accountingAccount(){
+        return $this->belongsTo(AccountingAccount::class,'account_id');
+    }
+
 }

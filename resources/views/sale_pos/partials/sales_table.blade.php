@@ -4,6 +4,7 @@
 <table class="table table-bordered table-striped ajax_view" id="sell_table">
     <thead>
         <tr>
+
             <th>@lang('messages.action')</th>
             <th>@lang('messages.date')</th>
             <th>@lang('sale.invoice_no')</th>
@@ -12,6 +13,11 @@
             <th>@lang('sale.location')</th>
             <th>@lang('sale.payment_status')</th>
             <th>@lang('lang_v1.payment_method')</th>
+            
+            <th>@lang('lang_v1.transfer_account')</th>
+            <th>@lang('lang_v1.cost_center')</th>
+            <th>@lang('lang_v1.account_name')</th>
+
             <th>@lang('sale.total_amount')</th>
             <th>@lang('sale.total_paid')</th>
             <th>@lang('lang_v1.sell_due')</th>

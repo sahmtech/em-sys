@@ -1363,7 +1363,7 @@ return [
   'add_employee_appointments' => 'إضافة تعيين موظفين',
   'edit_employee_appointments' => 'تعديل تعيين موظفين',
   'delete_employee_appointments' => 'حذف تعيين موظفين',
-  'activate_employee_appointments' => 'تفعيل تعيين موظفين',
+  'activate_employee_appointments' => 'تفعيل/إلغاء تفعيل  تعيين موظفين',
 
   'add_employee_work_admissions' => 'إضافة مباشرة عمل',
   'edit_employee_work_admissions' => 'تعديل مباشرة العمل',
@@ -1507,7 +1507,7 @@ return [
   'view_missing_employees_info' => 'عرض نواقص الموظفين والعمال',
   'view_contract_ending' => 'عرض العقود المنتهية',
   'edit_Insurance' => 'تعديل التأمين الطبي',
-  'activate_employee_admission' => 'تفعيل مباشرة العمل',
+  'activate_employee_admission' => 'تفعيل/إلغاء تفعيل مباشرة العمل',
   'end_admission_activate' => 'انهاء المباشرة',
   'admission_status' => 'حالة المباشرة ',
   'not_found' => 'غير موجود',
@@ -1545,7 +1545,6 @@ return [
   'view_missing_employees_info' => 'عرض نواقص الموظفين والعمال',
   'view_contract_ending' => 'عرض العقود المنتهية',
   'edit_Insurance' => 'تعديل التأمين الطبي',
-  'activate_employee_admission' => 'تفعيل مباشرة العمل',
   'end_admission_activate' => 'انهاء المباشرة',
   'admission_status' => 'حالة المباشرة ',
   'not_found' => 'غير موجود',
@@ -1887,5 +1886,9 @@ return [
   'employees_file' => 'ملف الموظفين',
   'import_employees_file' => 'استيراد',
   'download_employees_file_template' => 'تحميل القالب',
+  'expiration_date_from' => 'تاريخ الانتهاء (بعد)',
+  'expiration_date_to' => 'تاريخ الانتهاء (قبل)',
+  'id_proof_number_or_border_number_is_required' => 'رقم إثبات الهوية مطلوب',
+
 
 ];

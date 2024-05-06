@@ -194,7 +194,9 @@
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 
-<script src="{{ asset('js/client.js') }}"></script>
+{{-- <script src="{{ asset('js/client.js') }}"></script> --}}
+<script src="{{ asset('js/client.js') }}?v={{ filemtime(public_path('js/client.js')) }}"></script>
+
 
 <script>
     $(document).ready(function() {

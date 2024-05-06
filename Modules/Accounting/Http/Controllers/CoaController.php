@@ -157,13 +157,13 @@ class CoaController extends Controller
 
         $user_id = request()->session()->get('user.id');
 
-        $default_accounts = AccountingUtil::Default_Accounts($business_id, $user_id, $company_id);
         $default_accounting_account_types = AccountingUtil::default_accounting_account_types($business_id, $company_id);
         $accountingAccountType = AccountingAccountType::where('business_id', $business_id)->where('company_id', $company_id)->get();
         if (count($accountingAccountType) == 0) {
             AccountingAccountType::insert($default_accounting_account_types);
         }
 
+        $default_accounts = AccountingUtil::Default_Accounts($business_id, $user_id, $company_id);
 
 
         if (AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)->doesntExist()) {

@@ -16,6 +16,7 @@ use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Illuminate\Support\Facades\Auth;
 
 class EssentialsEmployeeQualificationController extends Controller
 {
@@ -151,9 +152,9 @@ class EssentialsEmployeeQualificationController extends Controller
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
-                EssentialsEmployeesQualification::where('id', $request->doc_id)->update(['file_path' => $filePath]);
+                EssentialsEmployeesQualification::where('id', $request->doc_id)->update(['file_path' => $filePath, 'updated_by' => Auth::user()->id]);
             } else if (request()->input('delete_file') == 1) {
-                EssentialsEmployeesQualification::where('id', $request->doc_id)->update(['file_path' => Null]);
+                EssentialsEmployeesQualification::where('id', $request->doc_id)->update(['file_path' => Null, 'updated_by' => Auth::user()->id]);
             }
             $output = [
                 'success' => true,
@@ -181,14 +182,14 @@ class EssentialsEmployeeQualificationController extends Controller
                 // Handle file upload
                 $image = $request->file('profile_picture');
                 $profile = $image->store('/profile_images');
-                $user->update(['profile_image' => $profile]);
+                $user->update(['profile_image' => $profile, 'updated_by' => Auth::user()->id]);
                 error_log($profile);
             } elseif ($request->input('delete_image') == '1') {
                 $oldImage = $user->profile_image;
                 if ($oldImage) {
                     Storage::delete($oldImage);
                 }
-                $user->update(['profile_image' => null]);
+                $user->update(['profile_image' => null, 'updated_by' => Auth::user()->id]);
                 // Make sure to reset the delete_image flag in case of future updates
                 $request->request->remove('delete_image');
             }
@@ -229,6 +230,7 @@ class EssentialsEmployeeQualificationController extends Controller
                 $filePath = $file->store('/employee_qualifications');
                 $input2['file_path'] = $filePath;
             }
+            $input2['created_by'] = Auth::user()->id;
 
             EssentialsEmployeesQualification::create($input2);
 
@@ -324,6 +326,8 @@ class EssentialsEmployeeQualificationController extends Controller
                     'degree' => $request->input('_degree'),
                     'marksName' => $request->input('_marksName'),
                     'great_degree' => $request->input('_great_degree'),
+                    'updated_by' => Auth::user()->id
+
 
                 ]);
 

@@ -15,13 +15,14 @@
     </td>
     <td @if($count_child_payments > 0) class="bg-gray" @endif>
         @php
+        
             $method = !empty($payment_types[$payment->method]) ? $payment_types[$payment->method] : '';
             if ($payment->method == 'cheque') {
                 $method .= '<br>(' . __('lang_v1.cheque_no') . ': ' . $payment->cheque_number . ')';
             } elseif ($payment->method == 'card') {
                 $method .= '<br>(' . __('lang_v1.card_transaction_no') . ': ' . $payment->card_transaction_number . ')';
             } elseif ($payment->method == 'bank_transfer') {
-                $method .= '<br>(' . __('lang_v1.bank_account_no') . ': ' . $payment->bank_account_number . ')';
+                $method .= '<br>' . __('lang_v1.bank_account_no') . ': ' . $payment->bank_account_number . '<br>' . __('lang_v1.transfer_account') . ': ' . $payment?->bankAccounts?->account_number . ' - ' . $payment?->bankAccounts?->Bank?->name ;
             } elseif ($payment->method == 'custom_pay_1') {
                 $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $payment->transaction_no . ')';
             } elseif ($payment->method == 'custom_pay_2') {

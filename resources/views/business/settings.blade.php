@@ -24,8 +24,9 @@
                     <a href="#" class="list-group-item text-center">@lang('business.tax') @show_tooltip(__('tooltip.business_tax'))</a>
                     <a href="#" class="list-group-item text-center">@lang('business.product')</a>
                     <a href="#" class="list-group-item text-center">@lang('contact.contact')</a>
+                    <a href="#" class="list-group-item text-center">@lang('lang_v1.bank_accounts')</a>
                     <a href="#" class="list-group-item text-center">@lang('business.sale')</a>
-                   // <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a>
+                    <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a>
                     <a href="#" class="list-group-item text-center">@lang('purchase.purchases')</a>
                     <a href="#" class="list-group-item text-center">@lang('lang_v1.payment')</a>
                     <a href="#" class="list-group-item text-center">@lang('business.dashboard')</a>
@@ -49,6 +50,8 @@
                 @include('business.partials.settings_product')
 
                 @include('business.partials.settings_contact')
+
+                @include('business.partials.settings_bank_accounts')
                 <!-- tab 3 end -->
                 <!-- tab 4 start -->
                 @include('business.partials.settings_sales')
@@ -93,6 +96,10 @@
         </div>
     </div>
 {!! Form::close() !!}
+
+<div class="modal fade" id="add_BankAccounts" tabindex="-1" role="dialog"></div>
+<div class="modal fade" id="edit_BankAccounts" tabindex="-1" role="dialog"></div>
+
 </section>
 <!-- /.content -->
 @stop

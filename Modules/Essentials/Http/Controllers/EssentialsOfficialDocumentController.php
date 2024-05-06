@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Sales\Entities\SalesProject;
+use Illuminate\Support\Facades\Auth;
 
 class EssentialsOfficialDocumentController extends Controller
 {
@@ -49,9 +50,9 @@ class EssentialsOfficialDocumentController extends Controller
 
 
         $official_documents = EssentialsOfficialDocument::leftjoin('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
-            ->whereIn('u.id', $userIds)
+            ->whereIn('u.id',  $userIds)
             ->where('u.status', '!=', 'inactive')
-
+            ->where('essentials_official_documents.is_active', 1)
             ->select([
                 'essentials_official_documents.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -92,11 +93,21 @@ class EssentialsOfficialDocumentController extends Controller
                 }
             }
 
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
-                $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
-                    ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
+            // if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            //     $start = request()->start_date;
+            //     $end = request()->end_date;
+            //     $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
+            //         ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
+            // }
+            $start_date = request()->get('start_date');
+            $end_date = request()->get('end_date');
+
+            if (!is_null($start_date)) {
+                $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start_date);
+            }
+
+            if (!is_null($end_date)) {
+                $official_documents->whereDate('essentials_official_documents.expiration_date', '<=', $end_date);
             }
             if (!empty(request()->isForHome)) {
                 $official_documents->where('essentials_official_documents.type', 'residence_permit');
@@ -151,9 +162,9 @@ class EssentialsOfficialDocumentController extends Controller
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
-                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => $filePath]);
+                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => $filePath, 'updated_by' => Auth::user()->id]);
             } else if (request()->input('delete_file') == 1) {
-                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => Null]);
+                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => Null, 'updated_by' => Auth::user()->id]);
             }
             $output = [
                 'success' => true,
@@ -223,7 +234,7 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['issue_place'] = $input['issue_place'];
             $input2['is_active'] = 1;
             $input2['status'] = 'valid';
-
+            $input2['created_by'] = Auth::user()->id;
             if ($request->has('image')) {
                 $image = $request->input('image');
 
@@ -342,7 +353,7 @@ class EssentialsOfficialDocumentController extends Controller
 
             $input2['expiration_date'] = $request->expiration_date;
             $input2['status'] = $request->status;
-
+            $input2['updated_by'] = Auth::user()->id;
             EssentialsOfficialDocument::where('id', $docId)->update($input2);
             $output = [
                 'success' => 1,

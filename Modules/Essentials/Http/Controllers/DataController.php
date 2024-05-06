@@ -11,6 +11,7 @@ use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 use Menu;
 use Modules\Essentials\Entities\EssentialsContractType;
@@ -2364,6 +2365,7 @@ class DataController extends Controller
                 $contract->contract_per_period = $contract_per_period;
                 $contract->probation_period = request()->input('probation_period');
                 $contract->is_renewable = request()->input('is_renewable');
+                $contract->created_by = Auth::user()->id;
                 $contract->contract_type_id = request()->input('contract_type');
 
 
@@ -2393,6 +2395,7 @@ class DataController extends Controller
                 $qualification2->graduation_country = request()->input('graduation_country');
                 $qualification2->degree =  request()->input('degree');
                 $qualification2->marksName =  request()->input('marksName');
+                $qualification2->created_by = Auth::user()->id;
                 $qualification2->great_degree =  request()->input('great_degree');
                 if (request()->hasFile('qualification_file')) {
                     $file = request()->file('qualification_file');
@@ -2409,17 +2412,20 @@ class DataController extends Controller
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
                 $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
                 $travel_ticket_categorie->employee_id = $user->id;
+                $travel_ticket_categorie->created_by = Auth::user()->id;
                 $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
                 $travel_ticket_categorie->save();
             }
 
-            //sponsor_id
-            //new_sponsor_name
+
             if (request()->input('profession')) {
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id = $user->id;
+
                 $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                 $essentials_employee_appointmets->is_active = 1;
+                $essentials_employee_appointmets->created_by = Auth::user()->id;
+
                 if (request()->input('sponsor_id') != 'other_suponser') {
                     $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
                 } else {
@@ -2431,7 +2437,7 @@ class DataController extends Controller
                 $essentials_employee_appointmets->save();
                 error_log("saved new appoinment");
             }
-            error_log("after save new appoinment");
+
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);
                 foreach ($jsonData as $item) {
@@ -2440,6 +2446,8 @@ class DataController extends Controller
                     try {
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
                         $userAllowancesAndDeduction->user_id = $user->id;
+                        $userAllowancesAndDeduction->created_by = Auth::user()->id;
+
                         $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
 
                         if ($item['amount'] != Null) {
@@ -2514,6 +2522,7 @@ class DataController extends Controller
                     if ($national_id_doc) {
                         $national_id_doc->is_active = 0;
                         $national_id_doc->status = 'expired';
+                        $national_id_doc->updated_by = Auth::user()->id;
                         $national_id_doc->save();
                     }
                     $new_national_id = new EssentialsOfficialDocument();
@@ -2522,6 +2531,7 @@ class DataController extends Controller
                     $new_national_id->is_active = 1;
                     $new_national_id->issue_date = \Carbon::now();
                     $new_national_id->employee_id = $user->id;
+                    $new_national_id->created_by = Auth::user()->id;
                     $new_national_id->save();
                 }
             } else if (request()->input('id_proof_name') == "eqama") {
@@ -2538,6 +2548,7 @@ class DataController extends Controller
                     if ($residence_permit_doc) {
                         $residence_permit_doc->is_active = 0;
                         $residence_permit_doc->status = 'expired';
+                        $residence_permit_doc->updated_by = Auth::user()->id;
                         $residence_permit_doc->save();
                     }
                     $new_residence_permit = new EssentialsOfficialDocument();
@@ -2548,6 +2559,7 @@ class DataController extends Controller
                     $new_residence_permit->employee_id = $user->id;
                     $new_residence_permit->number = request()->input('id_proof_number');
                     $new_residence_permit->expiration_date = request()->input('expiration_date');
+                    $residence_permit_doc->created_by = Auth::user()->id;
                     $new_residence_permit->save();
                 }
             }
@@ -2563,6 +2575,7 @@ class DataController extends Controller
                 $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
                 if (!$qualification2) {
                     $qualification2 = new EssentialsEmployeesQualification();
+                    $qualification2->created_by = Auth::user()->id;
                 }
 
                 $qualification2->qualification_type = request()->input('qualification_type');
@@ -2575,6 +2588,7 @@ class DataController extends Controller
                 $qualification2->degree =  request()->input('degree');
                 $qualification2->marksName =  request()->input('marksName');
                 $qualification2->great_degree =  request()->input('great_degree');
+                $qualification2->updated_by = Auth::user()->id;
                 // if (request()->hasFile('qualification_file')) {
                 //     $file = request()->file('qualification_file');
                 //     $filePath = $file->store('/employee_qualifications');
@@ -2582,39 +2596,6 @@ class DataController extends Controller
                 // }
                 $qualification2->save();
             }
-
-            // if (request()->input('document_type')) {
-            //     $document2 = EssentialsOfficialDocument::where('employee_id', $id)->first();
-            //     if ($document2) {
-
-            //         $document2->type = request()->input('document_type');
-            //         $document2->employee_id =   $user->id;
-            //         $document2->status = 'valid';
-
-            //         if (request()->hasFile('document_file')) {
-            //             $file = request()->file('document_file');
-            //             $filePath = $file->store('/officialDocuments');
-
-            //             $document2->file_path = $filePath;
-            //         }
-
-            //         $document2->save();
-            //     } else {
-            //         $document2 = new EssentialsOfficialDocument();
-            //         $document2->type = request()->input('document_type');
-            //         $document2->employee_id =   $user->id;
-            //         $document2->status = 'valid';
-
-            //         if (request()->hasFile('document_file')) {
-            //             $file = request()->file('document_file');
-            //             $filePath = $file->store('/officialDocuments');
-
-            //             $document2->file_path = $filePath;
-            //         }
-
-            //         $document2->save();
-            //     }
-            // }
 
             $id = $data['model_instance']['id'];
 
@@ -2628,7 +2609,8 @@ class DataController extends Controller
                 $filePath =  !empty($contract->file_path) ? $contract->file_path ?? null : null;
                 if ($filePath) {
                     $contract->file_path = null;
-
+                    $contract->deleted_by = Auth::user()->id;
+                    $contract->deleted_at = \Carbon::now();
 
                     Storage::delete($filePath);
                 }
@@ -2652,6 +2634,7 @@ class DataController extends Controller
                 if ($contract) {
                     $contract->is_active = 0;
                     $contract->status = 'canceled';
+                    $contract->updated_by = Auth::user()->id;
                     $contract->save();
                 }
                 $contract = new EssentialsEmployeesContract();
@@ -2664,6 +2647,7 @@ class DataController extends Controller
                 $contract->probation_period = request()->input('probation_period');
                 $contract->is_renewable = request()->input('is_renewable');
                 $contract->contract_type_id = request()->input('contract_type');
+                $contract->created_by = Auth::user()->id;
                 $contract->is_active = 1;
 
 
@@ -2688,18 +2672,21 @@ class DataController extends Controller
 
                 if ($travel_ticket_categorie) {
                     $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
+                    $travel_ticket_categorie->updated_by = Auth::user()->id;
                     $travel_ticket_categorie->save();
                 } else {
                     $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
                     $travel_ticket_categorie->employee_id = $user->id;
                     $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
+
+                    $travel_ticket_categorie->created_by = Auth::user()->id;
                     $travel_ticket_categorie->save();
                 }
             }
 
             if (request()->input('essentials_department_id')) {
 
-                $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id)->update(['is_active' => 0]);
+                $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id)->update(['is_active' => 0, 'updated_by' => Auth::user()->id]);
 
                 if (request()->input('profession')) {
                     $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
@@ -2707,6 +2694,7 @@ class DataController extends Controller
                     $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                     $essentials_employee_appointmets->is_active = 1;
                     $essentials_employee_appointmets->type = 'appoint';
+                    $essentials_employee_appointmets->created_by = Auth::user()->id;
                     if (request()->input('sponsor_id') != 'other_suponser') {
                         $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
                     } else {
@@ -2714,7 +2702,6 @@ class DataController extends Controller
                     }
                     $essentials_employee_appointmets->profession_id = request()->input('profession');
                     $essentials_employee_appointmets->save();
-                    error_log("saved new appoinment");
                 }
             }
 
@@ -2728,6 +2715,7 @@ class DataController extends Controller
                     try {
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
                         $userAllowancesAndDeduction->user_id = $user->id;
+                        $userAllowancesAndDeduction->created_by = Auth::user()->id;
                         $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
 
                         if ($item['amount'] != Null) {
