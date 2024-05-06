@@ -102,15 +102,13 @@ class EssentialsEmployeeContractController extends Controller
         $end_date = request()->get('end_date');
 
         if (!is_null($start_date)) {
-            $employees_contracts->whereDate('essentials_official_documents.expiration_date', '>=', $start_date);
+            $employees_contracts->whereDate('essentials_employees_contracts.contract_start_date', '>=', $start_date);
         }
 
         if (!is_null($end_date)) {
-            $employees_contracts->whereDate('essentials_official_documents.expiration_date', '<=', $end_date);
+            $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end_date);
         }
-        if (!empty(request()->isForHome)) {
-            $employees_contracts->where('essentials_official_documents.type', 'residence_permit');
-        }
+
 
 
 
