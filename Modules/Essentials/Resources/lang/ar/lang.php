@@ -1888,6 +1888,7 @@ return [
   'download_employees_file_template' => 'تحميل القالب',
   'expiration_date_from' => 'تاريخ الانتهاء (بعد)',
   'expiration_date_to' => 'تاريخ الانتهاء (قبل)',
+  'id_proof_number_or_border_number_is_required' => 'رقم إثبات الهوية مطلوب',
 
 
 ];
