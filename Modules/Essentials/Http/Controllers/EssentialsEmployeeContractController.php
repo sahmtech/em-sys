@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Sales\Entities\SalesProject;
+use Illuminate\Support\Facades\Auth;
 
 class EssentialsEmployeeContractController extends Controller
 {
@@ -203,7 +204,9 @@ class EssentialsEmployeeContractController extends Controller
 
 
 
+            $input2['created_by'] = Auth::user()->id;
             $input2['is_renewable'] = $input['is_renewable'];
+
 
             $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
             if ($latestRecord) {
