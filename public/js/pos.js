@@ -1600,13 +1600,13 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
             $('input#status').val() == 'draft')) {
             is_draft = true;
         }
-
+console.log(product_row);
         $.ajax({
             method: 'GET',
             url: '/sells/pos/get_product_row/' + variation_id + '/' + location_id,
             async: false,
             data: {
-                product_row: product_row?product_row:1,
+                product_row: product_row,
                 customer_id: customer_id,
                 is_direct_sell: is_direct_sell,
                 price_group: price_group,
