@@ -3,37 +3,43 @@
 
 @section('content')
 
-<!-- Content Header (Page header) -->
-<section class="content-header">
-    <h1>@lang('lang_v1.add_opening_stock')</h1>
-</section>
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>@lang('lang_v1.add_opening_stock')</h1>
+    </section>
 
-<!-- Main content -->
-<section class="content">
-	{!! Form::open(['url' => action([\App\Http\Controllers\OpeningStockController::class, 'save']), 'method' => 'post', 'id' => 'add_opening_stock_form' ]) !!}
-	{!! Form::hidden('product_id', $product->id); !!}
-	@include('opening_stock.form-part')
-	<div class="row">
-		<div class="col-sm-12 text-center">
-			<button type="submit" class="btn btn-primary btn-big">@lang('messages.save')</button>
-		</div>
-	</div>
+    <!-- Main content -->
+    <section class="content">
+        {!! Form::open([
+            'url' => action([\App\Http\Controllers\OpeningStockController::class, 'save']),
+            'method' => 'post',
+            'id' => 'add_opening_stock_form',
+        ]) !!}
+        {!! Form::hidden('product_id', $product->id) !!}
+        @include('opening_stock.form-part')
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <button type="submit" class="btn btn-primary btn-big">@lang('messages.save')</button>
+            </div>
+        </div>
 
-	{!! Form::close() !!}
-</section>
+        {!! Form::close() !!}
+    </section>
 @stop
 @section('javascript')
-	<script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
-	<script type="text/javascript">
-		$(document).ready( function(){
-			$('.os_date').datetimepicker({
-		        format: moment_date_format + ' ' + moment_time_format,
-		        ignoreReadonly: true,
-		        widgetPositioning: {
-		            horizontal: 'right',
-		            vertical: 'bottom'
-		        }
-		    });
-		});
-	</script>
+    {{-- <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script> --}}
+    <script src="{{ asset('js/opening_stock.js') }}?v={{ filemtime(public_path('js/opening_stock.js')) }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.os_date').datetimepicker({
+                format: moment_date_format + ' ' + moment_time_format,
+                ignoreReadonly: true,
+                widgetPositioning: {
+                    horizontal: 'right',
+                    vertical: 'bottom'
+                }
+            });
+        });
+    </script>
 @endsection

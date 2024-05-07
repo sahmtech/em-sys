@@ -292,39 +292,39 @@
 
  --}}
 
- <div class="col-md-3">
-    <div class="form-group">
-        <div class="multi-input">
-            @php
-                $is_pay_term_required = !empty($pos_settings['is_pay_term_required']);
-            @endphp
-            {!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!} @show_tooltip(__('tooltip.pay_term'))
-            <br />
-            {!! Form::number('pay_term_number', $walk_in_customer['pay_term_number'] ?? '', [
-                'class' => 'form-control width-40 pull-left',
-                'placeholder' => __('contact.pay_term'),
-                'required' => $is_pay_term_required,
-            ]) !!}
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="multi-input">
+                                @php
+                                    $is_pay_term_required = !empty($pos_settings['is_pay_term_required']);
+                                @endphp
+                                {!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!} @show_tooltip(__('tooltip.pay_term'))
+                                <br />
+                                {!! Form::number('pay_term_number', $walk_in_customer['pay_term_number'] ?? '', [
+                                    'class' => 'form-control width-40 pull-left',
+                                    'placeholder' => __('contact.pay_term'),
+                                    'required' => $is_pay_term_required,
+                                ]) !!}
 
-            {!! Form::select(
-                'pay_term_type',
-                ['months' => __('lang_v1.months'), 'days' => __('lang_v1.days')],
-                $walk_in_customer['pay_term_type'] ?? '',
-                [
-                    'class' => 'form-control width-60 pull-left',
-                    'placeholder' => __('messages.please_select'),
-                    'required' => $is_pay_term_required,
-                    'style'=>'padding: 0px 3px;',
-                ],
-            ) !!}
-        </div>
-    </div>
-</div>
+                                {!! Form::select(
+                                    'pay_term_type',
+                                    ['months' => __('lang_v1.months'), 'days' => __('lang_v1.days')],
+                                    $walk_in_customer['pay_term_type'] ?? '',
+                                    [
+                                        'class' => 'form-control width-60 pull-left',
+                                        'placeholder' => __('messages.please_select'),
+                                        'required' => $is_pay_term_required,
+                                        'style' => 'padding: 0px 3px;',
+                                    ],
+                                ) !!}
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="clearfix"></div>
 
                     <br />
-                  
+
                     {{-- <div class="clearfix"></div> --}}
 
                     <div class="@if (!empty($commission_agent)) col-sm-2 @else col-sm-3 @endif">
@@ -394,8 +394,8 @@
                     </div>
                     <div class="clearfix"></div>
 
-                    
-                    
+
+
 
                     {{-- @can('edit_invoice_number') --}}
                     <div class="col-sm-3">
@@ -715,7 +715,8 @@
 
 
                                         {!! Form::text('line_discount_amount_', 0, [
-                                            'class' => 'form-control input_number row_discount_amount row_discount_amount_','id'=>'line_discount_amount_'
+                                            'class' => 'form-control input_number row_discount_amount row_discount_amount_',
+                                            'id' => 'line_discount_amount_',
                                         ]) !!}<br>
                                         {!! Form::select(
                                             'line_discount_type',
@@ -765,7 +766,7 @@
                 @component('components.widget', ['class' => 'box-solid'])
                     <div class="col-md-3  @if ($sale_type == 'sales_order') hide @endif">
                         <div class="form-group">
-                            {!! Form::label('discount_type', __('sale.discount_type') . ' ') !!}  <span style="color: red; font-size:15px">*</span>
+                            {!! Form::label('discount_type', __('sale.discount_type') . ' ') !!} <span style="color: red; font-size:15px">*</span>
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="fa fa-info"></i>
@@ -804,7 +805,7 @@
                     @endphp
                     <div class="col-md-3 @if ($sale_type == 'sales_order') hide @endif">
                         <div class="form-group">
-                            {!! Form::label('discount_amount', __('sale.discount_amount') . '  ') !!}  <span style="color: red; font-size:15px">*</span>
+                            {!! Form::label('discount_amount', __('sale.discount_amount') . '  ') !!} <span style="color: red; font-size:15px">*</span>
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="fa fa-info"></i>
@@ -878,7 +879,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif" style="margin-right: 49.333333%;">
+                    <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif"
+                        style="margin-right: 49.333333%;">
                         <b>@lang('sale.order_tax'):</b>(+)
                         <span class="display_currency" id="order_tax">0</span>
                     </div>
@@ -1217,20 +1219,20 @@
                                     </tr>
                                 </tbody>
                             </table>
-                         </div>
+                        </div>
                         <div class="col-md-4 col-md-offset-8">
                             @if (!empty($pos_settings['amount_rounding_method']) && $pos_settings['amount_rounding_method'] > 0)
                                 <small id="round_off"><br>(@lang('lang_v1.round_off'): <span id="round_off_text">0</span>)</small>
                                 <br />
                                 <input type="hidden" name="round_off_amount" id="round_off_amount" value=0>
-                             @endif 
+                            @endif
                             <div><b>@lang('sale.total_payable'): </b>
                                 <input type="hidden" name="final_total" id="final_total_input">
                                 <span id="total_payable">0</span>
                             </div>
-                         </div>
-                    @endcomponent 
-                </div> 
+                        </div>
+                    @endcomponent
+                </div>
 
             </div>
         </div>
@@ -1450,9 +1452,15 @@
 @stop
 
 @section('javascript')
-    <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
+    {{-- <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script> --}}
+    <script src="{{ asset('js/pos.js') }}?v={{ filemtime(public_path('js/pos.js')) }}"></script>
+
+    {{-- <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script> --}}
+    <script src="{{ asset('js/product.js') }}?v={{ filemtime(public_path('js/product.js')) }}"></script>
+
+    {{-- <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script> --}}
+    <script src="{{ asset('js/opening_stock.js') }}?v={{ filemtime(public_path('js/opening_stock.js')) }}"></script>
+
 
     <!-- Call restaurant module if defined -->
     @if (in_array('tables', $enabled_modules) ||
@@ -1608,7 +1616,8 @@
                     },
                     success: function(result) {
 
-                        pos_product_row(result.variation.id, null, null, quantity = $("#quantity_").val());
+                        pos_product_row(result.variation.id, null, null, quantity = $(
+                            "#quantity_").val());
 
                         $("#name_").val('');
                         $("#quantity_").val('');
@@ -1618,7 +1627,7 @@
                         $("#unit_price_inc_tax_").val('0');
                         $("#pos_line_total").val('0');
 
-                        
+
                         $("#name_").focus();
                     },
                     error: function(result) {

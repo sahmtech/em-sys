@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Sales\Entities\SalesProject;
+use Illuminate\Support\Facades\Auth;
 
 class EssentialsEmployeeContractController extends Controller
 {
@@ -91,12 +92,24 @@ class EssentialsEmployeeContractController extends Controller
         if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
             $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
         }
-        if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            $start = request()->start_date;
-            $end = request()->end_date;
-            $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
-                ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
+        // if (!empty(request()->start_date) && !empty(request()->end_date)) {
+        //     $start = request()->start_date;
+        //     $end = request()->end_date;
+        //     $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
+        //         ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
+        // }
+
+        $start_date = request()->get('start_date');
+        $end_date = request()->get('end_date');
+
+        if (!is_null($start_date)) {
+            $employees_contracts->whereDate('essentials_employees_contracts.contract_start_date', '>=', $start_date);
         }
+
+        if (!is_null($end_date)) {
+            $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end_date);
+        }
+
 
 
 
@@ -203,7 +216,9 @@ class EssentialsEmployeeContractController extends Controller
 
 
 
+            $input2['created_by'] = Auth::user()->id;
             $input2['is_renewable'] = $input['is_renewable'];
+
 
             $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
             if ($latestRecord) {

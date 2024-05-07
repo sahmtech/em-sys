@@ -512,9 +512,13 @@ return [
   'add_new_employee' => 'إضافة موظف جديد',
   'employ_user' => 'توظيف المستخدم',
   'contract_details' => 'تفاصيل العقد',
+  'project_manager' => 'مدير الحساب',
   'contract_details_create_edit' => 'العقد الوظيفي',
   'contract_number' => 'رقم العقد',
+  'salary_voucher_status' => 'الحالة',
+  'change_salary_voucher' => 'تغير حالة',
   'contract_start_date' => 'تاريخ بداية العقد',
+  'contact_location' => 'الفرع',
   'contract_end_date' => 'تاريخ نهاية العقد',
   'contract_duration' => 'مدة العقد',
   'probation_period_in_days' => 'الفترة التجريبية بالأيام',
@@ -1807,14 +1811,21 @@ return [
   'sacnDoc' => 'مسح وثيقة',
   'user_type.employee' => 'موظفين',
   'user_type.worker' => 'عمال',
+  'save' => 'حفظ',
   'user_type.remote_employee' => 'موظفين عن بعد',
   'late_hours' => 'تأخير',
-
+  'list_of_emp' => ' قائمة  الموظفين',
+  'view_salary_info' => ' تفاصيل الراتب',
+  'edit' => 'تعديل',
+  'project_assigner' => 'موقع المشروع',
   'company_name' => 'اسم الشركة',
+  'project_info' => 'تفاصيل المشروع',
 
   'doc_exists_filter' => 'مرفق الوثيقة',
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',
+  'salary_voucher' => 'سند راتب',
+  'project_name' => 'اسم المشروع',
 
 
   'show_Leave_Balances' => 'عرض رصيد الاجازات',
@@ -1886,5 +1897,9 @@ return [
   'employees_file' => 'ملف الموظفين',
   'import_employees_file' => 'استيراد',
   'download_employees_file_template' => 'تحميل القالب',
+  'expiration_date_from' => 'تاريخ الانتهاء (بعد)',
+  'expiration_date_to' => 'تاريخ الانتهاء (قبل)',
+  'id_proof_number_or_border_number_is_required' => 'رقم إثبات الهوية مطلوب',
+
 
 ];

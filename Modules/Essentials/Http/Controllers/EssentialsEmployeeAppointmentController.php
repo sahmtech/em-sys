@@ -17,6 +17,7 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Illuminate\Support\Facades\Auth;
 
 class EssentialsEmployeeAppointmentController extends Controller
 {
@@ -195,6 +196,8 @@ class EssentialsEmployeeAppointmentController extends Controller
 
             if ($appointmet) {
                 $appointmet->is_active = $input['origValue'];
+                $appointmet->updated_by = Auth::user()->id;
+
                 $appointmet->end_at = now();
                 $appointmet->save();
                 User::where('id',   $appointmet->employee_id)->update([
@@ -245,7 +248,10 @@ class EssentialsEmployeeAppointmentController extends Controller
             $collection = User::where('id', '=', $user->employee_id)->get();
 
             foreach ($collection as $model) {
-                $model->update(['status' => $input['status']]);
+                $model->update([
+                    'status' => $input['status'],
+                    'created_by' => Auth::user()->id
+                ]);
                 $model->save();
             }
 
@@ -283,6 +289,8 @@ class EssentialsEmployeeAppointmentController extends Controller
             $input2['department_id'] = $input['department'];
             $input2['business_location_id'] = $input['location'];
             $input2['profession_id'] = $input['profession'];
+
+            $input2['created_by'] = Auth::user()->id;
 
             $input2['is_active'] = 1;
             $input2['start_from'] = $input['start_from'];
@@ -397,7 +405,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
             //        $input2['superior'] = $input['superior'];
             $input2['profession_id'] = $input['profession'];
-            // $input2['specialization_id'] = $input['specialization'];
+            $input2['updated_by'] = Auth::user()->id;
 
             User::where('id', $input['employee'])->update(['essentials_department_id' => $input['department']]);
 
