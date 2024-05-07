@@ -211,50 +211,79 @@ include_once 'install_r.php';
 //     }
 // });
 
-// Route::get('/fix_emp', function () {
-//     DB::beginTransaction();
-//     try {
+Route::get('/fix_emp', function () {
+    DB::beginTransaction();
+    try {
 
-//         $companySequences = [];
+        $companySequences = [];
 
-//         $users = User::whereNot('company_id', 2)->get();
+        $users = User::whereNot('company_id', 2)->get();
 
-//         foreach ($users as $user) {
-//             if (!isset($companySequences[$user->company_id])) {
-//                 $companySequences[$user->company_id] = 1;
-//             } else {
-//                 $companySequences[$user->company_id]++;
-//             }
+        foreach ($users as $user) {
+            if (!isset($companySequences[$user->company_id])) {
+                $companySequences[$user->company_id] = 1;
+            } else {
+                $companySequences[$user->company_id]++;
+            }
 
-//             $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
-//             $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
-//             $newEmpNumber = $companyPart . $sequencePart;
+            $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
+            $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
+            $newEmpNumber = $companyPart . $sequencePart;
 
-//             $user->emp_number = $newEmpNumber;
-//             $user->save();
-//         }
-//         DB::commit();
-//         return response()->json(['message' => 'Success',]);
-//     } catch (Exception $e) {
-//         DB::rollback();
-//         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
-//     }
-// });
+            $user->emp_number = $newEmpNumber;
+            $user->save();
+        }
+        DB::commit();
+        return response()->json(['message' => 'Success',]);
+    } catch (Exception $e) {
+        DB::rollback();
+        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+    }
+});
+Route::get('/fix_emp2', function () {
+    DB::beginTransaction();
+    try {
 
-// Route::get('/swap_k', function () {
-//     DB::beginTransaction();
-//     try {
-//         $tmp = User::where('emp_number', "0100001")->first();
-//         $kh = User::where('id', 5901)->first();
-//         User::where('emp_number', "0100001")->update(['emp_number' => $kh->emp_number]);
-//         User::where('id', 5901)->first()->update(['emp_number' => $tmp->emp_number]);
-//         DB::commit();
-//         return response()->json(['message' => 'Success',]);
-//     } catch (Exception $e) {
-//         DB::rollback();
-//         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
-//     }
-// });
+        $companySequences = [];
+
+        $users = User::where('company_id', 2)->whereRaw('LENGTH(emp_number) > 6')->get();
+
+        foreach ($users as $user) {
+            if (!isset($companySequences[$user->company_id])) {
+                $companySequences[$user->company_id] = 2;
+            } else {
+                $companySequences[$user->company_id]++;
+            }
+
+            $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
+            $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
+            $newEmpNumber = $companyPart . $sequencePart;
+
+            $user->emp_number = $newEmpNumber;
+            $user->save();
+        }
+        DB::commit();
+        return response()->json(['message' => 'Success',]);
+    } catch (Exception $e) {
+        DB::rollback();
+        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+    }
+});
+
+Route::get('/swap_k', function () {
+    DB::beginTransaction();
+    try {
+        $tmp = User::where('emp_number', "0100001")->first();
+        $kh = User::where('id', 5901)->first();
+        User::where('emp_number', "0100001")->update(['emp_number' => $kh->emp_number]);
+        User::where('id', 5901)->first()->update(['emp_number' => $tmp->emp_number]);
+        DB::commit();
+        return response()->json(['message' => 'Success',]);
+    } catch (Exception $e) {
+        DB::rollback();
+        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+    }
+});
 
 
 Route::get('/getContractsByDate', function () {
@@ -424,15 +453,15 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/test-email', [BusinessController::class, 'testEmailConfiguration']);
     Route::post('/test-sms', [BusinessController::class, 'testSmsConfiguration']);
     Route::get('/business/settings', [BusinessController::class, 'getBusinessSettings'])->name('business.getBusinessSettings');
-    
-    
+
+
     Route::get('/create-bank-account', [BankAccountsController::class, 'create'])->name('create-bank-account');
     Route::post('/save-bank-account', [BankAccountsController::class, 'store']);
     Route::get('/edit-bank-account/{id}', [BankAccountsController::class, 'edit']);
     Route::post('/update-bank-account/{id}', [BankAccountsController::class, 'update']);
     Route::get('/delete-bank-account/{id}', [BankAccountsController::class, 'delete']);
 
-    
+
     Route::post('/business/update', [BusinessController::class, 'postBusinessSettings'])->name('business.postBusinessSettings');
     Route::get('/user/profile', [UserController::class, 'getProfile'])->name('user.getProfile');
     Route::post('/user/update', [UserController::class, 'updateProfile'])->name('user.updateProfile');
@@ -923,5 +952,4 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
         ->name('packing.downloadPdf');
     Route::get('/sells/invoice-url/{id}', [SellPosController::class, 'showInvoiceUrl']);
     Route::get('/show-notification/{id}', [HomeController::class, 'showNotification']);
-
 });

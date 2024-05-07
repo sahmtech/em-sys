@@ -42,7 +42,7 @@ class ModuleUtil extends Util
     }
     public function generateEmpNumber($company_id)
     {
-        $last_emp_number = User::where('company_id', $company_id)->latest()->first()->emp_number;
+        $last_emp_number = User::where('company_id', $company_id)->whereNotNull('emp_number')->whereRaw('LENGTH(emp_number) > 6')->orderBy('emp_number', 'desc')->first()->emp_number;
         $emp_number = intval(substr($last_emp_number, 2));
         $emp_number++;
         $sequencePart = str_pad($emp_number, 5, '0', STR_PAD_LEFT);
