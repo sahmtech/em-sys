@@ -77,11 +77,11 @@ function __currency_trans_from_en(
 ) {
     
     if (use_page_currency && __p_currency_symbol) {
-        var s = 'ريال';
+        var s = '﷼';
         var thousand = __p_currency_thousand_separator;
         var decimal = __p_currency_decimal_separator;
     } else {
-        var s = 'ريال';
+        var s = '﷼';
         var thousand = __currency_thousand_separator;
         var decimal = __currency_decimal_separator;
     }
