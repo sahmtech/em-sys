@@ -713,7 +713,7 @@
                                         {!! Form::hidden("products[$row_count][discount_id]", $discount->id) !!}
                                     @endif --}}
 
-
+                                    
                                         {!! Form::text('line_discount_amount_', 0, [
                                             'class' => 'form-control input_number row_discount_amount row_discount_amount_',
                                             'id' => 'line_discount_amount_',
@@ -739,8 +739,11 @@
                                             class="form-control pos_unit_price_inc_tax" value="0">
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control pos_line_total" id="pos_line_total"
+                                        <input type="number" class="form-control pos_line_total hidden" id="pos_line_total"
                                             readonly value="0">
+                                        <span class=" pos_line_total_text" id="pos_line_total_text_"
+                                            {{-- data-currency_symbol="false" --}}
+                                            ></span>
                                         {{-- value="{{ @num_format($product->quantity_ordered * $unit_price_inc_tax) }}"> --}}
                                     </td>
                                 </tbody>
@@ -823,7 +826,7 @@
                     </div>
                     <div class="col-md-4 @if ($sale_type == 'sales_order') hide @endif"><br>
                         <b>@lang('sale.discount_amount'):</b>(-)
-                        <span class="display_currency" id="total_discount">0</span>
+                        <span class="" id="total_discount">0</span>
                     </div>
                     <div class="clearfix"></div>
                     <div class="col-md-12 well well-sm bg-light-gray @if (session('business.enable_rp') != 1 || $sale_type == 'sales_order') hide @endif">
@@ -882,7 +885,7 @@
                     <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif"
                         style="margin-right: 49.333333%;">
                         <b>@lang('sale.order_tax'):</b>(+)
-                        <span class="display_currency" id="order_tax">0</span>
+                        <span class="" id="order_tax">0</span>
                     </div>
 
                     {{-- <div class="col-md-12">
@@ -1586,6 +1589,20 @@
             //     // $(".unit_price_inc_tax_").text(total);
 
 
+
+
+            // $('#pos_table').on('click', '#add_product_', function() {
+            //     var
+            //         $table = $(this).closest('table'),
+            //         $row = $(this).closest('tr'),
+            //         $newRow = $row.clone();
+            //     $table.append($newRow);
+            //     // $new_row.setAttribute('data-row_index', $newRow.rowIndex);
+             
+            // });
+
+
+
             // });
             $("#add_product_").click(function(e) {
                 e.preventDefault();
@@ -1626,6 +1643,8 @@
                         $("#line_discount_amount_").val('0');
                         $("#unit_price_inc_tax_").val('0');
                         $("#pos_line_total").val('0');
+                        $("#pos_line_total_text_").text('0');
+
 
 
                         $("#name_").focus();

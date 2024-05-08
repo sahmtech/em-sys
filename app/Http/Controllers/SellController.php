@@ -674,6 +674,9 @@ class SellController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
+        // $ = request()->session()->get('user.company_id');
+        // dd($company_id,Session::get('selectedCompanyId'));
+        $company_id = Session::get('selectedCompanyId');
 
         //Check if subscribed or not, then check for users quota
         // if (! $this->moduleUtil->isSubscribed($business_id)) {
@@ -687,7 +690,7 @@ class SellController extends Controller
         $business_details = $this->businessUtil->getDetails($business_id);
         $taxes = TaxRate::forBusinessDropdown($business_id, true, true);
 
-        $business_locations = BusinessLocation::forDropdown($business_id, false, true);
+        $business_locations = BusinessLocation::forDropdownWithCompany($business_id, $company_id, false, true);
         $bl_attributes = $business_locations['attributes'];
         $business_locations = $business_locations['locations'];
 
@@ -728,7 +731,7 @@ class SellController extends Controller
         $default_datetime = $this->businessUtil->format_date('now', true);
 
         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
-
+        $pos_settings['allow_overselling']=true;
         $invoice_schemes = InvoiceScheme::forDropdown($business_id);
         $default_invoice_schemes = InvoiceScheme::getDefault($business_id);
         if (!empty($default_location) && !empty($default_location->sale_invoice_scheme_id)) {

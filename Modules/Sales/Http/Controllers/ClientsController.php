@@ -290,6 +290,7 @@ class ClientsController extends Controller
                     'commercial_register_no', 'mobile', 'email', 'city'
 
                 ])->where('business_id', $business_id)->where('type', 'converted');
+                
 
             return Datatables::of($contacts)
 

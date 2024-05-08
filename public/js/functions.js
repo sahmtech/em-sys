@@ -75,12 +75,13 @@ function __currency_trans_from_en(
     precision = __currency_precision,
     is_quantity = false
 ) {
+    
     if (use_page_currency && __p_currency_symbol) {
-        var s = __p_currency_symbol;
+        var s = 'ريال';
         var thousand = __p_currency_thousand_separator;
         var decimal = __p_currency_decimal_separator;
     } else {
-        var s = __currency_symbol;
+        var s = 'ريال';
         var thousand = __currency_thousand_separator;
         var decimal = __currency_decimal_separator;
     }
@@ -98,7 +99,6 @@ function __currency_trans_from_en(
     if (is_quantity) {
         precision = __quantity_precision;
     }
-
     return accounting.formatMoney(input, symbol, precision, thousand, decimal, format);
 }
 
