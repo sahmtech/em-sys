@@ -4,6 +4,7 @@ namespace App;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 
 class BusinessLocation extends Model
 {
@@ -33,6 +34,8 @@ class BusinessLocation extends Model
      */
     public static function forDropdown($business_id, $show_all = false, $receipt_printer_type_attribute = false, $append_id = true, $check_permission = true)
     {
+        // $company_id = Session::get('selectedCompanyId');
+
         $query = BusinessLocation::where('business_id', $business_id)->Active();
 
         if ($check_permission) {

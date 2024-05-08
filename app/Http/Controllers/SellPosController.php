@@ -1723,7 +1723,8 @@ class SellPosController extends Controller
 
         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
-        $check_qty = !empty($pos_settings['allow_overselling']) ? false : true;
+        // $check_qty = !empty($pos_settings['allow_overselling']) ? false : true;
+        $check_qty =  false;
 
         $is_sales_order = request()->has('is_sales_order') && request()->input('is_sales_order') == 'true' ? true : false;
         $is_draft = request()->has('is_draft') && request()->input('is_draft') == 'true' ? true : false;
@@ -1863,33 +1864,33 @@ class SellPosController extends Controller
                 $is_direct_sell = true;
             }
 
-            if ($variation_id == 'null' && !empty($weighing_barcode)) {
-                $product_details = $this->__parseWeighingBarcode($weighing_barcode);
-                if ($product_details['success']) {
-                    $variation_id = $product_details['variation_id'];
-                    $quantity = $product_details['qty'];
-                } else {
-                    $output['success'] = false;
-                    $output['msg'] = $product_details['msg'];
+            // if ($variation_id == 'null' && !empty($weighing_barcode)) {
+            //     $product_details = $this->__parseWeighingBarcode($weighing_barcode);
+            //     if ($product_details['success']) {
+            //         $variation_id = $product_details['variation_id'];
+            //         $quantity = $product_details['qty'];
+            //     } else {
+            //         $output['success'] = false;
+            //         $output['msg'] = $product_details['msg'];
 
-                    return $output;
-                }
-            }
+            //         return $output;
+            //     }
+            // }
 
             $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell);
 
-            if ($this->transactionUtil->isModuleEnabled('modifiers') && !$is_direct_sell) {
-                $variation = Variation::find($variation_id);
-                $business_id = request()->session()->get('user.business_id');
-                $this_product = Product::where('business_id', $business_id)
-                    ->with(['modifier_sets'])
-                    ->find($variation->product_id);
-                if (count($this_product->modifier_sets) > 0) {
-                    $product_ms = $this_product->modifier_sets;
-                    $output['html_modifier'] = view('restaurant.product_modifier_set.modifier_for_product')
-                        ->with(compact('product_ms', 'row_count'))->render();
-                }
-            }
+            // if ($this->transactionUtil->isModuleEnabled('modifiers') && !$is_direct_sell) {
+            //     $variation = Variation::find($variation_id);
+            //     $business_id = request()->session()->get('user.business_id');
+            //     $this_product = Product::where('business_id', $business_id)
+            //         ->with(['modifier_sets'])
+            //         ->find($variation->product_id);
+            //     if (count($this_product->modifier_sets) > 0) {
+            //         $product_ms = $this_product->modifier_sets;
+            //         $output['html_modifier'] = view('restaurant.product_modifier_set.modifier_for_product')
+            //             ->with(compact('product_ms', 'row_count'))->render();
+            //     }
+            // }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

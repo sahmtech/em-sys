@@ -133,6 +133,7 @@ $(document).ready(function () {
 
     //Set page level currency to be used for some pages. (Purchase page)
     if ($('input#p_symbol').length > 0) {
+       
         __p_currency_symbol = $('input#p_symbol').val();
         __p_currency_thousand_separator = $('input#p_thousand').val();
         __p_currency_decimal_separator = $('input#p_decimal').val();

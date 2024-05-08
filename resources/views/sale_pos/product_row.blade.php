@@ -271,15 +271,19 @@
             <input type="text" data-min="1" class="form-control pos_quantity input_number mousetrap input_quantity"
                 value="{{ @format_quantity($product->quantity_ordered) }}"
                 name="products[{{ $row_count }}][quantity]"
-                data-allow-overselling="@if (empty($pos_settings['allow_overselling'])) {{ 'false' }}@else{{ 'true' }} @endif"
+                data-allow-overselling="@if (empty($pos_settings['allow_overselling'])) {{ 'true' }}@else{{ 'true' }} @endif"
                 @if ($allow_decimal) data-decimal=1 
 			@else 
 				data-decimal=0 
 				data-rule-abs_digit="true" 
 				data-msg-abs_digit="@lang('lang_v1.decimal_value_not_allowed')" @endif
-                data-rule-required="true" data-msg-required="@lang('validation.custom-messages.this_field_is_required')"
-                @if ($product->enable_stock && empty($pos_settings['allow_overselling']) && empty($is_sales_order)) data-rule-max-value="{{ $max_qty_rule }}" data-qty_available="{{ $product->qty_available }}" data-msg-max-value="{{ $max_qty_msg }}" 
-				data-msg_max_default="@lang('validation.custom-messages.quantity_not_available', ['qty'=> $product->formatted_qty_available, 'unit' => $product->unit  ])" @endif>
+
+                data-rule-required="fasle" data-msg-required="@lang('validation.custom-messages.this_field_is_required')"
+                
+                {{-- @if ($product->enable_stock && empty($pos_settings['allow_overselling']) && empty($is_sales_order)) data-rule-max-value="{{ $max_qty_rule }}" data-qty_available="{{ $product->qty_available }}" data-msg-max-value="{{ $max_qty_msg }}" 
+				data-msg_max_default="@lang('validation.custom-messages.quantity_not_available', ['qty'=> $product->formatted_qty_available, 'unit' => $product->unit  ])" @endif
+                 --}}
+                >
             <span class="input-group-btn"><button type="button" class="btn btn-default btn-flat quantity-up"><i
                         class="fa fa-plus text-success"></i></button></span>
         </div>

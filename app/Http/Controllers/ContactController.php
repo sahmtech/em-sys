@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\ContactCreatedOrModified;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class ContactController extends Controller
 {
@@ -903,19 +904,19 @@ class ContactController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
-            $contacts = Contact::where('contacts.business_id', $business_id)
-                            ->leftjoin('customer_groups as cg', 'cg.id', '=', 'contacts.customer_group_id')
-                            ->active();
+            $contacts = Contact::where('business_id', $business_id)->where('type', 'converted');
+                            // ->leftjoin('customer_groups as cg', 'cg.id', '=', 'contacts.customer_group_id');
+                            // ->active();
+                        //    dd($contacts );
+            // if (! request()->has('all_contact')) {
+                // $contacts->onlyCustomers();
+            // }
 
-            if (! request()->has('all_contact')) {
-                $contacts->onlyCustomers();
-            }
-
-            if (! empty($term)) {
+            if (!empty($term)) {
                 $contacts->where(function ($query) use ($term) {
                     $query->where('contacts.name', 'like', '%'.$term.'%')
-                            ->orWhere('supplier_business_name', 'like', '%'.$term.'%')
-                            ->orWhere('mobile', 'like', '%'.$term.'%')
+                            ->orWhere('contacts.supplier_business_name', 'like', '%'.$term.'%')
+                            ->orWhere('contacts.mobile', 'like', '%'.$term.'%')
                             ->orWhere('contacts.contact_id', 'like', '%'.$term.'%');
                 });
             }
@@ -935,9 +936,9 @@ class ContactController extends Controller
                 'pay_term_type',
                 'balance',
                 'supplier_business_name',
-                'cg.amount as discount_percent',
-                'cg.price_calculation_type',
-                'cg.selling_price_group_id',
+                // 'cg.amount as discount_percent',
+                // 'cg.price_calculation_type',
+                // 'cg.selling_price_group_id',
                 'shipping_custom_field_details',
                 'is_export',
                 'export_custom_field_1',
@@ -952,7 +953,7 @@ class ContactController extends Controller
                 $contacts->addSelect('total_rp');
             }
             $contacts = $contacts->get();
-
+           
             return json_encode($contacts);
         }
     }

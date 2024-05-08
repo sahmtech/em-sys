@@ -3230,8 +3230,9 @@ class TransactionUtil extends Util
         if (!empty($business['pos_settings']) && !is_array($business['pos_settings'])) {
             $business['pos_settings'] = json_decode($business['pos_settings'], true);
         }
-        $allow_overselling = !empty($business['pos_settings']['allow_overselling']) ?
-            true : false;
+        $allow_overselling = true;
+        // $allow_overselling = !empty($business['pos_settings']['allow_overselling']) ?
+        //     true : false;
 
         //Set flag to check for expired items during SELLING only.
         $stop_selling_expired = false;
