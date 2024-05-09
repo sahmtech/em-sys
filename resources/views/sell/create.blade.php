@@ -623,7 +623,7 @@
                         <div class="table-responsive">
                             <table class="table table-condensed table-bordered table-striped table-responsive" id="pos_table">
                                 <thead>
-                                    <tr class="product_row">
+                                    <tr class="">
                                         <th class="col-md-1">#
                                         </th>
                                         <th class="text-center">
