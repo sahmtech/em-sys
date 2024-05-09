@@ -330,7 +330,7 @@ class ProductController extends Controller
 
         $brands = Brands::forDropdown($business_id);
 
-       
+
         $units = Unit::forDropdown($business_id);
 
         $tax_dropdown = TaxRate::forBusinessDropdown($business_id, false);
@@ -1458,8 +1458,9 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function saveQuickProduct(Request $request)
+    public static function saveQuickProduct(Request $request)
     {
+        // dd($request);
         if (!auth()->user()->can('product.create')) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -1479,76 +1480,85 @@ class ProductController extends Controller
                     }
                 }
             }
-            $product_details = $request->only($form_fields);
 
-            $product_details['type'] = empty($product_details['type']) ? 'single' : $product_details['type'];
-            $product_details['business_id'] = $business_id;
-            $product_details['created_by'] = $request->session()->get('user.id');
-            if (!empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) {
-                $product_details['enable_stock'] = 1;
-                //TODO: Save total qty
-                //$product_details['total_qty_available'] = 0;
+            foreach ($request->only('products_') as $_products) {
+                $product_details = $request->only($form_fields);
+
+                $product_details['type'] = empty($product_details['type']) ? 'single' : $product_details['type'];
+                $product_details['business_id'] = $business_id;
+                $product_details['barcode_type'] = 'C128';
+                $product_details['unit_id'] = 1;
+                $product_details['profit_percent'] = 0;
+                $request['single_dpp']= $_products->unit_price;
+                $request['single_dpp_inc_tax']= $_products->unit_price_inc_tax;
+                $request['single_dsp']= $_products->unit_price;
+                $request['single_dsp_inc_tax']= $_products->unit_price_inc_tax;
+                $product_details['created_by'] = $request->session()->get('user.id');
+                if (!empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) {
+                    $product_details['enable_stock'] = 1;
+                    //TODO: Save total qty
+                    //$product_details['total_qty_available'] = 0;
+                }
+                if (!empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) {
+                    $product_details['not_for_selling'] = 1;
+                }
+                if (empty($product_details['sku'])) {
+                    $product_details['sku'] = ' ';
+                }
+
+                if (!empty($product_details['alert_quantity'])) {
+                    $product_details['alert_quantity'] = $this->productUtil->num_uf($product_details['alert_quantity']);
+                }
+
+                $expiry_enabled = $request->session()->get('business.enable_product_expiry');
+                if (!empty($request->input('expiry_period_type')) && !empty($request->input('expiry_period')) && !empty($expiry_enabled)) {
+                    $product_details['expiry_period_type'] = $request->input('expiry_period_type');
+                    $product_details['expiry_period'] = $this->productUtil->num_uf($request->input('expiry_period'));
+                }
+
+                if (!empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) {
+                    $product_details['enable_sr_no'] = 1;
+                }
+
+                $product_details['warranty_id'] = !empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
+
+                DB::beginTransaction();
+
+                $product = Product::create($product_details);
+                event(new ProductsCreatedOrModified($product_details, 'added'));
+
+                if (empty(trim($request->input('sku')))) {
+                    $sku = $this->productUtil->generateProductSku($product->id);
+                    $product->sku = $sku;
+                    $product->save();
+                }
+
+                $this->productUtil->createSingleProductVariation(
+                    $product->id,
+                    $product->sku,
+                    $request->input('single_dpp'),
+                    $request->input('single_dpp_inc_tax'),
+                    $request->input('profit_percent'),
+                    $request->input('single_dsp'),
+                    $request->input('single_dsp_inc_tax')
+                );
+                // ($product, $sku, $purchase_price, $dpp_inc_tax, $profit_percent, $selling_price, $selling_price_inc_tax, $combo_variations = [])
+
+                if ($product->enable_stock == 1 && !empty($request->input('opening_stock'))) {
+                    $user_id = $request->session()->get('user.id');
+
+                    $transaction_date = $request->session()->get('financial_year.start');
+                    $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+
+                    $this->productUtil->addSingleProductOpeningStock($business_id, $product, $request->input('opening_stock'), $transaction_date, $user_id);
+                }
+
+                //Add product locations
+                $product_locations = $request->input('product_locations');
+                if (!empty($product_locations)) {
+                    $product->product_locations()->sync($product_locations);
+                }
             }
-            if (!empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) {
-                $product_details['not_for_selling'] = 1;
-            }
-            if (empty($product_details['sku'])) {
-                $product_details['sku'] = ' ';
-            }
-
-            if (!empty($product_details['alert_quantity'])) {
-                $product_details['alert_quantity'] = $this->productUtil->num_uf($product_details['alert_quantity']);
-            }
-
-            $expiry_enabled = $request->session()->get('business.enable_product_expiry');
-            if (!empty($request->input('expiry_period_type')) && !empty($request->input('expiry_period')) && !empty($expiry_enabled)) {
-                $product_details['expiry_period_type'] = $request->input('expiry_period_type');
-                $product_details['expiry_period'] = $this->productUtil->num_uf($request->input('expiry_period'));
-            }
-
-            if (!empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) {
-                $product_details['enable_sr_no'] = 1;
-            }
-
-            $product_details['warranty_id'] = !empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
-
-            DB::beginTransaction();
-
-            $product = Product::create($product_details);
-            event(new ProductsCreatedOrModified($product_details, 'added'));
-
-            if (empty(trim($request->input('sku')))) {
-                $sku = $this->productUtil->generateProductSku($product->id);
-                $product->sku = $sku;
-                $product->save();
-            }
-
-            $this->productUtil->createSingleProductVariation(
-                $product->id,
-                $product->sku,
-                $request->input('single_dpp'),
-                $request->input('single_dpp_inc_tax'),
-                $request->input('profit_percent'),
-                $request->input('single_dsp'),
-                $request->input('single_dsp_inc_tax')
-            );
-            // ($product, $sku, $purchase_price, $dpp_inc_tax, $profit_percent, $selling_price, $selling_price_inc_tax, $combo_variations = [])
-    
-            if ($product->enable_stock == 1 && !empty($request->input('opening_stock'))) {
-                $user_id = $request->session()->get('user.id');
-
-                $transaction_date = $request->session()->get('financial_year.start');
-                $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
-
-                $this->productUtil->addSingleProductOpeningStock($business_id, $product, $request->input('opening_stock'), $transaction_date, $user_id);
-            }
-
-            //Add product locations
-            $product_locations = $request->input('product_locations');
-            if (!empty($product_locations)) {
-                $product->product_locations()->sync($product_locations);
-            }
-
             DB::commit();
 
             $output = [
