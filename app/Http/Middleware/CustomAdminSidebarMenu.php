@@ -1674,8 +1674,8 @@ class CustomAdminSidebarMenu
                     ]) : ((auth()->user()->can('housingmovements.housed')) ? action([
                         \Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_workers_index'
                     ]) : ((auth()->user()->can('housingmovements.advanceSalaryRequest')) ? action([
-                        \Modules\HousingMovements\Http\Controllers\ClientsController::class,
-                        'qualified_contacts'
+                        \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                        'advanceSalaryRequest'
                     ]) : ((auth()->user()->can('housingmovements.medicalExamination')) ? action([
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'
                     ]) : ((auth()->user()->can('housingmovements.medicalInsurance')) ? action([
@@ -1692,7 +1692,7 @@ class CustomAdminSidebarMenu
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyPrint'
                     ]) : action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])))))))))),
 
-                    __('housingmovements::lang.contacts'),
+                    __('housingmovements::lang.travelers'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && (request()->segment(2) == 'travelers'
                         || request()->segment(2) == 'housed-workers'
                         || request()->segment(2) == 'advanceSalaryRequest'

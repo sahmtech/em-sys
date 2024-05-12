@@ -105,12 +105,12 @@
                                         <span id="bankCodeError" class="text-danger"></span>
                                     </div>
                                     <div class="form-group col-md-4">
-                                        {!! Form::label('iban_file', __('lang_v1.iban_file') . ':') !!}
+                                        {!! Form::label('iban_file', __('housingmovements::lang.iban_file') . ':') !!}
                                         {!! Form::file('iban_file', null, [
                                             'class' => 'form-control',
                                             'style' => 'height:40px',
                                             'id' => 'iban_file',
-                                            'placeholder' => __('lang_v1.iban_file'),
+                                            'placeholder' => __('housingmovements::lang.iban_file'),
                                         ]) !!}
                                         <span id="bankCodeError" class="text-danger"></span>
                                     </div>

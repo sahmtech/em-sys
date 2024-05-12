@@ -101,6 +101,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/residencyDelivery', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])->name('residencyDelivery');
         Route::post('/delivery_residency', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'deliveryResidency'])->name('delivery_residency');
 
+
+        Route::get('/advanceSalaryRequest', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'advanceSalaryRequest'])->name('advanceSalaryRequest');
+
         // Workers 
         Route::get('/workers/available-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping'])->name('workers.available_shopping');
         Route::get('/workers/reserved-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'reserved_shopping'])->name('workers.reserved_shopping');
