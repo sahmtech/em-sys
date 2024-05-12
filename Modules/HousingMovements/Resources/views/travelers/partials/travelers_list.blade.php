@@ -12,6 +12,8 @@
             </th>
 
             <th>@lang('housingmovements::lang.worker_name')</th>
+            <th>@lang('housingmovements::lang.profile_image')</th>
+            <th>@lang('housingmovements::lang.contact')</th>
             <th>@lang('housingmovements::lang.project')</th>
             <th>@lang('housingmovements::lang.location')</th>
             <th>@lang('housingmovements::lang.medical_examination')</th>
@@ -19,7 +21,7 @@
             <th>@lang('housingmovements::lang.passport_number')</th>
             <th>@lang('housingmovements::lang.profession')</th>
             <th>@lang('housingmovements::lang.nationality')</th>
-            {{-- <th>@lang('messages.action')</th> --}}
+            <th>@lang('housingmovements::lang.attachments')</th>
 
         </tr>
     </thead>

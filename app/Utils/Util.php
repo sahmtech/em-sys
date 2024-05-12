@@ -145,7 +145,7 @@ class Util
     {
         if (!empty($location)) {
             $location = is_object($location) ? $location : BusinessLocation::find($location);
-           
+
 
             //Get custom label from business settings
             // $custom_labels = Business::find($location->business_id)->custom_labels;
@@ -1864,6 +1864,7 @@ class Util
             $input['is_active'] = 1;
             $input['employee_id'] = $user->id;
             $input['number'] = $bankCode;
+            $input['created_by'] = Auth::user()->id;
             $input['file_path'] = $file->store('/officialDocuments');
 
             EssentialsOfficialDocument::create($input);

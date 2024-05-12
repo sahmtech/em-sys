@@ -250,6 +250,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/send_import_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostImportEmployee'])->name('send_import_employee_insurance');
         Route::post('/send_import_update_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostUpdateImportEmployee'])
             ->name('send_import_update_employee_insurance');
+        Route::get('/get-insurance-classes/{company_id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'getInsuranceClasses']);
+        Route::get('/get-insurance-info', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'show']);
+
 
 
 

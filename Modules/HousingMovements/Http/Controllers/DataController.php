@@ -165,19 +165,19 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    // [
+                    //     'value' => 'housingmovements.crud_htr_trevelers',
+                    //     'label' => __('housingmovements::lang.crud_htr_trevelers'),
+                    //     'default' => false,
+                    // ],
                     [
-                        'value' => 'housingmovements.crud_htr_trevelers',
-                        'label' => __('housingmovements::lang.crud_htr_trevelers'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'change_arrived_status',
+                        'value' => 'housingmovements.change_arrived_status',
                         'label' => __('housingmovements::lang.change_arrived_status'),
                         'default' => false,
                     ],
 
                     [
-                        'value' => 'worker_housed',
+                        'value' => 'housingmovements.worker_housed',
                         'label' => __('housingmovements::lang.worker_housed'),
                         'default' => false,
                     ],
@@ -197,7 +197,67 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.department_employees'),
                         'default' => false,
                     ],
-
+                    //////////////////////
+                    [
+                        'value' => 'housingmovements.new_arrival_for_workers',
+                        'label' => __('housingmovements::lang.new_arrival_for_workers'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.housed',
+                        'label' => __('housingmovements::lang.housed'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.advanceSalaryRequest',
+                        'label' => __('housingmovements::lang.advanceSalaryRequest'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.medicalExamination',
+                        'label' => __('housingmovements::lang.medicalExamination'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.medicalInsurance',
+                        'label' => __('housingmovements::lang.medicalInsurance'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.workCardIssuing',
+                        'label' => __('housingmovements::lang.workCardIssuing'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.SIMCard',
+                        'label' => __('housingmovements::lang.SIMCard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.bankAccount',
+                        'label' => __('housingmovements::lang.bankAccount'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.Contract',
+                        'label' => __('housingmovements::lang.Contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.residencyAdd&Print',
+                        'label' => __('housingmovements::lang.residencyAdd&Print'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.residencyDelivery',
+                        'label' => __('housingmovements::lang.residencyDelivery'),
+                        'default' => false,
+                    ],
+                    // [
+                    //     'value' => 'housingmovements.',
+                    //     'label' => __('housingmovements::lang.'),
+                    //     'default' => false,
+                    // ],
                 ]
 
             ],
