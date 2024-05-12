@@ -82,7 +82,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.Contract'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.contract'))
                         <!-- 9 -->
                         <li @if (request()->segment(2) == 'QiwaContract') class="active" @endif>
                             <a href="{{ route('QiwaContract') }}">

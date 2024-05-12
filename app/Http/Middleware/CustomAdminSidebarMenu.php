@@ -1660,7 +1660,7 @@ class CustomAdminSidebarMenu
                 || auth()->user()->can('housingmovements.workCardIssuing')
                 || auth()->user()->can('housingmovements.SIMCard')
                 || auth()->user()->can('housingmovements.bankAccount')
-                || auth()->user()->can('housingmovements.Contract')
+                || auth()->user()->can('housingmovements.contract')
                 || auth()->user()->can('housingmovements.residencyAdd&Print')
                 || auth()->user()->can('housingmovements.residencyDelivery')
 
@@ -1686,7 +1686,7 @@ class CustomAdminSidebarMenu
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'SIMCard'
                     ]) : ((auth()->user()->can('housingmovements.bankAccount')) ? action([
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'bankAccounts'
-                    ]) : ((auth()->user()->can('housingmovements.Contract')) ? action([
+                    ]) : ((auth()->user()->can('housingmovements.contract')) ? action([
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'QiwaContracts'
                     ]) : ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyPrint'

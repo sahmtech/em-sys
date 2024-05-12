@@ -329,7 +329,8 @@ return [
     'add_eqama' => 'إصدار إقامة',
     'eqama_number' => 'رقم الإقامة',
     'please add the eqama number' => 'الرجاء إدخال رقم الإقامة',
-    'new_arrival_for_workers' => 'الوصول الجديد للعمال'
+    'new_arrival_for_workers' => 'الوصول الجديد للعمال',
+
 
 
 

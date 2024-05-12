@@ -239,8 +239,8 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'housingmovements.Contract',
-                        'label' => __('housingmovements::lang.Contract'),
+                        'value' => 'housingmovements.contract',
+                        'label' => __('housingmovements::lang.contract'),
                         'default' => false,
                     ],
                     [
