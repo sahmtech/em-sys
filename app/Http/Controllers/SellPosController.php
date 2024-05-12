@@ -317,7 +317,7 @@ class SellPosController extends Controller
         if (!auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access') && !auth()->user()->can('so.create')) {
             //temp  abort(403, 'Unauthorized action.');
         }
-
+        // dd($request);
         $is_direct_sale = false;
         if (!empty($request->input('is_direct_sale'))) {
             $is_direct_sale = true;
@@ -728,140 +728,140 @@ class SellPosController extends Controller
 
     public function saveQuickProduct(Request $request)
     {
-       
+
         if (!auth()->user()->can('product.create')) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
-        $business_id = $request->session()->get('user.business_id');
-        $form_fields = [
-            'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'tax_type', 'sku',
-            'alert_quantity', 'type', 'sub_unit_ids', 'sub_category_id', 'weight', 'product_description', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20'
-        ];
+            $business_id = $request->session()->get('user.business_id');
+            $form_fields = [
+                'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'tax_type', 'sku',
+                'alert_quantity', 'type', 'sub_unit_ids', 'sub_category_id', 'weight', 'product_description', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20'
+            ];
 
-        $module_form_fields = $this->moduleUtil->getModuleData('product_form_fields');
-        if (!empty($module_form_fields)) {
-            foreach ($module_form_fields as $key => $value) {
-                if (!empty($value) && is_array($value)) {
-                    $form_fields = array_merge($form_fields, $value);
+            $module_form_fields = $this->moduleUtil->getModuleData('product_form_fields');
+            if (!empty($module_form_fields)) {
+                foreach ($module_form_fields as $key => $value) {
+                    if (!empty($value) && is_array($value)) {
+                        $form_fields = array_merge($form_fields, $value);
+                    }
                 }
             }
-        }
-        $products_arr = [];
-        foreach ($request->only('products_') as  $request_products) {
-            foreach ($request_products as  $_products) {
+            $products_arr = [];
+            foreach ($request->only('products_') as  $request_products) {
+                foreach ($request_products as  $_products) {
 
-                $product_details = $request->only($form_fields);
+                    $product_details = $request->only($form_fields);
 
-                $product_details['type'] = empty($product_details['type']) ? 'single' : $product_details['type'];
-                $product_details['business_id'] = $business_id;
-                $product_details['barcode_type'] = 'C128';
-                $product_details['unit_id'] = 1;
-                $product_details['profit_percent'] = 0;
-                $request['single_dpp'] = $_products['unit_price'];
-                $request['single_dpp_inc_tax'] = $_products['unit_price_inc_tax'];
-                $request['single_dsp'] = $_products['unit_price'];
-                $product_details['name'] = $_products['name'];
-                $product_details['line_discount_type'] = $_products['line_discount_type'];
+                    $product_details['type'] = empty($product_details['type']) ? 'single' : $product_details['type'];
+                    $product_details['business_id'] = $business_id;
+                    $product_details['barcode_type'] = 'C128';
+                    $product_details['unit_id'] = 1;
+                    $product_details['profit_percent'] = 0;
+                    $request['single_dpp'] = $_products['unit_price'];
+                    $request['single_dpp_inc_tax'] = $_products['unit_price_inc_tax'];
+                    $request['single_dsp'] = $_products['unit_price'];
+                    $product_details['name'] = $_products['name'];
+                    $product_details['line_discount_type'] = $_products['line_discount_type'];
 
-                $request['single_dsp_inc_tax'] = $_products['unit_price_inc_tax'];
-                $product_details['created_by'] = $request->session()->get('user.id');
-                if (!empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) {
-                    $product_details['enable_stock'] = 1;
-                    //TODO: Save total qty
-                    //$product_details['total_qty_available'] = 0;
+                    $request['single_dsp_inc_tax'] = $_products['unit_price_inc_tax'];
+                    $product_details['created_by'] = $request->session()->get('user.id');
+                    if (!empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) {
+                        $product_details['enable_stock'] = 1;
+                        //TODO: Save total qty
+                        //$product_details['total_qty_available'] = 0;
+                    }
+                    if (!empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) {
+                        $product_details['not_for_selling'] = 1;
+                    }
+                    if (empty($product_details['sku'])) {
+                        $product_details['sku'] = ' ';
+                    }
+
+                    if (!empty($product_details['alert_quantity'])) {
+                        $product_details['alert_quantity'] = $this->productUtil->num_uf($product_details['alert_quantity']);
+                    }
+
+                    $expiry_enabled = $request->session()->get('business.enable_product_expiry');
+                    if (!empty($request->input('expiry_period_type')) && !empty($request->input('expiry_period')) && !empty($expiry_enabled)) {
+                        $product_details['expiry_period_type'] = $request->input('expiry_period_type');
+                        $product_details['expiry_period'] = $this->productUtil->num_uf($request->input('expiry_period'));
+                    }
+
+                    if (!empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) {
+                        $product_details['enable_sr_no'] = 1;
+                    }
+
+                    $product_details['warranty_id'] = !empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
+
+                    DB::beginTransaction();
+
+                    $product = Product::create($product_details);
+                    // event(new ProductsCreatedOrModified($product_details, 'added'));
+
+                    if (empty(trim($request->input('sku')))) {
+                        $sku = $this->productUtil->generateProductSku($product->id);
+                        $product->sku = $sku;
+                        $product->save();
+                    }
+
+                    $this->productUtil->createSingleProductVariation(
+                        $product->id,
+                        $product->sku,
+                        $request->input('single_dpp'),
+                        $request->input('single_dpp_inc_tax'),
+                        $request->input('profit_percent'),
+                        $request->input('single_dsp'),
+                        $request->input('single_dsp_inc_tax')
+                    );
+                    // ($product, $sku, $purchase_price, $dpp_inc_tax, $profit_percent, $selling_price, $selling_price_inc_tax, $combo_variations = [])
+
+                    if ($product->enable_stock == 1 && !empty($request->input('opening_stock'))) {
+                        $user_id = $request->session()->get('user.id');
+
+                        $transaction_date = $request->session()->get('financial_year.start');
+                        $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+
+                        $this->productUtil->addSingleProductOpeningStock($business_id, $product, $request->input('opening_stock'), $transaction_date, $user_id);
+                    }
+
+                    //Add product locations
+                    $product_locations = $request->input('product_locations');
+                    if (!empty($product_locations)) {
+                        $product->product_locations()->sync($product_locations);
+                    }
+                    $variations = $product->variations->first();
+                    $product['product_type'] = 'single';
+                    $product['product_id'] = $product->id;
+                    $product['variation_id'] = $variations->id;
+
+                    $product['enable_stock'] = 0;
+                    $product['single_dpp'] = $_products['unit_price'];
+                    $product['quantity'] = (string)$_products['quantity'];
+                    $product['line_discount_type'] = $_products['line_discount_type'];
+
+                    $product['product_unit_id'] = 1;
+                    $product['base_unit_multiplier'] = 1;
+                    $product['unit_price'] = $_products['unit_price'];
+                    $product['line_discount_amount'] = $_products['line_discount_amount'];
+                    $product['item_tax'] = $_products['item_tax'] ?? null;
+                    $product['tax_id'] = $_products['tax_id'];
+                    $product['unit_price_inc_tax'] = $_products['unit_price_inc_tax'];
+
+                    array_push($products_arr, $product);
+                    DB::commit();
                 }
-                if (!empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) {
-                    $product_details['not_for_selling'] = 1;
-                }
-                if (empty($product_details['sku'])) {
-                    $product_details['sku'] = ' ';
-                }
-
-                if (!empty($product_details['alert_quantity'])) {
-                    $product_details['alert_quantity'] = $this->productUtil->num_uf($product_details['alert_quantity']);
-                }
-
-                $expiry_enabled = $request->session()->get('business.enable_product_expiry');
-                if (!empty($request->input('expiry_period_type')) && !empty($request->input('expiry_period')) && !empty($expiry_enabled)) {
-                    $product_details['expiry_period_type'] = $request->input('expiry_period_type');
-                    $product_details['expiry_period'] = $this->productUtil->num_uf($request->input('expiry_period'));
-                }
-
-                if (!empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) {
-                    $product_details['enable_sr_no'] = 1;
-                }
-
-                $product_details['warranty_id'] = !empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
-
-                DB::beginTransaction();
-
-                $product = Product::create($product_details);
-                // event(new ProductsCreatedOrModified($product_details, 'added'));
-
-                if (empty(trim($request->input('sku')))) {
-                    $sku = $this->productUtil->generateProductSku($product->id);
-                    $product->sku = $sku;
-                    $product->save();
-                }
-
-                $this->productUtil->createSingleProductVariation(
-                    $product->id,
-                    $product->sku,
-                    $request->input('single_dpp'),
-                    $request->input('single_dpp_inc_tax'),
-                    $request->input('profit_percent'),
-                    $request->input('single_dsp'),
-                    $request->input('single_dsp_inc_tax')
-                );
-                // ($product, $sku, $purchase_price, $dpp_inc_tax, $profit_percent, $selling_price, $selling_price_inc_tax, $combo_variations = [])
-
-                if ($product->enable_stock == 1 && !empty($request->input('opening_stock'))) {
-                    $user_id = $request->session()->get('user.id');
-
-                    $transaction_date = $request->session()->get('financial_year.start');
-                    $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
-
-                    $this->productUtil->addSingleProductOpeningStock($business_id, $product, $request->input('opening_stock'), $transaction_date, $user_id);
-                }
-
-                //Add product locations
-                $product_locations = $request->input('product_locations');
-                if (!empty($product_locations)) {
-                    $product->product_locations()->sync($product_locations);
-                }
-                $variations = $product->variations->first();
-                $product['product_type'] = 'single';
-                $product['product_id'] = $product->id;
-                $product['variation_id'] = $variations->id;
-
-                $product['enable_stock'] = 0;
-                $product['single_dpp'] = $_products['unit_price'];
-                $product['quantity'] = (string)$_products['quantity'];
-                $product['line_discount_type'] = $_products['line_discount_type'];
-
-                $product['product_unit_id'] = 1;
-                $product['base_unit_multiplier'] = 1;
-                $product['unit_price'] = $_products['unit_price'];
-                $product['line_discount_amount'] = $_products['line_discount_amount'];
-                $product['item_tax'] = $_products['item_tax'] ?? null;
-                $product['tax_id'] = $_products['tax_id'];
-                $product['unit_price_inc_tax'] = $_products['unit_price_inc_tax'];
-
-                array_push($products_arr, $product);
-                DB::commit();
             }
-        }
 
 
-        $output = [
-            'success' => 1,
-            'msg' => __('product.product_added_success'),
-            'products' => $products_arr,
-            'variation' => $product->variations->first(),
-            'locations' => $product_locations,
-        ];
+            $output = [
+                'success' => 1,
+                'msg' => __('product.product_added_success'),
+                'products' => $products_arr,
+                'variation' => $product->variations->first(),
+                'locations' => $product_locations,
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -972,7 +972,7 @@ class SellPosController extends Controller
                 $order_taxes[$sell->tax->name] = $sell->tax_amount;
             }
         }
-
+        // dd($sell->tax, $sell->tax_amount);
         $business_details = $this->businessUtil->getDetails($business_id);
         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
@@ -2366,6 +2366,7 @@ class SellPosController extends Controller
             if (!empty($pos_settings['enable_payment_link']) && $transaction->payment_status != 'paid') {
                 $payment_link = $this->transactionUtil->getInvoicePaymentLink($transaction->id, $transaction->business_id);
             }
+
 
             $title = $transaction->business->name . ' | ' . $transaction->invoice_no;
 
