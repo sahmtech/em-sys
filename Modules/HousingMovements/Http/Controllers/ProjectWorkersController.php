@@ -40,6 +40,8 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
+use Modules\HousingMovements\Entities\NewWorkersAdSalaryRequest;
+
 use Modules\Sales\Entities\SalesProject;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 
@@ -1707,6 +1709,100 @@ class ProjectWorkersController extends Controller
         $output = [
             'success' => true,
             'msg' => __('housingmovements::lang.updated_successfully'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+
+    public function advanceSalaryRequest()
+    {
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $users = User::whereIn('id', $userIds)->whereNotNull('proposal_worker_id')
+            ->where('status', '!=', 'inactive')->whereNotIn('users.id', function ($query) {
+                $query->select('related_to')->from('new_workers_ad_salary_requests');
+            })->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+        $requests = NewWorkersAdSalaryRequest::leftJoin('users', 'users.id', '=', 'new_workers_ad_salary_requests.related_to')
+            ->whereIn('new_workers_ad_salary_requests.related_to', $userIds)->whereNotNull('proposal_worker_id')->where('users.status', '!=', 'inactive')
+            ->select([
+                'new_workers_ad_salary_requests.request_no', 'new_workers_ad_salary_requests.related_to',
+                'new_workers_ad_salary_requests.advSalaryAmount', 'new_workers_ad_salary_requests.monthlyInstallment',
+                'new_workers_ad_salary_requests.installmentsNumber', 'new_workers_ad_salary_requests.status',
+                'new_workers_ad_salary_requests.note', 'new_workers_ad_salary_requests.created_at',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.border_no',
+            ]);
+
+
+        if (request()->ajax()) {
+
+            return DataTables::of($requests ?? [])
+                ->editColumn('created_at', function ($row) {
+                    return Carbon::parse($row->created_at);
+                })
+
+
+
+                ->editColumn('status', function ($row) use ($is_admin) {
+                    if ($row->status) {
+                        $status = trans('request.' . $row->status);
+
+
+                        return $status;
+                    }
+                })
+
+                ->rawColumns(['status'])
+
+
+                ->make(true);
+        }
+
+
+        return view('housingmovements::travelers.advanceSalaryRequest')->with(compact('users'));
+    }
+    public function newWorkersAdvSalaryStore(Request $request)
+    {
+
+        $path = '';
+        if ($request->hasFile('attachment')) {
+
+            $file = $request->file('attachment');
+
+            $path = $file->store('/requests_attachments');
+        }
+
+
+        $latestRecord = NewWorkersAdSalaryRequest::orderBy('request_no', 'desc')->first();
+
+        if ($latestRecord) {
+            $latestRefNo = $latestRecord->request_no;
+            $numericPart = (int)substr($latestRefNo, 'adv_');
+            $numericPart++;
+            $request_no = 'adv_' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+        } else {
+            $request_no = 'adv_0001';
+        }
+        $documentData = [
+            'advSalaryAmount' => $request->amount,
+            'request_no' => $request_no,
+            'monthlyInstallment' => $request->monthlyInstallment,
+            'related_to' => $request->user_id,
+            'installmentsNumber' => $request->installmentsNumber,
+            'status' => 'pending',
+            'employee_id' => $request->user_id,
+            'note' =>  $request->note,
+            'created_by' => Auth::user()->id,
+            'attachment' => $path,
+        ];
+        NewWorkersAdSalaryRequest::create($documentData);
+        $output = [
+            'success' => true,
+            'msg' => __('housingmovements::lang.added_successfully'),
         ];
         return redirect()->back()
             ->with('status', $output);

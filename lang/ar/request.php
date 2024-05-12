@@ -219,7 +219,7 @@ return [
   'start_date_after_end_date' => 'تاريخ بداية الطلب بعد تاريخ النهاية',
   'time_is_gone' => 'لقد مضى هذا الوقت لبداية الطلب',
   'finish_operation' => 'إنهاء العملية',
-  '' => '',
+  'border_number' => 'رقم الحدود',
   '' => '',
 
 

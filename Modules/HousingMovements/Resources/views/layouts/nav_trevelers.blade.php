@@ -36,8 +36,8 @@
                     @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.advanceSalaryRequest'))
                         <!--3 -->
                         <li @if (request()->segment(2) == 'advanceSalaryRequest') class="active" @endif>
-                            {{-- {{ route('advanceSalaryRequest') }} --}}
-                            <a href="">
+
+                            <a href="{{ route('advanceSalaryRequest') }}">
                                 <i class="fas fa-hand-holding-usd" aria-hidden="true"></i> @lang('housingmovements::lang.advanceSalaryRequest')
                             </a>
                         </li>

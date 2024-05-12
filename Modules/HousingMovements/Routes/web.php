@@ -103,6 +103,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/advanceSalaryRequest', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'advanceSalaryRequest'])->name('advanceSalaryRequest');
+        Route::post('/newWorkersAdvSalaryStore', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'newWorkersAdvSalaryStore'])->name('newWorkersAdvSalaryStore');
 
         // Workers 
         Route::get('/workers/available-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping'])->name('workers.available_shopping');
