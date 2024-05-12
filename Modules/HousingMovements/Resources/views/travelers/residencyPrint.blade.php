@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('housingmovements::lang.residencyPrint'))
+@section('title', __('housingmovements::lang.residencyAdd&Print'))
 
 @section('content')
 
     <section class="content-header">
         <h1>
-            <span>@lang('housingmovements::lang.residencyPrint')</span>
+            <span>@lang('housingmovements::lang.residencyAdd&Print')</span>
         </h1>
     </section>
 
