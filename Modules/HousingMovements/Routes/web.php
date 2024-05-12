@@ -60,9 +60,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/import_rooms', [\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'index'])
-        ->name('import_rooms');
+            ->name('import_rooms');
         Route::post('/send_import_rooms', [\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'sendImportRooms'])
-        ->name('send_import_rooms');
+            ->name('send_import_rooms');
         //facilities
         Route::get('/facilities', [\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index'])->name('facilities');
 
@@ -77,6 +77,32 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/workers/index/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
         Route::get('/workers/show/{id}', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'show'])->name('htr.show.workers');
 
+        Route::get('/medicalExamination', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'])->name('medicalExamination');
+        Route::post('/upload-medical-document', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'uploadMedicalDocument'])->name('uploadMedicalDocument');
+
+        Route::get('/medicalInsurance', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'medicalInsurance'])->name('medicalInsurance');
+
+        Route::get('/workCardIssuing', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'workCardIssuing'])->name('workCardIssuing');
+        Route::post('/storeWorkCard', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'storeWorkCard'])->name('storeWorkCard');
+
+
+        Route::get('/SIMCard', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'SIMCard'])->name('SIMCard');
+        Route::post('/addSIM', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'addSIM'])->name('addSIM');
+
+        Route::get('/bankAccountsForLabors', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'bankAccounts'])->name('bankAccountsForLabors');
+        Route::post('/addBank', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'addBank'])->name('addBank');
+
+        Route::get('/QiwaContract', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'QiwaContracts'])->name('QiwaContract');
+
+        Route::get('/residencyPrint', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyPrint'])->name('residencyPrint');
+        Route::post('/printResidency', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'updateResidencyPrint'])->name('printResidency');
+        Route::post('/addEqama', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'addEqama'])->name('addEqama');
+
+        Route::get('/residencyDelivery', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])->name('residencyDelivery');
+        Route::post('/delivery_residency', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'deliveryResidency'])->name('delivery_residency');
+
+
+        Route::get('/advanceSalaryRequest', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'advanceSalaryRequest'])->name('advanceSalaryRequest');
 
         // Workers 
         Route::get('/workers/available-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping'])->name('workers.available_shopping');

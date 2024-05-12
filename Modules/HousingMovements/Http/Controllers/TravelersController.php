@@ -5,7 +5,6 @@ namespace Modules\HousingMovements\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\ContactLocation;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ContactUtil;
 use App\Utils\ModuleUtil;
@@ -13,9 +12,6 @@ use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use App\User;
-use App\Business;
-use App\BusinessLocation;
-use App\Contact;
 use App\Events\ContactCreatedOrModified;
 use Modules\Sales\Entities\SalesProject;
 use App\Transaction;
@@ -31,6 +27,8 @@ use Modules\HousingMovements\Entities\HtrRoom;
 use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
 use Modules\InternationalRelations\Entities\IrDelegation;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
+use Illuminate\Support\Facades\Auth;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 
 class TravelersController extends Controller
 {
@@ -82,10 +80,14 @@ class TravelersController extends Controller
             'transactionSellLine.service.nationality',
             'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
             'transactionSellLine.transaction.salesContract.project',
+            'transactionSellLine.transaction.contact',
             'visa',
-            'agency'
+            'agency',
+            'worker_documents'
         ])
             ->select([
+
+                'ir_proposed_labors.profile_image',
                 'ir_proposed_labors.id',
                 'passport_number',
                 'medical_examination',
@@ -100,7 +102,7 @@ class TravelersController extends Controller
             ->where('interviewStatus', 'acceptable')
             ->where('arrival_status', 0);
 
-
+        // return $workers->get();
 
         if (!empty($request->input('project_name_filter'))) {
         }
@@ -138,6 +140,9 @@ class TravelersController extends Controller
 
                 ->editColumn('project', function ($row) {
                     return $row->transactionSellLine?->transaction?->salesContract?->project?->name ?? '';
+                })
+                ->editColumn('contact', function ($row) {
+                    return $row->transactionSellLine?->transaction?->contact?->supplier_business_name ?? '';
                 })
 
                 ->editColumn('location', function ($row) {
@@ -534,6 +539,7 @@ class TravelersController extends Controller
 
     public function postarrivaldata(Request $request)
     {
+
         try {
             $requestData = $request->only([
                 'worker_id',
@@ -571,12 +577,11 @@ class TravelersController extends Controller
                         $border_number = User::where('border_no', $data['border_no'])->first();
 
                         if ($border_number != null) {
-                            // dd($border_number);
                             $output = ['success' => 0, 'msg' => __('housingmovements.border_no_exist')];
                         } else {
 
 
-                            User::create([
+                            $user = User::create([
                                 'first_name' => $worker->first_name,
                                 'mid_name' => $worker->mid_name,
                                 'last_name' => $worker->last_name,
@@ -597,15 +602,28 @@ class TravelersController extends Controller
                                 'user_type' => 'worker',
                                 'border_no' => $data['border_no'],
                                 'proposal_worker_id' => $data['worker_id'],
+                                'created_by' => Auth::user()->id
 
                             ]);
+
+                            $admission = new EssentialsAdmissionToWork();
+                            $admission->employee_id = $user->id;
+                            $admission->admissions_type = 'first_time';
+                            $admission->admissions_status = 'on_date';
+                            $admission->admissions_date = $worker->arrival_date;
+                            $admission->created_by = Auth::user()->id;
+                            $admission->save();
+
                             // $worker->update(['arrival_status' => 1]);
                             $worker->arrival_status = 1;
                             $worker->save();
 
-                            $allWorkersArrived = IrProposedLabor::where('visa_id', $worker->visa_id)
+                            $allWorkersArrived =
+                                IrProposedLabor::where('visa_id', $worker->visa_id)
                                 ->where('arrival_status', 1)
-                                ->count() == IrProposedLabor::where('visa_id', $worker->visa_id)
+                                ->count()
+                                ==
+                                IrProposedLabor::where('visa_id', $worker->visa_id)
                                 ->count();
 
                             if ($allWorkersArrived) {

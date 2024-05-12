@@ -12,7 +12,12 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Facades\DB;
+use Modules\InternationalRelations\Entities\IrWorkersDocument;
+use Modules\Essentials\Entities\EssentialsWorkCard;
+use Illuminate\Support\Facades\Auth;
+
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Spatie\Activitylog\Models\Activity;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
@@ -29,13 +34,16 @@ use App\User;
 use App\Company;
 use App\WorkerProjectsHistory;
 use Carbon\Carbon;
-
+use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\Sales\Entities\SalesProject;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
+
 
 class ProjectWorkersController extends Controller
 {
@@ -899,207 +907,808 @@ class ProjectWorkersController extends Controller
 
             ));
     }
-    // public function create()
-    // {
-    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-    //     if (!($is_admin || auth()->user()->can('user.create'))) {
-    //         //temp  abort(403, 'Unauthorized action.');
-    //     }
-    //     $business_id = request()->session()->get('user.business_id');
 
 
-    //     if (!$this->moduleUtil->isSubscribed($business_id)) {
-    //         return $this->moduleUtil->expiredResponse();
-    //     } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
-    //         return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
-    //     }
-
-    //     // $roles = $this->getRolesArray($business_id);
-    //     $username_ext = $this->moduleUtil->getUsernameExtension();
-    //     // $locations = BusinessLocation::where('business_id', $business_id)
-    //     //     ->Active()
-    //     //     ->get();
-    //     $contract_types = EssentialsContractType::all()->pluck('type', 'id');
-    //     $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
-
-    //     $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
-    //     $nationalities = EssentialsCountry::nationalityForDropdown();
-
-    //     $contacts = SalesProject::pluck('name', 'id')->toArray();
-    //     $contacts = [null => __('essentials::lang.undefined')] + $contacts;
-
-    //     $blood_types = [
-    //         'A+' => 'A positive (A+).',
-    //         'A-' => 'A negative (A-).',
-    //         'B+' => 'B positive (B+)',
-    //         'B-' => 'B negative (B-).',
-    //         'AB+' => 'AB positive (AB+).',
-    //         'AB-' => 'AB negative (AB-).',
-    //         'O+' => 'O positive (O+).',
-    //         'O-' => 'O positive (O-).',
-    //     ];
-
-
-
-    //     $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-    //     $countries = $countries = EssentialsCountry::forDropdown();
-    //     $resident_doc = null;
-    //     $user = null;
-    //     $designations = Category::forDropdown($business_id, 'hrm_designation');
-
-    //     $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
-    //     $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
-
-    //     $user = !empty($data['user']) ? $data['user'] : null;
-
-    //     $allowance_deduction_ids = [];
-    //     if (!empty($user)) {
-    //         $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-    //             ->pluck('allowance_deduction_id')
-    //             ->toArray();
-    //     }
-
-    //     if (!empty($user)) {
-    //         $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-    //     } else {
-    //         $contract = null;
-    //     }
-
-    //     // $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-    //     $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
-    //     $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
-    //     $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
-    //     $nationalities = EssentialsCountry::nationalityForDropdown();
-    //     $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-    //     $professions = EssentialsProfession::all()->pluck('name', 'id');
-
-    //     $company = Company::where('business_id', $business_id)->pluck('name', 'id');
-
-    //     return  view('housingmovements::projects_workers.create')
-    //         ->with(compact(
-    //             'departments',
-    //             'countries',
-    //             'spacializations',
-    //             'nationalities',
-    //             'username_ext',
-    //             'blood_types',
-    //             'contacts',
-    //             'company',
-    //             'banks',
-    //             'contract_types',
-    //             'form_partials',
-    //             'resident_doc',
-    //             'user',
-
-    //             'allowance_types',
-    //             'travel_ticket_categorie',
-    //             'contract_types',
-    //             'nationalities',
-    //             'specializations',
-    //             'professions'
-
-    //         ));
-    // }
-
-    // public function storeProjectWorker(Request $request)
-    // {
-    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-    //     if (!($is_admin || auth()->user()->can('user.create'))) {
-    //         //temp  abort(403, 'Unauthorized action.');
-    //     }
-
-    //     try {
-    //         if (!empty($request->input('dob'))) {
-    //             $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
-    //         }
-
-    //         $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
-    //         $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-
-
-    //         // $com_id = request()->input('essentials_department_id');
-    //         // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
-    //         //     ->first();
-
-    //         // if ($latestRecord) {
-    //         //     $latestRefNo = $latestRecord->emp_number;
-    //         //     $latestRefNo++;
-    //         //     $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-    //         // } else {
-
-    //         //     $request['emp_number'] =  $business_id . '000';
-    //         // }
-
-
-    //         if ($request->input('id_proof_number')) {
-    //             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-    //         }
-    //         if ($request->input('border_no')) {
-    //             $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
-    //         }
-
-
-
-    //         if ($existingprofnumber || $existingBordernumber) {
-
-    //             if ($existingprofnumber != null) {
-    //                 $output = [
-    //                     'success' => 0,
-    //                     'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
-    //                 ];
-    //             } else {
-    //                 $output = [
-    //                     'success' => 0,
-    //                     'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
-    //                 ];
-    //             }
-    //         } else {
-    //             $user = $this->moduleUtil->createUser($request);
-    //             event(new UserCreatedOrModified($user, 'added'));
-
-    //             $output = [
-    //                 'success' => 1,
-    //                 'msg' => __('user.user_added'),
-    //             ];
-    //         }
-    //     } catch (\Exception $e) {
-    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    //         $output = [
-    //             'success' => 0,
-    //             'msg' => __('messages.something_went_wrong'),
-    //         ];
-    //     }
-
-    //     return redirect()->route('workers.index')->with('status', $output);
-    // }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
     public function edit($id)
     {
         return view('housingmovements::edit');
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
+
     public function update(Request $request, $id)
     {
     }
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
+
+    public function medicalExamination()
     {
+
+
+        $workers = IrProposedLabor::with(['worker_documents'])
+            ->whereNotNull('visa_id')
+            ->where('interviewStatus', 'acceptable')
+            ->where('arrival_status', 1)
+            ->select([
+                'id',
+                'medical_examination',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ]);
+
+        if (request()->ajax()) {
+            return Datatables::of($workers)
+                ->addColumn('action', function ($worker) {
+
+                    $buttonHtml = $worker->medical_examination == 1 ?
+                        '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>' :
+                        '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>';
+
+                    foreach ($worker->worker_documents as $document) {
+                        if ($document->type == "medical_examination") {
+                            $buttonHtml = '<a href="/uploads/' . $document->attachment . '" class="btn btn-success" target="_blank">View File</a>';
+                            break;
+                        }
+                    }
+                    return $buttonHtml;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('housingmovements::travelers.medicalExamination');
+    }
+
+    public function uploadMedicalDocument(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:2048',
+        ]);
+
+        IrProposedLabor::where('id', $request->workerId)->update([
+            'medical_examination' => 1,
+        ]);
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('/workers_documents');
+            $uploadedFile = new IrWorkersDocument();
+            $uploadedFile->worker_id = $request->workerId;
+            $uploadedFile->type = 'medical_examination';
+            $uploadedFile->uploaded_by = auth()->user()->id;
+            $uploadedFile->uploaded_at = Carbon::now();
+            $uploadedFile->attachment = $path;
+
+            $uploadedFile->save();
+        }
+
+
+
+        return response()->json(['message' => 'File uploaded successfully']);
+    }
+
+    public function medicalInsurance()
+    {
+
+        $insurance_companies = Contact::where('type', 'insurance')
+            ->pluck('supplier_business_name', 'id');
+
+        $insurance_classes = EssentialsInsuranceClass::all()
+            ->pluck('name', 'id');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $userIds = User::whereNot('user_type', 'admin')
+            ->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $workers = User::with(['proposal_worker'])
+            ->whereNotNull('proposal_worker_id')
+            ->whereIn('id', $userIds)
+            ->select([
+                'id',
+                'has_insurance',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ]);
+
+        if (request()->ajax()) {
+            return Datatables::of($workers)
+                ->addColumn('action', function ($worker) {
+                    if ($worker->has_insurance) {
+                        return '<button onclick="viewInsurance(' . $worker->id . ')" class="btn btn-info">' . __('housingmovements::lang.view_insurance_info') . '</button>';
+                    } else {
+                        return '<button onclick="addInsurance(' . $worker->id . ')" class="btn btn-primary">' . __('essentials::lang.add_Insurance') . '</button>';
+                    }
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('housingmovements::travelers.medicalInsurance')->with(compact('insurance_companies', 'insurance_classes'));
+    }
+
+    public function workCardIssuing()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $responsible_client = null;
+
+        $userIds = User::whereNot('user_type', 'admin')->whereNotNull('proposal_worker_id')
+            ->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $all_users = User::whereIn('id', $userIds)
+            ->whereNotNull('proposal_worker_id')
+            ->select(
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, ''), ' - ', COALESCE(users.border_no, '')) as full_name, users.border_no"),
+                'users.id'
+            )
+            ->whereNotIn('users.id', function ($query) {
+                $query->select('employee_id')->from('essentials_work_cards');
+            })
+            ->get();
+
+        $employees = $all_users->mapWithKeys(function ($item) {
+            return [$item->id => [
+                'name' => $item->full_name,
+                'border_no' => $item->border_no
+            ]];
+        });
+
+
+        $durationOptions = [
+            '3' => __('essentials::lang.3_months'),
+            '6' => __('essentials::lang.6_months'),
+            '9' => __('essentials::lang.9_months'),
+            '12' => __('essentials::lang.12_months'),
+            //  '1' => __('essentials::lang.1_year'),
+        ];
+        $companies = Company::pluck('name', 'id');
+        $card = EssentialsWorkCard::whereIn('employee_id', $userIds)
+            ->where('is_active', 1)
+            ->with(['user', 'user.OfficialDocument'])
+            ->select(
+                'id',
+                'employee_id',
+                'workcard_duration',
+                'work_card_no as card_no',
+                'fees as passport_fees',
+                'work_card_fees as work_card_fees',
+                'other_fees',
+                'Payment_number as Payment_number'
+            );
+
+
+
+
+        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
+        $sales_projects = SalesProject::pluck('name', 'id');
+
+        if (request()->ajax()) {
+            return Datatables::of($card)
+
+
+
+                ->editColumn('company_name', function ($row) {
+                    return $row->user->company?->name ?? '';
+                })
+
+                ->editColumn('fixnumber', function ($row) {
+                    return $row->user->company?->documents
+                        ?->where('licence_type', 'COMMERCIALREGISTER')
+                        ->first()->unified_number ?? '';
+                })
+
+                ->editColumn('user', function ($row) {
+                    return $row->user->first_name .
+                        ' ' .
+                        $row->user->mid_name .
+                        ' ' .
+                        $row->user->last_name ??
+                        '';
+                })
+                // ->addColumn('assigned_to', function ($row) use ($sales_projects) {
+                //     if ($row->user->assigned_to) {
+
+                //         return $sales_projects[$row->user->assigned_to];
+                //     } else {
+                //         return '';
+                //     }
+                // })
+
+                ->editColumn('project', function ($row) {
+                    if ($row->user->assignedTo) {
+
+                        return $row->user->assignedTo->name ?? '';
+                    } else {
+                        return '';
+                    }
+                })->addColumn('responsible_client', function ($row) use ($name_in_charge_choices) {
+                    if (empty($row->user->assignedTo)) {
+                        return '';
+                    }
+
+                    $userIds = json_decode($row->user->assignedTo->assigned_to, true) ?? [];
+
+
+                    $names = [];
+
+                    foreach ($userIds as $userId) {
+                        if (!empty($name_in_charge_choices[$userId])) {
+                            $names[] = $name_in_charge_choices[$userId];
+                        }
+                    }
+
+                    return implode(', ', $names);
+                })
+
+
+                ->editColumn('proof_number', function ($row) {
+                    $residencePermitDocument = $row->user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
+
+                    if ($residencePermitDocument) {
+                        return $residencePermitDocument->number;
+                    } elseif ($row->user->border_no) {
+                        return $row->user->border_no;
+                    } else {
+                        return '';
+                    }
+                })
+
+
+
+                ->editColumn('nationality', function ($row) {
+                    return $row->user->country?->nationality ?? '';
+                })
+
+
+
+                ->rawColumns([
+                    'action',
+                    'profession',
+                    'nationality',
+                    'checkbox'
+
+                ])
+                ->make(true);
+        }
+
+
+
+        $proof_numbers = User::whereIn('users.id', $userIds)
+            ->where('users.user_type', 'worker')
+            ->select(
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),
+                'users.id'
+            )
+            ->get();
+
+
+
+        return view('housingmovements::travelers.workCardIssuing')->with(
+            compact(
+                'sales_projects',
+                'proof_numbers',
+                'employees',
+                'companies',
+                'durationOptions'
+            )
+        );
+    }
+    public function storeWorkCard(Request $request)
+    {
+
+
+        try {
+            $data = $request->only([
+                'employee_id', 'border_no', 'business', 'company_id',
+                'workcard_duration_input',
+                'Payment_number',
+                'passport_fees_input',
+                'work_card_fees',
+                'other_fees',
+
+            ]);
+
+            if ($request->input('Payment_number') != null && strlen($request->input('Payment_number')) !== 14) {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('essentials::lang.payment_number_invalid'),
+                ];
+            } else {
+                $data['employee_id'] = (int) $request->input('employee_id');
+                $data['fees'] = $request->input('passport_fees_input');
+                $data['work_card_fees'] = $request->input('work_card_fees');
+                $data['other_fees'] = $request->input('other_fees');
+                $data['workcard_duration'] = (int) $request->input(
+                    'workcard_duration_input'
+                );
+                $data['is_active'] = 1;
+                $lastrecord = EssentialsWorkCard::orderBy(
+                    'work_card_no',
+                    'desc'
+                )->first();
+
+                if ($lastrecord) {
+                    $lastEmpNumber = (int) substr($lastrecord->work_card_no, 3);
+                    $nextNumericPart = $lastEmpNumber + 1;
+                    $data['work_card_no'] =
+                        'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                } else {
+                    $data['work_card_no'] = 'WC' . '000';
+                }
+
+                EssentialsWorkCard::create($data);
+                $user = User::findOrFail($request->input('employee_id'));
+                $user->update([
+                    'company_id' => $request->input('company_id'),
+                    'updated_by' => Auth::user()->id
+                ]);
+
+                $output = [
+                    'success' => 1,
+                    'msg' => __('essentials::lang.card_added_sucessfully'),
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency(
+                'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()
+            );
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => __('messeages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
+
+    public function SIMCard()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $userIds = User::whereNot('user_type', 'admin')
+            ->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $workers = User::with(['proposal_worker'])->whereIn('id', $userIds)
+            ->whereNotNull('proposal_worker_id')->whereNot('status', 'inactive')
+            ->select([
+                'id',
+                'contact_number',
+                'has_SIM', 'cell_phone_company',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ]);
+
+        if (request()->ajax()) {
+            return Datatables::of($workers)
+                ->addColumn('action', function ($worker) {
+                    if ($worker->has_SIM) {
+                        return $worker->cell_phone_company;
+                    } else {
+                        return '<button onclick="addSIM(' . $worker->id . ')" class="btn btn-primary">' . __('housingmovements::lang.add_SIM') . '</button>';
+                    }
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('housingmovements::travelers.SIMCard');
+    }
+
+    public function addSIM(Request $request)
+    {
+
+        $user = User::findOrFail($request->user);
+
+        $user->update([
+            'cell_phone_company' => $request->cell_phone_company,
+            'contact_number' => $request->contact_number,
+            'has_SIM' => 1,
+            'updated_by' => Auth::user()->id
+        ]);
+        $output = [
+            'success' => true,
+            'msg' => __('lang_v1.added_success'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+
+    public function bankAccounts()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $userIds = User::whereNot('user_type', 'admin')
+            ->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
+        $all_users = User::whereIn('id', $userIds)->whereNotNull('proposal_worker_id')->whereNull('bank_details')->select(
+            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),
+            'users.id'
+        )->get();
+
+        $employees = $all_users->pluck('full_name', 'id');
+        $workers = User::with(['proposal_worker', 'activeIban'])
+            ->whereNotNull('proposal_worker_id')
+            ->whereNotNull('bank_details')
+            ->where('status', '!=', 'inactive')
+            ->select([
+                'id',
+                'bank_details',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ]);
+
+        if (request()->ajax()) {
+            return Datatables::of($workers)
+                ->addColumn('account_holder_name', function ($worker) {
+
+                    return json_decode($worker->bank_details, true)['account_holder_name'] ?? '';
+                })
+                ->addColumn('account_number', function ($worker) {
+                    return json_decode($worker->bank_details, true)['account_number'] ?? '';
+                })
+                ->addColumn('bank_name', function ($worker) {
+                    return json_decode($worker->bank_details, true)['bank_name'] ?? '';
+                })
+                ->addColumn('bank_code', function ($worker) {
+                    return json_decode($worker->bank_details, true)['bank_code'] ?? '';
+                })
+                ->addColumn('iban_file', function ($worker) {
+                    $document = $worker->activeIban;
+                    if ($document) {
+                        return '<a href="/uploads/' . $document->file_path . '" class="btn btn-success" target="_blank">View File</a>';
+                    }
+                    return __('housingmovements::lang.no_files');
+                })
+                ->rawColumns(['account_holder_name', 'account_number', 'bank_name', 'bank_code', 'iban_file'])
+                ->make(true);
+        }
+
+        return view('housingmovements::travelers.bankAccounts')->with(compact('employees', 'banks'));
+    }
+
+    public function addBank(Request $request)
+    {
+        $is_existing = EssentialsOfficialDocument::where('number', $request->bank_details['bank_code'])->where('is_active', 1)->first();
+        if ($is_existing) {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.the_bank code is exists already'),
+            ];
+            return redirect()->back()
+                ->with('status', $output);
+        }
+        $user = User::findOrFail($request->user_id);
+        $user->update([
+            'bank_details' => json_encode($request->bank_details),
+            'updated_by' => Auth::user()->id
+        ]);
+
+        if ($request->hasFile('iban_file')) {
+
+            $file = $request->file('iban_file');
+
+            $path = $file->store('/officialDocuments');
+
+            $documentData = [
+                'type' => 'Iban',
+                'status' => 'valid',
+                'is_active' => 1,
+                'employee_id' => $request->user_id,
+                'number' => $request->bank_details['bank_code'],
+                'created_by' => Auth::user()->id,
+                'file_path' => $path,
+            ];
+
+            EssentialsOfficialDocument::create($documentData);
+        }
+        $output = [
+            'success' => true,
+            'msg' => __('lang_v1.added_success'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+
+    public function QiwaContracts()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $userIds = User::whereNot('user_type', 'admin')->whereNotNull('proposal_worker_id')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
+            ->whereIn('u.id', $userIds)
+            ->where('u.status', '!=', 'inactive')
+
+            ->select([
+                'essentials_employees_contracts.id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' ,COALESCE(u.last_name, '')) as user"),
+                'essentials_employees_contracts.contract_number',
+                'essentials_employees_contracts.contract_start_date',
+                'essentials_employees_contracts.contract_end_date',
+                'essentials_employees_contracts.contract_duration',
+                'essentials_employees_contracts.contract_per_period',
+                'essentials_employees_contracts.probation_period',
+                'essentials_employees_contracts.contract_type_id',
+                'essentials_employees_contracts.is_renewable',
+                'essentials_employees_contracts.is_active',
+                'essentials_employees_contracts.file_path',
+                DB::raw("
+                CASE 
+                    WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
+                    WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
+                    WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
+                    WHEN DATE(essentials_employees_contracts.contract_end_date) > CURDATE() THEN 'valid'
+                    ELSE 'Null'
+                END as status
+            "),
+            ])
+            ->where('essentials_employees_contracts.is_active', 1)
+            ->orderby('id', 'desc');
+
+        $contract_types = EssentialsContractType::pluck('type', 'id')->all();
+        if (request()->ajax()) {
+
+            return Datatables::of($employees_contracts)
+                ->editColumn('contract_type_id', function ($row) use ($contract_types) {
+                    $item = $contract_types[$row->contract_type_id] ?? '';
+                    return $item;
+                })
+
+                ->addColumn(
+                    'action',
+                    function ($row)  use ($is_admin) {
+                        $html = '';
+
+                        // if ($is_admin || $can_show_employee_contracts) {
+                        if (!empty($row->file_path)) {
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.open(\'/uploads/' . $row->file_path . '\', \'_blank\')"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
+                            '&nbsp;';
+                        } else {
+                            $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                        }
+                        // }
+
+                        // if ($is_admin || $can_delete_employee_contracts) {
+                        $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        //   }
+
+
+
+
+                        return $html;
+                    }
+                )
+
+                ->filterColumn('user', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->removeColumn('file_path')
+                ->removeColumn('id')
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        $query = User::whereIn('id', $userIds)->whereDoesntHave('activeContract');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as  full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+
+
+        return view('housingmovements::travelers.QiwaContracts')->with(compact('users', 'contract_types'));
+    }
+
+
+    public function residencyPrint()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $userIds = User::whereNot('user_type', 'admin')
+            ->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $workers = User::with(['proposal_worker'])->whereIn('id', $userIds)
+            ->whereNotNull('proposal_worker_id')->whereNot('status', 'inactive')
+            ->select([
+                'id',
+                'residency_print', 'id_proof_number',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ]);
+
+        if (request()->ajax()) {
+            return Datatables::of($workers)
+                ->addColumn('id_proof_number', function ($worker) {
+                    if ($worker->id_proof_number) {
+                        return $worker->id_proof_number;
+                    } else {
+                        return '<button onclick="add_eqama(' . $worker->id . ')" class="btn btn-warning">' . __('housingmovements::lang.add_eqama') . '</button>';
+                    }
+                })
+                ->addColumn('action', function ($worker) {
+                    if ($worker->id_proof_number) {
+                        if ($worker->residency_print) {
+                            return __('housingmovements::lang.done');
+                        } else {
+                            return '<button onclick="print_residency(' . $worker->id . ')" class="btn btn-primary">' . __('housingmovements::lang.print_residency') . '</button>';
+                        }
+                    }
+                })
+                ->rawColumns(['action', 'id_proof_number'])
+                ->make(true);
+        }
+
+        return view('housingmovements::travelers.residencyPrint');
+    }
+
+    public function addEqama(Request $request)
+    {
+        if (!$request->id_proof_number || $request->id_proof_number == NULL) {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please add the eqama number'),
+            ];
+            return redirect()->back()
+                ->with('status', $output);
+        }
+        $user = User::find($request->user);
+        $user->id_proof_name = 'eqama';
+        $user->id_proof_number = $request->id_proof_number;
+        $user->updated_by = auth()->user()->id;
+        $user->save();
+        $documentData = [
+            'type' => 'residence_permit',
+            'status' => 'valid',
+            'is_active' => 1,
+            'employee_id' => $request->user,
+            'number' => $request->id_proof_number,
+            'created_by' => Auth::user()->id,
+        ];
+
+        EssentialsOfficialDocument::create($documentData);
+        $output = [
+            'success' => true,
+            'msg' => __('housingmovements::lang.updated_successfully'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+    public function updateResidencyPrint(Request $request)
+    {
+
+        $worker = User::findOrFail($request->id);
+
+
+        $worker->residency_print = 1;
+        if ($worker->save()) {
+            return response()->json([
+                'success' => true,
+                'msg' => __('housingmovements::lang.updated_successfully'),
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'msg' => __('housingmovements::lang.update_failed'),
+            ], 500);
+        }
+    }
+
+
+    public function residencyDelivery()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $userIds = User::whereNot('user_type', 'admin')
+            ->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $workers = User::with(['proposal_worker.worker_documents'])->whereIn('id', $userIds)
+            ->whereNotNull('proposal_worker_id')->whereNotNull('id_proof_number')->whereNot('status', 'inactive')
+            ->select([
+                'id', 'proposal_worker_id',
+                'residency_delivery',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ]);
+        //  return $workers->get();
+        if (request()->ajax()) {
+            return Datatables::of($workers)
+                ->addColumn('action', function ($worker) {
+
+                    $actionButton = '<button onclick="delivery_residency(' . $worker->id . ')" class="btn btn-primary">' . __('housingmovements::lang.residencyDelivery') . '</button>';
+
+                    if ($worker->residency_delivery) {
+                        error_log('here');
+                        foreach ($worker->proposal_worker->worker_documents as $document) {
+                            error_log('here2');
+                            error_log($document->type);
+
+                            if ($document->type == "residency_delivery") {
+                                error_log('here3');
+                                return '<a href="/uploads/' . $document->attachment . '" class="btn btn-success" target="_blank">' . __('housingmovements::lang.delivery_file') . '</a>';
+                            }
+                        }
+                        return 'No file available';
+                    }
+                    return $actionButton;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+
+        return view('housingmovements::travelers.residencyDelivery');
+    }
+
+
+    public function deliveryResidency(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please uplode the delivery file'),
+            ];
+            return redirect()->back()
+                ->with('status', $output);
+        }
+
+        $worker = User::findOrFail($request->user);
+        $worker->residency_delivery = 1;
+        $worker->save();
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('/workers_documents');
+            $uploadedFile = new IrWorkersDocument();
+            $uploadedFile->worker_id = $worker->proposal_worker_id;
+            $uploadedFile->type = 'residency_delivery';
+            $uploadedFile->uploaded_by = auth()->user()->id;
+            $uploadedFile->uploaded_at = Carbon::now();
+            $uploadedFile->attachment = $path;
+
+            $uploadedFile->save();
+        }
+
+
+        $output = [
+            'success' => true,
+            'msg' => __('housingmovements::lang.updated_successfully'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
     }
 }

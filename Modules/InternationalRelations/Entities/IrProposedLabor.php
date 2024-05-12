@@ -4,6 +4,7 @@ namespace Modules\InternationalRelations\Entities;
 
 use App\Contact;
 use App\TransactionSellLine;
+use App\User;
 use Modules\InternationalRelations\Entities\IrVisaCard;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +27,7 @@ class IrProposedLabor extends Model
 
     public function user()
     {
-        return $this->belongsTo(user::class, 'proposal_worker_id');
+        return $this->belongsTo(User::class, 'proposal_worker_id');
     }
 
 

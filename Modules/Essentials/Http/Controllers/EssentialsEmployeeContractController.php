@@ -261,7 +261,7 @@ class EssentialsEmployeeContractController extends Controller
         $users = $all_users->pluck('full_name', 'id');
 
         // return  $output ;
-        return redirect()->route('employeeContracts')->with(compact('users'));
+        return redirect()->back()->with(compact('users'));
     }
 
 
