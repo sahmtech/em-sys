@@ -1897,31 +1897,12 @@ class CustomAdminSidebarMenu
             }
             if ($is_admin  || auth()->user()->can('accounting.settings')) {
 
-                // $menu->url(
-                //     action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
-                //     __('messages.settings'),
-                //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
-                // );
-
-                $menu->dropdown(
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
                     __('messages.settings'),
-                    function ($sub) {
-                        // if ($is_admin  || auth()->user()->can('accounting.settings')) {
-                        $sub->url(
-                            action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
-                            __('lang_v1.accounting_settings'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
-                        );
-
-                        $sub->url(
-                            action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'getBusinessSettings_accounting']),
-                            __('lang_v1.public_accounting_settings'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-business-settings']
-                        );
-                        // }
-                    },
-                    ['icon' => 'fa fas fa-plus-circle',]
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
                 );
+
             }
         });
     }
