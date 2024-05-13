@@ -303,9 +303,6 @@
                         <th>{{ __('purchase.ref_no') }}</th>
                         <th>{{ __('sale.amount') }}</th>
                         <th>{{ __('sale.payment_mode') }}</th>
-                        <th>{{ __('lang_v1.cost_center') }}</th>
-                        <th>{{ __('lang_v1.transfer_account') }}</th>
-                        <th>{{ __('lang_v1.account_name') }}</th>
                         <th>{{ __('sale.payment_note') }}</th>
                     </tr>
                     @foreach ($sell->payment_lines as $payment_line)
@@ -329,24 +326,7 @@
                                     ({{ __('lang_v1.change_return') }})
                                 @endif
                             </td>
-                            <td>{{ $payment_line?->costCenter?->ar_name }}</td>
-                            <td>{{ $payment_line?->bankAccounts?->account_number . ' - ' . $payment_line?->bankAccounts?->Bank?->name }}
-                            </td>
-                            @if ($payment_line?->accountingAccount)
-                                <td>
-                                    @if (!empty($payment_line?->accountingAccount?->gl_code))
-                                        ({{ $payment_line?->accountingAccount?->gl_code }})
-                                        -
-                                    @endif
-                                    @if (Lang::has('accounting::lang.' . $payment_line?->accountingAccount?->name))
-                                        @lang('accounting::lang.' . $payment_line?->accountingAccount?->name)
-                                    @else
-                                        {{ $payment_line?->accountingAccount?->name }}
-                                    @endif
-                                </td>
-                            @else
-                                --
-                            @endif
+                        
 
                             <td>
                                 @if ($payment_line->note)
