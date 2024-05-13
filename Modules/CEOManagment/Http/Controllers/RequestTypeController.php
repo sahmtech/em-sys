@@ -184,24 +184,24 @@ class RequestTypeController extends Controller
     {
 
         try {
-
             $requests = WkProcedure::where('request_type_id', $request->request_type_id)->get();
 
             if ($requests->count() != 0) {
+
                 $output = [
                     'success' => false,
                     'msg' => __('ceomanagment::lang.cant_edit_type_it_have_procedures'),
                 ];
-                return redirect()->back()->with($output);
+                return $output;
             }
-
             Task::where('request_type_id', $request->request_type_id)->delete();
-
             if (isset($request->tasks)) {
+
                 $descriptions = $request->tasks['description'] ?? [];
                 $links = $request->tasks['link'] ?? [];
 
                 foreach ($descriptions as $index => $description) {
+
 
                     if (!empty($description)) {
 
@@ -231,7 +231,7 @@ class RequestTypeController extends Controller
             ];
         }
 
-        return redirect()->back()->with($output);
+        return $output;
     }
 
     private function getTypePrefix($type)
