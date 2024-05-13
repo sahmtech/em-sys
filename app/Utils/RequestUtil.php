@@ -311,7 +311,8 @@ class RequestUtil extends Util
                             }
                         }
                     }
-                    if ($is_admin || $can_show_request) {
+                    //|| $can_show_request
+                    if ($is_admin) {
                         $buttonsHtml .= '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' . $row->id . '">' . trans('request.view_request') . '</button>';
                     }
 
