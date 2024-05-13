@@ -6,6 +6,7 @@ use App\Utils\RequestUtil;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Illuminate\Support\Facades\Session;
 
 
 
@@ -29,7 +30,7 @@ class RequestController extends Controller
         $can_return_request = auth()->user()->can('accounting.return_the_request');
         $can_show_request = auth()->user()->can('accounting.show_request');
 
-
+        $company_id = Session::get('selectedCompanyId');
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
                 $query->where('name', 'like', '%حاسب%')
@@ -47,7 +48,7 @@ class RequestController extends Controller
 
         $ownerTypes = ['employee', 'manager', 'worker'];
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'accounting::requests.allRequest', $can_change_status, $can_return_request, $can_show_request);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'accounting::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, [], false, $company_id);
     }
 
 

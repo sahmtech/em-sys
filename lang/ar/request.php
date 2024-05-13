@@ -1,6 +1,6 @@
 <?php
 return [
-  'pending' => 'قيد الدراسة',
+  'pending' => 'تحت الإجراء',
   'approved' => 'مقبول',
   'rejected' => 'مرفوض',
   'exitRequest' => 'طلب خروح نهائي',
@@ -85,7 +85,6 @@ return [
   'start_date' => 'تاريخ البداية',
   'end_date' => 'تاريخ النهاية',
   'status' => 'الحالة',
-  'pending' => 'بإنتظار الموافقة',
   'rejected' => 'مع الرفض',
   'approved' => 'قبول الطلب',
   'return_the_request' => 'إرجاع الطلب',
@@ -182,7 +181,6 @@ return [
   'customer_home_workers' => 'حالات العمال',
   'create_order' => 'إنشاء طلب',
   'return_request' => 'إرجاع الطلب',
-  'pending' => 'قيد الدراسة',
   'approved' => 'مقبول',
   'rejected' => 'مرفوض',
 
@@ -220,7 +218,8 @@ return [
   'time_is_gone' => 'لقد مضى هذا الوقت لبداية الطلب',
   'finish_operation' => 'إنهاء العملية',
   'border_number' => 'رقم الحدود',
-  '' => '',
+  'created_user_name' => 'المستخدم الذي أنشئ الطلب',
+  'do_the_procedure' => 'تنفيذ الإجراء'
 
 
 
