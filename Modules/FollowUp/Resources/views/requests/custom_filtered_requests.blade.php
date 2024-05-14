@@ -12,7 +12,7 @@
     <!-- Main content -->
 
     <section class="content">
-
+        <input type="hidden" id='filter_type' name='filter_type' value="{{ $filter }}">
 
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
@@ -45,13 +45,17 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-
+            var filter_type = $('#filter_type').val();
             var requests_table = $('#requests_table').DataTable({
                 processing: true,
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('allRequests') }}"
+                    url: '{{ route('filteredRequests') }}',
+
+                    data: {
+                        filter: filter_type,
+                    },
                 },
 
                 columns: [
@@ -62,7 +66,7 @@
 
                     {
                         data: 'user'
-                    }, 
+                    },
                     {
                         data: 'request_type_id',
                         render: function(data, type, row) {
