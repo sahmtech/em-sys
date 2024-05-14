@@ -303,9 +303,6 @@
                         <th>{{ __('purchase.ref_no') }}</th>
                         <th>{{ __('sale.amount') }}</th>
                         <th>{{ __('sale.payment_mode') }}</th>
-                        <th>{{ __('lang_v1.cost_center') }}</th>
-                        <th>{{ __('lang_v1.transfer_account') }}</th>
-                        <th>{{ __('lang_v1.account_name') }}</th>
                         <th>{{ __('sale.payment_note') }}</th>
                     </tr>
                     @foreach ($sell->payment_lines as $payment_line)
@@ -329,24 +326,7 @@
                                     ({{ __('lang_v1.change_return') }})
                                 @endif
                             </td>
-                            <td>{{ $payment_line?->costCenter?->ar_name }}</td>
-                            <td>{{ $payment_line?->bankAccounts?->account_number . ' - ' . $payment_line?->bankAccounts?->Bank?->name }}
-                            </td>
-                            @if ($payment_line?->accountingAccount)
-                                <td>
-                                    @if (!empty($payment_line?->accountingAccount?->gl_code))
-                                        ({{ $payment_line?->accountingAccount?->gl_code }})
-                                        -
-                                    @endif
-                                    @if (Lang::has('accounting::lang.' . $payment_line?->accountingAccount?->name))
-                                        @lang('accounting::lang.' . $payment_line?->accountingAccount?->name)
-                                    @else
-                                        {{ $payment_line?->accountingAccount?->name }}
-                                    @endif
-                                </td>
-                            @else
-                                --
-                            @endif
+                        
 
                             <td>
                                 @if ($payment_line->note)
@@ -367,10 +347,19 @@
         <div class="table-responsive">
             <table class="table bg-gray">
                 <tr>
-                    <th>{{ __('sale.total') }}: </th>
+                    <th>{{ __('sale.total_without_tax') }}: </th>
                     <td></td>
+                   
                     <td><span class="display_currency pull-right"
-                            data-currency_symbol="true">{{ $sell->total_before_tax }}</span></td>
+                            data-currency_symbol="true">
+                            @if (!empty($order_taxes))
+                            @foreach ($order_taxes as $k => $v)
+                            {{  $sell->total_before_tax  -$v }}
+                            @endforeach
+                        @else
+                        {{ $sell->total_before_tax }}
+                        @endif
+                           </span></td>
                 </tr>
                 <tr>
                     <th>{{ __('sale.discount') }}:</th>
@@ -422,7 +411,20 @@
                         @endif
                     </td>
                 </tr>
-                @if (!empty($line_taxes))
+
+                <tr>
+                    <th>{{ __('sale.total_with_tax') }}: </th>
+                    <td></td>
+                  
+                    <td><span class="display_currency pull-right"
+                        data-currency_symbol="true">
+                        
+                    {{ $sell->total_before_tax }}
+                
+                       </span></td>
+                </tr>
+               
+                {{-- @if (!empty($line_taxes))
                     <tr>
                         <th>{{ __('lang_v1.line_taxes') }}:</th>
                         <td></td>
@@ -438,7 +440,7 @@
                             @endif
                         </td>
                     </tr>
-                @endif
+                @endif --}}
                 {{-- <tr>
                     <th>{{ __('sale.shipping') }}: @if ($sell->shipping_details)
                             ({{ $sell->shipping_details }})
@@ -481,12 +483,12 @@
                         </td>
                     </tr>
                 @endif
-                <tr>
+                {{-- <tr>
                     <th>{{ __('lang_v1.round_off') }}: </th>
                     <td></td>
                     <td><span class="display_currency pull-right"
                             data-currency_symbol="true">{{ $sell->round_off_amount }}</span></td>
-                </tr>
+                </tr> --}}
                 <tr>
                     <th>{{ __('sale.total_payable') }}: </th>
                     <td></td>

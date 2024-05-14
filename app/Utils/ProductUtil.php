@@ -640,6 +640,7 @@ class ProductUtil extends Util
 
         //Sub Total
         foreach ($products as $product) {
+            // dd($product);
             $unit_price_inc_tax = $uf_number ? $this->num_uf($product['unit_price_inc_tax']) : $product['unit_price_inc_tax'];
             $quantity = $uf_number ? $this->num_uf($product['quantity']) : $product['quantity'];
 
