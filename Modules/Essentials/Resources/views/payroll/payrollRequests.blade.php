@@ -766,6 +766,10 @@
                                     ': ' +
                                     response.request_info.started_depatment.name + '</p>';
                                 activity += '<p>' +
+                                    '{{ __('request.created_user_name') }}' +
+                                    ': ' +
+                                    response.created_user_info.created_user_full_name + '</p>';
+                                activity += '<p>' +
                                     '{{ __('essentials::lang.department_name') }}' + ': ' +
                                     response.followup_processes[j].department.name;
 
