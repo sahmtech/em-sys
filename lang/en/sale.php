@@ -23,6 +23,9 @@ return [
     'order_tax' => 'Order Tax',
     'discount' => 'Discount',
     'total_payable' => 'Total Payable',
+
+    "total_with_tax" => "Total with tax",
+    "total_without_tax" => "Total without tax",
     'cancel' => 'Cancel',
     'draft' => 'Draft',
     'finalize' => 'Pay & Checkout',

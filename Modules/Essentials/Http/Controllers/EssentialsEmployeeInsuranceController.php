@@ -871,7 +871,32 @@ class EssentialsEmployeeInsuranceController extends Controller
             ->with(compact('insurance_companies', 'insurance_classes', 'users'));
     }
 
+    public function show(Request $request)
+    {
 
+        $insurance = EssentialsEmployeesInsurance::with(['user', 'user.business', 'insuranceCompany', 'insuranceClass'])
+            ->where('essentials_employees_insurances.employee_id', $request->employee_id)
+            ->where('essentials_employees_insurances.is_deleted', 0)
+            ->first();
+
+
+        if ($insurance) {
+            $response = [
+                'success' => true,
+                'id_proof_number' => $insurance->user->id_proof_number ?? '',
+                'border_number' => $insurance->user->border_no ?? '',
+                'border_no' => $insurance->user->border_no,
+                'insurance_company' => $insurance->insuranceCompany->supplier_business_name ?? '',
+                'insurance_class' => $insurance->insuranceClass->name ?? '',
+            ];
+        } else {
+            $response = [
+                'success' => false,
+                'message' => 'No insurance information found'
+            ];
+        }
+        return response()->json($response);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -880,6 +905,7 @@ class EssentialsEmployeeInsuranceController extends Controller
      */
     public function store(Request $request)
     {
+
 
         try {
 
@@ -984,7 +1010,7 @@ class EssentialsEmployeeInsuranceController extends Controller
             ];
         }
 
-        return redirect()->route('employee_insurance')
+        return redirect()->back()
             ->with('status', $output);
     }
 
@@ -1207,5 +1233,13 @@ class EssentialsEmployeeInsuranceController extends Controller
         }
 
         return $output;
+    }
+    public function getInsuranceClasses($companyId)
+    {
+
+        $insuranceClasses = EssentialsInsuranceClass::where('insurance_company_id', $companyId)
+            ->pluck('name', 'id');
+
+        return response()->json($insuranceClasses);
     }
 }

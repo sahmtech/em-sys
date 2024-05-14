@@ -140,9 +140,9 @@ class FollowUpWorkerController extends Controller
 
             return DataTables::of($users)
 
-            ->addColumn('worker_id', function ($user) {
-                return $user->worker_id ?? ' ';
-            })
+                ->addColumn('worker_id', function ($user) {
+                    return $user->worker_id ?? ' ';
+                })
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
@@ -225,7 +225,7 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('dob', function ($user) {
 
                     return $user->dob ?? '';
-                })  ->addColumn('insurance', function ($user) {
+                })->addColumn('insurance', function ($user) {
                     if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
                         return __('followup::lang.has_insurance');
                     } else {
@@ -243,7 +243,7 @@ class FollowUpWorkerController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker_id','company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker_id', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
         $allRequestTypes = RequestsType::pluck('type', 'id');

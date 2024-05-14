@@ -669,23 +669,26 @@
 
                                     <td>
 
-                                        <input class="form-control valid"  required id="products_" placeholder="@lang('product.product_name')" name="products_[0][name]" type="text" value="" aria-invalid="false">
-                                      
+                                        <input class="form-control valid" required id="products_"
+                                            placeholder="@lang('product.product_name')" name="products_[0][name]" type="text"
+                                            value="" aria-invalid="false">
+
                                     </td>
                                     <td>
-                                  
+
 
                                         <input type="text" data-min="1" required
                                             class="form-control pos_quantity input_number input_quantity quantity_ valid"
-                                            value="" name="products_[0][quantity]" data-allow-overselling="true" data-decimal="1"
-                                            data-rule-abs_digit="true" id="quantity_" data-rule-required="fasle"
+                                            value="" name="products_[0][quantity]" data-allow-overselling="true"
+                                            data-decimal="1" data-rule-abs_digit="true" id="quantity_"
+                                            data-rule-required="fasle"
                                             data-msg-required="validation.custom-messages.this_field_is_required"
                                             aria-required="true" aria-invalid="false">
-                                      
+
 
                                     </td>
                                     <td>
-                                       
+
                                         <input type="text" id="unit_price_" name="products_[0][unit_price]" required
                                             class="form-control pos_unit_price input_number mousetrap valid" value=""
                                             aria-invalid="false">
@@ -698,7 +701,9 @@
                                         @endphp
 
 
-                                        <input class="form-control input_number row_discount_amount row_discount_amount_" id="line_discount_amount_" name="products_[0][line_discount_amount]" type="text" value="0">
+                                        <input class="form-control input_number row_discount_amount row_discount_amount_"
+                                            id="line_discount_amount_" name="products_[0][line_discount_amount]"
+                                            type="text" value="0">
                                         <br>
                                         {!! Form::select(
                                             'products_[0][line_discount_type]',
@@ -708,6 +713,8 @@
                                         ) !!}
                                     </td>
                                     <td>
+                                        {!! Form::hidden("products_[0][item_tax]",0, ['class' => 'item_tax']) !!}
+
                                         {!! Form::select(
                                             'products_[0][tax_id]',
                                             $tax_dropdown['tax_rates'],
@@ -717,8 +724,9 @@
                                         ) !!}
                                     </td>
                                     <td>
-                                        
-                                        <input type="text" id="unit_price_inc_tax_" name="products_[0][unit_price_inc_tax]"
+
+                                        <input type="text" id="unit_price_inc_tax_"
+                                            name="products_[0][unit_price_inc_tax]"
                                             class="form-control pos_unit_price_inc_tax input_number valid" value="0"
                                             aria-invalid="false">
                                     </td>
@@ -872,6 +880,7 @@
                     </div>
                     <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif"
                         style="margin-right: 49.333333%;">
+                        <input type="hidden" name="order_tax" id="order_tax">
                         <b>@lang('sale.order_tax'):</b>(+)
                         <span class="" id="order_tax">0</span>
                     </div>
@@ -1576,27 +1585,50 @@
             });
 
 
-                $(document).on('click', '#add_product_', function() {
-                    var selected_tax_id_ = $('#tax_id_').val();
-            let counter = $('#pos_table tr').length - 1;
-            $('#tbody').append(
-                '<tr><td><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer"id="add_product_" style="    background: transparent; border: 0px;"></button></td>'
-                    // +'<td>{!! Form::text("name' + '[' +counter + ']'+'", " ", ["class" => "form-control","id" => "name_","placeholder" => __("product.product_name"),]) !!}</td>'
-                    +'<td><input class="form-control valid" id="products_' + '[' +counter + ']'+'[name]'+'" placeholder="@lang('product.product_name')" name="products_' + '[' +counter + ']'+'[name]" type="text" value="" aria-invalid="false"></td>'
-                    
-                    +'<td><input type="text" data-min="1" class="form-control pos_quantity input_number input_quantity quantity_ valid" value="0" name="products_' + '[' +counter + '][quantity]'+'" data-allow-overselling="true" data-decimal="1" data-rule-abs_digit="true" id="quantity_" data-rule-required="fasle" data-msg-required="validation.custom-messages.this_field_is_required" aria-required="true" aria-invalid="false"></td>'
-                    +'<td><input type="text" id="unit_price_" name="products_' + '[' +counter + '][unit_price]' +'" class="form-control pos_unit_price input_number mousetrap valid" value="0" aria-invalid="false"></td>'
-                    +'<td><input class="form-control input_number row_discount_amount row_discount_amount_" id="line_discount_amount_" name="products_' + '[' +counter + '][line_discount_amount]'+'" type="text" value="0"><br><select class="form-control row_discount_type_ row_discount_type valid" name="products_' + '[' +counter + '][line_discount_type]'+'" aria-invalid="false"><option value="fixed" selected="selected">@lang("lang_v1.fixed")</option><option value="percentage" selected="selected">@lang("lang_v1.percentage")</option></select>'
+            $(document).on('click', '#add_product_', function() {
+                var selected_tax_id_ = $('#tax_id_').val();
+                let counter = $('#pos_table tr').length - 1;
+                $('#tbody').append(
+                    '<tr><td><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer"id="add_product_" style="    background: transparent; border: 0px;"></button></td>'
+                    // +'<td>{!! Form::text("name' + '[' +counter + ']'+'", ' ', [
+                        'class' => 'form-control',
+                        'id' => 'name_',
+                        'placeholder' => __('product.product_name'),
+                    ]) !!}</td>'
+                    +
+                    '<td><input class="form-control valid" id="products_' + '[' + counter + ']' +
+                    '[name]' + '" placeholder="@lang('product.product_name')" name="products_' + '[' + counter +
+                    ']' + '[name]" type="text" value="" aria-invalid="false"></td>'
 
-                    +'<td><select class="form-control tax_id" id="tax_id_" name="products_' + '[' +counter + '][tax_id]'+'"><option value="">غير محدد</option><option value="1" data-rate="15">ضريبة القيمة المضافة</option></select></td>'
-                    +'<td><input type="text" id="unit_price_inc_tax_" name="products_' + '[' +counter + '][unit_price_inc_tax]' +'" class="form-control pos_unit_price_inc_tax input_number valid" value="0" aria-invalid="false"></td>'
-                    +'<td class="text-center"><input type="hidden" class="form-control pos_line_total " id="pos_line_total_"value="0"><span class="display_currency pos_line_total_text " id="pos_line_total_text_" data-currency_symbol="true"></span></td>'
-                    +'<td class="text-center v-center"><i class="fa fa-times text-danger pos_remove_row cursor-pointer"aria-hidden="true"></i></td>'
-)
+                    +
+                    '<td><input type="text" data-min="1" class="form-control pos_quantity input_number input_quantity quantity_ valid" value="0" name="products_' +
+                    '[' + counter + '][quantity]' +
+                    '" data-allow-overselling="true" data-decimal="1" data-rule-abs_digit="true" id="quantity_" data-rule-required="fasle" data-msg-required="validation.custom-messages.this_field_is_required" aria-required="true" aria-invalid="false"></td>' +
+                    '<td><input type="text" id="unit_price_" name="products_' + '[' + counter +
+                    '][unit_price]' +
+                    '" class="form-control pos_unit_price input_number mousetrap valid" value="0" aria-invalid="false"></td>' +
+                    '<td><input class="form-control input_number row_discount_amount row_discount_amount_" id="line_discount_amount_" name="products_' +
+                    '[' + counter + '][line_discount_amount]' +
+                    '" type="text" value="0"><br><select class="form-control row_discount_type_ row_discount_type valid" name="products_' +
+                    '[' + counter + '][line_discount_type]' +
+                    '" aria-invalid="false"><option value="fixed" selected="selected">@lang('lang_v1.fixed')</option><option value="percentage" selected="selected">@lang('lang_v1.percentage')</option></select>'
+
+                    +
+                    '<td><input class="item_tax" name="products_' + '[' + counter +
+                    '][item_tax]' +
+                    '" type="hidden" value="0"><select class="form-control tax_id" id="tax_id_" name="products_' + '[' +
+                    counter + '][tax_id]' +
+                    '"><option value="">غير محدد</option><option value="1" data-rate="15">ضريبة القيمة المضافة</option></select></td>' +
+                    '<td><input type="text" id="unit_price_inc_tax_" name="products_' + '[' + counter +
+                    '][unit_price_inc_tax]' +
+                    '" class="form-control pos_unit_price_inc_tax input_number valid" value="0" aria-invalid="false"></td>' +
+                    '<td class="text-center"><input type="hidden" class="form-control pos_line_total " id="pos_line_total_"value="0"><span class="display_currency pos_line_total_text " id="pos_line_total_text_" data-currency_symbol="true"></span></td>' +
+                    '<td class="text-center v-center"><i class="fa fa-times text-danger pos_remove_row cursor-pointer"aria-hidden="true"></i></td>'
+                )
             });
 
 
-        
+
         });
     </script>
 @endsection

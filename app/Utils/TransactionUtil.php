@@ -71,7 +71,9 @@ class TransactionUtil extends Util
             'tax_id' => !empty($input['tax_rate_id']) ? $input['tax_rate_id'] : null,
             'discount_type' => !empty($input['discount_type']) ? $input['discount_type'] : null,
             'discount_amount' => $uf_data ? $this->num_uf($input['discount_amount']) : $input['discount_amount'],
-            'tax_amount' => $invoice_total['tax'],
+            
+            // 'tax_amount' => $invoice_total['tax'],
+            'tax_amount' =>$input['order_tax'],
             'final_total' => $final_total,
             'additional_notes' => !empty($input['sale_note']) ? $input['sale_note'] : null,
             'staff_note' => !empty($input['staff_note']) ? $input['staff_note'] : null,
@@ -4037,7 +4039,7 @@ class TransactionUtil extends Util
             $sub_taxes = $tax->sub_taxes;
 
             $sum = $tax->sub_taxes->sum('amount');
-
+           
             $details = [];
             foreach ($sub_taxes as $sub_tax) {
                 $details[] = [

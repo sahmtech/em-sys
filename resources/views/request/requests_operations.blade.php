@@ -301,7 +301,7 @@
                                     '&nbsp;@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.finish_request_operation'))<button class="btn btn-warning btn-sm btn-finish-procedure" data-request-id="' +
                                     row.request_procedure_task +
 
-                                    '">@lang('request.finish_operation')</button>@endif';
+                                    '">@lang('request.do_the_procedure')</button>@endif';
                             }
 
                             return buttonsHtml;
@@ -401,7 +401,10 @@
                                     '{{ __('request.created_department_name') }}' +
                                     ': ' +
                                     response.request_info.started_depatment.name + '</p>';
-
+                                activity += '<p>' +
+                                    '{{ __('request.created_user_name') }}' +
+                                    ': ' +
+                                    response.created_user_info.created_user_full_name + '</p>';
                                 activity += '<p>' +
                                     '{{ __('request.department_name') }}' + ': ' +
                                     response.followup_processes[j].department.name;

@@ -63,13 +63,33 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
                             {!! Form::text('doc_filter_date_range', null, [
                                 'placeholder' => __('lang_v1.select_a_date_range'),
                                 'class' => 'form-control ',
                                 'readonly',
+                            ]) !!}
+                        </div>
+                    </div> --}}
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('start_date_filter', __('essentials::lang.expiration_date_from') . ':') !!}
+                            {!! Form::date('start_date_filter', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.select_start_date'),
+                                'id' => 'start_date_filter',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('end_date_filter', __('essentials::lang.expiration_date_to') . ':') !!}
+                            {!! Form::date('end_date_filter', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.select_end_date'),
+                                'id' => 'end_date_filter',
                             ]) !!}
                         </div>
                     </div>
@@ -214,23 +234,23 @@
                         if ($('#select_company_id').val()) {
                             d.company = $('#select_company_id').val();
                         }
-                        if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
-                            d.start_date = start;
-                            d.end_date = end;
-                        }
+                        // if ($('#doc_filter_date_range').val()) {
+                        //     var start = $('#doc_filter_date_range').data('daterangepicker').startDate
+                        //         .format('YYYY-MM-DD');
+                        //     var end = $('#doc_filter_date_range').data('daterangepicker').endDate
+                        //         .format('YYYY-MM-DD');
+                        //     d.start_date = start;
+                        //     d.end_date = end;
+                        // }
                     }
                 },
 
                 columns: [{
-                        "data": "worker_id"
+                        data: "worker_id"
                     },
                     {
-                        "data": "profile_image",
-                        "render": function(data, type, row) {
+                        data: "profile_image",
+                        render: function(data, type, row) {
                             if (data) {
 
                                 var imageUrl = '/uploads/' + data;
@@ -242,7 +262,7 @@
                         }
                     },
                     {
-                        "data": "emp_number"
+                        data: "emp_number"
                     },
 
 
@@ -259,7 +279,7 @@
                         data: 'id_proof_number'
                     },
                     {
-                        "data": "company_name"
+                        data: "company_name"
                     },
                     {
                         data: 'passport_number'

@@ -1,7 +1,7 @@
 <?php
 return [
     'CEOmanagement_dashboard' => 'الصفحة الرئيسية للرئيس التنفيذي',
-    'CEO_Managment' => 'إدارة التشغيل',
+    'CEO_Managment' => 'إدارة التشغيل (القطاع الحكومي)',
     'requests' => 'الطلبات',
     'escalate_requests' => 'الطلبات المصعّدة',
     'requests_by_sequential' => 'الطلبات حسب التسلسل',

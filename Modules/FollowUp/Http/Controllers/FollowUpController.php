@@ -62,11 +62,15 @@ class FollowUpController extends Controller
 
 
 
-        $on_going_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
-            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
+        $on_going_requests = UserRequest::where('requests.status', 'pending')
+            ->leftJoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+            ->leftJoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
+            ->whereIn('requests.related_to', $userIds)
+            ->where(function ($query) use ($departmentIds) {
                 $query->whereIn('wk_procedures.department_id', $departmentIds)
                     ->orWhereIn('request_processes.superior_department_id', $departmentIds);
-            })->where('requests.status', 'under_process')->count();
+            })
+            ->count();
 
         $finished_requests = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
             ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->where(function ($query) use ($departmentIds) {
