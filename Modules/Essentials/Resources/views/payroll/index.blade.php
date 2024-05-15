@@ -335,30 +335,7 @@
 
 
 
-            // $(document).on('change', '#companies', function() {
-            //     let company_id = $(this).val();
-            //     $.ajax({
-            //         method: 'GET',
-            //         url: "{{ route('payrolls.getEmployeesBasedOnCompany') }}",
-            //         dataType: 'json',
-            //         data: {
-            //             'company_id': company_id
-            //         },
-            //         success: function(result) {
-            //             if (result.success == true) {
-            //                 $('#employee_ids').empty();
-            //                 console.log(result.employees);
-            //                 $.each(result.employees, function(id, employee) {
-            //                     $('#employee_ids').append($('<option>', {
-            //                         value: id,
-            //                         text: employee
-            //                     }));
-            //                 });
-            //                 $('#employee_ids').select2();
-            //             }
-            //         }
-            //     });
-            // });
+
         });
     </script>
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
