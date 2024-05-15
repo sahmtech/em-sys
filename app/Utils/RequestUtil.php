@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Request as UserRequest;
 use App\RequestProcess;
 use App\RequestAttachment;
@@ -726,13 +728,16 @@ class RequestUtil extends Util
 
         $process = RequestProcess::where('request_id', $request->id)->latest()->first();
         $users = [];
+        $userCompanyId = User::where('id', $request->related_to)->first()->company_id;
+        $acessRoleCompany = AccessRoleCompany::where('company_id', $userCompanyId)->pluck('access_role_id')->toArray();
+        $rolesFromAccessRoles = AccessRole::whereIn('id', $acessRoleCompany)->pluck('role_id')->toArray();
         if ($process->superior_department_id) {
             $viewRequestPermission = $this->getViewRequestsPermission($process->superior_department_id);
             if ($viewRequestPermission) {
                 $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
                 $rolesIds = $permission_id->roles->pluck('id')->toArray();
-                $users = User::whereHas('roles', function ($query) use ($rolesIds) {
-                    $query->whereIn('id', $rolesIds);
+                $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
+                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
                 })->where('essentials_department_id', $process->superior_department_id);
             }
         } else {
@@ -742,11 +747,15 @@ class RequestUtil extends Util
             if ($viewRequestPermission) {
                 $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
                 $rolesIds = $permission_id->roles->pluck('id')->toArray();
-                $users = User::whereHas('roles', function ($query) use ($rolesIds) {
-                    $query->whereIn('id', $rolesIds);
+                $users = User::whereHas('roles', function ($query) use ($rolesIds,  $rolesFromAccessRoles) {
+                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
                 })->where('essentials_department_id', $department_id);
             }
         }
+
+
+
+
 
 
         $input['task_id'] = $request->request_no;
