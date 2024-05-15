@@ -111,5 +111,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/travel_categories', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index'])->name('travel_categories');
         Route::post('/book_visa_from_request', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'book_visa'])->name('book_visa_from_request');
         Route::get('/getVisaData/{requestId}', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'getVisaData'])->name('getVisaData');
+
+        Route::get('/ir_travelers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'new_arrival_for_workers'])->name('ir_travelers');
+        Route::get('/ir_housed_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'housed_workers_index'])->name('ir_housed_workers');
+        Route::get('/ir_medicalExamination', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'medicalExamination'])->name('ir_medicalExamination');
+        Route::get('/ir_medicalInsurance', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'medicalInsurance'])->name('ir_medicalInsurance');
+        Route::get('/ir_workCardIssuing', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'workCardIssuing'])->name('ir_workCardIssuing');
+        Route::get('/ir_SIMCard', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'SIMCard'])->name('ir_SIMCard');
+        Route::get('/ir_bankAccountsForLabors', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'bankAccounts'])->name('ir_bankAccountsForLabors');
+        Route::get('/ir_QiwaContract', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'QiwaContracts'])->name('ir_QiwaContract');
+        Route::get('/ir_residencyPrint', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'residencyPrint'])->name('ir_residencyPrint');
+        Route::get('/ir_residencyDelivery', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'residencyDelivery'])->name('ir_residencyDelivery');
+        Route::get('/ir_advanceSalaryRequest', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'advanceSalaryRequest'])->name('ir_advanceSalaryRequest');
     });
 });

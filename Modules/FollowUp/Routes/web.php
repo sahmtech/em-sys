@@ -118,5 +118,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/documents-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'destroy'])->name('documents-delivery-delete');
 
         Route::post('/cancleProject', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'cancleProject'])->name('cancleProject');
+
+        Route::get('/followup_travelers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'new_arrival_for_workers'])->name('followup_travelers');
+        Route::get('/followup_housed_workers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'housed_workers_index'])->name('followup_housed_workers');
+        Route::get('/followup_medicalExamination', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'medicalExamination'])->name('followup_medicalExamination');
+        Route::get('/followup_medicalInsurance', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'medicalInsurance'])->name('followup_medicalInsurance');
+        Route::get('/followup_workCardIssuing', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'workCardIssuing'])->name('followup_workCardIssuing');
+        Route::get('/followup_SIMCard', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'SIMCard'])->name('followup_SIMCard');
+        Route::get('/followup_bankAccountsForLabors', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'bankAccounts'])->name('followup_bankAccountsForLabors');
+        Route::get('/followup_QiwaContract', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'QiwaContracts'])->name('followup_QiwaContract');
+        Route::get('/followup_residencyPrint', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'residencyPrint'])->name('followup_residencyPrint');
+        Route::get('/followup_residencyDelivery', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'residencyDelivery'])->name('followup_residencyDelivery');
+        Route::get('/followup_advanceSalaryRequest', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'advanceSalaryRequest'])->name('followup_advanceSalaryRequest');
     });
 });
