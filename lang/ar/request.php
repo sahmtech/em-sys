@@ -11,7 +11,7 @@ return [
   'assetRequest' => 'طلب عُهدة',
   'exitRequest' => 'طلب خروح نهائي',
   'returnRequest' => 'طلب خروج وعودة',
-  'advanceSalary' => 'السلف',
+  'advanceSalary' => 'طلب سلفة',
   'leavesAndDepartures' => 'الإجازات والمغادرات',
   'atmCard' => 'بطاقة صراف آلي',
   'residenceRenewal' => 'طلب تجديد إقامة',
