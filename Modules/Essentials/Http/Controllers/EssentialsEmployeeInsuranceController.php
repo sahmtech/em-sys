@@ -6,6 +6,8 @@ use App\Contact;
 use App\User;
 use Excel;
 use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -22,9 +24,12 @@ use Modules\Essentials\Entities\EssentialsCompaniesInsurancesContract;
 class EssentialsEmployeeInsuranceController extends Controller
 {
     protected $moduleUtil;
-    public function __construct(ModuleUtil $moduleUtil)
+    protected $newArrivalUtil;
+
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->newArrivalUtil = $newArrivalUtil;
     }
     /**
      * Display a listing of the resource.
@@ -1241,5 +1246,63 @@ class EssentialsEmployeeInsuranceController extends Controller
             ->pluck('name', 'id');
 
         return response()->json($insuranceClasses);
+    }
+
+    public function new_arrival_for_workers(Request $request)
+    {
+        $view = 'essentials::insurance.travelers.index';
+        return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
+    }
+
+    public function housed_workers_index(Request $request)
+    {
+        $view = 'essentials::insurance.travelers.partials.housed_workers';
+        return $this->newArrivalUtil->housed_workers_index($request, $view);
+    }
+
+    public function medicalExamination()
+    {
+        $view = 'essentials::insurance.travelers.medicalExamination';
+        return $this->newArrivalUtil->medicalExamination($view);
+    }
+    public function SIMCard()
+    {
+        $view = 'essentials::insurance.travelers.SIMCard';
+        return $this->newArrivalUtil->SIMCard($view);
+    }
+    public function workCardIssuing()
+    {
+        $view = 'essentials::insurance.travelers.workCardIssuing';
+        return $this->newArrivalUtil->workCardIssuing($view);
+    }
+    public function medicalInsurance()
+    {
+        $view = 'essentials::insurance.travelers.medicalInsurance';
+        return $this->newArrivalUtil->medicalInsurance($view);
+    }
+    public function bankAccounts()
+    {
+        $view = 'essentials::insurance.travelers.bankAccounts';
+        return $this->newArrivalUtil->bankAccounts($view);
+    }
+    public function QiwaContracts()
+    {
+        $view = 'essentials::insurance.travelers.QiwaContracts';
+        return $this->newArrivalUtil->QiwaContracts($view);
+    }
+    public function residencyPrint()
+    {
+        $view = 'essentials::insurance.travelers.residencyPrint';
+        return $this->newArrivalUtil->residencyPrint($view);
+    }
+    public function residencyDelivery()
+    {
+        $view = 'essentials::insurance.travelers.residencyDelivery';
+        return $this->newArrivalUtil->residencyDelivery($view);
+    }
+    public function advanceSalaryRequest()
+    {
+        $view = 'essentials::insurance.travelers.advanceSalaryRequest';
+        return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }

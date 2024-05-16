@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
 use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Facades\DB;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
@@ -54,12 +55,18 @@ class ProjectWorkersController extends Controller
      * @return Renderable
      */
     protected $moduleUtil;
+    protected $newArrivalUtil;
 
 
-    public function __construct(ModuleUtil $moduleUtil)
+
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
+
         $this->moduleUtil = $moduleUtil;
+        $this->newArrivalUtil = $newArrivalUtil;
     }
+
+
     public function index()
     {
 
@@ -922,42 +929,6 @@ class ProjectWorkersController extends Controller
     }
 
 
-    public function medicalExamination()
-    {
-
-
-        $workers = IrProposedLabor::with(['worker_documents'])
-            ->whereNotNull('visa_id')
-            ->where('interviewStatus', 'acceptable')
-            ->where('arrival_status', 1)
-            ->select([
-                'id',
-                'medical_examination',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
-
-        if (request()->ajax()) {
-            return Datatables::of($workers)
-                ->addColumn('action', function ($worker) {
-
-                    $buttonHtml = $worker->medical_examination == 1 ?
-                        '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>' :
-                        '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>';
-
-                    foreach ($worker->worker_documents as $document) {
-                        if ($document->type == "medical_examination") {
-                            $buttonHtml = '<a href="/uploads/' . $document->attachment . '" class="btn btn-success" target="_blank">View File</a>';
-                            break;
-                        }
-                    }
-                    return $buttonHtml;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-
-        return view('housingmovements::travelers.medicalExamination');
-    }
 
     public function uploadMedicalDocument(Request $request)
     {
@@ -986,225 +957,7 @@ class ProjectWorkersController extends Controller
         return response()->json(['message' => 'File uploaded successfully']);
     }
 
-    public function medicalInsurance()
-    {
 
-        $insurance_companies = Contact::where('type', 'insurance')
-            ->pluck('supplier_business_name', 'id');
-
-        $insurance_classes = EssentialsInsuranceClass::all()
-            ->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-        $userIds = User::whereNot('user_type', 'admin')
-            ->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-        $workers = User::with(['proposal_worker'])
-            ->whereNotNull('proposal_worker_id')
-            ->whereIn('id', $userIds)
-            ->select([
-                'id',
-                'has_insurance',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
-
-        if (request()->ajax()) {
-            return Datatables::of($workers)
-                ->addColumn('action', function ($worker) {
-                    if ($worker->has_insurance) {
-                        return '<button onclick="viewInsurance(' . $worker->id . ')" class="btn btn-info">' . __('housingmovements::lang.view_insurance_info') . '</button>';
-                    } else {
-                        return '<button onclick="addInsurance(' . $worker->id . ')" class="btn btn-primary">' . __('essentials::lang.add_Insurance') . '</button>';
-                    }
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-
-        return view('housingmovements::travelers.medicalInsurance')->with(compact('insurance_companies', 'insurance_classes'));
-    }
-
-    public function workCardIssuing()
-    {
-
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $responsible_client = null;
-
-        $userIds = User::whereNot('user_type', 'admin')->whereNotNull('proposal_worker_id')
-            ->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $all_users = User::whereIn('id', $userIds)
-            ->whereNotNull('proposal_worker_id')
-            ->select(
-                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, ''), ' - ', COALESCE(users.border_no, '')) as full_name, users.border_no"),
-                'users.id'
-            )
-            ->whereNotIn('users.id', function ($query) {
-                $query->select('employee_id')->from('essentials_work_cards');
-            })
-            ->get();
-
-        $employees = $all_users->mapWithKeys(function ($item) {
-            return [$item->id => [
-                'name' => $item->full_name,
-                'border_no' => $item->border_no
-            ]];
-        });
-
-
-        $durationOptions = [
-            '3' => __('essentials::lang.3_months'),
-            '6' => __('essentials::lang.6_months'),
-            '9' => __('essentials::lang.9_months'),
-            '12' => __('essentials::lang.12_months'),
-            //  '1' => __('essentials::lang.1_year'),
-        ];
-        $companies = Company::pluck('name', 'id');
-        $card = EssentialsWorkCard::whereIn('employee_id', $userIds)
-            ->where('is_active', 1)
-            ->with(['user', 'user.OfficialDocument'])
-            ->select(
-                'id',
-                'employee_id',
-                'workcard_duration',
-                'work_card_no as card_no',
-                'fees as passport_fees',
-                'work_card_fees as work_card_fees',
-                'other_fees',
-                'Payment_number as Payment_number'
-            );
-
-
-
-
-        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-        $sales_projects = SalesProject::pluck('name', 'id');
-
-        if (request()->ajax()) {
-            return Datatables::of($card)
-
-
-
-                ->editColumn('company_name', function ($row) {
-                    return $row->user->company?->name ?? '';
-                })
-
-                ->editColumn('fixnumber', function ($row) {
-                    return $row->user->company?->documents
-                        ?->where('licence_type', 'COMMERCIALREGISTER')
-                        ->first()->unified_number ?? '';
-                })
-
-                ->editColumn('user', function ($row) {
-                    return $row->user->first_name .
-                        ' ' .
-                        $row->user->mid_name .
-                        ' ' .
-                        $row->user->last_name ??
-                        '';
-                })
-                // ->addColumn('assigned_to', function ($row) use ($sales_projects) {
-                //     if ($row->user->assigned_to) {
-
-                //         return $sales_projects[$row->user->assigned_to];
-                //     } else {
-                //         return '';
-                //     }
-                // })
-
-                ->editColumn('project', function ($row) {
-                    if ($row->user->assignedTo) {
-
-                        return $row->user->assignedTo->name ?? '';
-                    } else {
-                        return '';
-                    }
-                })->addColumn('responsible_client', function ($row) use ($name_in_charge_choices) {
-                    if (empty($row->user->assignedTo)) {
-                        return '';
-                    }
-
-                    $userIds = json_decode($row->user->assignedTo->assigned_to, true) ?? [];
-
-
-                    $names = [];
-
-                    foreach ($userIds as $userId) {
-                        if (!empty($name_in_charge_choices[$userId])) {
-                            $names[] = $name_in_charge_choices[$userId];
-                        }
-                    }
-
-                    return implode(', ', $names);
-                })
-
-
-                ->editColumn('proof_number', function ($row) {
-                    $residencePermitDocument = $row->user->OfficialDocument
-                        ->where('type', 'residence_permit')
-                        ->first();
-
-                    if ($residencePermitDocument) {
-                        return $residencePermitDocument->number;
-                    } elseif ($row->user->border_no) {
-                        return $row->user->border_no;
-                    } else {
-                        return '';
-                    }
-                })
-
-
-
-                ->editColumn('nationality', function ($row) {
-                    return $row->user->country?->nationality ?? '';
-                })
-
-
-
-                ->rawColumns([
-                    'action',
-                    'profession',
-                    'nationality',
-                    'checkbox'
-
-                ])
-                ->make(true);
-        }
-
-
-
-        $proof_numbers = User::whereIn('users.id', $userIds)
-            ->where('users.user_type', 'worker')
-            ->select(
-                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
-        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),
-                'users.id'
-            )
-            ->get();
-
-
-
-        return view('housingmovements::travelers.workCardIssuing')->with(
-            compact(
-                'sales_projects',
-                'proof_numbers',
-                'employees',
-                'companies',
-                'durationOptions'
-            )
-        );
-    }
     public function storeWorkCard(Request $request)
     {
 
@@ -1275,42 +1028,7 @@ class ProjectWorkersController extends Controller
         return $output;
     }
 
-    public function SIMCard()
-    {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-        $userIds = User::whereNot('user_type', 'admin')
-            ->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-        $workers = User::with(['proposal_worker'])->whereIn('id', $userIds)
-            ->whereNotNull('proposal_worker_id')->whereNot('status', 'inactive')
-            ->select([
-                'id',
-                'contact_number',
-                'has_SIM', 'cell_phone_company',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
-
-        if (request()->ajax()) {
-            return Datatables::of($workers)
-                ->addColumn('action', function ($worker) {
-                    if ($worker->has_SIM) {
-                        return $worker->cell_phone_company;
-                    } else {
-                        return '<button onclick="addSIM(' . $worker->id . ')" class="btn btn-primary">' . __('housingmovements::lang.add_SIM') . '</button>';
-                    }
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-
-        return view('housingmovements::travelers.SIMCard');
-    }
 
     public function addSIM(Request $request)
     {
@@ -1329,66 +1047,6 @@ class ProjectWorkersController extends Controller
         ];
         return redirect()->back()
             ->with('status', $output);
-    }
-
-    public function bankAccounts()
-    {
-
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-        $userIds = User::whereNot('user_type', 'admin')
-            ->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-        $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
-        $all_users = User::whereIn('id', $userIds)->whereNotNull('proposal_worker_id')->whereNull('bank_details')->select(
-            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
-        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),
-            'users.id'
-        )->get();
-
-        $employees = $all_users->pluck('full_name', 'id');
-        $workers = User::with(['proposal_worker', 'activeIban'])
-            ->whereNotNull('proposal_worker_id')
-            ->whereNotNull('bank_details')
-            ->where('status', '!=', 'inactive')
-            ->select([
-                'id',
-                'bank_details',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
-
-        if (request()->ajax()) {
-            return Datatables::of($workers)
-                ->addColumn('account_holder_name', function ($worker) {
-
-                    return json_decode($worker->bank_details, true)['account_holder_name'] ?? '';
-                })
-                ->addColumn('account_number', function ($worker) {
-                    return json_decode($worker->bank_details, true)['account_number'] ?? '';
-                })
-                ->addColumn('bank_name', function ($worker) {
-                    return json_decode($worker->bank_details, true)['bank_name'] ?? '';
-                })
-                ->addColumn('bank_code', function ($worker) {
-                    return json_decode($worker->bank_details, true)['bank_code'] ?? '';
-                })
-                ->addColumn('iban_file', function ($worker) {
-                    $document = $worker->activeIban;
-                    if ($document) {
-                        return '<a href="/uploads/' . $document->file_path . '" class="btn btn-success" target="_blank">View File</a>';
-                    }
-                    return __('housingmovements::lang.no_files');
-                })
-                ->rawColumns(['account_holder_name', 'account_number', 'bank_name', 'bank_code', 'iban_file'])
-                ->make(true);
-        }
-
-        return view('housingmovements::travelers.bankAccounts')->with(compact('employees', 'banks'));
     }
 
     public function addBank(Request $request)
@@ -1434,144 +1092,6 @@ class ProjectWorkersController extends Controller
             ->with('status', $output);
     }
 
-    public function QiwaContracts()
-    {
-
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-        $userIds = User::whereNot('user_type', 'admin')->whereNotNull('proposal_worker_id')->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
-            ->whereIn('u.id', $userIds)
-            ->where('u.status', '!=', 'inactive')
-
-            ->select([
-                'essentials_employees_contracts.id',
-                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' ,COALESCE(u.last_name, '')) as user"),
-                'essentials_employees_contracts.contract_number',
-                'essentials_employees_contracts.contract_start_date',
-                'essentials_employees_contracts.contract_end_date',
-                'essentials_employees_contracts.contract_duration',
-                'essentials_employees_contracts.contract_per_period',
-                'essentials_employees_contracts.probation_period',
-                'essentials_employees_contracts.contract_type_id',
-                'essentials_employees_contracts.is_renewable',
-                'essentials_employees_contracts.is_active',
-                'essentials_employees_contracts.file_path',
-                DB::raw("
-                CASE 
-                    WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
-                    WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
-                    WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
-                    WHEN DATE(essentials_employees_contracts.contract_end_date) > CURDATE() THEN 'valid'
-                    ELSE 'Null'
-                END as status
-            "),
-            ])
-            ->where('essentials_employees_contracts.is_active', 1)
-            ->orderby('id', 'desc');
-
-        $contract_types = EssentialsContractType::pluck('type', 'id')->all();
-        if (request()->ajax()) {
-
-            return Datatables::of($employees_contracts)
-                ->editColumn('contract_type_id', function ($row) use ($contract_types) {
-                    $item = $contract_types[$row->contract_type_id] ?? '';
-                    return $item;
-                })
-
-                ->addColumn(
-                    'action',
-                    function ($row)  use ($is_admin) {
-                        $html = '';
-
-                        // if ($is_admin || $can_show_employee_contracts) {
-                        if (!empty($row->file_path)) {
-                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.open(\'/uploads/' . $row->file_path . '\', \'_blank\')"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
-                            '&nbsp;';
-                        } else {
-                            $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
-                        }
-                        // }
-
-                        // if ($is_admin || $can_delete_employee_contracts) {
-                        $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                        //   }
-
-
-
-
-                        return $html;
-                    }
-                )
-
-                ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
-                })
-                ->removeColumn('file_path')
-                ->removeColumn('id')
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-        $query = User::whereIn('id', $userIds)->whereDoesntHave('activeContract');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as  full_name"))->get();
-        $users = $all_users->pluck('full_name', 'id');
-
-
-        return view('housingmovements::travelers.QiwaContracts')->with(compact('users', 'contract_types'));
-    }
-
-
-    public function residencyPrint()
-    {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-        $userIds = User::whereNot('user_type', 'admin')
-            ->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $workers = User::with(['proposal_worker'])->whereIn('id', $userIds)
-            ->whereNotNull('proposal_worker_id')->whereNot('status', 'inactive')
-            ->select([
-                'id',
-                'residency_print', 'id_proof_number',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
-
-        if (request()->ajax()) {
-            return Datatables::of($workers)
-                ->addColumn('id_proof_number', function ($worker) {
-                    if ($worker->id_proof_number) {
-                        return $worker->id_proof_number;
-                    } else {
-                        return '<button onclick="add_eqama(' . $worker->id . ')" class="btn btn-warning">' . __('housingmovements::lang.add_eqama') . '</button>';
-                    }
-                })
-                ->addColumn('action', function ($worker) {
-                    if ($worker->id_proof_number) {
-                        if ($worker->residency_print) {
-                            return __('housingmovements::lang.done');
-                        } else {
-                            return '<button onclick="print_residency(' . $worker->id . ')" class="btn btn-primary">' . __('housingmovements::lang.print_residency') . '</button>';
-                        }
-                    }
-                })
-                ->rawColumns(['action', 'id_proof_number'])
-                ->make(true);
-        }
-
-        return view('housingmovements::travelers.residencyPrint');
-    }
 
     public function addEqama(Request $request)
     {
@@ -1626,56 +1146,6 @@ class ProjectWorkersController extends Controller
     }
 
 
-    public function residencyDelivery()
-    {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-        $userIds = User::whereNot('user_type', 'admin')
-            ->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-
-        $workers = User::with(['proposal_worker.worker_documents'])->whereIn('id', $userIds)
-            ->whereNotNull('proposal_worker_id')->whereNotNull('id_proof_number')->whereNot('status', 'inactive')
-            ->select([
-                'id', 'proposal_worker_id',
-                'residency_delivery',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
-        //  return $workers->get();
-        if (request()->ajax()) {
-            return Datatables::of($workers)
-                ->addColumn('action', function ($worker) {
-
-                    $actionButton = '<button onclick="delivery_residency(' . $worker->id . ')" class="btn btn-primary">' . __('housingmovements::lang.residencyDelivery') . '</button>';
-
-                    if ($worker->residency_delivery) {
-                        error_log('here');
-                        foreach ($worker->proposal_worker->worker_documents as $document) {
-                            error_log('here2');
-                            error_log($document->type);
-
-                            if ($document->type == "residency_delivery") {
-                                error_log('here3');
-                                return '<a href="/uploads/' . $document->attachment . '" class="btn btn-success" target="_blank">' . __('housingmovements::lang.delivery_file') . '</a>';
-                            }
-                        }
-                        return 'No file available';
-                    }
-                    return $actionButton;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-
-
-        return view('housingmovements::travelers.residencyDelivery');
-    }
-
 
     public function deliveryResidency(Request $request)
     {
@@ -1714,57 +1184,7 @@ class ProjectWorkersController extends Controller
             ->with('status', $output);
     }
 
-    public function advanceSalaryRequest()
-    {
 
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-        $users = User::whereIn('id', $userIds)->whereNotNull('proposal_worker_id')
-            ->where('status', '!=', 'inactive')->whereNotIn('users.id', function ($query) {
-                $query->select('related_to')->from('new_workers_ad_salary_requests');
-            })->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
-        $requests = NewWorkersAdSalaryRequest::leftJoin('users', 'users.id', '=', 'new_workers_ad_salary_requests.related_to')
-            ->whereIn('new_workers_ad_salary_requests.related_to', $userIds)->whereNotNull('proposal_worker_id')->where('users.status', '!=', 'inactive')
-            ->select([
-                'new_workers_ad_salary_requests.request_no', 'new_workers_ad_salary_requests.related_to',
-                'new_workers_ad_salary_requests.advSalaryAmount', 'new_workers_ad_salary_requests.monthlyInstallment',
-                'new_workers_ad_salary_requests.installmentsNumber', 'new_workers_ad_salary_requests.status',
-                'new_workers_ad_salary_requests.note', 'new_workers_ad_salary_requests.created_at',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.border_no',
-            ]);
-
-
-        if (request()->ajax()) {
-
-            return DataTables::of($requests ?? [])
-                ->editColumn('created_at', function ($row) {
-                    return Carbon::parse($row->created_at);
-                })
-
-
-
-                ->editColumn('status', function ($row) use ($is_admin) {
-                    if ($row->status) {
-                        $status = trans('request.' . $row->status);
-
-
-                        return $status;
-                    }
-                })
-
-                ->rawColumns(['status'])
-
-
-                ->make(true);
-        }
-
-
-        return view('housingmovements::travelers.advanceSalaryRequest')->with(compact('users'));
-    }
     public function newWorkersAdvSalaryStore(Request $request)
     {
 
@@ -1806,5 +1226,52 @@ class ProjectWorkersController extends Controller
         ];
         return redirect()->back()
             ->with('status', $output);
+    }
+
+
+    public function medicalExamination()
+    {
+        $view = 'housingmovements::travelers.medicalExamination';
+        return $this->newArrivalUtil->medicalExamination($view);
+    }
+    public function SIMCard()
+    {
+        $view = 'housingmovements::travelers.SIMCard';
+        return $this->newArrivalUtil->SIMCard($view);
+    }
+    public function workCardIssuing()
+    {
+        $view = 'housingmovements::travelers.workCardIssuing';
+        return $this->newArrivalUtil->workCardIssuing($view);
+    }
+    public function medicalInsurance()
+    {
+        $view = 'housingmovements::travelers.medicalInsurance';
+        return $this->newArrivalUtil->medicalInsurance($view);
+    }
+    public function bankAccounts()
+    {
+        $view = 'housingmovements::travelers.bankAccounts';
+        return $this->newArrivalUtil->bankAccounts($view);
+    }
+    public function QiwaContracts()
+    {
+        $view = 'housingmovements::travelers.QiwaContracts';
+        return $this->newArrivalUtil->QiwaContracts($view);
+    }
+    public function residencyPrint()
+    {
+        $view = 'housingmovements::travelers.residencyPrint';
+        return $this->newArrivalUtil->residencyPrint($view);
+    }
+    public function residencyDelivery()
+    {
+        $view = 'housingmovements::travelers.residencyDelivery';
+        return $this->newArrivalUtil->residencyDelivery($view);
+    }
+    public function advanceSalaryRequest()
+    {
+        $view = 'housingmovements::travelers.advanceSalaryRequest';
+        return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }
