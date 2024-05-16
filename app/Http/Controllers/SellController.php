@@ -359,19 +359,19 @@ class SellController extends Controller
                         $html .= '<li><a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
 
                         if (!$only_shipments) {
-                            if ($row->is_direct_sale == 0) {
-                                // if (auth()->user()->can('sell.update')) {
-                                $html .= '<li><a target="_blank" href="' . action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
-                                // }
-                            } elseif ($row->type == 'sales_order') {
-                                // if (auth()->user()->can('so.update')) {
-                                $html .= '<li><a target="_blank" href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
-                                // }
-                            } else {
-                                // if (auth()->user()->can('direct_sell.update')) {
-                                $html .= '<li><a target="_blank" href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
-                                // }
-                            }
+                            // if ($row->is_direct_sale == 0) {
+                            //     // if (auth()->user()->can('sell.update')) {
+                            //     $html .= '<li><a target="_blank" href="' . action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
+                            //     // }
+                            // } elseif ($row->type == 'sales_order') {
+                            //     // if (auth()->user()->can('so.update')) {
+                            //     $html .= '<li><a target="_blank" href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
+                            //     // }
+                            // } else {
+                            //     // if (auth()->user()->can('direct_sell.update')) {
+                            //     $html .= '<li><a target="_blank" href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i class="fas fa-edit"></i> ' . __('messages.edit') . '</a></li>';
+                            //     // }
+                            // }
 
                             $delete_link = '<li><a href="' . action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]) . '" class="delete-sale"><i class="fas fa-trash"></i> ' . __('messages.delete') . '</a></li>';
                             if ($row->is_direct_sale == 0) {
@@ -674,6 +674,9 @@ class SellController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
+        // $ = request()->session()->get('user.company_id');
+        // dd($company_id,Session::get('selectedCompanyId'));
+        $company_id = Session::get('selectedCompanyId');
 
         //Check if subscribed or not, then check for users quota
         // if (! $this->moduleUtil->isSubscribed($business_id)) {
@@ -687,7 +690,7 @@ class SellController extends Controller
         $business_details = $this->businessUtil->getDetails($business_id);
         $taxes = TaxRate::forBusinessDropdown($business_id, true, true);
 
-        $business_locations = BusinessLocation::forDropdown($business_id, false, true);
+        $business_locations = BusinessLocation::forDropdownWithCompany($business_id, $company_id, false, true);
         $bl_attributes = $business_locations['attributes'];
         $business_locations = $business_locations['locations'];
 
@@ -728,7 +731,7 @@ class SellController extends Controller
         $default_datetime = $this->businessUtil->format_date('now', true);
 
         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
-
+        $pos_settings['allow_overselling']=true;
         $invoice_schemes = InvoiceScheme::forDropdown($business_id);
         $default_invoice_schemes = InvoiceScheme::getDefault($business_id);
         if (!empty($default_location) && !empty($default_location->sale_invoice_scheme_id)) {

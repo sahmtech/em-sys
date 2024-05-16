@@ -1820,7 +1820,7 @@ return [
   'project_assigner' => 'موقع المشروع',
   'company_name' => 'اسم الشركة',
   'project_info' => 'تفاصيل المشروع',
-
+  'view_worker_project' => 'عرض المشروع',
   'doc_exists_filter' => 'مرفق الوثيقة',
   'doc_exists' => 'يوجد مرفق',
   'doc_doesnt_exist' => 'لايوجد مرفق',

@@ -128,7 +128,7 @@
                                         'class' => 'form-control select2',
                                         'style' => 'width: 100%;',
                                         'id' => 'projects',
-                                        
+                                    
                                         'multiple',
                                         // 'placeholder' => __('lang_v1.all'),
                                     ]) !!}
@@ -141,7 +141,7 @@
                                         'class' => 'form-control select2',
                                         'style' => 'width: 100%;',
                                         'id' => 'companies',
-                                       
+                                    
                                         'multiple',
                                         // 'placeholder' => __('lang_v1.all'),
                                     ]) !!}
@@ -205,18 +205,18 @@
                 var selectedUserType = $('#user_type').val();
 
                 if (selectedUserType === 'worker') {
-        // If the user is a worker, show projects and hide companies
-        $('#projects').closest('.col-md-12').show();
-        $('#projects').attr('required', 'required'); // Add required attribute to projects
-        $('#companies').closest('.col-md-12').hide();
-        $('#companies').removeAttr('required'); // Remove required attribute from companies
-    } else {
-        // For any other user type, show companies and hide projects
-        $('#projects').closest('.col-md-12').hide();
-        $('#projects').removeAttr('required'); // Remove required attribute from projects
-        $('#companies').closest('.col-md-12').show();
-        $('#companies').attr('required', 'required'); // Add required attribute to companies
-    }
+                    // If the user is a worker, show projects and hide companies
+                    $('#projects').closest('.col-md-12').show();
+                    $('#projects').attr('required', 'required'); // Add required attribute to projects
+                    $('#companies').closest('.col-md-12').hide();
+                    $('#companies').removeAttr('required'); // Remove required attribute from companies
+                } else {
+                    // For any other user type, show companies and hide projects
+                    $('#projects').closest('.col-md-12').hide();
+                    $('#projects').removeAttr('required'); // Remove required attribute from projects
+                    $('#companies').closest('.col-md-12').show();
+                    $('#companies').attr('required', 'required'); // Add required attribute to companies
+                }
             }
 
             // Call the function on page load in case there's a pre-selected value
@@ -335,30 +335,7 @@
 
 
 
-            $(document).on('change', '#companies', function() {
-                let company_id = $(this).val();
-                $.ajax({
-                    method: 'GET',
-                    url: "{{ route('payrolls.getEmployeesBasedOnCompany') }}",
-                    dataType: 'json',
-                    data: {
-                        'company_id': company_id
-                    },
-                    success: function(result) {
-                        if (result.success == true) {
-                            $('#employee_ids').empty();
-                            console.log(result.employees);
-                            $.each(result.employees, function(id, employee) {
-                                $('#employee_ids').append($('<option>', {
-                                    value: id,
-                                    text: employee
-                                }));
-                            });
-                            $('#employee_ids').select2();
-                        }
-                    }
-                });
-            });
+
         });
     </script>
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>

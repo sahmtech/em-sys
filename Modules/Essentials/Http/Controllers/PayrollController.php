@@ -487,23 +487,23 @@ class PayrollController extends Controller
 
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
-    public function getEmployeesBasedOnCompany(Request $request)
-    {
+    // public function getEmployeesBasedOnCompany(Request $request)
+    // {
 
-        $employees =  User::whereIn('user_type', ['employee', 'manager'])
-            ->whereIn('users.company_id', $request->company_id)
-            ->select(
-                'users.*',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
-            )->pluck('name', 'id')->toArray();
+    //     $employees =  User::whereIn('user_type', ['employee', 'manager'])
+    //         ->whereIn('users.company_id', $request->company_id)->whereNot('status', 'inactive')
+    //         ->select(
+    //             'users.*',
+    //             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
+    //         )->pluck('name', 'id')->toArray();
 
 
-        return [
-            'success' => true,
-            'msg' => __('lang_v1.success'),
-            'employees' => $employees,
-        ];
-    }
+    //     return [
+    //         'success' => true,
+    //         'msg' => __('lang_v1.success'),
+    //         'employees' => $employees,
+    //     ];
+    // }
 
     public function payrollsGroupIndex()
     {
@@ -792,7 +792,7 @@ class PayrollController extends Controller
                 $query->where('contract_type_id', $remote_id);
             });
         }
-        $employee_ids = $employee_ids->pluck('id')->toArray();
+        $employee_ids = $employee_ids->whereNot('status', 'inactive')->pluck('id')->toArray();
 
         $month_year = request()->input('month_year');
         $employees = User::with(['appointment.profession', 'assignedTo', 'essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
@@ -870,7 +870,7 @@ class PayrollController extends Controller
             ];
         }
 
-        $date = (Carbon::createFromFormat('m/Y', request()->input('month_year')))->format('F Y');
+        $date = (Carbon::createFromFormat('m/Y', request()->input('month_year') ?? Carbon::now()->format('m/Y')))->format('F Y');
         $transaction_date = request()->input('month_year');
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
@@ -2819,3 +2819,4 @@ class PayrollController extends Controller
         return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }
+

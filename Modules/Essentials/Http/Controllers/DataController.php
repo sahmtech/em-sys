@@ -938,6 +938,13 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_salary_info'),
                         'default' => false,
                     ],
+
+                    [
+                        'value' => 'essentials.view_worker_project',
+                        'label' => __('essentials::lang.view_worker_project'),
+                        'default' => false,
+                    ],
+
                 ]
 
             ],
