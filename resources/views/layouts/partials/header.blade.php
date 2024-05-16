@@ -58,7 +58,14 @@
                         <i class="fas fa-headset"></i> @lang('messages.support')
                     </a>
                 </li>
+
+                <li>
+                    <div class="m-8 pull-left mt-15 hidden-xs" style="color: #fff; margin-right:25vw">
+                        <strong>{{ @format_date('now') }}</strong>
+                    </div>
+                </li>
             </ul>
+
             {{-- <div class="btn-group">
                 <button id="header_shortcut_dropdown" type="button"
                     class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10" data-toggle="dropdown"
@@ -133,8 +140,6 @@
           </button>
         @endcan --}}
 
-            <div class="m-8 pull-left mt-15 hidden-xs" style="color: #fff;"><strong>{{ @format_date('now') }}</strong>
-            </div>
 
             <ul class="nav navbar-nav">
                 @include('layouts.partials.header-notifications')
