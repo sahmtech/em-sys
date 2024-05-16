@@ -908,6 +908,13 @@ class CustomAdminSidebarMenu
                     __('essentials::lang.employee_affairs_dashboard'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_dashboard'],
                 );
+                if ($is_admin  || auth()->user()->can('essentials.view_employees_affairs_requests')) {
+                    $menu->url(
+                        action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_affairs_all_requests']),
+                        __('essentials::lang.employees_requests'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' &&  (request()->segment(2) == 'allEmployeeAffairsRequests')]
+                    );
+                }
 
                 if ($is_admin  || auth()->user()->can('essentials.curd_employees')) {
                     $menu->url(
@@ -929,13 +936,7 @@ class CustomAdminSidebarMenu
                 }
 
 
-                if ($is_admin  || auth()->user()->can('essentials.view_employees_affairs_requests')) {
-                    $menu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_affairs_all_requests']),
-                        __('essentials::lang.employees_requests'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' &&  (request()->segment(2) == 'allEmployeeAffairsRequests')]
-                    );
-                }
+
                 if ($is_admin  || auth()->user()->can('essentials.crud_employee_appointments')) {
                     $menu->url(
                         route('appointments'),
