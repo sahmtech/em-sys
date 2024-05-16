@@ -27,24 +27,34 @@
             {{-- @if (Module::has('Essentials'))
                 @includeIf('essentials::layouts.partials.header_part')
             @endif --}}
-            @if (config('app.env') != 'demo')
-                <a class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10"
-                    href="{{ route('calendar') }}">
-                    <i class="fas fa-calendar-alt" aria-hidden="true"></i> @lang('lang_v1.calendar')
-                </a>
-            @endif
-            @if (Module::has('Essentials'))
-                <a href="#" class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10"
-                    data-href="{{ action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create']) }}"
-                    data-container="#task_modal">
-                    <i class="fas fa-clipboard-check" aria-hidden="true"></i> @lang('essentials::lang.add_to_do')
-                </a>
-
-                <a class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10"
-                    href="{{ route('employee_requests') }}">
-                    <i class="fas fa-tasks" aria-hidden="true"></i> @lang('essentials::lang.my_requests')
-                </a>
-            @endif
+            <ul class="nav navbar-nav ">
+                @if (config('app.env') != 'demo')
+                    <li class="custom_header_icon">
+                        <a class="custom_header_icon_a" href="{{ route('calendar') }}">
+                            <i class="fas fa-calendar-alt" aria-hidden="true"></i> @lang('lang_v1.calendar')
+                        </a>
+                    </li>
+                @endif
+                @if (Module::has('Essentials'))
+                    <li class="custom_header_icon">
+                        <a href="#" class="custom_header_icon_a"
+                            data-href="{{ action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create']) }}"
+                            data-container="#task_modal">
+                            <i class="fas fa-clipboard-check" aria-hidden="true"></i> @lang('essentials::lang.add_to_do')
+                        </a>
+                    </li>
+                    <li class="custom_header_icon">
+                        <a class="custom_header_icon_a" href="{{ route('employee_requests') }}">
+                            <i class="fas fa-tasks" aria-hidden="true"></i> @lang('essentials::lang.my_requests')
+                        </a>
+                    </li>
+                @endif
+                <li class="custom_header_icon">
+                    <a class="custom_header_icon_a" href="{{ route('tickets.index') }}">
+                        <i class="fas fa-headset"></i> @lang('messages.support')
+                    </a>
+                </li>
+            </ul>
             {{-- <div class="btn-group">
                 <button id="header_shortcut_dropdown" type="button"
                     class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10" data-toggle="dropdown"
@@ -147,6 +157,7 @@
                                     class="btn btn-default btn-flat">@lang('lang_v1.sign_out')</a>
                             </div>
                         </li>
+
                     </ul>
                 </li>
                 <!-- Control Sidebar Toggle Button -->

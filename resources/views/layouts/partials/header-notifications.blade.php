@@ -7,11 +7,7 @@
     $total_unread = count($unread_notifications ?? []);
 @endphp
 <!-- Notifications: style can be found in dropdown.less -->
-<li>
-    <a href="{{ route('tickets.index') }}">
-        <i class="fas fa-headset"></i>
-    </a>
-</li>
+
 <li class="dropdown notifications-menu">
     <a href="#" class="dropdown-toggle load_notifications" data-toggle="dropdown" id="show_unread_notifications"
         data-loaded="false">

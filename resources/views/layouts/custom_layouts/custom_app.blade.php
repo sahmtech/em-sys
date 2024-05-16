@@ -109,10 +109,7 @@
 
         }
     </style>
-<script
-src='//fw-cdn.com/11549296/4203905.js'
-chat='true'>
-</script>
+    <script src='//fw-cdn.com/11549296/4203905.js' chat='true'></script>
 </head>
 
 <body
@@ -124,7 +121,7 @@ chat='true'>
                 body.className += " sidebar-collapse";
             }
         </script>
-          
+
         @if (!$pos_layout)
             @include('layouts.partials.header')
             @include('layouts.custom_layouts.custom_partials.custom_sidebar')
@@ -180,7 +177,7 @@ chat='true'>
         <!-- /.content-wrapper -->
         {{-- @include('layouts.custom_layouts.custom_footer') --}}
         @include('layouts.partials.footer')
-        
+
         {{-- @if (!$pos_layout)
             @include('layouts.partials.footer')
         @else
