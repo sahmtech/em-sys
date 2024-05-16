@@ -24,40 +24,44 @@
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
 
-            @if (Module::has('Essentials'))
+            {{-- @if (Module::has('Essentials'))
                 @includeIf('essentials::layouts.partials.header_part')
+            @endif --}}
+            @if (config('app.env') != 'demo')
+                <a class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10"
+                    href="{{ route('calendar') }}">
+                    <i class="fas fa-calendar-alt" aria-hidden="true"></i> @lang('lang_v1.calendar')
+                </a>
             @endif
+            @if (Module::has('Essentials'))
+                <a href="#" class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10"
+                    data-href="{{ action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create']) }}"
+                    data-container="#task_modal">
+                    <i class="fas fa-clipboard-check" aria-hidden="true"></i> @lang('essentials::lang.add_to_do')
+                </a>
 
-            <div class="btn-group">
+                <a class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10"
+                    href="{{ route('employee_requests') }}">
+                    <i class="fas fa-tasks" aria-hidden="true"></i> @lang('essentials::lang.my_requests')
+                </a>
+            @endif
+            {{-- <div class="btn-group">
                 <button id="header_shortcut_dropdown" type="button"
                     class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-plus-circle fa-lg"></i>
                 </button>
                 <ul class="dropdown-menu">
-                    @if (config('app.env') != 'demo')
-                        <li><a href="{{ route('calendar') }}">
-                                <i class="fas fa-calendar-alt" aria-hidden="true"></i> @lang('lang_v1.calendar')
-                            </a></li>
-                    @endif
-                    @if (Module::has('Essentials'))
-                        <li><a href="#" class="btn-modal"
-                                data-href="{{ action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create']) }}"
-                                data-container="#task_modal">
-                                <i class="fas fa-clipboard-check" aria-hidden="true"></i> @lang('essentials::lang.add_to_do')
-                            </a></li>
-                        <li><a href="{{ route('employee_requests') }}">
-                                <i class="fas fa-tasks" aria-hidden="true"></i> @lang('essentials::lang.my_requests')
-                            </a></li>
-                    @endif
-                    <!-- Help Button -->
-                    {{-- @if (auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
+                  --}}
+
+            <!-- Help Button -->
+            {{-- @if (auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
               <li><a id="start_tour" href="#">
                   <i class="fas fa-question-circle" aria-hidden="true"></i> @lang('lang_v1.application_tour')
               </a></li>
             @endif --}}
-                </ul>
-            </div>
+            {{-- </ul>
+            </div> --}}
             {{-- <button id="btnCalculator" title="@lang('lang_v1.calculator')" type="button" class="btn btn-success btn-flat pull-left m-8 btn-sm mt-10 popover-default hidden-xs" data-toggle="popover" data-trigger="click" data-content='@include("layouts.partials.calculator")' data-html="true" data-placement="bottom">
             <strong><i class="fa fa-calculator fa-lg" aria-hidden="true"></i></strong>
         </button> --}}
