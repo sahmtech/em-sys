@@ -197,7 +197,7 @@
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':') !!}
-                                    {!! Form::number('doc_number', null, [
+                                    {!! Form::text('doc_number', null, [
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.doc_number'),
                                     

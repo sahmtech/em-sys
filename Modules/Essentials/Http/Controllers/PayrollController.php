@@ -37,6 +37,7 @@ use Modules\Sales\Entities\SalesProject;
 use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\RequestUtil;
+use App\Utils\NewArrivalUtil;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 
@@ -56,13 +57,25 @@ class PayrollController extends Controller
     protected $businessUtil;
 
     protected $requestUtil;
+
+
+    protected $newArrivalUtil;
+
+
+    /**
+     * Constructor
+     *
+     * @param  Util  $commonUtil
+     * @return void
+     */
+
     /**
      * Constructor
      *
      * @param  ProductUtils  $product
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil, EssentialsUtil $essentialsUtil, Util $commonUtil, TransactionUtil $transactionUtil, BusinessUtil $businessUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil, NewArrivalUtil $newArrivalUtil, EssentialsUtil $essentialsUtil, Util $commonUtil, TransactionUtil $transactionUtil, BusinessUtil $businessUtil)
     {
         $this->moduleUtil = $moduleUtil;
         $this->essentialsUtil = $essentialsUtil;
@@ -70,6 +83,7 @@ class PayrollController extends Controller
         $this->transactionUtil = $transactionUtil;
         $this->businessUtil = $businessUtil;
         $this->requestUtil = $requestUtil;
+        $this->newArrivalUtil = $newArrivalUtil;
     }
 
     public function dashboard()
@@ -2747,4 +2761,61 @@ class PayrollController extends Controller
     //         ->with(compact('payroll_group', 'month_name', 'year', 'payrolls', 'payment_types', 'accounts'));
     // }
 
+    public function new_arrival_for_workers(Request $request)
+    {
+        $view = 'essentials::payroll.travelers.index';
+        return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
+    }
+
+    public function housed_workers_index(Request $request)
+    {
+        $view = 'essentials::payroll.travelers.partials.housed_workers';
+        return $this->newArrivalUtil->housed_workers_index($request, $view);
+    }
+
+    public function medicalExamination()
+    {
+        $view = 'essentials::payroll.travelers.medicalExamination';
+        return $this->newArrivalUtil->medicalExamination($view);
+    }
+    public function SIMCard()
+    {
+        $view = 'essentials::payroll.travelers.SIMCard';
+        return $this->newArrivalUtil->SIMCard($view);
+    }
+    public function workCardIssuing()
+    {
+        $view = 'essentials::payroll.travelers.workCardIssuing';
+        return $this->newArrivalUtil->workCardIssuing($view);
+    }
+    public function medicalInsurance()
+    {
+        $view = 'essentials::payroll.travelers.medicalInsurance';
+        return $this->newArrivalUtil->medicalInsurance($view);
+    }
+    public function bankAccounts()
+    {
+        $view = 'essentials::payroll.travelers.bankAccounts';
+        return $this->newArrivalUtil->bankAccounts($view);
+    }
+    public function QiwaContracts()
+    {
+        $view = 'essentials::payroll.travelers.QiwaContracts';
+        return $this->newArrivalUtil->QiwaContracts($view);
+    }
+    public function residencyPrint()
+    {
+        $view = 'essentials::payroll.travelers.residencyPrint';
+        return $this->newArrivalUtil->residencyPrint($view);
+    }
+    public function residencyDelivery()
+    {
+        $view = 'essentials::payroll.travelers.residencyDelivery';
+        return $this->newArrivalUtil->residencyDelivery($view);
+    }
+    public function advanceSalaryRequest()
+    {
+        $view = 'essentials::payroll.travelers.advanceSalaryRequest';
+        return $this->newArrivalUtil->advanceSalaryRequest($view);
+    }
 }

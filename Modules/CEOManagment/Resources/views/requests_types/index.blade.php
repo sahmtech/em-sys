@@ -419,6 +419,31 @@
                     }
 
                 });
+                $('#editRequestTypeForm').submit(function(e) {
+                    e.preventDefault();
+                    var formAction = $(this).attr('action');
+                    var formData = $(this).serialize();
+
+                    $.ajax({
+                        url: formAction,
+                        type: 'POST',
+                        data: formData,
+                        success: function(response) {
+                            if (response.success == true) {
+                                toastr.success(response.msg);
+                                requests_types.ajax.reload();
+                                location.reload();
+                            } else {
+
+                                toastr.error(response.msg);
+                                $('#editRequestTypeModal').modal('hide');
+                            }
+                        },
+                        error: function() {
+                            alert('Something went wrong. Please try again.');
+                        }
+                    });
+                });
             });
 
 

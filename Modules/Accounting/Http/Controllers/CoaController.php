@@ -347,7 +347,7 @@ class CoaController extends Controller
         $account_types = AccountingUtil::account_type();
         $account_category = AccountingUtil::account_category();
 
-        return view('accounting::chart_of_accounts.create', compact('parent_accounts', 'account_types','account_category'));
+        return view('accounting::chart_of_accounts.create', compact('parent_accounts', 'account_types', 'account_category'));
     }
 
     public function store(Request $request)
@@ -361,7 +361,7 @@ class CoaController extends Controller
             DB::beginTransaction();
 
             $input = $request->only([
-                'name', 'account_category', 'parent_account_id','account_type'
+                'name', 'account_category', 'parent_account_id', 'account_type'
             ]);
 
 
@@ -473,8 +473,8 @@ class CoaController extends Controller
                 ->where('account_sub_type_id', $account->account_sub_type_id)
                 ->whereNull('parent_account_id')
                 ->get();
-                $account_types = AccountingUtil::account_type();
-                $account_category = AccountingUtil::account_category();
+            $account_types = AccountingUtil::account_type();
+            $account_category = AccountingUtil::account_category();
 
             return view('accounting::chart_of_accounts.edit')->with(compact(
                 'account_types',
@@ -729,7 +729,8 @@ class CoaController extends Controller
                     if (!$value[2]  || !$value[3]) {
                         continue;
                     } else {
-                        $AccountingAccount = AccountingAccount::where('gl_code', substr_replace($value[3], "", -2))->first();
+                        $AccountingAccount = AccountingAccount::where('gl_code', $this->removeNumberAfterLastDot($value[3]))->first();
+                        // $AccountingAccount = AccountingAccount::where('gl_code', substr_replace($value[3], "", -2))->first();
                         if (!$AccountingAccount) {
                             continue;
                         } else {
@@ -767,6 +768,18 @@ class CoaController extends Controller
                     'success' => 0,
                     'msg' => __('messages.something_went_wrong'),
                 ]);
+        }
+    }
+
+
+    public function removeNumberAfterLastDot($string)
+    {
+        $lastDotPosition = strrpos($string, '.');
+
+        if ($lastDotPosition !== false) {
+            return substr($string, 0, $lastDotPosition);
+        } else {
+            return $string;
         }
     }
 }

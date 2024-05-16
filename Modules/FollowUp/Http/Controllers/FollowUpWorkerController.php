@@ -38,6 +38,7 @@ use Modules\CEOManagment\Entities\WkProcedure;
 use Modules\CEOManagment\Entities\RequestsType;
 
 use Modules\Essentials\Entities\EssentialsLeaveType;
+use App\Utils\NewArrivalUtil;
 
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 
@@ -48,11 +49,13 @@ class FollowUpWorkerController extends Controller
      * @return Renderable
      */
     protected $moduleUtil;
+    protected $newArrivalUtil;
 
 
-    public function __construct(ModuleUtil $moduleUtil)
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->newArrivalUtil = $newArrivalUtil;
     }
     public function index()
     {
@@ -140,9 +143,9 @@ class FollowUpWorkerController extends Controller
 
             return DataTables::of($users)
 
-            ->addColumn('worker_id', function ($user) {
-                return $user->worker_id ?? ' ';
-            })
+                ->addColumn('worker_id', function ($user) {
+                    return $user->worker_id ?? ' ';
+                })
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
@@ -225,7 +228,7 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('dob', function ($user) {
 
                     return $user->dob ?? '';
-                })  ->addColumn('insurance', function ($user) {
+                })->addColumn('insurance', function ($user) {
                     if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
                         return __('followup::lang.has_insurance');
                     } else {
@@ -243,7 +246,7 @@ class FollowUpWorkerController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker_id','company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker_id', 'company_name', 'passport_number', 'passport_expire_date', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
         $allRequestTypes = RequestsType::pluck('type', 'id');
@@ -563,5 +566,62 @@ class FollowUpWorkerController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function new_arrival_for_workers(Request $request)
+    {
+        $view = 'followup::travelers.index';
+        return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
+    }
+
+    public function housed_workers_index(Request $request)
+    {
+        $view = 'followup::travelers.partials.housed_workers';
+        return $this->newArrivalUtil->housed_workers_index($request, $view);
+    }
+
+    public function medicalExamination()
+    {
+        $view = 'followup::travelers.medicalExamination';
+        return $this->newArrivalUtil->medicalExamination($view);
+    }
+    public function SIMCard()
+    {
+        $view = 'followup::travelers.SIMCard';
+        return $this->newArrivalUtil->SIMCard($view);
+    }
+    public function workCardIssuing()
+    {
+        $view = 'followup::travelers.workCardIssuing';
+        return $this->newArrivalUtil->workCardIssuing($view);
+    }
+    public function medicalInsurance()
+    {
+        $view = 'followup::travelers.medicalInsurance';
+        return $this->newArrivalUtil->medicalInsurance($view);
+    }
+    public function bankAccounts()
+    {
+        $view = 'followup::travelers.bankAccounts';
+        return $this->newArrivalUtil->bankAccounts($view);
+    }
+    public function QiwaContracts()
+    {
+        $view = 'followup::travelers.QiwaContracts';
+        return $this->newArrivalUtil->QiwaContracts($view);
+    }
+    public function residencyPrint()
+    {
+        $view = 'followup::travelers.residencyPrint';
+        return $this->newArrivalUtil->residencyPrint($view);
+    }
+    public function residencyDelivery()
+    {
+        $view = 'followup::travelers.residencyDelivery';
+        return $this->newArrivalUtil->residencyDelivery($view);
+    }
+    public function advanceSalaryRequest()
+    {
+        $view = 'followup::travelers.advanceSalaryRequest';
+        return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }

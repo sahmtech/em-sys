@@ -71,8 +71,9 @@ class SettingsController extends Controller
         $account_types = AccountingAccountType::accounting_primary_type();
 
         $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
+        $bankAccounts = BankAccount::where('business_id',$business_id)->where('company_id',$company_id)->get();
 
-        return view('accounting::settings.index')->with(compact('account_sub_types', 'account_types', 'accounting_settings'));
+        return view('accounting::settings.index')->with(compact('account_sub_types','bankAccounts', 'account_types', 'accounting_settings'));
     }
 
     public function resetData()
@@ -371,6 +372,6 @@ class SettingsController extends Controller
         $bankAccounts = BankAccount::where('business_id',$business_id)->where('company_id',$company_id)->get();
 
         return view('accounting::settings.businessSetting', compact('business', 'bankAccounts', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts',  'modules', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
-        // return view('settings.businessSetting', compact('business','bankAccounts', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
+       
     }
 }

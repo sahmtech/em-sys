@@ -6,6 +6,8 @@ use App\Contact;
 use App\User;
 use Excel;
 use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -22,9 +24,12 @@ use Modules\Essentials\Entities\EssentialsCompaniesInsurancesContract;
 class EssentialsEmployeeInsuranceController extends Controller
 {
     protected $moduleUtil;
-    public function __construct(ModuleUtil $moduleUtil)
+    protected $newArrivalUtil;
+
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->newArrivalUtil = $newArrivalUtil;
     }
     /**
      * Display a listing of the resource.
@@ -871,7 +876,32 @@ class EssentialsEmployeeInsuranceController extends Controller
             ->with(compact('insurance_companies', 'insurance_classes', 'users'));
     }
 
+    public function show(Request $request)
+    {
 
+        $insurance = EssentialsEmployeesInsurance::with(['user', 'user.business', 'insuranceCompany', 'insuranceClass'])
+            ->where('essentials_employees_insurances.employee_id', $request->employee_id)
+            ->where('essentials_employees_insurances.is_deleted', 0)
+            ->first();
+
+
+        if ($insurance) {
+            $response = [
+                'success' => true,
+                'id_proof_number' => $insurance->user->id_proof_number ?? '',
+                'border_number' => $insurance->user->border_no ?? '',
+                'border_no' => $insurance->user->border_no,
+                'insurance_company' => $insurance->insuranceCompany->supplier_business_name ?? '',
+                'insurance_class' => $insurance->insuranceClass->name ?? '',
+            ];
+        } else {
+            $response = [
+                'success' => false,
+                'message' => 'No insurance information found'
+            ];
+        }
+        return response()->json($response);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -880,6 +910,7 @@ class EssentialsEmployeeInsuranceController extends Controller
      */
     public function store(Request $request)
     {
+
 
         try {
 
@@ -984,7 +1015,7 @@ class EssentialsEmployeeInsuranceController extends Controller
             ];
         }
 
-        return redirect()->route('employee_insurance')
+        return redirect()->back()
             ->with('status', $output);
     }
 
@@ -1207,5 +1238,71 @@ class EssentialsEmployeeInsuranceController extends Controller
         }
 
         return $output;
+    }
+    public function getInsuranceClasses($companyId)
+    {
+
+        $insuranceClasses = EssentialsInsuranceClass::where('insurance_company_id', $companyId)
+            ->pluck('name', 'id');
+
+        return response()->json($insuranceClasses);
+    }
+
+    public function new_arrival_for_workers(Request $request)
+    {
+        $view = 'essentials::insurance.travelers.index';
+        return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
+    }
+
+    public function housed_workers_index(Request $request)
+    {
+        $view = 'essentials::insurance.travelers.partials.housed_workers';
+        return $this->newArrivalUtil->housed_workers_index($request, $view);
+    }
+
+    public function medicalExamination()
+    {
+        $view = 'essentials::insurance.travelers.medicalExamination';
+        return $this->newArrivalUtil->medicalExamination($view);
+    }
+    public function SIMCard()
+    {
+        $view = 'essentials::insurance.travelers.SIMCard';
+        return $this->newArrivalUtil->SIMCard($view);
+    }
+    public function workCardIssuing()
+    {
+        $view = 'essentials::insurance.travelers.workCardIssuing';
+        return $this->newArrivalUtil->workCardIssuing($view);
+    }
+    public function medicalInsurance()
+    {
+        $view = 'essentials::insurance.travelers.medicalInsurance';
+        return $this->newArrivalUtil->medicalInsurance($view);
+    }
+    public function bankAccounts()
+    {
+        $view = 'essentials::insurance.travelers.bankAccounts';
+        return $this->newArrivalUtil->bankAccounts($view);
+    }
+    public function QiwaContracts()
+    {
+        $view = 'essentials::insurance.travelers.QiwaContracts';
+        return $this->newArrivalUtil->QiwaContracts($view);
+    }
+    public function residencyPrint()
+    {
+        $view = 'essentials::insurance.travelers.residencyPrint';
+        return $this->newArrivalUtil->residencyPrint($view);
+    }
+    public function residencyDelivery()
+    {
+        $view = 'essentials::insurance.travelers.residencyDelivery';
+        return $this->newArrivalUtil->residencyDelivery($view);
+    }
+    public function advanceSalaryRequest()
+    {
+        $view = 'essentials::insurance.travelers.advanceSalaryRequest';
+        return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }

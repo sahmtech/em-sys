@@ -5,17 +5,15 @@ namespace Modules\HousingMovements\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\ContactLocation;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ContactUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
+use App\Utils\NewArrivalUtil;
+
 use App\Utils\Util;
 use App\User;
-use App\Business;
-use App\BusinessLocation;
-use App\Contact;
 use App\Events\ContactCreatedOrModified;
 use Modules\Sales\Entities\SalesProject;
 use App\Transaction;
@@ -31,6 +29,8 @@ use Modules\HousingMovements\Entities\HtrRoom;
 use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
 use Modules\InternationalRelations\Entities\IrDelegation;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
+use Illuminate\Support\Facades\Auth;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 
 class TravelersController extends Controller
 {
@@ -43,6 +43,8 @@ class TravelersController extends Controller
     protected $moduleUtil;
 
     protected $notificationUtil;
+    protected $newArrivalUtil;
+
 
 
     public function __construct(
@@ -50,13 +52,16 @@ class TravelersController extends Controller
         ModuleUtil $moduleUtil,
         TransactionUtil $transactionUtil,
         NotificationUtil $notificationUtil,
-        ContactUtil $contactUtil
+        ContactUtil $contactUtil,
+        NewArrivalUtil $newArrivalUtil
+
     ) {
         $this->commonUtil = $commonUtil;
         $this->contactUtil = $contactUtil;
         $this->moduleUtil = $moduleUtil;
         $this->transactionUtil = $transactionUtil;
         $this->notificationUtil = $notificationUtil;
+        $this->newArrivalUtil = $newArrivalUtil;
     }
     /**
      * Display a listing of the resource.
@@ -64,118 +69,8 @@ class TravelersController extends Controller
      */
     public function index(Request $request)
     {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_housing_crud_htr_trevelers = auth()->user()->can('housingmovements.crud_htr_trevelers');
-        if (!($is_admin || $can_housing_crud_htr_trevelers)) {
-            return redirect()->route('home')->with('status', [
-                'success' => false,
-                'msg' => __('message.unauthorized'),
-            ]);
-        }
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $workers = IrProposedLabor::with([
-            'transactionSellLine.service.profession',
-            'transactionSellLine.service.nationality',
-            'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
-            'transactionSellLine.transaction.salesContract.project',
-            'visa',
-            'agency'
-        ])
-            ->select([
-                'ir_proposed_labors.id',
-                'passport_number',
-                'medical_examination',
-                'transaction_sell_line_id',
-                'visa_id',
-                'arrival_date',
-                'agency_id',
-                DB::raw("CONCAT(COALESCE(first_name, ''),
-                 ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ])
-            ->whereNotNull('visa_id')
-            ->where('interviewStatus', 'acceptable')
-            ->where('arrival_status', 0);
-
-
-
-        if (!empty($request->input('project_name_filter'))) {
-        }
-        if (!empty(request()->input('project_name_filter')) && request()->input('project_name_filter') !== 'all') {
-
-            if (request()->input('project_name_filter') == 'none') {
-                $workers->whereNull('transaction_sell_line_id');
-            } else {
-                $workers->whereHas('transactionSellLine.transaction.salesContract.project', function ($query) use ($request) {
-                    $query->where('id', '=', $request->input('project_name_filter'));
-                });
-            }
-        }
-
-        if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
-            $start = request()->filter_start_date;
-            $end = request()->filter_end_date;
-
-            $workers->whereHas('visa', function ($query) use ($start, $end) {
-                $query->whereDate('arrival_date', '>=', $start)
-                    ->whereDate('arrival_date', '<=', $end);
-            });
-        }
-
-
-        if (request()->ajax()) {
-
-
-            return Datatables::of($workers)
-
-
-                ->addColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
-                })
-
-                ->editColumn('project', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->project?->name ?? '';
-                })
-
-                ->editColumn('location', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->project?->Location ?? '';
-                })
-
-                ->editColumn('arrival_date', function ($row) {
-                    return $row->arrival_date ?? '';
-                })
-
-                ->editColumn('profession', function ($row) {
-                    return $row->transactionSellLine?->service?->profession?->name ?? '';
-                })
-                ->editColumn('nationality', function ($row) {
-                    return $row->transactionSellLine?->service?->nationality?->nationality ?? '';
-                })
-
-
-                ->filter(function ($query) use ($request) {
-
-                    if (!empty($request->input('full_name'))) {
-                        $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('full_name')}%"]);
-                    }
-                })
-
-                ->rawColumns(['action', 'profession', 'nationality', 'checkbox'])
-                ->make(true);
-        }
-
-        $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
-
-        $salesProjects = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
-
-        $roomStatusOptions = [
-            'busy' => __('housingmovements::lang.busy_rooms'),
-            'available' => __('housingmovements::lang.available_rooms'),
-        ];
-        return view('housingmovements::travelers.index')->with(compact('salesProjects', 'buildings', 'roomStatusOptions'));
+        $view = 'housingmovements::travelers.index';
+        return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
     }
 
     public function getSelectedRowsData(Request $request)
@@ -201,106 +96,8 @@ class TravelersController extends Controller
 
     public function  housed_workers_index(Request $request)
     {
-        $business_id = request()->session()->get('user.business_id');
-        // if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-        $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
-        $availableRooms = HtrRoom::where('beds_count', '>', 0)->pluck('room_number', 'id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $workers = IrProposedLabor::with([
-            'transactionSellLine.service.profession',
-            'transactionSellLine.service.nationality',
-            'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
-            'transactionSellLine.transaction.salesContract.project',
-            'visa',
-            'agency'
-        ])
-            ->select([
-                'ir_proposed_labors.id',
-                'passport_number',
-                'arrival_date',
-                'transaction_sell_line_id',
-                'visa_id',
-                'agency_id',
-                DB::raw("CONCAT(COALESCE(first_name, ''),
-                 ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ])
-            ->whereNotNull('visa_id')
-            ->where('interviewStatus', 'acceptable')
-            ->where('arrival_status', 1)
-            ->where('housed_status', 0);
-
-
-
-
-        if (!empty($request->input('project_name_filter'))) {
-            $workers->whereHas('transactionSellLine.transaction.salesContract.project', function ($query) use ($request) {
-                $query->where('id', '=', $request->input('project_name_filter'));
-            });
-        }
-
-        if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
-            $start = request()->filter_start_date;
-            $end = request()->filter_end_date;
-
-            $workers->whereHas('visa', function ($query) use ($start, $end) {
-                $query->whereDate('arrival_date', '>=', $start)
-                    ->whereDate('arrival_date', '<=', $end);
-            });
-        }
-
-
-        if (request()->ajax()) {
-
-
-            return Datatables::of($workers)
-
-
-                ->addColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
-                })
-
-                ->editColumn('project', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->project?->name ?? '';
-                })
-
-                ->editColumn('location', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->Location ?? '';
-                })
-
-                ->editColumn('arrival_date', function ($row) {
-                    return $row->arrival_date ?? '';
-                })
-
-                ->editColumn('profession', function ($row) {
-                    return $row->transactionSellLine?->service?->profession?->name ?? '';
-                })
-                ->editColumn('nationality', function ($row) {
-                    return $row->transactionSellLine?->service?->nationality?->nationality ?? '';
-                })
-
-                ->filter(function ($query) use ($request) {
-
-                    if (!empty($request->input('full_name'))) {
-                        $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('full_name')}%"]);
-                    }
-                })
-
-                ->rawColumns(['action', 'profession', 'nationality', 'checkbox'])
-                ->make(true);
-        }
-
-
-        $salesProjects = SalesProject::all()->pluck('name', 'id');
-        $roomStatusOptions = [
-            'busy' => __('housingmovements::lang.busy_rooms'),
-            'available' => __('housingmovements::lang.available_rooms'),
-        ];
-        return view('housingmovements::travelers.partials.housed_workers')->with(compact('salesProjects', 'buildings', 'availableRooms', 'roomStatusOptions'));
+        $view = 'housingmovements::travelers.partials.housed_workers';
+        return $this->newArrivalUtil->housed_workers_index($request, $view);
     }
 
 
@@ -534,6 +331,7 @@ class TravelersController extends Controller
 
     public function postarrivaldata(Request $request)
     {
+
         try {
             $requestData = $request->only([
                 'worker_id',
@@ -571,12 +369,11 @@ class TravelersController extends Controller
                         $border_number = User::where('border_no', $data['border_no'])->first();
 
                         if ($border_number != null) {
-                            // dd($border_number);
                             $output = ['success' => 0, 'msg' => __('housingmovements.border_no_exist')];
                         } else {
 
 
-                            User::create([
+                            $user = User::create([
                                 'first_name' => $worker->first_name,
                                 'mid_name' => $worker->mid_name,
                                 'last_name' => $worker->last_name,
@@ -597,15 +394,28 @@ class TravelersController extends Controller
                                 'user_type' => 'worker',
                                 'border_no' => $data['border_no'],
                                 'proposal_worker_id' => $data['worker_id'],
+                                'created_by' => Auth::user()->id
 
                             ]);
+
+                            $admission = new EssentialsAdmissionToWork();
+                            $admission->employee_id = $user->id;
+                            $admission->admissions_type = 'first_time';
+                            $admission->admissions_status = 'on_date';
+                            $admission->admissions_date = $worker->arrival_date;
+                            $admission->created_by = Auth::user()->id;
+                            $admission->save();
+
                             // $worker->update(['arrival_status' => 1]);
                             $worker->arrival_status = 1;
                             $worker->save();
 
-                            $allWorkersArrived = IrProposedLabor::where('visa_id', $worker->visa_id)
+                            $allWorkersArrived =
+                                IrProposedLabor::where('visa_id', $worker->visa_id)
                                 ->where('arrival_status', 1)
-                                ->count() == IrProposedLabor::where('visa_id', $worker->visa_id)
+                                ->count()
+                                ==
+                                IrProposedLabor::where('visa_id', $worker->visa_id)
                                 ->count();
 
                             if ($allWorkersArrived) {

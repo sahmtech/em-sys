@@ -2,9 +2,13 @@
 
 namespace App\Utils;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Request as UserRequest;
 use App\RequestProcess;
 use App\RequestAttachment;
+use App\SentNotification;
+use App\SentNotificationsUser;
 use App\User;
 use Carbon\Carbon;
 use App\Utils\ModuleUtil;
@@ -33,8 +37,9 @@ use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Sales\Entities\SalesProject;
 
 use Modules\CEOManagment\Entities\Task;
-
-
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use stdClass;
 
 class RequestUtil extends Util
 {
@@ -64,7 +69,7 @@ class RequestUtil extends Util
 
 
     ////// get requests /////////////////// 
-    public function getRequests($departmentIds, $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment = [], $isFollowup = false)
+    public function getRequests($departmentIds, $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null)
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -105,7 +110,23 @@ class RequestUtil extends Util
                 $userIds = array_intersect($userIds, $worker_ids);
             }
         }
-        $users = User::whereIn('id', $userIds)->whereIn('user_type', $ownerTypes)->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+        if ($company_id) {
+
+            $ids = User::whereIn('id', $userIds)->where('company_id',  $company_id)->pluck('id')->toArray();
+            $userIds = array_intersect($userIds, $ids);
+        }
+        $users = User::whereIn('id', $userIds)
+            ->whereIn('user_type', $ownerTypes)
+            ->where(function ($query) {
+                $query->where('status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('status', 'inactive')
+                            ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))
+            ->pluck('full_name', 'id');
+
 
         $saleProjects = SalesProject::all()->pluck('name', 'id');
 
@@ -113,6 +134,7 @@ class RequestUtil extends Util
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
 
         $requestsProcess = UserRequest::select([
+
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
             'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
@@ -120,6 +142,8 @@ class RequestUtil extends Util
             'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+
+
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -131,7 +155,7 @@ class RequestUtil extends Util
             ->leftjoin('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
             ->leftjoin('request_procedure_tasks', function ($join) {
                 $join->on('request_procedure_tasks.procedure_task_id', '=', 'procedure_tasks.id')
-                    ->where('request_procedure_tasks.request_id', '=', 'requests.id');
+                    ->on('request_procedure_tasks.request_id', '=', 'requests.id');
             })
             ->leftJoin('users', 'users.id', '=', 'requests.related_to')
             ->where(function ($query) use ($departmentIds) {
@@ -142,30 +166,35 @@ class RequestUtil extends Util
 
 
             ->whereIn('requests.related_to', $userIds)
-            ->where('users.status', '!=', 'inactive')->groupBy('requests.id');
+            ->where(function ($query) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->groupBy('requests.id');
 
-        $tasksDetails = [];
-        if ($requestsProcess) {
-            $requests = $requestsProcess->get();
+        $requests = $requestsProcess->get();
+
+        foreach ($requests as $request) {
+            $tasksDetails = DB::table('request_procedure_tasks')
+                ->join('procedure_tasks', 'procedure_tasks.id', '=', 'request_procedure_tasks.procedure_task_id')
+                ->join('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+                ->where('procedure_tasks.procedure_id', $request->procedure_id)
+                ->where('request_procedure_tasks.request_id', $request->id)
+                ->select('tasks.description', 'request_procedure_tasks.id', 'request_procedure_tasks.procedure_task_id', 'tasks.link', 'request_procedure_tasks.isDone', 'procedure_tasks.procedure_id')
+                ->get();
 
 
-            foreach ($requests as $request) {
-                $tasksDetails = DB::table('request_procedure_tasks')
-                    ->join('procedure_tasks', 'procedure_tasks.id', '=', 'request_procedure_tasks.procedure_task_id')
-                    ->join('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
-                    ->where('request_procedure_tasks.request_id', $request->id)
-                    ->select('tasks.description', 'request_procedure_tasks.id', 'tasks.link', 'request_procedure_tasks.isDone')
-                    ->get();
-
-
-                $request->tasksDetails = $tasksDetails;
-            }
+            $request->tasksDetails = $tasksDetails;
         }
 
+        // return  $request->tasksDetails;
         if (request()->ajax()) {
 
 
-            return DataTables::of($requestsProcess ?? [])
+            return DataTables::of($requests ?? [])
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at);
                 })
@@ -182,9 +211,9 @@ class RequestUtil extends Util
                     }
                 })
 
-                ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds, $tasksDetails, $departmentIdsForGeneralManagment, $statuses) {
+                ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds,  $departmentIdsForGeneralManagment, $statuses) {
                     if ($row->status) {
-
+                        $status = '';
                         if ($row->action_type === 'accept_reject' || $row->action_type === null) {
                             $status = trans('request.' . $row->status);
                             if ($departmentIdsForGeneralManagment) {
@@ -204,38 +233,45 @@ class RequestUtil extends Util
                                 }
                             }
                         } elseif ($row->action_type === 'task') {
-                            if ($tasksDetails) {
+
+                            if (isset($row->tasksDetails) && !empty($row->tasksDetails)) {
 
                                 $status = '<ul style="list-style-type:none; padding-left: 0;">';
 
-
-                                foreach ($tasksDetails as $taskDetail) {
-
-
+                                foreach ($row->tasksDetails as $taskDetail) {
                                     $checkmark = $taskDetail->isDone ? '&#9989;' : '';
-
                                     $taskLink = $taskDetail->link;
 
                                     $status .= "<li><label>";
                                     if ($taskDetail->isDone) {
-
-
-                                        $status .= "<a href='{$taskLink}' target='_blank' style='color: green; font-size: large; text-decoration: none;'>$checkmark</a>";
+                                        if ($taskLink) {
+                                            $status .= "<a href='{$taskLink}' target='_blank' style='color: green; font-size: large; text-decoration: none;'>$checkmark</a>";
+                                        } else {
+                                            $status .= "<span style='color: green; font-size: large;'>$checkmark</span>";
+                                        }
                                     } else {
-
                                         $status .= "<input type='checkbox' disabled>";
                                     }
-                                    $status .= " <a href='{$taskLink}' target='_blank'>{$taskDetail->description}</a></label></li>";
+
+                                    if ($taskLink) {
+                                        $status .= " <a href='{$taskLink}' target='_blank'>{$taskDetail->description}</a>";
+                                    } else {
+                                        $status .= " {$taskDetail->description}";
+                                    }
+
+                                    $status .= "</label></li>";
                                 }
 
                                 $status .= '</ul>';
                             }
-                            if ($departmentIdsForGeneralManagment) {
+
+                            if (isset($departmentIdsForGeneralManagment) && !empty($departmentIdsForGeneralManagment)) {
+
                                 if ($row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
-                                    if ($tasksDetails) {
+                                    if ($row->tasksDetails) {
                                         $status = '<ul style="list-style-type:none; padding-left: 0;">';
 
-                                        foreach ($tasksDetails as $taskDetail) {
+                                        foreach ($row->tasksDetails as $taskDetail) {
                                             $checkmark = $taskDetail->isDone ? '&#9989;' : '';
 
                                             $taskLink = $taskDetail->link;
@@ -258,10 +294,12 @@ class RequestUtil extends Util
                                 }
                             } elseif ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
 
-                                if ($tasksDetails) {
+
+
+                                if ($row->tasksDetails) {
                                     $status = '<ul style="list-style-type:none; padding-left: 0;">';
 
-                                    foreach ($tasksDetails as $taskDetail) {
+                                    foreach ($row->tasksDetails as $taskDetail) {
 
                                         $checkmark = $taskDetail->isDone ? '&#9989;' : '';
 
@@ -347,7 +385,7 @@ class RequestUtil extends Util
                 if ($end_date) {
 
                     $endDateCarbon = Carbon::parse($end_date);
-                    error_log($endDateCarbon);
+
                     if ($startDateCarbon->gt($endDateCarbon)) {
                         $message = __('request.start_date_after_end_date');
                         return redirect()->back()->withErrors([$message]);
@@ -690,36 +728,72 @@ class RequestUtil extends Util
 
         $process = RequestProcess::where('request_id', $request->id)->latest()->first();
         $users = [];
+        $userCompanyId = User::where('id', $request->related_to)->first()->company_id;
+        $acessRoleCompany = AccessRoleCompany::where('company_id', $userCompanyId)->pluck('access_role_id')->toArray();
+        $rolesFromAccessRoles = AccessRole::whereIn('id', $acessRoleCompany)->pluck('role_id')->toArray();
         if ($process->superior_department_id) {
             $viewRequestPermission = $this->getViewRequestsPermission($process->superior_department_id);
             if ($viewRequestPermission) {
-                $users = User::whereHas('permissions', function ($query) use ($viewRequestPermission) {
-                    $query->where('name', $viewRequestPermission);
-                })->where('essentials_department_id', $process->superior_department_id)->get();
+                $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+                $rolesIds = $permission_id->roles->pluck('id')->toArray();
+                $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
+                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+                })->where('essentials_department_id', $process->superior_department_id);
             }
         } else {
             $procedure = $process->procedure_id;
             $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
             $viewRequestPermission = $this->getViewRequestsPermission($department_id);
             if ($viewRequestPermission) {
-                $users = User::whereHas('permissions', function ($query) use ($viewRequestPermission) {
-                    $query->where('name', $viewRequestPermission);
-                })->where('essentials_department_id', $department_id)->get();
+                $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+                $rolesIds = $permission_id->roles->pluck('id')->toArray();
+                $users = User::whereHas('roles', function ($query) use ($rolesIds,  $rolesFromAccessRoles) {
+                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+                })->where('essentials_department_id', $department_id);
             }
         }
+
+
+
+
 
 
         $input['task_id'] = $request->request_no;
 
         $to_dos = ToDo::create($input);
+        $usersData = $users->get();
 
-        $to_dos->users()->sync($users);
-        if ($users->isNotEmpty()) {
+        $to_dos->users()->sync($usersData);
 
-            \Notification::send($users, new NewTaskNotification($to_dos));
+
+        $user_ids = $users->pluck('id')->toArray();
+        $to =  $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+            ->pluck('full_name')->toArray();
+        if (!empty($user_ids)) {
+            $to = [];
+            $userName = User::where('id', $request->related_to)->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+                ->pluck('full_name')->toArray()[0];
+            $sentNotification = SentNotification::create([
+                'via' => 'dashboard',
+                'type' => 'GeneralManagementNotification',
+                'title' =>  $input['task'],
+                'msg' => __('request.' . $request_type) . ' ' . $userName,
+                'sender_id' => auth()->user()->id,
+                'to' => json_encode($to),
+            ]);
+            // $details = new stdClass();
+            // $details->title =  $input['task'];
+            // $details->message = $request_type;
+
+            foreach ($user_ids as $user_id) {
+                SentNotificationsUser::create([
+                    'sent_notifications_id' => $sentNotification->id,
+                    'user_id' => $user_id,
+                ]);
+                // User::where('id', $user_id)->first()?->notify(new GeneralNotification($details, false, true));
+            }
         }
     }
-
 
 
     ////// change request status /////////////////// 
@@ -1371,11 +1445,6 @@ class RequestUtil extends Util
 
     protected function validateLeaveRequirements($request, $userId, $count)
     {
-        error_log($count);
-        error_log($userId);
-        error_log($request);
-
-
 
         $leave_type = EssentialsLeaveType::where('id', $request->leaveType)->first();
         $work_duration = EssentialsEmployeeAppointmet::where('employee_id', $userId)->where('is_active', 1)->first();
@@ -1648,12 +1717,15 @@ class RequestUtil extends Util
 
             if ($type == 'exitRequest') {
                 $operation_type = 'final_visa';
+                $sub_status = 'final_exit';
             }
             if ($type == 'returnRequest') {
                 $operation_type = 'return_visa';
+                $sub_status = 'return_exit';
             }
             if ($type == 'escapeRequest') {
                 $operation_type = 'absent_report';
+                $sub_status = 'escape';
             }
 
 
@@ -1663,6 +1735,7 @@ class RequestUtil extends Util
             }
             $user->update([
                 'status' => 'inactive',
+                'sub_status' => $sub_status,
                 'allow_login' => '0'
             ]);
             $appointment = EssentialsEmployeeAppointmet::where('employee_id', $userRequest->related_to)->where('is_active', '1')->first();
@@ -1868,6 +1941,7 @@ class RequestUtil extends Util
             })->pluck('id')->toArray();
 
             if (in_array($department, $deptIds)) {
+
                 return $info['permission'];
             }
         }

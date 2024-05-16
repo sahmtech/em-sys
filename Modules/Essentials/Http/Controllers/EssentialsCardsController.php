@@ -69,6 +69,7 @@ class EssentialsCardsController extends Controller
 
     public function index(Request $request)
     {
+
         $business_id = request()
             ->session()
             ->get('user.business_id');
@@ -2082,6 +2083,7 @@ class EssentialsCardsController extends Controller
      */
     public function store(Request $request)
     {
+
         try {
             $data = $request->only([
                 'Residency_no',

@@ -14,7 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('salary_voucher')->default(true)->after('essentials_salary');
+
+            $table->boolean('has_SIM')->default(0)->after('contact_number');
+            $table->string('cell_phone_company')->nullable()->after('has_SIM');
+            $table->boolean('residency_print')->default(0)->after('id_proof_number');
+            $table->boolean('residency_delivery')->default(0)->after('residency_print');
         });
     }
 

@@ -28,6 +28,7 @@ use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use App\TransactionSellLine;
 use Modules\InternationalRelations\Entities\IrVisaCard;
 use Modules\Sales\Entities\SalesUnSupportedWorker;
+use App\Utils\NewArrivalUtil;
 
 class WorkerController extends Controller
 {
@@ -35,12 +36,13 @@ class WorkerController extends Controller
     protected $moduleUtil;
     protected $statuses;
 
+    protected $newArrivalUtil;
 
-    public function __construct(ModuleUtil $moduleUtil)
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
 
         $this->moduleUtil = $moduleUtil;
-
+        $this->newArrivalUtil = $newArrivalUtil;
         $this->statuses = [
             'acceptable' => [
                 'name' => __('internationalrelations::lang.acceptable'),
@@ -1487,5 +1489,63 @@ class WorkerController extends Controller
 
 
         return redirect()->route('proposed_laborIndex')->with('notification', 'success insert');
+    }
+
+    public function new_arrival_for_workers(Request $request)
+    {
+        $view = 'internationalrelations::travelers.index';
+        return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
+    }
+
+    public function housed_workers_index(Request $request)
+    {
+        $view = 'internationalrelations::travelers.partials.housed_workers';
+        return $this->newArrivalUtil->housed_workers_index($request, $view);
+    }
+
+    public function medicalExamination()
+    {
+        $view = 'internationalrelations::travelers.medicalExamination';
+        return $this->newArrivalUtil->medicalExamination($view);
+    }
+    public function SIMCard()
+    {
+        $view = 'internationalrelations::travelers.SIMCard';
+        return $this->newArrivalUtil->SIMCard($view);
+    }
+    public function workCardIssuing()
+    {
+        $view = 'internationalrelations::travelers.workCardIssuing';
+        return $this->newArrivalUtil->workCardIssuing($view);
+    }
+    public function medicalInsurance()
+    {
+        $view = 'internationalrelations::travelers.medicalInsurance';
+        return $this->newArrivalUtil->medicalInsurance($view);
+    }
+    public function bankAccounts()
+    {
+        $view = 'internationalrelations::travelers.bankAccounts';
+        return $this->newArrivalUtil->bankAccounts($view);
+    }
+    public function QiwaContracts()
+    {
+        $view = 'internationalrelations::travelers.QiwaContracts';
+        return $this->newArrivalUtil->QiwaContracts($view);
+    }
+    public function residencyPrint()
+    {
+        $view = 'internationalrelations::travelers.residencyPrint';
+        return $this->newArrivalUtil->residencyPrint($view);
+    }
+    public function residencyDelivery()
+    {
+        $view = 'internationalrelations::travelers.residencyDelivery';
+        return $this->newArrivalUtil->residencyDelivery($view);
+    }
+    public function advanceSalaryRequest()
+    {
+        $view = 'internationalrelations::travelers.advanceSalaryRequest';
+        return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }

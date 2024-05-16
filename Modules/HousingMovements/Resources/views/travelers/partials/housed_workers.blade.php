@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', __('housingmovements::lang.housed'))
 @section('content')
-    @include('housingmovements::layouts.nav_trevelers')
+  
 
     <section class="content-header">
         <h1>
@@ -13,6 +13,7 @@
 
     <!-- Main content -->
     <section class="content">
+          @include('housingmovements::layouts.nav_trevelers')
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])

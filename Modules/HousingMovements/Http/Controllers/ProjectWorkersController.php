@@ -10,9 +10,15 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
 use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Facades\DB;
+use Modules\InternationalRelations\Entities\IrWorkersDocument;
+use Modules\Essentials\Entities\EssentialsWorkCard;
+use Illuminate\Support\Facades\Auth;
+
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Spatie\Activitylog\Models\Activity;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
@@ -29,13 +35,18 @@ use App\User;
 use App\Company;
 use App\WorkerProjectsHistory;
 use Carbon\Carbon;
-
+use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
+use Modules\HousingMovements\Entities\NewWorkersAdSalaryRequest;
+
 use Modules\Sales\Entities\SalesProject;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
+
 
 class ProjectWorkersController extends Controller
 {
@@ -44,12 +55,18 @@ class ProjectWorkersController extends Controller
      * @return Renderable
      */
     protected $moduleUtil;
+    protected $newArrivalUtil;
 
 
-    public function __construct(ModuleUtil $moduleUtil)
+
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
+
         $this->moduleUtil = $moduleUtil;
+        $this->newArrivalUtil = $newArrivalUtil;
     }
+
+
     public function index()
     {
 
@@ -899,207 +916,362 @@ class ProjectWorkersController extends Controller
 
             ));
     }
-    // public function create()
-    // {
-    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-    //     if (!($is_admin || auth()->user()->can('user.create'))) {
-    //         //temp  abort(403, 'Unauthorized action.');
-    //     }
-    //     $business_id = request()->session()->get('user.business_id');
 
 
-    //     if (!$this->moduleUtil->isSubscribed($business_id)) {
-    //         return $this->moduleUtil->expiredResponse();
-    //     } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
-    //         return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
-    //     }
-
-    //     // $roles = $this->getRolesArray($business_id);
-    //     $username_ext = $this->moduleUtil->getUsernameExtension();
-    //     // $locations = BusinessLocation::where('business_id', $business_id)
-    //     //     ->Active()
-    //     //     ->get();
-    //     $contract_types = EssentialsContractType::all()->pluck('type', 'id');
-    //     $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
-
-    //     $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
-    //     $nationalities = EssentialsCountry::nationalityForDropdown();
-
-    //     $contacts = SalesProject::pluck('name', 'id')->toArray();
-    //     $contacts = [null => __('essentials::lang.undefined')] + $contacts;
-
-    //     $blood_types = [
-    //         'A+' => 'A positive (A+).',
-    //         'A-' => 'A negative (A-).',
-    //         'B+' => 'B positive (B+)',
-    //         'B-' => 'B negative (B-).',
-    //         'AB+' => 'AB positive (AB+).',
-    //         'AB-' => 'AB negative (AB-).',
-    //         'O+' => 'O positive (O+).',
-    //         'O-' => 'O positive (O-).',
-    //     ];
-
-
-
-    //     $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-    //     $countries = $countries = EssentialsCountry::forDropdown();
-    //     $resident_doc = null;
-    //     $user = null;
-    //     $designations = Category::forDropdown($business_id, 'hrm_designation');
-
-    //     $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
-    //     $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
-
-    //     $user = !empty($data['user']) ? $data['user'] : null;
-
-    //     $allowance_deduction_ids = [];
-    //     if (!empty($user)) {
-    //         $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-    //             ->pluck('allowance_deduction_id')
-    //             ->toArray();
-    //     }
-
-    //     if (!empty($user)) {
-    //         $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-    //     } else {
-    //         $contract = null;
-    //     }
-
-    //     // $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-    //     $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
-    //     $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
-    //     $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
-    //     $nationalities = EssentialsCountry::nationalityForDropdown();
-    //     $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-    //     $professions = EssentialsProfession::all()->pluck('name', 'id');
-
-    //     $company = Company::where('business_id', $business_id)->pluck('name', 'id');
-
-    //     return  view('housingmovements::projects_workers.create')
-    //         ->with(compact(
-    //             'departments',
-    //             'countries',
-    //             'spacializations',
-    //             'nationalities',
-    //             'username_ext',
-    //             'blood_types',
-    //             'contacts',
-    //             'company',
-    //             'banks',
-    //             'contract_types',
-    //             'form_partials',
-    //             'resident_doc',
-    //             'user',
-
-    //             'allowance_types',
-    //             'travel_ticket_categorie',
-    //             'contract_types',
-    //             'nationalities',
-    //             'specializations',
-    //             'professions'
-
-    //         ));
-    // }
-
-    // public function storeProjectWorker(Request $request)
-    // {
-    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-    //     if (!($is_admin || auth()->user()->can('user.create'))) {
-    //         //temp  abort(403, 'Unauthorized action.');
-    //     }
-
-    //     try {
-    //         if (!empty($request->input('dob'))) {
-    //             $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
-    //         }
-
-    //         $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
-    //         $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-
-
-    //         // $com_id = request()->input('essentials_department_id');
-    //         // $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
-    //         //     ->first();
-
-    //         // if ($latestRecord) {
-    //         //     $latestRefNo = $latestRecord->emp_number;
-    //         //     $latestRefNo++;
-    //         //     $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-    //         // } else {
-
-    //         //     $request['emp_number'] =  $business_id . '000';
-    //         // }
-
-
-    //         if ($request->input('id_proof_number')) {
-    //             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
-    //         }
-    //         if ($request->input('border_no')) {
-    //             $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
-    //         }
-
-
-
-    //         if ($existingprofnumber || $existingBordernumber) {
-
-    //             if ($existingprofnumber != null) {
-    //                 $output = [
-    //                     'success' => 0,
-    //                     'msg' => __('essentials::lang.user_with_same_id_proof_number_exists'),
-    //                 ];
-    //             } else {
-    //                 $output = [
-    //                     'success' => 0,
-    //                     'msg' => __('essentials::lang.worker_with_same_border_number_exists'),
-    //                 ];
-    //             }
-    //         } else {
-    //             $user = $this->moduleUtil->createUser($request);
-    //             event(new UserCreatedOrModified($user, 'added'));
-
-    //             $output = [
-    //                 'success' => 1,
-    //                 'msg' => __('user.user_added'),
-    //             ];
-    //         }
-    //     } catch (\Exception $e) {
-    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    //         $output = [
-    //             'success' => 0,
-    //             'msg' => __('messages.something_went_wrong'),
-    //         ];
-    //     }
-
-    //     return redirect()->route('workers.index')->with('status', $output);
-    // }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
     public function edit($id)
     {
         return view('housingmovements::edit');
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
+
     public function update(Request $request, $id)
     {
     }
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
+
+
+    public function uploadMedicalDocument(Request $request)
     {
+        $request->validate([
+            'file' => 'required|file|max:2048',
+        ]);
+
+        IrProposedLabor::where('id', $request->workerId)->update([
+            'medical_examination' => 1,
+        ]);
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('/workers_documents');
+            $uploadedFile = new IrWorkersDocument();
+            $uploadedFile->worker_id = $request->workerId;
+            $uploadedFile->type = 'medical_examination';
+            $uploadedFile->uploaded_by = auth()->user()->id;
+            $uploadedFile->uploaded_at = Carbon::now();
+            $uploadedFile->attachment = $path;
+
+            $uploadedFile->save();
+        }
+
+
+
+        return response()->json(['message' => 'File uploaded successfully']);
+    }
+
+
+    public function storeWorkCard(Request $request)
+    {
+
+
+        try {
+            $data = $request->only([
+                'employee_id', 'border_no', 'business', 'company_id',
+                'workcard_duration_input',
+                'Payment_number',
+                'passport_fees_input',
+                'work_card_fees',
+                'other_fees',
+
+            ]);
+
+            if ($request->input('Payment_number') != null && strlen($request->input('Payment_number')) !== 14) {
+                $output = [
+                    'success' => 0,
+                    'msg' => __('essentials::lang.payment_number_invalid'),
+                ];
+            } else {
+                $data['employee_id'] = (int) $request->input('employee_id');
+                $data['fees'] = $request->input('passport_fees_input');
+                $data['work_card_fees'] = $request->input('work_card_fees');
+                $data['other_fees'] = $request->input('other_fees');
+                $data['workcard_duration'] = (int) $request->input(
+                    'workcard_duration_input'
+                );
+                $data['is_active'] = 1;
+                $lastrecord = EssentialsWorkCard::orderBy(
+                    'work_card_no',
+                    'desc'
+                )->first();
+
+                if ($lastrecord) {
+                    $lastEmpNumber = (int) substr($lastrecord->work_card_no, 3);
+                    $nextNumericPart = $lastEmpNumber + 1;
+                    $data['work_card_no'] =
+                        'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                } else {
+                    $data['work_card_no'] = 'WC' . '000';
+                }
+
+                EssentialsWorkCard::create($data);
+                $user = User::findOrFail($request->input('employee_id'));
+                $user->update([
+                    'company_id' => $request->input('company_id'),
+                    'updated_by' => Auth::user()->id
+                ]);
+
+                $output = [
+                    'success' => 1,
+                    'msg' => __('essentials::lang.card_added_sucessfully'),
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency(
+                'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()
+            );
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => __('messeages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
+
+
+
+    public function addSIM(Request $request)
+    {
+
+        $user = User::findOrFail($request->user);
+
+        $user->update([
+            'cell_phone_company' => $request->cell_phone_company,
+            'contact_number' => $request->contact_number,
+            'has_SIM' => 1,
+            'updated_by' => Auth::user()->id
+        ]);
+        $output = [
+            'success' => true,
+            'msg' => __('lang_v1.added_success'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+
+    public function addBank(Request $request)
+    {
+        $is_existing = EssentialsOfficialDocument::where('number', $request->bank_details['bank_code'])->where('is_active', 1)->first();
+        if ($is_existing) {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.the_bank code is exists already'),
+            ];
+            return redirect()->back()
+                ->with('status', $output);
+        }
+        $user = User::findOrFail($request->user_id);
+        $user->update([
+            'bank_details' => json_encode($request->bank_details),
+            'updated_by' => Auth::user()->id
+        ]);
+
+        if ($request->hasFile('iban_file')) {
+
+            $file = $request->file('iban_file');
+
+            $path = $file->store('/officialDocuments');
+
+            $documentData = [
+                'type' => 'Iban',
+                'status' => 'valid',
+                'is_active' => 1,
+                'employee_id' => $request->user_id,
+                'number' => $request->bank_details['bank_code'],
+                'created_by' => Auth::user()->id,
+                'file_path' => $path,
+            ];
+
+            EssentialsOfficialDocument::create($documentData);
+        }
+        $output = [
+            'success' => true,
+            'msg' => __('lang_v1.added_success'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+
+
+    public function addEqama(Request $request)
+    {
+        if (!$request->id_proof_number || $request->id_proof_number == NULL) {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please add the eqama number'),
+            ];
+            return redirect()->back()
+                ->with('status', $output);
+        }
+        $user = User::find($request->user);
+        $user->id_proof_name = 'eqama';
+        $user->id_proof_number = $request->id_proof_number;
+        $user->updated_by = auth()->user()->id;
+        $user->save();
+        $documentData = [
+            'type' => 'residence_permit',
+            'status' => 'valid',
+            'is_active' => 1,
+            'employee_id' => $request->user,
+            'number' => $request->id_proof_number,
+            'created_by' => Auth::user()->id,
+        ];
+
+        EssentialsOfficialDocument::create($documentData);
+        $output = [
+            'success' => true,
+            'msg' => __('housingmovements::lang.updated_successfully'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+    public function updateResidencyPrint(Request $request)
+    {
+
+        $worker = User::findOrFail($request->id);
+
+
+        $worker->residency_print = 1;
+        if ($worker->save()) {
+            return response()->json([
+                'success' => true,
+                'msg' => __('housingmovements::lang.updated_successfully'),
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'msg' => __('housingmovements::lang.update_failed'),
+            ], 500);
+        }
+    }
+
+
+
+    public function deliveryResidency(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please uplode the delivery file'),
+            ];
+            return redirect()->back()
+                ->with('status', $output);
+        }
+
+        $worker = User::findOrFail($request->user);
+        $worker->residency_delivery = 1;
+        $worker->save();
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('/workers_documents');
+            $uploadedFile = new IrWorkersDocument();
+            $uploadedFile->worker_id = $worker->proposal_worker_id;
+            $uploadedFile->type = 'residency_delivery';
+            $uploadedFile->uploaded_by = auth()->user()->id;
+            $uploadedFile->uploaded_at = Carbon::now();
+            $uploadedFile->attachment = $path;
+
+            $uploadedFile->save();
+        }
+
+
+        $output = [
+            'success' => true,
+            'msg' => __('housingmovements::lang.updated_successfully'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+
+
+    public function newWorkersAdvSalaryStore(Request $request)
+    {
+
+        $path = '';
+        if ($request->hasFile('attachment')) {
+
+            $file = $request->file('attachment');
+
+            $path = $file->store('/requests_attachments');
+        }
+
+
+        $latestRecord = NewWorkersAdSalaryRequest::orderBy('request_no', 'desc')->first();
+
+        if ($latestRecord) {
+            $latestRefNo = $latestRecord->request_no;
+            $numericPart = (int)substr($latestRefNo, 'adv_');
+            $numericPart++;
+            $request_no = 'adv_' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+        } else {
+            $request_no = 'adv_0001';
+        }
+        $documentData = [
+            'advSalaryAmount' => $request->amount,
+            'request_no' => $request_no,
+            'monthlyInstallment' => $request->monthlyInstallment,
+            'related_to' => $request->user_id,
+            'installmentsNumber' => $request->installmentsNumber,
+            'status' => 'pending',
+            'employee_id' => $request->user_id,
+            'note' =>  $request->note,
+            'created_by' => Auth::user()->id,
+            'attachment' => $path,
+        ];
+        NewWorkersAdSalaryRequest::create($documentData);
+        $output = [
+            'success' => true,
+            'msg' => __('housingmovements::lang.added_successfully'),
+        ];
+        return redirect()->back()
+            ->with('status', $output);
+    }
+
+
+    public function medicalExamination()
+    {
+        $view = 'housingmovements::travelers.medicalExamination';
+        return $this->newArrivalUtil->medicalExamination($view);
+    }
+    public function SIMCard()
+    {
+        $view = 'housingmovements::travelers.SIMCard';
+        return $this->newArrivalUtil->SIMCard($view);
+    }
+    public function workCardIssuing()
+    {
+        $view = 'housingmovements::travelers.workCardIssuing';
+        return $this->newArrivalUtil->workCardIssuing($view);
+    }
+    public function medicalInsurance()
+    {
+        $view = 'housingmovements::travelers.medicalInsurance';
+        return $this->newArrivalUtil->medicalInsurance($view);
+    }
+    public function bankAccounts()
+    {
+        $view = 'housingmovements::travelers.bankAccounts';
+        return $this->newArrivalUtil->bankAccounts($view);
+    }
+    public function QiwaContracts()
+    {
+        $view = 'housingmovements::travelers.QiwaContracts';
+        return $this->newArrivalUtil->QiwaContracts($view);
+    }
+    public function residencyPrint()
+    {
+        $view = 'housingmovements::travelers.residencyPrint';
+        return $this->newArrivalUtil->residencyPrint($view);
+    }
+    public function residencyDelivery()
+    {
+        $view = 'housingmovements::travelers.residencyDelivery';
+        return $this->newArrivalUtil->residencyDelivery($view);
+    }
+    public function advanceSalaryRequest()
+    {
+        $view = 'housingmovements::travelers.advanceSalaryRequest';
+        return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }

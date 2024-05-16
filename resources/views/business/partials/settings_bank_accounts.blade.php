@@ -109,14 +109,11 @@
                         </center> --}}
             </div>
 
-
-    {{-- </div> --}}
-    {{-- <div class="modal fade" id="edit_carsChangeOil_model" tabindex="-1" role="dialog"></div> --}}
 @endcomponent
 
 
 
 </section>
 
-<!-- /.content -->
+
 </div>

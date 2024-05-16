@@ -157,6 +157,19 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('download-non-employees/{filename}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'downloadFile'])->name('download-file');
 
 
+        Route::get('/emp_travelers', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'new_arrival_for_workers'])->name('emp_travelers');
+        Route::get('/emp_housed_workers', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'housed_workers_index'])->name('emp_housed_workers');
+        Route::get('/emp_medicalExamination', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'medicalExamination'])->name('emp_medicalExamination');
+        Route::get('/emp_medicalInsurance', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'medicalInsurance'])->name('emp_medicalInsurance');
+        Route::get('/emp_workCardIssuing', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'workCardIssuing'])->name('emp_workCardIssuing');
+        Route::get('/emp_SIMCard', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'SIMCard'])->name('emp_SIMCard');
+        Route::get('/emp_bankAccountsForLabors', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'bankAccounts'])->name('emp_bankAccountsForLabors');
+        Route::get('/emp_QiwaContract', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'QiwaContracts'])->name('emp_QiwaContract');
+        Route::get('/emp_residencyPrint', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'residencyPrint'])->name('emp_residencyPrint');
+        Route::get('/emp_residencyDelivery', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'residencyDelivery'])->name('emp_residencyDelivery');
+        Route::get('/emp_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'advanceSalaryRequest'])->name('emp_advanceSalaryRequest');
+
+
 
         Route::get('/appointments', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'index'])->name('appointments');
         Route::post('/changeStatusApp', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'changeStatus'])->name('changeStatusApp');
@@ -250,8 +263,21 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/send_import_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostImportEmployee'])->name('send_import_employee_insurance');
         Route::post('/send_import_update_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostUpdateImportEmployee'])
             ->name('send_import_update_employee_insurance');
+        Route::get('/get-insurance-classes/{company_id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'getInsuranceClasses']);
+        Route::get('/get-insurance-info', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'show']);
 
 
+        Route::get('/insurance_travelers', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'new_arrival_for_workers'])->name('insurance_travelers');
+        Route::get('/insurance_housed_workers', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'housed_workers_index'])->name('insurance_housed_workers');
+        Route::get('/insurance_medicalExamination', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'medicalExamination'])->name('insurance_medicalExamination');
+        Route::get('/insurance_medicalInsurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'medicalInsurance'])->name('insurance_medicalInsurance');
+        Route::get('/insurance_workCardIssuing', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'workCardIssuing'])->name('insurance_workCardIssuing');
+        Route::get('/insurance_SIMCard', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'SIMCard'])->name('insurance_SIMCard');
+        Route::get('/insurance_bankAccountsForLabors', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'bankAccounts'])->name('insurance_bankAccountsForLabors');
+        Route::get('/insurance_QiwaContract', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'QiwaContracts'])->name('insurance_QiwaContract');
+        Route::get('/insurance_residencyPrint', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'residencyPrint'])->name('insurance_residencyPrint');
+        Route::get('/insurance_residencyDelivery', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'residencyDelivery'])->name('insurance_residencyDelivery');
+        Route::get('/insurance_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'advanceSalaryRequest'])->name('insurance_advanceSalaryRequest');
 
         Route::get('/insurance_contracts', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'index'])->name('insurance_contracts');
         Route::post('/insurance_contracts.store', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'store'])->name('insurance_contracts.store');
@@ -322,6 +348,18 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/submitTmeSheet', [Modules\Essentials\Http\Controllers\PayrollController::class, 'store'])->name('payrolls.submit');
         // Route::resource('/payroll', 'Modules\Essentials\Http\Controllers\PayrollController');
         Route::resource('/holiday', 'EssentialsHolidayController');
+
+        Route::get('/pay_travelers', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'new_arrival_for_workers'])->name('pay_travelers');
+        Route::get('/pay_housed_workers', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'housed_workers_index'])->name('pay_housed_workers');
+        Route::get('/pay_medicalExamination', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'medicalExamination'])->name('pay_medicalExamination');
+        Route::get('/pay_medicalInsurance', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'medicalInsurance'])->name('pay_medicalInsurance');
+        Route::get('/pay_workCardIssuing', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'workCardIssuing'])->name('pay_workCardIssuing');
+        Route::get('/pay_SIMCard', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'SIMCard'])->name('pay_SIMCard');
+        Route::get('/pay_bankAccountsForLabors', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'bankAccounts'])->name('pay_bankAccountsForLabors');
+        Route::get('/pay_QiwaContract', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'QiwaContracts'])->name('pay_QiwaContract');
+        Route::get('/pay_residencyPrint', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyPrint'])->name('pay_residencyPrint');
+        Route::get('/pay_residencyDelivery', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyDelivery'])->name('pay_residencyDelivery');
+        Route::get('/pay_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'advanceSalaryRequest'])->name('pay_advanceSalaryRequest');
     });
 
     Route::prefix('hrm')->group(function () {

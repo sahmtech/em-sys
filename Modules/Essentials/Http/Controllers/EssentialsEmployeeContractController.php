@@ -157,7 +157,7 @@ class EssentialsEmployeeContractController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $query = User::whereIn('id', $userIds);
+        $query = User::whereIn('id', $userIds)->where('status', '!=', 'inactive');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();
@@ -261,7 +261,7 @@ class EssentialsEmployeeContractController extends Controller
         $users = $all_users->pluck('full_name', 'id');
 
         // return  $output ;
-        return redirect()->route('employeeContracts')->with(compact('users'));
+        return redirect()->back()->with(compact('users'));
     }
 
 
