@@ -9,6 +9,7 @@ use App\SentNotificationsSetting;
 use App\SentNotificationsUser;
 use App\User;
 use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -54,7 +55,13 @@ class NotificationController extends Controller
                 ->addColumn('created_at', function ($row) {
                     return $row->created_at;
                 })
-                ->rawColumns(['title', 'msg', 'to', 'created_at'])
+                ->addColumn('read_at', function ($row) {
+                    return Carbon::parse($row->read_at)->diffForHumans();
+                })
+                ->addColumn('created_at', function ($row) {
+                    return Carbon::parse($row->created_at)->diffForHumans();
+                })
+                ->rawColumns(['title', 'msg', 'to', 'read_at', 'created_at'])
                 ->make(true);
         }
         return view('generalmanagement::notifications.index');
