@@ -40,6 +40,8 @@
                             <th class="table-td-width-100">@lang('generalmanagement::lang.notification_title')</th>
                             <th class="table-td-width-200px">@lang('generalmanagement::lang.notification_msg')</th>
                             <th class="table-td-width-100px">@lang('generalmanagement::lang.notification_recievers')</th>
+                            <th class="table-td-width-100px">@lang('lang_v1.notification_read_at')</th>
+                            <th class="table-td-width-100px">@lang('lang_v1.notification_created_at')</th>
                         </tr>
                     </thead>
                 </table>
@@ -74,6 +76,12 @@
                     },
                     {
                         data: 'to'
+                    },
+                    {
+                        data: 'read_at'
+                    },
+                    {
+                        data: 'created_at'
                     },
                 ]
 
