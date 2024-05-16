@@ -13,9 +13,23 @@
 .table-td-width-50px {
     width: 50px !important;
 }
+
 .table-td-width-40px {
     width: 40px !important;
 }
+
 .table-td-width-25px {
     width: 25px !important;
 }
+
+
+/* .custom_header_icon {
+    background-color: #fabc14;
+    border-radius: 8%;
+}
+
+
+
+.skin-black .main-header .navbar .custom_header_icon {
+    color: #12142e !important;
+} */

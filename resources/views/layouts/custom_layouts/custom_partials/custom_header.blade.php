@@ -24,43 +24,64 @@
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
 
-            @if (Module::has('Essentials'))
+            {{-- @if (Module::has('Essentials'))
                 @includeIf('essentials::layouts.partials.header_part')
-            @endif
-
-            <div class="btn-group">
-                <button id="header_shortcut_dropdown" type="button"
-                    class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-plus-circle fa-lg"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    @if (config('app.env') != 'demo')
-                        <li><a href="{{ route('calendar') }}">
-                                <i class="fas fa-calendar-alt" aria-hidden="true"></i> @lang('lang_v1.calendar')
-                            </a></li>
-                    @endif
-                    @if (Module::has('Essentials'))
-                        <li><a href="#" class="btn-modal"
-                                data-href="{{ action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create']) }}"
-                                data-container="#task_modal">
-                                <i class="fas fa-clipboard-check" aria-hidden="true"></i> @lang('essentials::lang.add_to_do')
-                            </a></li>
-                        <li><a href="{{ route('employee_requests') }}">
-                                <i class="fas fa-tasks" aria-hidden="true"></i> @lang('essentials::lang.my_requests')
-                            </a></li>
-                    @endif
-                    <!-- Help Button -->
-                    {{-- @if (auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
-              <li><a id="start_tour" href="#">
-                  <i class="fas fa-question-circle" aria-hidden="true"></i> @lang('lang_v1.application_tour')
-              </a></li>
             @endif --}}
-                </ul>
-            </div>
+            <ul class="nav navbar-nav ">
+                @if (config('app.env') != 'demo')
+                    <li class="custom_header_icon">
+                        <a class="custom_header_icon_a" href="{{ route('calendar') }}">
+                            <i class="fas fa-calendar-alt" aria-hidden="true"></i> @lang('lang_v1.calendar')
+                        </a>
+                    </li>
+                @endif
+                @if (Module::has('Essentials'))
+                    <li class="custom_header_icon">
+                        <a href="#" class="custom_header_icon_a"
+                            data-href="{{ action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create']) }}"
+                            data-container="#task_modal">
+                            <i class="fas fa-clipboard-check" aria-hidden="true"></i> @lang('essentials::lang.add_to_do')
+                        </a>
+                    </li>
+                    <li class="custom_header_icon">
+                        <a class="custom_header_icon_a" href="{{ route('employee_requests') }}">
+                            <i class="fas fa-tasks" aria-hidden="true"></i> @lang('essentials::lang.my_requests')
+                        </a>
+                    </li>
+                @endif
+                <li class="custom_header_icon">
+                    <a class="custom_header_icon_a" href="{{ route('tickets.index') }}">
+                        <i class="fas fa-headset"></i> @lang('messages.support')
+                    </a>
+                </li>
+
+                <li>
+                    <div class="m-8 pull-left mt-15 hidden-xs" style="color: #fff; margin-right:25vw">
+                        <strong>{{ @format_date('now') }}</strong>
+                    </div>
+                </li>
+            </ul>
+
+            {{-- <div class="btn-group">
+                    <button id="header_shortcut_dropdown" type="button"
+                        class="btn btn-success dropdown-toggle btn-flat pull-left m-8 btn-sm mt-10" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-plus-circle fa-lg"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                    --}}
+
+            <!-- Help Button -->
+            {{-- @if (auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
+                <li><a id="start_tour" href="#">
+                    <i class="fas fa-question-circle" aria-hidden="true"></i> @lang('lang_v1.application_tour')
+                </a></li>
+                @endif --}}
+            {{-- </ul>
+                </div> --}}
             {{-- <button id="btnCalculator" title="@lang('lang_v1.calculator')" type="button" class="btn btn-success btn-flat pull-left m-8 btn-sm mt-10 popover-default hidden-xs" data-toggle="popover" data-trigger="click" data-content='@include("layouts.partials.calculator")' data-html="true" data-placement="bottom">
-            <strong><i class="fa fa-calculator fa-lg" aria-hidden="true"></i></strong>
-        </button> --}}
+                <strong><i class="fa fa-calculator fa-lg" aria-hidden="true"></i></strong>
+            </button> --}}
 
             @if ($request->segment(1) == 'pos')
                 @can('view_cash_register')
@@ -84,25 +105,24 @@
             @endif
 
             {{-- @if (in_array('pos_sale', $enabled_modules))
-          @can('sell.create')
-            <a href="{{action([\App\Http\Controllers\SellPosController::class, 'create'])}}" title="@lang('sale.pos_sale')" data-toggle="tooltip" data-placement="bottom" class="btn btn-flat pull-left m-8 btn-sm mt-10 btn-success">
-              <strong><i class="fa fa-th-large"></i> &nbsp; @lang('sale.pos_sale')</strong>
-            </a>
-          @endcan
-        @endif --}}
+            @can('sell.create')
+                <a href="{{action([\App\Http\Controllers\SellPosController::class, 'create'])}}" title="@lang('sale.pos_sale')" data-toggle="tooltip" data-placement="bottom" class="btn btn-flat pull-left m-8 btn-sm mt-10 btn-success">
+                <strong><i class="fa fa-th-large"></i> &nbsp; @lang('sale.pos_sale')</strong>
+                </a>
+            @endcan
+            @endif --}}
 
             @if (Module::has('Repair'))
                 @includeIf('repair::layouts.partials.header')
             @endif
 
             {{-- @can('profit_loss_report.view')
-          <button type="button" id="view_todays_profit" title="{{ __('home.todays_profit') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 btn-sm mt-10">
-            <strong><i class="fas fa-money-bill-alt fa-lg"></i></strong>
-          </button>
-        @endcan --}}
+                <button type="button" id="view_todays_profit" title="{{ __('home.todays_profit') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 btn-sm mt-10">
+                    <strong><i class="fas fa-money-bill-alt fa-lg"></i></strong>
+                </button>
+                @endcan --}}
 
-            <div class="m-8 pull-left mt-15 hidden-xs" style="color: #fff;"><strong>{{ @format_date('now') }}</strong>
-            </div>
+
 
             <ul class="nav navbar-nav">
                 @include('layouts.partials.header-notifications')
@@ -143,6 +163,7 @@
                                     class="btn btn-default btn-flat">@lang('lang_v1.sign_out')</a>
                             </div>
                         </li>
+
                     </ul>
                 </li>
                 <!-- Control Sidebar Toggle Button -->

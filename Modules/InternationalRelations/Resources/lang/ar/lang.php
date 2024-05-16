@@ -25,7 +25,7 @@ return [
   'good' => 'جيد',
   'bad' => 'سيء',
   'order_request_view' => 'عرض امر الطلب',
-  'order_request' => 'أمر الطلب',
+  'order_request' => ' أوامر التشغيل',
   'crud_order_request' => 'تعديل / إضافة /حذف  أوامر الطلب',
   'Delegation' => 'التفويض',
   'add_delegation' => 'إضافة تفويض',

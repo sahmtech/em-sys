@@ -35,11 +35,13 @@ return [
     'deactivate' => 'إلغاء تنشيط',
     'employe' => 'توظيف',
     'create_user' => 'إنشاء مستخدم',
-    'update_access_role' => 'صلاحية الوصول',
+    'update_access_role' => 'صلاحية الشركات',
+    'update_pages_role' => 'صلاحية الصفحات',
     'update_access_role_report' => 'صلاحية التقارير',
     'go_back' => 'رجوع',
     'added_success' => 'تم الحفظ بنجاح',
     'unauthorized' => 'ليس لديك الصلاحية المناسبة',
     'undefined' => 'غير محدد',
-    'bed_count_exceeded' => 'عدد العمالة تجاوز عدد الأسرة المتاحة في الغرفة المحددة'
+    'bed_count_exceeded' => 'عدد العمالة تجاوز عدد الأسرة المتاحة في الغرفة المحددة',
+    'support' => 'الدعم الفني',
 ];
