@@ -2,8 +2,7 @@
 @section('title', __('business.business_location_coordinates'))
 
 @section('content')
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ Config::get('app.GOOGLE_MAP_KEY') }}&libraries=geometry">
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_API_KEY') }}&libraries=geometry"></script>
 
     <style>
         #map {
