@@ -2819,4 +2819,3 @@ class PayrollController extends Controller
         return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
 }
-
