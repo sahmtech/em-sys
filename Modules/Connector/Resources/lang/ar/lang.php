@@ -7,4 +7,7 @@ return [
     'client_secret' => 'سر العميل',
     'clients' => 'العملاء',
     'documentation' => 'الوثائق',
+    'user_device' => 'أجهزة المستخدمين',
+    'device_name' => 'اسم الجهاز',
+    'device_number' => 'رقم الجهاز',
 ];

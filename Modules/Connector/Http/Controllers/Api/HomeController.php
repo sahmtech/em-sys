@@ -244,7 +244,7 @@ class HomeController extends ApiController
                 $result = true;
                 UserDevice::create([
                     'user_id' => $user->id,
-                    'device_name' => request()->devـname,
+                    'device_name' => request()->dev_name,
                     'device_number' => request()->dev_number,
                     'created_by' => $user->id,
                 ]);

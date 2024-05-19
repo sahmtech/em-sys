@@ -2,9 +2,11 @@
 
 namespace Modules\Connector\Http\Controllers;
 
+use App\UserDevice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Yajra\DataTables\Facades\DataTables;
 
 class ConnectorController extends Controller
 {
@@ -16,6 +18,16 @@ class ConnectorController extends Controller
     public function index()
     {
         return view('connector::index');
+    }
+
+    public function user_device()
+    {
+        $user_devices = UserDevice::query();
+        if (request()->ajax()) {
+            return DataTables::of($user_devices)
+                ->make(true);
+        }
+        return view('connector::user_device');
     }
 
     /**
