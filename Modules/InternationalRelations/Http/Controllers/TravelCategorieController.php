@@ -44,7 +44,7 @@ class TravelCategorieController extends Controller
 
         $requestsProcess = null;
 
-        $types = RequestsType::whereIn('type', ['exitRequest', 'returnRequest'])->pluck('id')->toArray();
+        $types = RequestsType::whereIn('type', ['exitRequest', 'returnRequest', 'cancleContractRequest', 'leavesAndDepartures'])->pluck('id')->toArray();
         $allRequestTypes = RequestsType::pluck('type', 'id');
 
         $requestsProcess = UserRequest::select([
