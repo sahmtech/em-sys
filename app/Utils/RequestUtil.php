@@ -375,8 +375,9 @@ class RequestUtil extends Util
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
             $today = Carbon::today();
+            $type = RequestsType::where('id', $request->type)->first()->type;
 
-            if ($startDate) {
+            if ($startDate && $type != 'escapeRequest') {
                 $startDateCarbon = Carbon::parse($startDate);
                 if ($startDateCarbon->lt($today)) {
                     $message = __('request.time_is_gone');
@@ -393,7 +394,7 @@ class RequestUtil extends Util
                 }
             }
 
-            $type = RequestsType::where('id', $request->type)->first()->type;
+
 
             if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
 
