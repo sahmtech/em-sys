@@ -44,7 +44,8 @@ class WkProcedureController extends Controller
         $escalates_departments = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
-                    ->orWhere('name', 'like', '%عليا%');
+                    ->orWhere('name', 'like', '%عليا%')
+                    ->orWhere('name', 'like', '%عام%');
             })
             ->pluck('name', 'id')->toArray();
         $requestsType = RequestsType::where('for', 'employee')->pluck('type', 'id');
@@ -129,7 +130,7 @@ class WkProcedureController extends Controller
         $escalates_departments = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
-                    ->orWhere('name', 'like', '%عليا%');
+                    ->orWhere('name', 'like', '%عليا%')->orWhere('name', 'like', '%عام%');
             })
             ->pluck('name', 'id')->toArray();
         $requestsType = RequestsType::where('for', 'worker')->pluck('type', 'id');
@@ -452,6 +453,7 @@ class WkProcedureController extends Controller
             $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
             if ($procedures) {
                 foreach ($procedures as $procedure) {
+
                     ProcedureTask::where('procedure_id', $procedure->id)->delete();
                     ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
                     $procedure->delete();
