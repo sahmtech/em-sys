@@ -142,6 +142,7 @@ class HomeController extends ApiController
                 'full_name' => $fullName,
                 'image' => $image,
                 'work' => $work,
+                'user_type' => $user->user_type == "worker" ? "worker" : "employee",
                 'signed_in' => $signed_in,
                 'signed_out' => $signed_out,
             ];
