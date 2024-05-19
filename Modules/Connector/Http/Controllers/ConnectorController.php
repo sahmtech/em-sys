@@ -28,6 +28,9 @@ class ConnectorController extends Controller
                 ->addColumn('name', function ($row) {
                     return $row->user->first_name . ' ' . $row->user->last_name;
                 })
+                ->editColumn('id_proof_number', function ($row) {
+                    return $row->user->id_proof_number;
+                })
                 ->make(true);
         }
         return view('connector::user_device');
