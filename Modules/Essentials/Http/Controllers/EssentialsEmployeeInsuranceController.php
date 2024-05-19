@@ -939,7 +939,14 @@ class EssentialsEmployeeInsuranceController extends Controller
                     $insurance_data['insurance_company_id'] =  $insurance_class_company->insurance_company_id;
                     EssentialsEmployeesInsurance::create($insurance_data);
 
-                    $emp_insurance = User::where('id', $input['employee'])->where('status', 'active')->first();
+                    $emp_insurance = User::where('id', $input['employee'])->where(function ($query) {
+                        $query->where('users.status', 'active')
+                            ->orWhere(function ($subQuery) {
+                                $subQuery->where('users.status', 'inactive')
+                                    ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                            });
+                    })
+                        ->first();
                     $emp_insurance->has_insurance = 1;
                     $emp_insurance->save();
 

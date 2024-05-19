@@ -1133,6 +1133,7 @@ class EssentialsManageEmployeeController extends Controller
                 // Handle file upload
                 $image = $request->file('profile_picture');
                 $profile = $image->store('/profile_images');
+
                 $user->update(['profile_image' => $profile, 'updated_by' => Auth::user()->id]);
                 error_log($profile);
             } elseif ($request->input('delete_image') == '1') {
@@ -1758,6 +1759,7 @@ class EssentialsManageEmployeeController extends Controller
 
                             $input['employee_id'] = $existing_user->id;
                             $input['type'] = 'Iban';
+                            $input['created_by'] = auth()->user()->id;
                             EssentialsOfficialDocument::create($input);
                         }
                     } elseif ($request->existing_iban_file) {
@@ -1770,6 +1772,7 @@ class EssentialsManageEmployeeController extends Controller
                         $input = [
                             'number' => $bankCode,
                             'file_path' => $request->existing_iban_file,
+                            'updated_by' => auth()->user()->id
                         ];
 
                         $Iban_doc = EssentialsOfficialDocument::where('employee_id', $existing_user->id)->where('is_active', 1)->where('type', 'Iban')->first();

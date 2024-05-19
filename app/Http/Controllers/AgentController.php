@@ -129,7 +129,9 @@ class AgentController extends Controller
             $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
             $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $projectsIds);
             $workers_count = $workers->count();
-            $active_workers_count = $workers->where('status', 'active')->count();
+            $active_workers_count = $workers
+                ->where('status', 'active')
+                ->count();
             $inactive_workers_count = $workers->whereNot('status', 'active')->count();
 
 

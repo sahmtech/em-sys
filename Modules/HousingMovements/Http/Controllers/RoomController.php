@@ -109,17 +109,17 @@ class RoomController extends Controller
         }
 
         $workers = User::whereIn('users.id', $userIds)
-        ->whereNot('status', 'inactive')
-        ->whereDoesntHave('htrRoomsWorkersHistories', function($query) {
-            $query->where('still_housed', '=', 1);
-        })
-        ->select(
-            'users.id',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''), ' - ',COALESCE(users.id_proof_number,'')) as full_name")
-        )
-        ->pluck('full_name', 'users.id');
+            ->whereNot('status', 'inactive')
+            ->whereDoesntHave('htrRoomsWorkersHistories', function ($query) {
+                $query->where('still_housed', '=', 1);
+            })
+            ->select(
+                'users.id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''), ' - ',COALESCE(users.id_proof_number,'')) as full_name")
+            )
+            ->pluck('full_name', 'users.id');
 
-    
+
         $roomStatusOptions = [
             'busy' => __('housingmovements::lang.busy_rooms'),
             'available' => __('housingmovements::lang.available_rooms'),
@@ -248,9 +248,9 @@ class RoomController extends Controller
                     'leave_date' => $carbon_now
                 ]);
                 $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)
-                ->latest()
-                ->pluck('room_id')
-                ->first();
+                    ->latest()
+                    ->pluck('room_id')
+                    ->first();
 
                 $room = HtrRoom::where('id', $roomId)->first();
 
@@ -261,7 +261,7 @@ class RoomController extends Controller
                 }
 
                 $user = User::find($userId);
-                $user->update(['room_id' => null]);
+                $user->update(['room_id' => null, 'updated_by' => auth()->user()->id]);
             }
 
             $output = [
@@ -320,7 +320,7 @@ class RoomController extends Controller
                     'still_housed' => '0',
                     'leave_date' => $carbon_now
                 ]);
-           
+
 
                 $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)->pluck('room_id');
 
@@ -331,7 +331,7 @@ class RoomController extends Controller
                     $room->save();
                 }
                 $user = User::find($userId);
-                $user->update(['room_id' => null]);
+                $user->update(['room_id' => null, 'updated_by' => auth()->user()->id]);
 
                 $newRoom = new HtrRoomsWorkersHistory();
                 $newRoom->worker_id = $userId;
@@ -341,7 +341,7 @@ class RoomController extends Controller
                 $newRoom->save();
 
                 $user = User::find($userId);
-                $user->update(['room_id' => $request->room]);
+                $user->update(['room_id' => $request->room, 'updated_by' => auth()->user()->id]);
 
                 $room = HtrRoom::where('id', $request->room)->first();
                 if ($room) {
@@ -484,7 +484,7 @@ class RoomController extends Controller
 
 
                                     $user = User::find($workerId);
-                                    $user->update(['room_id' => $transferRoomId]);
+                                    $user->update(['room_id' => $transferRoomId, 'updated_by' => auth()->user()->id]);
 
 
                                     DB::table('htr_rooms')
@@ -513,7 +513,7 @@ class RoomController extends Controller
                                 $htrroom_histoty->save();
 
                                 $user = User::find($workerId);
-                                $user->update(['room_id' => $room->id]);
+                                $user->update(['room_id' => $room->id, 'updated_by' => auth()->user()->id]);
 
                                 DB::table('htr_rooms')
                                     ->where('id', $room->id)
@@ -541,11 +541,11 @@ class RoomController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    
+
 
     public function workers_housed(Request $request)
     {
-        
+
         try {
             $selectedRooms = json_decode($request->input('selectedRooms'), true);
             if (empty($selectedRooms)) {
@@ -556,7 +556,7 @@ class RoomController extends Controller
             }
 
             $workerAssignments = [];
-    
+
             foreach ($selectedRooms as $room) {
                 foreach ($room['workers'] as $workerId) {
                     if (isset($workerAssignments[$workerId])) {
@@ -565,29 +565,28 @@ class RoomController extends Controller
                             'success' => false,
                             'msg' => __("housingmovements::lang.worker_assigned_to_multiple_rooms", ['id' => $worker->id_proof_number]),
                         ];
-                        
                     }
                     $workerAssignments[$workerId] = $room['room_id'];
                 }
             }
-    
+
             // If no duplicates, proceed to assign rooms and create history
             foreach ($selectedRooms as $room) {
                 $roomDetails = HtrRoom::find($room['room_id']);
                 if ($roomDetails && $roomDetails->beds_count >= count($room['workers'])) {
                     foreach ($room['workers'] as $workerId) {
                         $carbon_now = \Carbon::now();
-    
+
                         $htrroom_history = new HtrRoomsWorkersHistory();
                         $htrroom_history->room_id = $room['room_id'];
                         $htrroom_history->worker_id = $workerId;
                         $htrroom_history->still_housed = 1;
                         $htrroom_history->housed_date = $carbon_now;
                         $htrroom_history->save();
-    
+
                         $user = User::find($workerId);
-                        $user->update(['room_id' => $room['room_id']]);
-    
+                        $user->update(['room_id' => $room['room_id'], 'updated_by' => auth()->user()->id]);
+
                         $roomDetails->decrement('beds_count');
                     }
                 } else {
@@ -595,27 +594,25 @@ class RoomController extends Controller
                         'success' => false,
                         'msg' => __("housingmovements::lang.no_enough_rooms", ['id' => $roomDetails->room_number]),
                     ];
-                    
                 }
             }
-    
+
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
-    
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-    
+
         return $output;
     }
-    
+
 
     /**
      * Store a newly created resource in storage.

@@ -93,6 +93,7 @@ class ApiEssentialsController extends ApiController
                     'last_name' => $request->last_name ?? $user->last_name,
                     'email' => $request->email ?? $user->email,
                     'contact_number' => $request->contact_number ?? $user->contact_number,
+                    'updated_by' => auth()->user()->id
                 ];
 
                 $user->update($res);
@@ -121,7 +122,7 @@ class ApiEssentialsController extends ApiController
                 if (!$user) {
                     throw new \Exception("no such user, register first.");
                 }
-                $user->update(['password' => Hash::make($request->new_password)]);
+                $user->update(['password' => Hash::make($request->new_password), 'updated_by' => auth()->user()->id]);
                 return new CommonResource(['msg' => 'تم تغيير كلمة المرور بنجاح']);
             } else {
                 throw new \Exception("The provided OTP is incorrect.");

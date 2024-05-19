@@ -214,8 +214,6 @@ class EssentialsEmployeeContractController extends Controller
 
             $input2['contract_type_id'] = $input['contract_type'];
 
-
-
             $input2['created_by'] = Auth::user()->id;
             $input2['is_renewable'] = $input['is_renewable'];
 
@@ -237,6 +235,7 @@ class EssentialsEmployeeContractController extends Controller
 
                 $input2['file_path'] = $filePath;
             }
+
 
             EssentialsEmployeesContract::where('employee_id', $input['employee'])->update(['is_active' => 0]);
             $contract = EssentialsEmployeesContract::create($input2);
@@ -273,8 +272,10 @@ class EssentialsEmployeeContractController extends Controller
 
 
         try {
-            EssentialsEmployeesContract::where('id', $id)
-                ->delete();
+            $contract = EssentialsEmployeesContract::where('id', $id)->first();
+            $contract['deleted_by'] = auth()->user()->id;
+            $contract->save();
+            $contract->delete();
 
             $output = [
                 'success' => true,

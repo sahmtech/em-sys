@@ -600,6 +600,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     'type' => 'passport',
                     'number' => $formated_data['passport_number'],
                     'expiration_date' => $formated_data['passport_expiration_date'],
+                    'created_by' => auth()->user()->id
                 ];
 
 
@@ -907,6 +908,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         'employee_id' => $existingEmployee->id,
                         'number' => $formated_data['id_proof_number'],
                         'expiration_date' => $formated_data['id_proof_number_expiration_date'],
+                        'created_by' => auth()->user()->id
                     ];
                 $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
                     return $value !== null;
@@ -928,6 +930,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     'type' => 'passport',
                     'number' => $formated_data['passport_number'],
                     'expiration_date' => $formated_data['passport_expiration_date'],
+                    'created_by' => auth()->user()->id
                 ];
 
 
@@ -1113,12 +1116,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $formated_data['assigned_to'] = null;
                     $formated_data['status'] = 'inactive';
                 }
+                $formated_data['created_by'] = auth()->user()->id;
                 $formated_data['essentials_pay_period'] = 'month';
                 $dataToUpdate = array_filter($formated_data, function ($value) {
                     return !is_null($value);
                 });
 
                 // $user = new User();
+
                 $user = User::create($dataToUpdate);
                 return $user;
             }
