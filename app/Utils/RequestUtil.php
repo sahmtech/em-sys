@@ -2,9 +2,13 @@
 
 namespace App\Utils;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Request as UserRequest;
 use App\RequestProcess;
 use App\RequestAttachment;
+use App\SentNotification;
+use App\SentNotificationsUser;
 use App\User;
 use Carbon\Carbon;
 use App\Utils\ModuleUtil;
@@ -33,8 +37,9 @@ use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Sales\Entities\SalesProject;
 
 use Modules\CEOManagment\Entities\Task;
-
-
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use stdClass;
 
 class RequestUtil extends Util
 {
@@ -723,36 +728,72 @@ class RequestUtil extends Util
 
         $process = RequestProcess::where('request_id', $request->id)->latest()->first();
         $users = [];
+        $userCompanyId = User::where('id', $request->related_to)->first()->company_id;
+        $acessRoleCompany = AccessRoleCompany::where('company_id', $userCompanyId)->pluck('access_role_id')->toArray();
+        $rolesFromAccessRoles = AccessRole::whereIn('id', $acessRoleCompany)->pluck('role_id')->toArray();
         if ($process->superior_department_id) {
             $viewRequestPermission = $this->getViewRequestsPermission($process->superior_department_id);
             if ($viewRequestPermission) {
-                $users = User::whereHas('permissions', function ($query) use ($viewRequestPermission) {
-                    $query->where('name', $viewRequestPermission);
-                })->where('essentials_department_id', $process->superior_department_id)->get();
+                $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+                $rolesIds = $permission_id->roles->pluck('id')->toArray();
+                $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
+                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+                })->where('essentials_department_id', $process->superior_department_id);
             }
         } else {
             $procedure = $process->procedure_id;
             $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
             $viewRequestPermission = $this->getViewRequestsPermission($department_id);
             if ($viewRequestPermission) {
-                $users = User::whereHas('permissions', function ($query) use ($viewRequestPermission) {
-                    $query->where('name', $viewRequestPermission);
-                })->where('essentials_department_id', $department_id)->get();
+                $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+                $rolesIds = $permission_id->roles->pluck('id')->toArray();
+                $users = User::whereHas('roles', function ($query) use ($rolesIds,  $rolesFromAccessRoles) {
+                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+                })->where('essentials_department_id', $department_id);
             }
         }
+
+
+
+
 
 
         $input['task_id'] = $request->request_no;
 
         $to_dos = ToDo::create($input);
+        $usersData = $users->get();
 
-        $to_dos->users()->sync($users);
-        if ($users->isNotEmpty()) {
+        $to_dos->users()->sync($usersData);
 
-            \Notification::send($users, new NewTaskNotification($to_dos));
+
+        $user_ids = $users->pluck('id')->toArray();
+        $to =  $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+            ->pluck('full_name')->toArray();
+        if (!empty($user_ids)) {
+            $to = [];
+            $userName = User::where('id', $request->related_to)->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+                ->pluck('full_name')->toArray()[0];
+            $sentNotification = SentNotification::create([
+                'via' => 'dashboard',
+                'type' => 'GeneralManagementNotification',
+                'title' =>  $input['task'],
+                'msg' => __('request.' . $request_type) . ' ' . $userName,
+                'sender_id' => auth()->user()->id,
+                'to' => json_encode($to),
+            ]);
+            // $details = new stdClass();
+            // $details->title =  $input['task'];
+            // $details->message = $request_type;
+
+            foreach ($user_ids as $user_id) {
+                SentNotificationsUser::create([
+                    'sent_notifications_id' => $sentNotification->id,
+                    'user_id' => $user_id,
+                ]);
+                // User::where('id', $user_id)->first()?->notify(new GeneralNotification($details, false, true));
+            }
         }
     }
-
 
 
     ////// change request status /////////////////// 
@@ -1900,6 +1941,7 @@ class RequestUtil extends Util
             })->pluck('id')->toArray();
 
             if (in_array($department, $deptIds)) {
+
                 return $info['permission'];
             }
         }

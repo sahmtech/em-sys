@@ -65,7 +65,7 @@ class HomeController extends ApiController
             $lastRequest = UserRequest::select([
                 'request_no',
                 'requests.id',
-                'requests_types.type',
+                'requests_types.type as type',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
                 'requests.created_at',
                 'requests.status',
@@ -83,9 +83,10 @@ class HomeController extends ApiController
                 ->where('users.id', $user->id)->latest('requests.created_at')
 
                 ->first();
-
-            $lastRequest['type'] = __('api.' . $lastRequest['type']);
-            $lastRequest['status'] = __('api.' . $lastRequest['status']);
+            if ($lastRequest) {
+                $lastRequest['type'] = __('api.' . $lastRequest['type']);
+                $lastRequest['status'] = __('api.' . $lastRequest['status']);
+            }
 
             $todo = ToDo::where('business_id', $business_id)
                 ->with(['assigned_by'])

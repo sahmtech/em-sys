@@ -344,7 +344,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/create',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'create'])->name('payrolls.create');
         Route::get('/edit/{id}',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'edit'])->name('payrolls.edit');
         Route::get('/show/{id}/{type}',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'show'])->name('payrolls.show');
-        Route::get('/getEmployeesBasedOnCompany', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnCompany'])->name('payrolls.getEmployeesBasedOnCompany');
+        // Route::get('/getEmployeesBasedOnCompany', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnCompany'])->name('payrolls.getEmployeesBasedOnCompany');
         Route::post('/submitTmeSheet', [Modules\Essentials\Http\Controllers\PayrollController::class, 'store'])->name('payrolls.submit');
         // Route::resource('/payroll', 'Modules\Essentials\Http\Controllers\PayrollController');
         Route::resource('/holiday', 'EssentialsHolidayController');

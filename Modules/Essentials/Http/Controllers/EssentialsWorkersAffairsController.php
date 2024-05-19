@@ -103,7 +103,7 @@ class EssentialsWorkersAffairsController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->with(['assignedTo'])
             ->where('user_type', 'worker')
-            ->where('users.status', '!=', 'inactive')
+            // ->where('users.status', '!=', 'inactive')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
@@ -146,6 +146,20 @@ class EssentialsWorkersAffairsController extends Controller
         if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
             $users = $users->where('users.nationality_id', request()->nationality);
+        }
+        $start_date = request()->get('start_date');
+        $end_date = request()->get('end_date');
+
+        if (!is_null($start_date)) {
+            $users = $users->whereHas('OfficialDocument', function ($query) use ($start_date) {
+                $query->where('type', 'residence_permit')->whereDate('expiration_date', '>=', $start_date);
+            });
+        }
+
+        if (!is_null($end_date)) {
+            $users = $users->whereHas('OfficialDocument', function ($query) use ($end_date) {
+                $query->where('type', 'residence_permit')->whereDate('expiration_date', '<=', $end_date);
+            });
         }
         // return $users->where('users.id_proof_number',2222222222)->first()->essentials_admission_to_works;
         if (request()->ajax()) {
