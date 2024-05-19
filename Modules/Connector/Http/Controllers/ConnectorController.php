@@ -22,9 +22,12 @@ class ConnectorController extends Controller
 
     public function user_device()
     {
-        $user_devices = UserDevice::query();
+        $user_devices = UserDevice::with('user');
         if (request()->ajax()) {
             return DataTables::of($user_devices)
+                ->addColumn('name', function ($row) {
+                    return $row->user->first_name . ' ' . $row->user->last_name;
+                })
                 ->make(true);
         }
         return view('connector::user_device');

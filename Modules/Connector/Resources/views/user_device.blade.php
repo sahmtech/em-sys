@@ -45,7 +45,7 @@
                     url: "{{ route('user_device') }}",
                 },
                 columns: [{
-                        data: 'full_name'
+                        data: 'name'
                     },
                     {
                         data: 'id_proof_number'
