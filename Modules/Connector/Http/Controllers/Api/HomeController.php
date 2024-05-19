@@ -6,6 +6,7 @@ use App\Business;
 use App\Notification;
 use App\User;
 use App\Request as UserRequest;
+use App\UserDevice;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
@@ -223,6 +224,34 @@ class HomeController extends ApiController
             ];
 
 
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
+    }
+
+
+
+    public function checkDevice()
+    {
+        try {
+            $result = false;
+            $user = Auth::user();
+            $user = User::where('id', $user->id)->with('userDevice')->first();
+            if ($user->userDevice) {
+                $result = $user->userDevice->device_number == request()->dev_number;
+            } else {
+                $result = true;
+                UserDevice::create([
+                    'user_id' => $user->id,
+                    'device_name' => request()->devـname,
+                    'device_number' => request()->dev_number,
+                    'created_by' => $user->id,
+                ]);
+            }
+            $res = [
+                'result' => $result,
+            ];
             return new CommonResource($res);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

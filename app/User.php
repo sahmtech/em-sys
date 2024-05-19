@@ -594,4 +594,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(EssentialsAdmissionToWork::class, 'employee_id')->where('is_active', 1);
     }
+
+    public function userDevice()
+    {
+        return $this->hasOne(UserDevice::class, 'user_id');
+    }
 }
