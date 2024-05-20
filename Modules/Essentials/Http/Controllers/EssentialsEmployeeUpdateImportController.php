@@ -759,15 +759,15 @@ class EssentialsEmployeeUpdateImportController extends Controller
     {
         if (!empty($formated_data) && (isset($formated_data['contract_start_date']) || isset($formated_data['contract_end_date']) || isset($formated_data['contract_type_id']))) {
 
-            $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
-
-            if ($previous_contract) {
-                $previous_contract->update(['is_active' => 0]);
-            }
-            $contract = new EssentialsEmployeesContract();
-
-
             if ((isset($formated_data['contract_start_date']) && $formated_data['contract_start_date'] != null) || (isset($formated_data['contract_end_date']) && $formated_data['contract_end_date'] != null)) {
+
+                $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
+
+                if ($previous_contract) {
+                    $previous_contract->update(['is_active' => 0]);
+                }
+
+                $contract = new EssentialsEmployeesContract();
 
                 if ((isset($formated_data['contract_start_date']) && $formated_data['contract_start_date'] != null) && (!isset($formated_data['contract_end_date']) || $formated_data['contract_end_date'] == null)) {
 
@@ -799,29 +799,30 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $contract->contract_end_date = $formated_data['contract_end_date'];
                     $contract->contract_duration = $contract_duration;
                 }
-            }
 
-            $contract->employee_id  = $existingEmployee->id;
-            if ((!isset($formated_data['contract_number']) || $formated_data['contract_number'] == null)) {
-                $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
-                if ($latestRecord) {
-                    $latestRefNo = $latestRecord->contract_number;
-                    $numericPart = (int)substr($latestRefNo, 3);
-                    $numericPart++;
-                    $formated_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+
+                $contract->employee_id  = $existingEmployee->id;
+                if ((!isset($formated_data['contract_number']) || $formated_data['contract_number'] == null)) {
+                    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+                    if ($latestRecord) {
+                        $latestRefNo = $latestRecord->contract_number;
+                        $numericPart = (int)substr($latestRefNo, 3);
+                        $numericPart++;
+                        $formated_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                    } else {
+                        $formated_data['contract_number'] = 'EC0001';
+                    }
+                    $contract->contract_number = $formated_data['contract_number'];
                 } else {
-                    $formated_data['contract_number'] = 'EC0001';
+                    $contract->contract_number = $formated_data['contract_number'];
                 }
-                $contract->contract_number = $formated_data['contract_number'];
-            } else {
-                $contract->contract_number = $formated_data['contract_number'];
+                $contract->probation_period = $formated_data["probation_period"] ?? 1;
+                $contract->is_renewable = $formated_data['is_renewable'] ?? 1;
+                $contract->contract_type_id  = $formated_data["contract_type_id"] ?? null;
+                $contract->is_active  = 1;
+                $contract->status = "valid";
+                $contract->save();
             }
-            $contract->probation_period = $formated_data["probation_period"] ?? 1;
-            $contract->is_renewable = $formated_data['is_renewable'] ?? 1;
-            $contract->contract_type_id  = $formated_data["contract_type_id"] ?? null;
-            $contract->is_active  = 1;
-            $contract->status = "valid";
-            $contract->save();
         }
     }
     private function updateUser($formated_data, $existingEmployee)
