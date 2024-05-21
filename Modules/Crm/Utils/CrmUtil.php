@@ -17,13 +17,13 @@ class CrmUtil extends Util
     public function addFollowUp($input, $user)
     {
         $input['notify_via'] = [
-            'sms' => ! empty($input['notify_via']['sms']) ? 1 : 0,
-            'mail' => ! empty($input['notify_via']['mail']) ? 1 : 0,
+            'sms' => !empty($input['notify_via']['sms']) ? 1 : 0,
+            'mail' => !empty($input['notify_via']['mail']) ? 1 : 0,
         ];
 
-        $input['notify_type'] = ! empty($input['notify_type']) ? $input['notify_type'] : 'hour';
-        $input['schedule_type'] = ! empty($input['schedule_type']) ? $input['schedule_type'] : 'email';
-        $input['allow_notification'] = ! empty($input['allow_notification']) ? 1 : 0;
+        $input['notify_type'] = !empty($input['notify_type']) ? $input['notify_type'] : 'hour';
+        $input['schedule_type'] = !empty($input['schedule_type']) ? $input['schedule_type'] : 'email';
+        $input['allow_notification'] = !empty($input['allow_notification']) ? 1 : 0;
         $input['business_id'] = $user->business_id;
         $input['created_by'] = $user->id;
         $input['followup_category_id'] = $input['followup_category_id'];
@@ -40,13 +40,13 @@ class CrmUtil extends Util
     public function addRecursiveFollowUp($input, $user)
     {
         $input['notify_via'] = [
-            'sms' => ! empty($input['notify_via']['sms']) ? 1 : 0,
-            'mail' => ! empty($input['notify_via']['mail']) ? 1 : 0,
+            'sms' => !empty($input['notify_via']['sms']) ? 1 : 0,
+            'mail' => !empty($input['notify_via']['mail']) ? 1 : 0,
         ];
 
-        $input['notify_type'] = ! empty($input['notify_type']) ? $input['notify_type'] : 'hour';
-        $input['schedule_type'] = ! empty($input['schedule_type']) ? $input['schedule_type'] : 'email';
-        $input['allow_notification'] = ! empty($input['allow_notification']) ? 1 : 0;
+        $input['notify_type'] = !empty($input['notify_type']) ? $input['notify_type'] : 'hour';
+        $input['schedule_type'] = !empty($input['schedule_type']) ? $input['schedule_type'] : 'email';
+        $input['allow_notification'] = !empty($input['allow_notification']) ? 1 : 0;
         $input['business_id'] = $user->business_id;
         $input['created_by'] = $user->id;
         $input['is_recursive'] = 1;
@@ -69,7 +69,7 @@ class CrmUtil extends Util
             unset($input['invoices']);
         }
 
-        $replacable_inputs['in_days'] = ! empty($input['in_days']) ? $input['in_days'] : null;
+        $replacable_inputs['in_days'] = !empty($input['in_days']) ? $input['in_days'] : null;
         $replacable_inputs['title'] = $input['title'];
         $replacable_inputs['description'] = $input['description'];
 
@@ -80,7 +80,7 @@ class CrmUtil extends Util
         foreach ($follow_ups as $key => $value) {
             $input['contact_id'] = $key;
             $input['user_id'] = $value['user_id'];
-            $invoices = ! empty($value['invoices']) ? $value['invoices'] : [];
+            $invoices = !empty($value['invoices']) ? $value['invoices'] : [];
 
             $replaced_tag_input = $this->replaceAdvFollowUpTags($input['contact_id'], $invoices, $replacable_inputs);
 
@@ -89,7 +89,7 @@ class CrmUtil extends Util
 
             $follow_up = $this->addFollowUp($input, $user);
 
-            if (! empty($value['invoices'])) {
+            if (!empty($value['invoices'])) {
                 $follow_up->invoices()->sync($value['invoices']);
             }
         }
@@ -98,13 +98,13 @@ class CrmUtil extends Util
     public function updateFollowUp($follow_up_id, $input, $user)
     {
         $input['notify_via'] = [
-            'sms' => ! empty($input['notify_via']['sms']) ? 1 : 0,
-            'mail' => ! empty($input['notify_via']['mail']) ? 1 : 0,
+            'sms' => !empty($input['notify_via']['sms']) ? 1 : 0,
+            'mail' => !empty($input['notify_via']['mail']) ? 1 : 0,
         ];
 
-        $input['notify_type'] = ! empty($input['notify_type']) ? $input['notify_type'] : 'hour';
-        $input['schedule_type'] = ! empty($input['schedule_type']) ? $input['schedule_type'] : 'email';
-        $input['allow_notification'] = ! empty($input['allow_notification']) ? 1 : 0;
+        $input['notify_type'] = !empty($input['notify_type']) ? $input['notify_type'] : 'hour';
+        $input['schedule_type'] = !empty($input['schedule_type']) ? $input['schedule_type'] : 'email';
+        $input['allow_notification'] = !empty($input['allow_notification']) ? 1 : 0;
         $input['followup_category_id'] = $input['followup_category_id'];
 
         $assigned_user = $input['user_id'];
@@ -112,7 +112,7 @@ class CrmUtil extends Util
 
         $query = Schedule::where('business_id', $user->business_id);
 
-        if (! $user->can('crm.access_all_schedule') && $user->can('crm.access_own_schedule')) {
+        if (!$user->can('crm.access_all_schedule') && $user->can('crm.access_own_schedule')) {
             $query->where(function ($qry) use ($user) {
                 $qry->whereHas('users', function ($q) use ($user) {
                     $q->where('user_id', $user->id);
@@ -133,13 +133,13 @@ class CrmUtil extends Util
     {
         $query = Schedule::with(['customer', 'followupCategory'])->where('business_id', $user->business_id);
 
-        if (! empty($start_date) && ! empty($end_date)) {
+        if (!empty($start_date) && !empty($end_date)) {
             $query->whereBetween(DB::raw('date(start_datetime)'), [$start_date, $end_date]);
-        } elseif (! empty($start_date)) {
+        } elseif (!empty($start_date)) {
             $query->where(DB::raw('date(start_datetime)'), $start_date);
         }
 
-        if (! $user->can('crm.access_all_schedule') && $user->can('crm.access_own_schedule')) {
+        if (!$user->can('crm.access_all_schedule') && $user->can('crm.access_own_schedule')) {
             $query->where(function ($qry) use ($user) {
                 $qry->whereHas('users', function ($q) use ($user) {
                     $q->where('user_id', $user->id);
@@ -153,21 +153,52 @@ class CrmUtil extends Util
     public function getLeadsListQuery($business_id)
     {
         $leads = CrmContact::with(['Source', 'lifeStage', 'leadUsers'])
-                ->where('contacts.business_id', $business_id)
-                ->where('contacts.type', 'lead')
-                ->select('contacts.contact_id', 'name', 'supplier_business_name', 'email',
-                'mobile', 'tax_number', 'contacts.created_at', 'custom_field1',
-                'custom_field2', 'custom_field3', 'custom_field4', 'custom_field5',
-                'custom_field6', 'alternate_number', 'landline', 'dob', 'contact_status',
-                'type', 'custom_field7', 'custom_field8', 'custom_field9', 'custom_field10',
-                'contacts.id', 'contacts.business_id', 'crm_source', 'crm_life_stage', 'address_line_1',
-                'address_line_2', 'city', 'state', 'country', 'zip_code',
-                'contacts.prefix', 'contacts.first_name', 'contacts.middle_name', 'contacts.last_name',
-                DB::raw('(SELECT CS.id FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime < "'.Carbon::today()->toDateTimeString().'" ORDER BY CS.start_datetime DESC LIMIT 1) as last_follow_up_id'), DB::raw('(SELECT CS.id FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime > "'.Carbon::today()->toDateTimeString().'" ORDER BY CS.start_datetime ASC LIMIT 1) as upcoming_follow_up_id'),
-                    DB::raw('(SELECT CS.start_datetime FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime < "'.Carbon::today()->toDateTimeString().'" ORDER BY CS.start_datetime DESC LIMIT 1) as last_follow_up'),
-                    DB::raw('(SELECT CS.start_datetime FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime > "'.Carbon::today()->toDateTimeString().'" ORDER BY CS.start_datetime ASC LIMIT 1) as upcoming_follow_up'),
-                    DB::raw('(SELECT CS.followup_additional_info FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime < "'.Carbon::today()->toDateTimeString().'" ORDER BY CS.start_datetime DESC LIMIT 1) as last_follow_up_additional_info'),
-                    DB::raw('(SELECT CS.followup_additional_info FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime > "'.Carbon::today()->toDateTimeString().'" ORDER BY CS.start_datetime ASC LIMIT 1) as upcoming_follow_up_additional_info'));
+            ->where('contacts.business_id', $business_id)
+            ->where('contacts.type', 'lead')
+            ->select(
+                'contacts.contact_id',
+                'name',
+                'supplier_business_name',
+                'email',
+                'mobile',
+                'tax_number',
+                'contacts.created_at',
+                'custom_field1',
+                'custom_field2',
+                'custom_field3',
+                'custom_field4',
+                'custom_field5',
+                'custom_field6',
+                'alternate_number',
+                'landline',
+                'dob',
+                'contact_status',
+                'type',
+                'custom_field7',
+                'custom_field8',
+                'custom_field9',
+                'custom_field10',
+                'contacts.id',
+                'contacts.business_id',
+                'crm_source',
+                'crm_life_stage',
+                'address_line_1',
+                'address_line_2',
+                'city',
+                'state',
+                'country',
+                'zip_code',
+                'contacts.prefix',
+                'contacts.first_name',
+                'contacts.middle_name',
+                'contacts.last_name',
+                DB::raw('(SELECT CS.id FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime < "' . Carbon::today()->toDateTimeString() . '" ORDER BY CS.start_datetime DESC LIMIT 1) as last_follow_up_id'),
+                DB::raw('(SELECT CS.id FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime > "' . Carbon::today()->toDateTimeString() . '" ORDER BY CS.start_datetime ASC LIMIT 1) as upcoming_follow_up_id'),
+                DB::raw('(SELECT CS.start_datetime FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime < "' . Carbon::today()->toDateTimeString() . '" ORDER BY CS.start_datetime DESC LIMIT 1) as last_follow_up'),
+                DB::raw('(SELECT CS.start_datetime FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime > "' . Carbon::today()->toDateTimeString() . '" ORDER BY CS.start_datetime ASC LIMIT 1) as upcoming_follow_up'),
+                DB::raw('(SELECT CS.followup_additional_info FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime < "' . Carbon::today()->toDateTimeString() . '" ORDER BY CS.start_datetime DESC LIMIT 1) as last_follow_up_additional_info'),
+                DB::raw('(SELECT CS.followup_additional_info FROM crm_schedules AS CS WHERE CS.contact_id=contacts.id AND CS.start_datetime > "' . Carbon::today()->toDateTimeString() . '" ORDER BY CS.start_datetime ASC LIMIT 1) as upcoming_follow_up_additional_info')
+            );
 
         return $leads;
     }
@@ -176,7 +207,7 @@ class CrmUtil extends Util
     {
         $input['password'] = Hash::make($input['password']);
         $input['user_type'] = 'user_customer';
-        $input['cmmsn_percent'] = ! empty($input['cmmsn_percent']) ? $input['cmmsn_percent'] : 0;
+        $input['cmmsn_percent'] = !empty($input['cmmsn_percent']) ? $input['cmmsn_percent'] : 0;
 
         if (empty($input['allow_login'])) {
             $input['password'] = null;
@@ -184,6 +215,7 @@ class CrmUtil extends Util
             $input['allow_login'] = 0;
         }
         // Create the user
+        $input['created_by'] = auth()->user()->id;
         $user = User::create($input);
     }
 
@@ -206,10 +238,10 @@ class CrmUtil extends Util
     public function replaceAdvFollowUpTags($contact_id, $invoices, $input)
     {
         $contact = CrmContact::where('id', $contact_id)
-                        ->first();
+            ->first();
 
         $invoice_numbers = '';
-        if (! empty($invoices)) {
+        if (!empty($invoices)) {
             $transactions = Transaction::find($invoices);
             $invoice_numbers = implode(', ', $transactions->pluck('invoice_no')->toArray());
         }
@@ -243,9 +275,9 @@ class CrmUtil extends Util
     public function getCrmSettings($business_id)
     {
         $crm_settings = Business::where('id', $business_id)
-                                ->value('crm_settings');
+            ->value('crm_settings');
 
-        $crm_settings = ! empty($crm_settings) ? json_decode($crm_settings, true) : [];
+        $crm_settings = !empty($crm_settings) ? json_decode($crm_settings, true) : [];
 
         return $crm_settings;
     }

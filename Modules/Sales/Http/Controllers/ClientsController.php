@@ -290,7 +290,7 @@ class ClientsController extends Controller
                     'commercial_register_no', 'mobile', 'email', 'city'
 
                 ])->where('business_id', $business_id)->where('type', 'converted');
-                
+
 
             return Datatables::of($contacts)
 
@@ -391,6 +391,7 @@ class ClientsController extends Controller
                 $userInfo['allow_login'] = 0;
                 $userInfo['business_id'] =  $business_id;
                 $userInfo['crm_contact_id'] =  $contactId;
+                $userInfo['created_by'] =  auth()->user()->id;
                 User::create($userInfo);
             }
 
@@ -418,7 +419,7 @@ class ClientsController extends Controller
             $contact_signer_input['user_type'] = 'customer_user';
             $contact_signer_input['username'] = null;
             $contact_signer_input['password'] = null;
-
+            $contact_signer_input['created_by'] =  auth()->user()->id;
 
             // $contact_signer_input['allow_login'] = $input['allow_login_cs'];
             $contact_signer_input['contact_user_type'] = 'contact_signer';
@@ -439,7 +440,7 @@ class ClientsController extends Controller
             $contact_follower_input['user_type'] = "customer_user";
             $contact_follower_input['username'] = null;
             $contact_follower_input['password'] = null;
-
+            $contact_follower_input['created_by'] =  auth()->user()->id;
 
             // $contact_follower_input['allow_login'] = $input['allow_login_cf'];
             $contact_follower_input['contact_user_type'] = 'contract_follower';
@@ -770,6 +771,7 @@ class ClientsController extends Controller
             $contract_signer_input['user_type'] = 'customer_user';
             $contract_signer_input['username'] = null;
             $contract_signer_input['password'] = null;
+            $contract_signer_input['created_by'] =  auth()->user()->id;
             // }
             if ($contactSigners != null) {
                 $contactSigners->update($contract_signer_input);
@@ -806,6 +808,7 @@ class ClientsController extends Controller
             $contract_follower_input['user_type'] = 'customer_user';
             $contract_follower_input['username'] = null;
             $contract_follower_input['password'] = null;
+            $contract_follower_input['created_by'] =  auth()->user()->id;
 
 
             if ($contactFollower != null) {

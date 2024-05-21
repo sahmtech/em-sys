@@ -93,7 +93,8 @@ class SalesController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $workers = User::where('user_type', 'worker');
         $workers_count = $workers->count();
-        $active_workers_count = $workers->where('status', 'active')->count();
+        $active_workers_count = $workers->where('status', 'active')
+        ->count();
         $inactive_workers_count = $workers->whereNot('status', 'active')->count();
         $under_study_price_offers = Transaction::where([['business_id', $user->business_id], ['type', 'sell'], ['sub_type', 'service'], ['status', 'under_study']])->count();
 

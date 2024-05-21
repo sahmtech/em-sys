@@ -599,7 +599,7 @@ class EssentialsEmployeeImportController extends Controller
                             //auto generate
                             $emp_data['emp_number'] = $this->moduleUtil->generateEmpNumber($emp_data['company_id']);
                         }
-
+                        $emp_data['created_by'] = auth()->user()->id;
                         $emp = User::create($emp_data);
 
 

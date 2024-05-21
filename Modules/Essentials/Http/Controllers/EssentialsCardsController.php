@@ -447,7 +447,13 @@ class EssentialsCardsController extends Controller
             ->whereIn('users.id', $userIds)
             ->where('users.is_cmmsn_agnt', 0)
             ->where('users.nationality_id', '!=', 5)
-            ->where('users.status', 'active')
+            ->where(function ($query) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
 
             ->leftJoin('essentials_employee_appointmets', function ($join) {
                 $join

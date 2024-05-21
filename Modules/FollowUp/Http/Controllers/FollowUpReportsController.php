@@ -314,7 +314,13 @@ class FollowUpReportsController extends Controller
 
                     return $row->users
                         ->where('user_type', 'worker')
-                        ->where('status', 'active')
+                        ->where(function ($query) {
+                            $query->where('users.status', 'active')
+                                ->orWhere(function ($subQuery) {
+                                    $subQuery->where('users.status', 'inactive')
+                                        ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                                });
+                        })
                         ->count();
                 })
                 ->addColumn('worker_count', function ($row) {

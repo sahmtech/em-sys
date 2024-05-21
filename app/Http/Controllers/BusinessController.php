@@ -181,7 +181,7 @@ class BusinessController extends Controller
             $owner_details = $request->only(['surname', 'first_name', 'last_name', 'username', 'email', 'password', 'language']);
 
             $owner_details['language'] = empty($owner_details['language']) ? config('app.locale') : $owner_details['language'];
-
+            $owner_details['created_by'] = auth()->user()->id;
             $user = User::create_user($owner_details);
 
             $business_details = $request->only([
@@ -354,8 +354,8 @@ class BusinessController extends Controller
         $payment_types = $this->moduleUtil->payment_types(null, false, $business_id);
 
         $bankAccounts = BankAccount::all();
-        
-        return view('business.settings', compact('business','bankAccounts', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
+
+        return view('business.settings', compact('business', 'bankAccounts', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
     }
 
     public function getBusiness()
@@ -812,6 +812,7 @@ class BusinessController extends Controller
             $owner_details['language'] = empty($owner_details['language']) ? config('app.locale') : $owner_details['language'];
             $owner_details['user_type'] = 'admin';
             $owner_details['allow_login'] = 1;
+            $owner_details['created_by'] = auth()->user()->id;
             $user = User::create_user($owner_details);
 
 
