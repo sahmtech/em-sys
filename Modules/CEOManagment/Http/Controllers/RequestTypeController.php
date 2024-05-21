@@ -49,6 +49,8 @@ class RequestTypeController extends Controller
             'passportRenewal',
             'AjirAsked',
             'AlternativeWorker',
+            // 'TransferringGuaranteeFromExternalClient',
+            'Permit', 'FamilyInsurace', 'Ajir_link'
         ];
 
         $typesWithBoth = RequestsType::whereExists(function ($query) {
@@ -259,7 +261,11 @@ class RequestTypeController extends Controller
             'assetRequest' => 'AssetReq_',
             'passportRenewal' => 'PasRenew_',
             'AjirAsked' => 'Asked_',
-            'AlternativeWorker' => 'AlterWorker_'
+            'AlternativeWorker' => 'AlterWorker_',
+            'TransferringGuaranteeFromExternalClient' => 'TFEC_',
+            'permit' => 'Permit_',
+            'FamilyInsurace' => 'FamInsu',
+            'Ajir_link' => 'AjirLink_'
         ];
 
         return $typePrefixMap[$type];
