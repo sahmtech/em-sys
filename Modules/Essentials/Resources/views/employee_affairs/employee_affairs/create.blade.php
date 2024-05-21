@@ -98,7 +98,7 @@
                     <!-- Hidden file input to store the captured photo -->
                
                 </div>
-@include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
+                      @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
                    
 
                   
@@ -122,52 +122,52 @@
                     </div>
                 </div>
 
-<div class="modal fade" data-file-path="{{ $contract->file_path ?? '' }}" id="ContractFilePopupModal"
-            tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                    <div class="modal fade" data-file-path="{{ $contract->file_path ?? '' }}" id="ContractFilePopupModal"
+                                tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
 
 
-                    <input type="hidden" name="delete_contract_file" value="0" id="delete_contract_file_input">
+                                        <input type="hidden" name="delete_contract_file" value="0" id="delete_contract_file_input">
 
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('essentials::lang.contract_file')</h4>
-                    </div>
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                                    aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">@lang('essentials::lang.contract_file')</h4>
+                                        </div>
 
-                    <div class="modal-body">
-                        <div class="row" id="contractFilePreviewRow" style="display: none;">
-                            <div class="form-group col-md-12">
-                                <iframe src="" id="popupContractFilePreview" style="width: 100%; height: 400px;"
-                                    frameborder="0"></iframe>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-9">
-                                <div class="form-group">
-                                    {!! Form::file('contract_file', [
-                                        'class' => 'form-control',
-                                        'style' => 'height:40px; ',
-                                        'accept' => '.*',
-                                    ]) !!}
+                                        <div class="modal-body">
+                                            <div class="row" id="contractFilePreviewRow" style="display: none;">
+                                                <div class="form-group col-md-12">
+                                                    <iframe src="" id="popupContractFilePreview" style="width: 100%; height: 400px;"
+                                                        frameborder="0"></iframe>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <div class="form-group">
+                                                        {!! Form::file('contract_file', [
+                                                            'class' => 'form-control',
+                                                            'style' => 'height:40px; ',
+                                                            'accept' => '.*',
+                                                        ]) !!}
 
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button type="button"
+                                                        class="btn btn-danger deleteContractFile">@lang('messages.delete')</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <button type="button"
-                                    class="btn btn-danger deleteContractFile">@lang('messages.delete')</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
 
 
 
