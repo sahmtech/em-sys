@@ -394,7 +394,7 @@ class ManageUserController extends Controller
             // if (!Str::contains($user->user_type, 'user')) {
             //     $user_data['user_type'] = ($user->user_type) . "user";
             // }
-
+            $user_data['updated_by'] = auth()->user()->id;
             $user->update($user_data);
             $role_id = $request->input('role');
             $user_role = $user->roles->first();

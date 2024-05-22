@@ -20,6 +20,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Sales\Entities\SalesProject;
 use Illuminate\Support\Facades\Auth;
+use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
 
 class EssentialsEmployeeContractController extends Controller
 {
@@ -45,6 +46,7 @@ class EssentialsEmployeeContractController extends Controller
         $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
         $can_add_employee_contracts = auth()->user()->can('essentials.add_employee_contracts');
         $can_show_employee_contracts = auth()->user()->can('essentials.show_employee_contracts');
+        $can_edit_employee_contracts = auth()->user()->can('essentials.edit_employee_contracts');
         $can_delete_employee_contracts = auth()->user()->can('essentials.delete_employee_contracts');
 
 
@@ -61,6 +63,7 @@ class EssentialsEmployeeContractController extends Controller
             ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employees_contracts.id',
+                'u.id_proof_number as id_proof_number',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' ,COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_contracts.contract_number',
                 'essentials_employees_contracts.contract_start_date',
@@ -90,7 +93,14 @@ class EssentialsEmployeeContractController extends Controller
             $employees_contracts->where('essentials_employees_contracts.contract_type_id', request()->input('contract_type'));
         }
         if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-            $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
+            $employees_contracts->where('essentials_employees_contracts.is_active', request()->input('status') == 'valid' ? 1 : 0);
+        }
+        if (!empty(request()->input('contract_file_exists_filter')) && request()->input('contract_file_exists_filter') !== 'all') {
+            if (request()->input('contract_file_exists_filter') == "exists") {
+                $employees_contracts->whereNotNull('file_path');
+            } else {
+                $employees_contracts->whereNull('file_path');
+            }
         }
         // if (!empty(request()->start_date) && !empty(request()->end_date)) {
         //     $start = request()->start_date;
@@ -126,21 +136,30 @@ class EssentialsEmployeeContractController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_show_employee_contracts, $can_delete_employee_contracts) {
+                    function ($row)  use ($is_admin, $can_show_employee_contracts, $can_delete_employee_contracts, $can_edit_employee_contracts) {
                         $html = '';
 
                         if ($is_admin || $can_show_employee_contracts) {
-                            if (!empty($row->file_path)) {
-                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.open(\'/uploads/' . $row->file_path . '\', \'_blank\')"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
-                                '&nbsp;';
+                            // if (!empty($row->file_path)) {
+                            //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.open(\'/uploads/' . $row->file_path . '\', \'_blank\')"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
+                            //     '&nbsp;';
+                            // } else {
+                            //     $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                            // }
+                            if ($row->file_path) {
+                                $html .= '<button class="btn btn-xs btn-info btn-modal view_doc_file_modal" data-id="' . $row->id . '" data-href="/uploads/' . $row->file_path . '"> ' . __('essentials::lang.contract_file') . '</button>  &nbsp;';
                             } else {
-                                $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                                $html .= ' &nbsp; <button class="btn btn-xs btn-secondary btn-modal view_doc_file_modal" data-id="' . $row->id . '" > ' . __('essentials::lang.contract_file') . '</button>  &nbsp;';
                             }
                         }
-
+                        if ($is_admin || $can_edit_employee_contracts) {
+                            $html .= '&nbsp;  <button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '" data-url="' . route('employeeContract.edit', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+                        }
                         if ($is_admin || $can_delete_employee_contracts) {
                             $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
+
+
 
 
 
@@ -151,6 +170,9 @@ class EssentialsEmployeeContractController extends Controller
 
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->where("u.id_proof_number", ["%{$keyword}%"]);
                 })
                 ->removeColumn('file_path')
                 ->removeColumn('id')
@@ -165,6 +187,111 @@ class EssentialsEmployeeContractController extends Controller
 
 
         return view('essentials::employee_affairs.employees_contracts.index')->with(compact('users', 'contract_types'));
+    }
+
+    public function storeContractFile(Request $request)
+    {
+        try {
+            if (request()->hasFile('file')) {
+                $file = request()->file('file');
+                $filePath = $file->store('/employee_contracts');
+                EssentialsEmployeesContract::where('id', $request->doc_id)->update([
+                    'file_path' => $filePath,
+                    'updated_by' => Auth::user()->id
+                ]);
+            } else if (request()->input('delete_file') == 1) {
+                EssentialsEmployeesContract::where('id', $request->doc_id)->update([
+                    'file_path' => Null,
+                    'updated_by' => Auth::user()->id
+                ]);
+            }
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
+
+
+
+    public function edit($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $employees_contract = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
+            ->where('essentials_employees_contracts.id', $id)->where('u.status', '!=', 'inactive')
+            ->select([
+                'essentials_employees_contracts.id',
+                'u.id_proof_number as id_proof_number',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' ,COALESCE(u.last_name, '')) as user"),
+                'essentials_employees_contracts.contract_number',
+                'essentials_employees_contracts.contract_start_date',
+                'essentials_employees_contracts.contract_end_date',
+                'essentials_employees_contracts.contract_duration',
+                'essentials_employees_contracts.contract_per_period',
+                'essentials_employees_contracts.probation_period',
+                'essentials_employees_contracts.contract_type_id',
+                'essentials_employees_contracts.is_renewable',
+                'essentials_employees_contracts.is_active',
+                'essentials_employees_contracts.file_path',
+                DB::raw("
+                 CASE 
+                WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
+                WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
+                WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
+                WHEN DATE(essentials_employees_contracts.contract_end_date) > CURDATE() THEN 'valid'
+                ELSE 'Null'
+              END as status
+                  "),
+            ])->first();
+
+
+
+
+        return response()->json(['employees_contract' => $employees_contract]);
+    }
+
+    public function update(Request $request)
+    {
+
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        try {
+            $contract_id = $request->contract_id;
+            $input2['updated_by'] = Auth::user()->id;
+            $input2['contract_number'] = $request->contract_number;
+            $input2['contract_start_date'] = $request->contract_start_date;
+            $input2['contract_end_date'] = $request->contract_end_date;
+            $input2['contract_duration'] = $request->contract_duration;
+            $input2['probation_period'] = $request->probation_period;
+            $input2['is_renewable'] = $request->is_renewable;
+            $input2['contract_type_id'] = $request->contract_type_id;
+
+            EssentialsEmployeesContract::where('id', $contract_id)->update($input2);
+            $output = [
+                'success' => 1,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->back()->with('status', $output);
     }
 
 
@@ -214,8 +341,6 @@ class EssentialsEmployeeContractController extends Controller
 
             $input2['contract_type_id'] = $input['contract_type'];
 
-
-
             $input2['created_by'] = Auth::user()->id;
             $input2['is_renewable'] = $input['is_renewable'];
 
@@ -237,6 +362,7 @@ class EssentialsEmployeeContractController extends Controller
 
                 $input2['file_path'] = $filePath;
             }
+
 
             EssentialsEmployeesContract::where('employee_id', $input['employee'])->update(['is_active' => 0]);
             $contract = EssentialsEmployeesContract::create($input2);
@@ -273,8 +399,10 @@ class EssentialsEmployeeContractController extends Controller
 
 
         try {
-            EssentialsEmployeesContract::where('id', $id)
-                ->delete();
+            $contract = EssentialsEmployeesContract::where('id', $id)->first();
+            $contract['deleted_by'] = auth()->user()->id;
+            $contract->save();
+            $contract->delete();
 
             $output = [
                 'success' => true,

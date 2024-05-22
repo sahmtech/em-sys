@@ -8,4 +8,7 @@ return [
     'clients' => 'Clients',
     'documentation' => 'Documentation',
     'regenerate_doc' => 'Regenerate',
+    'user_device' => 'User Device',
+    'device_name' => 'Device Name',
+    'device_number' => 'Device Number',
 ];

@@ -64,7 +64,9 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.number',
                 'essentials_official_documents.expiration_date',
                 'u.user_type',
-                'u.id_proof_number as id_proof_number'
+                'u.id_proof_number as id_proof_number',
+
+                'u.border_no',
             ])
             ->orderby('essentials_official_documents.id', 'desc');
 
@@ -157,15 +159,23 @@ class EssentialsOfficialDocumentController extends Controller
 
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
     }
+
+
     public function storeDocFile(Request $request)
     {
         try {
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
-                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => $filePath, 'updated_by' => Auth::user()->id]);
+                EssentialsOfficialDocument::where('id', $request->doc_id)->update([
+                    'file_path' => $filePath,
+                    'updated_by' => Auth::user()->id
+                ]);
             } else if (request()->input('delete_file') == 1) {
-                EssentialsOfficialDocument::where('id', $request->doc_id)->update(['file_path' => Null, 'updated_by' => Auth::user()->id]);
+                EssentialsOfficialDocument::where('id', $request->doc_id)->update([
+                    'file_path' => Null,
+                    'updated_by' => Auth::user()->id
+                ]);
             }
             $output = [
                 'success' => true,
@@ -355,6 +365,10 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['expiration_date'] = $request->expiration_date;
             $input2['status'] = $request->status;
             $input2['updated_by'] = Auth::user()->id;
+            $input2['type'] = $request->doc_type;
+            $input2['number'] = $request->doc_number;
+            $input2['issue_date'] = $request->issue_date;
+            $input2['issue_place'] = $request->issue_place;
             EssentialsOfficialDocument::where('id', $docId)->update($input2);
             $output = [
                 'success' => 1,

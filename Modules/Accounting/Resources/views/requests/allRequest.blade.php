@@ -590,6 +590,14 @@
                                 return '@lang('request.AjirAsked')';
                             } else if (data === 'AlternativeWorker') {
                                 return '@lang('request.AlternativeWorker')';
+                            } else if (data === 'TransferringGuaranteeFromExternalClient') {
+                                return '@lang('request.TransferringGuaranteeFromExternalClient')';
+                            } else if (data === 'Permit') {
+                                return '@lang('request.Permit')';
+                            } else if (data === 'FamilyInsurace') {
+                                return '@lang('request.FamilyInsurace')';
+                            } else if (data === 'Ajir_link') {
+                                return '@lang('request.Ajir_link')';
                             } else {
                                 return data;
                             }

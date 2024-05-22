@@ -1683,7 +1683,13 @@ class RequestUtil extends Util
 
 
                 ->whereIn('requests.related_to', $userIds)
-                ->where('users.status', 'active');
+                ->where(function ($query) {
+                    $query->where('users.status', 'active')
+                        ->orWhere(function ($subQuery) {
+                            $subQuery->where('users.status', 'inactive')
+                                ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                        });
+                });
 
 
             if (request()->ajax()) {
@@ -1737,7 +1743,8 @@ class RequestUtil extends Util
             $user->update([
                 'status' => 'inactive',
                 'sub_status' => $sub_status,
-                'allow_login' => '0'
+                'allow_login' => '0',
+                'updated_by' => auth()->user()->id
             ]);
             $appointment = EssentialsEmployeeAppointmet::where('employee_id', $userRequest->related_to)->where('is_active', '1')->first();
             if ($appointment) {

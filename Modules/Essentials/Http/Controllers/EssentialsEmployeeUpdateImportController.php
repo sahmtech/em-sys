@@ -106,6 +106,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
             return redirect()->route('import-employees')->with('notification', ['success' => 0, 'msg' => $e->getMessage()]);
         }
     }
+
     private function exportFailedRows($failedRows)
     {
         $export = new FailedRowsExport($failedRows);
@@ -116,13 +117,13 @@ class EssentialsEmployeeUpdateImportController extends Controller
     {
 
         if (!$excelDate) {
-            error_log($excelDate);
+
             return $excelDate;
         } else {
             $excelDate = (int)$excelDate;
 
             $unixDate = ($excelDate - 25569) * 86400;
-            error_log(gmdate("Y-m-d", $unixDate));
+
             return gmdate("Y-m-d", $unixDate);
         }
     }
@@ -134,7 +135,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
         $proofNumberFound = true;
         $proofNameFound = true;
         $borderNumberFound = true;
-        error_log(json_encode($emp_array['border_no']));
+
         if (!isset($emp_array['id_proof_number']) || $emp_array['id_proof_number'] == null) {
             if (!isset($emp_array['border_no']) || $emp_array['border_no'] == null) {
 
@@ -554,7 +555,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
     private function updateOfficalDocument($formated_data, $existingEmployee)
     {
         if (isset($formated_data['id_proof_name']) && $formated_data['id_proof_name'] != null && $formated_data['id_proof_name'] == 'eqama') {
-            if (isset($formated_data['proof_end_date']) && $formated_data['proof_end_date'] != null) {
+            if (isset($formated_data['id_proof_number_expiration_date']) && $formated_data['id_proof_number_expiration_date'] != null) {
+                error_log('here_eqama_update');
                 $previous_proof_date = EssentialsOfficialDocument::where('employee_id',  $existingEmployee->id)
                     ->where('type', 'residence_permit')
                     ->where('is_active', 1)
@@ -583,7 +585,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 }
             }
         }
-        if (isset($formated_data['passport_end_date']) && $formated_data['passport_end_date'] != null) {
+        if (isset($formated_data['passport_expiration_date']) && $formated_data['passport_expiration_date'] != null) {
+            error_log('here_passport_update');
             $previous_passport_date = EssentialsOfficialDocument::where('employee_id',  $existingEmployee->id)
                 ->where('type', 'passport')
                 ->where('is_active', 1)
@@ -600,6 +603,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     'type' => 'passport',
                     'number' => $formated_data['passport_number'],
                     'expiration_date' => $formated_data['passport_expiration_date'],
+                    'created_by' => auth()->user()->id
                 ];
 
 
@@ -757,17 +761,18 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
     private function updateContract($formated_data, $existingEmployee)
     {
+        error_log('here_contract');
         if (!empty($formated_data) && (isset($formated_data['contract_start_date']) || isset($formated_data['contract_end_date']) || isset($formated_data['contract_type_id']))) {
-
-            $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
-
-            if ($previous_contract) {
-                $previous_contract->update(['is_active' => 0]);
-            }
-            $contract = new EssentialsEmployeesContract();
-
-
+            error_log('here_contract_update');
             if ((isset($formated_data['contract_start_date']) && $formated_data['contract_start_date'] != null) || (isset($formated_data['contract_end_date']) && $formated_data['contract_end_date'] != null)) {
+
+                $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
+
+                if ($previous_contract) {
+                    $previous_contract->update(['is_active' => 0]);
+                }
+
+                $contract = new EssentialsEmployeesContract();
 
                 if ((isset($formated_data['contract_start_date']) && $formated_data['contract_start_date'] != null) && (!isset($formated_data['contract_end_date']) || $formated_data['contract_end_date'] == null)) {
 
@@ -799,29 +804,30 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $contract->contract_end_date = $formated_data['contract_end_date'];
                     $contract->contract_duration = $contract_duration;
                 }
-            }
 
-            $contract->employee_id  = $existingEmployee->id;
-            if ((!isset($formated_data['contract_number']) || $formated_data['contract_number'] == null)) {
-                $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
-                if ($latestRecord) {
-                    $latestRefNo = $latestRecord->contract_number;
-                    $numericPart = (int)substr($latestRefNo, 3);
-                    $numericPart++;
-                    $formated_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+
+                $contract->employee_id  = $existingEmployee->id;
+                if ((!isset($formated_data['contract_number']) || $formated_data['contract_number'] == null)) {
+                    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+                    if ($latestRecord) {
+                        $latestRefNo = $latestRecord->contract_number;
+                        $numericPart = (int)substr($latestRefNo, 3);
+                        $numericPart++;
+                        $formated_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                    } else {
+                        $formated_data['contract_number'] = 'EC0001';
+                    }
+                    $contract->contract_number = $formated_data['contract_number'];
                 } else {
-                    $formated_data['contract_number'] = 'EC0001';
+                    $contract->contract_number = $formated_data['contract_number'];
                 }
-                $contract->contract_number = $formated_data['contract_number'];
-            } else {
-                $contract->contract_number = $formated_data['contract_number'];
+                $contract->probation_period = $formated_data["probation_period"] ?? 1;
+                $contract->is_renewable = $formated_data['is_renewable'] ?? 1;
+                $contract->contract_type_id  = $formated_data["contract_type_id"] ?? null;
+                $contract->is_active  = 1;
+                $contract->status = "valid";
+                $contract->save();
             }
-            $contract->probation_period = $formated_data["probation_period"] ?? 1;
-            $contract->is_renewable = $formated_data['is_renewable'] ?? 1;
-            $contract->contract_type_id  = $formated_data["contract_type_id"] ?? null;
-            $contract->is_active  = 1;
-            $contract->status = "valid";
-            $contract->save();
         }
     }
     private function updateUser($formated_data, $existingEmployee)
@@ -896,7 +902,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
     private function createOfficalDocument($formated_data, $existingEmployee)
     {
         if (isset($formated_data['id_proof_name']) && $formated_data['id_proof_name'] != null && $formated_data['id_proof_name'] == 'eqama') {
-            if (isset($formated_data['proof_end_date']) && $formated_data['proof_end_date'] != null) {
+            if (isset($formated_data['id_proof_number_expiration_date']) && $formated_data['id_proof_number_expiration_date'] != null) {
 
 
                 $residencePermitData =
@@ -907,6 +913,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         'employee_id' => $existingEmployee->id,
                         'number' => $formated_data['id_proof_number'],
                         'expiration_date' => $formated_data['id_proof_number_expiration_date'],
+                        'created_by' => auth()->user()->id
                     ];
                 $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
                     return $value !== null;
@@ -918,7 +925,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 }
             }
         }
-        if (isset($formated_data['passport_end_date']) && $formated_data['passport_end_date'] != null) {
+        if (isset($formated_data['passport_expiration_date']) && $formated_data['passport_expiration_date'] != null) {
 
             $passportData =
                 [
@@ -928,6 +935,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     'type' => 'passport',
                     'number' => $formated_data['passport_number'],
                     'expiration_date' => $formated_data['passport_expiration_date'],
+                    'created_by' => auth()->user()->id
                 ];
 
 
@@ -1113,12 +1121,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $formated_data['assigned_to'] = null;
                     $formated_data['status'] = 'inactive';
                 }
+                $formated_data['created_by'] = auth()->user()->id;
                 $formated_data['essentials_pay_period'] = 'month';
                 $dataToUpdate = array_filter($formated_data, function ($value) {
                     return !is_null($value);
                 });
 
                 // $user = new User();
+
                 $user = User::create($dataToUpdate);
                 return $user;
             }
@@ -1127,9 +1137,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
-
-
-
 
     public function downloadFile($filename)
     {

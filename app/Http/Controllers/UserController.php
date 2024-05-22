@@ -105,7 +105,7 @@ class UserController extends Controller
             if (!empty($request->input('bank_details'))) {
                 $input['bank_details'] = json_encode($request->input('bank_details'));
             }
-
+            $input['updated_by'] = auth()->user()->id;
             $user = User::find($user_id);
             $user->update($input);
 

@@ -43,7 +43,7 @@ class ReportController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -57,7 +57,13 @@ class ReportController extends Controller
 
 
         $first_account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
-            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
             ->first();
         $ledger_url = null;
         if (!empty($first_account)) {
@@ -75,7 +81,7 @@ class ReportController extends Controller
     public function trialBalance()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -116,7 +122,7 @@ class ReportController extends Controller
     public function balanceSheet()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -204,7 +210,7 @@ class ReportController extends Controller
     public function accountReceivableAgeingReport()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -221,7 +227,7 @@ class ReportController extends Controller
     public function accountPayableAgeingReport()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $location_id = request()->input('location_id', null);
         $report_details = $this->accountingUtil->getAgeingReport($business_id, 'purchase', $company_id, 'contact', $location_id);

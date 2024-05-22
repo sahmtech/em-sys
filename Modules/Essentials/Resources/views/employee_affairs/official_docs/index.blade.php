@@ -132,10 +132,11 @@
                                 <tr>
                                     <th>@lang('essentials::lang.doc_owner')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
+                                    <th>@lang('essentials::lang.border_no')</th>
                                     <th>@lang('essentials::lang.doc_number')</th>
                                     <th>@lang('essentials::lang.doc_type')</th>
                                     <th>@lang('essentials::lang.issue_date')</th>
-                                    <th>@lang('essentials::lang.issue_place')</th>
+
                                     <th>@lang('essentials::lang.expired_date')</th>
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('messages.action')</th>
@@ -482,7 +483,7 @@
 
             official_documents_table = $('#official_documents_table').DataTable({
                 processing: true,
-                serverSide: true,
+                // serverSide: true,
                 ajax: {
                     "url": "{{ action([\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index']) }}",
                     "data": function(d) {
@@ -525,6 +526,9 @@
                         data: 'id_proof_number'
                     },
                     {
+                        data: 'border_no'
+                    },
+                    {
                         data: 'number'
                     },
                     {
@@ -550,9 +554,7 @@
                     {
                         data: 'issue_date'
                     },
-                    {
-                        data: 'issue_place'
-                    },
+
 
                     {
                         data: 'expiration_date'
@@ -623,6 +625,15 @@
                         $('#editdocModal').find('[name="expiration_date"]').val(doc
                             .expiration_date);
                         $('#editdocModal').find('[name="docId"]').val(doc_id);
+                        $('#editdocModal').find('[name="doc_type"]').val(doc
+                            .type);
+                        $('#editdocModal').find('[name="issue_date"]').val(doc
+                            .issue_date);
+                        $('#editdocModal').find('[name="issue_place"]').val(doc
+                            .issue_place);
+                        $('#editdocModal').find('[name="doc_number"]').val(doc
+                            .number);
+
                         $('#editdocModal').modal('show');
                     },
                     error: function(xhr, status, error) {

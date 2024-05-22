@@ -185,7 +185,7 @@ class TravelersController extends Controller
                 $newRoom->save();
 
                 $user = User::find($userId);
-                $user->update(['room_id' => $request->room]);
+                $user->update(['room_id' => $request->room, 'updated_by' => auth()->user()->id]);
 
                 $room = HtrRoom::where('id', $request->room)->first();
                 if ($room) {
@@ -394,7 +394,8 @@ class TravelersController extends Controller
                                 'user_type' => 'worker',
                                 'border_no' => $data['border_no'],
                                 'proposal_worker_id' => $data['worker_id'],
-                                'created_by' => Auth::user()->id
+                                'created_by' => Auth::user()->id,
+
 
                             ]);
 

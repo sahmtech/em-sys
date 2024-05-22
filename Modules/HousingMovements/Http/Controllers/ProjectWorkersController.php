@@ -1080,6 +1080,7 @@ class ProjectWorkersController extends Controller
                 'number' => $request->bank_details['bank_code'],
                 'created_by' => Auth::user()->id,
                 'file_path' => $path,
+                'created_by' => auth()->user()->id,
             ];
 
             EssentialsOfficialDocument::create($documentData);

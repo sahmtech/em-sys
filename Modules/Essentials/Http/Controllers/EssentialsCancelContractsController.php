@@ -117,15 +117,16 @@ class EssentialsCancelContractsController extends Controller
 
             $user->update([
                 'status' => 'inactive',
-                'allow_login' => '0'
+                'allow_login' => '0',
+                'updated_by' => auth()->user()->id
             ]);
 
-            $appointment= EssentialsEmployeeAppointmet::where('employee_id',$userRequest->related_to)->where('is_active','1')->first();
+            $appointment = EssentialsEmployeeAppointmet::where('employee_id', $userRequest->related_to)->where('is_active', '1')->first();
             $appointment->update([
                 'is_active' => '0'
             ]);
 
-            $appointment= EssentialsAdmissionToWork::where('employee_id',$userRequest->related_to)->where('is_active','1')->first();
+            $appointment = EssentialsAdmissionToWork::where('employee_id', $userRequest->related_to)->where('is_active', '1')->first();
             $appointment->update([
                 'is_active' => '0'
             ]);

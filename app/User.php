@@ -150,6 +150,7 @@ class User extends Authenticatable
             'username' => $details['username'],
             'email' => $details['email'],
             'password' => Hash::make($details['password']),
+            'created_by' => auth()->user()->id,
             'language' => !empty($details['language']) ? $details['language'] : 'en',
         ]);
 
@@ -593,5 +594,10 @@ class User extends Authenticatable
     public function activeAdmission()
     {
         return $this->hasOne(EssentialsAdmissionToWork::class, 'employee_id')->where('is_active', 1);
+    }
+
+    public function userDevice()
+    {
+        return $this->hasOne(UserDevice::class, 'user_id');
     }
 }

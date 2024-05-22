@@ -194,9 +194,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeEmployeeContract', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'store'])->name('storeEmployeeContract');
         Route::delete('/employeeContracts/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'destroy'])->name('employeeContract.destroy');
         Route::get('/employeeContracts.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'show'])->name('employeeContract.view');
-        Route::put('/updateEmployeeContract/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'update'])->name('updateEmployeeContract');
+        Route::post('/updateEmployeeContract', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'update'])->name('updateEmployeeContract');
         Route::get('/employeeContracts/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'edit'])->name('employeeContract.edit');
-
+        Route::post('/storeContractFile', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'storeContractFile'])->name('storeContractFile');
 
 
 

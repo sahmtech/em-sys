@@ -26,7 +26,10 @@ return [
   'chamberRequest' => ' طلبات تصديق غرفة تجارية',
   'AjirAsked' => 'طلب أجير',
   'AlternativeWorker' => 'طلب عامل بديل',
-
+  'TransferringGuaranteeFromExternalClient' => 'طلب نقل كفالة من عميل خارجي',
+  'Permit' => 'طلب تصريح',
+  'FamilyInsurace' => 'طلب تأمين طبي للمرافقين',
+  'Ajir_link' => 'ربط أجير',
 
   'this_department_cant_reject_this_request' => 'لا يمكن لهذه الإدارة رفض هذا الطلب',
   'returned_successfully' => 'تم الإرجاع بنجاح',
