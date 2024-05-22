@@ -90,7 +90,7 @@ class EssentialsEmployeeContractController extends Controller
             $employees_contracts->where('essentials_employees_contracts.contract_type_id', request()->input('contract_type'));
         }
         if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-            $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
+            $employees_contracts->where('essentials_employees_contracts.is_active', request()->input('status') == 'valid' ? 1 : 0);
         }
         // if (!empty(request()->start_date) && !empty(request()->end_date)) {
         //     $start = request()->start_date;

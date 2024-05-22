@@ -132,10 +132,11 @@
                                 <tr>
                                     <th>@lang('essentials::lang.doc_owner')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
+                                    <th>@lang('essentials::lang.border_no')</th>
                                     <th>@lang('essentials::lang.doc_number')</th>
                                     <th>@lang('essentials::lang.doc_type')</th>
                                     <th>@lang('essentials::lang.issue_date')</th>
-                                    <th>@lang('essentials::lang.issue_place')</th>
+
                                     <th>@lang('essentials::lang.expired_date')</th>
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('messages.action')</th>
@@ -525,6 +526,9 @@
                         data: 'id_proof_number'
                     },
                     {
+                        data: 'border_no'
+                    },
+                    {
                         data: 'number'
                     },
                     {
@@ -550,9 +554,7 @@
                     {
                         data: 'issue_date'
                     },
-                    {
-                        data: 'issue_place'
-                    },
+
 
                     {
                         data: 'expiration_date'

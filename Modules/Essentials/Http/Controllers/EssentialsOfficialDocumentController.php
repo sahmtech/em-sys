@@ -64,7 +64,9 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.number',
                 'essentials_official_documents.expiration_date',
                 'u.user_type',
-                'u.id_proof_number as id_proof_number'
+                'u.id_proof_number as id_proof_number',
+
+                'u.border_no',
             ])
             ->orderby('essentials_official_documents.id', 'desc');
 

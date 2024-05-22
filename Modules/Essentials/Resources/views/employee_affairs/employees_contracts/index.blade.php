@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                      <div class="col-md-3">
+                    <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('start_date_filter', __('essentials::lang.expiration_date_from') . ':') !!}
                             {!! Form::date('start_date_filter', null, [
@@ -38,6 +38,16 @@
                                 'style' => 'width:100%',
                                 'placeholder' => __('lang_v1.all'),
                             ]) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="status_filter">@lang('essentials::lang.status'):</label>
+                            <select class="form-control select2" name="status_filter" id="status_filter" style="width: 100%;">
+                                <option value="all">@lang('lang_v1.all')</option>
+                                <option value="valid">@lang('essentials::lang.valid')</option>
+                                <option value="expired">@lang('essentials::lang.expired')</option>
+                            </select>
                         </div>
                     </div>
                     {{--
@@ -354,7 +364,7 @@
 
             employees_contracts_table = $('#employees_contracts_table').DataTable({
                 processing: true,
-                serverSide: true,
+                // serverSide: true,
                 ajax: {
                     url: "{{ route('employeeContracts') }}",
                     data: function(d) {
@@ -362,7 +372,9 @@
                         addDateFiltersToRequest(d);
                         d.contract_type = $('#contract_type_filter').val();
 
-                        d.status = $('#status_filter').val();
+                        if ($('#status_filter').val() && $('#status_filter').val() != 'all') {
+                            d.status = $('#status_filter').val();
+                        }
 
                         console.log($('#doc_filter_date_range').val());
 
@@ -446,7 +458,7 @@
                 ],
             });
 
-             function addDateFiltersToRequest(d) {
+            function addDateFiltersToRequest(d) {
                 var start_date = $('#start_date_filter').val();
                 var end_date = $('#end_date_filter').val();
 
