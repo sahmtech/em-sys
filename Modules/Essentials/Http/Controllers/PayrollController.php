@@ -181,6 +181,24 @@ class PayrollController extends Controller
             $employee_ids = $employee_ids->pluck('id')->toArray();
             $users =  $users->whereIn('users.id',  $employee_ids);
         }
+        $requestcompanyIds = request()->input('company', []);
+        // $requestprojectIds = request()->input('project_name', []);
+
+        if (!empty($requestcompanyIds)) {
+            if (is_array($requestcompanyIds)) {
+                $users->whereIn('users.company_id', $requestcompanyIds);
+            } else {
+                $users->where('users.company_id', $requestcompanyIds);
+            }
+        }
+
+        // if (!empty($requestprojectIds)) {
+        //     if (is_array($requestprojectIds)) {
+        //         $users->whereIn('users.assigned_to', $requestprojectIds);
+        //     } else {
+        //         $users->where('users.assigned_to', $requestprojectIds);
+        //     }
+        // }
 
         if (!empty(request()->input('company')) && request()->input('company') !== 'all') {
             $users =  $users->where('users.company_id', request()->input('company'));

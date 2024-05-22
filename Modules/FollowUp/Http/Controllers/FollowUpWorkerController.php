@@ -313,7 +313,7 @@ class FollowUpWorkerController extends Controller
                 $input2['file_path'] = $filePath;
             }
 
-
+            $input2['created_by'] = auth()->user()->id;
             EssentialsOfficialDocument::create($input2);
 
             $output = [

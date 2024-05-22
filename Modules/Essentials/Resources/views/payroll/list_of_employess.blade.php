@@ -22,9 +22,11 @@
                                 'class' => 'form-control select2',
                                 'id' => 'select_company_id',
                                 'style' => 'height:40px; width:100%',
-                                'placeholder' => __('lang_v1.all'),
-                                'required',
+                               
+                              
+                                'multiple'=>'multiple',
                                 'autofocus',
+                                 'data-placeholder' => __('lang_v1.all')
                             ]) !!}
                         </div>
                     </div>
@@ -34,7 +36,8 @@
                             {!! Form::select('project_name_filter', $contacts_fillter, null, [
                                 'class' => 'form-control select2',
                                 'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
+                                
+                                 'data-placeholder' => __('lang_v1.all')
                             ]) !!}
 
                         </div>
@@ -125,10 +128,20 @@
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
                         }
+
+                // var selectedProjects = $('#project_name_filter').val();
+                // if (selectedProjects && selectedProjects.length > 0) {
+                //     d.project_name = selectedProjects; // Send selected company IDs as an array
+                // } else {
+                //     d.company = []; // Send an empty array if no company is selected
+                // }
                        
-                        if ($('#select_company_id').val()) {
-                            d.company = $('#select_company_id').val();
-                        }
+                var selectedCompanies = $('#select_company_id').val();
+                if (selectedCompanies && selectedCompanies.length > 0) {
+                    d.company = selectedCompanies; // Send selected company IDs as an array
+                } else {
+                    d.company = []; // Send an empty array if no company is selected
+                }
 
                           if ($('#user_type').val()) {
                             d.user_type = $('#user_type').val();

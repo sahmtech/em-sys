@@ -28,18 +28,20 @@ class SalesCommissionAgentController extends Controller
      */
     public function index()
     {
-        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
 
             $users = User::where('business_id', $business_id)
-                        ->where('is_cmmsn_agnt', 1)
-                        ->select(['id',
-                            DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"),
-                            'email', 'contact_no', 'address', 'cmmsn_percent', ]);
+                ->where('is_cmmsn_agnt', 1)
+                ->select([
+                    'id',
+                    DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"),
+                    'email', 'contact_no', 'address', 'cmmsn_percent',
+                ]);
 
             return Datatables::of($users)
                 ->addColumn(
@@ -70,8 +72,8 @@ class SalesCommissionAgentController extends Controller
      */
     public function create()
     {
-        if (! auth()->user()->can('user.create')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('user.create')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('sales_commission_agent.create');
@@ -85,8 +87,8 @@ class SalesCommissionAgentController extends Controller
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('user.create')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('user.create')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -96,16 +98,18 @@ class SalesCommissionAgentController extends Controller
             $input['business_id'] = $business_id;
             $input['allow_login'] = 0;
             $input['is_cmmsn_agnt'] = 1;
-
+            $input['created_by'] = auth()->user()->id;
             $user = User::create($input);
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.commission_agent_added_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -121,14 +125,14 @@ class SalesCommissionAgentController extends Controller
      */
     public function edit($id)
     {
-        if (! auth()->user()->can('user.update')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('user.update')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $user = User::findOrFail($id);
 
         return view('sales_commission_agent.edit')
-                    ->with(compact('user'));
+            ->with(compact('user'));
     }
 
     /**
@@ -140,8 +144,8 @@ class SalesCommissionAgentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (! auth()->user()->can('user.update')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('user.update')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -151,18 +155,21 @@ class SalesCommissionAgentController extends Controller
                 $business_id = $request->session()->get('user.business_id');
 
                 $user = User::where('id', $id)
-                            ->where('business_id', $business_id)
-                            ->where('is_cmmsn_agnt', 1)
-                            ->first();
+                    ->where('business_id', $business_id)
+                    ->where('is_cmmsn_agnt', 1)
+                    ->first();
+                $input['updated_by'] = auth()->user()->id;
                 $user->update($input);
 
-                $output = ['success' => true,
+                $output = [
+                    'success' => true,
                     'msg' => __('lang_v1.commission_agent_updated_success'),
                 ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-                $output = ['success' => false,
+                $output = [
+                    'success' => false,
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }
@@ -179,8 +186,8 @@ class SalesCommissionAgentController extends Controller
      */
     public function destroy($id)
     {
-        if (! auth()->user()->can('user.delete')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('user.delete')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -192,13 +199,15 @@ class SalesCommissionAgentController extends Controller
                     ->where('is_cmmsn_agnt', 1)
                     ->delete();
 
-                $output = ['success' => true,
+                $output = [
+                    'success' => true,
                     'msg' => __('lang_v1.commission_agent_deleted_success'),
                 ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-                $output = ['success' => false,
+                $output = [
+                    'success' => false,
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }

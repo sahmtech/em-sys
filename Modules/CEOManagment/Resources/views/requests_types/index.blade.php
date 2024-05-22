@@ -234,6 +234,14 @@
                                     return '@lang('ceomanagment::lang.AjirAsked')';
                                 case 'AlternativeWorker':
                                     return '@lang('ceomanagment::lang.AlternativeWorker')';
+                                case 'TransferringGuaranteeFromExternalClient':
+                                    return '@lang('ceomanagment::lang.TransferringGuaranteeFromExternalClient')';
+                                case 'Permit':
+                                    return '@lang('ceomanagment::lang.Permit')';
+                                case 'FamilyInsurace':
+                                    return '@lang('ceomanagment::lang.FamilyInsurace')';
+                                case 'Ajir_link':
+                                    return '@lang('ceomanagment::lang.Ajir_link')';
                                 default:
                                     return data;
                             }

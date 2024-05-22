@@ -1809,7 +1809,7 @@ class Util
         }
 
 
-
+        $user_details['created_by'] = auth()->user()->id;
 
         $user = User::create($user_details);
         if ($request->has('DocumentTypes')) {

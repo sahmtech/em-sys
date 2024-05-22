@@ -867,7 +867,7 @@ class EssentialsWorkersAffairsController extends Controller
                     $bankCode = $bank_details['bank_code'];
                     $input['number'] = $bankCode;
                     $input['file_path'] =  $path;
-
+                    $input['updated_by'] =  auth()->user()->id;
                     $Iban_doc = EssentialsOfficialDocument::where('employee_id', $user->id)->where('type', 'Iban')->where('is_active', 1)->first();
                     if ($Iban_doc) {
                         $Iban_doc->update([$input]);
@@ -902,6 +902,7 @@ class EssentialsWorkersAffairsController extends Controller
                     $bankCode = $bank_details['bank_code'];
                     $input['number'] = $bankCode;
                     $input['file_path'] =  $path;
+                    $inpu['updated_by'] = auth()->user()->id;
                     $Iban_doc->update($input);
                 }
                 $user_data['updated_by'] = Auth::user()->id;
