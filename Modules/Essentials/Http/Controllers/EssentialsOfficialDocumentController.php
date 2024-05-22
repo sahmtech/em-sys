@@ -365,6 +365,10 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['expiration_date'] = $request->expiration_date;
             $input2['status'] = $request->status;
             $input2['updated_by'] = Auth::user()->id;
+            $input2['type'] = $request->doc_type;
+            $input2['number'] = $request->doc_number;
+            $input2['issue_date'] = $request->issue_date;
+            $input2['issue_place'] = $request->issue_place;
             EssentialsOfficialDocument::where('id', $docId)->update($input2);
             $output = [
                 'success' => 1,

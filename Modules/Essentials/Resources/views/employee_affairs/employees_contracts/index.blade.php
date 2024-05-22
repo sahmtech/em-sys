@@ -50,6 +50,17 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="contract_file_exists_filter">@lang('essentials::lang.contract_file'):</label>
+                            <select class="form-control select2" name="contract_file_exists_filter"
+                                id="contract_file_exists_filter" style="width: 100%;">
+                                <option value="all">@lang('lang_v1.all')</option>
+                                <option value="exists">@lang('essentials::lang.doc_exists')</option>
+                                <option value="dosent_exist">@lang('essentials::lang.doc_doesnt_exist')</option>
+                            </select>
+                        </div>
+                    </div>
                     {{--
             <div class="col-md-3">
                 <div class="form-group">
@@ -85,6 +96,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('essentials::lang.contract_number')</th>
                                     <th>@lang('essentials::lang.contract_start_date')</th>
                                     <th>@lang('essentials::lang.contract_end_date')</th>
@@ -224,8 +236,58 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="addDocFileModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+                        {!! Form::open(['route' => 'storeContractFile', 'enctype' => 'multipart/form-data']) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('essentials::lang.contract_file')</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="modal-body">
+                                    <iframe id="iframeDocViewer" width="100%" height="300px" frameborder="0"></iframe>
+                                </div>
+                            </div>
+
+                            <div class="row" id="file_input_row">
+                                {!! Form::hidden('delete_file', '0', ['id' => 'delete_file_input']) !!}
+                                {!! Form::hidden('doc_id', null, ['id' => 'doc_id']) !!}
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('file', __('essentials::lang.contract_file') . ':') !!}
+
+                                    {!! Form::file('file', null, [
+                                        'class' => 'form-control',
+                                    
+                                        'style' => 'height:40px',
+                                    ]) !!}
+                                </div>
+                                <div class="col-md-3">
+                                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_official_documents'))
+                                        <button type="button"
+                                            class="btn btn-danger deleteFile">@lang('messages.delete')</button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary saveFile" disabled>@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default"
+                                data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+    @include('essentials::employee_affairs.employees_contracts.edit')
 @endsection
 @section('javascript')
 
@@ -375,7 +437,10 @@
                         if ($('#status_filter').val() && $('#status_filter').val() != 'all') {
                             d.status = $('#status_filter').val();
                         }
-
+                        if ($('#contract_file_exists_filter').val() && $('#contract_file_exists_filter')
+                            .val() != 'all') {
+                            d.contract_file_exists_filter = $('#contract_file_exists_filter').val();
+                        }
                         console.log($('#doc_filter_date_range').val());
 
                         // if ($('#doc_filter_date_range').val()) {
@@ -392,6 +457,9 @@
 
                 columns: [{
                         data: 'user'
+                    },
+                    {
+                        data: 'id_proof_number'
                     },
                     {
                         data: 'contract_number'
@@ -457,6 +525,161 @@
                     },
                 ],
             });
+            var userPermissions = {
+                isAdmin: {{ json_encode(auth()->user()->hasRole('Admin#1')) }},
+                canEdit: {{ json_encode(auth()->user()->can('essentials.edit_employee_contracts')) }},
+                canAdd: {{ json_encode(auth()->user()->can('essentials.add_employee_contracts')) }}
+            };
+
+            $(document).on('click', '.view_doc_file_modal', function(e) {
+                e.preventDefault();
+
+                var fileUrl = $(this).data('href') ?? null;
+                var doc_id = $(this).data('id');
+                $('#doc_id').val(doc_id);
+                if (fileUrl != null) {
+                    console.log(fileUrl);
+                    $('#iframeDocViewer').attr('src', fileUrl);
+
+                    if (userPermissions.isAdmin || userPermissions.canEdit) {
+
+                        $('#file_input_row').show();
+                    } else {
+                        $('#file_input_row').hide();
+                    }
+                    $('#iframeDocViewer').show();
+
+                } else {
+                    if (userPermissions.isAdmin || userPermissions.canAdd) {
+                        $('#file_input_row').show();
+                    } else {
+                        $('#file_input_row').hide();
+                    }
+                    $('#iframeDocViewer').hide();
+
+                }
+
+
+                // Open the modal
+                $('#addDocFileModal').modal('show');
+            });
+            $('#addDocFileModal').on('hidden.bs.modal', function() {
+                $('#iframeDocViewer').attr('src', '');
+            });
+            let fileChanged = false;
+            $('.deleteFile').on('click', function() {
+                $('#iframeDocViewer').attr('src', ''); // Remove image source
+                $('input[type="file"]').val(''); // Clear file input
+                $('#delete_file_input').val('1'); // Indicate that the image should be deleted
+                $('#iframeDocViewer').hide();
+                fileChanged = true;
+                enableSaveButton();
+            });
+
+
+            function enableSaveButton() {
+                $('.saveFile').prop('disabled', !fileChanged);
+            }
+
+            $('input[type="file"]').on('change', function(event) {
+                var file = event.target.files[0];
+
+                if (file) {
+                    var fileType = file.type;
+                    var url = '';
+
+                    // Check file type and create URL accordingly
+                    if (fileType.match(/image.*/)) {
+                        // If the file is an image
+                        url = URL.createObjectURL(file);
+                    } else if (fileType === 'application/pdf') {
+                        // If the file is a PDF - you might want to use PDF.js here
+                        url = URL.createObjectURL(file);
+                    } else {
+                        // Handle other file types or show an error message
+                        alert('File type not supported for preview');
+                        return;
+                    }
+
+                    // Update the iframe src to show the file
+                    $('#iframeDocViewer').attr('src', url).show();
+                } else {
+
+                }
+                fileChanged = true;
+                enableSaveButton();
+            });
+
+
+
+            $('#addDocModal').on('shown.bs.modal', function(e) {
+                $('#employees_select').select2({
+                    dropdownParent: $(
+                        '#addDocModal'),
+                    width: '100%',
+                });
+
+
+            });
+
+            $(document).on('click', '.open-edit-modal', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var doc_id = $(this).data('id');
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        var employees_contract = response.employees_contract;
+                        console.log(employees_contract);
+                        $('#editEmployeesContractModal').find('[name="contract_id"]').val(
+                            employees_contract
+                            .id);
+                        $('#editEmployeesContractModal').find('[name="contract_start_date"]')
+                            .val(
+                                employees_contract
+                                .contract_start_date);
+                        $('#editEmployeesContractModal').find('[name="contract_end_date"]')
+                            .val(
+                                employees_contract
+                                .contract_end_date);
+                        $('#editEmployeesContractModal').find('[name="contract_duration"]')
+                            .val(
+                                employees_contract
+                                .contract_duration);
+                        $('#editEmployeesContractModal').find('[name="probation_period"]')
+                            .val(
+                                employees_contract
+                                .probation_period);
+                        $('#editEmployeesContractModal').find('[name="is_renewable"]')
+                            .val(
+                                employees_contract
+                                .is_renewable);
+                        $('#editEmployeesContractModal').find('[name="contract_type"]')
+                            .val(
+                                employees_contract
+                                .contract_type_id);
+                        $('#editEmployeesContractModal').find('[name="contract_number"]')
+                            .val(
+                                employees_contract
+                                .contract_number);
+                        // $('#editdocModal').find('[name="status"]').val(doc.status);
+                        // $('#editdocModal').find('[name="expiration_date"]').val(doc
+                        //     .expiration_date);
+                        // $('#editdocModal').find('[name="docId"]').val(doc_id);
+                        // $('#editdocModal').modal('show');
+                        $('#editEmployeesContractModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+
+                        console.error("Error in AJAX request:", error);
+                    }
+                });
+
+
+            })
+
+
 
             function addDateFiltersToRequest(d) {
                 var start_date = $('#start_date_filter').val();
@@ -484,11 +707,13 @@
             });
 
 
-            $('#contract_type_filter,#status_filter ,#doc_filter_date_range').on('change', function() {
-                console.log($('#contract_type_filter').val());
-                console.log($('#status_filter').val());
-                reloadDataTable();
-            });
+            $('#contract_type_filter, #contract_file_exists_filter, #status_filter ,#doc_filter_date_range').on(
+                'change',
+                function() {
+                    console.log($('#contract_type_filter').val());
+                    console.log($('#status_filter').val());
+                    reloadDataTable();
+                });
             $(document).on('click', 'button.delete_employeeContract_button', function() {
                 swal({
                     title: LANG.sure,

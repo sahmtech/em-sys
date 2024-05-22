@@ -625,6 +625,15 @@
                         $('#editdocModal').find('[name="expiration_date"]').val(doc
                             .expiration_date);
                         $('#editdocModal').find('[name="docId"]').val(doc_id);
+                        $('#editdocModal').find('[name="doc_type"]').val(doc
+                            .type);
+                        $('#editdocModal').find('[name="issue_date"]').val(doc
+                            .issue_date);
+                        $('#editdocModal').find('[name="issue_place"]').val(doc
+                            .issue_place);
+                        $('#editdocModal').find('[name="doc_number"]').val(doc
+                            .number);
+
                         $('#editdocModal').modal('show');
                     },
                     error: function(xhr, status, error) {

@@ -1441,6 +1441,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'essentials.edit_employee_contracts',
+                        'label' => __('essentials::lang.edit_employee_contracts'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.delete_employee_contracts',
                         'label' => __('essentials::lang.delete_employee_contracts'),
                         'default' => false,

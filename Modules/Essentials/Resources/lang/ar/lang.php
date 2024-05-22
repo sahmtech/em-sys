@@ -1056,6 +1056,7 @@ return [
   '12_months' => '12 شهرا',
   'contract_file' => 'ملف العقد',
   'contract' => 'العقد',
+  'contract_file' => 'مرفق العقد',
   'english_name' => 'الاسم الانكليزي',
   'all' => 'الكل',
   'connect_camera' => 'الاتصال بالكاميرا',
@@ -1375,6 +1376,7 @@ return [
 
   'add_employee_contracts' => 'إضافة عقد وظيفي',
   'show_employee_contracts' => 'عرض ملف العقد',
+  'edit_employee_contracts' => 'تعديل العقد الوظيفي',
   'delete_employee_contracts' => 'حذف العقد الوظيفي',
 
   'add_employee_qualifications' => 'إضافة مؤهل علمي',
