@@ -482,7 +482,7 @@
 
             official_documents_table = $('#official_documents_table').DataTable({
                 processing: true,
-                serverSide: true,
+                // serverSide: true,
                 ajax: {
                     "url": "{{ action([\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index']) }}",
                     "data": function(d) {
