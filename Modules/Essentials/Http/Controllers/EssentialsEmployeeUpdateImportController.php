@@ -563,6 +563,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     ->first();
 
                 if ($previous_proof_date) {
+                    $proofFile = $previous_proof_date->file_path;
                     $previous_proof_date->update(['is_active' => 0]);
                 }
 
@@ -570,6 +571,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     [
                         'status' => 'valid',
                         'is_active' => 1,
+                        'file_path' => $proofFile,
                         'type' => 'residence_permit',
                         'employee_id' => $existingEmployee->id,
                         'number' => $formated_data['id_proof_number'],
@@ -592,6 +594,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 ->where('is_active', 1)
                 ->first();
             if ($previous_passport_date) {
+                $passportFile = $previous_passport_date->file_path;
                 $previous_passport_date->update(['is_active' => 0]);
             }
 
@@ -600,6 +603,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     'status' => 'valid',
                     'is_active' => 1,
                     'employee_id' => $existingEmployee->id,
+                    'file_path' => $passportFile,
                     'type' => 'passport',
                     'number' => $formated_data['passport_number'],
                     'expiration_date' => $formated_data['passport_expiration_date'],
@@ -769,6 +773,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
 
                 if ($previous_contract) {
+                    $file = $previous_contract->file_path;
                     $previous_contract->update(['is_active' => 0]);
                 }
 
@@ -805,7 +810,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $contract->contract_duration = $contract_duration;
                 }
 
-
+                $contract->file_path = $file;
                 $contract->employee_id  = $existingEmployee->id;
                 if ((!isset($formated_data['contract_number']) || $formated_data['contract_number'] == null)) {
                     $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
