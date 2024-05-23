@@ -6,8 +6,8 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountReportsController;
 use App\Http\Controllers\AccountTypeController;
 use App\Http\Controllers\BankAccountsController;
-
-
+use Carbon\Carbon;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 // use App\Http\Controllers\Auth;
 use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BarcodeController;
@@ -73,6 +73,8 @@ use App\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Modules\FollowUp\Http\Controllers\FollowUpRequestController;
+
+
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
@@ -358,8 +360,86 @@ Route::get('/updateContractsBetweenDates', function () {
 
     return response()->json(['message' => 'success']);
 });
+Route::get('/getEmployeeIdsWithContractsBefore2000', function () {
+    $employeeIds = EssentialsEmployeesContract::where('contract_end_date', '<', '2000-01-01')
+        ->pluck('employee_id');
+
+    foreach ($employeeIds as $employeeId) {
+
+        $latestContract = EssentialsEmployeesContract::where('employee_id', $employeeId)
+            ->where('is_active', 1)
+            ->first();
+
+        if ($latestContract) {
+
+            $latestContract->delete();
+
+            $previousContract = EssentialsEmployeesContract::where('employee_id', $employeeId)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($previousContract) {
+
+                $previousContract->is_active = 1;
+                $previousContract->save();
+            }
+        }
+    }
+});
+Route::get('/updateContractNumbers', function () {
+
+    EssentialsEmployeesContract::query()->update(['contract_number' => null]);
 
 
+    $contracts = EssentialsEmployeesContract::orderBy('id')->get();
+
+    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+    $latestRefNo = $latestRecord ? $latestRecord->contract_number : null;
+    $numericPart = $latestRefNo ? (int)substr($latestRefNo, 2) : 0;
+
+    foreach ($contracts as $contract) {
+        $numericPart++;
+        $newContractNumber = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+        $contract->contract_number = $newContractNumber;
+        $contract->save();
+    }
+    return 'success';
+});
+
+Route::get('/updateContractsStatusForAll', function () {
+
+
+    $contracts = EssentialsEmployeesContract::all();
+
+    foreach ($contracts as $contract) {
+
+        if (is_null($contract->is_renewable) || is_null($contract->contract_duration) || is_null($contract->contract_start_date)) {
+            if (is_null($contract->contract_end_date) || Carbon::parse($contract->contract_end_date)->isPast()) {
+                $contract->is_active = 0;
+            }
+            $contract->save();
+            continue;
+        }
+        if (is_null($contract->contract_end_date)) {
+            continue;
+        }
+
+        $contractEndDate = Carbon::parse($contract->contract_end_date);
+
+        if ($contractEndDate->isPast() && $contract->is_renewable == 1) {
+            while ($contractEndDate->isPast()) {
+                $contract->contract_start_date = $contractEndDate;
+                $contractEndDate = $contractEndDate->copy()->addYears($contract->contract_duration);
+            }
+            $contract->contract_end_date = $contractEndDate;
+        } elseif ($contract->is_renewable == 0) {
+            $contract->is_active = 0;
+        }
+
+        $contract->save();
+    }
+    return 'success';
+});
 Route::get('/clear_cache', function () {
     try {
         // Call the artisan command
