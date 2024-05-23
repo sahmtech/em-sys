@@ -51,7 +51,15 @@ class EssentialsOfficialDocumentController extends Controller
 
         $official_documents = EssentialsOfficialDocument::leftjoin('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
             ->whereIn('u.id',  $userIds)
-            ->where('u.status', '!=', 'inactive')
+
+            ->where(function ($query) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+
             ->where('essentials_official_documents.is_active', 1)
             ->select([
                 'essentials_official_documents.id',
