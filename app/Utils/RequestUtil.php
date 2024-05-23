@@ -1683,13 +1683,7 @@ class RequestUtil extends Util
 
 
                 ->whereIn('requests.related_to', $userIds)
-                ->where(function ($query) {
-                    $query->where('users.status', 'active')
-                        ->orWhere(function ($subQuery) {
-                            $subQuery->where('users.status', 'inactive')
-                                ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
-                        });
-                });
+                ->where('users.status', 'active');
 
 
             if (request()->ajax()) {

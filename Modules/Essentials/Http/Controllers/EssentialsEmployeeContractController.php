@@ -60,7 +60,13 @@ class EssentialsEmployeeContractController extends Controller
 
 
         $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
-            ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
+            ->whereIn('u.id', $userIds)->where(function ($query) {
+                $query->where('u.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('u.status', 'inactive')
+                            ->whereIn('u.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
             ->select([
                 'essentials_employees_contracts.id',
                 'u.id_proof_number as id_proof_number',
