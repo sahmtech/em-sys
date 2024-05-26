@@ -470,7 +470,7 @@ class ClientsController extends Controller
     public function store_from_website(Request $request)
     {
 
-        return $request;
+
         $latestRecord = Contact::whereIn('type', ['draft', 'lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
 
 
