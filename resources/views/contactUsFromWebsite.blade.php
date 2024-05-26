@@ -11,7 +11,7 @@
             background: #f0f2f5;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
@@ -40,27 +40,27 @@
 
         .contact-form-container {
             background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             margin: 20px 0;
         }
 
         .contact-form-container h1 {
             text-align: center;
             margin-bottom: 20px;
-            color: #333333;
+            color: rgb(15, 66, 153);
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: rgb(15, 66, 153);
             font-weight: bold;
         }
@@ -68,38 +68,40 @@
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #dddddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: rgb(15, 66, 153);
+            outline: none;
+            box-shadow: 0 0 5px rgba(15, 66, 153, 0.2);
         }
 
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             background: rgb(15, 66, 153);
             color: #ffffff;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         button:hover {
             background: rgb(255, 180, 0);
         }
 
-        #responseMessage {
-            margin-top: 20px;
-            text-align: center;
-        }
-
         .alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
+            margin-top: 20px;
             padding: 10px 20px;
-            border-radius: 4px;
+            border-radius: 5px;
             color: white;
             font-weight: bold;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -132,36 +134,35 @@
 </head>
 
 <body>
-    @if (session('status'))
-        <div class="alert {{ session('status')['success'] ? 'alert-success' : 'alert-error' }}">
-            {{ session('status')['msg'] }}
-        </div>
-    @endif
     <div class="contact-form-container">
-        <h1 style="color: rgb(15, 66, 153)">تواصل معنا</h1>
+        <h1>تواصل معنا</h1>
+        @if (session('status'))
+            <div class="alert {{ session('status')['success'] ? 'alert-success' : 'alert-error' }}">
+                {{ session('status')['msg'] }}
+            </div>
+        @endif
         <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
-                <label style="color: rgb(15, 66, 153)" for="company-name">اسم الشركة :</label>
+                <label for="company-name">اسم الشركة :</label>
                 <input type="text" id="company-name" name="company_name" required>
             </div>
             <div class="form-group">
-                <label style="color: rgb(15, 66, 153)" for="contact-name">اسم جهة الاتصال :</label>
+                <label for="contact-name">اسم جهة الاتصال :</label>
                 <input type="text" id="contact-name" name="contact_name" required>
             </div>
             <div class="form-group">
-                <label style="color: rgb(15, 66, 153)" for="email">البريد الالكتروني :</label>
+                <label for="email">البريد الالكتروني :</label>
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group">
-                <label style="color: rgb(15, 66, 153)" for="number">رقم الاتصال :</label>
+                <label for="number">رقم الاتصال :</label>
                 <input type="text" id="number" name="number" required>
             </div>
             <button type="submit">إرسال</button>
         </form>
         <div id="responseMessage"></div>
     </div>
-
 </body>
 
 </html>
