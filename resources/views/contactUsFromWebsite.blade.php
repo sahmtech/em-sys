@@ -76,8 +76,7 @@
 <body>
     <div class="contact-form-container">
         <h1>Contact Us</h1>
-        <form id="contactForm" method="POST" action="https://emdadatalatta.com/store_from_website">
-            @csrf
+        <form id="contactForm">
             <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required>
@@ -94,6 +93,32 @@
         </form>
         <div id="responseMessage"></div>
     </div>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let formData = new FormData(this);
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch('https://emdadatalatta.com/store_from_website', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('responseMessage').innerText = data.message;
+                })
+                .catch(error => {
+                    document.getElementById('responseMessage').innerText = 'An error occurred';
+                });
+        });
+    </script>
 </body>
 
 </html>
