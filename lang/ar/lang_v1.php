@@ -1527,10 +1527,13 @@ return [
     'cost_center' => 'مركز التكلفة',
     'select_transfer_account' => 'حدد حساب التحويل',
     'delivery_note' => 'ملاحظات التوصيل',
-    'accounting_settings'=>'إعدادات الحسابات',
-    'public_accounting_settings'=>'إعدادات المحاسبة',
+    'accounting_settings' => 'إعدادات الحسابات',
+    'public_accounting_settings' => 'إعدادات المحاسبة',
+    'the email is already exist' => 'الايميل المدخل موجود سابقا',
+    'the number is already exist' => 'رقم الهاتف المدخل موجود سابقا',
 
-    
+
+
 
 
 ];

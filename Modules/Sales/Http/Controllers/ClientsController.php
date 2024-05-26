@@ -469,56 +469,70 @@ class ClientsController extends Controller
 
     public function store_from_website(Request $request)
     {
+        try {
+            $contactEmailexsits = Contact::where('email', $request->email)->first();
+            if ($contactEmailexsits) {
+                return redirect()->back()
+                    ->with('status', [
+                        'success' => false,
+                        'msg' => __('lang_v1.the email is already exist'),
+                    ]);
+            }
+            $contactEmailexsits = Contact::where('mobile', $request->contact_number)->first();
+            if ($contactEmailexsits) {
+                return redirect()->back()
+                    ->with('status', [
+                        'success' => false,
+                        'msg' => __('lang_v1.the number is already exist'),
+                    ]);
+            }
+            $latestRecord = Contact::whereIn('type', ['draft', 'lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
 
 
-        $latestRecord = Contact::whereIn('type', ['draft', 'lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->ref_no;
+                $numericPart = (int)substr($latestRefNo, 5);
+                $numericPart++;
+                $contact_input['ref_no'] = 'L' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
+            } else {
+                $contact_input['ref_no'] = 'L0005000';
+            }
 
 
-        if ($latestRecord) {
-            $latestRefNo = $latestRecord->ref_no;
-            $numericPart = (int)substr($latestRefNo, 5);
-            $numericPart++;
-            $contact_input['ref_no'] = 'L' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
-        } else {
+            // Store contact
+            $contact_input['supplier_business_name'] = $request->company_name;
+            $contact_input['name'] = $request->contact_name;
+            $contact_input['mobile'] = $request->contact_number;
+            $contact_input['email'] = $request->email;
+            $contact_input['business_id'] = 1;
+            $contact_input['type'] = "draft";
+            $contact_input['created_by'] = 1;
 
-            $contact_input['ref_no'] = 'L0005000';
+            $responseData = Contact::create($contact_input);
+            $contactId = $responseData->id;
+
+            if ($contactId) {
+                $userInfo['user_type'] = 'customer';
+                $userInfo['first_name'] = $request->contact_name;
+                $userInfo['allow_login'] = 0;
+                $userInfo['business_id'] =  1;
+                $userInfo['crm_contact_id'] =  $contactId;
+                $userInfo['created_by'] = 1;
+                User::create($userInfo);
+            }
+
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('lang_v1.added_success'),
+                ]);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('lang_v1.added_failed') . ' ' . $e->getMessage(),
+                ]);
         }
-
-
-
-
-
-        //store contact
-        // $contact_input['name'] =  $request->input('contact_name');
-        $contact_input['supplier_business_name'] = $request->name;
-        $contact_input['mobile'] = $request->mobile;
-        $contact_input['email'] = $request->email;
-        $contact_input['business_id'] = 1;
-        $contact_input['type'] = "draft";
-        $contact_input['created_by'] = 1;
-
-
-        // $output = $this->contactUtil->createNewContact($contact_input);
-
-        $responseData = Contact::create($contact_input);
-        $contactId = $responseData->id;
-        if ($contactId) {
-
-            $userInfo['user_type'] = 'customer';
-            $userInfo['first_name'] = $request->name;
-            $userInfo['allow_login'] = 0;
-            $userInfo['business_id'] =  1;
-            $userInfo['crm_contact_id'] =  $contactId;
-            $userInfo['created_by'] = 1;
-            User::create($userInfo);
-        }
-
-
-        $output = [
-            'success' => true,
-            'msg' => __('lang_v1.added_success'),
-        ];
-        return $output;
     }
 
 
