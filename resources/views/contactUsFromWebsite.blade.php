@@ -93,12 +93,47 @@
             margin-top: 20px;
             text-align: center;
         }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .alert-success {
+            background-color: green;
+        }
+
+        .alert-error {
+            background-color: red;
+        }
+
+        .alert.hide {
+            opacity: 0;
+        }
     </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.classList.add('hide');
+                }, 3000);
+            }
+        });
+    </script>
 </head>
 
 <body>
     @if (session('status'))
-        <div style="color: {{ session('status')['success'] ? 'green' : 'red' }}; text-align: center; margin-top: 20px;">
+        <div class="alert {{ session('status')['success'] ? 'alert-success' : 'alert-error' }}">
             {{ session('status')['msg'] }}
         </div>
     @endif
