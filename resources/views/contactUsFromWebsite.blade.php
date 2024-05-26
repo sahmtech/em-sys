@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us</title>
+    <title> تواصل معنا</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
@@ -70,6 +70,65 @@
             margin-top: 20px;
             text-align: center;
         }
+
+
+
+
+        .contact-form-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+        }
+
+        .contact-form-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: rgb(15, 66, 153);
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background: rgb(15, 66, 153);
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: rgb(255, 180, 0);
+        }
+
+        #responseMessage {
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -80,26 +139,26 @@
         </div>
     @endif
     <div class="contact-form-container">
-        <h1>Contact Us</h1>
+        <h1>تواصل معنا</h1>
         <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
-                <label for="name">Company Name</label>
+                <label for="name">اسم الشركة</label>
                 <input type="text" id="company_name" name="company_name" required>
             </div>
             <div class="form-group">
-                <label for="name">Contact Name</label>
+                <label for="name">اسم جهة الاتصال</label>
                 <input type="text" id="contact_name" name="contact_name" required>
             </div>
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email">البريد الالكتروني</label>
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group">
-                <label for="number">Number</label>
+                <label for="number">رقم الاتصال</label>
                 <input type="number" id="number" name="number" required>
             </div>
-            <button type="submit">Send Message</button>
+            <button type="submit">إرسال</button>
         </form>
         <div id="responseMessage"></div>
     </div>
