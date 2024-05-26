@@ -74,6 +74,11 @@
 </head>
 
 <body>
+    @if (session('status'))
+        <div style="color: {{ session('status')['success'] ? 'green' : 'red' }}; text-align: center; margin-top: 20px;">
+            {{ session('status')['msg'] }}
+        </div>
+    @endif
     <div class="contact-form-container">
         <h1>Contact Us</h1>
         <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
