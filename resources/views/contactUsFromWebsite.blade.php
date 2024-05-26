@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -75,7 +76,7 @@
 <body>
     <div class="contact-form-container">
         <h1>Contact Us</h1>
-        <form id="contactForm" method="POST" action="https://emdadatalatta.com/store_from_website">
+        <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
                 <label for="name">Name</label>
@@ -89,14 +90,6 @@
                 <label for="number">Number</label>
                 <input type="number" id="number" name="number" required>
             </div>
-            {{-- <div class="form-group">
-                <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" required>
-            </div> --}}
-            {{-- <div class="form-group">
-                <label for="message">Message</label>
-                <textarea id="message" name="message" rows="4" required></textarea>
-            </div> --}}
             <button type="submit">Send Message</button>
         </form>
         <div id="responseMessage"></div>

@@ -488,6 +488,7 @@ class ClientsController extends Controller
             }
             $latestRecord = Contact::whereIn('type', ['draft', 'lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
 
+
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->ref_no;
                 $numericPart = (int)substr($latestRefNo, 5);
@@ -496,6 +497,7 @@ class ClientsController extends Controller
             } else {
                 $contact_input['ref_no'] = 'L0005000';
             }
+
 
             // Store contact
             $contact_input['supplier_business_name'] = $request->company_name;
