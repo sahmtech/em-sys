@@ -293,6 +293,30 @@ class CustomAdminSidebarMenu
                 ],
             );
 
+            if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
+                $menu->url(
+
+                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                    __('essentials::lang.organizational_structure'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && request()->segment(2) == 'departments'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types')) {
+                $menu->url(
+                    action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
+                    __('ceomanagment::lang.requests_types'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests_types')]
+                );
+            }
+
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
+
+                $menu->url(
+                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
+                    __('ceomanagment::lang.procedures'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures')],
+                );
+            }
             if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') || auth()->user()->can('generalmanagement.view_GM_escalate_requests')) {
 
 
@@ -410,30 +434,6 @@ class CustomAdminSidebarMenu
                 ],
             );
 
-            if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
-                $menu->url(
-
-                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
-                    __('essentials::lang.organizational_structure'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'departments'],
-                );
-            }
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types')) {
-                $menu->url(
-                    action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
-                    __('ceomanagment::lang.requests_types'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests_types')]
-                );
-            }
-
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
-
-                $menu->url(
-                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
-                    __('ceomanagment::lang.procedures'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures')],
-                );
-            }
             if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') || auth()->user()->can('ceomanagment.view_CEO_escalate_requests')) {
 
                 $menu->url(

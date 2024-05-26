@@ -53,19 +53,19 @@ class EssentialsOfficialDocumentController extends Controller
             ->whereIn('u.id',  $userIds)
 
             ->where(function ($query) {
-                $query->where('users.status', 'active')
+                $query->where('u.status', 'active')
                     ->orWhere(function ($subQuery) {
-                        $subQuery->where('users.status', 'inactive')
-                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                        $subQuery->where('u.status', 'inactive')
+                            ->whereIn('u.sub_status', ['vacation', 'escape', 'return_exit']);
                     });
             })
 
-            ->where('essentials_official_documents.is_active', 1)
+            // ->where('essentials_official_documents.is_active', 1)
             ->select([
                 'essentials_official_documents.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'essentials_official_documents.type',
-                'essentials_official_documents.status',
+                'essentials_official_documents.is_active',
                 'essentials_official_documents.file_path',
                 'essentials_official_documents.issue_date',
                 'essentials_official_documents.issue_place',
@@ -89,7 +89,12 @@ class EssentialsOfficialDocumentController extends Controller
                 $official_documents->where('u.user_type', request()->input('user_type'));
             }
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $official_documents->where('essentials_official_documents.status', request()->input('status'));
+                if (request()->input('status') == 'valid') {
+                    $official_documents->where('essentials_official_documents.is_active', 1);
+                }
+                if (request()->input('status') == 'expired') {
+                    $official_documents->where('essentials_official_documents.is_active', 0);
+                }
             }
 
             if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
