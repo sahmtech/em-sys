@@ -470,7 +470,12 @@ Route::get('/updateOfficialDocumentsStatusForAll', function () {
     }
     return 'success';
 });
+Route::get('/updateContractPerPeriod', function () {
 
+    EssentialsEmployeesContract::query()->update(['contract_per_period' => 'years']);
+    
+    return 'success';
+});
 
 Route::get('/clear_cache', function () {
     try {
