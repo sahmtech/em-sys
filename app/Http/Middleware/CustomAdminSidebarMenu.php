@@ -105,6 +105,8 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
+        } elseif (Str::startsWith($currentPath, 'generalmanagmentoffice')) {
+            $this->generalmanagmentofficeMenu();
         } elseif (Str::startsWith($currentPath, ['ceomanagment',])) {
             $this->ceoMenu();
         } elseif (Str::startsWith($currentPath, 'toDo')) {
@@ -291,6 +293,30 @@ class CustomAdminSidebarMenu
                 ],
             );
 
+            if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
+                $menu->url(
+
+                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                    __('essentials::lang.organizational_structure'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && request()->segment(2) == 'departments'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types')) {
+                $menu->url(
+                    action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
+                    __('ceomanagment::lang.requests_types'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests_types')]
+                );
+            }
+
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
+
+                $menu->url(
+                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
+                    __('ceomanagment::lang.procedures'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures')],
+                );
+            }
             if ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests') || auth()->user()->can('generalmanagement.view_GM_escalate_requests')) {
 
 
@@ -335,6 +361,63 @@ class CustomAdminSidebarMenu
             }
         });
     }
+    public function generalmanagmentofficeMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(
+                action([\Modules\GeneralManagmentOffice\Http\Controllers\DashboardController::class, 'index']),
+                '<i class="fas fa-users-cog"></i> ' . __('generalmanagmentoffice::lang.generalmanagmentoffice'),
+                [
+                    'active' => request()->segment(1) == 'generalmanagmentoffice' && request()->segment(2) == 'dashboard',
+                    // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
+                ],
+            );
+
+            if ($is_admin  || auth()->user()->can('generalmanagmentoffice.view_president_requests') || auth()->user()->can('generalmanagmentoffice.view_escalate_requests')) {
+
+
+                $menu->url(
+                    ($is_admin  || auth()->user()->can('generalmanagmentoffice.view_president_requests')) ? action([\Modules\GeneralManagmentOffice\Http\Controllers\RequestController::class, 'index']) : action([\Modules\GeneralManagmentOffice\Http\Controllers\RequestController::class, 'escalateRequests']),
+                    __('generalmanagmentoffice::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'GMO_president_requests' || request()->segment(2) == 'GMO_escalate_requests')]
+                );
+            }
+            // if ($is_admin   || auth()->user()->can('generalmanagmentoffice.view_notifications') || auth()->user()->can('generalmanagmentoffice.send_notifications')) {
+
+
+            //     $menu->dropdown(
+            //         __('generalmanagmentoffice::lang.notifications'),
+            //         function ($sub)  use ($is_admin) {
+            //             if ($is_admin || auth()->user()->can('generalmanagmentoffice.view_notifications')) {
+            //                 $sub->url(
+            //                     route('GMO_notifications.index'),
+            //                     __('generalmanagmentoffice::lang.view_notifications'),
+            //                     ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'index']
+            //                 );
+            //             }
+            //             if ($is_admin ||  auth()->user()->can('generalmanagement.send_notifications')) {
+            //                 $sub->url(
+            //                     route('notifications.create'),
+            //                     __('generalmanagement::lang.send_notifications'),
+            //                     ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'create']
+            //                 );
+            //             }
+            //             if ($is_admin ||  auth()->user()->can('generalmanagement.edit_notification_settings')) {
+            //                 $sub->url(
+            //                     route('notifications.settings'),
+            //                     __('generalmanagement::lang.notification_settings'),
+            //                     ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'settings']
+            //                 );
+            //             }
+            //         },
+            //         ['icon' => 'fa fas fa-envelope',]
+            //     );
+            // }
+        });
+    }
     public function ceoMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
@@ -351,30 +434,6 @@ class CustomAdminSidebarMenu
                 ],
             );
 
-            if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
-                $menu->url(
-
-                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
-                    __('essentials::lang.organizational_structure'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && request()->segment(2) == 'departments'],
-                );
-            }
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types')) {
-                $menu->url(
-                    action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
-                    __('ceomanagment::lang.requests_types'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests_types')]
-                );
-            }
-
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
-
-                $menu->url(
-                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
-                    __('ceomanagment::lang.procedures'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ceomanagment' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures')],
-                );
-            }
             if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') || auth()->user()->can('ceomanagment.view_CEO_escalate_requests')) {
 
                 $menu->url(

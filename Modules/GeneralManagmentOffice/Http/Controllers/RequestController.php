@@ -1,32 +1,24 @@
 <?php
 
-namespace Modules\GeneralManagement\Http\Controllers;
-
+namespace Modules\GeneralManagmentOffice\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\User;;
 
+use App\User;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use App\Utils\RequestUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
-
 use App\Request as UserRequest;
 use App\RequestProcess;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Modules\CEOManagment\Entities\RequestsType;
 
 class RequestController extends Controller
 {
-
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-
     protected $moduleUtil;
     protected $requestUtil;
 
@@ -68,22 +60,30 @@ class RequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
-        $can_return_request = auth()->user()->can('generalmanagement.return_request');
-        $can_show_request = auth()->user()->can('generalmanagement.view_request');
+        $can_change_status = auth()->user()->can('generalmanagmentoffice.change_request_status');
+        $can_return_request = auth()->user()->can('generalmanagmentoffice.return_request');
+        $can_show_request = auth()->user()->can('generalmanagmentoffice.view_request');
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
 
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
-                $query->Where('name', 'like', '%مجلس%')
-                    ->orWhere('name', 'like', '%عليا%')
-                    ->orWhere('name', 'like', '%عام%');
+                $query->Where('name', 'like', '%مكتب%');
             })
             ->pluck('id')->toArray();
 
         $ownerTypes = ['employee', 'manager', 'worker'];
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagmentoffice::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment);
     }
+
+    /**
+     * Show the form for creating a new resource.
+     * @return Renderable
+     */
+    public function create()
+    {
+        return view('generalmanagmentoffice::create');
+    }
+
 
     public function escalateRequests()
     {
@@ -97,8 +97,7 @@ class RequestController extends Controller
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
-                $query->Where('name', 'like', '%مجلس%')
-                    ->orWhere('name', 'like', '%عليا%')->orWhere('name', 'like', '%عام%');
+                $query->Where('name', 'like', '%مكتب%');
             })
             ->pluck('id')->toArray();
 
@@ -178,7 +177,7 @@ class RequestController extends Controller
                 ->make(true);
         }
         $statuses = $this->statuses;
-        return view('generalmanagement::requests.escalate_requests')->with(compact('statuses'));
+        return view('generalmanagmentoffice::requests.escalate_requests')->with(compact('statuses'));
     }
 
     public function changeEscalationStatus(Request $request)

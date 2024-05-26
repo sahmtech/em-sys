@@ -23,9 +23,7 @@
     "YourModuleName": true,
     "GeneralManagement": true,
     "HelpDesk": true,
-
     "LegalAffairs": true,
-
-    "CEOManagment": true
-
+    "CEOManagment": true,
+    "GeneralManagmentOffice": true
 }

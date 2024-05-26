@@ -288,6 +288,9 @@ class HomeController extends Controller
         $generalManagmentDashPermission = [
             ['value' => 'generalmanagement.generalmanagement_dashboard'],
         ];
+        $generalManagmentOfficeDashPermission = [
+            ['value' => 'generalmanagmentoffice.generalmanagmentoffice_dashboard'],
+        ];
         $CEODashPermission = [
             ['value' => 'ceomanagment.CEOmanagement_dashboard'],
         ];
@@ -362,8 +365,8 @@ class HomeController extends Controller
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
             ['id' => 'general_management',  'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'general_management_office',  'permissions' => $generalManagmentOfficeDashPermission, 'title' => __('generalmanagmentoffice::lang.generalmanagmentoffice'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagmentOffice\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'ceo_management',  'permissions' => $CEODashPermission, 'title' => __('ceomanagment::lang.CEO_Managment'), 'icon' => "fas fa-chart-line", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
-
             // ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
