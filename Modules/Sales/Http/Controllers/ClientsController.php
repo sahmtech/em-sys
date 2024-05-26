@@ -478,7 +478,7 @@ class ClientsController extends Controller
                         'msg' => __('lang_v1.the email is already exist'),
                     ]);
             }
-            $contactEmailexsits = Contact::where('mobile', $request->contact_number)->first();
+            $contactEmailexsits = Contact::where('mobile', $request->number)->first();
             if ($contactEmailexsits) {
                 return redirect()->back()
                     ->with('status', [
@@ -502,7 +502,7 @@ class ClientsController extends Controller
             // Store contact
             $contact_input['supplier_business_name'] = $request->company_name;
             $contact_input['name'] = $request->contact_name;
-            $contact_input['mobile'] = $request->contact_number;
+            $contact_input['mobile'] = $request->number;
             $contact_input['email'] = $request->email;
             $contact_input['business_id'] = 1;
             $contact_input['type'] = "draft";

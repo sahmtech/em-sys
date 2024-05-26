@@ -79,8 +79,12 @@
         <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" required>
+                <label for="name">Company Name</label>
+                <input type="text" id="company_name" name="company_name" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Contact Name</label>
+                <input type="text" id="contact_name" name="contact_name" required>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
