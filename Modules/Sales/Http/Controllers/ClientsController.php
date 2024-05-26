@@ -485,6 +485,9 @@ class ClientsController extends Controller
         }
 
 
+
+
+
         //store contact
         // $contact_input['name'] =  $request->input('contact_name');
         $contact_input['supplier_business_name'] = $request->name;
