@@ -103,6 +103,7 @@
         </div>
     @endif
     <div class="contact-form-container">
+        <h1 style="color: rgb(15, 66, 153)">تواصل معنا</h1>
         <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
