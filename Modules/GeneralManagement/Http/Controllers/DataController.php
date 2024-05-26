@@ -47,17 +47,17 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'generalmanagement.send_notifications',
+                        'value' => 'office.generalmanagement.send_notifications',
                         'label' => __('generalmanagement::lang.send_notifications'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'generalmanagement.edit_notification_settings',
+                        'value' => 'office.generalmanagement.edit_notification_settings',
                         'label' => __('generalmanagement::lang.edit_notification_settings'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'generalmanagement.view_notifications',
+                        'value' => 'office.generalmanagement.view_notifications',
                         'label' => __('generalmanagement::lang.view_notifications'),
                         'default' => false,
                     ],

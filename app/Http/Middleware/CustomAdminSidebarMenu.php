@@ -388,34 +388,33 @@ class CustomAdminSidebarMenu
             // if ($is_admin   || auth()->user()->can('generalmanagmentoffice.view_notifications') || auth()->user()->can('generalmanagmentoffice.send_notifications')) {
 
 
-            //     $menu->dropdown(
-            //         __('generalmanagmentoffice::lang.notifications'),
-            //         function ($sub)  use ($is_admin) {
-            //             if ($is_admin || auth()->user()->can('generalmanagmentoffice.view_notifications')) {
-            //                 $sub->url(
-            //                     route('GMO_notifications.index'),
-            //                     __('generalmanagmentoffice::lang.view_notifications'),
-            //                     ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'index']
-            //                 );
-            //             }
-            //             if ($is_admin ||  auth()->user()->can('generalmanagement.send_notifications')) {
-            //                 $sub->url(
-            //                     route('notifications.create'),
-            //                     __('generalmanagement::lang.send_notifications'),
-            //                     ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'create']
-            //                 );
-            //             }
-            //             if ($is_admin ||  auth()->user()->can('generalmanagement.edit_notification_settings')) {
-            //                 $sub->url(
-            //                     route('notifications.settings'),
-            //                     __('generalmanagement::lang.notification_settings'),
-            //                     ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'settings']
-            //                 );
-            //             }
-            //         },
-            //         ['icon' => 'fa fas fa-envelope',]
-            //     );
-            // }
+            $menu->dropdown(
+                __('generalmanagmentoffice::lang.notifications'),
+                function ($sub)  use ($is_admin) {
+                    if ($is_admin || auth()->user()->can('office.generalmanagement.view_notifications')) {
+                        $sub->url(
+                            route('office.notifications.index'),
+                            __('generalmanagmentoffice::lang.view_notifications'),
+                            ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'index']
+                        );
+                    }
+                    if ($is_admin ||  auth()->user()->can('office.generalmanagement.send_notifications')) {
+                        $sub->url(
+                            route('office.notifications.create'),
+                            __('generalmanagement::lang.send_notifications'),
+                            ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'create']
+                        );
+                    }
+                    if ($is_admin ||  auth()->user()->can('office.generalmanagement.edit_notification_settings')) {
+                        $sub->url(
+                            route('office.notifications.settings'),
+                            __('generalmanagement::lang.notification_settings'),
+                            ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(2) == 'notifications' && request()->segment(3) == 'settings']
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-envelope',]
+            );
         });
     }
     public function ceoMenu()
