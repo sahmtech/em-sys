@@ -91,6 +91,11 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 |
 */
 
+Route::get('/contactUsFromWebsite', function () {
+    return view('contactUsFromWebsite');
+});
+
+Route::post('/store_from_website', [\Modules\Sales\Http\Controllers\ClientsController::class, 'store_from_website']);
 include_once 'install_r.php';
 
 // Route::get('/testcomposer', function () {

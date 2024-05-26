@@ -467,6 +467,57 @@ class ClientsController extends Controller
         return redirect()->route('draft_contacts');
     }
 
+    public function store_from_website(Request $request)
+    {
+
+
+        $latestRecord = Contact::whereIn('type', ['draft', 'lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
+
+
+        if ($latestRecord) {
+            $latestRefNo = $latestRecord->ref_no;
+            $numericPart = (int)substr($latestRefNo, 5);
+            $numericPart++;
+            $contact_input['ref_no'] = 'L' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
+        } else {
+
+            $contact_input['ref_no'] = 'L0005000';
+        }
+
+
+        //store contact
+        // $contact_input['name'] =  $request->input('contact_name');
+        $contact_input['supplier_business_name'] = $request->name;
+        $contact_input['mobile'] = $request->mobile;
+        $contact_input['email'] = $request->email;
+        $contact_input['business_id'] = 1;
+        $contact_input['type'] = "draft";
+        $contact_input['created_by'] = 1;
+
+
+        $output = $this->contactUtil->createNewContact($contact_input);
+        $responseData = $output['data'];
+        $contactId = $responseData->id;
+        if ($contactId) {
+
+            $userInfo['user_type'] = 'customer';
+            $userInfo['first_name'] = $request->name;
+            $userInfo['allow_login'] = 0;
+            $userInfo['business_id'] =  1;
+            $userInfo['crm_contact_id'] =  $contactId;
+            $userInfo['created_by'] = 1;
+            User::create($userInfo);
+        }
+
+
+        $output = [
+            'success' => true,
+            'msg' => __('lang_v1.added_success'),
+        ];
+        return $output;
+    }
+
+
     public function changeStatus(Request $request)
     {
         $user = auth()->user();
