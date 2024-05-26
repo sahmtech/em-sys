@@ -322,7 +322,7 @@ class Util
     public function setAndGetReferenceCount($type, $business_id = null, $company_id = null)
     {
         if (empty($business_id)) {
-            $business_id = request()->session()->get('user.business_id');
+            $business_id = request()->session()->get('user.business_id') ?? '1';
         }
 
         $ref = ReferenceCount::where('ref_type', $type)

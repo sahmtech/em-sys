@@ -495,8 +495,9 @@ class ClientsController extends Controller
         $contact_input['created_by'] = 1;
 
 
-        $output = $this->contactUtil->createNewContact($contact_input);
-        $responseData = $output['data'];
+        // $output = $this->contactUtil->createNewContact($contact_input);
+
+        $responseData = Contact::create($contact_input);
         $contactId = $responseData->id;
         if ($contactId) {
 

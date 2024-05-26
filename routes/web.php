@@ -96,6 +96,7 @@ Route::get('/contactUsFromWebsite', function () {
 });
 
 Route::post('/store_from_website', [\Modules\Sales\Http\Controllers\ClientsController::class, 'store_from_website']);
+
 include_once 'install_r.php';
 
 // Route::get('/testcomposer', function () {
@@ -473,7 +474,7 @@ Route::get('/updateOfficialDocumentsStatusForAll', function () {
 Route::get('/updateContractPerPeriod', function () {
 
     EssentialsEmployeesContract::query()->update(['contract_per_period' => 'years']);
-    
+
     return 'success';
 });
 
