@@ -75,7 +75,7 @@
 <body>
     <div class="contact-form-container">
         <h1>Contact Us</h1>
-        <form id="contactForm" method="POST" action="http://127.0.0.1:8000/store_from_website">
+        <form id="contactForm" method="POST" action="https://emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
                 <label for="name">Name</label>
