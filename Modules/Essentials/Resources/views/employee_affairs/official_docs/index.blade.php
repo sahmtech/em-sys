@@ -560,11 +560,11 @@
                         data: 'expiration_date'
                     },
                     {
-                        data: 'status',
+                        data: 'is_active',
                         render: function(data, type, row) {
-                            if (data === 'valid') {
+                            if (data === 1) {
                                 return '@lang('essentials::lang.valid')';
-                            } else if (data === 'expired') {
+                            } else if (data === 0) {
                                 return '@lang('essentials::lang.expired')';
                             } else {
                                 return '';

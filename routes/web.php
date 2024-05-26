@@ -8,6 +8,8 @@ use App\Http\Controllers\AccountTypeController;
 use App\Http\Controllers\BankAccountsController;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
+
 // use App\Http\Controllers\Auth;
 use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BarcodeController;
@@ -288,79 +290,98 @@ Route::get('/swap_k', function () {
 });
 
 
-Route::get('/getContractsByDate', function () {
-    $date = '2024-04-28';
+// Route::get('/getContractsByDate', function () {
+//     $date = '2024-04-28';
 
 
-    DB::transaction(function () use ($date) {
+//     DB::transaction(function () use ($date) {
 
-        $contracts = DB::table('essentials_employees_contracts as a')
-            ->select('a.id', 'a.employee_id', 'a.created_at')
-            ->whereDate('a.created_at', '=', $date)
-            ->whereExists(function ($query) use ($date) {
-                $query->select(DB::raw(1))
-                    ->from('essentials_employees_contracts as b')
-                    ->whereColumn('b.employee_id', 'a.employee_id')
-                    ->whereDate('b.updated_at', '=', $date)
-                    ->whereNotNull('b.updated_at');
-            })
-            ->get();
+//         $contracts = DB::table('essentials_employees_contracts as a')
+//             ->select('a.id', 'a.employee_id', 'a.created_at')
+//             ->whereDate('a.created_at', '=', $date)
+//             ->whereExists(function ($query) use ($date) {
+//                 $query->select(DB::raw(1))
+//                     ->from('essentials_employees_contracts as b')
+//                     ->whereColumn('b.employee_id', 'a.employee_id')
+//                     ->whereDate('b.updated_at', '=', $date)
+//                     ->whereNotNull('b.updated_at');
+//             })
+//             ->get();
 
-        $Keep = $contracts->groupBy('employee_id')->map(function ($items) {
-            return $items->sortBy('created_at')->first()->id;
-        });
-        DB::table('essentials_employees_contracts')
-            ->whereIn('id', $Keep->all())
-            ->update(['is_active' => 1]);
+//         $Keep = $contracts->groupBy('employee_id')->map(function ($items) {
+//             return $items->sortBy('created_at')->first()->id;
+//         });
+//         DB::table('essentials_employees_contracts')
+//             ->whereIn('id', $Keep->all())
+//             ->update(['is_active' => 1]);
 
-        if ($Keep->isNotEmpty()) {
-            DB::table('essentials_employees_contracts')
-                ->whereDate('created_at', '=', $date)
-                ->whereNotIn('id', $Keep->all())
-                ->delete();
-        }
-    });
+//         if ($Keep->isNotEmpty()) {
+//             DB::table('essentials_employees_contracts')
+//                 ->whereDate('created_at', '=', $date)
+//                 ->whereNotIn('id', $Keep->all())
+//                 ->delete();
+//         }
+//     });
 
-    return response()->json(['message' => 'success']);
+//     return response()->json(['message' => 'success']);
+// });
+// Route::get('/updateContractsBetweenDates', function () {
+
+//     $start_date = '2024-04-25';
+//     $end_date = '2024-05-01';
+
+//     DB::transaction(function () use ($start_date, $end_date) {
+
+//         $contracts = DB::table('essentials_employees_contracts as a')
+//             ->select('a.id', 'a.employee_id', 'a.created_at')
+//             ->whereBetween('a.created_at', [$start_date, $end_date])
+//             ->whereExists(function ($query) use ($start_date, $end_date) {
+//                 $query->select(DB::raw(1))
+//                     ->from('essentials_employees_contracts as b')
+//                     ->whereColumn('b.employee_id', 'a.employee_id')
+//                     ->whereBetween('b.updated_at', [$start_date, $end_date])
+//                     ->whereNotNull('b.updated_at');
+//             })
+//             ->get();
+
+//         $Keep = $contracts->groupBy('employee_id')->map(function ($items) {
+//             return $items->sortBy('created_at')->first()->id;
+//         });
+
+//         DB::table('essentials_employees_contracts')
+//             ->whereIn('id', $Keep->all())
+//             ->update(['is_active' => 1]);
+
+//         if ($Keep->isNotEmpty()) {
+//             DB::table('essentials_employees_contracts')
+//                 ->whereBetween('created_at', [$start_date, $end_date])
+//                 ->whereNotIn('id', $Keep->all())
+//                 ->delete();
+//         }
+//     });
+
+//     return response()->json(['message' => 'success']);
+// });
+Route::get('/updateContractNumbers', function () {
+
+    EssentialsEmployeesContract::query()->update(['contract_number' => null]);
+
+
+    $contracts = EssentialsEmployeesContract::orderBy('id')->get();
+
+    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+    $latestRefNo = $latestRecord ? $latestRecord->contract_number : null;
+    $numericPart = $latestRefNo ? (int)substr($latestRefNo, 2) : 0;
+
+    foreach ($contracts as $contract) {
+        $numericPart++;
+        $newContractNumber = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+        $contract->contract_number = $newContractNumber;
+        $contract->save();
+    }
+    return 'success';
 });
-Route::get('/updateContractsBetweenDates', function () {
-
-    $start_date = '2024-04-25';
-    $end_date = '2024-05-01';
-
-    DB::transaction(function () use ($start_date, $end_date) {
-
-        $contracts = DB::table('essentials_employees_contracts as a')
-            ->select('a.id', 'a.employee_id', 'a.created_at')
-            ->whereBetween('a.created_at', [$start_date, $end_date])
-            ->whereExists(function ($query) use ($start_date, $end_date) {
-                $query->select(DB::raw(1))
-                    ->from('essentials_employees_contracts as b')
-                    ->whereColumn('b.employee_id', 'a.employee_id')
-                    ->whereBetween('b.updated_at', [$start_date, $end_date])
-                    ->whereNotNull('b.updated_at');
-            })
-            ->get();
-
-        $Keep = $contracts->groupBy('employee_id')->map(function ($items) {
-            return $items->sortBy('created_at')->first()->id;
-        });
-
-        DB::table('essentials_employees_contracts')
-            ->whereIn('id', $Keep->all())
-            ->update(['is_active' => 1]);
-
-        if ($Keep->isNotEmpty()) {
-            DB::table('essentials_employees_contracts')
-                ->whereBetween('created_at', [$start_date, $end_date])
-                ->whereNotIn('id', $Keep->all())
-                ->delete();
-        }
-    });
-
-    return response()->json(['message' => 'success']);
-});
-Route::get('/getEmployeeIdsWithContractsBefore2000', function () {
+Route::get('/updateContractsBefore2000', function () {
     $employeeIds = EssentialsEmployeesContract::where('contract_end_date', '<', '2000-01-01')
         ->pluck('employee_id');
 
@@ -386,26 +407,6 @@ Route::get('/getEmployeeIdsWithContractsBefore2000', function () {
         }
     }
 });
-Route::get('/updateContractNumbers', function () {
-
-    EssentialsEmployeesContract::query()->update(['contract_number' => null]);
-
-
-    $contracts = EssentialsEmployeesContract::orderBy('id')->get();
-
-    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
-    $latestRefNo = $latestRecord ? $latestRecord->contract_number : null;
-    $numericPart = $latestRefNo ? (int)substr($latestRefNo, 2) : 0;
-
-    foreach ($contracts as $contract) {
-        $numericPart++;
-        $newContractNumber = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-        $contract->contract_number = $newContractNumber;
-        $contract->save();
-    }
-    return 'success';
-});
-
 Route::get('/updateContractsStatusForAll', function () {
 
 
@@ -440,6 +441,32 @@ Route::get('/updateContractsStatusForAll', function () {
     }
     return 'success';
 });
+
+Route::get('/updateOfficialDocumentsStatusForAll', function () {
+
+    $docs = EssentialsOfficialDocument::all();
+
+    foreach ($docs as $doc) {
+
+
+        if (is_null($doc->expiration_date)) {
+            continue;
+        }
+
+        $expiration_date = Carbon::parse($doc->expiration_date);
+
+        if ($expiration_date->isPast()) {
+            $doc->is_active = 0;
+        } else {
+            $doc->is_active = 1;
+        }
+
+        $doc->save();
+    }
+    return 'success';
+});
+
+
 Route::get('/clear_cache', function () {
     try {
         // Call the artisan command
@@ -454,7 +481,6 @@ Route::get('/clear_cache', function () {
         return response()->json(['error' => 'Failed to clear cache', 'message' => $e->getMessage()], 500);
     }
 });
-
 Route::get('/privacy-policy', function () {
     return view('privacy_policy');
 });
