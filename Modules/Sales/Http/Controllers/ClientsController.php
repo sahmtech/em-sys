@@ -500,7 +500,8 @@ class ClientsController extends Controller
 
 
             // Store contact
-            $contact_input['commercial_register_no'] = $request->commercial_register_no;
+            // $contact_input['commercial_register_no'] = $request->commercial_register_no;
+
             $contact_input['supplier_business_name'] = $request->company_name;
             $contact_input['name'] = $request->contact_name;
             $contact_input['mobile'] = $request->number;
@@ -508,7 +509,7 @@ class ClientsController extends Controller
             $contact_input['business_id'] = 1;
             $contact_input['type'] = "draft";
             $contact_input['created_by'] = 1;
-
+            $contact_input['note_lead'] = $request->message ?? null;
             $responseData = Contact::create($contact_input);
             $contactId = $responseData->id;
 
