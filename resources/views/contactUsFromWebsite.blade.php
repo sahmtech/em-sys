@@ -135,13 +135,13 @@
 
 <body>
     <div class="contact-form-container">
-        <h1>تواصل معنا</h1>
+
         @if (session('status'))
             <div class="alert {{ session('status')['success'] ? 'alert-success' : 'alert-error' }}">
                 {{ session('status')['msg'] }}
             </div>
         @endif
-        <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
+        <form id="contactForm" method="POST" action="https://emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
                 <label for="company-name">اسم الشركة :</label>
@@ -159,6 +159,12 @@
                 <label for="number">رقم الاتصال :</label>
                 <input type="text" id="number" name="number" required>
             </div>
+            <div class="form-group">
+                <label for="commercial_register_no">السجل التجاري :</label>
+                <input type="text" id="commercial_register_no" name="commercial_register_no" required>
+            </div>
+
+
             <button type="submit">إرسال</button>
         </form>
         <div id="responseMessage"></div>
