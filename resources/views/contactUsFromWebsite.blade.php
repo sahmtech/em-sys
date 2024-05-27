@@ -147,7 +147,7 @@
                 {{ session('status')['msg'] }}
             </div>
         @endif
-        <form id="contactForm" method="POST" action="http://127.0.0.1:8000/store_from_website">
+        <form id="contactForm" method="POST" action="https://emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
                 <label for="company-name">اسم الشركة :</label>
