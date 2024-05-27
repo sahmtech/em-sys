@@ -70,7 +70,7 @@ class ClientsController extends Controller
         $contacts = DB::table('contacts')
             ->select([
                 'id', 'supplier_business_name', 'type', 'contact_id', 'created_by', 'created_at',
-                'commercial_register_no', 'mobile', 'email', 'city'
+                'commercial_register_no', 'mobile', 'email', 'city', 'note_draft', 'name'
 
             ])->where('business_id', $business_id)->where('type', 'draft');
         $cities = EssentialsCity::forDropdown();
@@ -509,7 +509,7 @@ class ClientsController extends Controller
             $contact_input['business_id'] = 1;
             $contact_input['type'] = "draft";
             $contact_input['created_by'] = 1;
-            $contact_input['note_lead'] = $request->message ?? null;
+            $contact_input['note_draft'] = $request->message ?? null;
             $responseData = Contact::create($contact_input);
             $contactId = $responseData->id;
 

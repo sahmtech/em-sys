@@ -17,17 +17,16 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
-    
-        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_draft_contact"))
-            @slot('tool')
-                <div class="box-tools">
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.add_draft_contact'))
+                @slot('tool')
+                    <div class="box-tools">
 
-                    <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addContactModal">
-                        <i class="fa fa-plus"></i> @lang('sales::lang.add_draft_contact')
-                    </button>
-                </div>
-            @endslot
-        @endif
+                        <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addContactModal">
+                            <i class="fa fa-plus"></i> @lang('sales::lang.add_draft_contact')
+                        </button>
+                    </div>
+                @endslot
+            @endif
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="cust_table">
@@ -39,10 +38,12 @@
                             <th>#</th>
                             <th>@lang('sales::lang.contact_number')</th>
                             <th>@lang('sales::lang.supplier_business_name')</th>
+                            <th>@lang('sales::lang.contact_name')</th>
                             <th>@lang('sales::lang.commercial_register_no')</th>
                             <th>@lang('sales::lang.created_by')</th>
                             <th>@lang('sales::lang.contact_mobile')</th>
                             <th>@lang('sales::lang.contact_email')</th>
+                            <th>@lang('sales::lang.message')</th>
                             <th>@lang('sales::lang.created_at')</th>
                             <th>@lang('messages.action')</th>
 
@@ -543,9 +544,9 @@
             </div>
         </div>
 
-     
+
     </section>
-   
+
 @endsection
 
 @section('javascript')
@@ -588,7 +589,10 @@
                         data: 'supplier_business_name',
                         name: 'supplier_business_name'
                     },
-
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
 
                     {
                         data: 'commercial_register_no',
@@ -607,7 +611,10 @@
                         data: 'email',
                         name: 'email'
                     },
-
+                    {
+                        data: 'note_draft',
+                        name: 'note_draft'
+                    },
                     {
                         data: 'created_at',
                         name: 'created_at'
@@ -773,28 +780,29 @@
             //         })
             //     }
             // });
-        
-$(document).on('click', '.btn-change-to-lead', function() {
-    var contactId = $(this).data('contact-id');
- 
-    if (contactId) {
-        $.ajax({
-            url: '{{ route('changeDraftStatus', ['contactId' => ':contactId']) }}'.replace(
-                            ':contactId', contactId),
-        
-            method: 'GET',
-            success: function(response) {
-                console.log(response);
-                if (response.success == true) {
-                    toastr.success(response.msg);
-                    customers_table.ajax.reload();
-                } else {
-                    toastr.error(response.msg);
+
+            $(document).on('click', '.btn-change-to-lead', function() {
+                var contactId = $(this).data('contact-id');
+
+                if (contactId) {
+                    $.ajax({
+                        url: '{{ route('changeDraftStatus', ['contactId' => ':contactId']) }}'
+                            .replace(
+                                ':contactId', contactId),
+
+                        method: 'GET',
+                        success: function(response) {
+                            console.log(response);
+                            if (response.success == true) {
+                                toastr.success(response.msg);
+                                customers_table.ajax.reload();
+                            } else {
+                                toastr.error(response.msg);
+                            }
+                        }
+                    });
                 }
-            }
-        });
-    }
-});
+            });
 
 
 
