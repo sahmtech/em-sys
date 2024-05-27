@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
+
 // use App\Http\Controllers\Auth;
 use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BarcodeController;
@@ -92,6 +93,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 */
 
 Route::get('/contactUsFromWebsite', function () {
+
     return view('contactUsFromWebsite');
 });
 

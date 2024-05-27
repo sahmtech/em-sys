@@ -500,6 +500,7 @@ class ClientsController extends Controller
 
 
             // Store contact
+            $contact_input['commercial_register_no'] = $request->commercial_register_no;
             $contact_input['supplier_business_name'] = $request->company_name;
             $contact_input['name'] = $request->contact_name;
             $contact_input['mobile'] = $request->number;
