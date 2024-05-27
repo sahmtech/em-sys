@@ -11,12 +11,21 @@ class VerifyCsrfToken extends BaseVerifier
      *
      * @var array
      */
+    // protected $except = [
+    //     '/install/details',
+    //     '/install/post-details',
+    //     '/install/install-alternate',
+    //     '/api/ecom/customers',
+    //     '/api/ecom/orders',
+    //     '/webhook/*'
+    // ];
     protected $except = [
         '/install/details',
         '/install/post-details',
         '/install/install-alternate',
         '/api/ecom/customers',
         '/api/ecom/orders',
-        '/webhook/*'
+        '/webhook/*',
+        'store_from_website' // Add this line
     ];
 }
