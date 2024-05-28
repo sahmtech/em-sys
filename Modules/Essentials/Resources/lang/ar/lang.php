@@ -1902,6 +1902,7 @@ return [
   'expiration_date_from' => 'تاريخ الانتهاء (بعد)',
   'expiration_date_to' => 'تاريخ الانتهاء (قبل)',
   'id_proof_number_or_border_number_is_required' => 'رقم إثبات الهوية مطلوب',
+  'go_to_superior_department' => 'يرفع إلى المدير المباشر'
 
 
 ];
