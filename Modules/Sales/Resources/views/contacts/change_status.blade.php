@@ -16,43 +16,44 @@
 
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-12">
-
-                        <section class="content">
-
-                            <div class="form-group">
-                                <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
-                                <label for="status">@lang('sale.status'):*</label>
-                                <select class="form-control select2" name="status" required id="status_dropdown"
-                                    style="width: 100%;">
-                                    @foreach ($status as $key => $value)
-                                        <option value="{{ $key }}">{{ $value['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="row" style="margin-top:8px; ">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        {!! Form::label('file_lead', __('sales::lang.file_lead') . ':') !!}
-                                        {!! Form::file('file_lead', ['class' => 'form-control', 'accept' => 'doc/*']) !!}
 
 
-                                    </div>
-                                </div>
 
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        {!! Form::label('note_lead', __('sales::lang.note_lead') . '') !!}
-                                        {!! Form::text('nots', '', [
-                                            'class' => 'form-control',
-                                            'placeholder' => __('sales::lang.note_lead'),
-                                            'id' => 'note_lead',
-                                        ]) !!}
-                                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
+                            <label for="status">@lang('sale.status'):*</label>
+                            <select class="form-control select2" name="status" required id="status_dropdown"
+                                style="width: 100%;height: 40px;">
+                                @foreach ($status as $key => $value)
+                                    <option value="{{ $key }}">{{ $value['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="row" style="margin-top:8px; ">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('file_lead', __('sales::lang.file_lead') . ':') !!}
+                                    {!! Form::file('file_lead', ['class' => 'form-control', 'accept' => 'doc/*']) !!}
+
+
                                 </div>
                             </div>
-                        </section>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('note_lead', __('sales::lang.note_lead') . '') !!}
+                                    {!! Form::text('nots', '', [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('sales::lang.note_lead'),
+                                        'id' => 'note_lead',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

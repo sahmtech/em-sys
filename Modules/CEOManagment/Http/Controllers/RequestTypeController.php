@@ -167,7 +167,7 @@ class RequestTypeController extends Controller
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            error_log($e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
@@ -238,7 +238,7 @@ class RequestTypeController extends Controller
 
     private function getTypePrefix($type)
     {
-
+        error_log($type);
         $typePrefixMap = [
 
             'exitRequest' => 'ExReq_',
@@ -263,7 +263,7 @@ class RequestTypeController extends Controller
             'AjirAsked' => 'Asked_',
             'AlternativeWorker' => 'AlterWorker_',
             'TransferringGuaranteeFromExternalClient' => 'TFEC_',
-            'permit' => 'Permit_',
+            'Permit' => 'Permit_',
             'FamilyInsurace' => 'FamInsu',
             'Ajir_link' => 'AjirLink_'
         ];
