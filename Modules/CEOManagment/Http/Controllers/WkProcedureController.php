@@ -212,8 +212,8 @@ class WkProcedureController extends Controller
         $procedureType = WkProcedure::where('id', $procedure_id)->first()->request_type_id;
 
         $procedures = WkProcedure::with('department')->where('request_type_id', $procedureType)->get();
-
-
+        $superior_dep =  RequestsType::where('id', $procedureType)->first()->goes_to_superior;
+        error_log($superior_dep);
         foreach ($procedures as $procedure) {
             $escalations = ProcedureEscalation::where('procedure_id', $procedure->id)->get();
             $tasks = ProcedureTask::where('procedure_id', $procedure->id)->get();
@@ -229,7 +229,7 @@ class WkProcedureController extends Controller
         }
 
 
-        return response()->json(['procedures' => $procedures]);
+        return response()->json(['procedures' => $procedures, 'superior_dep' => $superior_dep]);
     }
 
 
@@ -353,6 +353,7 @@ class WkProcedureController extends Controller
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
+            RequestsType::where('id', $type)->update(['goes_to_superior' => $request->superior_department]);
 
             $previousStepIds = [];
             foreach ($steps  as $index => $step) {
@@ -541,10 +542,11 @@ class WkProcedureController extends Controller
 
     public function updateEmployeeProcedure(Request $request, $id)
     {
-        //   return $request->all();
+        // return $request->all();
 
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
+            error_log($type);
             $requests = UserRequest::where('request_type_id', $type)->get();
             if ($requests->count() != 0) {
                 $output = [
@@ -575,6 +577,8 @@ class WkProcedureController extends Controller
                     $procedure->delete();
                 }
             }
+            RequestsType::where('id', $type)->update(['goes_to_superior' => $request->superior_department]);
+
             $previousStepIds = [];
             if ($steps) {
                 $index = 0;
