@@ -370,12 +370,12 @@ class RequestUtil extends Util
     {
         try {
             $business_id = request()->session()->get('user.business_id');
-
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
             $today = Carbon::today();
             $type = RequestsType::where('id', $request->type)->first()->type;
+
 
             if ($startDate && $type != 'escapeRequest') {
                 $startDateCarbon = Carbon::parse($startDate);
@@ -572,28 +572,71 @@ class RequestUtil extends Util
                         } else {
                             $department_id = User::where('id', $userId)->first()->essentials_department_id;
 
-
-
                             if ($createdBy_type == 'employee' || ($createdBy_type == 'manager' &&  $createdBy_department !=  $department_id) || ($createdBy_type == 'admin' && !(in_array($department_id, $departmentIds)))) {
 
-                                if ($department_id) {
-                                    $process = RequestProcess::create([
-                                        'started_department_id' => $departmentIds[0],
-                                        'request_id' => $Request->id,
-                                        'superior_department_id' => $department_id,
-                                        'status' => 'pending'
-                                    ]);
+                                $superior_dep =  RequestsType::where('id', $request->type)->first()->goes_to_superior;
+                                if ($superior_dep) {
+                                    if ($department_id) {
+                                        $process = RequestProcess::create([
+                                            'started_department_id' => $departmentIds[0],
+                                            'request_id' => $Request->id,
+                                            'superior_department_id' => $department_id,
+                                            'status' => 'pending'
+                                        ]);
+                                    } else {
+                                        RequestAttachment::where('request_id', $Request->id)->delete();
+                                        $Request->delete();
+                                        if (count($request->user_id) == 1) {
+                                            $output = [
+                                                'success' => 0,
+                                                'msg' => __('request.this_user_has_not_department'),
+                                            ];
+                                            return redirect()->back()->withErrors([$output['msg']]);
+                                        }
+                                    }
                                 } else {
 
-
-                                    RequestAttachment::where('request_id', $Request->id)->delete();
-                                    $Request->delete();
-                                    if (count($request->user_id) == 1) {
+                                    $procedure = WkProcedure::Where('request_type_id', $request->type)->where('start', '1')->first();
+                                    if (!$procedure) {
                                         $output = [
-                                            'success' => 0,
-                                            'msg' => __('request.this_user_has_not_department'),
+                                            'success' => false,
+                                            'msg' => __('request.no_procedure_found'),
                                         ];
                                         return redirect()->back()->withErrors([$output['msg']]);
+                                    }
+                                    if ((in_array($procedure->department_id, $departmentIds))) {
+                                        $nextProcedure = WkProcedure::Where('request_type_id', $request->type)->where('department_id', $procedure->next_department_id)->first();
+                                        if ($nextProcedure) {
+                                            $process = RequestProcess::create([
+                                                'started_department_id' => $departmentIds[0],
+                                                'request_id' => $Request->id,
+                                                'procedure_id' => $nextProcedure->id,
+                                                'status' => 'pending'
+                                            ]);
+
+                                            if ($nextProcedure->action_type = 'task') {
+                                                $procedureTasks = ProcedureTask::where('procedure_id', $nextProcedure->id)->get();
+                                                foreach ($procedureTasks as $task) {
+                                                    $requestTasks = new RequestProcedureTask();
+                                                    $requestTasks->request_id = $Request->id;
+                                                    $requestTasks->procedure_task_id = $task->id;
+                                                    $requestTasks->save();
+                                                }
+                                            }
+                                        } else {
+                                            $output = [
+                                                'success' => false,
+                                                'msg' => __('request.no_next_department_to_go_there'),
+                                            ];
+                                            return redirect()->back()->withErrors([$output['msg']]);
+                                        }
+                                    } else {
+                                        $process = RequestProcess::create([
+                                            'started_department_id' => $departmentIds[0],
+                                            'request_id' => $Request->id,
+                                            'procedure_id' => $procedure->id,
+                                            'status' => 'pending'
+                                        ]);
                                     }
                                 }
                             } else if (($createdBy_type == 'admin' && (in_array($department_id, $departmentIds))) || ($createdBy_type == 'manager' && (in_array($createdBy_department, $departmentIds)))) {
