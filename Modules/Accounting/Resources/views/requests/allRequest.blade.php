@@ -382,6 +382,86 @@
                                     'id' => 'monthlyInstallmentField',
                                 ]) !!}
                             </div>
+                            <div class="form-group col-md-6" id="authorized_entity" style="display: none;">
+                                {!! Form::label('authorized_entity', __('request.authorized_entity') . ':*') !!}
+                                {!! Form::text('authorized_entity', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.authorized_entity'),
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="commissioner_info" style="display: none;">
+                                {!! Form::label('commissioner_info', __('request.commissioner_info') . ':') !!}
+                                {!! Form::text('commissioner_info', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.commissioner_info'),
+                                ]) !!}
+                            </div>
+
+                            <div class="form-group col-md-6" id="trip_type" style="display: none;">
+                                {!! Form::label('trip_type', __('request.trip_type') . ':*') !!}
+                                {!! Form::select(
+                                    'trip_type',
+                                    [
+                                        'round' => __('request.round_trip'),
+                                        'one_way' => __('request.one_way_trip'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'trip_typeField',
+                                    ],
+                                ) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="Take_off_location" style="display: none;">
+                                {!! Form::label('Take_off_location', __('request.Take_off_location') . ':') !!}
+                                {!! Form::text('Take_off_location', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.Take_off_location'),
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="destination" style="display: none;">
+                                {!! Form::label('destination', __('request.destination') . ':*') !!}
+                                {!! Form::text('destination', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.destination'),
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="weight_of_furniture" style="display: none;">
+                                {!! Form::label('weight_of_furniture', __('request.weight_of_furniture') . ':') !!}
+                                {!! Form::text('weight_of_furniture', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.weight_of_furniture'),
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="time_of_take_off" style="display: none;">
+                                {!! Form::label('time_of_take_off', __('request.time_of_take_off') . ':*') !!}
+                                {!! Form::time('time_of_take_off', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.time_of_take_off'),
+                                    'id' => 'time_of_take_offField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="date_of_take_off" style="display: none;">
+                                {!! Form::label('date_of_take_off', __('request.date_of_take_off') . ':*') !!}
+                                {!! Form::date('date_of_take_off', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.date_of_take_off'),
+                                    'id' => 'date_of_take_offField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="return_date_of_trip" style="display: none;">
+                                {!! Form::label('return_date_of_trip', __('request.return_date') . ':*') !!}
+                                {!! Form::date('return_date_of_trip', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.return_date_of_trip'),
+                                    'id' => 'return_dateField',
+                                ]) !!}
+                            </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('note', __('request.note') . ':') !!}
                                 {!! Form::textarea('note', null, [
@@ -598,6 +678,10 @@
                                 return '@lang('request.FamilyInsurace')';
                             } else if (data === 'Ajir_link') {
                                 return '@lang('request.Ajir_link')';
+                            } else if (data === 'ticketReservationRequest') {
+                                return '@lang('request.ticketReservationRequest')';
+                            } else if (data === 'authorizationRequest') {
+                                return '@lang('request.authorizationRequest')';
                             } else {
                                 return data;
                             }
@@ -997,6 +1081,36 @@
                             $('#monthlyInstallment').hide();
                             $('#amount').hide();
                         }
+                        if (selectedType === 'authorizationRequest') {
+                            $('#commissioner_info').show();
+                            $('#authorized_entity').show();
+
+                        } else {
+                            $('#commissioner_info').hide();
+                            $('#authorized_entity').hide();
+                        }
+                        if (selectedType === 'ticketReservationRequest') {
+                            $('#trip_type').show();
+                            $('#Take_off_location').show();
+                            $('#destination').show();
+                            $('#weight_of_furniture').show();
+                            $('#date_of_take_off').show();
+                            $('#time_of_take_off').show();
+                            $('#trip_typeField').change(function() {
+                                if ($(this).val() === 'round') {
+                                    $('#return_date_of_trip').show();
+                                } else {
+                                    $('#return_date_of_trip').hide();
+                                }
+                            });
+                        } else {
+                            $('#trip_type').hide();
+                            $('#Take_off_location').hide();
+                            $('#destination').hide();
+                            $('#weight_of_furniture').hide();
+                            $('#date_of_take_off').hide();
+                            $('#time_of_take_off').hide();
+                        }
                         if (selectedType === 'residenceEditRequest') {
                             $('#resEditType').show();
                             fetchUsersWithSaudiNationality();
@@ -1030,9 +1144,8 @@
                             $('#main_reason').hide();
 
                         }
-                        if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest') {
+                        if (selectedType === 'mofaRequest') {
                             $('#visa_number').show();
-
 
                         } else {
                             $('#visa_number').hide();

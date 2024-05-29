@@ -30,7 +30,7 @@ use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsLeaveType;
-
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
@@ -519,6 +519,18 @@ class RequestUtil extends Util
                     $Request->contract_sub_reason_id = $request->sub_reason;
                     $Request->visa_number = $request->visa_number;
                     $Request->atmCardType = $request->atmType;
+                    $Request->authorized_entity = $request->authorized_entity;
+                    $Request->commissioner_info = $request->commissioner_info;
+                    $Request->trip_type = $request->trip_type;
+                    $Request->Take_off_location = $request->Take_off_location;
+                    $Request->destination = $request->destination;
+                    $Request->weight_of_furniture = $request->weight_of_furniture;
+                    $Request->date_of_take_off = $request->date_of_take_off;
+                    $Request->time_of_take_off = $request->time_of_take_off;
+                    $Request->return_date = $request->return_date_of_trip;
+
+
+
                     $Request->save();
 
 
@@ -881,7 +893,23 @@ class RequestUtil extends Util
 
                 if ($procedure && $procedure->end == 1) {
                     $requestProcess->request->status = 'approved';
-                    $requestProcess->request->save();
+                    $cancelContracttypes = RequestsType::where('type', 'cancleContractRequest')->pluck('id')->toArray();
+                    $exittypes = RequestsType::whereIn('type', ['exitRequest', 'return_request', 'leavesAndDepartures'])->pluck('id')->toArray();
+
+
+                    if (!in_array($requestProcess->request->request_type_id, $cancelContracttypes)) {
+                        if (in_array($requestProcess->request->request_type_id, $exittypes)) {
+
+                            $travel = EssentialsEmployeeTravelCategorie::where('employee_id', $requestProcess->request->related_to)->first();
+                            error_log($travel);
+                            if (!$travel) {
+                                $requestProcess->request->is_done = 1;
+                            }
+                        } else {
+                            $requestProcess->request->is_done = 1;
+                        }
+                        $requestProcess->request->save();
+                    }
 
 
                     $types = RequestsType::where('type', 'leavesAndDepartures')->pluck('id')->toArray();
@@ -891,7 +919,6 @@ class RequestUtil extends Util
                         $startDate = Carbon::parse($requestProcess->request->start_date);
                         $endDate = Carbon::parse($requestProcess->request->end_date);
 
-
                         $daysDifference = $startDate->diffInDays($endDate) + 1;
 
 
@@ -899,7 +926,6 @@ class RequestUtil extends Util
                             'user_id' => $requestProcess->request->related_to,
                             'essentials_leave_type_id' => $requestProcess->request->essentials_leave_type_id,
                         ])->first();
-
 
                         $leaveBalance->amount -= $daysDifference;
                         $leaveBalance->save();
@@ -1625,7 +1651,22 @@ class RequestUtil extends Util
 
             if ($procedure && $procedure->end == 1) {
                 $requestProcess->request->status = 'approved';
-                $requestProcess->request->save();
+                $cancelContracttypes = RequestsType::where('type', 'cancleContractRequest')->pluck('id')->toArray();
+                $exittypes = RequestsType::whereIn('type', ['exitRequest', 'return_request', 'leavesAndDepartures'])->pluck('id')->toArray();
+
+                if (!in_array($requestProcess->request->request_type_id, $cancelContracttypes)) {
+                    if (in_array($requestProcess->request->request_type_id, $exittypes)) {
+
+                        $travel = EssentialsEmployeeTravelCategorie::where('employee_id', $requestProcess->request->related_to)->first();
+                        error_log($travel);
+                        if (!$travel) {
+                            $requestProcess->request->is_done = 1;
+                        }
+                    } else {
+                        $requestProcess->request->is_done = 1;
+                    }
+                    $requestProcess->request->save();
+                }
             } else {
                 $nextDepartmentId = $procedure->next_department_id;
                 $nextProcedure = WkProcedure::where('department_id', $nextDepartmentId)
@@ -1688,6 +1729,7 @@ class RequestUtil extends Util
     //only for workcard operations
     public function viewRequestsOperations()
     {
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
@@ -1703,7 +1745,7 @@ class RequestUtil extends Util
         $allRequestTypes = RequestsType::pluck('type', 'id');
         if ($is_admin  || auth()->user()->can('essentials.view_requests_operations')) {
 
-            $types = RequestsType::whereIn('type', ['exitRequest', 'returnRequest', 'escapeRequest'])->pluck('id')->toArray();
+            $types = RequestsType::whereIn('type', ['exitRequest', 'returnRequest', 'leavesAndDepartures', 'escapeRequest'])->pluck('id')->toArray();
 
             $procedures = WkProcedure::whereIn('department_id', $departmentIds)->pluck('id')->toArray();
 
@@ -1771,7 +1813,10 @@ class RequestUtil extends Util
                 $operation_type = 'absent_report';
                 $sub_status = 'escape';
             }
-
+            if ($type == 'leavesAndDepartures') {
+                $operation_type = 'vacation_report';
+                $sub_status = 'vacation';
+            }
 
             $user = User::find($userRequest->related_to);
             if (!$user) {
@@ -1797,27 +1842,19 @@ class RequestUtil extends Util
                 ]);
             }
 
-            DB::table('essentails_employee_operations')->insert([
-                'operation_type' => $operation_type,
-                'employee_id' => $userRequest->related_to,
-                'start_date' => $userRequest->start_date,
-                'end_date' =>  $userRequest->end_date,
-            ]);
+            if ($type == 'exitRequest' || $type == 'returnRequest' || $type == 'escapeRequest') {
+                DB::table('essentails_employee_operations')->insert([
+                    'operation_type' => $operation_type,
+                    'employee_id' => $userRequest->related_to,
+                    'start_date' => $userRequest->start_date,
+                    'end_date' =>  $userRequest->end_date,
+                ]);
+            }
             $request_procedure_task->update([
                 'isDone' => '1'
             ]);
 
             $requestProcess = RequestProcess::where('request_id', $userRequest->id)->where('status', 'pending')->where('sub_status', null)->first();
-            // $procedure = WkProcedure::where('id', $requestProcess->procedure_id)->first()->can_reject;
-
-
-            // if ($procedure == 0 && $request->status == 'rejected') {
-            //     $output = [
-            //         'success' => false,
-            //         'msg' => __('request.this_department_cant_reject_this_request'),
-            //     ];
-            //     return $output;
-            // }
 
             $requestProcess->status = 'approved';
             $requestProcess->updated_by = auth()->user()->id;
@@ -1830,6 +1867,16 @@ class RequestUtil extends Util
 
             if ($procedure && $procedure->end == 1) {
                 $requestProcess->request->status = 'approved';
+                if ($type == 'escapeRequest') {
+                    $requestProcess->request->is_done = 1;
+                }
+                if ($type == 'exitRequest' || $type == 'returnRequest') {
+                    $travel = EssentialsEmployeeTravelCategorie::where('employee_id', $userRequest->related_to)->first();
+                    if (!$travel) {
+                        $requestProcess->request->is_done = 1;
+                    }
+                }
+
                 $requestProcess->request->save();
             } else {
                 $nextDepartmentId = $procedure->next_department_id;
