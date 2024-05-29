@@ -501,6 +501,10 @@
                                 return '@lang('request.FamilyInsurace')';
                             } else if (data === 'Ajir_link') {
                                 return '@lang('request.Ajir_link')';
+                            } else if (data === 'ticketReservationRequest') {
+                                return '@lang('request.ticketReservationRequest')';
+                            } else if (data === 'authorizationRequest') {
+                                return '@lang('request.authorizationRequest')';
                             } else {
                                 return data;
                             }

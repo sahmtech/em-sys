@@ -519,6 +519,18 @@ class RequestUtil extends Util
                     $Request->contract_sub_reason_id = $request->sub_reason;
                     $Request->visa_number = $request->visa_number;
                     $Request->atmCardType = $request->atmType;
+                    $Request->authorized_entity = $request->authorized_entity;
+                    $Request->commissioner_info = $request->commissioner_info;
+                    $Request->trip_type = $request->trip_type;
+                    $Request->Take_off_location = $request->Take_off_location;
+                    $Request->destination = $request->destination;
+                    $Request->weight_of_furniture = $request->weight_of_furniture;
+                    $Request->date_of_take_off = $request->date_of_take_off;
+                    $Request->time_of_take_off = $request->time_of_take_off;
+                    $Request->return_date = $request->return_date_of_trip;
+
+
+
                     $Request->save();
 
 

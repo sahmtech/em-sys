@@ -242,6 +242,10 @@
                                     return '@lang('ceomanagment::lang.FamilyInsurace')';
                                 case 'Ajir_link':
                                     return '@lang('ceomanagment::lang.Ajir_link')';
+                                case 'authorizationRequest':
+                                    return '@lang('ceomanagment::lang.authorizationRequest')';
+                                case 'ticketReservationRequest':
+                                    return '@lang('ceomanagment::lang.ticketReservationRequest')';
                                 default:
                                     return data;
                             }
