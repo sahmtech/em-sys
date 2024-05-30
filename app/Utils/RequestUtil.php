@@ -135,7 +135,7 @@ class RequestUtil extends Util
 
         $requestsProcess = UserRequest::select([
 
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
 
             'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
 
@@ -964,7 +964,8 @@ class RequestUtil extends Util
                 $requestProcess->request->status = 'rejected';
                 $requestProcess->request->save();
             }
-
+            $requestProcess->request->is_new = 0;
+            $requestProcess->request->save();
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -1056,7 +1057,8 @@ class RequestUtil extends Util
                 $this->makeToDo($userRequest, $business_id);
             }
 
-
+            $process->request->is_new = 0;
+            $process->request->save();
 
             $output = [
                 'success' => true,
@@ -2039,5 +2041,166 @@ class RequestUtil extends Util
         }
 
         return null;
+    }
+
+
+    public function getRequest($id)
+    {
+        $request = UserRequest::with(['requestType', 'related_to_user'])->find($id);
+
+        if ($request) {
+            return response()->json([
+                'request' => $request,
+                'requestType' => $request->requestType,
+                'related_to_user' => $request->related_to_user,
+            ]);
+        } else {
+            return response()->json(['error' => 'Request not found'], 404);
+        }
+    }
+
+    public function updateRequest(Request $request, $id)
+    {
+
+
+        $userRequest = UserRequest::findOrFail($id);
+
+
+        $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
+        $end_date = $request->end_date ?? $request->return_date;
+        $today = Carbon::today();
+        $type = RequestsType::where('id', $userRequest->request_type_id)->first()->type;
+
+        if ($startDate && $type != 'escapeRequest') {
+            $startDateCarbon = Carbon::parse($startDate);
+            if ($startDateCarbon->lt($today)) {
+                $message = __('request.time_is_gone');
+                return redirect()->back()->withErrors([$message]);
+            }
+            if ($end_date) {
+                $endDateCarbon = Carbon::parse($end_date);
+                if ($startDateCarbon->gt($endDateCarbon)) {
+                    $message = __('request.start_date_after_end_date');
+                    return redirect()->back()->withErrors([$message]);
+                }
+            }
+        }
+
+        if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
+            $contract = EssentialsEmployeesContract::where('employee_id', $userRequest->related_to)->firstOrFail();
+            if (is_null($contract->wish_id)) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('request.no_wishes_found'),
+                ];
+                return redirect()->back()->withErrors([$output['msg']]);
+            }
+            if (now()->diffInMonths($contract->contract_end_date) > 1) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('request.contract_expired'),
+                ];
+                return redirect()->back()->withErrors([$output['msg']]);
+            }
+        }
+
+        if ($type == 'leavesAndDepartures' && is_null($request->leaveType)) {
+            $output = [
+                'success' => false,
+                'msg' => __('request.please_select_the_type_of_leave'),
+            ];
+            return redirect()->back()->withErrors([$output['msg']]);
+        }
+
+        if ($type == "leavesAndDepartures") {
+            $leaveBalance = UserLeaveBalance::where([
+                'user_id' => $userRequest->related_to,
+                'essentials_leave_type_id' => $request->leaveType,
+            ])->first();
+
+            if (!$leaveBalance || $leaveBalance->amount == 0) {
+                $messageKey = !$leaveBalance ? 'this_user_cant_ask_for_leave_request' : 'this_user_has_not_enough_leave_balance';
+                $message = __("request.$messageKey");
+                DB::rollBack();
+                return redirect()->back()->withErrors([$message]);
+            } else {
+                $startDate = Carbon::parse($startDate);
+                $endDate = Carbon::parse($end_date);
+                $daysRequested = $startDate->diffInDays($endDate) + 1;
+
+                if ($daysRequested > $leaveBalance->amount) {
+                    $message = __("request.this_user_has_not_enough_leave_balance");
+                    DB::rollBack();
+                    return redirect()->back()->withErrors([$message]);
+                }
+            }
+        }
+
+
+        $userRequest->start_date = $startDate;
+        $userRequest->end_date = $end_date;
+        $userRequest->reason = $request->reason;
+        $userRequest->note = $request->note;
+        $userRequest->essentials_leave_type_id = $request->leaveType;
+        $userRequest->escape_time = $request->escape_time;
+        $userRequest->installmentsNumber = $request->installmentsNumber;
+        $userRequest->monthlyInstallment = $request->monthlyInstallment;
+        $userRequest->advSalaryAmount = $request->amount;
+        $userRequest->updated_by = auth()->user()->id;
+        $userRequest->insurance_classes_id = $request->ins_class;
+        $userRequest->baladyCardType = $request->baladyType;
+        $userRequest->resCardEditType = $request->resEditType;
+        $userRequest->workInjuriesDate = $request->workInjuriesDate;
+        $userRequest->contract_main_reason_id = $request->main_reason;
+        $userRequest->contract_sub_reason_id = $request->sub_reason;
+        $userRequest->visa_number = $request->visa_number;
+        $userRequest->atmCardType = $request->atmType;
+        $userRequest->authorized_entity = $request->authorized_entity;
+        $userRequest->commissioner_info = $request->commissioner_info;
+        $userRequest->trip_type = $request->trip_type;
+        $userRequest->Take_off_location = $request->Take_off_location;
+        $userRequest->destination = $request->destination;
+        $userRequest->weight_of_furniture = $request->weight_of_furniture;
+        $userRequest->date_of_take_off = $request->date_of_take_off;
+        $userRequest->time_of_take_off = $request->time_of_take_off;
+        $userRequest->return_date = $request->return_date_of_trip;
+
+        $userRequest->save();
+
+
+        $output = [
+            'success' => 1,
+            'msg' => __('request.updated_success'),
+        ];
+        return redirect()->back()->with('success', $output['msg']);
+    }
+    public function deleteRequest($id)
+    {
+        error_log($id);
+        try {
+            DB::beginTransaction();
+
+
+
+            RequestProcess::where('request_id', $id)->delete();
+            RequestProcedureTask::where('request_id', $id)->delete();
+            RequestAttachment::where('request_id', $id)->delete();
+            UserRequest::where('id', $id)->delete();
+            DB::commit();
+
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.deleted_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return $output;
     }
 }

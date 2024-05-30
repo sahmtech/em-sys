@@ -158,6 +158,8 @@ return [
   'project' => 'المشروع',
   'customer_name' => 'العميل',
   'end_date' => 'تاريخ الانتهاء',
+  'edit' => 'تعديل',
+  'edit_order' => 'تعديل الطلب',
 
 
   'new_requests' => 'الطلبات الجديدة',
@@ -172,7 +174,8 @@ return [
   'no_attachment_to_show' => 'لا يوجد مرفقات للعرض',
   'attachments' => 'المرفقات',
   'view_requests' => 'عرض كل الطلبات',
-
+  'updated_success' => 'تم التحديث بنجاح',
+  'delete' => 'حذف',
   'release' => 'إصدار جديد',
   're_issuing' => 'إعادة إصدار',
   'update_info' => 'تحديث بيانات',
