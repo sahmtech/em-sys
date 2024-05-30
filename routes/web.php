@@ -795,6 +795,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/update-task-status', [\App\Utils\RequestUtil::class, 'updateStatus'])->name('tasks.updateStatus');
     Route::get('/work_cards/view_requests_operations', [\App\Utils\RequestUtil::class, 'viewRequestsOperations'])->name('view_requests_operations');
     Route::get('/finish_operation/{requestId}', [\App\Utils\RequestUtil::class,  'finish_operation'])->name('finish_operation');
+    Route::get('/get-request/{id}', [\App\Utils\RequestUtil::class, 'getRequest'])->name('getRequest');
+    Route::post('/update-request/{id}', [\App\Utils\RequestUtil::class, 'updateRequest'])->name('updateRequest');
+    Route::delete('/delete-request/{id}', [\App\Utils\RequestUtil::class, 'deleteRequest'])->name('deleteRequest');
 
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {

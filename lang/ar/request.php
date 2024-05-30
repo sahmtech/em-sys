@@ -30,6 +30,21 @@ return [
   'Permit' => 'طلب تصريح',
   'FamilyInsurace' => 'طلب تأمين طبي للمرافقين',
   'Ajir_link' => 'ربط أجير',
+  'authorizationRequest' => 'طلب تفويض',
+  'ticketReservationRequest' => 'طلب حجز تذكرة',
+  'authorized_entity' => 'اسم الجهة المفوض لها',
+  'commissioner_info' => 'معلومات المفوض',
+  'trip_type' => 'نوع الرحلة',
+  'Take_off_location' => 'مكان الإقلاع',
+  'destination' => 'الوجهة',
+  'weight_of_furniture' => 'وزن العفش',
+  'date_of_take_off' => 'تاريخ الاقلاع',
+  'time_of_take_off' => 'وقت الاقلاع',
+  'return_date' => 'تاريخ العودة',
+  'round_trip' => 'ذهاب وعودة',
+  'one_way_trip' => 'ذهاب',
+
+
 
   'this_department_cant_reject_this_request' => 'لا يمكن لهذه الإدارة رفض هذا الطلب',
   'returned_successfully' => 'تم الإرجاع بنجاح',
@@ -143,6 +158,8 @@ return [
   'project' => 'المشروع',
   'customer_name' => 'العميل',
   'end_date' => 'تاريخ الانتهاء',
+  'edit' => 'تعديل',
+  'edit_order' => 'تعديل الطلب',
 
 
   'new_requests' => 'الطلبات الجديدة',
@@ -151,13 +168,14 @@ return [
   'no_wishes_found' => 'لا توجد رغبات مضافة',
   'no_contract_found' => 'لا يوجد عقد مضاف',
   'contract_expired' => 'لا يمكن إضافة الطلب لأن الوقت المتبقي لنهاية العقد أكثر من شهر',
-  'visa_number' => 'رقم التأشيرة',
+  'visa_number' => 'رقم الطلب',
   'recruitmentRequests' => 'طلبات التوظيف الداخلي',
   'attachment_view' => 'عرض المرفقات',
   'no_attachment_to_show' => 'لا يوجد مرفقات للعرض',
   'attachments' => 'المرفقات',
   'view_requests' => 'عرض كل الطلبات',
-
+  'updated_success' => 'تم التحديث بنجاح',
+  'delete' => 'حذف',
   'release' => 'إصدار جديد',
   're_issuing' => 'إعادة إصدار',
   'update_info' => 'تحديث بيانات',

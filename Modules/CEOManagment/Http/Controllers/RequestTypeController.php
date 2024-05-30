@@ -50,7 +50,8 @@ class RequestTypeController extends Controller
             'AjirAsked',
             'AlternativeWorker',
             // 'TransferringGuaranteeFromExternalClient',
-            'Permit', 'FamilyInsurace', 'Ajir_link'
+            'Permit', 'FamilyInsurace', 'Ajir_link',
+            'ticketReservationRequest', 'authorizationRequest'
         ];
 
         $typesWithBoth = RequestsType::whereExists(function ($query) {
@@ -238,7 +239,7 @@ class RequestTypeController extends Controller
 
     private function getTypePrefix($type)
     {
-        error_log($type);
+
         $typePrefixMap = [
 
             'exitRequest' => 'ExReq_',
@@ -265,7 +266,9 @@ class RequestTypeController extends Controller
             'TransferringGuaranteeFromExternalClient' => 'TFEC_',
             'Permit' => 'Permit_',
             'FamilyInsurace' => 'FamInsu',
-            'Ajir_link' => 'AjirLink_'
+            'Ajir_link' => 'AjirLink_',
+            'ticketReservationRequest' => 'TicketReq',
+            'authorizationRequest' => 'AuthReq',
         ];
 
         return $typePrefixMap[$type];

@@ -711,7 +711,7 @@
 
                     },
 
-                    
+
                 ]
             });
 
@@ -916,6 +916,36 @@
                             $('#monthlyInstallment').hide();
                             $('#amount').hide();
                         }
+                        if (selectedType === 'authorizationRequest') {
+                            $('#commissioner_info').show();
+                            $('#authorized_entity').show();
+
+                        } else {
+                            $('#commissioner_info').hide();
+                            $('#authorized_entity').hide();
+                        }
+                        if (selectedType === 'ticketReservationRequest') {
+                            $('#trip_type').show();
+                            $('#Take_off_location').show();
+                            $('#destination').show();
+                            $('#weight_of_furniture').show();
+                            $('#date_of_take_off').show();
+                            $('#time_of_take_off').show();
+                            $('#trip_typeField').change(function() {
+                                if ($(this).val() === 'round') {
+                                    $('#return_date_of_trip').show();
+                                } else {
+                                    $('#return_date_of_trip').hide();
+                                }
+                            });
+                        } else {
+                            $('#trip_type').hide();
+                            $('#Take_off_location').hide();
+                            $('#destination').hide();
+                            $('#weight_of_furniture').hide();
+                            $('#date_of_take_off').hide();
+                            $('#time_of_take_off').hide();
+                        }
                         if (selectedType === 'residenceEditRequest') {
                             $('#resEditType').show();
 
@@ -949,9 +979,8 @@
                             $('#main_reason').hide();
 
                         }
-                        if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest') {
+                        if (selectedType === 'mofaRequest') {
                             $('#visa_number').show();
-
 
                         } else {
                             $('#visa_number').hide();
