@@ -926,7 +926,7 @@ class CustomAdminSidebarMenu
 
 
 
-            if ($is_admin  || auth()->user()->can('essentials.work_cards_operation')) {
+            if ($is_admin  || auth()->user()->can('essentials.work_cards_operation') || auth()->user()->can('essentials.view_requests_operations')) {
 
                 $menu->url(
                     route('work_cards_operation'),
