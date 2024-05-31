@@ -2293,7 +2293,7 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($is_admin || auth()->user()->can('internationalrelations.view_operation_orders')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_operations_order_for_contract') || auth()->user()->can('internationalrelations.view_operations_order_for_unSupported_workers')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'index']),
                     __('internationalrelations::lang.order_request'),
@@ -2434,7 +2434,7 @@ class CustomAdminSidebarMenu
                 $menu->dropdown(
                     __('internationalrelations::lang.reports'),
                     function ($sub) {
-                        if (auth()->user()->can('internationalrelations::lang.view_visa_reports')) {
+                        if (auth()->user()->can('internationalrelations.view_visa_reports')) {
                             $sub->url(
                                 action([\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'getVisaReport']),
                                 __('internationalrelations::lang.visa_reports'),
@@ -2451,7 +2451,7 @@ class CustomAdminSidebarMenu
 
 
 
-            if ($is_admin || auth()->user()->can('internationalrelations.travel_categories')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_travel_categorie_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index']),
                     __('internationalrelations::lang.travel_categories'),
@@ -2460,13 +2460,13 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin || auth()->user()->can('internationalrelations.crud_all_reports')) {
-                $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
-                    __('followup::lang.reports.title'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'internationalRleations']
-                );
-            }
+            // if ($is_admin || auth()->user()->can('internationalrelations.crud_all_reports')) {
+            //     $menu->url(
+            //         action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
+            //         __('followup::lang.reports.title'),
+            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'internationalRleations']
+            //     );
+            // }
             if ($is_admin || auth()->user()->can('internationalrelations.view_all_salary_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index']),
