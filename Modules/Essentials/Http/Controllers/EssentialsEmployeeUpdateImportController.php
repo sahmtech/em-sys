@@ -17,6 +17,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\FailedRowsExport;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
@@ -113,18 +114,47 @@ class EssentialsEmployeeUpdateImportController extends Controller
         return Excel::download($export, 'failed_rows.xlsx');
     }
 
+    // public function convertExcelDate($excelDate)
+    // {
+    //     error_log($excelDate);
+    //     if (!$excelDate) {
+
+    //         return $excelDate;
+    //     } else {
+    //         $excelDate = (int)$excelDate;
+
+    //         $unixDate = ($excelDate - 25569) * 86400;
+    //         error_log("Y-m-d", $unixDate);
+    //         return gmdate("Y-m-d", $unixDate);
+    //     }
+    // }
+
     public function convertExcelDate($excelDate)
     {
+        error_log($excelDate);
+
+
+        $datePatternYMD = '/^\d{4}-\d{2}-\d{2}$/';
 
         if (!$excelDate) {
-
+            error_log('111111');
             return $excelDate;
-        } else {
+        } elseif (preg_match($datePatternYMD, $excelDate)) {
+            error_log('222222222');
+            error_log($excelDate);
+            return $excelDate;
+        } elseif (is_numeric($excelDate)) {
+            error_log('333333');
+
             $excelDate = (int)$excelDate;
-
             $unixDate = ($excelDate - 25569) * 86400;
-
-            return gmdate("Y-m-d", $unixDate);
+            $convertedDate = gmdate("Y-m-d", $unixDate);
+            error_log("Converted date: " . $convertedDate);
+            return $convertedDate;
+        } else {
+            error_log('4444444');
+            error_log("Invalid date format: " . $excelDate);
+            return $excelDate;
         }
     }
 
@@ -209,6 +239,12 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     $doesntExiste = EssentialsProfession::where('id', $emp_array['profession_id'])->first() == null;
                     if ($doesntExiste) {
                         $errors[] = __('essentials::lang.profession_id_not_found');
+                    }
+                }
+                if (isset($emp_array['sub_specialization']) && $emp_array['sub_specialization'] != null) {
+                    $doesntExiste = EssentialsSpecialization::where('id', $emp_array['sub_specialization'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.sub_specialization_id_not_found');
                     }
                 }
                 if (isset($emp_array['assigned_to']) && $emp_array['assigned_to'] != null) {
@@ -357,7 +393,12 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $errors[] = __('essentials::lang.profession_id_not_found');
                     }
                 }
-
+                if (isset($emp_array['sub_specialization']) && $emp_array['sub_specialization'] != null) {
+                    $doesntExiste = EssentialsSpecialization::where('id', $emp_array['sub_specialization'])->first() == null;
+                    if ($doesntExiste) {
+                        $errors[] = __('essentials::lang.sub_specialization_id_not_found');
+                    }
+                }
                 if (isset($emp_array['assigned_to']) && $emp_array['assigned_to'] != null) {
                     $assignedTo = trim($emp_array['assigned_to']);
                     if (is_numeric($assignedTo)) {
@@ -563,7 +604,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     ->first();
 
                 if ($previous_proof_date) {
-                    $proofFile = $previous_proof_date->file_path;
+                    $proofFile = $previous_proof_date->file_path ?? null;
                     $previous_proof_date->update(['is_active' => 0]);
                 }
 
@@ -594,7 +635,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 ->where('is_active', 1)
                 ->first();
             if ($previous_passport_date) {
-                $passportFile = $previous_passport_date->file_path;
+                $passportFile = $previous_passport_date->file_path ?? null;
                 $previous_passport_date->update(['is_active' => 0]);
             }
 
@@ -689,6 +730,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
             $contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
             $start_from = $formated_data['appointment_start_from'] ?? null;
+
             if ($contract && $start_from === null) {
                 $start_from = $contract->contract_start_date;
             }
@@ -696,7 +738,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
             if ($previous_appointment) {
                 $previous_appointment->update(['is_active' => 0, 'end_at' => Carbon::today()]);
             }
-
 
 
             if (isset($formated_data['essentials_department_id']) && $formated_data['essentials_department_id'] != null) {
@@ -742,7 +783,6 @@ class EssentialsEmployeeUpdateImportController extends Controller
             } elseif ((isset($formated_data['profession_id']) && $formated_data['profession_id'] != null) && (!isset($formated_data['essentials_department_id']) || $formated_data['essentials_department_id'] == null)) {
 
 
-
                 if ($previous_appointment) {
                     $appointmentData = [
                         'employee_id' => $existingEmployee->id,
@@ -773,7 +813,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
 
                 if ($previous_contract) {
-                    $file = $previous_contract->file_path;
+                    $file = $previous_contract->file_path ?? null;
                     $previous_contract->update(['is_active' => 0]);
                 }
 

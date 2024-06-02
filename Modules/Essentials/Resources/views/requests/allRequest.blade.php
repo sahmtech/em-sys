@@ -335,6 +335,7 @@
                                     'id' => 'mainReasonSelect',
                                 ]) !!}
                             </div>
+
                             <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
                                 {!! Form::label('sub_reason', __('request.sub_reason') . ':*') !!}
                                 {!! Form::select('sub_reason', [], null, [
@@ -461,6 +462,90 @@
                                     'id' => 'return_dateField',
                                 ]) !!}
                             </div>
+                            <div class="form-group col-md-6" id="project_name" style="display: none;">
+                                {!! Form::label('project_name', __('request.project_name') . ':*') !!}
+                                {!! Form::select('project_name', $saleProjects, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_project'),
+                                    'id' => 'projectSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="interview_date" style="display: none;">
+                                {!! Form::label('interview_date', __('request.interview_date') . ':*') !!}
+                                {!! Form::date('interview_date', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.interview_date'),
+                                    'id' => 'interview_dateField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="interview_time" style="display: none;">
+                                {!! Form::label('interview_time', __('request.interview_time') . ':*') !!}
+                                {!! Form::time('interview_time', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.interview_time'),
+                                    'id' => 'interview_timeField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="interview_place" style="display: none;">
+                                {!! Form::label('interview_place', __('request.interview_place') . ':*') !!}
+                                {!! Form::select(
+                                    'interview_place',
+                                    [
+                                        'online' => __('request.online'),
+                                        'housing' => __('request.housing_place'),
+                                        'company' => __('request.company_place'),
+                                        'customer' => __('request.customer_place'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'interview_placeField',
+                                    ],
+                                ) !!}
+                            </div>
+
+
+
+                            <div class="form-group col-md-6" id="profession" style="display: none;">
+                                {!! Form::label('profession', __('request.profession') . ':*') !!}
+                                {!! Form::select('profession', $specializations, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_profession'),
+                                    'id' => 'professionSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="job_title" style="display: none;">
+                                {!! Form::label('job_title', __('request.job_title') . ':*') !!}
+                                {!! Form::select('job_title', $job_titles, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_job_title'),
+                                    'id' => 'job_titleSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="nationlity" style="display: none;">
+                                {!! Form::label('nationlity', __('request.nationlity') . ':*') !!}
+                                {!! Form::select('nationlity', $nationalities, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_nationlity'),
+                                    'id' => 'nationlitySelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="number_of_salary_inquiry" style="display: none;">
+                                {!! Form::label('number_of_salary_inquiry', __('request.number_of_salary_inquiry') . ':') !!}
+                                {!! Form::text('number_of_salary_inquiry', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.number_of_salary_inquiry'),
+                                    'id' => 'number_of_salary_inquiryField',
+                                ]) !!}
+                            </div>
 
 
 
@@ -474,10 +559,6 @@
                                 ]) !!}
                             </div>
 
-                            {{-- <div class="form-group col-md-6" id="reason" style="display: block;">
-                            {!! Form::label('reason', __('request.reason') . ':') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('request.reason'), 'rows' => 3]) !!}
-                        </div> --}}
                             <div class="form-group col-md-6">
                                 {!! Form::label('attachment', __('request.attachment') . ':') !!}
                                 {!! Form::file('attachment', null, [
@@ -843,6 +924,94 @@
                                     'id' => 'editReturnDateOfTripField',
                                 ]) !!}
                             </div>
+
+
+
+                            <div class="form-group col-md-6" id="edit_project_name" style="display: none;">
+                                {!! Form::label('project_name', __('request.project_name') . ':*') !!}
+                                {!! Form::select('project_name', $saleProjects, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_project'),
+                                    'id' => 'editProjectSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="edit_interview_date" style="display: none;">
+                                {!! Form::label('interview_date', __('request.interview_date') . ':*') !!}
+                                {!! Form::date('interview_date', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.interview_date'),
+                                    'id' => 'edit_interview_dateField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="edit_interview_time" style="display: none;">
+                                {!! Form::label('interview_time', __('request.interview_time') . ':*') !!}
+                                {!! Form::time('interview_time', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.interview_time'),
+                                    'id' => 'edit_interview_timeField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="edit_interview_place" style="display: none;">
+                                {!! Form::label('interview_place', __('request.interview_place') . ':*') !!}
+                                {!! Form::select(
+                                    'interview_place',
+                                    [
+                                        'online' => __('request.online'),
+                                        'housing' => __('request.housing_place'),
+                                        'company' => __('request.company_place'),
+                                        'customer' => __('request.customer_place'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'edit_interview_placeField',
+                                    ],
+                                ) !!}
+                            </div>
+
+
+
+                            <div class="form-group col-md-6" id="edit_profession" style="display: none;">
+                                {!! Form::label('profession', __('request.profession') . ':*') !!}
+                                {!! Form::select('profession', $specializations, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_profession'),
+                                    'id' => 'editProfessionSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="edit_job_title" style="display: none;">
+                                {!! Form::label('job_title', __('request.job_title') . ':*') !!}
+                                {!! Form::select('job_title', $job_titles, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_job_title'),
+                                    'id' => 'edit_job_titleSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="edit_nationlity" style="display: none;">
+                                {!! Form::label('nationlity', __('request.nationlity') . ':*') !!}
+                                {!! Form::select('nationlity', $nationalities, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_nationlity'),
+                                    'id' => 'editNationlitySelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="edit_number_of_salary_inquiry" style="display: none;">
+                                {!! Form::label('number_of_salary_inquiry', __('request.number_of_salary_inquiry') . ':') !!}
+                                {!! Form::text('number_of_salary_inquiry', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.number_of_salary_inquiry'),
+                                    'id' => 'edit_number_of_salary_inquiryField',
+                                ]) !!}
+                            </div>
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('note', __('request.note') . ':') !!}
                                 {!! Form::textarea('note', null, [
@@ -963,6 +1132,10 @@
                                 return '@lang('request.ticketReservationRequest')';
                             } else if (data === 'authorizationRequest') {
                                 return '@lang('request.authorizationRequest')';
+                            } else if (data === 'salaryInquiryRequest') {
+                                return '@lang('request.salaryInquiryRequest')';
+                            } else if (data === 'interviewsRequest') {
+                                return '@lang('request.interviewsRequest')';
                             } else {
                                 return data;
                             }
@@ -1265,7 +1438,6 @@
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
 
-
                 $.ajax({
                     url: '/get-non-saudi-users',
                     type: 'POST',
@@ -1279,6 +1451,39 @@
                         userSelect.empty();
 
                         $.each(data.users, function(key, value) {
+                            userSelect.append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+
+
+                        userSelect.trigger('change');
+                    },
+                    error: function(xhr) {
+
+                        console.log('Error:', xhr.responseText);
+                    }
+                });
+            }
+
+            function fetchWorkersNotAssignedy() {
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+
+                $.ajax({
+                    url: '/get-unsigned-workers',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        users: @json($users)
+                    },
+                    success: function(data) {
+                        console.log(data.workers);
+                        var userSelect = $('#worker');
+                        userSelect.empty();
+
+                        $.each(data.workers, function(key, value) {
                             userSelect.append($('<option>', {
                                 value: key,
                                 text: value
@@ -1477,7 +1682,33 @@
                             fetchUsersWithSaudiNationality();
 
                         }
+                        if (selectedType === 'interviewsRequest') {
+                            fetchWorkersNotAssignedy();
+                            $('#project_name').show();
+                            $('#interview_date').show();
+                            $('#interview_time').show();
+                            $('#interview_place').show();
 
+                        } else {
+                            $('#interview_date').hide();
+                            $('#interview_time').hide();
+                            $('#interview_place').hide();
+
+                        }
+                        if (selectedType === 'salaryInquiryRequest') {
+                            $('#nationlity').show();
+                            $('#profession').show();
+                            $('#number_of_salary_inquiry').show();
+                            $('#job_title').show();
+
+                        } else {
+                            $('#nationlity').hide();
+                            $('#profession').hide();
+                            $('#number_of_salary_inquiry').hide();
+                            $('#job_title').hide();
+
+
+                        }
 
                     },
                     error: function(xhr) {
@@ -1495,9 +1726,6 @@
                 });
 
             });
-
-
-
 
 
         });
@@ -1557,6 +1785,9 @@
             'Ajir_link': '@lang('request.Ajir_link')',
             'ticketReservationRequest': '@lang('request.ticketReservationRequest')',
             'authorizationRequest': '@lang('request.authorizationRequest')',
+            'interviewsRequest': '@lang('request.interviewsRequest')',
+            'salaryInquiryRequest': '@lang('request.salaryInquiryRequest')',
+
         };
         $('#requests_table').on('click', '.edit-request', function() {
             var requestId = $(this).data('id');
@@ -1588,11 +1819,13 @@
             $('#editRequestUser').val(related_to_user.first_name + ' ' + related_to_user
                 .last_name);
             $('#editStartDateField').val(request.start_date) ?? null;
+            $('#editLeaveTypeField').val(request.essentials_leave_type_id) ?? null;
             $('#editEndDateField').val(request.end_date) ?? null;
             $('#editExitDateField').val(request.start_date) ?? null;
             $('#editReturnDateField').val(request.end_date) ?? null;
             $('#editEscapeTimeField').val(request.escape_time) ?? null;
             $('#editEscapeDateField').val(request.start_date) ?? null;
+
             $('#editWorkInjuriesDateField').val(request.workInjuriesDate) ?? null;
             $('#editResEditTypeField').val(request.resCardEditType) ?? null;
             $('#editAtmTypeField').val(request.atmCardType) ?? null;
@@ -1613,6 +1846,18 @@
             $('#editTimeOfTakeOffField').val(request.time_of_take_off) ?? null;
             $('#editDateOfTakeOffField').val(request.date_of_take_off) ?? null;
             $('#editReturnDateOfTripField').val(request.return_date) ?? null;
+
+            $('#editProjectSelect').val(request.sale_project_id) ?? null;
+            $('#edit_interview_placeField').val(request.interview_place) ?? null;
+            $('#edit_interview_dateField').val(request.interview_date) ?? null;
+            $('#edit_interview_timeField').val(request.interview_time) ?? null;
+
+            $('#editProfessionSelect').val(request.specialization_id) ?? null;
+            $('#edit_job_titleSelect').val(request.job_title_id) ?? null;
+            $('#editNationlitySelect').val(request.nationality_id) ?? null;
+            $('#edit_number_of_salary_inquiryField').val(request.number_of_salary_inquiry) ?? null;
+
+
             $('#editNote').val(request.note) ?? null;
 
             if (request.trip_type === 'round') {
@@ -1620,16 +1865,16 @@
                 $('#editReturnDateOfTripField').val(request.return_date);
             } else {
                 $('#edit_return_date_of_trip').hide();
-                $('#editReturnDateOfTripField').val(''); // Clear the field if hidden
+                $('#editReturnDateOfTripField').val('');
             }
 
-            // Attach change event handler to #editTripTypeField to handle dynamic changes
+
             $('#editTripTypeField').off('change').on('change', function() {
                 if ($(this).val() === 'round') {
                     $('#edit_return_date_of_trip').show();
                 } else {
                     $('#edit_return_date_of_trip').hide();
-                    $('#editReturnDateOfTripField').val(''); // Clear the field if hidden
+                    $('#editReturnDateOfTripField').val('');
                 }
             });
         }
@@ -1646,6 +1891,12 @@
                     break;
                 case 'returnRequest':
                     $('#edit_exit_date, #edit_return_date').show();
+                    break;
+                case 'interviewsRequest':
+                    $('#edit_project_name, #edit_interview_date, #edit_interview_time, #edit_interview_place').show();
+                    break;
+                case 'salaryInquiryRequest':
+                    $('#edit_profession, #edit_job_title, #edit_nationlity, #edit_number_of_salary_inquiry').show();
                     break;
                 case 'workInjuriesRequest':
                     $('#edit_workInjuriesDate').show();
@@ -1716,17 +1967,16 @@
             $('#requests_table').on('click', '.delete-request', function() {
                 var requestId = $(this).data('id');
 
-                // Perform AJAX request to delete the request
+
                 $.ajax({
                     url: `/delete-request/${requestId}`,
                     type: 'DELETE',
                     success: function(result) {
                         if (result.success == true) {
                             toastr.success(result.msg);
-                            // Reload the datatable
+
                             $('#requests_table').DataTable().ajax.reload();
-                            // Reload the page
-                            //  window.location.reload();
+
                         } else {
                             toastr.error(result.msg);
                         }

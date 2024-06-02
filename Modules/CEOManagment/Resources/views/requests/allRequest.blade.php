@@ -298,10 +298,32 @@
                                 return '@lang('request.insuranceUpgradeRequest')';
                             } else if (data === 'chamberRequest') {
                                 return '@lang('request.chamberRequest')';
-                            } else if (data === 'cancleContractRequest') {
-                                return '@lang('request.cancleContractRequest')';
                             } else if (data === 'WarningRequest') {
                                 return '@lang('request.WarningRequest')';
+                            } else if (data === 'cancleContractRequest') {
+                                return '@lang('request.cancleContractRequest')';
+                            } else if (data === 'passportRenewal') {
+                                return '@lang('request.passportRenewal')';
+                            } else if (data === 'AjirAsked') {
+                                return '@lang('request.AjirAsked')';
+                            } else if (data === 'AlternativeWorker') {
+                                return '@lang('request.AlternativeWorker')';
+                            } else if (data === 'TransferringGuaranteeFromExternalClient') {
+                                return '@lang('request.TransferringGuaranteeFromExternalClient')';
+                            } else if (data === 'Permit') {
+                                return '@lang('request.Permit')';
+                            } else if (data === 'FamilyInsurace') {
+                                return '@lang('request.FamilyInsurace')';
+                            } else if (data === 'Ajir_link') {
+                                return '@lang('request.Ajir_link')';
+                            } else if (data === 'ticketReservationRequest') {
+                                return '@lang('request.ticketReservationRequest')';
+                            } else if (data === 'authorizationRequest') {
+                                return '@lang('request.authorizationRequest')';
+                            } else if (data === 'salaryInquiryRequest') {
+                                return '@lang('request.salaryInquiryRequest')';
+                            } else if (data === 'interviewsRequest') {
+                                return '@lang('request.interviewsRequest')';
                             } else {
                                 return data;
                             }
