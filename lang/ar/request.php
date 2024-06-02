@@ -31,6 +31,8 @@ return [
   'FamilyInsurace' => 'طلب تأمين طبي للمرافقين',
   'Ajir_link' => 'ربط أجير',
   'authorizationRequest' => 'طلب تفويض',
+  'salaryInquiryRequest' => 'طلب استعلام عن راتب',
+  'interviewsRequest' => 'طلب مقابلات',
   'ticketReservationRequest' => 'طلب حجز تذكرة',
   'authorized_entity' => 'اسم الجهة المفوض لها',
   'commissioner_info' => 'معلومات المفوض',
@@ -68,6 +70,14 @@ return [
 
   'attachements' => 'المرفقات',
   'profession' => 'المهنة',
+  'job_title' => 'المسمى الوظيفي',
+  'select_job_title' => 'اختر مسمى وظيفي',
+  'nationlity' => 'الجنسية',
+  'select_nationlity' => 'اختر جنسية',
+  'select_profession' => 'اختر مهنة',
+
+  'number_of_salary_inquiry' => 'العدد',
+
   'passport_end_date' => 'تاريخ انتهاء جواز السفر',
 
   'male' => 'ذكر',
@@ -240,7 +250,20 @@ return [
   'finish_operation' => 'إنهاء العملية',
   'border_number' => 'رقم الحدود',
   'created_user_name' => 'المستخدم الذي أنشئ الطلب',
-  'do_the_procedure' => 'تنفيذ الإجراء'
+  'do_the_procedure' => 'تنفيذ الإجراء',
+  'project_name' => 'المشروع',
+  'interview_date' => 'تاريخ المقابلة',
+  'interview_time' => 'وقت المقابلة',
+  'interview_place' => 'مكان المقابلة',
+  'online' => 'أونلاين',
+  'housing_place' => 'السكن',
+  'company_place' => 'مقر الشركة',
+  'customer_place' => 'مقر العميل',
+  'select_project' => 'اختر مشروع',
+
+
+
+
 
 
 

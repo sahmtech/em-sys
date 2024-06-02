@@ -246,6 +246,10 @@
                                     return '@lang('ceomanagment::lang.authorizationRequest')';
                                 case 'ticketReservationRequest':
                                     return '@lang('ceomanagment::lang.ticketReservationRequest')';
+                                case 'interviewsRequest':
+                                    return '@lang('ceomanagment::lang.interviewsRequest')';
+                                case 'salaryInquiryRequest':
+                                    return '@lang('ceomanagment::lang.salaryInquiryRequest')';
                                 default:
                                     return data;
                             }

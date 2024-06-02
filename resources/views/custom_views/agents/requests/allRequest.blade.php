@@ -470,6 +470,90 @@
                                     'id' => 'return_dateField',
                                 ]) !!}
                             </div>
+                            <div class="form-group col-md-6" id="project_name" style="display: none;">
+                                {!! Form::label('project_name', __('request.project_name') . ':*') !!}
+                                {!! Form::select('project_name', $saleProjects, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_project'),
+                                    'id' => 'projectSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="interview_date" style="display: none;">
+                                {!! Form::label('interview_date', __('request.interview_date') . ':*') !!}
+                                {!! Form::date('interview_date', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.interview_date'),
+                                    'id' => 'interview_dateField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="interview_time" style="display: none;">
+                                {!! Form::label('interview_time', __('request.interview_time') . ':*') !!}
+                                {!! Form::time('interview_time', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('request.interview_time'),
+                                    'id' => 'interview_timeField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="interview_place" style="display: none;">
+                                {!! Form::label('interview_place', __('request.interview_place') . ':*') !!}
+                                {!! Form::select(
+                                    'interview_place',
+                                    [
+                                        'online' => __('request.online'),
+                                        'housing' => __('request.housing_place'),
+                                        'company' => __('request.company_place'),
+                                        'customer' => __('request.customer_place'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'interview_placeField',
+                                    ],
+                                ) !!}
+                            </div>
+
+
+
+                            <div class="form-group col-md-6" id="profession" style="display: none;">
+                                {!! Form::label('profession', __('request.profession') . ':*') !!}
+                                {!! Form::select('profession', $specializations, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_profession'),
+                                    'id' => 'professionSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="job_title" style="display: none;">
+                                {!! Form::label('job_title', __('request.job_title') . ':*') !!}
+                                {!! Form::select('job_title', $job_titles, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_job_title'),
+                                    'id' => 'job_titleSelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="nationlity" style="display: none;">
+                                {!! Form::label('nationlity', __('request.nationlity') . ':*') !!}
+                                {!! Form::select('nationlity', $nationalities, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height: 40px',
+                                    'placeholder' => __('request.select_nationlity'),
+                                    'id' => 'nationlitySelect',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="number_of_salary_inquiry" style="display: none;">
+                                {!! Form::label('number_of_salary_inquiry', __('request.number_of_salary_inquiry') . ':') !!}
+                                {!! Form::text('number_of_salary_inquiry', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('request.number_of_salary_inquiry'),
+                                    'id' => 'number_of_salary_inquiryField',
+                                ]) !!}
+                            </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('note', __('request.note') . ':') !!}
                                 {!! Form::textarea('note', null, [
@@ -696,6 +780,10 @@
                                 return '@lang('request.ticketReservationRequest')';
                             } else if (data === 'authorizationRequest') {
                                 return '@lang('request.authorizationRequest')';
+                            } else if (data === 'salaryInquiryRequest') {
+                                return '@lang('request.salaryInquiryRequest')';
+                            } else if (data === 'interviewsRequest') {
+                                return '@lang('request.interviewsRequest')';
                             } else {
                                 return data;
                             }

@@ -31,9 +31,12 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
-
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
 use Modules\Sales\Entities\SalesProject;
 
 use Modules\CEOManagment\Entities\Task;
@@ -97,6 +100,9 @@ class RequestUtil extends Util
             ->toArray();
 
 
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
         $statuses = $this->statuses;
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
@@ -361,7 +367,18 @@ class RequestUtil extends Util
 
                 ->make(true);
         }
-        return view($view)->with(compact('users', 'requestTypes', 'statuses', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes'));
+        return view($view)->with(compact(
+            'users',
+            'requestTypes',
+            'statuses',
+            'main_reasons',
+            'classes',
+            'saleProjects',
+            'leaveTypes',
+            'job_titles',
+            'specializations',
+            'nationalities'
+        ));
     }
 
 
@@ -528,6 +545,18 @@ class RequestUtil extends Util
                     $Request->date_of_take_off = $request->date_of_take_off;
                     $Request->time_of_take_off = $request->time_of_take_off;
                     $Request->return_date = $request->return_date_of_trip;
+
+
+                    $Request->job_title_id = $request->job_title;
+                    $Request->specialization_id = $request->profession;
+                    $Request->nationality_id = $request->nationlity;
+                    $Request->number_of_salary_inquiry = $request->number_of_salary_inquiry;
+
+                    $Request->sale_project_id = $request->project_name;
+                    $Request->interview_date = $request->interview_date;
+                    $Request->interview_time = $request->interview_time;
+                    $Request->interview_place = $request->interview_place;
+
 
 
 
@@ -1625,6 +1654,17 @@ class RequestUtil extends Util
 
         return response()->json(['users' => $saudiUsers]);
     }
+    public function getUnsignedWorkers(Request $request)
+    {
+
+
+        $workerIds = array_keys($request->input('users', []));
+
+
+        $workers = User::whereNull('assigned_to')->where('user_type', 'worker')->whereIn('id', $workerIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+
+        return response()->json(['workers' => $workers]);
+    }
 
     public function updateStatus(Request $request)
     {
@@ -2164,6 +2204,17 @@ class RequestUtil extends Util
         $userRequest->date_of_take_off = $request->date_of_take_off;
         $userRequest->time_of_take_off = $request->time_of_take_off;
         $userRequest->return_date = $request->return_date_of_trip;
+
+        $userRequest->job_title_id = $request->job_title;
+        $userRequest->specialization_id = $request->profession;
+        $userRequest->nationality_id = $request->nationlity;
+        $userRequest->number_of_salary_inquiry = $request->number_of_salary_inquiry;
+
+        $userRequest->sale_project_id = $request->project_name;
+        $userRequest->interview_date = $request->interview_date;
+        $userRequest->interview_time = $request->interview_time;
+        $userRequest->interview_place = $request->interview_place;
+
 
         $userRequest->save();
 
