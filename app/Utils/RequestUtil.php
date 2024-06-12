@@ -3,6 +3,7 @@
 namespace App\Utils;
 
 use App\AccessRole;
+use App\AccessRoleRequest;
 use App\AccessRoleCompany;
 use App\Request as UserRequest;
 use App\RequestProcess;
@@ -72,7 +73,7 @@ class RequestUtil extends Util
 
 
     ////// get requests /////////////////// 
-    public function getRequests($departmentIds, $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null)
+    public function getRequests($departmentIds,  $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null)
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -82,6 +83,7 @@ class RequestUtil extends Util
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $allRequestTypes = RequestsType::pluck('type', 'id');
+        //  $requestTypeIds = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
 
         $requestTypeIds = WkProcedure::distinct()
             ->with('request_type')
@@ -107,6 +109,9 @@ class RequestUtil extends Util
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->whereIn('employee_type', $ownerTypes)->pluck('reason', 'id');
+
+        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $all_users->pluck('full_name', 'id');
 
         if ($isFollowup) {
             $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
@@ -179,8 +184,19 @@ class RequestUtil extends Util
                             ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
                     });
             })
-            ->groupBy('requests.id');
+            ->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
 
+        if (request()->input('status') && request()->input('status') !== 'all') {
+            error_log(request()->input('status'));
+            $requestsProcess->where('process.status', request()->input('status'));
+        }
+
+
+        if (request()->input('type') && request()->input('type') !== 'all') {
+            error_log(request()->input('type'));
+            $types = RequestsType::where('type', request()->input('type'))->pluck('id')->toArray();
+            $requestsProcess->whereIn('requests.request_type_id', $types);
+        }
         $requests = $requestsProcess->get();
 
         foreach ($requests as $request) {
@@ -196,7 +212,6 @@ class RequestUtil extends Util
             $request->tasksDetails = $tasksDetails;
         }
 
-        // return  $request->tasksDetails;
         if (request()->ajax()) {
 
 
@@ -216,7 +231,10 @@ class RequestUtil extends Util
                         return '';
                     }
                 })
+                ->addColumn('created_user', function ($row) use ($all_users) {
 
+                    return $all_users[$row->created_by];
+                })
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds,  $departmentIdsForGeneralManagment, $statuses) {
                     if ($row->status) {
                         $status = '';
@@ -356,17 +374,24 @@ class RequestUtil extends Util
                         }
                     }
                     if ($is_admin || $can_show_request) {
-                        $buttonsHtml .= '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' . $row->id . '">' . trans('request.view_request') . '</button>';
+                        $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                        $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
                     }
+
+
+                    // if ($is_admin || $can_show_request) {
+                    //     $buttonsHtml .= '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' . $row->id . '">' . trans('request.view_request') . '</button>';
+                    // }
 
                     return $buttonsHtml;
                 })
 
-                ->rawColumns(['status', 'request_type_id', 'can_return', 'assigned_to'])
+                ->rawColumns(['status', 'request_type_id', 'can_return', 'created_user', 'assigned_to'])
 
 
                 ->make(true);
         }
+        $all_status = ['approved', 'pending', 'rejected'];
         return view($view)->with(compact(
             'users',
             'requestTypes',
@@ -377,7 +402,9 @@ class RequestUtil extends Util
             'leaveTypes',
             'job_titles',
             'specializations',
-            'nationalities'
+            'nationalities',
+            'allRequestTypes',
+            'all_status'
         ));
     }
 
@@ -385,6 +412,7 @@ class RequestUtil extends Util
     ////// store request /////////////////// 
     public function storeRequest($request, $departmentIds)
     {
+
         try {
             $business_id = request()->session()->get('user.business_id');
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
@@ -766,34 +794,33 @@ class RequestUtil extends Util
 
     public function saveAttachment(Request $request, $requestId)
     {
+        if ($request->has('attachments')) {
+            foreach ($request->attachments as $attachment) {
+                if (isset($attachment['file'])) {
+                    $file = $attachment['file'];
+                    $attachmentPath = $file->store('/requests_attachments');
 
-        // $request->validate([
-        //     'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
-        // ]);
-        if ($request->hasFile('attachment')) {
-            $attachment = $request->file('attachment');
-            $attachmentPath = $attachment->store('/requests_attachments');
-
-
-            RequestAttachment::create([
-                'request_id' => $requestId,
-                'file_path' => $attachmentPath,
-
-            ]);
+                    RequestAttachment::create([
+                        'request_id' => $requestId,
+                        'added_by' => auth()->user()->id,
+                        'name' => $attachment['name'],
+                        'file_path' => $attachmentPath,
+                    ]);
+                }
+            }
             $output = [
-                'success' => true,
+                'status' => 'success',
                 'msg' => __('messages.saved_successfully'),
             ];
         } else {
             $output = [
-                'success' => false,
+                'status' => 'error',
                 'msg' => __('request.please_add_afile_before_saved'),
             ];
         }
-        return redirect()->back()->with('status', $output);
-
-        // return redirect()->back()->with('success', trans('messages.saved_successfully'));
+        return response()->json($output);
     }
+
 
     public function makeToDo($request, $business_id)
     {
@@ -1186,6 +1213,7 @@ class RequestUtil extends Util
             $attachments = $request->attachments->map(function ($attachments) {
                 return [
                     'request_id' => $attachments->request_id,
+                    'name' => $attachments->name,
                     'file_path' => $attachments->file_path,
                     'created_at' => $attachments->created_at,
                 ];
@@ -1370,6 +1398,7 @@ class RequestUtil extends Util
             $attachments = $request->attachments->map(function ($attachments) {
                 return [
                     'request_id' => $attachments->request_id,
+                    'name' => $attachments->name,
                     'file_path' => $attachments->file_path,
                     'created_at' => $attachments->created_at,
                 ];

@@ -8,6 +8,7 @@ use App\AccessRoleCompany;
 use App\AccessRoleCompanyUserType;
 use App\AccessRoleProject;
 use App\AccessRoleReport;
+use App\AccessRoleRequest;
 use App\Business;
 use App\Company;
 use App\Contact;
@@ -16,6 +17,7 @@ use App\SellingPriceGroup;
 use App\User;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
+use Modules\CEOManagment\Entities\RequestsType;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
@@ -70,6 +72,9 @@ class RoleController extends Controller
 
                             $action .= '&nbsp
                             <a href="' . action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.update_pages_role') . '</a>';
+
+                            $action .= '&nbsp
+                            <a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateRequestAccessRole'], [$row->id]) . '" class="btn btn-xs btn" style="background-color: #6c757d; color: white;"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.update_requests_access_role') . '</a>';
                         }
                         if ($is_admin  || $can_role_delete) {
                             $action .= '&nbsp
@@ -132,6 +137,7 @@ class RoleController extends Controller
 
     public function editOrCreateReportAccessRole($id)
     {
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin  || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -150,16 +156,35 @@ class RoleController extends Controller
         return view('role.edit_create_access_role_report')
             ->with(compact('reports', 'accessRoleReports', 'accessRole',));
     }
+
+    public function editOrCreateRequestAccessRole($id)
+    {
+
+        $accessRole = AccessRole::where('role_id', $id)->first();
+        if (!$accessRole) {
+            $accessRole = new AccessRole();
+            $accessRole->role_id = $id;
+            $accessRole->save();
+        }
+
+        $accessRoleRequests = AccessRoleRequest::where('access_role_id', $accessRole->id)->pluck('request_id')->unique()->toArray();
+        $requests = RequestsType::all();
+
+        return view('role.edit_create_access_role_request')
+            ->with(compact('requests', 'accessRoleRequests', 'accessRole'));
+    }
     public function updateAccessRoleReport(Request $request, $roleId)
     {
         $reports = $request->reports;
 
         AccessRoleReport::where('access_role_id', $roleId)->delete();
-        foreach ($reports as  $report) {
-            AccessRoleReport::create([
-                'access_role_id' =>  $roleId,
-                'report_id' => $report,
-            ]);
+        if (!empty($reports)) {
+            foreach ($reports as  $report) {
+                AccessRoleReport::create([
+                    'access_role_id' =>  $roleId,
+                    'report_id' => $report,
+                ]);
+            }
         }
         $output = [
             'success' => 1,
@@ -167,7 +192,25 @@ class RoleController extends Controller
         ];
         return redirect('roles')->with('status', $output);
     }
+    public function updateAccessRoleRequest(Request $request, $roleId)
+    {
+        $requests = $request->requests;
 
+        AccessRoleRequest::where('access_role_id', $roleId)->delete();
+        if (!empty($requests)) {
+            foreach ($requests as  $request) {
+                AccessRoleRequest::create([
+                    'access_role_id' =>  $roleId,
+                    'request_id' => $request,
+                ]);
+            }
+        }
+        $output = [
+            'success' => 1,
+            'msg' => __('user.role_updated'),
+        ];
+        return redirect('roles')->with('status', $output);
+    }
     public function updateAccessRole(Request $request, $roleId)
     {
         $user_business_id = User::where('id', auth()->user()->id)->first()->business_id;
