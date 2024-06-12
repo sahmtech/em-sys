@@ -2,8 +2,12 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-
+use Modules\Sales\Entities\SalesProject;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use App\User;
+use App\AccessRole;
 use Carbon\Carbon;
 use App\Request as Req;
 use Modules\CEOManagment\Entities\RequestsType;
@@ -50,6 +54,7 @@ class EssentialsRequestController extends Controller
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%بشرية%')
             ->pluck('id')->toArray();
+
         if (empty($departmentIds)) {
             $output = [
                 'success' => false,
@@ -57,7 +62,8 @@ class EssentialsRequestController extends Controller
             ];
             return redirect()->back()->with('status', $output);
         }
-
+        // $roles = DB::table('roles')->where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+        // $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $ownerTypes = ['employee', 'manager', 'worker'];
 
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::requests.allRequest', $can_change_status, $can_return_request, $can_show_request);
@@ -129,6 +135,7 @@ class EssentialsRequestController extends Controller
 
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
 
 
 
@@ -182,21 +189,27 @@ class EssentialsRequestController extends Controller
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
 
 
-        return view('essentials::requests.allRequest')->with(compact('main_reasons', 'classes', 'leaveTypes'));
+        return view('essentials::requests.allRequest')->with(compact('main_reasons', 'saleProjects', 'classes', 'leaveTypes'));
     }
 
     public function employee_requests()
     {
 
         $user = User::where('id', auth()->user()->id)->first();
-
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
-
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
         $requestsProcess = null;
+        $all_status = ['approved', 'pending', 'rejected'];
+
         $allRequestTypes = RequestsType::where('for', 'employee')->pluck('type', 'id');
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
+
+
         $requestsProcess = Req::select([
             'requests.request_no', 'process.id as process_id', 'requests.id',
             'requests.request_type_id', 'requests.created_at', 'process.status',
@@ -255,6 +268,16 @@ class EssentialsRequestController extends Controller
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
-        return view('essentials::requests.employee_requests')->with(compact('allRequestTypes', 'main_reasons', 'classes', 'leaveTypes'));
+        return view('essentials::requests.employee_requests')->with(compact(
+            'allRequestTypes',
+            'job_titles',
+            'specializations',
+            'nationalities',
+            'all_status',
+            'saleProjects',
+            'main_reasons',
+            'classes',
+            'leaveTypes'
+        ));
     }
 }
