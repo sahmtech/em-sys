@@ -390,6 +390,7 @@ class ClientsController extends Controller
                 $userInfo['first_name'] = $contact_input['supplier_business_name'];
                 $userInfo['allow_login'] = 0;
                 $userInfo['business_id'] =  $business_id;
+                $userInfo['company_id'] =  $business_id;
                 $userInfo['crm_contact_id'] =  $contactId;
                 $userInfo['created_by'] =  auth()->user()->id;
                 User::create($userInfo);
