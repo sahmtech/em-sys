@@ -387,7 +387,7 @@ class ClientsController extends Controller
 
                 //add contact as user can't log in
                 $userInfo['user_type'] = 'customer';
-                $userInfo['first_name'] = $request->supplier_business_name;
+                $userInfo['first_name'] = $contact_input['supplier_business_name'];
                 $userInfo['allow_login'] = 0;
                 $userInfo['business_id'] =  $business_id;
                 $userInfo['crm_contact_id'] =  $contactId;
