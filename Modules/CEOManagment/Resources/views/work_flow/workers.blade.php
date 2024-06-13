@@ -514,6 +514,18 @@
                                 return '@lang('request.FamilyInsurace')';
                             } else if (data === 'Ajir_link') {
                                 return '@lang('request.Ajir_link')';
+                            } else if (data === 'ticketReservationRequest') {
+                                return '@lang('request.ticketReservationRequest')';
+                            } else if (data === 'authorizationRequest') {
+                                return '@lang('request.authorizationRequest')';
+                            } else if (data === 'salaryInquiryRequest') {
+                                return '@lang('request.salaryInquiryRequest')';
+                            } else if (data === 'interviewsRequest') {
+                                return '@lang('request.interviewsRequest')';
+                            } else if (data === 'salaryInquiryRequest') {
+                                return '@lang('request.salaryInquiryRequest')';
+                            } else if (data === 'interviewsRequest') {
+                                return '@lang('request.interviewsRequest')';
                             } else {
                                 return data;
                             }

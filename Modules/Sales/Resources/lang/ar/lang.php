@@ -470,7 +470,8 @@ return [
     'change_to_lead' => 'تحويل إلى عميل محتمل',
     'first_choice' => 'الخيار الأول',
     'second_choice' => 'الخيار الثاني',
-    'attachment' => 'الملف'
+    'attachment' => 'الملف',
+    'message' => 'الرسالة'
 
 ];
 

@@ -73,6 +73,11 @@ return [
     'Permit' => 'طلب تصريح',
     'FamilyInsurace' => 'طلب تأمين طبي للمرافقين',
     'Ajir_link' => 'ربط أجير',
+    'authorizationRequest' => 'طلب تفويض',
+    'ticketReservationRequest' => 'طلب حجز تذكرة',
+    'salaryInquiryRequest' => 'طلب استعلام عن راتب',
+    'interviewsRequest' => 'طلب مقابلات',
+
     'repeated_managements_please_re_check' => 'يوجد إدارات مكررة، يرجى إعادة إدخال الإجراء',
     'cant_delete_procedure_it_have_requests' => 'لا يمكن حذف الإجراء، يوجد طلبات متعلقة بهذا الإجراء',
     'cant_edit_procedure_it_have_requests' => 'لا يمكن تعديل الإجراء، يوجد طلبات متعلقة بهذا الإجراء',

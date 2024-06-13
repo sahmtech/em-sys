@@ -3,6 +3,7 @@ return [
   'pending' => 'تحت الإجراء',
   'approved' => 'مقبول',
   'rejected' => 'مرفوض',
+  'filters' => 'التصفية',
   'exitRequest' => 'طلب خروح نهائي',
   'returnRequest' => 'طلب خروج وعودة',
   'escapeRequest' => 'تبليغ هروب',
@@ -30,6 +31,23 @@ return [
   'Permit' => 'طلب تصريح',
   'FamilyInsurace' => 'طلب تأمين طبي للمرافقين',
   'Ajir_link' => 'ربط أجير',
+  'authorizationRequest' => 'طلب تفويض',
+  'salaryInquiryRequest' => 'طلب استعلام عن راتب',
+  'interviewsRequest' => 'طلب مقابلات',
+  'ticketReservationRequest' => 'طلب حجز تذكرة',
+  'authorized_entity' => 'اسم الجهة المفوض لها',
+  'commissioner_info' => 'معلومات المفوض',
+  'trip_type' => 'نوع الرحلة',
+  'Take_off_location' => 'مكان الإقلاع',
+  'destination' => 'الوجهة',
+  'weight_of_furniture' => 'وزن العفش',
+  'date_of_take_off' => 'تاريخ الاقلاع',
+  'time_of_take_off' => 'وقت الاقلاع',
+  'return_date' => 'تاريخ العودة',
+  'round_trip' => 'ذهاب وعودة',
+  'one_way_trip' => 'ذهاب',
+
+
 
   'this_department_cant_reject_this_request' => 'لا يمكن لهذه الإدارة رفض هذا الطلب',
   'returned_successfully' => 'تم الإرجاع بنجاح',
@@ -53,6 +71,14 @@ return [
 
   'attachements' => 'المرفقات',
   'profession' => 'المهنة',
+  'job_title' => 'المسمى الوظيفي',
+  'select_job_title' => 'اختر مسمى وظيفي',
+  'nationlity' => 'الجنسية',
+  'select_nationlity' => 'اختر جنسية',
+  'select_profession' => 'اختر مهنة',
+
+  'number_of_salary_inquiry' => 'العدد',
+
   'passport_end_date' => 'تاريخ انتهاء جواز السفر',
 
   'male' => 'ذكر',
@@ -143,6 +169,8 @@ return [
   'project' => 'المشروع',
   'customer_name' => 'العميل',
   'end_date' => 'تاريخ الانتهاء',
+  'edit' => 'تعديل',
+  'edit_order' => 'تعديل الطلب',
 
 
   'new_requests' => 'الطلبات الجديدة',
@@ -151,13 +179,14 @@ return [
   'no_wishes_found' => 'لا توجد رغبات مضافة',
   'no_contract_found' => 'لا يوجد عقد مضاف',
   'contract_expired' => 'لا يمكن إضافة الطلب لأن الوقت المتبقي لنهاية العقد أكثر من شهر',
-  'visa_number' => 'رقم التأشيرة',
+  'visa_number' => 'رقم الطلب',
   'recruitmentRequests' => 'طلبات التوظيف الداخلي',
   'attachment_view' => 'عرض المرفقات',
   'no_attachment_to_show' => 'لا يوجد مرفقات للعرض',
   'attachments' => 'المرفقات',
   'view_requests' => 'عرض كل الطلبات',
-
+  'updated_success' => 'تم التحديث بنجاح',
+  'delete' => 'حذف',
   'release' => 'إصدار جديد',
   're_issuing' => 'إعادة إصدار',
   'update_info' => 'تحديث بيانات',
@@ -168,6 +197,9 @@ return [
   'created_at' => 'تاريخ التقديم',
   'department_name' => 'اسم الإدارة',
   'not_exist' => 'لا يوجد',
+  'add_attachment' => 'أضف مرفق',
+  'attachment_name' => 'اسم المرفق',
+  'remove' => 'حذف',
   'worker_details' => 'تفاصيل العامل',
   'activites' => 'النشاطات',
   'passport_number' => 'رقم الجواز',
@@ -222,7 +254,29 @@ return [
   'finish_operation' => 'إنهاء العملية',
   'border_number' => 'رقم الحدود',
   'created_user_name' => 'المستخدم الذي أنشئ الطلب',
-  'do_the_procedure' => 'تنفيذ الإجراء'
+  'do_the_procedure' => 'تنفيذ الإجراء',
+  'project_name' => 'المشروع',
+  'interview_date' => 'تاريخ المقابلة',
+  'interview_time' => 'وقت المقابلة',
+  'interview_place' => 'مكان المقابلة',
+  'online' => 'أونلاين',
+  'housing_place' => 'السكن',
+  'company_place' => 'مقر الشركة',
+  'customer_place' => 'مقر العميل',
+  'select_project' => 'اختر مشروع',
+  'worker' => 'عامل',
+  'employee' => 'موظف',
+  'view_activities' => 'عرض سجل النشاطات',
+  'view_request_details' => 'عرض تفاصيل الطلب',
+  'department' => 'الإدارة',
+  'status_note' => 'الملاحظات',
+  'activities' => 'سجل النشاطات',
+  'started_department' => 'الإدارة التي بدأت الطلب',
+  '' => '',
+
+
+
+
 
 
 

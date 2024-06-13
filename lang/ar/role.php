@@ -73,4 +73,6 @@ return [
     'report_access' => 'صلاحية التقارير',
     'add_access_role' => 'إضافة صلاحية وصول',
     'add_report_access_role' => 'إضافة صلاحية تقارير',
+    'add_request_access_role' => 'إضافة صلاحية إنشاء طلب',
+    'request_access' => 'صلاحية الطلبات'
 ];

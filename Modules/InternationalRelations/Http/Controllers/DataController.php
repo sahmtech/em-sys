@@ -33,13 +33,13 @@ class DataController extends Controller
                     ],
 
                     [
-                        'value' => 'sales.view_operations_order_for_contract',
-                        'label' => __('sales::lang.view_operations_order_for_contract'),
+                        'value' => 'internationalrelations.view_operations_order_for_contract',
+                        'label' => __('internationalrelations::lang.view_operations_order_for_contract'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.view_operations_order_for_unSupported_workers',
-                        'label' => __('sales::lang.view_operations_order_for_unSupported_workers'),
+                        'value' => 'internationalrelations.view_operations_order_for_unSupported_workers',
+                        'label' => __('internationalrelations::lang.view_operations_order_for_unSupported_workers'),
                         'default' => false,
                     ],
 

@@ -5,10 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تواصل معنا</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background: #f0f2f5;
+            font-family: 'Almarai', sans-serif;
+            background: rgb(255, 180, 0);
+            /* //linear-gradient(to bottom, rgb(255, 180, 0), rgb(222, 193, 9)); */
+            color: rgb(15, 66, 153);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -39,13 +42,14 @@
         }
 
         .contact-form-container {
-            background: #ffffff;
+            background: rgb(255, 180, 0);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 450px;
             margin: 20px 0;
+            color: rgb(15, 66, 153);
         }
 
         .contact-form-container h1 {
@@ -73,6 +77,8 @@
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 16px;
+            background: #ffffff;
+            color: rgb(15, 66, 153);
         }
 
         .form-group input:focus,
@@ -110,7 +116,7 @@
         }
 
         .alert-success {
-            background-color: green;
+            background-color: rgb(15, 66, 153);
         }
 
         .alert-error {
@@ -135,13 +141,13 @@
 
 <body>
     <div class="contact-form-container">
-        <h1>تواصل معنا</h1>
+
         @if (session('status'))
             <div class="alert {{ session('status')['success'] ? 'alert-success' : 'alert-error' }}">
                 {{ session('status')['msg'] }}
             </div>
         @endif
-        <form id="contactForm" method="POST" action="https://dev.emdadatalatta.com/store_from_website">
+        <form id="contactForm" method="POST" action="https://emdadatalatta.com/store_from_website">
             @csrf
             <div class="form-group">
                 <label for="company-name">اسم الشركة :</label>
@@ -158,6 +164,14 @@
             <div class="form-group">
                 <label for="number">رقم الاتصال :</label>
                 <input type="text" id="number" name="number" required>
+            </div>
+            {{-- <div class="form-group">
+                <label for="commercial_register_no">السجل التجاري :</label>
+                <input type="text" id="commercial_register_no" name="commercial_register_no" required>
+            </div> --}}
+            <div class="form-group">
+                <label for="message">الرسالة :</label>
+                <textarea id="message" name="message" rows="2"></textarea>
             </div>
             <button type="submit">إرسال</button>
         </form>

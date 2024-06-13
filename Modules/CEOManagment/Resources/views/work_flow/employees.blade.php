@@ -89,21 +89,15 @@
                                             'style' => 'width:100%; height:40px',
                                         ],
                                     ) !!}
+                                    <div class="checkbox">
+                                        <label style="font-weight: bold; color: red;">
+                                            {!! Form::checkbox('superior_department', 1, false, ['class' => 'custom-checkbox']) !!} {{ __('essentials::lang.go_to_superior_department') }}
+                                        </label>
+                                    </div>
                                 </div>
+
+
                                 <div class="clearfix"></div>
-
-
-                                {{-- <div class="form-group col-md-6">
-                                    {!! Form::label('add_modal_department_id_start', __('essentials::lang.managment') . ':*') !!}
-                                    {!! Form::select('add_modal_department_id_start[]', $departments, null, [
-                                        'class' => 'form-control select2',
-                                        'id' => 'add_modal_department_id_start',
-                                        'required',
-                                        'placeholder' => __('essentials::lang.selectDepartment'),
-                                      
-                                        'style' => 'height:40px',
-                                    ]) !!}
-                                </div> --}}
                                 <div id="workflow-step_add_modal">
 
                                     <div class="form-group col-md-12 entire_step" id="add_modal_step_0">
@@ -262,22 +256,19 @@
                     <div class="modal-body">
                         <div>
                             <div class="row stepsClass">
-
-
+                                <div class="form-group col-md-6">
+                                    <div class="checkbox">
+                                        <label style="font-weight: bold; color: red;">
+                                            {!! Form::checkbox('superior_department', 1, false, [
+                                                'class' => 'custom-checkbox',
+                                            ]) !!} {{ __('essentials::lang.go_to_superior_department') }}
+                                        </label>
+                                    </div>
+                                </div>
                                 <div class="clearfix"></div>
 
 
-                                {{-- <div class="form-group col-md-6">
-                                    {!! Form::label('edit_modal_department_id_start', __('essentials::lang.managment') . ':*') !!}
-                                    {!! Form::select('edit_modal_department_id_start[]', $departments, null, [
-                                        'class' => 'form-control select2',
-                                        'id' => 'edit_modal_department_id_start',
-                                        'required',
-                                        'placeholder' => __('essentials::lang.selectDepartment'),
-                                        'multiple' => 'multiple',
-                                        'style' => 'height:40px',
-                                    ]) !!}
-                                </div> --}}
+
                                 <div id="workflow-step_edit_modal">
 
                                     <div class="form-group col-md-12 entire_step" id="edit_modal_step_0">
@@ -510,6 +501,18 @@
                                 return '@lang('request.FamilyInsurace')';
                             } else if (data === 'Ajir_link') {
                                 return '@lang('request.Ajir_link')';
+                            } else if (data === 'ticketReservationRequest') {
+                                return '@lang('request.ticketReservationRequest')';
+                            } else if (data === 'authorizationRequest') {
+                                return '@lang('request.authorizationRequest')';
+                            } else if (data === 'salaryInquiryRequest') {
+                                return '@lang('request.salaryInquiryRequest')';
+                            } else if (data === 'interviewsRequest') {
+                                return '@lang('request.interviewsRequest')';
+                            } else if (data === 'salaryInquiryRequest') {
+                                return '@lang('request.salaryInquiryRequest')';
+                            } else if (data === 'interviewsRequest') {
+                                return '@lang('request.interviewsRequest')';
                             } else {
                                 return data;
                             }
@@ -738,6 +741,14 @@
                     type: 'GET',
                     success: function(response) {
                         console.log(response.procedures);
+                        console.log(response.superior_dep);
+                        if (response.superior_dep) {
+                            $('#editProcedureForm input[name="superior_department"]').prop(
+                                'checked', true);
+                        } else {
+                            $('#editProcedureForm input[name="superior_department"]').prop(
+                                'checked', false);
+                        }
                         var procedures = typeof response.procedures === 'string' ? JSON.parse(
                             response.procedures) : response.procedures;
 
@@ -988,8 +999,6 @@
             $(document).on('click', '.remove-task-btn', function() {
                 $(this).closest('.task_template').remove();
             });
-
-
 
             $('.action_type_select').each(function() {
                 var selectedActionType = $(this).val();

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
+
 // use App\Http\Controllers\Auth;
 use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BarcodeController;
@@ -92,6 +93,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 */
 
 Route::get('/contactUsFromWebsite', function () {
+
     return view('contactUsFromWebsite');
 });
 
@@ -696,8 +698,12 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
     Route::get('/roles/editOrCreateReportAccessRole/{id}', [RoleController::class, 'editOrCreateReportAccessRole'])->name('editOrCreateReportAccessRole');
+    Route::get('/roles/editOrCreateRequestAccessRole/{id}', [RoleController::class, 'editOrCreateRequestAccessRole'])->name('editOrCreateRequestAccessRole');
+
     Route::post('/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
     Route::post('/roles/updateAccessRoleReport/{roleId}', [RoleController::class, 'updateAccessRoleReport'])->name('updateAccessRoleReport');
+    Route::post('/roles/updateAccessRoleRequest/{roleId}', [RoleController::class, 'updateAccessRoleRequest'])->name('updateAccessRoleRequest');
+
 
 
     Route::prefix('reports')->group(function () {
@@ -789,10 +795,15 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/get-sub-reasons', [\App\Utils\RequestUtil::class, 'getSubReasons'])->name('getSubReasons');
     Route::post('/save-attachment/{requestId}',  [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
     Route::post('/get-non-saudi-users', [\App\Utils\RequestUtil::class, 'getNonSaudiUsers'])->name('getNonSaudiUsers');
+    Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
+
     Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');
     Route::post('/update-task-status', [\App\Utils\RequestUtil::class, 'updateStatus'])->name('tasks.updateStatus');
     Route::get('/work_cards/view_requests_operations', [\App\Utils\RequestUtil::class, 'viewRequestsOperations'])->name('view_requests_operations');
     Route::get('/finish_operation/{requestId}', [\App\Utils\RequestUtil::class,  'finish_operation'])->name('finish_operation');
+    Route::get('/get-request/{id}', [\App\Utils\RequestUtil::class, 'getRequest'])->name('getRequest');
+    Route::post('/update-request/{id}', [\App\Utils\RequestUtil::class, 'updateRequest'])->name('updateRequest');
+    Route::delete('/delete-request/{id}', [\App\Utils\RequestUtil::class, 'deleteRequest'])->name('deleteRequest');
 
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
