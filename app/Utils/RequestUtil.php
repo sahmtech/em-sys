@@ -440,26 +440,6 @@ class RequestUtil extends Util
             }
 
 
-
-            if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
-
-                $contract = EssentialsEmployeesContract::where('employee_id', $request->worker_id)->firstOrFail();
-                if (is_null($contract->wish_id)) {
-                    $output = [
-                        'success' => false,
-                        'msg' => __('request.no_wishes_found'),
-                    ];
-                    return redirect()->back()->withErrors([$output['msg']]);
-                }
-                if (now()->diffInMonths($contract->contract_end_date) > 1) {
-                    $output = [
-                        'success' => false,
-                        'msg' => __('request.contract_expired'),
-                    ];
-                    return redirect()->back()->withErrors([$output['msg']]);
-                }
-            }
-
             if ($type == 'leavesAndDepartures' && is_null($request->leaveType)) {
                 $output = [
                     'success' => false,
@@ -538,6 +518,32 @@ class RequestUtil extends Util
                                 }
                                 continue;
                             }
+                        }
+                    }
+                    if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
+
+                        $contract = EssentialsEmployeesContract::where('employee_id', $userId)->firstOrFail();
+                        if (is_null($contract->wish_id)) {
+                            if ($count_of_users == 1) {
+                                $output = [
+                                    'success' => false,
+                                    'msg' => __('request.no_wishes_found'),
+                                ];
+
+                                return redirect()->back()->withErrors([$output['msg']]);
+                            }
+                            continue;
+                        }
+                        if (now()->diffInMonths($contract->contract_end_date) > 1) {
+                            if ($count_of_users == 1) {
+                                $output = [
+                                    'success' => false,
+                                    'msg' => __('request.contract_expired'),
+                                ];
+
+                                return redirect()->back()->withErrors([$output['msg']]);
+                            }
+                            continue;
                         }
                     }
                     $Request = new UserRequest;
@@ -1160,18 +1166,37 @@ class RequestUtil extends Util
         $type = $allRequestTypes[$request->request_type_id];
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $firstStep = RequestProcess::where('id', $request->process[0]->id)->first();
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->pluck('reason', 'id');
+        $sub_main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'sub_main')->pluck('sub_reason', 'id');
+
         $requestInfo = [
             'id' => $request->id,
             'request_no' => $request->request_no,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'escape_time' => $request->escape_time,
+            'advSalaryAmount' => $request->advSalaryAmount,
+            'monthlyInstallment' => $request->monthlyInstallment,
+            'installmentsNumber' => $request->installmentsNumber,
+            'baladyCardType' => $request->baladyCardType,
+            'workInjuriesDate' => $request->workInjuriesDate,
+            'resCardEditType' => $request->resCardEditType,
+            'contract_main_reason_id' => $main_reasons[$request->contract_main_reason_id],
+            'contract_sub_reason_id' => $sub_main_reasons[$request->contract_sub_reason_id],
+            'visa_number' => $request->visa_number,
+            'atmCardType' => trans("request.{$request->atmCardType}"),
+            'insurance_classes_id' => $request->insurance_classes_id,
             'status' => trans("request.{$request->status}"),
             'type' => trans("request.{$type}"),
             'started_depatment' => [
                 'id' => $firstStep->started_department_id,
                 'name' => $departments[$firstStep->started_department_id],
             ],
-            'created_at' => $request->created_at,
-            'updated_at' => $request->updated_at,
+            'created_at' => carbon::parse($request->created_at)->format('y:m:d h:m:i'),
+            'updated_at' => carbon::parse($request->updated_at)->format('y:m:d h:m:i'),
         ];
+
+
         $workflow = [];
         $currentStep = WkProcedure::where('id', $request->process[0]->procedure_id)->first();
 
@@ -1317,20 +1342,36 @@ class RequestUtil extends Util
         $type = $allRequestTypes[$request->request_type_id];
         $firstStep = RequestProcess::where('id', $request->process[0]->id)->first();
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->pluck('reason', 'id');
+        $sub_main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'sub_main')->pluck('sub_reason', 'id');
 
         $requestInfo = [
             'id' => $request->id,
             'request_no' => $request->request_no,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'escape_time' => $request->escape_time,
+            'advSalaryAmount' => $request->advSalaryAmount,
+            'monthlyInstallment' => $request->monthlyInstallment,
+            'installmentsNumber' => $request->installmentsNumber,
+            'baladyCardType' => $request->baladyCardType,
+            'workInjuriesDate' => $request->workInjuriesDate,
+            'resCardEditType' => $request->resCardEditType,
+            'contract_main_reason_id' => $request->contract_main_reason_id ? $main_reasons[$request->contract_main_reason_id] : null,
+            'contract_sub_reason_id' => $request->contract_sub_reason_id ?  $sub_main_reasons[$request->contract_sub_reason_id] : null,
+            'visa_number' => $request->visa_number,
+            'atmCardType' => trans("request.{$request->atmCardType}"),
+            'insurance_classes_id' => $request->insurance_classes_id,
+            'status' => trans("request.{$request->status}"),
+            'type' => trans("request.{$type}"),
             'started_depatment' => [
                 'id' => $firstStep->started_department_id,
                 'name' => $departments[$firstStep->started_department_id],
             ],
-
-            'status' => trans("request.{$request->status}"),
-            'type' => trans("request.{$type}"),
-            'created_at' => $request->created_at,
-            'updated_at' => $request->updated_at,
+            'created_at' => carbon::parse($request->created_at)->format('y:m:d h:m:i'),
+            'updated_at' => carbon::parse($request->updated_at)->format('y:m:d h:m:i'),
         ];
+
         $workflow = [];
 
         $firstStep = RequestProcess::where('id', $request->process[0]->id)->first();

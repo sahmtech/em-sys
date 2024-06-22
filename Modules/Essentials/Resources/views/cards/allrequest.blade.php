@@ -782,7 +782,7 @@
             </div>
         </div>
 
-        
+
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
             aria-hidden="true">
@@ -1190,6 +1190,10 @@
                                 <h4>@lang('request.attachments')</h4>
                                 <ul id="attachments-list"></ul>
                             </div>
+                            <div class="col-md-6">
+                                <h4>@lang('request.request_info')</h4>
+                                <ul id="request-info"></ul>
+                            </div>
                         </div>
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -1207,8 +1211,8 @@
 
 
         {{-- view request activities --}}
-        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog" aria-labelledby="activitiesModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog"
+            aria-labelledby="activitiesModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -1481,10 +1485,11 @@
                             var workflowContainer = $('#workflow-container');
                             var workerList = $('#worker-list');
                             var attachmentsList = $('#attachments-list');
-
+                            var requestInfoList = $('#request-info');
                             workflowContainer.html('');
                             workerList.html('');
                             attachmentsList.html('');
+                            requestInfoList.html('');
 
                             response.workflow.forEach(function(step, i) {
                                 var status = step.status ? step.status.toLowerCase() :
@@ -1549,7 +1554,99 @@
                                   </li>
                               `);
                             });
+                            // Populate request info list
+                            var requestInfo = response.request_info;
+                            var requestInfoData = [{
+                                    label: '{{ __('request.type') }}',
+                                    value: requestInfo.type
+                                },
+                                {
+                                    label: '{{ __('request.request_no') }}',
+                                    value: requestInfo.request_no
+                                },
+                                {
+                                    label: '{{ __('request.exit_date') }}',
+                                    value: requestInfo.start_date
+                                },
+                                {
+                                    label: '{{ __('request.end_date') }}',
+                                    value: requestInfo.end_date
+                                },
+                                {
+                                    label: '{{ __('request.escape_time') }}',
+                                    value: requestInfo.escape_time
+                                },
+                                {
+                                    label: '{{ __('request.advSalaryAmount') }}',
+                                    value: requestInfo.advSalaryAmount
+                                },
+                                {
+                                    label: '{{ __('request.monthlyInstallment') }}',
+                                    value: requestInfo.monthlyInstallment
+                                },
+                                {
+                                    label: '{{ __('request.installmentsNumber') }}',
+                                    value: requestInfo.installmentsNumber
+                                },
+                                {
+                                    label: '{{ __('request.baladyCardType') }}',
+                                    value: requestInfo.baladyCardType
+                                },
+                                {
+                                    label: '{{ __('request.workInjuriesDate') }}',
+                                    value: requestInfo.workInjuriesDate
+                                },
+                                {
+                                    label: '{{ __('request.resCardEditType') }}',
+                                    value: requestInfo.resCardEditType
+                                },
+                                {
+                                    label: '{{ __('request.main_reason') }}',
+                                    value: requestInfo.contract_main_reason_id
+                                },
+                                {
+                                    label: '{{ __('request.sub_reason') }}',
+                                    value: requestInfo.contract_sub_reason_id
+                                },
+                                {
+                                    label: '{{ __('request.visa_number') }}',
+                                    value: requestInfo.visa_number
+                                },
+                                {
+                                    label: '{{ __('request.atmCardType') }}',
+                                    value: requestInfo.atmCardType
+                                },
+                                {
+                                    label: '{{ __('request.insurance_class') }}',
+                                    value: requestInfo.insurance_classes_id
+                                },
+                                {
+                                    label: '{{ __('request.status') }}',
+                                    value: requestInfo.status
+                                },
 
+                                {
+                                    label: '{{ __('request.started_depatment') }}',
+                                    value: requestInfo.started_depatment.name
+                                },
+                                {
+                                    label: '{{ __('request.created_at') }}',
+                                    value: requestInfo.created_at
+                                },
+                                {
+                                    label: '{{ __('request.updated_at') }}',
+                                    value: requestInfo.updated_at
+                                }
+                            ];
+
+                            requestInfoData.forEach(function(info) {
+                                if (info.value !== null && info.value !==
+                                    '') { // Check for null or empty values
+                                    requestInfoList.append(
+                                        `<li class="request-info-item">${info.label}: ${info.value}</li>`
+                                    );
+                                }
+                            });
                             $('#attachmentForm').attr('action',
                                 '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
                                 .replace(':requestId', response.request_info.id));
@@ -2190,5 +2287,3 @@
         });
     </script>
 @endsection
-
-
