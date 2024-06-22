@@ -59,11 +59,16 @@ return [
   'this_user_has_not_department' => 'هذا المستخدم غير تابع لإدارة لتوجيه الطلب إليها',
 
 
+  'request_no' => 'رقم الطلب',
+  'started_depatment' => 'الإدارة التي بدأت الطلب',
+  'updated_at' => 'تاريخ التحديث',
+  'request_info' => 'معلومات الطلب',
   'name' => 'الاسم الكامل',
   'sponsor' => 'الكفيل',
   'nationality' => 'الجنسية',
   'eqama' => 'رقم الاقامة',
   'eqama_end_date' => 'تاريخ انتهاء الاقامة',
+  'exit_date' => 'تاريخ الخروج',
 
   'contract_end_date' => 'تاريخ انتهاء العقد',
   'passport' => 'رقم جواز السفر',
