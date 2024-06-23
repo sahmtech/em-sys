@@ -658,9 +658,11 @@ class WkProcedureController extends Controller
                 ];
                 return $output;
             }
+            error_log($type);
 
             $wk_pocedures =  WkProcedure::where('request_type_id', $type)->get();
             foreach ($wk_pocedures  as $wk_pocedure) {
+                error_log($wk_pocedure->id);
                 ProcedureTask::where('procedure_id',  $wk_pocedure->id)->delete();
                 ProcedureEscalation::where('procedure_id',  $wk_pocedure->id)->delete();
                 $wk_pocedure->delete();

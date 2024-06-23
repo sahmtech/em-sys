@@ -25,10 +25,159 @@
                 }
             }
 
-            .workflow-circle {
-                min-width: 110px;
-                height: 110px;
-                border-radius: 50%;
+            .modal-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .modal-title {
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .modal-body {
+                background-color: #ffffff;
+                color: #495057;
+            }
+
+            .request-details,
+            .activity {
+                border: 1px solid #dee2e6;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 4px;
+            }
+
+            .request-details strong,
+            .activity strong {
+                color: #007bff;
+            }
+
+            .modal-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .modal-title {
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .modal-body {
+                background-color: #ffffff;
+                color: #495057;
+            }
+
+            .card {
+                border: 1px solid #dee2e6;
+                margin-bottom: 10px;
+                border-radius: 4px;
+                width: 90%;
+
+            }
+
+            .card-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+                padding: 10px;
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .card-body {
+                padding: 10px;
+            }
+
+            .card-body p {
+                margin: 5px 0;
+            }
+
+            .arrow-down {
+                width: 0;
+                height: 0;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-top: 10px solid #dee2e6;
+                margin: 0 auto;
+            }
+
+            .modal-header .close {
+                color: #007bff;
+                opacity: 1;
+            }
+
+            .modal-header .close:hover,
+            .modal-header .close:focus {
+                color: #0056b3;
+                text-decoration: none;
+                opacity: 1;
+            }
+
+            .modal-footer .btn-secondary {
+                background-color: #007bff;
+                border-color: #007bff;
+                color: #fff;
+            }
+
+            .modal-footer .btn-secondary:hover,
+            .modal-footer .btn-secondary:focus {
+                background-color: #0056b3;
+                border-color: #0056b3;
+                color: #fff;
+            }
+
+            .modal-header .close {
+                color: #007bff;
+                opacity: 1;
+            }
+
+            .modal-header .close:hover,
+            .modal-header .close:focus {
+                color: #0056b3;
+                text-decoration: none;
+                opacity: 1;
+            }
+
+            .modal-footer .btn-secondary {
+                background-color: #007bff;
+                border-color: #007bff;
+                color: #fff;
+            }
+
+            .modal-footer .btn-secondary:hover,
+            .modal-footer .btn-secondary:focus {
+                background-color: #0056b3;
+                border-color: #0056b3;
+                color: #fff;
+            }
+
+            .card {
+                border: 1px solid #dee2e6;
+                border-radius: 0.25rem;
+                margin-bottom: 1rem;
+                padding: 1rem;
+            }
+
+            .card-header {
+                background-color: #f7f7f7;
+                border-bottom: 1px solid #dee2e6;
+                font-weight: bold;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .card-footer {
+                background-color: #f7f7f7;
+                border-top: 1px solid #dee2e6;
+                text-align: right;
+            }
+
+            .workflow-rectangle {
+                min-width: 150px;
+                height: 100px;
+                border-radius: 10px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -37,7 +186,8 @@
                 font-weight: bold;
                 color: #fff;
                 padding: 10px;
-
+                text-align: center;
+                margin-bottom: 10px;
             }
 
             .workflow-arrow {
@@ -48,13 +198,6 @@
                 margin: 0 10px;
                 border-left: 10px solid transparent;
                 border-right: 10px solid transparent;
-
-
-            }
-
-            .workflow-circle span {
-                margin-top: 5px;
-
             }
 
             .workflow-container {
@@ -63,22 +206,21 @@
                 margin-bottom: 20px;
                 white-space: nowrap;
                 overflow-x: auto;
-                margin-bottom: 20px;
             }
 
-            .workflow-circle.pending {
+            .workflow-rectangle.pending {
                 background-color: orange;
             }
 
-            .workflow-circle.approved {
+            .workflow-rectangle.approved {
                 background-color: green;
             }
 
-            .workflow-circle.rejected {
+            .workflow-rectangle.rejected {
                 background-color: red;
             }
 
-            .workflow-circle.grey {
+            .workflow-rectangle.grey {
                 background-color: grey;
             }
 
@@ -90,9 +232,42 @@
             }
 
             .department-name {
-                text-align: center;
                 margin-top: 5px;
                 font-weight: bold;
+            }
+
+            .updated-by {
+                font-size: 12px;
+                margin-top: 5px;
+            }
+
+            .workflow-rectangle.green {
+                background-color: #4CAF50;
+            }
+
+            .attachment-item {
+                margin-bottom: 10px;
+            }
+
+            .attachment-link {
+                color: #007bff;
+                text-decoration: none;
+            }
+
+            .attachment-link:hover {
+                text-decoration: underline;
+            }
+
+            #attachmentForm .attachment-group {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            #attachmentForm .form-control {
+                width: 100%;
+                max-width: 150px;
+                margin-right: 10px;
             }
         </style>
     </head>

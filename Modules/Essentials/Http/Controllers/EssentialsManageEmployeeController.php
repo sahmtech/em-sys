@@ -1772,7 +1772,7 @@ class EssentialsManageEmployeeController extends Controller
                         $input = [
                             'number' => $bankCode,
                             'file_path' => $request->existing_iban_file,
-                            'updated_by' => auth()->user()->id
+                            'updated_by' => Auth::user()->id
                         ];
 
                         $Iban_doc = EssentialsOfficialDocument::where('employee_id', $existing_user->id)->where('is_active', 1)->where('type', 'Iban')->first();

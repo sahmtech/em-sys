@@ -698,8 +698,12 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
     Route::get('/roles/editOrCreateReportAccessRole/{id}', [RoleController::class, 'editOrCreateReportAccessRole'])->name('editOrCreateReportAccessRole');
+    Route::get('/roles/editOrCreateRequestAccessRole/{id}', [RoleController::class, 'editOrCreateRequestAccessRole'])->name('editOrCreateRequestAccessRole');
+
     Route::post('/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
     Route::post('/roles/updateAccessRoleReport/{roleId}', [RoleController::class, 'updateAccessRoleReport'])->name('updateAccessRoleReport');
+    Route::post('/roles/updateAccessRoleRequest/{roleId}', [RoleController::class, 'updateAccessRoleRequest'])->name('updateAccessRoleRequest');
+
 
 
     Route::prefix('reports')->group(function () {

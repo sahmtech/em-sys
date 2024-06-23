@@ -2582,7 +2582,7 @@ class DataController extends Controller
                     $new_residence_permit->employee_id = $user->id;
                     $new_residence_permit->number = request()->input('id_proof_number');
                     $new_residence_permit->expiration_date = request()->input('expiration_date');
-                    $residence_permit_doc->created_by = Auth::user()->id;
+                    $new_residence_permit->created_by = Auth::user()->id;
                     $new_residence_permit->save();
                 }
             }

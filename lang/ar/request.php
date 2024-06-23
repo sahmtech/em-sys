@@ -3,6 +3,7 @@ return [
   'pending' => 'تحت الإجراء',
   'approved' => 'مقبول',
   'rejected' => 'مرفوض',
+  'filters' => 'التصفية',
   'exitRequest' => 'طلب خروح نهائي',
   'returnRequest' => 'طلب خروج وعودة',
   'escapeRequest' => 'تبليغ هروب',
@@ -58,11 +59,16 @@ return [
   'this_user_has_not_department' => 'هذا المستخدم غير تابع لإدارة لتوجيه الطلب إليها',
 
 
+  'request_no' => 'رقم الطلب',
+  'started_depatment' => 'الإدارة التي بدأت الطلب',
+  'updated_at' => 'تاريخ التحديث',
+  'request_info' => 'معلومات الطلب',
   'name' => 'الاسم الكامل',
   'sponsor' => 'الكفيل',
   'nationality' => 'الجنسية',
   'eqama' => 'رقم الاقامة',
   'eqama_end_date' => 'تاريخ انتهاء الاقامة',
+  'exit_date' => 'تاريخ الخروج',
 
   'contract_end_date' => 'تاريخ انتهاء العقد',
   'passport' => 'رقم جواز السفر',
@@ -196,6 +202,9 @@ return [
   'created_at' => 'تاريخ التقديم',
   'department_name' => 'اسم الإدارة',
   'not_exist' => 'لا يوجد',
+  'add_attachment' => 'أضف مرفق',
+  'attachment_name' => 'اسم المرفق',
+  'remove' => 'حذف',
   'worker_details' => 'تفاصيل العامل',
   'activites' => 'النشاطات',
   'passport_number' => 'رقم الجواز',
@@ -260,6 +269,15 @@ return [
   'company_place' => 'مقر الشركة',
   'customer_place' => 'مقر العميل',
   'select_project' => 'اختر مشروع',
+  'worker' => 'عامل',
+  'employee' => 'موظف',
+  'view_activities' => 'عرض سجل النشاطات',
+  'view_request_details' => 'عرض تفاصيل الطلب',
+  'department' => 'الإدارة',
+  'status_note' => 'الملاحظات',
+  'activities' => 'سجل النشاطات',
+  'started_department' => 'الإدارة التي بدأت الطلب',
+  '' => '',
 
 
 
