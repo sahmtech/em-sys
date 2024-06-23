@@ -49,7 +49,16 @@ class FollowupUserAccessProjectController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%متابعة%')
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
+            })
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
@@ -95,7 +104,6 @@ class FollowupUserAccessProjectController extends Controller
                         if ($is_admin  || $can_add_user_project_access_permissions) {
 
                             $html .= '<a href="#" class="btn btn-xs btn-primary add_access_project_btn" data-id="' . $row->id . '" data-url="' . route('getUserProjectsPermissions', ['userId' => $row->id]) . '">' . __('followup::lang.edit_project') . '</a>&nbsp;';
-
                         }
                         return $html;
                     }
@@ -107,7 +115,7 @@ class FollowupUserAccessProjectController extends Controller
                 ->filterColumn('id_proof_number', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
                 })
-               
+
                 ->rawColumns(['id', 'full_name', 'id_proof_number', 'appointment', 'action'])
                 ->make(true);
         }

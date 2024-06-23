@@ -49,7 +49,16 @@ class FollowUpController extends Controller
 
         $business = Business::where('id', $business_id)->first();
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%متابعة%')
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
+            })
             ->pluck('id')->toArray();
 
         $new_requests = UserRequest::whereDate('created_at', Carbon::now($business->time_zone)->toDateString())->count();
@@ -116,7 +125,16 @@ class FollowUpController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%متابعة%')
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
+            })
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
