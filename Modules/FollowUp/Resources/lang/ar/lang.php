@@ -335,7 +335,7 @@ return [
     'return_the_request_workInjuriesRequest' => 'إرجاع طلبات إصابة العمل ',
     'select_type' => 'اختر نوع',
     'request_owner' => ' صاحب الطلب',
-
+    'there_is_no_followup_dep' => 'لا يوجد إدارة متابعة لوصول الطلبات إليها',
     'view_followup_requests' => 'عرض طلبات المتابعة',
     'add_request' => 'إضافة طلب',
     'change_request_status' => 'تغيير حالة الطلب',

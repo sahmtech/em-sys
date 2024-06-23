@@ -65,16 +65,7 @@ class FollowUpRequestController extends Controller
 
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
-                $query  ->where(function ($query) {
                 $query->where('name', 'LIKE', '%متابعة%')
-                    ->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%أعمال%');
-                    })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
-            })
                     ->orWhere(function ($query) {
                         $query->where('name', 'LIKE', '%تشغيل%')
                             ->where('name', 'LIKE', '%أعمال%');
@@ -102,16 +93,7 @@ class FollowUpRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-              ->where(function ($query) {
-                $query->where('name', 'LIKE', '%متابعة%')
-                    ->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%أعمال%');
-                    })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
-            })
+            ->where('name', 'LIKE', '%متابعة%')
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
@@ -128,16 +110,7 @@ class FollowUpRequestController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-              ->where(function ($query) {
-                $query->where('name', 'LIKE', '%متابعة%')
-                    ->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%أعمال%');
-                    })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
-            })
+            ->where('name', 'LIKE', '%متابعة%')
             ->pluck('id')->toArray();
 
         if (empty($departmentIds)) {
@@ -395,16 +368,7 @@ class FollowUpRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-              ->where(function ($query) {
-                $query->where('name', 'LIKE', '%متابعة%')
-                    ->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%أعمال%');
-                    })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
-            })
+            ->where('name', 'LIKE', '%متابعة%')
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
