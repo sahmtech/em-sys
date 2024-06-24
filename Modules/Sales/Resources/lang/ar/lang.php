@@ -473,7 +473,8 @@ return [
     'attachment' => 'الملف',
     'message' => 'الرسالة',
     'click_here_to_add_qualified_client' => 'اضغط هنا لإضافة عميل مؤهل',
-    'add_qualified_contact' => 'إضافة عميل مؤهل'
+    'add_qualified_contact' => 'إضافة عميل مؤهل',
+    'View_File' => 'عرض المرفق'
 
 ];
 
