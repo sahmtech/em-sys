@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 {{-- 'specializations','professions','nationalities' --}}
-                <div class="col-sm-4">
+                {{-- <div class="col-sm-4">
                     <div class="form-group">
                         {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
                         {!! Form::select('specialization', $specializations, null, [
@@ -34,7 +34,7 @@
                             'placeholder' => __('sales::lang.specialization'),
                         ]) !!}
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-sm-4">
                     <div class="form-group">
                         {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}

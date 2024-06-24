@@ -85,30 +85,38 @@
                     {!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
                     <div class="clearfix"></div>
-                    <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                    <div class="col-sm-4">
                         <div class="form-group">
-                            <div class="form-group col-md-10">
-                                {!! Form::label('contact_id', __('sales::lang.project_name') . ':*') !!}
-                                @if (!empty($id))
-                                    {!! Form::select('contact_id', $leads, $id, [
-                                        'class' => 'form-control',
-                                        'style' => 'height:40px',
-                                        // 'placeholder' => __('sales::lang.select_project'),
-                                        'required',
-                                        // 'disabled' => true,
-                                    ]) !!}
-                                @else
-                                    {!! Form::select('contact_id', $leads, null, [
-                                        'class' => 'form-control',
-                                        'style' => 'height:40px',
-                                        'placeholder' => __('sales::lang.select_project'),
-                                        'required',
-                                    ]) !!}
-                                @endif
 
+                            <div class="input-group">
+                                {!! Form::label('contact_id', __('sales::lang.project_name') . ':*') !!}
+
+
+                                {!! Form::select('contact_id', $leads, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:40px',
+                                    // 'placeholder' => __('sales::lang.select_project'),
+                                    'required',
+                                    // 'disabled' => true,
+                                ]) !!}
+
+
+
+                            </div>
+                            <div class="input-group-append">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default bg-white btn-flat" data-toggle="modal"
+                                        data-target="#addContactModal" @if (!auth()->user()->hasRole('Admin#1') || !auth()->user()->can('sales.add_qualified_contact')) disabled @endif>
+                                        <small>@lang('sales::lang.click_here_to_add_qualified_client')</small>
+                                        <i class="fa fa-plus-circle text-primary fa-lg" style="margin-right: 7px;"></i>
+                                    </button>
+                                </span>
                             </div>
                         </div>
                     </div>
+
+
+
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('contract_form', __('sales::lang.contract_form') . ':*') !!}
@@ -292,9 +300,9 @@
                                         <th class="text-center">
                                             @lang('sales::lang.profession')
                                         </th>
-                                        <th class="text-center">
+                                        {{-- <th class="text-center">
                                             @lang('sales::lang.specialization')
-                                        </th>
+                                        </th> --}}
                                         <th class="text-center">
                                             @lang('sales::lang.nationality')
                                         </th>
@@ -606,6 +614,153 @@
 
         {!! Form::close() !!}
     </section>
+    <div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                {!! Form::open(['route' => 'sale.storeQualifiedCustomer', 'id' => 'storeQualifiedCustomerForm']) !!}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">@lang('sales::lang.add_contact')</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- Modal body content here -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('contact_name', __('sales::lang.contact_name') . ':*') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                {!! Form::text('contact_name', null, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'placeholder' => __('sales::lang.contact_name'),
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('name_en', __('sales::lang.name_en') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fas fa-font"></i>
+                                </span>
+                                {!! Form::text('name_en', null, [
+                                    'class' => 'form-control',
+                                    // 'required',
+                                    'placeholder' => __('sales::lang.name_en'),
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- <div class="col-md-4 business">
+                        <div class="form-group">
+                            {!! Form::label('supplier_business_name', __('business.business_name') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-briefcase"></i>
+                                </span>
+                                {!! Form::text('supplier_business_name', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('business.business_name'),
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div> --}}
+
+                    <div class="col-md-4 business">
+                        <div class="form-group">
+                            {!! Form::label('commercial_register_no', __('sales::lang.commercial_register_no') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-briefcase"></i>
+                                </span>
+                                {!! Form::text('commercial_register_no', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('sales::lang.commercial_register_no'),
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('mobile', __('contact.mobile') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-mobile"></i>
+                                </span>
+                                {!! Form::text('mobile', null, ['class' => 'form-control', 'placeholder' => __('contact.mobile')]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('alternate_number', __('contact.alternate_contact_number') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-phone"></i>
+                                </span>
+                                {!! Form::text('alternate_number', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('contact.alternate_contact_number'),
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('email', __('business.email') . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-envelope"></i>
+                                </span>
+                                {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group col-md-4">
+                        {!! Form::label('arabic_name_for_city', __('essentials::lang.city') . ':') !!}
+                        {!! Form::select('city', $cities, null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('essentials::lang.city'),
+                            'id' => 'cityDropdown',
+                            'style' => 'height:40px',
+                            'data-url' => route('getEnglishNameForCity'),
+                        ]) !!}
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        {!! Form::label('english_name_for_city', __('essentials::lang.english_name_for_city') . ':') !!}
+                        {!! Form::text('english_name_for_city', null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('essentials::lang.english_name_for_city'),
+                            'id' => 'relatedInput',
+                            'readonly' => 'readonly',
+                        ]) !!}
+                    </div>
+                    <!-- Add the remaining fields here -->
+                    <div class="clearfix"></div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         @include('contact.create', ['quick_add' => true])
@@ -636,6 +791,39 @@
 
     {{-- <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script> --}}
     <script src="{{ asset('js/opening_stock.js') }}?v={{ filemtime(public_path('js/opening_stock.js')) }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#storeQualifiedCustomerForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            $('#addContactModal').modal('hide');
+                            // Set the contact_id field with the new contact ID and supplier_business_name
+                            $('select[name="contact_id"]').append(new Option(response
+                                .supplier_business_name, response.contact_id, true, true
+                            )).trigger('change');
+
+                            // Redirect to the create price offer view if needed
+                            // window.location.href = '/create-price-offer/' + response.contact_id; // Adjust this URL as needed
+                        } else {
+                            alert(response.msg);
+                        }
+                    },
+                    error: function(response) {
+                        console.log(response);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
 
 
 

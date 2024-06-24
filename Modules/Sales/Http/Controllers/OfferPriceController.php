@@ -3,6 +3,7 @@
 namespace Modules\Sales\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
+use Modules\Essentials\Entities\EssentialsCity;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\BusinessLocation;
@@ -508,7 +509,7 @@ class OfferPriceController extends Controller
 
             ->pluck('supplier_business_name', 'id');
 
-
+        $cities = EssentialsCity::forDropdown();
         return view('sales::price_offer.create')
             ->with(compact(
 
@@ -516,7 +517,7 @@ class OfferPriceController extends Controller
                 'taxes',
                 'leads',
                 'walk_in_customer',
-                // 'business_locations',
+                'cities',
                 // 'bl_attributes',
                 'default_location',
                 'commission_agent',

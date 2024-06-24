@@ -467,6 +467,85 @@ class ClientsController extends Controller
         return redirect()->route('draft_contacts');
     }
 
+    public function storeQualifiedCustomer(Request $request)
+    {
+        if (!auth()->user()->can('user.create') && !auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $business_id = session()->get('user.business_id');
+
+            if (!$this->moduleUtil->isSubscribed($business_id)) {
+                return $this->moduleUtil->expiredResponse();
+            }
+
+            $input = $request->only([
+                'contact_name', 'name_en', 'city', 'commercial_register_no', 'mobile', 'alternate_number', 'email',
+            ]);
+
+            $latestRecord = Contact::whereIn('type', ['draft', 'lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->ref_no;
+                $numericPart = (int)substr($latestRefNo, 5);
+                $numericPart++;
+                $contact_input['ref_no'] = 'L' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
+            } else {
+                $contact_input['ref_no'] = 'L0005000';
+            }
+
+            $contact_input['supplier_business_name'] = $request->input('contact_name');
+            $contact_input['english_name'] = $request->input('name_en');
+            $contact_input['commercial_register_no'] = $request->input('commercial_register_no');
+            $contact_input['mobile'] = $request->input('mobile');
+            $contact_input['alternate_number'] = $request->input('alternate_number');
+            $contact_input['email'] = $request->input('email');
+            $contact_input['business_id'] = $business_id;
+            $contact_input['created_by'] = $request->session()->get('user.id');
+            $contact_input['type'] = "qualified";
+
+            $output = $this->contactUtil->createNewContact($contact_input);
+            $responseData = $output['data'];
+            $contactId = $responseData->id;
+
+            if ($contactId) {
+                $userInfo['user_type'] = 'customer';
+                $userInfo['first_name'] = $request->supplier_business_name;
+                $userInfo['allow_login'] = 0;
+                $userInfo['business_id'] = $business_id;
+                $userInfo['crm_contact_id'] = $contactId;
+                $userInfo['created_by'] = auth()->user()->id;
+                User::create($userInfo);
+            }
+
+            event(new ContactCreatedOrModified($contact_input, 'added'));
+
+            $this->moduleUtil->getModuleData('after_contact_saved', ['contact' => $output['data'], 'input' => $request->input()]);
+
+            $this->contactUtil->activityLog($output['data'], 'added');
+
+            return response()->json([
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+                'contact_id' => $contactId,
+                'supplier_business_name' => $contact_input['supplier_business_name']
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ], 500);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->errors();
+            return response()->json(['success' => false, 'errors' => $errors], 422);
+        }
+    }
+
+
+
     public function store_from_website(Request $request)
     {
         try {
