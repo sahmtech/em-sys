@@ -356,7 +356,6 @@ class AgentController extends Controller
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
             $status_filltetr = $this->moduleUtil->getUserStatus();
-            $fields = $this->moduleUtil->getWorkerFields();
             $user = User::where('id', auth()->user()->id)->first();
             $contact_id =  $user->crm_contact_id;
             $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
@@ -474,7 +473,7 @@ class AgentController extends Controller
                     ->make(true);
             }
 
-            return view('custom_views.agents.agent_workers')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+            return view('custom_views.agents.agent_workers')->with(compact('contacts_fillter', 'status_filltetr',   'nationalities'));
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

@@ -23,10 +23,9 @@ class HdTicketController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $tickets = HdTicket::query();
 
-        if (!$is_admin) {
+        if (!$is_admin ||  $user->user_type != 'admin') {
             $tickets =  $tickets->where('user_id',  $user->id);
         }
-
         if (request()->ajax()) {
             return Datatables::of($tickets)
                 ->addColumn('ticket_number', function ($row) {
