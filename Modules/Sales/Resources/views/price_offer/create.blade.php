@@ -106,7 +106,7 @@
                             <div class="input-group-append">
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-default bg-white btn-flat" data-toggle="modal"
-                                        data-target="#addContactModal" @if (!auth()->user()->hasRole('Admin#1') || !auth()->user()->can('sales.add_qualified_contact')) disabled @endif>
+                                        data-target="#addContactModal" @if (!(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.add_qualified_contact'))) disabled @endif>
                                         <small>@lang('sales::lang.click_here_to_add_qualified_client')</small>
                                         <i class="fa fa-plus-circle text-primary fa-lg" style="margin-right: 7px;"></i>
                                     </button>
@@ -165,23 +165,27 @@
                     </div>
 
 
-                    <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                    {{-- <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
                             <div class="input-group">
-                                <span class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </span>
-                                {!! Form::text('transaction_date', $default_datetime, [
+                                {!! Form::date('transaction_date', null, [
                                     'class' => 'form-control',
                                     'style' => 'height:40px',
-                                    'readonly',
                                     'required',
                                 ]) !!}
                             </div>
                         </div>
+                    </div> --}}
+                    <div class="form-group col-md-4">
+                        {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
+                        {!! Form::date('issue_date', null, [
+                            'class' => 'form-control',
+                            'style' => 'height:40px',
+                            'placeholder' => __('essentials::lang.issue_date'),
+                            'required',
+                        ]) !!}
                     </div>
-
                     @if (!empty($commission_agent))
                         @php
                             $is_commission_agent_required = !empty($pos_settings['is_commission_agent_required']);
@@ -824,6 +828,7 @@
             });
         });
     </script>
+
 
 
 

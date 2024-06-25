@@ -469,9 +469,7 @@ class ClientsController extends Controller
 
     public function storeQualifiedCustomer(Request $request)
     {
-        if (!auth()->user()->can('user.create') && !auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $business_id = session()->get('user.business_id');

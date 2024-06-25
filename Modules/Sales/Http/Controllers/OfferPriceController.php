@@ -696,16 +696,35 @@ class OfferPriceController extends Controller
     public function store(Request $request)
     {
 
-
+        //   return $request;
         try {
             $business_id = $request->session()->get('user.business_id');
-            $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date'];
-            $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
+
+            $offer = ['contract_form',  'down_payment', 'issue_date'];
+
+
+            //     $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
+
+            //  $transactionDateInput = $request->input('transaction_date');
+            //  $formattedDate = null;
+
+
+            //  try {
+            // Attempt to parse the date with the expected format
+            //       $transactionDate = Carbon::createFromFormat('m/d/Y H:i', $transactionDateInput);
+            //   } catch (\Exception $e) {
+            // Handle the case where the format does not match
+            //       return response()->json(['error' => 'Invalid date format'], 400);
+            // }
+            //  $formattedDate = $transactionDate->format('m/d/Y h:i A');
             $offer_details = $request->only($offer);
+
+
+
             //   $offer_details['location_id'] = $request->input('location_id');
             $offer_details['contact_id'] = $request->input('contact_id');
             $offer_details['business_id'] = $business_id;
-            $offer_details['transaction_date'] = $transactionDate;
+            $offer_details['transaction_date'] = $request->input('issue_date');
             $offer_details['created_by'] = $request->session()->get('user.id');
             $offer_details['type'] = 'sell';
             $offer_details['sub_type'] = 'service';
