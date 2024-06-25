@@ -293,6 +293,8 @@
                         </div>
 
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-primary"
+                                id="printDocButton">@lang('messages.print')</button>
                             <button type="submit" class="btn btn-primary saveFile" disabled>@lang('messages.save')</button>
                             <button type="button" class="btn btn-default"
                                 data-dismiss="modal">@lang('messages.close')</button>
@@ -575,7 +577,6 @@
                     $('#iframeDocViewer').attr('src', fileUrl);
 
                     if (userPermissions.isAdmin || userPermissions.canEdit) {
-
                         $('#file_input_row').show();
                     } else {
                         $('#file_input_row').hide();
@@ -589,13 +590,22 @@
                         $('#file_input_row').hide();
                     }
                     $('#iframeDocViewer').hide();
-
                 }
-
 
                 // Open the modal
                 $('#addDocFileModal').modal('show');
             });
+
+            $(document).on('click', '#printDocButton', function() {
+                var iframe = document.getElementById('iframeDocViewer');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } else {
+                    alert('No document to print');
+                }
+            });
+
             $('#addDocFileModal').on('hidden.bs.modal', function() {
                 $('#iframeDocViewer').attr('src', '');
             });
