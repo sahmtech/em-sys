@@ -95,6 +95,7 @@
                         <table class="table table-bordered table-striped" id="employees_contracts_table">
                             <thead>
                                 <tr>
+                                    <th>@lang('essentials::lang.employee_number')</th>
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('essentials::lang.contract_number')</th>
@@ -103,6 +104,8 @@
                                     <th>@lang('essentials::lang.contract_duration')</th>
                                     <th>@lang('essentials::lang.probation_period')</th>
                                     <th>@lang('essentials::lang.contract_type')</th>
+                                    <th>@lang('essentials::lang.cancle_contract_under_trial')</th>
+
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('essentials::lang.is_renewable')</th>
 
@@ -152,7 +155,7 @@
                                         ],
                                     ) !!}
                                 </div>
-                                <div class="form-group col-md-8">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
                                     <div class="form-group">
                                         <div class="multi-input">
@@ -196,7 +199,20 @@
                                         'required',
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-7">
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('cancle_contract_under_trial', __('essentials::lang.cancle_contract_under_trial') . ':*') !!}
+                                    {!! Form::select(
+                                        'cancle_contract_under_trial',
+                                        [
+                                            'employee' => __('essentials::lang.by_employee'),
+                                            'work_owner' => __('essentials::lang.by_work_owner'),
+                                            'both' => __('essentials::lang.by_both_parties'),
+                                        ],
+                                        null,
+                                        ['class' => 'form-control pull-left', 'style' => 'height:40px; width:100%'],
+                                    ) !!}
+                                </div>
+                                <div class="form-group col-md-6">
                                     {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
                                     {!! Form::select(
                                         'is_renewable',
@@ -206,7 +222,7 @@
                                     ) !!}
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':*') !!}
                                     {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, [
                                         'class' => 'form-control  pull-left ',
@@ -456,6 +472,10 @@
                 },
 
                 columns: [{
+                        data: 'emp_number'
+                    },
+
+                    {
                         data: 'user'
                     },
                     {
@@ -494,7 +514,20 @@
                     {
                         data: 'contract_type_id'
                     },
-
+                    {
+                        data: 'cancle_contract_under_trial',
+                        render: function(data, type, row) {
+                            if (data === 'employee') {
+                                return '@lang('essentials::lang.by_employee')';
+                            } else if (data === 'both') {
+                                return '@lang('essentials::lang.by_both_parties')';;
+                            } else if (data === 'work_owner') {
+                                return '@lang('essentials::lang.by_work_owner')';;
+                            } else {
+                                return " ";
+                            }
+                        }
+                    },
                     {
                         data: 'is_active',
                         render: function(data, type, row) {
@@ -659,6 +692,11 @@
                             .val(
                                 employees_contract
                                 .contract_type_id);
+                        $('#editEmployeesContractModal').find(
+                                '[name="cancle_contract_under_trial"]')
+                            .val(
+                                employees_contract
+                                .cancle_contract_under_trial);
                         $('#editEmployeesContractModal').find('[name="contract_number"]')
                             .val(
                                 employees_contract

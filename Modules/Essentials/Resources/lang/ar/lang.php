@@ -1903,6 +1903,11 @@ return [
   'expiration_date_to' => 'تاريخ الانتهاء (قبل)',
   'id_proof_number_or_border_number_is_required' => 'رقم إثبات الهوية مطلوب',
   'go_to_superior_department' => 'يرفع إلى المدير المباشر',
-  'sub_specialization_id_not_found' => 'الاختصاص غير موجود'
+  'sub_specialization_id_not_found' => 'الاختصاص غير موجود',
+  'by_both_parties' => 'من قبل الطرفين',
+  'by_employee' => 'من قبل الموظف',
+  'by_work_owner' => 'من قبل صاحب العمل',
+  'cancle_contract_under_trial' => 'إنهاء العقد خلال الفترة التجريبية'
+
 
 ];

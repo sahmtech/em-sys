@@ -80,7 +80,10 @@ class EssentialsEmployeeContractController extends Controller
                 'essentials_employees_contracts.contract_type_id',
                 'essentials_employees_contracts.is_renewable',
                 'essentials_employees_contracts.is_active',
+                'u.emp_number',
                 'essentials_employees_contracts.file_path',
+                'essentials_employees_contracts.cancle_contract_under_trial',
+
                 DB::raw("
                 CASE 
                     WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
@@ -230,6 +233,7 @@ class EssentialsEmployeeContractController extends Controller
 
     public function edit($id)
     {
+
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
@@ -249,6 +253,8 @@ class EssentialsEmployeeContractController extends Controller
                 'essentials_employees_contracts.is_renewable',
                 'essentials_employees_contracts.is_active',
                 'essentials_employees_contracts.file_path',
+                'essentials_employees_contracts.cancle_contract_under_trial',
+
                 DB::raw("
                  CASE 
                 WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
@@ -262,7 +268,7 @@ class EssentialsEmployeeContractController extends Controller
 
 
 
-
+        //   error_log($employees_contract->cancle_contract_under_trial);
         return response()->json(['employees_contract' => $employees_contract]);
     }
 
@@ -282,6 +288,7 @@ class EssentialsEmployeeContractController extends Controller
             $input2['probation_period'] = $request->probation_period;
             $input2['is_renewable'] = $request->is_renewable;
             $input2['contract_type_id'] = $request->contract_type_id;
+            $input2['cancle_contract_under_trial'] = $request->cancle_contract_under_trial;
 
             EssentialsEmployeesContract::where('id', $contract_id)->update($input2);
             $output = [
@@ -319,11 +326,14 @@ class EssentialsEmployeeContractController extends Controller
                 'probation_period',
                 'status',
                 'is_renewable',
-                'file'
+                'file',
+                'cancle_contract_under_trial'
             ]);
 
 
             $input2['employee_id'] = $input['employee'];
+            $input2['cancle_contract_under_trial'] = $input['cancle_contract_under_trial'];
+
 
 
 
