@@ -60,7 +60,7 @@ class ClientsController extends Controller
         $can_edit_contact = auth()->user()->can('sales.edit_draft_contact');
         $can_view_contact_info = auth()->user()->can('sales.view_contact_info');
         $can_change_contact_status = auth()->user()->can('sales.change_to_lead');
-
+        $can_change_contact_qualified = auth()->user()->can('sales.change_contact_status');
 
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
@@ -79,7 +79,7 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) use ($is_admin, $can_edit_contact, $can_view_contact_info, $can_change_contact_status) {
+                ->addColumn('action', function ($row) use ($is_admin, $can_edit_contact, $can_view_contact_info, $can_change_contact_qualified, $can_change_contact_status) {
                     $html  = '';
                     if ($is_admin || $can_edit_contact) {
                         $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
@@ -89,6 +89,12 @@ class ClientsController extends Controller
                     }
                     if ($is_admin || $can_change_contact_status) {
                         $html .= '<button style="height: 25px; padding: 0 12px; font-size: 1.0 rem;" class="btn btn-warning btn-sm btn-change-to-lead" data-contact-id="' . $row->id . '">' . __('sales::lang.change_to_lead') . '</button>';
+                    }
+                    if ($is_admin || $can_change_contact_qualified) {
+                        $html .= '&nbsp;<a href="' . route('changeContactStatus', ['id' => $row->id]) . '"
+                        data-href="' . route('changeContactStatus', ['id' => $row->id])  . '"  
+                        data-container="#changeStatusContactModal" class="btn btn-xs btn-modal btn-success" style="margin-top:3px;">' . __('sales::lang.change_contact_status') . '</a>'; // New view button
+                        // $html .= '&nbsp;<button type="button" class="btn btn-secondary btn-sm custom-btn" id="change-status-client">'.__('sales::lang.change_contact_status').'</button>'; // New view button
                     }
 
                     return $html;

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('sales::lang.lead_contacts'))
+@section('title', __('sales::lang.draft_contacts'))
 
 @section('content')
     @include('sales::layouts.nav_contact')
@@ -546,6 +546,7 @@
 
 
     </section>
+    <div class="modal fade" id="changeStatusContactModal" tabindex="-1" role="dialog"></div>
 
 @endsection
 
