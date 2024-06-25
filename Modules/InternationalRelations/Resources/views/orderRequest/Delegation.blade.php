@@ -56,7 +56,7 @@
                                 <th>{{ __('sales::lang.quantity') }}</th>
                                 <th>{{ __('sales::lang.operation_remaining_quantity') }}</th>
                                 <th>{{ __('sales::lang.profession_name') }}</th>
-                                <th>{{ __('sales::lang.specialization_name') }}</th>
+                                {{-- <th>{{ __('sales::lang.specialization_name') }}</th> --}}
                                 <th>{{ __('sales::lang.nationality_name') }}</th>
                                 <th>{{ __('sales::lang.gender') }}</th>
                                 <th>{{ __('sales::lang.salary') }}</th>
@@ -76,7 +76,7 @@
                                     <td>{{ $sell_line->quantity }}</td>
                                     <td>{{ $sell_line->operation_remaining_quantity }}</td>
                                     <td>{{ $sell_line['service']['profession']['name'] }}</td>
-                                    <td>{{ $sell_line['service']['specialization']['name'] }}</td>
+                                    {{-- <td>{{ $sell_line['service']['specialization']['name'] }}</td> --}}
                                     <td>{{ $sell_line['service']['nationality']['nationality'] }}</td>
                                     <td> {{ __('sales::lang.' . $sell_line['service']['gender']) }}</td>
 

@@ -144,37 +144,52 @@ class OrderRequestController extends Controller
     public function Delegation($id)
     {
 
+
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_delegate_order = auth()->user()->can('internationalrelations.delegate_order');
         if (!($is_admin || $can_delegate_order)) {
             //temp  abort(403, 'Unauthorized action.');
         }
-        $operation = SalesOrdersOperation::with('salesContract.transaction')
-            ->where('id', $id)
-            ->first();
+        try {
+            error_log('111111111111');
+            $operation = SalesOrdersOperation::with('salesContract.transaction')
+                ->where('id', $id)
+                ->first();
+            error_log('22222222222222');
 
-        $business_id = request()->session()->get('user.business_id');
-        $query = Transaction::where('business_id', $business_id)
-            ->where('id', $operation->salesContract->transaction->id)->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
-            ->select(
-                'id',
-                'business_id',
-                'location_id',
-                'status',
-                'contact_id',
-                'ref_no',
-                'final_total',
-                'down_payment',
-                'contract_form',
-                'transaction_date'
+            $business_id = request()->session()->get('user.business_id');
+            error_log($operation->salesContract->transaction->id);
 
-            )->get()[0];
+            $query = Transaction::where('business_id', $business_id)
+                ->where('id', $operation->salesContract->transaction->id)->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
+                ->select(
+                    'id',
+                    'business_id',
+                    'location_id',
+                    'status',
+                    'contact_id',
+                    'ref_no',
+                    'final_total',
+                    'down_payment',
+                    'contract_form',
+                    'transaction_date'
 
-        $agencies = Contact::where('type', '=', 'recruitment')->get();
+                )->get()[0];
 
+            $agencies = Contact::where('type', '=', 'recruitment')->get();
+            error_log(json_encode($agencies));
 
-        return view('internationalrelations::orderRequest.Delegation')->with(compact('query', 'agencies', 'id'));
+            return view('internationalrelations::orderRequest.Delegation')->with(compact('query', 'agencies', 'id'));
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log($e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return redirect()->back()->with($output);
+        }
     }
 
     public function unSupportedDelegation($id)
