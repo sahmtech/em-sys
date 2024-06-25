@@ -75,12 +75,23 @@ class SalesSalaryRequestsController extends Controller
                     return '';
                 })
                 ->addColumn(
+                    'salary',
+                    function ($row) {
+                        $html = '';
+
+                        if (!$row->salary) {
+                            $html .= __('sales::lang.not_answered_yet');
+                        } else {
+                            $html .= __('sales::lang.answered_with_salary') . $row->salary;
+                        }
+                        return $html;
+                    }
+                )
+                ->addColumn(
                     'action',
                     function ($row) use ($is_admin, $can_delete_sales_salary_request, $can_edit_sales_salary_request) {
                         $html = '';
-                        // if ($is_admin || $can_edit_sales_salary_request) {
-                        //     $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
-                        // }
+
                         if ($is_admin || $can_delete_sales_salary_request) {
                             $html .= '<button class="btn btn-xs btn-danger delete_salary_request_button" data-href="' . route('salay_request.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
@@ -90,7 +101,7 @@ class SalesSalaryRequestsController extends Controller
 
 
 
-                ->rawColumns(['action', 'file'])
+                ->rawColumns(['action', 'file', 'salary'])
                 ->make(true);
         }
 

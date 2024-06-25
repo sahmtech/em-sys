@@ -39,6 +39,7 @@
                                     <th>@lang('sales::lang.quantity')</th>
                                     <th>@lang('sales::lang.note')</th>
                                     <th>@lang('sales::lang.file')</th>
+                                    <th>@lang('sales::lang.answered_salary')</th>
 
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -88,6 +89,9 @@
 
                     {
                         data: 'file'
+                    },
+                    {
+                        data: 'salary'
                     },
 
                     {
