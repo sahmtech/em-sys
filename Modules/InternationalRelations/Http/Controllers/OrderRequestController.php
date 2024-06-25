@@ -178,7 +178,7 @@ class OrderRequestController extends Controller
                 )->get()[0];
 
             $agencies = Contact::where('type', '=', 'recruitment')->get();
-            error_log(json_encode($agencies));
+
 
             return view('internationalrelations::orderRequest.Delegation')->with(compact('query', 'agencies', 'id'));
         } catch (\Exception $e) {
