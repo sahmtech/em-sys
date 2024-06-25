@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="form-group">
                     <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
                     {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
@@ -37,7 +37,7 @@
                         'id' => 'specializations-select',
                     ]) !!}
                 </div>
-            </div>
+            </div> --}}
 
 
 
@@ -68,18 +68,18 @@
                             <th>@lang('essentials::lang.mobile_number')</th>
                             <th>@lang('essentials::lang.contry_nationality')</th>
                             <th>@lang('essentials::lang.profession')</th>
-                            <th>@lang('essentials::lang.specialization')</th>
+                            {{-- <th>@lang('essentials::lang.specialization')</th> --}}
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
                 </table>
 
                 <div style="margin-bottom: 10px;">
- 
-                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.change_worker_interview_status'))
-                    <button type="button" class="btn btn-warning btn-sm custom-btn" id="change-status-selected">
-                        @lang('internationalrelations::lang.change_interview_status')
-                    </button>
+
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.change_worker_interview_status'))
+                        <button type="button" class="btn btn-warning btn-sm custom-btn" id="change-status-selected">
+                            @lang('internationalrelations::lang.change_interview_status')
+                        </button>
                     @endif
                 </div>
 
@@ -154,7 +154,7 @@
                 ajax: {
                     url: "{{ route('proposed_laborIndex') }}",
                     data: function(d) {
-                        d.specialization = $('#specializations-select').val();
+                        // d.specialization = $('#specializations-select').val();
                         d.profession = $('#professions-select').val();
                         d.agency = $('#agency_filter').val();
 
@@ -196,10 +196,10 @@
                         "data": "profession_id",
 
                     },
-                    {
-                        "data": "specialization_id",
+                    // {
+                    //     "data": "specialization_id",
 
-                    },
+                    // },
 
 
                     {
@@ -209,7 +209,7 @@
 
             });
 
-            $('#specializations-select, #professions-select, #agency_filter').change(
+            $(' #professions-select, #agency_filter').change(
                 function() {
                     users_table.ajax.reload();
 

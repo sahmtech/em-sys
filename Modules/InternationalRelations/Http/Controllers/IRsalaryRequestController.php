@@ -11,7 +11,7 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use App\User;
 use DB;
 use App\Utils\ModuleUtil;
-
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Sales\Entities\SalesSalariesRequest;
 
@@ -22,82 +22,77 @@ class IRsalaryRequestController extends Controller
      * @return Renderable
      */
 
-     protected $moduleUtil;
-   
+    protected $moduleUtil;
 
-     public function __construct(ModuleUtil $moduleUtil)
-     {
-         $this->moduleUtil = $moduleUtil;
-     }
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $can_crud_sales_salary_requests= auth()->user()->can('sales.crud_sales_salary_requests');
-       
-        if (! $can_crud_sales_salary_requests) {
-           
+        $can_crud_sales_salary_requests = auth()->user()->can('sales.crud_sales_salary_requests');
+
+        if (!$can_crud_sales_salary_requests) {
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
-        $salary_requests=salesSalariesRequest::whereIn('worker_id',$userIds)->select(['id','worker_id','salary','file','arrival_period','recruitment_fees']);
-        
+
+        $salary_requests = salesSalariesRequest::all();
+
         if (request()->ajax()) {
-                        
+
 
             return Datatables::of($salary_requests)
-           
-            ->editColumn('worker_id', function ($row) {
-                return $row->user->last_name . ', ' . $row->user->first_name;
-            })
+                ->editColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item = $nationalities[$row->nationality_id] ?? '';
 
-            ->editColumn('nationality', function ($row) {
-                return $row->user->country->nationality ?? '' ;
-            })
-            ->addColumn('profession', function ($row) use ($appointments, $professions) {
-                
-                $professionId = $appointments[$row->worker_id] ?? null;
-            
-                if ($professionId !== null) {
-                    return $professions[$professionId] ?? '';
-                }
-            
-                
-                return $row->user->transactionSellLine?->service->profession->name ?? '';
-            })
-            // ->addColumn(
-            //     'action',
-            //     function ($row) use($is_admin) {
-            //         $html = '';
-            //         if ($is_admin) {
-            //         $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
-            //         $html .= '<button class="btn btn-xs btn-danger delete_salary_request_button" data-href="' . route('salay_request.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-            //         }
-            //         return $html;
-            //     }
-            // )
-           
-           
-            
-            ->rawColumns(['action'])
-            ->make(true);
-        
-        
-            }
+                    return $item;
+                })
+                ->editColumn('profession_id', function ($row) use ($professions) {
+                    $item = $professions[$row->profession_id] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('specialization_id', function ($row) use ($specializations) {
+                    $item = $specializations[$row->specialization_id] ?? '';
+
+                    return $item;
+                })
+                ->addColumn('file', function ($row) {
+                    if ($row->file) {
+                        return '<a href="' . asset('uploads/' . $row->file) . '" target="_blank">' . __('sales::lang.View_File') . '</a>';
+                    }
+                    return '';
+                })
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin) {
+                        $html = '';
+                        if (!$row->salary) {
+                            $html .= '<button class="btn btn-primary" data-toggle="modal" data-target="#addSalaryModal" data-id="' . $row->id . '">Add Salary</button>';
+                        } else {
+                            $html .= __('sales::lang.answered_with_salary') . $row->salary;
+                        }
+
+                        return $html;
+                    }
+                )
+
+                ->rawColumns(['file', 'action'])
+                ->make(true);
+        }
 
 
-        
+
         return view('internationalrelations::salaryRequest.index');
     }
-   
+
 
     /**
      * Show the form for creating a new resource.
@@ -107,6 +102,34 @@ class IRsalaryRequestController extends Controller
     {
         return view('internationalrelations::create');
     }
+    public function updateSalary(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'sales_id' => 'required|integer',
+            'salary' => 'required|numeric',
+        ]);
+        try {
+            salesSalariesRequest::where('id', $request->sales_id)
+                ->update([
+                    'salary' => $request->salary,
+                    'updated_at' => now(),
+                ]);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
+
 
     /**
      * Store a newly created resource in storage.

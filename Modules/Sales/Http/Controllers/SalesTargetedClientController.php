@@ -54,7 +54,7 @@ class SalesTargetedClientController extends Controller
             $input = $request->only(['profession', 'specialization', 'nationality', 'gender', 'monthly_cost', 'number', 'essentials_salary']);
 
             $input2['profession_id'] = $input['profession'];
-            $input2['specialization_id'] = $input['specialization'];
+            // $input2['specialization_id'] = $input['specialization'];
             $input2['nationality_id'] = $input['nationality'];
             $input2['gender'] = $input['gender'];
             $input2['service_price'] = $input['essentials_salary'];
@@ -65,14 +65,14 @@ class SalesTargetedClientController extends Controller
 
             $client = salesService::create($input2);
             $profession = DB::table('essentials_professions')->where('id', $client->profession_id)->first()->name;
-            $specialization = DB::table('essentials_specializations')->where('id', $client->specialization_id)->first()->name;
+            //   $specialization = DB::table('essentials_specializations')->where('id', $client->specialization_id)->first()->name;
             $nationality = DB::table('essentials_countries')->where('id', $client->nationality_id)->first()->nationality;
-
+            error_log($client);
             $output = [
                 'success' => 1,
                 'client' => $client,
                 'profession' => $profession,
-                'specialization' => $specialization,
+                //   'specialization' => $specialization,
                 'nationality' => $nationality,
                 'quantity' => request()->number,
                 'selectedData' => json_decode(request()->selectedData, true)

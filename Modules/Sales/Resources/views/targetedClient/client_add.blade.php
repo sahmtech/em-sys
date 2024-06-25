@@ -9,7 +9,7 @@
         </div>
         <div class="modal-body">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
                         {!! Form::select('profession', $professions, null, [
@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 {{-- 'specializations','professions','nationalities' --}}
-                <div class="col-sm-4">
+                {{-- <div class="col-sm-4">
                     <div class="form-group">
                         {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
                         {!! Form::select('specialization', $specializations, null, [
@@ -34,8 +34,8 @@
                             'placeholder' => __('sales::lang.specialization'),
                         ]) !!}
                     </div>
-                </div>
-                <div class="col-sm-4">
+                </div> --}}
+                <div class="col-sm-6">
                     <div class="form-group">
                         {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
 
@@ -48,7 +48,7 @@
                         ]) !!}
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-6">
                     <div class="form-group">
                         {!! Form::label('gender', __('sales::lang.gender') . ':*') !!}
                         {!! Form::select('gender', ['male' => __('sales::lang.male'), 'female' => __('sales::lang.female')], null, [
@@ -61,7 +61,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('essentials_salary', __('essentials::lang.salary') . ':') !!}
                         {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, [

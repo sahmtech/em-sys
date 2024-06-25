@@ -24,7 +24,7 @@
 
                             <th>@lang('sales::lang.operation_order_number')</th>
                             <th>@lang('sales::lang.profession')</th>
-                            <th>@lang('sales::lang.specialization')</th>
+                            {{-- <th>@lang('sales::lang.specialization')</th> --}}
                             <th>@lang('sales::lang.nationality')</th>
                             <th>@lang('sales::lang.salary')</th>
                             <th>@lang('sales::lang.date')</th>
@@ -99,10 +99,12 @@
                     {
                         data: 'profession_id',
                         name: 'profession_id'
-                    }, {
-                        data: 'specialization_id',
-                        name: 'specialization_id'
-                    }, {
+                    },
+                    // {
+                    //     data: 'specialization_id',
+                    //     name: 'specialization_id'
+                    // }, 
+                    {
                         data: 'nationality_id',
                         name: 'nationality_id'
                     }, {

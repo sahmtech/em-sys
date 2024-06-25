@@ -40,9 +40,20 @@ class ContractsController extends Controller
 
 
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
+        // $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
+        //     ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+        //     ->leftJoin('contacts', 'contacts.id', '=', 'transactions.contact_id')
+        //     ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no', 'contacts.supplier_business_name', 'transactions.id');
         $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
             ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
-            ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no', 'transactions.id');
+            ->leftJoin('contacts', 'contacts.id', '=', 'transactions.contact_id')
+            ->whereNull('sales_contracts.offer_price_id')
+            ->get(['transactions.id', 'transactions.ref_no', 'contacts.supplier_business_name'])
+            ->mapWithKeys(function ($item) {
+                return [$item->id => $item->supplier_business_name . ' - ' . $item->ref_no];
+            })
+            ->toArray();
+
         $items = salesContractItem::pluck('name_of_item', 'id');
         if (request()->ajax()) {
 

@@ -106,6 +106,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/get-Irsalary-requests', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index'])->name('get_Irsalary_requests');
+        Route::post('/update-salary', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'updateSalary'])->name('updateSalary');
 
 
         Route::get('/travel_categories', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index'])->name('travel_categories');

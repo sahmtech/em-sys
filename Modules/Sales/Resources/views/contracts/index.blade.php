@@ -40,17 +40,16 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
-                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_sale_contract"))
-               
-                    @slot('tool')
-                        <div class="box-tools">
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.add_sale_contract'))
+                        @slot('tool')
+                            <div class="box-tools">
 
-                            <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                                data-target="#addContractModal">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </button>
-                        </div>
-                    @endslot
+                                <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                                    data-target="#addContractModal">
+                                    <i class="fa fa-plus"></i> @lang('messages.add')
+                                </button>
+                            </div>
+                        @endslot
                     @endif
 
 
@@ -62,12 +61,10 @@
                                     <th>@lang('sales::lang.number_of_contract')</th>
                                     <th>@lang('sales::lang.customer_name')</th>
                                     <th>@lang('sales::lang.contract_status')</th>
-
                                     <th>@lang('sales::lang.start_date')</th>
                                     <th>@lang('sales::lang.contract_duration')</th>
                                     <th>@lang('sales::lang.end_date')</th>
                                     <th>@lang('sales::lang.contract_form')</th>
-
                                     <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -90,7 +87,7 @@
 
                                 <div class="row">
 
-                                        {{-- <div class="form-group col-md-12">
+                                    {{-- <div class="form-group col-md-12">
                                                 {!! Form::radio('contract_type', 'new', null, ['id' => 'new_contract']) !!}
                                                 <label for="new_contract">{{ __('sales::lang.new_contract') }}</label>
 
@@ -99,85 +96,78 @@
 
                                         </div> --}}
 
-                                   
-            
-                                            <div class="form-group col-md-6">
-                                                {!! Form::label('offer_price', __('sales::lang.offer_price') . ':*') !!}
-                                                {!! Form::select('offer_price', $offer_prices, null, [
-                                                    'class' => 'form-control',
-                                                    'id' => 'offer_price',
-                                                    'style'=>'height:40px;',
-                                                    'placeholder' => __('sales::lang.select_offer_price'),
-                                                 
-                                                ]) !!}
-                                            </div>
 
-                                            <div class="form-group col-md-6">
-                                                {!! Form::label('contract_signer', __('sales::lang.contract_signer') . ':') !!}
-                                                {!! Form::text('contract_signer', null, [
-                                                    'class' => 'form-control',
-                                                    'placeholder' => __('sales::lang.contract_signer'),
-                                                
-                                                ]) !!}
-                                            </div>
-                                            <div class="form-group col-md-6" style="float:left;">
-                                                {!! Form::label('contract_follower', __('sales::lang.contract_follower') . ':') !!}
-                                                {!! Form::text('contract_follower', null, [
-                                                    'class' => 'form-control',
-                                                    'placeholder' => __('sales::lang.contract_follower'),
-                                                
-                                                ]) !!}
-                                            </div>
 
-                                            <div class="form-group col-md-6" style="float:left;">
-                                                {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
-                                                {!! Form::date('start_date', !empty($contract->start_date) ? $contract->start_date : null, [
-                                                    'class' => 'form-control',
-                                                    'style' => 'height:40px',
-                                                    'id' => 'start_date',
-                                                    'placeholder' => __('essentials::lang.start_date'),
-                                                ]) !!}
-                                            </div>
+                                    <div class="form-group col-md-6">
+                                        {!! Form::label('offer_price', __('sales::lang.offer_price') . ':*') !!}
+                                        {!! Form::select('offer_price', $offer_prices, null, [
+                                            'class' => 'form-control',
+                                            'id' => 'offer_price',
+                                            'style' => 'height:40px;',
+                                            'placeholder' => __('sales::lang.select_offer_price'),
+                                        ]) !!}
+                                    </div>
 
-                                            <div class="form-group col-md-6" style="float:left;">
-                                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':') !!}
-                                                {!! Form::date('end_date', !empty($contract->end_date) ? $contract->end_date : null, [
-                                                    'class' => 'form-control',
-                                                    'style' => 'height:40px',
-                                                    'id' => 'end_date',
-                                                    'placeholder' => __('essentials::lang.end_date'),
-                                                ]) !!}
-                                            </div>
+                                    <div class="form-group col-md-6">
+                                        {!! Form::label('contract_signer', __('sales::lang.contract_signer') . ':') !!}
+                                        {!! Form::text('contract_signer', null, [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('sales::lang.contract_signer'),
+                                        ]) !!}
+                                    </div>
+                                    <div class="form-group col-md-6" style="float:left;">
+                                        {!! Form::label('contract_follower', __('sales::lang.contract_follower') . ':') !!}
+                                        {!! Form::text('contract_follower', null, [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('sales::lang.contract_follower'),
+                                        ]) !!}
+                                    </div>
 
-                                            <div class="form-group col-md-6" style="float:left;">
-                                                {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
-                                                <div class="form-group">
-                                                    <div class="multi-input">
-                                                        <div class="input-group">
-                                                            {!! Form::number(
-                                                                'contract_duration',
-                                                                  null,
-                                                                [
-                                                                    'class' => 'form-control width-40 pull-left',
-                                                                    'style' => 'height:40px',
-                                                                    'id' => 'contract_duration',
-                                                                    'placeholder' => __('essentials::lang.contract_duration'),
-                                                                ],
-                                                            ) !!}
-                                                            {!! Form::select(
-                                                                'contract_duration_unit',
-                                                                [ 'months' => __('essentials::lang.months')],
-                                                                !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
-                                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:40px;', 'id' => 'contract_duration_unit'],
-                                                            ) !!}
-                                                        </div>
-                                                    </div>
+                                    <div class="form-group col-md-6" style="float:left;">
+                                        {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
+                                        {!! Form::date('start_date', !empty($contract->start_date) ? $contract->start_date : null, [
+                                            'class' => 'form-control',
+                                            'style' => 'height:40px',
+                                            'id' => 'start_date',
+                                            'placeholder' => __('essentials::lang.start_date'),
+                                        ]) !!}
+                                    </div>
+
+                                    <div class="form-group col-md-6" style="float:left;">
+                                        {!! Form::label('end_date', __('essentials::lang.end_date') . ':') !!}
+                                        {!! Form::date('end_date', !empty($contract->end_date) ? $contract->end_date : null, [
+                                            'class' => 'form-control',
+                                            'style' => 'height:40px',
+                                            'id' => 'end_date',
+                                            'placeholder' => __('essentials::lang.end_date'),
+                                        ]) !!}
+                                    </div>
+
+                                    <div class="form-group col-md-6" style="float:left;">
+                                        {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
+                                        <div class="form-group">
+                                            <div class="multi-input">
+                                                <div class="input-group">
+                                                    {!! Form::number('contract_duration', null, [
+                                                        'class' => 'form-control width-40 pull-left',
+                                                        'style' => 'height:40px',
+                                                        'id' => 'contract_duration',
+                                                        'placeholder' => __('essentials::lang.contract_duration'),
+                                                    ]) !!}
+                                                    {!! Form::select(
+                                                        'contract_duration_unit',
+                                                        ['months' => __('essentials::lang.months')],
+                                                        !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
+                                                        ['class' => 'form-control width-60 pull-left', 'style' => 'height:40px;', 'id' => 'contract_duration_unit'],
+                                                    ) !!}
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
 
-                                          
-                                           
-                                            {{-- <div class="form-group col-md-8">
+
+
+                                    {{-- <div class="form-group col-md-8">
                                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                                 {!! Form::select('contract_items[]', $items, null, [
                                                     'class' => 'form-control select2', 
@@ -189,60 +179,60 @@
 
 
 
-                                            <div class="form-group col-md-6">
-                                                {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
-                                                {!! Form::select(
-                                                    'is_renewable',
-                                                    ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')],
-                                                    null,
-                                                    ['class' => 'form-control', 'style' => 'height: 100%'],
-                                                ) !!}
+                                    <div class="form-group col-md-6">
+                                        {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
+                                        {!! Form::select(
+                                            'is_renewable',
+                                            ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')],
+                                            null,
+                                            ['class' => 'form-control', 'style' => 'height: 100%'],
+                                        ) !!}
 
-                                            </div>
-                                            <div class="form-group col-md-6" style="float:left;">
-                                                {!! Form::label('file', __('essentials::lang.file') . ':') !!}
-                                                {!! Form::file('file', null, [
-                                                    'class' => 'form-control',
-                                                    'placeholder' => __('essentials::lang.file'),
-                                                    'required',
-                                                ]) !!}
-                                            </div>
-                                            <div class="form-group col-md-6"  >
-                                                {!! Form::label('notes', __('sales::lang.notes') . ':') !!}
-                                                {!! Form::textarea('notes', null, [
-                                                    'class' => 'form-control',
-                                                    'placeholder' => __('sales::lang.notes'),
-                                                    'rows' => 2,
-                                                ]) !!}
-                                            </div>
-                                        
-                                            <div id="new-contract-fields" >
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('project_name', __('sales::lang.project_name') . ':*') !!}
-                                                    {!! Form::text('project_name', null, [
-                                                        'class' => 'form-control',
-                                                        'placeholder' => __('sales::lang.project_name'),
-                                                        'id' => 'project_name',
-                                                    ]) !!}
-                                                </div>
+                                    </div>
+                                    <div class="form-group col-md-6" style="float:left;">
+                                        {!! Form::label('file', __('essentials::lang.file') . ':') !!}
+                                        {!! Form::file('file', null, [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('essentials::lang.file'),
+                                            'required',
+                                        ]) !!}
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        {!! Form::label('notes', __('sales::lang.notes') . ':') !!}
+                                        {!! Form::textarea('notes', null, [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('sales::lang.notes'),
+                                            'rows' => 2,
+                                        ]) !!}
+                                    </div>
 
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('assigned_to', __('sales::lang.project_follower') . ':*') !!}
-                                                    {!! Form::select('assigned_to[]', $users, null, [
-                                                        'class' => 'form-control select2',
-                                                        'multiple' => 'multiple',
-                                                        'id'=>'assigned_to',
-                                                        'style' => 'width:90%;',
-                                                    ]) !!}
-                                                </div>
-                                            </div>
+                                    <div id="new-contract-fields">
+                                        <div class="form-group col-md-6">
+                                            {!! Form::label('project_name', __('sales::lang.project_name') . ':*') !!}
+                                            {!! Form::text('project_name', null, [
+                                                'class' => 'form-control',
+                                                'placeholder' => __('sales::lang.project_name'),
+                                                'id' => 'project_name',
+                                            ]) !!}
+                                        </div>
 
-                                            <div >
-                                            
+                                        <div class="form-group col-md-6">
+                                            {!! Form::label('assigned_to', __('sales::lang.project_follower') . ':*') !!}
+                                            {!! Form::select('assigned_to[]', $users, null, [
+                                                'class' => 'form-control select2',
+                                                'multiple' => 'multiple',
+                                                'id' => 'assigned_to',
+                                                'style' => 'width:90%;',
+                                            ]) !!}
+                                        </div>
+                                    </div>
 
-                                        
+                                    <div>
 
-                                        
+
+
+
+
                                     </div>
 
                                     {{-- <div id="appendix-contract-fields" class="form-fields" style="display:none;">
@@ -279,109 +269,108 @@
 @endsection
 @section('javascript')
 
-<script>
-    $(document).ready(function () {
-        
-        $(document).on('click', '.btn-download', function(e) {
-                    e.preventDefault();
+    <script>
+        $(document).ready(function() {
 
-                    var downloadUrl = $(this).data('href');
+            $(document).on('click', '.btn-download', function(e) {
+                e.preventDefault();
 
-                    // Trigger the download using JavaScript
-                    var link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = downloadUrl.split('/').pop();
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                });
+                var downloadUrl = $(this).data('href');
+
+                // Trigger the download using JavaScript
+                var link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = downloadUrl.split('/').pop();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
 
 
-        $('.select2').select2();
-        console.log("selectedRadio");
-        
-        $('.contract-type-radio').change(function () {
-          
-            $('.form-fields').hide();
+            $('.select2').select2();
+            console.log("selectedRadio");
 
-            
-            var selectedRadio = $('input[name="contract_type"]:checked').val();
-          
-            $('#' + selectedRadio + '-contract-fields').show();
+            $('.contract-type-radio').change(function() {
 
-            console.log(selectedRadio);
+                $('.form-fields').hide();
 
-              
-           
+
+                var selectedRadio = $('input[name="contract_type"]:checked').val();
+
+                $('#' + selectedRadio + '-contract-fields').show();
+
+                console.log(selectedRadio);
+
+
+
+            });
+
+            document.getElementById("new_contract").addEventListener('change', function() {
+                document.getElementById("status").required = this.checked;
+                document.getElementById("offer_price").required = this.checked;
+                document.getElementById("project_name").required = this.checked;
+                document.getElementById("assigned_to").required = this.checked;
+            })
+
+
+            document.getElementById("appendix_contract").addEventListener('change', function() {
+                document.getElementById("contract-select").required = this.checked;
+
+            })
+
+
+
+
+            $('#appendix_contract').change(function() {
+
+                $('.form-fields').hide();
+
+                var selectedRadio = $('input[name="contract_type"]:checked').val();
+                $('#' + selectedRadio + '-appendix-fields').show();
+            });
         });
+    </script>
 
-        document.getElementById("new_contract").addEventListener('change', function(){
-            document.getElementById("status").required = this.checked ;
-            document.getElementById("offer_price").required = this.checked ;
-            document.getElementById("project_name").required = this.checked ;
-            document.getElementById("assigned_to").required = this.checked ;
-        })
-
-
-        document.getElementById("appendix_contract").addEventListener('change', function(){
-            document.getElementById("contract-select").required = this.checked ;
-          
-        })
+    <script>
+        $(document).ready(function() {
 
 
 
-        
-        $('#appendix_contract').change(function () {
-            
-            $('.form-fields').hide();
-            
-            var selectedRadio = $('input[name="contract_type"]:checked').val();
-            $('#' + selectedRadio + '-appendix-fields').show();
+            $('#start_date').change(function() {
+                updateEndDateFromStartDate();
+            });
+            $('#contract_duration').change(function() {
+                updateEndDateFromStartDate();
+            });
+
+            function updateEndDateFromStartDate() {
+                var startDate = $('#start_date').val();
+                var duration = $('#contract_duration').val();
+                var unit = $('#contract_duration_unit').val();
+
+                if (startDate && duration && unit) {
+                    var newEndDate = calculateEndDate(startDate, duration, unit);
+                    $('#end_date').val(newEndDate);
+                }
+            }
+
+
+
+
+            function calculateEndDate(startDate, duration, unit) {
+                var startDateObj = new Date(startDate);
+                var endDateObj = new Date(startDateObj);
+
+                if (unit === 'years') {
+                    endDateObj.setFullYear(startDateObj.getFullYear() + parseInt(duration));
+                } else if (unit === 'months') {
+                    endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
+                }
+
+                return endDateObj.toISOString().split('T')[0];
+            }
         });
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-    
-
-    
-    $('#start_date').change(function() {
-        updateEndDateFromStartDate();
-    });
-    $('#contract_duration').change(function() {
-        updateEndDateFromStartDate();
-    });
-    
-    function updateEndDateFromStartDate() {
-        var startDate = $('#start_date').val();
-        var duration = $('#contract_duration').val();
-        var unit = $('#contract_duration_unit').val();
-
-        if (startDate && duration && unit) {
-            var newEndDate = calculateEndDate(startDate, duration, unit);
-            $('#end_date').val(newEndDate);
-        }
-    }
-
-    
-
-    
-    function calculateEndDate(startDate, duration, unit) {
-        var startDateObj = new Date(startDate);
-        var endDateObj = new Date(startDateObj);
-
-        if (unit === 'years') {
-            endDateObj.setFullYear(startDateObj.getFullYear() + parseInt(duration));
-        } else if (unit === 'months') {
-            endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
-        }
-
-        return endDateObj.toISOString().split('T')[0];
-    }
-});
-
-</script>
+    </script>
 
 
 
@@ -523,17 +512,18 @@
                     },
                     success: function(data) {
                         console.log(data);
-                        if(data.contract_follower != null && data.contract_signer != null )
-                        {
-                            $('#contract_follower').val(data.contract_follower.first_name + ' ' +
-                            data.contract_follower.last_name);
-                        $('#contract_signer').val(data.contract_signer.first_name + ' ' + data
-                            .contract_signer.last_name)
-                        $('#contract_follower').prop('disabled', true);
-                        $('#contract_signer').prop('disabled', true);
+                        if (data.contract_follower != null && data.contract_signer != null) {
+                            $('#contract_follower').val(data.contract_follower.first_name +
+                                ' ' +
+                                data.contract_follower.last_name);
+                            $('#contract_signer').val(data.contract_signer.first_name + ' ' +
+                                data
+                                .contract_signer.last_name)
+                            $('#contract_follower').prop('disabled', true);
+                            $('#contract_signer').prop('disabled', true);
                         }
                         $('#contract_duration').val(data.contract_duration);
-                     
+
                     }
                 });
             });
