@@ -1908,7 +1908,8 @@ return [
   'by_employee' => 'من قبل الموظف',
   'by_work_owner' => 'من قبل صاحب العمل',
   'cancle_contract_under_trial' => 'إنهاء العقد خلال الفترة التجريبية',
-  'edit_qualification' => 'تعديل المؤهل العلمي'
+  'edit_qualification' => 'تعديل المؤهل العلمي',
+  'contract_canceled_successfully' => 'تم إنهاء العقد بنجاح'
 
 
 ];

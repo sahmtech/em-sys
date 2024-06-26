@@ -82,7 +82,7 @@
                             'required',
                         ]) !!}
                     </div>
-                    <div class="form-group col-md-6">
+                    {{-- <div class="form-group col-md-6">
                         {!! Form::label('cancle_contract_under_trial', __('essentials::lang.cancle_contract_under_trial') . ':*') !!}
                         {!! Form::select(
                             'cancle_contract_under_trial',
@@ -95,7 +95,7 @@
                             ['class' => 'form-control pull-left', 'style' => 'height:40px; width:100%'],
                         ) !!}
 
-                    </div>
+                    </div> --}}
                     <div class="form-group col-md-6">
                         {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
                         {!! Form::select(

@@ -197,6 +197,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/updateEmployeeContract', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'update'])->name('updateEmployeeContract');
         Route::get('/employeeContracts/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'edit'])->name('employeeContract.edit');
         Route::post('/storeContractFile', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'storeContractFile'])->name('storeContractFile');
+        Route::post('/employee-contract/cancel', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'cancelContract'])->name('cancelEmployeeContract');
 
 
 

@@ -104,7 +104,7 @@
                                     <th>@lang('essentials::lang.contract_duration')</th>
                                     <th>@lang('essentials::lang.probation_period')</th>
                                     <th>@lang('essentials::lang.contract_type')</th>
-                                    <th>@lang('essentials::lang.cancle_contract_under_trial')</th>
+                                    {{-- <th>@lang('essentials::lang.cancle_contract_under_trial')</th> --}}
 
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('essentials::lang.is_renewable')</th>
@@ -199,7 +199,7 @@
                                         'required',
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-6">
+                                {{-- <div class="form-group col-md-6">
                                     {!! Form::label('cancle_contract_under_trial', __('essentials::lang.cancle_contract_under_trial') . ':*') !!}
                                     {!! Form::select(
                                         'cancle_contract_under_trial',
@@ -211,7 +211,7 @@
                                         null,
                                         ['class' => 'form-control pull-left', 'style' => 'height:40px; width:100%'],
                                     ) !!}
-                                </div>
+                                </div> --}}
                                 <div class="form-group col-md-6">
                                     {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
                                     {!! Form::select(
@@ -303,9 +303,50 @@
                     </div>
                 </div>
             </div>
+
+
+
+
         </div>
     </section>
     @include('essentials::employee_affairs.employees_contracts.edit')
+    <!-- Cancel Contract Modal -->
+    <div class="modal fade" id="cancelContractModal" tabindex="-1" role="dialog"
+        aria-labelledby="cancelContractModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                {!! Form::open(['route' => 'cancelEmployeeContract', 'method' => 'POST']) !!}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">@lang('essentials::lang.cancel_contract')</h4>
+                </div>
+                <div class="modal-body">
+                    {!! Form::hidden('contract_id', null, ['id' => 'cancel_contract_id']) !!}
+                    <div class="form-group">
+                        {!! Form::label('cancle_contract_under_trial', __('essentials::lang.cancle_contract_under_trial') . ':*') !!}
+                        {!! Form::select(
+                            'cancle_contract_under_trial',
+                            [
+                                'employee' => __('essentials::lang.by_employee'),
+                                'work_owner' => __('essentials::lang.by_work_owner'),
+                                'both' => __('essentials::lang.by_both_parties'),
+                            ],
+                            null,
+                            ['class' => 'form-control', 'required', 'style' => 'height:40px; width:100%'],
+                        ) !!}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
+
+
 @endsection
 @section('javascript')
 
@@ -516,20 +557,20 @@
                     {
                         data: 'contract_type_id'
                     },
-                    {
-                        data: 'cancle_contract_under_trial',
-                        render: function(data, type, row) {
-                            if (data === 'employee') {
-                                return '@lang('essentials::lang.by_employee')';
-                            } else if (data === 'both') {
-                                return '@lang('essentials::lang.by_both_parties')';;
-                            } else if (data === 'work_owner') {
-                                return '@lang('essentials::lang.by_work_owner')';;
-                            } else {
-                                return " ";
-                            }
-                        }
-                    },
+                    // {
+                    //     data: 'cancle_contract_under_trial',
+                    //     render: function(data, type, row) {
+                    //         if (data === 'employee') {
+                    //             return '@lang('essentials::lang.by_employee')';
+                    //         } else if (data === 'both') {
+                    //             return '@lang('essentials::lang.by_both_parties')';;
+                    //         } else if (data === 'work_owner') {
+                    //             return '@lang('essentials::lang.by_work_owner')';;
+                    //         } else {
+                    //             return " ";
+                    //         }
+                    //     }
+                    // },
                     {
                         data: 'is_active',
                         render: function(data, type, row) {
@@ -702,11 +743,11 @@
                             .val(
                                 employees_contract
                                 .contract_type_id);
-                        $('#editEmployeesContractModal').find(
-                                '[name="cancle_contract_under_trial"]')
-                            .val(
-                                employees_contract
-                                .cancle_contract_under_trial);
+                        // $('#editEmployeesContractModal').find(
+                        //         '[name="cancle_contract_under_trial"]')
+                        //     .val(
+                        //         employees_contract
+                        //         .cancle_contract_under_trial);
                         $('#editEmployeesContractModal').find('[name="contract_number"]')
                             .val(
                                 employees_contract
@@ -790,6 +831,39 @@
             });
 
 
+        });
+
+        $(document).on('click', '.cancel-contract-button', function(e) {
+            e.preventDefault();
+            var contractId = $(this).data('id');
+            $('#cancel_contract_id').val(contractId);
+            $('#cancelContractModal').modal('show');
+        });
+
+        $(document).on('submit', '#cancelContractModal form', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr('action');
+            var data = form.serialize();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(result) {
+                    if (result.success == true) {
+                        $('#cancelContractModal').modal('hide');
+                        toastr.success(result.msg);
+                        employees_contracts_table.ajax.reload();
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+
+                error: function(xhr, status, error) {
+                    toastr.error('An error occurred while canceling the contract.');
+                }
+            });
         });
     </script>
 @endsection
