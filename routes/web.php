@@ -496,7 +496,6 @@ Route::get('/updateContractPerPeriod', function () {
 
     return 'success';
 });
-
 Route::get('/clear_cache', function () {
     try {
         // Call the artisan command
