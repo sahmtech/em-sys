@@ -10,13 +10,12 @@
 
     <head>
         <style>
-                
             .input-with-padding {
                 padding-right: 15px !important;
             }
 
             .renew-row {
-                margin-bottom: 10px; 
+                margin-bottom: 10px;
             }
         </style>
     </head>
@@ -38,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="form-group">
                     <label for="offer_type_filter">@lang('essentials::lang.proof_numbers'):</label>
                     {!! Form::select('proof_numbers_select', $proof_numbers->pluck('full_name', 'id'), null, [
@@ -50,14 +49,13 @@
                         'id' => 'proof_numbers_select',
                     ]) !!}
                 </div>
-            </div>
+            </div> --}}
         @endcomponent
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
                 <div class="box-tools">
-                    <a class="btn btn-block btn-primary"
-                        href="#" data-toggle="modal" data-target="#createWorkCardModal">
+                    <a class="btn btn-block btn-primary" href="#" data-toggle="modal" data-target="#createWorkCardModal">
                         <i class="fa fa-plus"></i> @lang('essentials::lang.create_work_cards')</a>
                 </div>
             @endslot
@@ -86,14 +84,14 @@
 
                             <th>@lang('essentials::lang.workcard_duration')</th>
                             <th>@lang('essentials::lang.work_card_fees')</th>
-                           
+
                             <th>@lang('essentials::lang.passport_fees')</th>
-                             <th>@lang('essentials::lang.other_fees')</th>
+                            <th>@lang('essentials::lang.other_fees')</th>
                             <th>@lang('essentials::lang.pay_number')</th>
                             <th>@lang('essentials::lang.fixed')</th>
-                        
 
-                           
+
+
                         </tr>
                     </thead>
 
@@ -101,8 +99,7 @@
                     <tfoot>
                         <tr>
                             <td colspan="5">
-                                @if (auth()->user()->hasRole('Admin#1') ||
-                                        auth()->user()->can('essentials.view_renew_residency'))
+                                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_renew_residency'))
                                     <div style="display: flex; width: 100%;">
                                         {!! Form::open([
                                             'url' => action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'postRenewData']),
@@ -130,87 +127,87 @@
 
 
     </section>
- 
-@include('essentials::cards.create_workcard_modal')
+
+    @include('essentials::cards.create_workcard_modal')
 @endsection
 
 
 @section('javascript')
-<script>
-    $(document).ready(function() {
-        $('#Payment_number').on('input', function() {
-            var payNumber = $(this).val().replace(/\D/g, ''); // Remove non-numeric characters
-            if (payNumber.length !== 14) {
-                // If not exactly 14 numbers, show error message
-                $('#error-message').text('يجب أن يتكون رقم السداد من 14 رقم تماما').show();
-            } else {
-                // If exactly 14 numbers, hide error message
-                $('#error-message').hide();
-            }
-        });
-    });
-</script>
-<script>
-    $(document).ready(function(){
-        // Function to calculate fees based on selected duration
-        function calculateFees(selectedValue) {
-            switch (selectedValue) {
-                case '3':
-                    return 2425;
-                case '6':
-                    return 4850;
-                case '9':
-                    return 7275;
-                case '12':
-                    return 9700;
-                default:
-                    return 0;
-            }
-        }
-
-        // Event listener for workcard_duration_input change
-        $('#workcard_duration_input').change(function(){
-            var selectedDuration = $(this).val();
-            var feesOptions = [];
-            switch(selectedDuration) {
-                case '3':
-                    feesOptions = ['163', '288', '413'];
-                    break;
-                case '6':
-                    feesOptions = ['326', '825'];
-                    break;
-                case '9':
-                    feesOptions = ['488'];
-                    break;
-                case '12':
-                    feesOptions = ['650', '1150'];
-                    break;
-                default:
-                    feesOptions = [];
-            }
-            // Clear previous options
-            $('#fees_input').empty();
-            // Populate fees dropdown with new options
-            $.each(feesOptions, function(index, value) {
-                $('#fees_input').append($('<option>', {
-                    value: value,
-                    text: value
-                }));
+    <script>
+        $(document).ready(function() {
+            $('#Payment_number').on('input', function() {
+                var payNumber = $(this).val().replace(/\D/g, ''); // Remove non-numeric characters
+                if (payNumber.length !== 14) {
+                    // If not exactly 14 numbers, show error message
+                    $('#error-message').text('يجب أن يتكون رقم السداد من 14 رقم تماما').show();
+                } else {
+                    // If exactly 14 numbers, hide error message
+                    $('#error-message').hide();
+                }
             });
-
-            // Calculate and populate work_card_fees field
-            var calculatedFees = calculateFees(selectedDuration);
-            $('#work_card_fees').val(calculatedFees);
         });
-    });
-</script>
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Function to calculate fees based on selected duration
+            function calculateFees(selectedValue) {
+                switch (selectedValue) {
+                    case '3':
+                        return 2425;
+                    case '6':
+                        return 4850;
+                    case '9':
+                        return 7275;
+                    case '12':
+                        return 9700;
+                    default:
+                        return 0;
+                }
+            }
+
+            // Event listener for workcard_duration_input change
+            $('#workcard_duration_input').change(function() {
+                var selectedDuration = $(this).val();
+                var feesOptions = [];
+                switch (selectedDuration) {
+                    case '3':
+                        feesOptions = ['163', '288', '413'];
+                        break;
+                    case '6':
+                        feesOptions = ['326', '825'];
+                        break;
+                    case '9':
+                        feesOptions = ['488'];
+                        break;
+                    case '12':
+                        feesOptions = ['650', '1150'];
+                        break;
+                    default:
+                        feesOptions = [];
+                }
+                // Clear previous options
+                $('#fees_input').empty();
+                // Populate fees dropdown with new options
+                $.each(feesOptions, function(index, value) {
+                    $('#fees_input').append($('<option>', {
+                        value: value,
+                        text: value
+                    }));
+                });
+
+                // Calculate and populate work_card_fees field
+                var calculatedFees = calculateFees(selectedDuration);
+                $('#work_card_fees').val(calculatedFees);
+            });
+        });
+    </script>
 
 
     <script type="text/javascript">
         var translations = {
             months: @json(__('essentials::lang.months')),
             management: @json(__('essentials::lang.management'))
-    
+
 
         };
 
@@ -219,8 +216,8 @@
         $(document).ready(function() {
 
             $('#createWorkCardModal').find('.select2').select2({
-				dropdownParent : $('#createWorkCardModal')
-			});
+                dropdownParent: $('#createWorkCardModal')
+            });
 
             var card_table = $('#card_table').DataTable({
 
@@ -275,7 +272,7 @@
                         data: 'company_name',
                         name: 'company_name'
                     },
-                   
+
 
                     {
                         data: 'user',
@@ -301,29 +298,31 @@
                         data: 'responsible_client',
                         name: 'responsible_client'
                     },
-                    { data: 'workcard_duration', name: 'workcard_duration',
+                    {
+                        data: 'workcard_duration',
+                        name: 'workcard_duration',
                         render: function(data) {
-                            if(data != null)
-                            {   return data +  " " +translations['months']; }
-                            else{
+                            if (data != null) {
+                                return data + " " + translations['months'];
+                            } else {
                                 return " ";
                             }
-                          
+
                         }
                     },
-                     {
-                        data:"work_card_fees",
-                        name:"work_card_fees"
+                    {
+                        data: "work_card_fees",
+                        name: "work_card_fees"
                     },
                     {
                         data: 'passport_fees',
                         name: 'passport_fees'
                     },
-                     {
+                    {
                         data: 'other_fees',
                         name: 'other_fees'
                     },
-                   
+
                     {
                         data: 'Payment_number',
                         name: 'Payment_number'
@@ -332,48 +331,48 @@
                         data: 'fixnumber',
                         name: 'fixnumber'
                     },
-                    
 
-                   
+
+
 
                 ]
 
             });
 
-          
-                  
-          
-        
- $('body').on('submit', '#workCardForm', function (e) {
-    e.preventDefault();
-    var urlWithId = $(this).attr('action');
-    $.ajax({
-        url: urlWithId,
-        type: 'POST',
-        data: new FormData(this),
-        contentType: false,
-        processData: false,
-        success: function (response) {
-            console.log(response); 
-            if (response.success) {
-                console.log(response);
-                // Assuming buildings_table is defined elsewhere
-                card_table.ajax.reload();
-                toastr.success(response.msg);
-                $('#createWorkCardModal').modal('hide');
-            } else {
-                toastr.error(response.msg);
-                $('#createWorkCardModal').modal('hide');
-                console.log(response);
-            }
-        },
-        error: function (error) {
-            console.error('Error submitting form:', error);
-            toastr.error('An error occurred while submitting the form.', 'Error');
-        },
-    });
-});
-          
+
+
+
+
+            $('body').on('submit', '#workCardForm', function(e) {
+                e.preventDefault();
+                var urlWithId = $(this).attr('action');
+                $.ajax({
+                    url: urlWithId,
+                    type: 'POST',
+                    data: new FormData(this),
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            console.log(response);
+                            // Assuming buildings_table is defined elsewhere
+                            card_table.ajax.reload();
+                            toastr.success(response.msg);
+                            $('#createWorkCardModal').modal('hide');
+                        } else {
+                            toastr.error(response.msg);
+                            $('#createWorkCardModal').modal('hide');
+                            console.log(response);
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error submitting form:', error);
+                        toastr.error('An error occurred while submitting the form.', 'Error');
+                    },
+                });
+            });
+
 
             $('#contact-select').on('change', function() {
 
@@ -420,7 +419,7 @@
                         return 0;
                 }
             }
-                
+
 
             $('#renew-selected').on('click', function(e) {
                 e.preventDefault();
@@ -440,7 +439,7 @@
 
                         success: function(response) {
                             var data = response.data;
-                           
+
                             var durationOptions = response.durationOptions;
                             console.log(durationOptions);
 
@@ -449,12 +448,12 @@
                             var inputClasses = 'form-group';
                             var inputClasses2 = 'form-group col-md-3';
 
-                           
+
                             var labelsRow = $('<div>', {
                                 class: 'row'
                             });
 
-                          
+
 
 
                             labelsRow.append($('<label>', {
@@ -475,14 +474,14 @@
                                 text: '{{ __('essentials::lang.choose_renew_duration') }}'
                             }));
 
-                           
+
                             labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
                                 style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
                                 text: '{{ __('essentials::lang.work_card_fees') }}'
                             }));
 
-                             labelsRow.append($('<label>', {
+                            labelsRow.append($('<label>', {
                                 class: inputClasses + 'col-md-2',
                                 style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
                                 text: '{{ __('essentials::lang.passport_fees') }}'
@@ -520,7 +519,7 @@
                                     class: inputClasses + 'col-md-2',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.id') }}',
-                                   
+
                                     value: row.id
                                 });
                                 rowDiv.append(rowIDInput);
@@ -529,7 +528,8 @@
                                 var workerIDInput = $('<input>', {
                                     type: 'hidden',
                                     name: 'employee_id[]',
-                                    class:  inputClasses2 + ' input-with-padding', 
+                                    class: inputClasses2 +
+                                        ' input-with-padding',
                                     style: 'height: 40px',
                                     placeholder: '{{ __('essentials::lang.id') }}',
                                     value: row.employee_id
@@ -540,22 +540,25 @@
                                 var numberInput = $('<input>', {
                                     type: 'text',
                                     name: 'number[]',
-                                    class: inputClasses2 + ' input-with-padding', 
+                                    class: inputClasses2 +
+                                        ' input-with-padding',
                                     style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right: 20px; !important',
                                     placeholder: '{{ __('essentials::lang.Residency_no') }}',
                                     value: row.number,
-                                    readonly: true 
-                                   
+                                    readonly: true
+
                                 });
 
                                 rowDiv.append(numberInput);
-                                
-                                var expiration_date = row.expiration_date ? formatDate(row.expiration_date) : '';
+
+                                var expiration_date = row.expiration_date ? formatDate(
+                                    row.expiration_date) : '';
                                 console.log(expiration_date);
                                 var expiration_dateInput = $('<input>', {
                                     type: 'text',
                                     name: 'expiration_date[]',
-                                    class: inputClasses2 + ' input-with-padding', 
+                                    class: inputClasses2 +
+                                        ' input-with-padding',
                                     style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.expiration_date') }}',
                                     value: expiration_date
@@ -583,7 +586,8 @@
                                 var renewDurationInput = $('<select>', {
                                     id: 'renew_durationId_' + index,
                                     name: 'renew_duration[]',
-                                    class: 'form-control select2' +  inputClasses2 + ' input-with-padding', 
+                                    class: 'form-control select2' +
+                                        inputClasses2 + ' input-with-padding',
                                     style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
                                     required: true
                                 });
@@ -596,34 +600,36 @@
 
                                     renewDurationInput.append(option);
                                 });
-                              
+
                                 renewDurationInput.val(row.workcard_duration);
                                 rowDiv.append(renewDurationInput);
-                               
-                           
-                              
+
+
+
                                 var feesInput = $('<input>', {
                                     type: 'text',
                                     name: 'fees[]',
-                                    class:  inputClasses2 + ' input-with-padding'+'fees-input',
+                                    class: inputClasses2 +
+                                        ' input-with-padding' + 'fees-input',
                                     style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.work_card_fees') }}',
-                                    required: true ,
+                                    required: true,
                                     value: row.work_card_fees
                                 });
 
                                 rowDiv.append(feesInput);
 
-                                
+
                                 var passportFeesSelect = $('<select>', {
                                     name: 'passportfees[]',
-                                    class: inputClasses2 + ' input-with-padding fees-input',
+                                    class: inputClasses2 +
+                                        ' input-with-padding fees-input',
                                     style: 'height: 40px; width:140px; text-align: center;padding-right: 20px; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.passport_fees') }}',
-                                    required: true 
+                                    required: true
                                 });
 
-                               
+
                                 var option = $('<option>', {
                                     value: row.passport_fees,
                                     text: row.passport_fees
@@ -631,38 +637,44 @@
                                 passportFeesSelect.append(option);
                                 rowDiv.append(passportFeesSelect);
 
-                                
-                               var pay_numberInput = $('<input>', {
-                                        type: 'number',
-                                        name: 'Payment_number[]',
-                                        class: inputClasses2 + ' input-with-padding',
-                                        style: 'height: 40px; width:140px; text-align: center; padding: 0 10px; !important',
-                                        placeholder: '{{ __('essentials::lang.pay_number') }}',
-                                        value: row.Payment_number
-                                    });
 
-                                    
+                                var pay_numberInput = $('<input>', {
+                                    type: 'number',
+                                    name: 'Payment_number[]',
+                                    class: inputClasses2 +
+                                        ' input-with-padding',
+                                    style: 'height: 40px; width:140px; text-align: center; padding: 0 10px; !important',
+                                    placeholder: '{{ __('essentials::lang.pay_number') }}',
+                                    value: row.Payment_number
+                                });
+
+
                                 pay_numberInput.on('input', function() {
-                                var currentValue = $(this).val().replace(/\D/g, ''); // Remove non-numeric characters
-                                if (currentValue.length !== 14) {
-                                    // If not exactly 14 digits, show error message
-                                    $('#error-message').text('You must enter exactly 14 numbers').show();
-                                } else {
-                                    // If exactly 14 digits, hide error message
-                                    $('#error-message').hide();
-                                }
-                            });
+                                    var currentValue = $(this).val().replace(
+                                        /\D/g, ''
+                                        ); // Remove non-numeric characters
+                                    if (currentValue.length !== 14) {
+                                        // If not exactly 14 digits, show error message
+                                        $('#error-message').text(
+                                            'You must enter exactly 14 numbers'
+                                            ).show();
+                                    } else {
+                                        // If exactly 14 digits, hide error message
+                                        $('#error-message').hide();
+                                    }
+                                });
 
-                                    rowDiv.append(pay_numberInput);
-                                
-                                
+                                rowDiv.append(pay_numberInput);
+
+
                                 var fixnumberInput = $('<input>', {
                                     type: 'text',
                                     name: 'fixnumber[]',
-                                    class:  inputClasses2 + ' input-with-padding', 
+                                    class: inputClasses2 +
+                                        ' input-with-padding',
                                     style: 'height: 40px; width:140px; text-align: center; padding-right:20px; !important',
                                     placeholder: '{{ __('essentials::lang.fixed') }}',
-                                  
+
                                     value: row.fixnumber,
                                     disabled: true
                                 });
@@ -671,22 +683,26 @@
 
 
                                 $('.modal-body').append(rowDiv);
-                                
+
                                 renewDurationInput.select2({
-                                        dropdownParent: $('#renewModal'),
+                                    dropdownParent: $('#renewModal'),
                                 });
-                                 passportFeesSelect.select2({
-                                        dropdownParent: $('#renewModal'),
+                                passportFeesSelect.select2({
+                                    dropdownParent: $('#renewModal'),
                                 });
 
-                                $('#renew_durationId_' + index).val(row.workcard_duration).trigger('change');
+                                $('#renew_durationId_' + index).val(row
+                                    .workcard_duration).trigger('change');
 
-                                   
-                                $('#renew_durationId_' + index).on('change', function() {
+
+                                $('#renew_durationId_' + index).on('change',
+                            function() {
                                     console.log("Change event triggered");
                                     var selectedValue = $(this).val();
-                                    console.log("Selected value:", selectedValue);
-                                    var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
+                                    console.log("Selected value:",
+                                        selectedValue);
+                                    var feesInput = $(this).closest('.row')
+                                        .find('input[name="fees[]"]');
                                     console.log("Fees input found:", feesInput);
                                     var fees = calculateFees(selectedValue);
                                     console.log("Calculated fees:", fees);
@@ -694,119 +710,131 @@
                                 });
 
 
-                                $('#renew_durationId_' + index).on('change', function() {
+                                $('#renew_durationId_' + index).on('change',
+                            function() {
                                     var selectedValue = $(this).val();
-                                    var passportFeesSelect = $(this).closest('.row').find('select[name="passportfees[]"]');
-                                    passportFeesSelect.empty(); // Clear previous options
+                                    var passportFeesSelect = $(this).closest(
+                                        '.row').find(
+                                        'select[name="passportfees[]"]');
+                                    passportFeesSelect
+                                .empty(); // Clear previous options
 
                                     if (selectedValue === '3') {
                                         var feesOptions = {
                                             163: '163',
                                             288: '288',
                                             413: '413',
-                                            
+
                                         };
-                                        $.each(feesOptions, function(value, text) {
+                                        $.each(feesOptions, function(value,
+                                            text) {
                                             var option = $('<option>', {
                                                 value: value,
                                                 text: text
                                             });
-                                            passportFeesSelect.append(option);
+                                            passportFeesSelect.append(
+                                                option);
                                         });
                                     } else if (selectedValue === '6') {
                                         var feesOptions = {
-                                             326: '326',
-                                             825: '825',
+                                            326: '326',
+                                            825: '825',
                                         };
-                                        $.each(feesOptions, function(value, text) {
+                                        $.each(feesOptions, function(value,
+                                            text) {
                                             var option = $('<option>', {
                                                 value: value,
                                                 text: text
                                             });
-                                            passportFeesSelect.append(option);
+                                            passportFeesSelect.append(
+                                                option);
                                         });
-                                    }
-                                    else if (selectedValue === '9') {
+                                    } else if (selectedValue === '9') {
                                         var feesOptions = {
-                                             488: '488',
-                                         
+                                            488: '488',
+
                                         };
-                                        $.each(feesOptions, function(value, text) {
+                                        $.each(feesOptions, function(value,
+                                            text) {
                                             var option = $('<option>', {
                                                 value: value,
                                                 text: text
                                             });
-                                            passportFeesSelect.append(option);
+                                            passportFeesSelect.append(
+                                                option);
                                         });
-                                    }
-                                     else if (selectedValue === '12') {
+                                    } else if (selectedValue === '12') {
                                         var feesOptions = {
-                                             650: '650',
-                                             1150: '1150',
-                                         
+                                            650: '650',
+                                            1150: '1150',
+
                                         };
-                                        $.each(feesOptions, function(value, text) {
+                                        $.each(feesOptions, function(value,
+                                            text) {
                                             var option = $('<option>', {
                                                 value: value,
                                                 text: text
                                             });
-                                            passportFeesSelect.append(option);
+                                            passportFeesSelect.append(
+                                                option);
                                         });
                                     }
                                 });
 
 
-                              
+
 
                             });
                         },
                         error: function(error) {
-                                console.error('Error submitting form:', error);
+                            console.error('Error submitting form:', error);
 
+                            toastr.error(
+                                'An error occurred while submitting the form.',
+                                'Error');
+                        },
+                    });
+
+                    $(document).ready(function() {
+                        $('#renewModal').on('hidden.bs.modal', function() {
+                            location.reload();
+                        });
+                    });
+
+
+
+
+                    $('body').on('submit', '#renew_form', function(e) {
+                        e.preventDefault();
+                        var urlWithId = $(this).attr('action');
+                        $.ajax({
+                            url: urlWithId,
+                            type: 'POST',
+                            data: new FormData(this),
+                            contentType: false,
+                            processData: false,
+                            success: function(response) {
+                                console.log(response);
+                                if (response.success) {
+                                    console.log(response);
+                                    // Assuming buildings_table is defined elsewhere
+                                    card_table.ajax.reload();
+                                    toastr.success(response.msg);
+                                    $('#renewModal').modal('hide');
+                                } else {
+                                    toastr.error(response.msg);
+                                    $('#renewModal').modal('hide');
+                                    console.log(response);
+                                }
+                            },
+                            error: function(error) {
+                                console.error('Error submitting form:', error);
                                 toastr.error(
                                     'An error occurred while submitting the form.',
                                     'Error');
                             },
-                    });
-
-                    $(document).ready(function(){
-                        $('#renewModal').on('hidden.bs.modal', function () {
-                            location.reload();
                         });
-                });
-
-
-    
-    
-                $('body').on('submit', '#renew_form', function (e) {
-                    e.preventDefault();
-                    var urlWithId = $(this).attr('action');
-                    $.ajax({
-                        url: urlWithId,
-                        type: 'POST',
-                        data: new FormData(this),
-                        contentType: false,
-                        processData: false,
-                        success: function (response) {
-                            console.log(response); 
-                            if (response.success) {
-                                console.log(response);
-                                // Assuming buildings_table is defined elsewhere
-                                card_table.ajax.reload();
-                                toastr.success(response.msg);
-                                $('#renewModal').modal('hide');
-                            } else {
-                                toastr.error(response.msg);
-                                $('#renewModal').modal('hide');
-                                console.log(response);
-                            }
-                        },
-                        error: function (error) {
-                            console.error('Error submitting form:', error);
-                            toastr.error('An error occurred while submitting the form.', 'Error');
-                        },
                     });
-                });
 
 
                     // $('#renewModal form').click(function() {
@@ -872,137 +900,128 @@
                 return selectedRows;
             }
         });
-
-
-
-
-
-       
     </script>
 
 
 
 
-<script>
-function getData(employeeId) {
-    getResponsibleData(employeeId);
-    getResidencyData(employeeId);
-}
-</script>
+    <script>
+        function getData(employeeId) {
+            getResponsibleData(employeeId);
+            getResidencyData(employeeId);
+        }
+    </script>
 
 
 
-<script>
+    <script>
+        function getResponsibleData(employeeId) {
 
-function getResponsibleData(employeeId) {
+            $.ajax({
+                url: "{{ route('get_responsible_data') }}",
+                type: 'GET',
+                data: {
+                    employeeId: employeeId
+                },
+                success: function(data) {
+                    console.log(data);
 
-$.ajax({
-    url: "{{ route('get_responsible_data') }}",
-    type: 'GET',
-    data: { employeeId: employeeId },
-    success: function (data) {
-        console.log(data);
 
-      
-        $('#responsible_users').empty();
-        $('#responsible_users').append($('<option>', {
-            value: data.all_responsible_users.id,
-            text: data.all_responsible_users.name
-        }));
+                    $('#responsible_users').empty();
+                    $('#responsible_users').append($('<option>', {
+                        value: data.all_responsible_users.id,
+                        text: data.all_responsible_users.name
+                    }));
 
-        if (data.responsible_client.length > 0) {
-            $('#responsible_client').empty();
-            $.each(data.responsible_client, function (index, item) {
-                $('#responsible_client').append($('<option>', {
-                    value: item.id,
-                    text: item.name,
-                    selected: true 
-                }));
+                    if (data.responsible_client.length > 0) {
+                        $('#responsible_client').empty();
+                        $.each(data.responsible_client, function(index, item) {
+                            $('#responsible_client').append($('<option>', {
+                                value: item.id,
+                                text: item.name,
+                                selected: true
+                            }));
+                        });
+
+
+                        $('#responsible_client').select2();
+                    } else if (data.responsible_client.length == 0 && data.all_responsible_users.length == 0) {
+                        $('#responsible_client').empty();
+                        $('#responsible_client').append($('<option>', {
+                            value: null,
+                            text: translations['management'],
+                            selected: true
+                        }));
+
+                        $('#responsible_users').empty();
+                        $('#responsible_users').append($('<option>', {
+                            value: null,
+                            text: translations['management'],
+                            selected: true
+                        }));
+                    } else {
+                        $('#responsible_client').empty();
+                    }
+
+
+
+                    $('#business').empty();
+                    $('#business').append($('<option>', {
+                        value: data.company.id,
+                        text: data.company.name
+                    }));
+
+
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
             });
-
-           
-            $('#responsible_client').select2();
-        } 
-        else if(data.responsible_client.length == 0 && data.all_responsible_users.length == 0 )
-        {
-            $('#responsible_client').empty();
-            $('#responsible_client').append($('<option>', {
-                value: null,
-                text: translations['management'],
-                selected: true
-            }));
-
-            $('#responsible_users').empty();
-            $('#responsible_users').append($('<option>', {
-                value: null,
-                text: translations['management'],
-                selected: true
-            }));
         }
-        else{
-            $('#responsible_client').empty();
+    </script>
+
+
+    <script>
+        function getResidencyData(employeeId) {
+
+            $.ajax({
+                url: '{{ route('getResidencyData') }}',
+                type: 'GET',
+                data: {
+                    employee_id: employeeId
+                },
+                success: function(response) {
+
+                    $('#Residency_no').val(response.residency_no);
+                    $('#border_no').val(response.border_no);
+                    $('#Residency_end_date').val(response.residency_end_date);
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
         }
-           
-
-      
-        $('#business').empty();
-        $('#business').append($('<option>', {
-            value: data.company.id,
-            text: data.company.name
-        }));
-
-       
-    },
-    error: function (xhr, status, error) {
-        console.error(error);
-    }
-});
-}
-</script>
+    </script>
 
 
-<script>
-function getResidencyData(employeeId) {
-
-    $.ajax({
-        url: '{{ route("getResidencyData") }}',
-        type: 'GET',
-        data: { employee_id: employeeId },
-        success: function(response) {
-           
-            $('#Residency_no').val(response.residency_no);
-            $('#border_no').val(response.border_no);
-            $('#Residency_end_date').val(response.residency_end_date);
-        },
-        error: function(xhr, status, error) {
-            console.error(error);
-        }
-    });
-}
-</script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#employees').on('change', function() {
+                var employeeId = $(this).val();
+                $('#employee_id').val(employeeId);
+                console.log(employeeId);
+            });
+        });
 
 
-<script  type="text/javascript">
-$(document).ready(function () {
-$('#employees').on('change', function () {
-    var employeeId = $(this).val();
-    $('#employee_id').val(employeeId);
-    console.log(employeeId);
-});
-});
-
-
-$(document).ready(function () {
-$('#all_responsible_users').on('change', function () {
-    var employee = $(this).val();
-    $('#responsible_user_id').val(employee);
-    console.log(employee);
-});
-});
-
-
-
-</script>
+        $(document).ready(function() {
+            $('#all_responsible_users').on('change', function() {
+                var employee = $(this).val();
+                $('#responsible_user_id').val(employee);
+                console.log(employee);
+            });
+        });
+    </script>
 
 
 @endsection

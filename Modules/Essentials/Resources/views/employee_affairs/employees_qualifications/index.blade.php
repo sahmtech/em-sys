@@ -20,8 +20,8 @@
                                     'PhD' => __('essentials::lang.PhD'),
                             
                                     'diploma' => __('essentials::lang.diploma'),
-                                                             'minor' => __('essentials::lang.minor'),
-                        'sponsorship' => __('essentials::lang.sponsorship'),
+                                    'minor' => __('essentials::lang.minor'),
+                                    'sponsorship' => __('essentials::lang.sponsorship'),
                                 ],
                                 null,
                                 [
@@ -128,29 +128,29 @@
                                             'sponsorship' => __('essentials::lang.sponsorship'),
                                         ],
                                         null,
-                                        ['class' => 'form-control',
-                                         'required', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                                        ['class' => 'form-control', 'required', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
                                     ) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
                                     {!! Form::select('general_specialization', $spacializations, null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:40px',   'id' => 'professionSelect',
+                                        'style' => 'height:40px',
+                                        'id' => 'professionSelect',
                                         'placeholder' => __('essentials::lang.select_specialization'),
                                     ]) !!}
                                 </div>
-                    
-                           
-                            <div class="form-group col-md-6">
+
+
+                                <div class="form-group col-md-6">
                                     {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
                                     {!! Form::select('sub_specialization', [], null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:40px','id' => 'specializationSelect',
-                                      
+                                        'style' => 'height:40px',
+                                        'id' => 'specializationSelect',
                                     ]) !!}
                                 </div>
-                             
+
                                 <div class="form-group col-md-6">
                                     {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':*') !!}
                                     {!! Form::date('graduation_year', null, [
@@ -179,7 +179,7 @@
                                         'required',
                                     ]) !!}
                                 </div>
-                              
+
                                 <div class=" col-md-6">
                                     <div class="form-group">
                                         {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
@@ -224,7 +224,7 @@
                                             'style' => 'height:40px',
                                         ]) !!}
                                     </div>
-                            
+
                                 </div>
                             </div>
 
@@ -238,11 +238,12 @@
                     </div>
                 </div>
             </div>
-            
-            @include('essentials::employee_affairs.employees_qualifications.edit_modal')
-             @include('essentials::employee_affairs.employees_qualifications.add_qualification_file_modal')
+
+
+            @include('essentials::employee_affairs.employees_qualifications.add_qualification_file_modal')
         </div>
     </section>
+    @include('essentials::employee_affairs.employees_qualifications.edit')
 @endsection
 @section('javascript')
     <script type="text/javascript">
@@ -272,10 +273,10 @@
 
 
             //----------------------------------------------------------------------------------
-             $(document).on('click', '.view_qualification_file_modal', function(e) {
+            $(document).on('click', '.view_qualification_file_modal', function(e) {
                 e.preventDefault();
 
-              
+
                 var fileUrl = $(this).data('href') ?? null;
                 var doc_id = $(this).data('id');
                 $('#doc_id').val(doc_id);
@@ -285,7 +286,7 @@
                     $('#iframeQualDocViewer').show();
 
                 } else {
-                    
+
                     $('#iframeQualDocViewer').hide();
 
                 }
@@ -298,18 +299,18 @@
 
             let fileChanged = false;
             $('.deleteFile').on('click', function() {
-                $('#iframeQualDocViewer').attr('src', ''); 
-                $('input[type="file"]').val(''); 
-                $('#delete_file_input').val('1'); 
+                $('#iframeQualDocViewer').attr('src', '');
+                $('input[type="file"]').val('');
+                $('#delete_file_input').val('1');
                 $('#iframeQualDocViewer').hide();
                 fileChanged = true;
                 enableSaveButton();
             });
-            
+
             function enableSaveButton() {
                 $('.saveFile').prop('disabled', !fileChanged);
             }
-            
+
             $('input[type="file"]').on('change', function(event) {
                 var file = event.target.files[0];
 
@@ -317,20 +318,20 @@
                     var fileType = file.type;
                     var url = '';
 
-                    
+
                     if (fileType.match(/image.*/)) {
-                        
+
                         url = URL.createObjectURL(file);
                     } else if (fileType === 'application/pdf') {
-                        
+
                         url = URL.createObjectURL(file);
                     } else {
-                        
+
                         alert('File type not supported for preview');
                         return;
                     }
 
-                    
+
                     $('#iframeQualDocViewer').attr('src', url).show();
                 } else {
 
@@ -338,9 +339,10 @@
                 fileChanged = true;
                 enableSaveButton();
             });
-            
+
             //-----------------------------------------------------------------------------
             var qualifications_table;
+
             function reloadDataTable() {
                 qualifications_table.ajax.reload();
             }
@@ -377,13 +379,17 @@
                                 return '@lang('essentials::lang.PhD')';
                             } else if (data === 'diploma') {
                                 return '@lang('essentials::lang.diploma')';
+                            } else if (data === 'minor') {
+                                return '@lang('essentials::lang.minor')';
+                            } else if (data === 'sponsorship') {
+                                return '@lang('essentials::lang.sponsorship')';
                             } else {
-                                return ' ';
+                                return data;
                             }
-                        
+
                         }
                     },
-                   
+
                     {
                         data: 'specialization'
                     },
@@ -408,7 +414,8 @@
                         data: 'marksName'
                     },
                     {
-                        data:'qualification_file'},
+                        data: 'qualification_file'
+                    },
                     {
                         data: 'action'
                     },
@@ -454,143 +461,83 @@
             });
 
 
-
-            $('body').on('click', '.open-edit-modal', function() {
-                var qualificationId = $(this).data('id');
-                $('#qualificationIdInput').val(qualificationId);
-
-                var editUrl = '{{ route('qualification.edit', ':qualificationId') }}'
-                editUrl = editUrl.replace(':qualificationId', qualificationId);
-                console.log(editUrl);
-
+            $(document).on('click', '.open-edit-modal', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var doc_id = $(this).data('id');
                 $.ajax({
-                    url: editUrl,
+                    url: url,
                     type: 'GET',
-                    dataType: 'json',
                     success: function(response) {
-                        var data = response.data;
-                        console.log(data);
-
-                        $('#editQualificationModal select[name="employee"]').val(data.employee)
-                            .trigger('change');
-                        $('#editQualificationModal select[name="qualification_type"]').val(data
-                            .qualification_type).trigger('change');
-                           $('#editQualificationModal select[name="general_specialization"]').val(data.general_specialization).trigger('change');
-                        $('#editQualificationModal select[name="sub_specialization"]').val(data.sub_specialization).trigger(
-                            'change');
-
-                        $('#editQualificationModal select[name="major"]').val(data.major)
-                            .trigger('change');
-                        $('#editQualificationModal input[name="graduation_year"]').val(data
-                            .graduation_year);
-                        $('#editQualificationModal input[name="graduation_institution"]').val(
-                            data.graduation_institution);
-                        $('#editQualificationModal select[name="graduation_country"]').val(data
-                            .graduation_country).trigger('change');
-                        $('#editQualificationModal input[name="_degree"]').val(data.degree);
-                        $('#editQualificationModal input[name="_great_degree"]').val(data
-                            .great_degree);
-                        $('#editQualificationModal input[name="_marksName"]').val(data
-                            .marksName);
+                        var qualification = response.qualification;
+                        console.log(qualification);
+                        $('#editQualificationModal').find('[name="id"]').val(
+                            qualification
+                            .id);
+                        $('#editQualificationModal').find('[name="employee"]')
+                            .val(
+                                qualification
+                                .employee_id);
+                        $('#editQualificationModal').find('[name="qualification_type"]')
+                            .val(
+                                qualification
+                                .qualification_type);
+                        $('#editQualificationModal').find('[name="general_specialization"]')
+                            .val(
+                                qualification
+                                .specialization);
+                        $('#editQualificationModal').find('[name="sub_specialization"]')
+                            .val(
+                                qualification
+                                .sub_specialization);
+                        $('#editQualificationModal').find('[name="graduation_institution"]')
+                            .val(
+                                qualification
+                                .graduation_institution);
+                        $('#editQualificationModal').find('[name="graduation_year"]')
+                            .val(
+                                qualification
+                                .graduation_year);
+                        $('#editQualificationModal').find(
+                                '[name="graduation_country"]')
+                            .val(
+                                qualification
+                                .graduation_country);
+                        $('#editQualificationModal').find('[name="_degree"]')
+                            .val(
+                                qualification
+                                .degree);
+                        $('#editQualificationModal').find('[name="_great_degree"]')
+                            .val(
+                                qualification
+                                .great_degree);
+                        $('#editQualificationModal').find('[name="_marksName"]')
+                            .val(
+                                qualification
+                                .marksName);
 
                         $('#editQualificationModal').modal('show');
                     },
-                    error: function(error) {
-                        console.error('Error fetching user data:', error);
+                    error: function(xhr, status, error) {
+
+                        console.error("Error in AJAX request:", error);
                     }
                 });
-            });
-
-            $('body').on('submit', '#editQualificationModal form', function(e) {
-                e.preventDefault();
-
-                var qualificationId = $('#qualificationIdInput')
-                    .val(); 
-                console.log(qualificationId);
-
-                var urlWithId = '{{ route('updateQualification', ':qualificationId') }}';
-                urlWithId = urlWithId.replace(':qualificationId', qualificationId);
-                console.log(urlWithId);
-
-                $.ajax({
-                    url: urlWithId,
-                    type: 'POST',
-                    data: new FormData(this),
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        if (response.success) {
-                            console.log(response);
-                            toastr.success(response.msg, 'Success');
-                            $('#editQualificationModal').modal('hide');
-                        } else {
-                            toastr.error(response.msg);
-                            console.log(response);
-                        }
-                    },
-                    error: function(error) {
-                        console.error('Error submitting form:', error);
-                        
-                        toastr.error('An error occurred while submitting the form.', 'Error');
-                    },
-                });
-            });
-
-            
-            $('#editQualificationModal').on('hidden.bs.modal', function() {
-                qualifications_table.ajax.reload();
-            });
 
 
-            
-            
-            
-            
-            
-            
+            })
 
-            
-            
-            
-            
-            
-           
         });
 
-        $('body').on('submit', '#editQualificationModal form', function(e) {
-            e.preventDefault();
-
-            var qualificationId = $('#qualificationIdInput').val();
-            console.log(qualificationId);
-
-            var urlWithId = '{{ route('updateQualification', ':qualificationId') }}';
-            urlWithId = urlWithId.replace(':qualificationId', qualificationId);
-            console.log(urlWithId);
-
-            $.ajax({
-                url: urlWithId,
-                type: 'POST',
-                data: new FormData(this),
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    if (response.success) {
-                        console.log(response);
-                        toastr.success(response.msg, 'Success');
-                        $('#editQualificationModal').modal('hide');
-                    } else {
-                        toastr.error(response.msg);
-                        console.log(response);
-                    }
-                },
-                error: function(error) {
-                    console.error('Error submitting form:', error);
-                    
-                    toastr.error('An error occurred while submitting the form.', 'Error');
-                },
-            });
+        $(document).on('click', '#printDocButton', function() {
+            var iframe = document.getElementById('iframeDocViewer');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            } else {
+                alert('No document to print');
+            }
         });
-        
 
         function getGPA() {
             const GPA = [{
@@ -717,13 +664,13 @@
     </script>
 
 
-  <script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function() {
             console.log('done');
 
             var professionSelect = $('#editprofessionSelect');
-            console.log(professionSelect );           
-             var specializationSelect = $('#editspecializationSelect');
+            console.log(professionSelect);
+            var specializationSelect = $('#editspecializationSelect');
 
 
             professionSelect.on('change', function() {

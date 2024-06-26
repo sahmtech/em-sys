@@ -69,7 +69,7 @@
                         </div>
 
                     </div>
-
+                    <input type="hidden" id="page" name="page" value="{{ $page }}">
                     <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('commercial_register_no', __('sales::lang.commercial_register_no') . ':') !!}

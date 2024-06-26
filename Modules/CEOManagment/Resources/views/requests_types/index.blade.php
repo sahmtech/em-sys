@@ -30,6 +30,7 @@
                                     <th>@lang('ceomanagment::lang.request_type')</th>
                                     <th>@lang('ceomanagment::lang.request_prefix')</th>
                                     <th>@lang('ceomanagment::lang.request_for')</th>
+                                    <th>@lang('ceomanagment::lang.selfish_service')</th>
                                     <th>@lang('ceomanagment::lang.tasks')</th>
                                     <th>@lang('ceomanagment::lang.action')</th>
 
@@ -90,6 +91,7 @@
                                         ],
                                     ) !!}
                                 </div>
+
                                 <div class="form-group col-md-12 task-select-container">
                                     {!! Form::label('task', __('ceomanagment::lang.task') . ':') !!}
                                     <div class="input-group">
@@ -118,7 +120,14 @@
                                         </span>
                                     </div>
                                 </div>
-
+                                <div class="form-group col-md-12">
+                                    <div class="checkbox">
+                                        <label style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                            {!! Form::checkbox('selfish_service', '1', false) !!}
+                                            @lang('ceomanagment::lang.selfish_service')
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -152,7 +161,14 @@
                                 </div>
                             </div>
                         </div>
-
+                        {{-- <div class="form-group col-md-12">
+                            <div class="checkbox">
+                                <label>
+                                    {!! Form::checkbox('selfish_service', '1', false, ['id' => 'edit_selfish_service']) !!}
+                                    @lang('ceomanagment::lang.selfish_service')
+                                </label>
+                            </div>
+                        </div> --}}
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
@@ -269,6 +285,17 @@
                         }
                     },
                     {
+                        data: 'selfish_service',
+                        render: function(data, type, row) {
+                            if (data === 1) {
+                                return '@lang('ceomanagment::lang.can_be_selfish_service')';
+                            } else if (data === 0) {
+                                return '<button class="btn btn-sm btn-warning toggle-selfish-service" data-id="' +
+                                    row.id + '">@lang('ceomanagment::lang.make_selfish_service')</button>';
+                            }
+                        }
+                    },
+                    {
                         data: 'tasks',
                         name: 'tasks',
                         orderable: false,
@@ -317,6 +344,8 @@
                 var requestType = $(this).data('type-value');
                 var requestPrefix = $(this).data('prefix-value');
                 var requestFor = $(this).data('for-value');
+                var requestSelfish_service = $(this).data('selfish_service-value');
+
 
                 var editModal = $('#editModal');
 
@@ -330,9 +359,14 @@
 
                 editModal.find('select[name="for2"]').val(requestFor).trigger('change');
                 editModal.find('input[name="request_type_id"]').val(itemId);
-
+                if (requestSelfishService) {
+                    editModal.find('input[name="selfish_service"]').prop('checked', true);
+                } else {
+                    editModal.find('input[name="selfish_service"]').prop('checked', false);
+                }
                 editModal.modal('show');
             });
+
             $(document).on('click', '.add-task-btn', function() {
                 var taskContainer = $(this).closest('.task-select-container');
                 var newTaskContainer = taskContainer.clone();
@@ -344,7 +378,28 @@
 
                 taskContainer.after(newTaskContainer);
             });
-
+            $(document).on('click', '.toggle-selfish-service', function() {
+                var requestId = $(this).data('id');
+                $.ajax({
+                    url: '/generalmanagement/update_selfish_service/' + requestId,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        selfish_service: 1
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Reload the DataTable to reflect changes
+                            requests_types.ajax.reload();
+                        } else {
+                            alert('Failed to update selfish service.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('An error occurred while updating selfish service.');
+                    }
+                });
+            });
 
             $(document).on('click', '.remove-task-btn', function() {
                 $(this).closest('.task-select-container').remove();

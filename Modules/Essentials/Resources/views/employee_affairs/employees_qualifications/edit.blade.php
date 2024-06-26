@@ -1,5 +1,5 @@
 <!-- Add this modal markup to your Blade file -->
-<div class="modal fade" id="editQualificationModal" tabindex="-1" role="dialog"
+{{-- <div class="modal fade" id="editQualificationModal" tabindex="-1" role="dialog"
     aria-labelledby="editQualificationModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -138,9 +138,149 @@
             {!! Form::close() !!}
         </div>
     </div>
+</div> --}}
+<div class="modal fade" id="editQualificationModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            {!! Form::open(['route' => 'updateQualification', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@lang('essentials::lang.edit_qualification')</h4>
+            </div>
+
+            <div class="modal-body">
+
+                {!! Form::hidden('id', null, ['id' => 'id']) !!}
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
+                        {!! Form::select('employee', $users, null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('essentials::lang.select_employee'),
+                            'required',
+                        ]) !!}
+
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
+                        {!! Form::select(
+                            'qualification_type',
+                            [
+                                'bachelors' => __('essentials::lang.bachelors'),
+                                'master' => __('essentials::lang.master'),
+                                'PhD' => __('essentials::lang.PhD'),
+                                'diploma' => __('essentials::lang.diploma'),
+                                'minor' => __('essentials::lang.minor'),
+                                'sponsorship' => __('essentials::lang.sponsorship'),
+                            ],
+                            null,
+                            ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                        ) !!}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
+                        {!! Form::select('general_specialization', $spacializations, null, [
+                            'class' => 'form-control',
+                            'style' => 'height:40px',
+                            'id' => 'editprofessionSelect',
+                            'placeholder' => __('essentials::lang.select_specialization'),
+                        ]) !!}
+                    </div>
+
+
+                    <div class="form-group col-md-6">
+                        {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
+                        {!! Form::select('sub_specialization', $sub_spacializations, null, [
+                            'class' => 'form-control',
+                            'style' => 'height:40px',
+                            'id' => 'editspecializationSelect',
+                        ]) !!}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
+                        {!! Form::date('graduation_year', null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('essentials::lang.graduation_year'),
+                            'required',
+                        ]) !!}
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <div class="form-group col-md-6">
+                        {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
+                        {!! Form::text('graduation_institution', null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('essentials::lang.graduation_institution'),
+                            'required',
+                        ]) !!}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
+                        {!! Form::select('graduation_country', $countries, null, [
+                            'class' => 'form-control',
+                            'style' => 'height:40px',
+                            'placeholder' => __('essentials::lang.select_country'),
+                            'required',
+                        ]) !!}
+                    </div>
+
+
+                    <div class=" col-md-6">
+                        <div class="form-group">
+                            {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
+                            {!! Form::number('_degree', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('essentials::lang.degree'),
+                                'step' => 'any',
+                                'id' => '_degree',
+                                'onkeyup' => 'getGPAFUn()',
+                            ]) !!}
+                        </div>
+                    </div>
+
+                    <div class=" col-md-6">
+                        <div class="form-group">
+                            {!! Form::label('great_degree', __('essentials::lang.great_degree') . ':') !!}
+                            {!! Form::number('_great_degree', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('essentials::lang.great_degree'),
+                                'step' => 'any',
+                                'id' => '_great_degree',
+                                'onkeyup' => 'getGPAFUn()',
+                            ]) !!}
+
+                        </div>
+                    </div>
+
+                    <div class=" col-md-6">
+                        <div class="form-group">
+                            {!! Form::label('marksName', __('essentials::lang.marksName') . ':') !!}
+                            {!! Form::text('_marksName', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('essentials::lang.marksName'),
+                                'step' => 'any',
+                                'id' => '_marksName',
+                                'readonly',
+                            ]) !!}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
 </div>
 
-  
 
 <script>
     function getGPAFUn() {
