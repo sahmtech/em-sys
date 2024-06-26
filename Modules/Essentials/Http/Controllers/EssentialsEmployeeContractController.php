@@ -131,9 +131,6 @@ class EssentialsEmployeeContractController extends Controller
 
 
 
-
-
-
         $contract_types = EssentialsContractType::pluck('type', 'id')->all();
         if (request()->ajax()) {
 

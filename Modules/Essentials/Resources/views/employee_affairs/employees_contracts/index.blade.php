@@ -500,7 +500,13 @@
                             .val() != 'all') {
                             d.contract_file_exists_filter = $('#contract_file_exists_filter').val();
                         }
-                        console.log($('#doc_filter_date_range').val());
+                        if ($('#start_date_filter').val()) {
+                            d.start_date = $('#start_date_filter').val();
+                        }
+                        if ($('#end_date_filter').val()) {
+                            d.end_date = $('#end_date_filter').val();
+                        }
+
 
                         // if ($('#doc_filter_date_range').val()) {
                         //     var start = $('#doc_filter_date_range').data('daterangepicker').startDate
@@ -796,13 +802,14 @@
             });
 
 
-            $('#contract_type_filter, #contract_file_exists_filter, #status_filter ,#doc_filter_date_range').on(
-                'change',
-                function() {
-                    console.log($('#contract_type_filter').val());
-                    console.log($('#status_filter').val());
-                    reloadDataTable();
-                });
+            $('#contract_type_filter, #contract_file_exists_filter, #status_filter ,#end_date_filter,#start_date_filter')
+                .on(
+                    'change',
+                    function() {
+                        console.log($('#contract_type_filter').val());
+                        console.log($('#status_filter').val());
+                        reloadDataTable();
+                    });
             $(document).on('click', 'button.delete_employeeContract_button', function() {
                 swal({
                     title: LANG.sure,

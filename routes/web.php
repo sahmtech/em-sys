@@ -415,41 +415,58 @@ Route::get('/updateContractsBefore2000', function () {
         }
     }
 });
+
 Route::get('/updateContractsStatusForAll', function () {
-
-
     $contracts = EssentialsEmployeesContract::all();
 
     foreach ($contracts as $contract) {
+        $today = Carbon::today();
 
+        // If essential fields are missing, determine if the contract should be inactive
         if (is_null($contract->is_renewable) || is_null($contract->contract_duration) || is_null($contract->contract_start_date)) {
             if (is_null($contract->contract_end_date) || Carbon::parse($contract->contract_end_date)->isPast()) {
                 $contract->is_active = 0;
+            } else if (is_null($contract->is_renewable) && Carbon::parse($contract->contract_end_date)->isFuture()) {
+                $contract->is_active = 1;
             }
             $contract->save();
             continue;
         }
+
         if (is_null($contract->contract_end_date)) {
             continue;
         }
 
         $contractEndDate = Carbon::parse($contract->contract_end_date);
 
+        // If the contract end date is in the future and the status is inactive, make it active
+        if ($contract->is_active == 0 && $contractEndDate->isFuture()) {
+            $contract->is_active = 1;
+            $contract->save();
+            continue;
+        }
+
+        // If the contract end date is in the past and the contract is renewable, renew it
         if ($contractEndDate->isPast() && $contract->is_renewable == 1) {
             while ($contractEndDate->isPast()) {
                 $contract->contract_start_date = $contractEndDate;
                 $contractEndDate = $contractEndDate->copy()->addYears($contract->contract_duration);
             }
             $contract->contract_end_date = $contractEndDate;
-        } elseif ($contract->is_renewable == 0) {
-            $contract->is_active = 0;
+            $contract->is_active = 1; // Set the status to active if it has been renewed
+            $contract->save();
+            continue;
         }
 
-        $contract->save();
+        // If the contract is not renewable and the end date is in the past, make it inactive
+        if ($contract->is_active == 1 && $contractEndDate->isPast() && $contract->is_renewable == 0) {
+            $contract->is_active = 0;
+            $contract->save();
+            continue;
+        }
     }
     return 'success';
 });
-
 Route::get('/updateOfficialDocumentsStatusForAll', function () {
 
     $docs = EssentialsOfficialDocument::all();
