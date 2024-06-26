@@ -1509,7 +1509,7 @@ class EssentialsCardsController extends Controller
                 ->first();
 
             $row->expiration_date = $doc ? $doc->expiration_date : null;
-            $row->number = $doc ? $doc->number : null;
+            $row->number = $doc ? $doc->number : $row->user->id_proof_number;
 
             $uni_number = $row->user->company?->documents
                 ?->where('licence_type', 'COMMERCIALREGISTER')
