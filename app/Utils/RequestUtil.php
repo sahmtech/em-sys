@@ -82,6 +82,7 @@ class RequestUtil extends Util
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
+
         $allRequestTypes = RequestsType::pluck('type', 'id');
         //  $requestTypeIds = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
 

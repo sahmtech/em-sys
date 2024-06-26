@@ -408,7 +408,7 @@ class EssentialsEmployeeContractController extends Controller
     }
     public function cancelContract(Request $request)
     {
-        error_log(json_encode($request->all()));
+
         $contract_id = $request->input('contract_id');
         $cancle_contract_under_trial = $request->input('cancle_contract_under_trial');
 
