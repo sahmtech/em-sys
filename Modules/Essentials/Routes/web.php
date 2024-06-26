@@ -204,10 +204,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeQualification', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'store'])->name('storeQualification');
         Route::delete('/qualifications/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'destroy'])->name('qualification.destroy');
         Route::get('/qualifications.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'show'])->name('qualification.view');
-        Route::post('/updateQualification/{qualificationId}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'updateQualification'])->name('updateQualification');
-        Route::get('/qualifications/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'edit'])->name('qualification.edit');
+        Route::post('/updateQualification', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'updateQualification'])->name('updateQualification');
         Route::put('/updateEmployeeQualificationAttachement/{user_id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'updateEmployeeQualificationAttachement'])->name('updateEmployeeQualificationAttachement');
         Route::post('/storeQualDocFile', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'storeQualDocFile'])->name('storeQualDocFile');
+        Route::get('/qualifications/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'edit'])->name('qualification.edit');
+
 
         Route::get('/official_documents', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index'])->name('official_documents');
         Route::post('/storeOfficialDoc', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'store'])->name('storeOfficialDoc');
