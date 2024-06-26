@@ -320,6 +320,9 @@
                         </div>
 
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-primary"
+                                id="printDocButton">@lang('messages.print')</button>
+
                             <button type="submit" class="btn btn-primary saveFile" disabled>@lang('messages.save')</button>
                             <button type="button" class="btn btn-default"
                                 data-dismiss="modal">@lang('messages.close')</button>
@@ -645,7 +648,15 @@
 
             })
 
-
+            $(document).on('click', '#printDocButton', function() {
+                var iframe = document.getElementById('iframeDocViewer');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } else {
+                    alert('No document to print');
+                }
+            });
 
             $(document).on('click', 'button.delete_doc_button', function() {
                 swal({

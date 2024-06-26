@@ -76,12 +76,26 @@
 
                     <div class="form-group col-md-6">
                         {!! Form::label('probation_period', __('essentials::lang.probation_period') . ':*') !!}
-                        {!! Form::number('probation_period', null, [
+                        {!! Form::number('probation_period', !empty($contract->probation_period) ? $contract->probation_period : null, [
                             'class' => 'form-control  pull-left',
                             'placeholder' => __('essentials::lang.probation_period_in_days'),
                             'required',
                         ]) !!}
                     </div>
+                    {{-- <div class="form-group col-md-6">
+                        {!! Form::label('cancle_contract_under_trial', __('essentials::lang.cancle_contract_under_trial') . ':*') !!}
+                        {!! Form::select(
+                            'cancle_contract_under_trial',
+                            [
+                                'employee' => __('essentials::lang.by_employee'),
+                                'work_owner' => __('essentials::lang.by_work_owner'),
+                                'both' => __('essentials::lang.by_both_parties'),
+                            ],
+                            !empty($contract->cancle_contract_under_trial) ? $contract->cancle_contract_under_trial : null,
+                            ['class' => 'form-control pull-left', 'style' => 'height:40px; width:100%'],
+                        ) !!}
+
+                    </div> --}}
                     <div class="form-group col-md-6">
                         {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
                         {!! Form::select(

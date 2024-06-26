@@ -548,6 +548,7 @@ class OfferPriceController extends Controller
     {
 
         $sale_type = request()->get('sale_type', '');
+        $cities = EssentialsCity::forDropdown();
 
         $can_create_offer_price = auth()->user()->can('sales.create_offer_price');
         if (!$can_create_offer_price) {
@@ -663,7 +664,7 @@ class OfferPriceController extends Controller
                 'taxes',
                 'leads',
                 'walk_in_customer',
-                // 'business_locations',
+                'cities',
                 // 'bl_attributes',
                 'default_location',
                 'commission_agent',

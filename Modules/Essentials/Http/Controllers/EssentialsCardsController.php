@@ -69,23 +69,14 @@ class EssentialsCardsController extends Controller
 
     public function index(Request $request)
     {
-
-        $business_id = request()
-            ->session()
-            ->get('user.business_id');
-        $is_admin = auth()
-            ->user()
-            ->hasRole('Admin#1')
-            ? true
-            : false;
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1');
         $responsible_client = null;
 
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::whereNot('user_type', 'admin')
-            ->pluck('id')
-            ->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
         if (!$is_admin) {
-            $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
 
             $companies_ids = [];
@@ -94,10 +85,7 @@ class EssentialsCardsController extends Controller
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
 
                 if ($accessRole) {
-                    $companies_ids = AccessRoleCompany::where(
-                        'access_role_id',
-                        $accessRole->id
-                    )
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)
                         ->pluck('company_id')
                         ->toArray();
                 }
@@ -106,23 +94,18 @@ class EssentialsCardsController extends Controller
 
         $all_users = User::whereIn('id', $userIds)
             ->where(function ($query) {
-                $query
-                    ->whereNotNull('users.border_no')
+                $query->whereNotNull('users.border_no')
                     ->orWhere('users.id_proof_name', 'eqama');
             })
             ->whereIn('users.user_type', ['worker', 'employee'])
             ->where('nationality_id', '!=', 5)
-
             ->select(
-                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
-            ' - ',COALESCE(users.id_proof_number,'')) as full_name"),
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),' - ',COALESCE(users.id_proof_number,'')) as full_name"),
                 'users.id'
             )
-
             ->whereNotIn('users.id', function ($query) {
                 $query->select('employee_id')->from('essentials_work_cards');
             })
-
             ->get();
 
         $employees = $all_users->pluck('full_name', 'id');
@@ -132,8 +115,8 @@ class EssentialsCardsController extends Controller
             '6' => __('essentials::lang.6_months'),
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
-            //  '1' => __('essentials::lang.1_year'),
         ];
+
         $companies = Company::pluck('name', 'id');
         $card = EssentialsWorkCard::whereIn('employee_id', $userIds)
             ->where('is_active', 1)
@@ -150,19 +133,8 @@ class EssentialsCardsController extends Controller
             );
 
         if (!empty($request->input('project'))) {
-            $card->whereHas('user.assignedTo', function ($query) use (
-                $request
-            ) {
+            $card->whereHas('user.assignedTo', function ($query) use ($request) {
                 $query->where('id', $request->input('project'));
-            });
-        }
-
-        if (
-            !empty($request->input('proof_numbers')) &&
-            $request->input('proof_numbers') != 'all'
-        ) {
-            $card->whereHas('user', function ($query) use ($request) {
-                $query->whereIn('id', $request->input('proof_numbers'));
             });
         }
 
@@ -170,67 +142,40 @@ class EssentialsCardsController extends Controller
         $all_users = $query
             ->select(
                 'id',
-                DB::raw(
-                    "CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"
-                )
+                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name")
             )
             ->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
 
         if (request()->ajax()) {
             return Datatables::of($card)
-
                 ->addColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' .
-                        $row->id .
-                        '" />';
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
                 })
-
                 ->editColumn('company_name', function ($row) {
                     return $row->user->company?->name ?? '';
                 })
-
                 ->editColumn('fixnumber', function ($row) {
                     return $row->user->company?->documents
                         ?->where('licence_type', 'COMMERCIALREGISTER')
                         ->first()->unified_number ?? '';
                 })
-
                 ->editColumn('user', function ($row) {
-                    return $row->user->first_name .
-                        ' ' .
-                        $row->user->mid_name .
-                        ' ' .
-                        $row->user->last_name ??
-                        '';
+                    return $row->user->first_name . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
                 })
-
                 ->editColumn('project', function ($row) {
                     return $row->user->assignedTo
-                        ? $row->user->assignedTo->name ??
-                        __('essentials::lang.management')
+                        ? $row->user->assignedTo->name ?? __('essentials::lang.management')
                         : __('essentials::lang.management');
                 })
-
-                ->addColumn('responsible_client', function ($row) use (
-                    $name_in_charge_choices
-                ) {
+                ->addColumn('responsible_client', function ($row) use ($name_in_charge_choices) {
                     $names = null;
-
-                    $userIds =
-                        json_decode(
-                            $row->user->assignedTo?->assigned_to,
-                            true
-                        ) ?? [];
+                    $userIds = json_decode($row->user->assignedTo?->assigned_to, true) ?? [];
 
                     if ($userIds) {
                         $lastUserId = end($userIds);
-
                         foreach ($userIds as $user_id) {
-                            $names .=
-                                $name_in_charge_choices[$user_id] ??
-                                'Management';
-
+                            $names .= $name_in_charge_choices[$user_id] ?? 'Management';
                             if ($user_id !== $lastUserId) {
                                 $names .= ', ';
                             }
@@ -243,53 +188,42 @@ class EssentialsCardsController extends Controller
 
                     return $names;
                 })
-
                 ->editColumn('proof_number', function ($row) {
-                    $residencePermitDocument = $row->user->OfficialDocument
-                        ->where('type', 'residence_permit')
-                        ->first();
+                    $residencePermitDocument = $row->user->OfficialDocument->where('type', 'residence_permit')->first();
 
                     if ($residencePermitDocument) {
                         return $residencePermitDocument->number;
+                    } elseif ($row->user->id_proof_number) {
+                        return $row->user->id_proof_number;
                     } elseif ($row->user->border_no) {
                         return $row->user->border_no;
                     } else {
                         return '';
                     }
                 })
-
                 ->addColumn('r_expiration_date', function ($row) {
-                    $residencePermitDocument = $row->user
-                        ->OfficialDocument()
-                        ->where('type', 'residence_permit')
-                        ->where('is_active', 1)
-                        ->latest('created_at')
-                        ->first();
-
-                    return $residencePermitDocument
-                        ? $residencePermitDocument->expiration_date
-                        : '';
+                    $residencePermitDocument = $row->user->OfficialDocument()->where('type', 'residence_permit')->where('is_active', 1)->latest('created_at')->first();
+                    return $residencePermitDocument ? $residencePermitDocument->expiration_date : '';
                 })
-
                 ->editColumn('nationality', function ($row) {
                     return $row->user->country?->nationality ?? '';
                 })
-
                 ->filter(function ($query) use ($request) {
                     if (!empty($request->input('full_name'))) {
-                        $query->whereRaw(
-                            "CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?",
-                            ["%{$request->input('full_name')}%"]
-                        );
+                        $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('full_name')}%"]);
                     }
                 })
-
-                ->rawColumns([
-                    'action',
-                    'profession',
-                    'nationality',
-                    'checkbox',
-                ])
+                ->filterColumn('proof_number', function ($query, $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->where('users.id_proof_number', 'like', "%{$keyword}%")
+                            ->orWhereHas('OfficialDocument', function ($query) use ($keyword) {
+                                $query->where('type', 'residence_permit')
+                                    ->where('number', 'like', "%{$keyword}%");
+                            })
+                            ->orWhere('users.border_no', 'like', "%{$keyword}%");
+                    });
+                })
+                ->rawColumns(['action', 'profession', 'nationality', 'checkbox'])
                 ->make(true);
         }
 
@@ -298,22 +232,16 @@ class EssentialsCardsController extends Controller
         $proof_numbers = User::whereIn('users.id', $userIds)
             ->where('users.user_type', 'worker')
             ->select(
-                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
-        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),' - ',COALESCE(users.id_proof_number,'')) as full_name"),
                 'users.id'
             )
             ->get();
 
         return view('essentials::cards.index')->with(
-            compact(
-                'sales_projects',
-                'proof_numbers',
-                'employees',
-                'companies',
-                'durationOptions'
-            )
+            compact('sales_projects', 'proof_numbers', 'employees', 'companies', 'durationOptions')
         );
     }
+
 
     public function work_cards_all_requests()
     {
@@ -1581,7 +1509,7 @@ class EssentialsCardsController extends Controller
                 ->first();
 
             $row->expiration_date = $doc ? $doc->expiration_date : null;
-            $row->number = $doc ? $doc->number : null;
+            $row->number = $doc ? $doc->number : $row->user->id_proof_number;
 
             $uni_number = $row->user->company?->documents
                 ?->where('licence_type', 'COMMERCIALREGISTER')

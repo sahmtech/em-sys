@@ -415,41 +415,58 @@ Route::get('/updateContractsBefore2000', function () {
         }
     }
 });
+
 Route::get('/updateContractsStatusForAll', function () {
-
-
     $contracts = EssentialsEmployeesContract::all();
 
     foreach ($contracts as $contract) {
+        $today = Carbon::today();
 
+        // If essential fields are missing, determine if the contract should be inactive
         if (is_null($contract->is_renewable) || is_null($contract->contract_duration) || is_null($contract->contract_start_date)) {
             if (is_null($contract->contract_end_date) || Carbon::parse($contract->contract_end_date)->isPast()) {
                 $contract->is_active = 0;
+            } else if (is_null($contract->is_renewable) && Carbon::parse($contract->contract_end_date)->isFuture()) {
+                $contract->is_active = 1;
             }
             $contract->save();
             continue;
         }
+
         if (is_null($contract->contract_end_date)) {
             continue;
         }
 
         $contractEndDate = Carbon::parse($contract->contract_end_date);
 
+        // If the contract end date is in the future and the status is inactive, make it active
+        if ($contract->is_active == 0 && $contractEndDate->isFuture()) {
+            $contract->is_active = 1;
+            $contract->save();
+            continue;
+        }
+
+        // If the contract end date is in the past and the contract is renewable, renew it
         if ($contractEndDate->isPast() && $contract->is_renewable == 1) {
             while ($contractEndDate->isPast()) {
                 $contract->contract_start_date = $contractEndDate;
                 $contractEndDate = $contractEndDate->copy()->addYears($contract->contract_duration);
             }
             $contract->contract_end_date = $contractEndDate;
-        } elseif ($contract->is_renewable == 0) {
-            $contract->is_active = 0;
+            $contract->is_active = 1; // Set the status to active if it has been renewed
+            $contract->save();
+            continue;
         }
 
-        $contract->save();
+        // If the contract is not renewable and the end date is in the past, make it inactive
+        if ($contract->is_active == 1 && $contractEndDate->isPast() && $contract->is_renewable == 0) {
+            $contract->is_active = 0;
+            $contract->save();
+            continue;
+        }
     }
     return 'success';
 });
-
 Route::get('/updateOfficialDocumentsStatusForAll', function () {
 
     $docs = EssentialsOfficialDocument::all();
@@ -478,6 +495,65 @@ Route::get('/updateContractPerPeriod', function () {
     EssentialsEmployeesContract::query()->update(['contract_per_period' => 'years']);
 
     return 'success';
+});
+
+Route::get('/removeDuplicateDocuments', function () {
+    DB::beginTransaction();
+
+    try {
+        $subquery = "
+            SELECT MIN(id) as id 
+            FROM essentials_official_documents 
+            GROUP BY type, number, issue_date, issue_place, expiration_date, is_active,file_path, employee_id
+        ";
+
+        $duplicateIds = DB::table(DB::raw("($subquery) as sub"))
+            ->select('id')
+            ->pluck('id')
+            ->toArray();
+
+        $deletedRows = DB::table('essentials_official_documents')
+            ->whereNotIn('id', $duplicateIds)
+            ->delete();
+
+        DB::commit();
+
+        return response()->json(['success' => true, 'message' => "$deletedRows duplicate rows deleted."]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['success' => false, 'message' => $e->getMessage()]);
+    }
+});
+Route::get('/removeDuplicateContracts', function () {
+
+    DB::beginTransaction();
+
+    try {
+        $subquery = "
+            SELECT MIN(id) as id 
+            FROM essentials_employees_contracts 
+            GROUP BY 
+                contract_number, employee_id, is_active, contract_start_date, contract_end_date,
+                contract_duration, contract_per_period, probation_period, file_path, wish_file,
+                is_renewable, contract_type_id
+        ";
+
+        $duplicateIds = DB::table(DB::raw("($subquery) as sub"))
+            ->select('id')
+            ->pluck('id')
+            ->toArray();
+
+        $deletedRows = DB::table('essentials_employees_contracts')
+            ->whereNotIn('id', $duplicateIds)
+            ->delete();
+
+        DB::commit();
+
+        return response()->json(['success' => true, 'message' => "$deletedRows duplicate rows deleted."]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['success' => false, 'message' => $e->getMessage()]);
+    }
 });
 
 Route::get('/clear_cache', function () {

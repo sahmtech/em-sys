@@ -52,11 +52,21 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
-                            {!! Form::text('doc_filter_date_range', null, [
-                                'placeholder' => __('lang_v1.select_a_date_range'),
-                                'class' => 'form-control ',
-                                'readonly',
+                            {!! Form::label('start_date_filter', __('essentials::lang.expiration_date_from') . ':') !!}
+                            {!! Form::date('start_date_filter', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.select_start_date'),
+                                'id' => 'start_date_filter',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('end_date_filter', __('essentials::lang.expiration_date_to') . ':') !!}
+                            {!! Form::date('end_date_filter', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('lang_v1.select_end_date'),
+                                'id' => 'end_date_filter',
                             ]) !!}
                         </div>
                     </div>
@@ -170,7 +180,7 @@
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
                 serverSide: true,
-                
+
                 ajax: {
 
                     url: "{{ route('get-essentials-workers') }}",
@@ -186,19 +196,16 @@
                         if ($('#status_fillter').val()) {
                             d.status_fillter = $('#status_fillter').val();
                         }
-                        if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
-                            d.start_date = start;
-                            d.end_date = end;
+                        if ($('#start_date_filter').val()) {
+                            d.start_date = $('#start_date_filter').val();
+                        }
+                        if ($('#end_date_filter').val()) {
+                            d.end_date = $('#end_date_filter').val();
                         }
                     }
                 },
 
-                columns: [
-                    {
+                columns: [{
                         "data": "worker_id"
                     },
                     {
@@ -218,7 +225,7 @@
                         "data": "emp_number"
                     },
 
-                     {
+                    {
                         data: 'worker',
                         render: function(data, type, row) {
                             @can('essentials.show_essentials_worker')
@@ -368,18 +375,9 @@
                 ]
             });
 
-            $('#doc_filter_date_range').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
-                        moment_date_format));
-                }
-            );
-            $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
-                $('#doc_filter_date_range').val('');
-                reloadDataTable();
-            });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter').on('change',
+
+            $('#project_name_filter,#end_date_filter,#start_date_filter,#nationality_filter,#status_fillter').on(
+                'change',
                 function() {
                     workers_table.ajax.reload();
                 });

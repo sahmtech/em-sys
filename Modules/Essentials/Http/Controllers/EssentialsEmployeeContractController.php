@@ -80,7 +80,10 @@ class EssentialsEmployeeContractController extends Controller
                 'essentials_employees_contracts.contract_type_id',
                 'essentials_employees_contracts.is_renewable',
                 'essentials_employees_contracts.is_active',
+                'u.emp_number',
                 'essentials_employees_contracts.file_path',
+                // 'essentials_employees_contracts.cancle_contract_under_trial',
+
                 DB::raw("
                 CASE 
                     WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
@@ -128,9 +131,6 @@ class EssentialsEmployeeContractController extends Controller
 
 
 
-
-
-
         $contract_types = EssentialsContractType::pluck('type', 'id')->all();
         if (request()->ajax()) {
 
@@ -164,7 +164,14 @@ class EssentialsEmployeeContractController extends Controller
                         if ($is_admin || $can_delete_employee_contracts) {
                             $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
+                        $current_date = \Carbon\Carbon::now();
+                        $contract_start_date = \Carbon\Carbon::parse($row->contract_start_date);
+                        $probation_end_date = $contract_start_date->addDays($row->probation_period);
 
+                        if ($current_date->lessThan($probation_end_date) && $row->is_active == 1) {
+
+                            $html .= ' &nbsp; <button class="btn btn-xs btn-warning cancel-contract-button" data-id="' . $row->id . '"><i class="glyphicon glyphicon-ban-circle"></i> ' . __('essentials::lang.cancel_contract') . '</button>';
+                        }
 
 
 
@@ -230,6 +237,7 @@ class EssentialsEmployeeContractController extends Controller
 
     public function edit($id)
     {
+
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
@@ -249,6 +257,8 @@ class EssentialsEmployeeContractController extends Controller
                 'essentials_employees_contracts.is_renewable',
                 'essentials_employees_contracts.is_active',
                 'essentials_employees_contracts.file_path',
+                // 'essentials_employees_contracts.cancle_contract_under_trial',
+
                 DB::raw("
                  CASE 
                 WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
@@ -262,7 +272,7 @@ class EssentialsEmployeeContractController extends Controller
 
 
 
-
+        //   error_log($employees_contract->cancle_contract_under_trial);
         return response()->json(['employees_contract' => $employees_contract]);
     }
 
@@ -282,6 +292,7 @@ class EssentialsEmployeeContractController extends Controller
             $input2['probation_period'] = $request->probation_period;
             $input2['is_renewable'] = $request->is_renewable;
             $input2['contract_type_id'] = $request->contract_type_id;
+            // $input2['cancle_contract_under_trial'] = $request->cancle_contract_under_trial;
 
             EssentialsEmployeesContract::where('id', $contract_id)->update($input2);
             $output = [
@@ -319,19 +330,16 @@ class EssentialsEmployeeContractController extends Controller
                 'probation_period',
                 'status',
                 'is_renewable',
-                'file'
+                'file',
+                // 'cancle_contract_under_trial'
             ]);
 
 
             $input2['employee_id'] = $input['employee'];
-
-
+            // $input2['cancle_contract_under_trial'] = $input['cancle_contract_under_trial'];
 
             $input2['contract_start_date'] = $input['contract_start_date'];
-
-
             $input2['contract_end_date'] = $input['contract_end_date'];
-
             $start_date = Carbon::parse($input['contract_start_date']);
             $end_date = Carbon::parse($input['contract_end_date']);
 
@@ -395,6 +403,31 @@ class EssentialsEmployeeContractController extends Controller
         // return  $output ;
         return redirect()->back()->with(compact('users'));
     }
+    public function cancelContract(Request $request)
+    {
+
+        $contract_id = $request->input('contract_id');
+        $cancle_contract_under_trial = $request->input('cancle_contract_under_trial');
+
+        $contract = EssentialsEmployeesContract::find($contract_id);
+        if ($contract) {
+            $contract->is_active = 0;
+            $contract->contract_end_date = \Carbon\Carbon::now();
+            $contract->cancle_contract_under_trial = $cancle_contract_under_trial;
+            $contract->save();
+            $output = [
+                'success' => 1,
+                'msg' => __('essentials::lang.contract_canceled_successfully'),
+            ];
+        } else {
+            $output = [
+                'success' => 0,
+                'msg' => __('essentials::lang.contract_cancel_failed'),
+            ];
+        }
+        return $output;
+    }
+
 
 
     public function destroy($id)

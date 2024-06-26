@@ -95,6 +95,7 @@
                         <table class="table table-bordered table-striped" id="employees_contracts_table">
                             <thead>
                                 <tr>
+                                    <th>@lang('essentials::lang.employee_number')</th>
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('essentials::lang.contract_number')</th>
@@ -103,6 +104,8 @@
                                     <th>@lang('essentials::lang.contract_duration')</th>
                                     <th>@lang('essentials::lang.probation_period')</th>
                                     <th>@lang('essentials::lang.contract_type')</th>
+                                    {{-- <th>@lang('essentials::lang.cancle_contract_under_trial')</th> --}}
+
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('essentials::lang.is_renewable')</th>
 
@@ -152,7 +155,7 @@
                                         ],
                                     ) !!}
                                 </div>
-                                <div class="form-group col-md-8">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
                                     <div class="form-group">
                                         <div class="multi-input">
@@ -196,7 +199,20 @@
                                         'required',
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-7">
+                                {{-- <div class="form-group col-md-6">
+                                    {!! Form::label('cancle_contract_under_trial', __('essentials::lang.cancle_contract_under_trial') . ':*') !!}
+                                    {!! Form::select(
+                                        'cancle_contract_under_trial',
+                                        [
+                                            'employee' => __('essentials::lang.by_employee'),
+                                            'work_owner' => __('essentials::lang.by_work_owner'),
+                                            'both' => __('essentials::lang.by_both_parties'),
+                                        ],
+                                        null,
+                                        ['class' => 'form-control pull-left', 'style' => 'height:40px; width:100%'],
+                                    ) !!}
+                                </div> --}}
+                                <div class="form-group col-md-6">
                                     {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
                                     {!! Form::select(
                                         'is_renewable',
@@ -206,7 +222,7 @@
                                     ) !!}
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':*') !!}
                                     {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, [
                                         'class' => 'form-control  pull-left ',
@@ -277,6 +293,8 @@
                         </div>
 
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-primary"
+                                id="printDocButton">@lang('messages.print')</button>
                             <button type="submit" class="btn btn-primary saveFile" disabled>@lang('messages.save')</button>
                             <button type="button" class="btn btn-default"
                                 data-dismiss="modal">@lang('messages.close')</button>
@@ -285,9 +303,50 @@
                     </div>
                 </div>
             </div>
+
+
+
+
         </div>
     </section>
     @include('essentials::employee_affairs.employees_contracts.edit')
+    <!-- Cancel Contract Modal -->
+    <div class="modal fade" id="cancelContractModal" tabindex="-1" role="dialog"
+        aria-labelledby="cancelContractModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                {!! Form::open(['route' => 'cancelEmployeeContract', 'method' => 'POST']) !!}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">@lang('essentials::lang.cancel_contract')</h4>
+                </div>
+                <div class="modal-body">
+                    {!! Form::hidden('contract_id', null, ['id' => 'cancel_contract_id']) !!}
+                    <div class="form-group">
+                        {!! Form::label('cancle_contract_under_trial', __('essentials::lang.cancle_contract_under_trial') . ':*') !!}
+                        {!! Form::select(
+                            'cancle_contract_under_trial',
+                            [
+                                'employee' => __('essentials::lang.by_employee'),
+                                'work_owner' => __('essentials::lang.by_work_owner'),
+                                'both' => __('essentials::lang.by_both_parties'),
+                            ],
+                            null,
+                            ['class' => 'form-control', 'required', 'style' => 'height:40px; width:100%'],
+                        ) !!}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
+
+
 @endsection
 @section('javascript')
 
@@ -441,7 +500,13 @@
                             .val() != 'all') {
                             d.contract_file_exists_filter = $('#contract_file_exists_filter').val();
                         }
-                        console.log($('#doc_filter_date_range').val());
+                        if ($('#start_date_filter').val()) {
+                            d.start_date = $('#start_date_filter').val();
+                        }
+                        if ($('#end_date_filter').val()) {
+                            d.end_date = $('#end_date_filter').val();
+                        }
+
 
                         // if ($('#doc_filter_date_range').val()) {
                         //     var start = $('#doc_filter_date_range').data('daterangepicker').startDate
@@ -456,6 +521,10 @@
                 },
 
                 columns: [{
+                        data: 'emp_number'
+                    },
+
+                    {
                         data: 'user'
                     },
                     {
@@ -494,7 +563,20 @@
                     {
                         data: 'contract_type_id'
                     },
-
+                    // {
+                    //     data: 'cancle_contract_under_trial',
+                    //     render: function(data, type, row) {
+                    //         if (data === 'employee') {
+                    //             return '@lang('essentials::lang.by_employee')';
+                    //         } else if (data === 'both') {
+                    //             return '@lang('essentials::lang.by_both_parties')';;
+                    //         } else if (data === 'work_owner') {
+                    //             return '@lang('essentials::lang.by_work_owner')';;
+                    //         } else {
+                    //             return " ";
+                    //         }
+                    //     }
+                    // },
                     {
                         data: 'is_active',
                         render: function(data, type, row) {
@@ -542,7 +624,6 @@
                     $('#iframeDocViewer').attr('src', fileUrl);
 
                     if (userPermissions.isAdmin || userPermissions.canEdit) {
-
                         $('#file_input_row').show();
                     } else {
                         $('#file_input_row').hide();
@@ -556,13 +637,22 @@
                         $('#file_input_row').hide();
                     }
                     $('#iframeDocViewer').hide();
-
                 }
-
 
                 // Open the modal
                 $('#addDocFileModal').modal('show');
             });
+
+            $(document).on('click', '#printDocButton', function() {
+                var iframe = document.getElementById('iframeDocViewer');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } else {
+                    alert('No document to print');
+                }
+            });
+
             $('#addDocFileModal').on('hidden.bs.modal', function() {
                 $('#iframeDocViewer').attr('src', '');
             });
@@ -659,6 +749,11 @@
                             .val(
                                 employees_contract
                                 .contract_type_id);
+                        // $('#editEmployeesContractModal').find(
+                        //         '[name="cancle_contract_under_trial"]')
+                        //     .val(
+                        //         employees_contract
+                        //         .cancle_contract_under_trial);
                         $('#editEmployeesContractModal').find('[name="contract_number"]')
                             .val(
                                 employees_contract
@@ -707,13 +802,14 @@
             });
 
 
-            $('#contract_type_filter, #contract_file_exists_filter, #status_filter ,#doc_filter_date_range').on(
-                'change',
-                function() {
-                    console.log($('#contract_type_filter').val());
-                    console.log($('#status_filter').val());
-                    reloadDataTable();
-                });
+            $('#contract_type_filter, #contract_file_exists_filter, #status_filter ,#end_date_filter,#start_date_filter')
+                .on(
+                    'change',
+                    function() {
+                        console.log($('#contract_type_filter').val());
+                        console.log($('#status_filter').val());
+                        reloadDataTable();
+                    });
             $(document).on('click', 'button.delete_employeeContract_button', function() {
                 swal({
                     title: LANG.sure,
@@ -742,6 +838,39 @@
             });
 
 
+        });
+
+        $(document).on('click', '.cancel-contract-button', function(e) {
+            e.preventDefault();
+            var contractId = $(this).data('id');
+            $('#cancel_contract_id').val(contractId);
+            $('#cancelContractModal').modal('show');
+        });
+
+        $(document).on('submit', '#cancelContractModal form', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr('action');
+            var data = form.serialize();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(result) {
+                    if (result.success == true) {
+                        $('#cancelContractModal').modal('hide');
+                        toastr.success(result.msg);
+                        employees_contracts_table.ajax.reload();
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+
+                error: function(xhr, status, error) {
+                    toastr.error('An error occurred while canceling the contract.');
+                }
+            });
         });
     </script>
 @endsection

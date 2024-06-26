@@ -331,6 +331,7 @@
                             <th>@lang('request.status')</th>
                             <th>@lang('request.note')</th>
                             <th>@lang('request.action')</th>
+                            <th></th>
 
 
                         </tr>
@@ -368,6 +369,9 @@
                 </div>
             </div>
         </div>
+
+
+        {{-- view request  --}}
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">

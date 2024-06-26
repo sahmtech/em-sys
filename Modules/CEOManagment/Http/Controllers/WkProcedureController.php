@@ -45,7 +45,8 @@ class WkProcedureController extends Controller
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
-                    ->orWhere('name', 'like', '%عام%');
+                    ->orWhere('name', 'like', '%عام%')
+                    ->orWhere('name', 'like', '%تنفيذ%');
             })
             ->pluck('name', 'id')->toArray();
         $requestsType = RequestsType::where('for', 'employee')->pluck('type', 'id');

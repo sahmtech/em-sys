@@ -234,6 +234,12 @@
                         if ($('#select_company_id').val()) {
                             d.company = $('#select_company_id').val();
                         }
+                        if ($('#start_date_filter').val()) {
+                            d.start_date = $('#start_date_filter').val();
+                        }
+                        if ($('#end_date_filter').val()) {
+                            d.end_date = $('#end_date_filter').val();
+                        }
                         // if ($('#doc_filter_date_range').val()) {
                         //     var start = $('#doc_filter_date_range').data('daterangepicker').startDate
                         //         .format('YYYY-MM-DD');
@@ -411,18 +417,8 @@
                 ]
             });
 
-            $('#doc_filter_date_range').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
-                        moment_date_format));
-                }
-            );
-            $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
-                $('#doc_filter_date_range').val('');
-                reloadDataTable();
-            });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter,#select_company_id')
+
+            $('#project_name_filter,#end_date_filter,#start_date_filter,#nationality_filter,#status_fillter,#select_company_id')
                 .on('change',
                     function() {
                         workers_table.ajax.reload();

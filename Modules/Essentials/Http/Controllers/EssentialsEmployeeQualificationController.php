@@ -117,7 +117,8 @@ class EssentialsEmployeeQualificationController extends Controller
                     function ($row) use ($is_admin, $can_edit_employee_qualifications, $can_delete_employee_qualifications) {
                         $html = '';
                         if ($is_admin || $can_edit_employee_qualifications) {
-                            $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+
+                            $html .= '&nbsp;  <button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '" data-url="' . route('qualification.edit', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                         }
                         if ($is_admin || $can_delete_employee_qualifications) {
                             $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_qualification_button" data-href="' . route('qualification.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
@@ -262,34 +263,13 @@ class EssentialsEmployeeQualificationController extends Controller
         return view('essentials::show');
     }
 
-    public function edit(Request $request, $id)
+    public function edit($id)
     {
-        $business_id = $request->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         try {
 
             $qualification = EssentialsEmployeesQualification::findOrFail($id);
-
-            $output = [
-                'success' => true,
-                'data' => [
-                    'employee' => $qualification->employee_id,
-                    'qualification_type' => $qualification->qualification_type,
-                    'general_specialization' => $qualification->specialization,
-                    'sub_specialization' => $qualification->sub_specialization,
-                    'graduation_year' => $qualification->graduation_year,
-                    'graduation_institution' => $qualification->graduation_institution,
-                    'graduation_country' => $qualification->graduation_country,
-                    'degree' => $qualification->degree,
-                    'marksName' => $qualification->marksName,
-                    'great_degree' => $qualification->great_degree,
-
-                ],
-
-                'msg' => __('lang_v1.fetched_success'),
-            ];
+            return response()->json(['qualification' => $qualification]);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
@@ -297,29 +277,26 @@ class EssentialsEmployeeQualificationController extends Controller
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
+            return $output;
         }
-
-        return response()->json($output);
     }
 
 
-    public function updateQualification(Request $request, $qualificationId)
+    public function updateQualification(Request $request)
     {
-
-        $business_id = $request->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
 
         try {
 
-            $qualification = EssentialsEmployeesQualification::find($qualificationId);
+            $qualification = EssentialsEmployeesQualification::find($request->id);
             //    dd( $qualification );
             if ($qualification) {
                 $qualification->update([
                     'employee_id' => $request->input('employee'),
                     'qualification_type' => $request->input('qualification_type'),
                     'major' => $request->input('major'),
+                    'specialization' => $request->input('general_specialization'),
+                    'sub_specialization' => $request->input('sub_specialization'),
                     'graduation_year' => $request->input('graduation_year'),
                     'graduation_institution' => $request->input('graduation_institution'),
                     'graduation_country' => $request->input('graduation_country'),
@@ -350,7 +327,7 @@ class EssentialsEmployeeQualificationController extends Controller
             ];
         }
 
-        return response()->json($output);
+        return redirect()->back()->with('status', $output);
     }
 
 
