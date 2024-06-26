@@ -496,6 +496,66 @@ Route::get('/updateContractPerPeriod', function () {
 
     return 'success';
 });
+
+Route::get('/removeDuplicateDocuments', function () {
+    DB::beginTransaction();
+
+    try {
+        $subquery = "
+            SELECT MIN(id) as id 
+            FROM essentials_official_documents 
+            GROUP BY type, number, issue_date, issue_place, expiration_date, is_active,file_path, employee_id
+        ";
+
+        $duplicateIds = DB::table(DB::raw("($subquery) as sub"))
+            ->select('id')
+            ->pluck('id')
+            ->toArray();
+
+        $deletedRows = DB::table('essentials_official_documents')
+            ->whereNotIn('id', $duplicateIds)
+            ->delete();
+
+        DB::commit();
+
+        return response()->json(['success' => true, 'message' => "$deletedRows duplicate rows deleted."]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['success' => false, 'message' => $e->getMessage()]);
+    }
+});
+Route::get('/removeDuplicateContracts', function () {
+
+    DB::beginTransaction();
+
+    try {
+        $subquery = "
+            SELECT MIN(id) as id 
+            FROM essentials_employees_contracts 
+            GROUP BY 
+                contract_number, employee_id, is_active, contract_start_date, contract_end_date,
+                contract_duration, contract_per_period, probation_period, file_path, wish_file,
+                is_renewable, contract_type_id
+        ";
+
+        $duplicateIds = DB::table(DB::raw("($subquery) as sub"))
+            ->select('id')
+            ->pluck('id')
+            ->toArray();
+
+        $deletedRows = DB::table('essentials_employees_contracts')
+            ->whereNotIn('id', $duplicateIds)
+            ->delete();
+
+        DB::commit();
+
+        return response()->json(['success' => true, 'message' => "$deletedRows duplicate rows deleted."]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['success' => false, 'message' => $e->getMessage()]);
+    }
+});
+
 Route::get('/clear_cache', function () {
     try {
         // Call the artisan command
