@@ -17,7 +17,7 @@ class DataController extends Controller
         return [
 
             [
-                'group_name' => __('ceomanagment::lang.operationsmanagmentgovernment'),
+                'group_name' => __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'),
                 'group_permissions' => [
                     [
                         'value' => 'operationsmanagmentgovernment.OperationsManagmentGovernment_dashboard',

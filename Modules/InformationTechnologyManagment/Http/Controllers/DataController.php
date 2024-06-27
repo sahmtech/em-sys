@@ -17,7 +17,7 @@ class DataController extends Controller
         return [
 
             [
-                'group_name' => __('ceomanagment::lang.informationtechnologymanagment'),
+                'group_name' => __('informationtechnologymanagment::lang.informationtechnologymanagment'),
                 'group_permissions' => [
                     [
                         'value' => 'informationtechnologymanagment.InformationTechnology_dashboard',
