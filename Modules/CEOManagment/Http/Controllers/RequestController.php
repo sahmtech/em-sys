@@ -44,11 +44,7 @@ class RequestController extends Controller
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
 
             ->where(function ($query) {
-                $query->where('name', 'LIKE', '%تنفيذ%')
-                    ->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%حكومي%');
-                    });
+                $query->where('name', 'LIKE', '%تنفيذ%');
             })
             ->pluck('id')->toArray();
 

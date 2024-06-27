@@ -285,7 +285,7 @@
     @endif
     <section class="content">
 
-        {{-- @include('sales::layouts.nav_requests') --}}
+
         @component('components.filters', ['title' => __('request.filters')])
             <div class="col-md-3">
                 <div class="form-group">
@@ -321,7 +321,7 @@
             </div>
         @endcomponent
         @component('components.widget', ['class' => 'box-primary'])
-            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('legalaffairs.add_request'))
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('operationsmanagmentgovernment.add_request'))
                 @slot('tool')
                     <div class="box-tools">
                         <button type="button" class="btn btn-block btn-primary btn-modal" data-toggle="modal"
@@ -359,7 +359,7 @@
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'storeLegalRequest', 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'storeOperationsManagmentGovernmentRequest', 'enctype' => 'multipart/form-data']) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -1248,7 +1248,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('legalrequests') }}",
+                    url: "{{ route('operationsmanagmentgovernment.view_requests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();

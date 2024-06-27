@@ -105,6 +105,8 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
+        } elseif (Str::startsWith($currentPath, 'operationsmanagmentgovernment')) {
+            $this->OperationsManagmentGovernmentMenu();
         } elseif (Str::startsWith($currentPath, 'generalmanagmentoffice')) {
             $this->generalmanagmentofficeMenu();
         } elseif (Str::startsWith($currentPath, ['ceomanagment',])) {
@@ -443,6 +445,33 @@ class CustomAdminSidebarMenu
             }
         });
     }
+    public function OperationsManagmentGovernmentMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(
+                action([\Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index']),
+                '<i class="fas fa-cogs"></i> ' . __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'),
+                [
+                    'active' => request()->segment(1) == 'operationsmanagmentgovernment' && request()->segment(2) == 'dashboard',
+
+                ],
+            );
+
+            if ($is_admin  || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index']),
+                    __('operationsmanagmentgovernment::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests')]
+                );
+            }
+        });
+    }
+
     public function agnetMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {

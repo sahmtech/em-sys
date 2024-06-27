@@ -461,7 +461,6 @@ class RequestUtil extends Util
             foreach ($request->user_id as $userId) {
                 $count_of_users = count($request->user_id);
                 if ($userId === null) continue;
-
                 $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
                 if ($isExists && count($request->user_id) == 1) {
                     $output = [
@@ -614,6 +613,7 @@ class RequestUtil extends Util
 
 
                             if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
+
                                 $nextProcedure = WkProcedure::where('business_id', $business_id)->where('request_type_id', $request->type)
                                     ->where('department_id', $procedure->next_department_id)->first();
 
@@ -635,6 +635,7 @@ class RequestUtil extends Util
                                     }
                                 }
                             } else {
+
 
 
                                 $process = RequestProcess::create([
