@@ -133,13 +133,13 @@ class EssentialsDepartmentsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_add_depatments = auth()->user()->can('ceomanagment.add_departments');
-        $can_delete_depatments = auth()->user()->can('ceomanagment.delete_depatments');
-        $can_edit_depatments = auth()->user()->can('ceomanagment.edit_depatments');
-        $can_show_depatments = auth()->user()->can('ceomanagment.show_depatments');
-        $can_add_manager = auth()->user()->can('ceomanagment.add_manager');
-        $can_add_deputy = auth()->user()->can('ceomanagment.add_deputy');
-        $can_delegatingManager_name = auth()->user()->can('ceomanagment.delegatingManager_name');
+        $can_add_depatments = auth()->user()->can('generalmanagement.add_departments');
+        $can_delete_depatments = auth()->user()->can('generalmanagement.delete_depatments');
+        $can_edit_depatments = auth()->user()->can('generalmanagement.edit_depatments');
+        $can_show_depatments = auth()->user()->can('generalmanagement.show_depatments');
+        $can_add_manager = auth()->user()->can('generalmanagement.add_manager');
+        $can_add_deputy = auth()->user()->can('generalmanagement.add_deputy');
+        $can_delegatingManager_name = auth()->user()->can('generalmanagement.delegatingManager_name');
 
 
 

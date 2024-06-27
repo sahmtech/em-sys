@@ -1,0 +1,11 @@
+{
+    "name": "OperationsManagmentGovernment",
+    "alias": "operationsmanagmentgovernment",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\OperationsManagmentGovernment\\Providers\\OperationsManagmentGovernmentServiceProvider"
+    ],
+    "files": []
+}

@@ -35,8 +35,8 @@ class WkProcedureController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_delete_procedures = auth()->user()->can('ceomanagment.delete_procedure');
-        $can_edit_procedures = auth()->user()->can('ceomanagment.edit_procedure');
+        $can_delete_procedures = auth()->user()->can('generalmanagement.delete_procedure');
+        $can_edit_procedures = auth()->user()->can('generalmanagement.edit_procedure');
 
 
         $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
@@ -122,8 +122,8 @@ class WkProcedureController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_delete_procedures = auth()->user()->can('ceomanagment.delete_procedure');
-        $can_edit_procedures = auth()->user()->can('ceomanagment.edit_procedure');
+        $can_delete_procedures = auth()->user()->can('generalmanagement.delete_procedure');
+        $can_edit_procedures = auth()->user()->can('generalmanagement.edit_procedure');
 
 
         $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');

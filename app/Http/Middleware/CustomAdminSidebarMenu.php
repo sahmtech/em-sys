@@ -105,6 +105,8 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
+        } elseif (Str::startsWith($currentPath, 'operationsmanagmentgovernment')) {
+            $this->OperationsManagmentGovernmentMenu();
         } elseif (Str::startsWith($currentPath, 'generalmanagmentoffice')) {
             $this->generalmanagmentofficeMenu();
         } elseif (Str::startsWith($currentPath, ['ceomanagment',])) {
@@ -293,7 +295,7 @@ class CustomAdminSidebarMenu
                 ],
             );
 
-            if ($is_admin  || auth()->user()->can('ceomanagment.curd_organizational_structure')) {
+            if ($is_admin  || auth()->user()->can('generalmanagement.curd_organizational_structure')) {
                 $menu->url(
 
                     action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
@@ -301,7 +303,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && request()->segment(2) == 'departments'],
                 );
             }
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_requests_types')) {
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_requests_types')) {
                 $menu->url(
                     action([\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index']),
                     __('ceomanagment::lang.requests_types'),
@@ -309,10 +311,10 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee') || auth()->user()->can('ceomanagment.view_procedures_for_workers')) {
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_procedures_for_employee') || auth()->user()->can('generalmanagement.view_procedures_for_workers')) {
 
                 $menu->url(
-                    ($is_admin  || auth()->user()->can('ceomanagment.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
+                    ($is_admin  || auth()->user()->can('generalmanagement.view_procedures_for_employee')) ? action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures']) : action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures']),
                     __('ceomanagment::lang.procedures'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && (request()->segment(2) == 'employeesProcedures' || request()->segment(2) == 'workersProcedures')],
                 );
@@ -443,6 +445,33 @@ class CustomAdminSidebarMenu
             }
         });
     }
+    public function OperationsManagmentGovernmentMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(
+                action([\Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index']),
+                '<i class="fas fa-cogs"></i> ' . __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'),
+                [
+                    'active' => request()->segment(1) == 'operationsmanagmentgovernment' && request()->segment(2) == 'dashboard',
+
+                ],
+            );
+
+            if ($is_admin  || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index']),
+                    __('operationsmanagmentgovernment::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests')]
+                );
+            }
+        });
+    }
+
     public function agnetMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {

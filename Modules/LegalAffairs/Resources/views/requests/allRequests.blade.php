@@ -340,7 +340,7 @@
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.eqama_number')</th>
-                            <th>@lang('request.project_name')</th>
+
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
                             <th>@lang('request.created_by')</th>
@@ -1558,8 +1558,8 @@
                                   </li>
                               `);
                             });
-   // Populate request info list
-   var requestInfo = response.request_info;
+                            // Populate request info list
+                            var requestInfo = response.request_info;
                             var requestInfoData = [{
                                     label: '{{ __('request.type') }}',
                                     value: requestInfo.type

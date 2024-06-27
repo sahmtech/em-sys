@@ -36,7 +36,7 @@ class RequestController extends Controller
         if (empty($departmentIds)) {
             $output = [
                 'success' => false,
-                'msg' => __('legalaffairs::lang.there_is_no_payroll_dep'),
+                'msg' => __('legalaffairs::lang.there_is_no_legalaffairs_dep'),
             ];
             return redirect()->back()->with('status', $output);
         }

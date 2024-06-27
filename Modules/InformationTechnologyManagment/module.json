@@ -1,0 +1,11 @@
+{
+    "name": "InformationTechnologyManagment",
+    "alias": "informationtechnologymanagment",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\InformationTechnologyManagment\\Providers\\InformationTechnologyManagmentServiceProvider"
+    ],
+    "files": []
+}

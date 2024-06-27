@@ -24,8 +24,8 @@ class RequestTypeController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_edit_requests_type = auth()->user()->can('ceomanagment.edit_requests_type');
-        $can_delete_requests_type = auth()->user()->can('ceomanagment.delete_requests_type');
+        $can_edit_requests_type = auth()->user()->can('generalmanagement.edit_requests_type');
+        $can_delete_requests_type = auth()->user()->can('generalmanagement.delete_requests_type');
 
         $allRequestsTypes = [
             'exitRequest',
