@@ -21,47 +21,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    [
-                        'value' => 'ceomanagment.curd_organizational_structure',
-                        'label' => __('ceomanagment::lang.organizational_structure'),
-                        'default' => false,
-                    ],
 
-                    [
-                        'value' => 'ceomanagment.delegatingManager_name',
-                        'label' => __('ceomanagment::lang.delegatingManager_name'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.add_manager',
-                        'label' => __('ceomanagment::lang.add_manager'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.add_deputy',
-                        'label' => __('ceomanagment::lang.add_deputy'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.show_depatments',
-                        'label' => __('ceomanagment::lang.show_depatments'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.edit_depatments',
-                        'label' => __('ceomanagment::lang.edit_depatments'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.delete_depatments',
-                        'label' => __('ceomanagment::lang.delete_depatments'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.add_departments',
-                        'label' => __('ceomanagment::lang.add_departments'),
-                        'default' => false,
-                    ],
                     [
                         'value' => 'ceomanagment.view_CEO_requests',
                         'label' => __('ceomanagment::lang.view_CEO_requests'),
@@ -88,55 +48,7 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.view_request'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'ceomanagment.delete_procedure',
-                        'label' => __('ceomanagment::lang.delete_procedure'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.edit_procedure',
-                        'label' => __('ceomanagment::lang.edit_procedure'),
-                        'default' => false,
-                    ],
 
-
-
-                    [
-                        'value' => 'ceomanagment.view_requests_types',
-                        'label' => __('ceomanagment::lang.view_requests_types'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.add_requests_type',
-                        'label' => __('ceomanagment::lang.add_requests_type'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.edit_requests_type',
-                        'label' => __('ceomanagment::lang.edit_requests_type'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.delete_requests_type',
-                        'label' => __('ceomanagment::lang.delete_requests_type'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.delete_request_type_tasks',
-                        'label' => __('ceomanagment::lang.delete_request_type_tasks'),
-                        'default' => false,
-                    ],
-
-                    [
-                        'value' => 'ceomanagment.view_procedures_for_employee',
-                        'label' => __('ceomanagment::lang.view_procedures_for_employee'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'ceomanagment.view_procedures_for_workers',
-                        'label' => __('ceomanagment::lang.view_procedures_for_workers'),
-                        'default' => false,
-                    ],
                 ]
             ]
         ];
