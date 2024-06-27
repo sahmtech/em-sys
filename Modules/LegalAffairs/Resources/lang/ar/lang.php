@@ -11,7 +11,7 @@ return [
     'show_request' => 'عرض الطلب',
     'return_request' => 'إرجاع الطلب',
     'change_request_status' => 'تغيير حالة الطلب',
-    '' => '',
+    'view_legalaffairs_requests' => 'عرض طلبات إدارة الشؤون القانونية',
 
     // ''=>'',
 ];

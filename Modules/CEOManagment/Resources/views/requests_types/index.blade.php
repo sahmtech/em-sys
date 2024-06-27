@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('ceomanagment.add_requests_type'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('generalmanagement.add_requests_type'))
                         @slot('tool')
                             <div class="box-tools">
 
