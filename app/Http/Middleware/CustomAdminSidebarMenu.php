@@ -29,6 +29,7 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
         $currentPath = $request->path();
+
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles', 'get-all-users'])) {
             $this->userManagementMenu();
@@ -103,10 +104,13 @@ class CustomAdminSidebarMenu
         //  elseif (Str::startsWith($currentPath, 'crm')) {
         //     $this->crmMenu();
         // } 
+
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
         } elseif (Str::startsWith($currentPath, 'operationsmanagmentgovernment')) {
             $this->OperationsManagmentGovernmentMenu();
+        } elseif (Str::startsWith($currentPath, 'informationtechnologymanagment')) {
+            $this->InformationTechnologyManagmentMenu();
         } elseif (Str::startsWith($currentPath, 'generalmanagmentoffice')) {
             $this->generalmanagmentofficeMenu();
         } elseif (Str::startsWith($currentPath, ['ceomanagment',])) {
@@ -421,6 +425,7 @@ class CustomAdminSidebarMenu
     }
     public function ceoMenu()
     {
+
         Menu::create('admin-sidebar-menu', function ($menu) {
 
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -471,7 +476,24 @@ class CustomAdminSidebarMenu
             }
         });
     }
+    public function InformationTechnologyManagmentMenu()
+    {
+        error_log('11111111111111111');
+        Menu::create('admin-sidebar-menu', function ($menu) {
 
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(
+                action([\Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index']),
+                '<i class="fas fa-cogs"></i> ' . __('informationtechnologymanagment::lang.informationtechnologymanagment'),
+                [
+                    'active' => request()->segment(1) == 'informationtechnologymanagment' && request()->segment(2) == 'dashboard',
+
+                ],
+            );
+        });
+    }
     public function agnetMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
