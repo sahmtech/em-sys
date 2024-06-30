@@ -236,7 +236,7 @@ class EssentialsDepartmentsController extends Controller
                 ->rawColumns(['action', 'manager_name', 'delegatingManager_name', 'manager_deputy'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'manager');
+        $query = User::where('business_id', $business_id)->whereIn('users.user_type', ['manager', 'department_head']);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as 
      full_name"))->get();
@@ -507,7 +507,7 @@ class EssentialsDepartmentsController extends Controller
             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'appoint')
-            ->where('users.user_type', 'manager')
+            ->whereIn('users.user_type', ['manager', 'department_head'])
             ->where('essentials_employee_appointmets.is_active', 1)
             ->select(
                 'users.id as id',
@@ -521,7 +521,7 @@ class EssentialsDepartmentsController extends Controller
             ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'delegating')
-            ->where('users.user_type', 'manager')
+            ->whereIn('users.user_type', ['manager', 'department_head'])
             ->where('essentials_employee_appointmets.is_active', 1)
             ->select(
                 'users.id as id',
@@ -578,7 +578,7 @@ class EssentialsDepartmentsController extends Controller
                     ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
                     ->where('essentials_employee_appointmets.department_id', $id)
                     ->where('essentials_employee_appointmets.type', 'appoint')
-                    ->where('users.user_type', 'manager')
+                    ->whereIn('users.user_type', ['manager', 'department_head'])
                     ->where('essentials_employee_appointmets.is_active', 1)
                     ->select('essentials_employee_appointmets.id')
                     ->get();
@@ -621,7 +621,7 @@ class EssentialsDepartmentsController extends Controller
                     ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
                     ->where('essentials_employee_appointmets.department_id', $id)
                     ->where('essentials_employee_appointmets.type', 'delegating')
-                    ->where('users.user_type', 'manager')
+                    ->whereIn('users.user_type', ['manager', 'department_head'])
                     ->where('essentials_employee_appointmets.is_active', 1)
                     ->select('essentials_employee_appointmets.id')
                     ->get();
@@ -684,7 +684,7 @@ class EssentialsDepartmentsController extends Controller
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'appoint')
             ->where('essentials_employee_appointmets.is_active', 1)
-            ->where('users.user_type', 'manager')
+            ->whereIn('users.user_type', ['manager', 'department_head'])
             ->select(
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as managername"),
                 'essentials_employee_appointmets.profession_id as profession_id',
@@ -698,7 +698,7 @@ class EssentialsDepartmentsController extends Controller
             ->where('essentials_employee_appointmets.department_id', $id)
             ->where('essentials_employee_appointmets.type', 'delegating')
             ->where('essentials_employee_appointmets.is_active', 1)
-            ->where('users.user_type', 'manager')
+            ->whereIn('users.user_type', ['manager', 'department_head'])
             ->select(
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as delegatename"),
                 'essentials_employee_appointmets.profession_id as profession_id',

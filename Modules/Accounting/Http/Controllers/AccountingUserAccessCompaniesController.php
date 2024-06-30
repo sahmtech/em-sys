@@ -49,7 +49,11 @@ class AccountingUserAccessCompaniesController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%مال%')
+            ->where(function ($query) {
+                $query->where('name', 'like', '%حاسب%')
+                    ->orWhere('name', 'like', '%مالي%');
+            })
+
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {

@@ -3,13 +3,15 @@
 @section('title', __('essentials::lang.add_new_employee'))
 
 @section('content')
-<head>
-    <style>
-    #video {
-        transform: scaleX(-1); /* Flip the video horizontally */
-    }
-</style>
-</head>
+
+    <head>
+        <style>
+            #video {
+                transform: scaleX(-1);
+                /* Flip the video horizontally */
+            }
+        </style>
+    </head>
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('essentials::lang.add_new_employee')</h1>
@@ -37,7 +39,7 @@
                             {!! Form::label('mid_name', __('business.mid_name') . ':') !!}
                             {!! Form::text('mid_name', null, [
                                 'class' => 'form-control',
-                                
+                            
                                 'placeholder' => __('business.mid_name'),
                             ]) !!}
                         </div>
@@ -58,11 +60,14 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
-                            {!! Form::text('emp_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.emp_number')]) !!}
+                            {!! Form::text('emp_number', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('essentials::lang.emp_number'),
+                            ]) !!}
                         </div>
                     </div>
 
-                     <div class="col-md-4">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('user_type', __('user.user_type') . ':*') !!}
                             {!! Form::select(
@@ -70,7 +75,7 @@
                                 [
                                     'manager' => __('user.manager'),
                                     'employee' => __('user.employee'),
-                                   
+                                    'department_head' => __('user.department_head'),
                                 ],
                                 null,
                                 [
@@ -84,24 +89,28 @@
                         </div>
                     </div>
 
-             
-               <div class="col-md-4">
-                    <div class="form-group">
-                        {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
-                        {!! Form::file('profile_picture', ['class' => 'form-control', 'id' => 'fileInputWrapper', 'accept' => 'image/*']) !!}
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
+                            {!! Form::file('profile_picture', [
+                                'class' => 'form-control',
+                                'id' => 'fileInputWrapper',
+                                'accept' => 'image/*',
+                            ]) !!}
+                        </div>
+
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                        </div>
+
+                        <!-- Hidden file input to store the captured photo -->
+
                     </div>
+                    @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
 
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
-                    </div>
 
-                    <!-- Hidden file input to store the captured photo -->
-               
-                </div>
-                      @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
-                   
 
-                  
                 </div>
 
                 @include('user.edit_profile_form_part')
@@ -122,52 +131,54 @@
                     </div>
                 </div>
 
-                    <div class="modal fade" data-file-path="{{ $contract->file_path ?? '' }}" id="ContractFilePopupModal"
-                                tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
+                <div class="modal fade" data-file-path="{{ $contract->file_path ?? '' }}" id="ContractFilePopupModal"
+                    tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
 
 
-                                        <input type="hidden" name="delete_contract_file" value="0" id="delete_contract_file_input">
+                            <input type="hidden" name="delete_contract_file" value="0"
+                                id="delete_contract_file_input">
 
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                                    aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title">@lang('essentials::lang.contract_file')</h4>
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">@lang('essentials::lang.contract_file')</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="row" id="contractFilePreviewRow" style="display: none;">
+                                    <div class="form-group col-md-12">
+                                        <iframe src="" id="popupContractFilePreview"
+                                            style="width: 100%; height: 400px;" frameborder="0"></iframe>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+                                            {!! Form::file('contract_file', [
+                                                'class' => 'form-control',
+                                                'style' => 'height:40px; ',
+                                                'accept' => '.*',
+                                            ]) !!}
+
                                         </div>
-
-                                        <div class="modal-body">
-                                            <div class="row" id="contractFilePreviewRow" style="display: none;">
-                                                <div class="form-group col-md-12">
-                                                    <iframe src="" id="popupContractFilePreview" style="width: 100%; height: 400px;"
-                                                        frameborder="0"></iframe>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-9">
-                                                    <div class="form-group">
-                                                        {!! Form::file('contract_file', [
-                                                            'class' => 'form-control',
-                                                            'style' => 'height:40px; ',
-                                                            'accept' => '.*',
-                                                        ]) !!}
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <button type="button"
-                                                        class="btn btn-danger deleteContractFile">@lang('messages.delete')</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary" data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
-                                        </div>
-
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button"
+                                            class="btn btn-danger deleteContractFile">@lang('messages.delete')</button>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary"
+                                    data-dismiss="modal">@lang('essentials::lang.Tamm')</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
 
 
 
@@ -203,73 +214,72 @@
     </script>
 
     <script>
-          $(document).ready(function() {
-                let contractFileChanged = false;
+        $(document).ready(function() {
+            let contractFileChanged = false;
 
-                $('#ContractFileLink').on('click', function(e) {
-                    e.preventDefault();
-                    openContractFilePopup();
-                });
-
-                $('input[type="file"]').on('change', function(event) {
-                    previewContractFile(event);
-                    contractFileChanged = true;
-                    $('#delete_contract_file_input').val('0');
-                    enableSaveButton();
-                });
-
-
-                $('#update_contract_file_form').submit(function(e) {
-                    if (!contractFileChanged) {
-                        e.preventDefault();
-                    }
-                });
-
-                function openContractFilePopup() {
-                    const modal = $('#ContractFilePopupModal');
-                    const filePath = modal.data('file-path');
-                    const filePreviewIframe = $('#popupContractFilePreview');
-                    const filePreviewRow = $('#contractFilePreviewRow');
-
-                    if (filePath) {
-                        filePreviewIframe.attr('src', '/uploads/' + filePath);
-                        filePreviewRow.show();
-                    } else {
-                        filePreviewIframe.attr('src', '');
-                        filePreviewRow.hide();
-                    }
-
-                    modal.modal('show');
-                }
-
-
-
-                function enableSaveButton() {
-                    $('.saveFile').prop('disabled', !contractFileChanged);
-                }
-
-                function previewContractFile(event) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        var output = document.getElementById('popupContractFilePreview');
-                        output.src = e.target.result;
-                        document.getElementById('contractFilePreviewRow').style.display =
-                            '';
-                    };
-                    reader.readAsDataURL(event.target.files[0]);
-                }
-
-                $('.deleteContractFile').on('click', function() {
-                    $('#popupContractFilePreview').attr('src', '');
-                    $('input[type="file"]').val('');
-                    $('#delete_contract_file_input').val('1');
-                    ibanFileChanged = true;
-                    enableSaveButton();
-                    document.getElementById('contractFilePreviewRow').style.display =
-                        'none';
-                });
+            $('#ContractFileLink').on('click', function(e) {
+                e.preventDefault();
+                openContractFilePopup();
             });
 
+            $('input[type="file"]').on('change', function(event) {
+                previewContractFile(event);
+                contractFileChanged = true;
+                $('#delete_contract_file_input').val('0');
+                enableSaveButton();
+            });
+
+
+            $('#update_contract_file_form').submit(function(e) {
+                if (!contractFileChanged) {
+                    e.preventDefault();
+                }
+            });
+
+            function openContractFilePopup() {
+                const modal = $('#ContractFilePopupModal');
+                const filePath = modal.data('file-path');
+                const filePreviewIframe = $('#popupContractFilePreview');
+                const filePreviewRow = $('#contractFilePreviewRow');
+
+                if (filePath) {
+                    filePreviewIframe.attr('src', '/uploads/' + filePath);
+                    filePreviewRow.show();
+                } else {
+                    filePreviewIframe.attr('src', '');
+                    filePreviewRow.hide();
+                }
+
+                modal.modal('show');
+            }
+
+
+
+            function enableSaveButton() {
+                $('.saveFile').prop('disabled', !contractFileChanged);
+            }
+
+            function previewContractFile(event) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var output = document.getElementById('popupContractFilePreview');
+                    output.src = e.target.result;
+                    document.getElementById('contractFilePreviewRow').style.display =
+                        '';
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
+            $('.deleteContractFile').on('click', function() {
+                $('#popupContractFilePreview').attr('src', '');
+                $('input[type="file"]').val('');
+                $('#delete_contract_file_input').val('1');
+                ibanFileChanged = true;
+                enableSaveButton();
+                document.getElementById('contractFilePreviewRow').style.display =
+                    'none';
+            });
+        });
     </script>
 
     <script type="text/javascript">

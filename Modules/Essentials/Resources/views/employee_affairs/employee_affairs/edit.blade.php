@@ -74,6 +74,7 @@
                         [
                             'manager' => __('user.manager'),
                             'employee' => __('user.employee'),
+                            'department_head' => __('user.department_head'),
                         ],
                         $user->user_type,
                         [
