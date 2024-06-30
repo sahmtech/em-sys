@@ -533,7 +533,7 @@ Route::get('/removeDuplicateContracts', function () {
             SELECT MIN(id) as id 
             FROM essentials_employees_contracts 
             GROUP BY 
-                contract_number, employee_id, is_active, contract_start_date, contract_end_date,
+                employee_id, is_active, contract_start_date, contract_end_date,
                 contract_duration, contract_per_period, probation_period, file_path, wish_file,
                 is_renewable, contract_type_id
         ";
