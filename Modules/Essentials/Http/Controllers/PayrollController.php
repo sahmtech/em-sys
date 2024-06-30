@@ -203,6 +203,10 @@ class PayrollController extends Controller
         if (!empty(request()->input('company')) && request()->input('company') !== 'all') {
             $users =  $users->where('users.company_id', request()->input('company'));
         }
+        if (!empty(request()->input('department_id')) && request()->input('department_id') !== 'all') {
+            $users =  $users->where('users.essentials_department_id', request()->input('department_id'));
+        }
+
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
             if (request()->input('project_name') == 'none') {
                 $users = $users->whereNull('users.assigned_to');
@@ -210,6 +214,8 @@ class PayrollController extends Controller
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
         }
+
+
 
         if (request()->ajax()) {
 
@@ -310,9 +316,9 @@ class PayrollController extends Controller
                 ->rawColumns(['contact_name', 'salary_voucher', 'actions', 'worker_id', 'company_name',  'worker',  'nationality', 'residence_permit_expiration', 'residence_permit',])
                 ->make(true);
         }
-
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
         return view('essentials::payroll.list_of_employess')
-            ->with(compact('companies', 'contacts_fillter', 'user_types'));
+            ->with(compact('companies', 'contacts_fillter', 'user_types', 'departments'));
     }
 
 

@@ -1293,7 +1293,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'list_of_employess']),
                     __('essentials::lang.list_of_emp'),
-                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'payroll_list_of_emp')]
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'list_of_employess')]
                 );
             }
         });
