@@ -25,10 +25,159 @@
                 }
             }
 
-            .workflow-circle {
-                min-width: 110px;
-                height: 110px;
-                border-radius: 50%;
+            .modal-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .modal-title {
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .modal-body {
+                background-color: #ffffff;
+                color: #495057;
+            }
+
+            .request-details,
+            .activity {
+                border: 1px solid #dee2e6;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 4px;
+            }
+
+            .request-details strong,
+            .activity strong {
+                color: #007bff;
+            }
+
+            .modal-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .modal-title {
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .modal-body {
+                background-color: #ffffff;
+                color: #495057;
+            }
+
+            .card {
+                border: 1px solid #dee2e6;
+                margin-bottom: 10px;
+                border-radius: 4px;
+                width: 90%;
+
+            }
+
+            .card-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+                padding: 10px;
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .card-body {
+                padding: 10px;
+            }
+
+            .card-body p {
+                margin: 5px 0;
+            }
+
+            .arrow-down {
+                width: 0;
+                height: 0;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-top: 10px solid #dee2e6;
+                margin: 0 auto;
+            }
+
+            .modal-header .close {
+                color: #007bff;
+                opacity: 1;
+            }
+
+            .modal-header .close:hover,
+            .modal-header .close:focus {
+                color: #0056b3;
+                text-decoration: none;
+                opacity: 1;
+            }
+
+            .modal-footer .btn-secondary {
+                background-color: #007bff;
+                border-color: #007bff;
+                color: #fff;
+            }
+
+            .modal-footer .btn-secondary:hover,
+            .modal-footer .btn-secondary:focus {
+                background-color: #0056b3;
+                border-color: #0056b3;
+                color: #fff;
+            }
+
+            .modal-header .close {
+                color: #007bff;
+                opacity: 1;
+            }
+
+            .modal-header .close:hover,
+            .modal-header .close:focus {
+                color: #0056b3;
+                text-decoration: none;
+                opacity: 1;
+            }
+
+            .modal-footer .btn-secondary {
+                background-color: #007bff;
+                border-color: #007bff;
+                color: #fff;
+            }
+
+            .modal-footer .btn-secondary:hover,
+            .modal-footer .btn-secondary:focus {
+                background-color: #0056b3;
+                border-color: #0056b3;
+                color: #fff;
+            }
+
+            .card {
+                border: 1px solid #dee2e6;
+                border-radius: 0.25rem;
+                margin-bottom: 1rem;
+                padding: 1rem;
+            }
+
+            .card-header {
+                background-color: #f7f7f7;
+                border-bottom: 1px solid #dee2e6;
+                font-weight: bold;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .card-footer {
+                background-color: #f7f7f7;
+                border-top: 1px solid #dee2e6;
+                text-align: right;
+            }
+
+            .workflow-rectangle {
+                min-width: 150px;
+                height: 100px;
+                border-radius: 10px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -37,7 +186,8 @@
                 font-weight: bold;
                 color: #fff;
                 padding: 10px;
-
+                text-align: center;
+                margin-bottom: 10px;
             }
 
             .workflow-arrow {
@@ -48,13 +198,6 @@
                 margin: 0 10px;
                 border-left: 10px solid transparent;
                 border-right: 10px solid transparent;
-
-
-            }
-
-            .workflow-circle span {
-                margin-top: 5px;
-
             }
 
             .workflow-container {
@@ -63,22 +206,21 @@
                 margin-bottom: 20px;
                 white-space: nowrap;
                 overflow-x: auto;
-                margin-bottom: 20px;
             }
 
-            .workflow-circle.pending {
+            .workflow-rectangle.pending {
                 background-color: orange;
             }
 
-            .workflow-circle.approved {
+            .workflow-rectangle.approved {
                 background-color: green;
             }
 
-            .workflow-circle.rejected {
+            .workflow-rectangle.rejected {
                 background-color: red;
             }
 
-            .workflow-circle.grey {
+            .workflow-rectangle.grey {
                 background-color: grey;
             }
 
@@ -90,9 +232,42 @@
             }
 
             .department-name {
-                text-align: center;
                 margin-top: 5px;
                 font-weight: bold;
+            }
+
+            .updated-by {
+                font-size: 12px;
+                margin-top: 5px;
+            }
+
+            .workflow-rectangle.green {
+                background-color: #4CAF50;
+            }
+
+            .attachment-item {
+                margin-bottom: 10px;
+            }
+
+            .attachment-link {
+                color: #007bff;
+                text-decoration: none;
+            }
+
+            .attachment-link:hover {
+                text-decoration: underline;
+            }
+
+            #attachmentForm .attachment-group {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            #attachmentForm .form-control {
+                width: 100%;
+                max-width: 150px;
+                margin-right: 10px;
             }
         </style>
     </head>
@@ -110,7 +285,40 @@
     @endif
     <section class="content">
 
-
+        @component('components.filters', ['title' => __('request.filters')])
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="status_filter">@lang('request.status'):</label>
+                    {!! Form::select(
+                        'status_filter',
+                        collect($all_status)->mapWithKeys(fn($status) => [$status => trans("request.$status")]),
+                        null,
+                        [
+                            'class' => 'form-control select2',
+                            'style' => 'height:40px',
+                            'placeholder' => __('lang_v1.all'),
+                            'id' => 'status_filter',
+                        ],
+                    ) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="type_filter">@lang('request.request_type'):</label>
+                    {!! Form::select(
+                        'type_filter',
+                        collect($allRequestTypes)->mapWithKeys(fn($type) => [$type => trans("request.$type")]),
+                        null,
+                        [
+                            'class' => 'form-control select2',
+                            'style' => 'height:40px',
+                            'placeholder' => __('lang_v1.all'),
+                            'id' => 'type_filter',
+                        ],
+                    ) !!}
+                </div>
+            </div>
+        @endcomponent
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
                 <div class="box-tools">
@@ -132,6 +340,7 @@
                             <th>@lang('request.project_name')</th>
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
+                            <th>@lang('request.created_by')</th>
                             <th>@lang('request.status')</th>
                             <th>@lang('request.note')</th>
                             <th>@lang('request.action')</th>
@@ -157,49 +366,32 @@
 
                     <div class="modal-body">
                         <div class="row">
+
+
                             <div class="form-group col-md-6">
-                                {!! Form::label('worker_id', __('request.worker_name') . ':*') !!}
-                                {!! Form::select('worker_id[]', $workers, null, [
+                                {!! Form::label('type', __('request.type') . ':*') !!}
+                                {!! Form::select(
+                                    'type',
+                                    collect($requestTypes)->mapWithKeys(fn($type, $id) => [$id => trans("request.$type")])->toArray(),
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'style' => 'height: 40px',
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'requestType',
+                                    ],
+                                ) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('user_id', __('request.name') . ':*') !!}
+                                {!! Form::select('user_id[]', $all_users, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
                                     'required',
                                     'id' => 'worker',
                                     'style' => 'height: 60px; width: 250px;',
                                 ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
-                                {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('request.exitRequest'),
-                                        'returnRequest' => __('request.returnRequest'),
-                                        'escapeRequest' => __('request.escapeRequest'),
-                                        'advanceSalary' => __('request.advanceSalary'),
-                                        'leavesAndDepartures' => __('request.leavesAndDepartures'),
-                                        'atmCard' => __('request.atmCard'),
-                                        'residenceRenewal' => __('request.residenceRenewal'),
-                                        'residenceCard' => __('request.residenceCard'),
-                                        'workerTransfer' => __('request.workerTransfer'),
-                                        'workInjuriesRequest' => __('request.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('request.residenceEditRequest'),
-                                        'baladyCardRequest' => __('request.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('request.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('request.mofaRequest'),
-                                        'chamberRequest' => __('request.chamberRequest'),
-                                        'cancleContractRequest' => __('request.cancleContractRequest'),
-                                        'WarningRequest' => __('request.WarningRequest'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'required',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
                             </div>
                             <div class="form-group col-md-6" id="leaveType" style="display: none;">
                                 {!! Form::label('leaveType', __('request.leaveType') . ':*') !!}
@@ -212,22 +404,22 @@
                             </div>
 
                             <div class="form-group col-md-6" id="start_date" style="display: none;">
-                                {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
+                                {!! Form::label('start_date', __('request.start_date') . ':*') !!}
                                 {!! Form::date('start_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.start_date'),
+                                    'placeholder' => __('request.start_date'),
                                     'id' => 'startDateField',
                                 ]) !!}
                             </div>
 
 
                             <div class="form-group col-md-6" id="end_date" style="display: none;">
-                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
+                                {!! Form::label('end_date', __('request.end_date') . ':*') !!}
                                 {!! Form::date('end_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.end_date'),
+                                    'placeholder' => __('request.end_date'),
                                     'id' => 'endDateField',
                                 ]) !!}
                             </div>
@@ -260,11 +452,11 @@
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
+                                {!! Form::label('escape_date', __('request.escape_date') . ':*') !!}
                                 {!! Form::date('escape_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.escape_date'),
+                                    'placeholder' => __('request.escape_date'),
                                     'id' => 'escapeDateField',
                                 ]) !!}
                             </div>
@@ -289,7 +481,8 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'resEditType',
                                     ],
                                 ) !!}
                             </div>
@@ -306,7 +499,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
                                         'id' => 'atmType',
                                     ],
                                 ) !!}
@@ -323,7 +516,8 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'baladyType',
                                     ],
                                 ) !!}
                             </div>
@@ -344,6 +538,7 @@
                                     'id' => 'mainReasonSelect',
                                 ]) !!}
                             </div>
+
                             <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
                                 {!! Form::label('sub_reason', __('request.sub_reason') . ':*') !!}
                                 {!! Form::select('sub_reason', [], null, [
@@ -554,6 +749,10 @@
                                     'id' => 'number_of_salary_inquiryField',
                                 ]) !!}
                             </div>
+
+
+
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('note', __('request.note') . ':') !!}
                                 {!! Form::textarea('note', null, [
@@ -563,10 +762,6 @@
                                 ]) !!}
                             </div>
 
-                            {{-- <div class="form-group col-md-6" id="reason" style="display: block;">
-                            {!! Form::label('reason', __('request.reason') . ':') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('request.reason'), 'rows' => 3]) !!}
-                        </div> --}}
                             <div class="form-group col-md-6">
                                 {!! Form::label('attachment', __('request.attachment') . ':') !!}
                                 {!! Form::file('attachment', null, [
@@ -585,64 +780,39 @@
                 </div>
             </div>
         </div>
-
         {{-- view request --}}
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                         <h4 class="modal-title">@lang('request.view_request')</h4>
                     </div>
-
                     <div class="modal-body">
                         <div class="row">
-
-                            <div class="workflow-container" id="workflow-container">
-
-                            </div>
-
-
+                            <div class="workflow-container" id="workflow-container"></div>
                         </div>
-
-
-
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>@lang('request.worker_details')</h4>
-                                <ul id="worker-list">
-                                    <!-- Worker info will be dynamically added here -->
-                            </div>
-                            <div class="col-md-6">
-
-                                <h4>@lang('request.activites')</h4>
-                                <ul id="activities-list">
-                                    <!-- Activities will be dynamically added here -->
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-
+                                <h4>@lang('request.request_owner')</h4>
+                                <ul id="worker-list"></ul>
                                 <h4>@lang('request.attachments')</h4>
-                                <ul id="attachments-list">
-
-                                </ul>
+                                <ul id="attachments-list"></ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>@lang('request.request_info')</h4>
+                                <ul id="request-info"></ul>
                             </div>
                         </div>
-                        <form id="attachmentForm" method="POST" enctype="multipart/form-data">
-                            @csrf
-
-                            <div class="form-group">
-                                <label for="attachment">
-                                    <h4>@lang('request.add_attachment')</h4>
-                                </label>
-                                <input type="file" class="form-control" style="width: 250px;" id="attachment"
-                                    name="attachment">
-                            </div>
-                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        </form>
                     </div>
-
+                    <form id="attachmentForm" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div id="attachmentContainer"></div>
+                        <button type="button" class="btn btn-primary" id="addAttachment">@lang('request.add_attachment')</button>
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                    </form>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
@@ -650,34 +820,25 @@
             </div>
         </div>
 
-        {{-- return request --}}
-        <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
-            aria-hidden="true">
+        {{-- view request activities --}}
+        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog"
+            aria-labelledby="activitiesModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="returnModalLabel">@lang('request.return_the_request')</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <h4 class="modal-title" id="activitiesModalLabel">@lang('request.activities')</h4>
+
                     </div>
                     <div class="modal-body">
-                        <form id="returnModalForm">
-                            <div class="form-group">
-                                <label for="reasonInput">@lang('request.reason')</label>
-                                <input type="text" class="form-control" id="reasonInput" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">@lang('request.update')</button>
-                        </form>
+                        <!-- Activities will be injected here -->
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('request.close')</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        @include('internationalrelations::requests.change_status_modal')
 
     </section>
     <!-- /.content -->
@@ -697,8 +858,304 @@
                 });
             });
 
+            $(document).on('click', '.btn-view-activities', function() {
+                var requestId = $(this).data('request-id');
+                viewRequestActivities(requestId);
+            });
 
 
+
+            function viewRequestActivities(requestId) {
+                if (requestId) {
+                    $.ajax({
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'.replace(
+                            ':requestId', requestId),
+                        method: 'GET',
+                        success: function(response) {
+
+                            $('#activitiesModal .modal-body').html(renderRequestActivities(response));
+                            $('#activitiesModal').modal('show');
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            }
+
+
+
+            function renderRequestActivities(data) {
+                let activitiesHtml = `
+                        <div class="activity-header card mb-3">
+                        
+                            <div class="card-body">
+                                <p><strong>@lang('request.started_department'):</strong> ${data.request_info.started_depatment.name || '@lang('request.not_exist')'}</p>
+                                <p><strong>@lang('request.created_by'):</strong> ${data.created_user_info.created_user_full_name || '@lang('request.not_exist')'}</p>
+                            </div>
+                        </div>
+                    `;
+
+                activitiesHtml += data.followup_processes.reverse().map((process, index) => `
+                        <div class="activity card mb-3">
+                            <div class="card-body">
+                                <p><strong>@lang('request.department'):</strong> ${process.department.name || '@lang('request.not_exist')'}</p>
+                                <p><strong>@lang('request.status'):</strong> ${process.status || '@lang('request.not_exist')'}</p>
+                                <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
+                            
+                                <p><strong>@lang('request.status_note'):</strong> ${process.status_note || '@lang('request.not_exist')'}</p>
+                            </div>
+                            ${index < data.followup_processes.length - 1 ? '<div class="arrow-down"></div>' : ''}
+                        </div>
+                    `).join('');
+
+                return activitiesHtml;
+            }
+
+            $(document).on('click', '.btn-view-request-details', function() {
+                var requestId = $(this).data('request-id');
+
+                if (requestId) {
+                    $.ajax({
+                        url: '{{ route('viewUserRequest', ['requestId' => ':requestId']) }}'
+                            .replace(':requestId', requestId),
+                        method: 'GET',
+                        success: function(response) {
+                            console.log(response);
+                            var workflowContainer = $('#workflow-container');
+                            var workerList = $('#worker-list');
+                            var attachmentsList = $('#attachments-list');
+                            var requestInfoList = $('#request-info');
+                            workflowContainer.html('');
+                            workerList.html('');
+                            attachmentsList.html('');
+                            requestInfoList.html('');
+
+                            response.workflow.forEach(function(step, i) {
+                                var status = step.status ? step.status.toLowerCase() :
+                                    'grey';
+                                var updatedBy = response.followup_processes.find(
+                                        process => process.department.name === step
+                                        .department)?.updated_by ||
+                                    '{{ __('request.not_exist') }}';
+                                var rectangle = `
+                                            <div class="workflow-rectangle ${status}">
+                                                <p class="department-name">${step.department}</p>
+                                            <p class="updated-by">@lang('request.updated_by'): ${updatedBy}</p>
+                                            </div>
+                                        `;
+                                workflowContainer.append(rectangle);
+
+                                if (i < response.workflow.length - 1) {
+                                    workflowContainer.append(
+                                        `<i class="fas fa-arrow-left workflow-arrow ${status}-arrow"></i>`
+                                    );
+                                }
+                            });
+
+                            workerList.append(
+                                `<p class="worker-info">{{ __('request.name') }}: ${response.user_info.worker_full_name}</p>`
+                            );
+                            workerList.append(
+                                `<p class="worker-info">{{ __('request.nationality') }}: ${response.user_info.nationality}</p>`
+                            );
+                            if (response.user_info.assigned_to) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.project_name') }}: ${response.user_info.assigned_to}</p>`
+                                );
+                            }
+                            if (response.user_info.id_proof_number) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.eqama_number') }}: ${response.user_info.id_proof_number}</p>`
+                                );
+                            }
+                            if (response.user_info.contract_end_date) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.contract_end_date') }}: ${response.user_info.contract_end_date}</p>`
+                                );
+                            }
+                            if (response.user_info.eqama_end_date) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.eqama_end_date') }}: ${response.user_info.eqama_end_date}</p>`
+                                );
+                            }
+                            if (response.user_info.passport_number) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.passport_number') }}: ${response.user_info.passport_number}</p>`
+                                );
+                            }
+
+                            response.attachments.forEach(function(attachment, j) {
+                                attachmentsList.append(`
+                                    <li class="attachment-item">
+                                        <a href="{{ url('uploads') }}/${attachment.file_path}" target="_blank" class="attachment-link">
+                                            ${attachment.name || '@lang('request.attach') ' + (j + 1)}
+                                        </a>
+                                    </li>
+                                `);
+                            });
+                            // Populate request info list
+                            var requestInfo = response.request_info;
+                            var requestInfoData = [{
+                                    label: '{{ __('request.type') }}',
+                                    value: requestInfo.type
+                                },
+                                {
+                                    label: '{{ __('request.request_no') }}',
+                                    value: requestInfo.request_no
+                                },
+                                {
+                                    label: '{{ __('request.exit_date') }}',
+                                    value: requestInfo.start_date
+                                },
+                                {
+                                    label: '{{ __('request.end_date') }}',
+                                    value: requestInfo.end_date
+                                },
+                                {
+                                    label: '{{ __('request.escape_time') }}',
+                                    value: requestInfo.escape_time
+                                },
+                                {
+                                    label: '{{ __('request.advSalaryAmount') }}',
+                                    value: requestInfo.advSalaryAmount
+                                },
+                                {
+                                    label: '{{ __('request.monthlyInstallment') }}',
+                                    value: requestInfo.monthlyInstallment
+                                },
+                                {
+                                    label: '{{ __('request.installmentsNumber') }}',
+                                    value: requestInfo.installmentsNumber
+                                },
+                                {
+                                    label: '{{ __('request.baladyCardType') }}',
+                                    value: requestInfo.baladyCardType
+                                },
+                                {
+                                    label: '{{ __('request.workInjuriesDate') }}',
+                                    value: requestInfo.workInjuriesDate
+                                },
+                                {
+                                    label: '{{ __('request.resCardEditType') }}',
+                                    value: requestInfo.resCardEditType
+                                },
+                                {
+                                    label: '{{ __('request.main_reason') }}',
+                                    value: requestInfo.contract_main_reason_id
+                                },
+                                {
+                                    label: '{{ __('request.sub_reason') }}',
+                                    value: requestInfo.contract_sub_reason_id
+                                },
+                                {
+                                    label: '{{ __('request.visa_number') }}',
+                                    value: requestInfo.visa_number
+                                },
+                                {
+                                    label: '{{ __('request.atmCardType') }}',
+                                    value: requestInfo.atmCardType
+                                },
+                                {
+                                    label: '{{ __('request.insurance_class') }}',
+                                    value: requestInfo.insurance_classes_id
+                                },
+                                {
+                                    label: '{{ __('request.status') }}',
+                                    value: requestInfo.status
+                                },
+
+                                {
+                                    label: '{{ __('request.started_depatment') }}',
+                                    value: requestInfo.started_depatment.name
+                                },
+                                {
+                                    label: '{{ __('request.created_at') }}',
+                                    value: requestInfo.created_at
+                                },
+                                {
+                                    label: '{{ __('request.updated_at') }}',
+                                    value: requestInfo.updated_at
+                                }
+                            ];
+
+                            requestInfoData.forEach(function(info) {
+                                if (info.value !== null && info.value !==
+                                    '') { // Check for null or empty values
+                                    requestInfoList.append(
+                                        `<li class="request-info-item">${info.label}: ${info.value}</li>`
+                                    );
+                                }
+                            });
+                            $('#attachmentForm').attr('action',
+                                '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
+                                .replace(':requestId', response.request_info.id));
+                            $('#attachmentForm input[name="requestId"]').val(requestId);
+                            $('#requestModal').modal('show');
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+            $('#addAttachment').click(function() {
+                var attachmentIndex = $('.attachment-group').length;
+                var attachmentGroup = `
+            <div class="attachment-group" style="margin-bottom: 10px;">
+                <input type="file" class="form-control attachment-input" name="attachments[${attachmentIndex}][file]" style="width: 150px; display: inline-block; margin-right: 10px;">
+                <input type="text" class="form-control attachment-name" name="attachments[${attachmentIndex}][name]" placeholder="@lang('request.attachment_name')" style="width: 150px; display: inline-block; margin-right: 10px;">
+                <button type="button" class="btn btn-danger remove-attachment">@lang('request.remove')</button>
+            </div>
+        `;
+                $('#attachmentContainer').append(attachmentGroup);
+            });
+
+            $(document).on('click', '.remove-attachment', function() {
+                $(this).closest('.attachment-group').remove();
+            });
+
+            $('#attachmentForm').submit(function(e) {
+                e.preventDefault();
+
+                var formData = new FormData(this);
+
+
+                $('.attachment-group').each(function(index, element) {
+                    var fileInput = $(element).find('input[type="file"]')[0];
+                    var nameInput = $(element).find('input[type="text"]').val();
+                    if (fileInput.files[0]) {
+                        formData.append(`attachments[${index}][file]`, fileInput.files[0]);
+                        formData.append(`attachments[${index}][name]`, nameInput);
+                    }
+                });
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            console.log(response);
+                            toastr.success(response.msg);
+                            $('#attachmentForm')[0].reset();
+                            $('#attachmentContainer').html('');
+                            $('#requestModal').modal('hide');
+                            //  $('#requests_table').DataTable().ajax.reload();
+                            window.location.reload();
+                        } else {
+                            toastr.error(response.msg);
+                        }
+                    },
+                    error: function(response) {
+                        var errorMessage = response.responseJSON ? response.responseJSON
+                            .message : 'Error saving attachment.';
+                        toastr.error(errorMessage);
+                    }
+                });
+            });
 
 
             var requests_table = $('#requests_table').DataTable({
@@ -706,7 +1163,11 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('agentRequests') }}"
+                    url: "{{ route('agentRequests') }}",
+                    data: function(d) {
+                        d.status = $('#status_filter').val();
+                        d.type = $('#type_filter').val();
+                    }
                 },
 
                 columns: [
@@ -725,72 +1186,48 @@
                         data: 'assigned_to'
                     },
                     {
-                        data: 'type',
+                        data: 'request_type_id',
                         render: function(data, type, row) {
-                            if (data === 'exitRequest') {
-                                return '@lang('request.exitRequest')';
+                            // Custom render logic based on request type
+                            const requestTypeMap = {
+                                'exitRequest': '@lang('request.exitRequest')',
+                                'returnRequest': '@lang('request.returnRequest')',
+                                'escapeRequest': '@lang('request.escapeRequest')',
+                                'advanceSalary': '@lang('request.advanceSalary')',
+                                'leavesAndDepartures': '@lang('request.leavesAndDepartures')',
+                                'atmCard': '@lang('request.atmCard')',
+                                'residenceRenewal': '@lang('request.residenceRenewal')',
+                                'workerTransfer': '@lang('request.workerTransfer')',
+                                'residenceCard': '@lang('request.residenceCard')',
+                                'workInjuriesRequest': '@lang('request.workInjuriesRequest')',
+                                'residenceEditRequest': '@lang('request.residenceEditRequest')',
+                                'baladyCardRequest': '@lang('request.baladyCardRequest')',
+                                'mofaRequest': '@lang('request.mofaRequest')',
+                                'insuranceUpgradeRequest': '@lang('request.insuranceUpgradeRequest')',
+                                'chamberRequest': '@lang('request.chamberRequest')',
+                                'WarningRequest': '@lang('request.WarningRequest')',
+                                'cancleContractRequest': '@lang('request.cancleContractRequest')',
+                                'passportRenewal': '@lang('request.passportRenewal')',
+                                'AjirAsked': '@lang('request.AjirAsked')',
+                                'AlternativeWorker': '@lang('request.AlternativeWorker')',
+                                'TransferringGuaranteeFromExternalClient': '@lang('request.TransferringGuaranteeFromExternalClient')',
+                                'Permit': '@lang('request.Permit')',
+                                'FamilyInsurace': '@lang('request.FamilyInsurace')',
+                                'Ajir_link': '@lang('request.Ajir_link')',
+                                'ticketReservationRequest': '@lang('request.ticketReservationRequest')',
+                                'authorizationRequest': '@lang('request.authorizationRequest')',
+                                'salaryInquiryRequest': '@lang('request.salaryInquiryRequest')',
+                                'interviewsRequest': '@lang('request.interviewsRequest')',
+                            };
 
-                            } else if (data === 'returnRequest') {
-                                return '@lang('request.returnRequest')';
-                            } else if (data === 'escapeRequest') {
-                                return '@lang('request.escapeRequest')';
-                            } else if (data === 'advanceSalary') {
-                                return '@lang('request.advanceSalary')';
-                            } else if (data === 'leavesAndDepartures') {
-                                return '@lang('request.leavesAndDepartures')';
-                            } else if (data === 'atmCard') {
-                                return '@lang('request.atmCard')';
-                            } else if (data === 'residenceRenewal') {
-                                return '@lang('request.residenceRenewal')';
-                            } else if (data === 'workerTransfer') {
-                                return '@lang('request.workerTransfer')';
-                            } else if (data === 'residenceCard') {
-                                return '@lang('request.residenceCard')';
-                            } else if (data === 'workInjuriesRequest') {
-                                return '@lang('request.workInjuriesRequest')';
-                            } else if (data === 'residenceEditRequest') {
-                                return '@lang('request.residenceEditRequest')';
-                            } else if (data === 'baladyCardRequest') {
-                                return '@lang('request.baladyCardRequest')';
-                            } else if (data === 'mofaRequest') {
-                                return '@lang('request.mofaRequest')';
-                            } else if (data === 'insuranceUpgradeRequest') {
-                                return '@lang('request.insuranceUpgradeRequest')';
-                            } else if (data === 'chamberRequest') {
-                                return '@lang('request.chamberRequest')';
-                            } else if (data === 'cancleContractRequest') {
-                                return '@lang('request.cancleContractRequest')';
-                            } else if (data === 'WarningRequest') {
-                                return '@lang('request.WarningRequest')';
-                            } else if (data === 'passportRenewal') {
-                                return '@lang('request.passportRenewal')';
-                            } else if (data === 'AjirAsked') {
-                                return '@lang('request.AjirAsked')';
-                            } else if (data === 'AlternativeWorker') {
-                                return '@lang('request.AlternativeWorker')';
-                            } else if (data === 'TransferringGuaranteeFromExternalClient') {
-                                return '@lang('request.TransferringGuaranteeFromExternalClient')';
-                            } else if (data === 'Permit') {
-                                return '@lang('request.Permit')';
-                            } else if (data === 'FamilyInsurace') {
-                                return '@lang('request.FamilyInsurace')';
-                            } else if (data === 'Ajir_link') {
-                                return '@lang('request.Ajir_link')';
-                            } else if (data === 'ticketReservationRequest') {
-                                return '@lang('request.ticketReservationRequest')';
-                            } else if (data === 'authorizationRequest') {
-                                return '@lang('request.authorizationRequest')';
-                            } else if (data === 'salaryInquiryRequest') {
-                                return '@lang('request.salaryInquiryRequest')';
-                            } else if (data === 'interviewsRequest') {
-                                return '@lang('request.interviewsRequest')';
-                            } else {
-                                return data;
-                            }
+                            return requestTypeMap[data] || data;
                         }
                     },
                     {
                         data: 'created_at'
+                    },
+                    {
+                        data: 'created_user'
                     },
                     {
                         data: 'status',
@@ -801,24 +1238,8 @@
                     },
 
                     {
-                        data: 'can_return',
-                        render: function(data, type, row) {
-                            var buttonsHtml = '';
+                        data: 'can_return'
 
-
-                            if (data == 1) {
-                                buttonsHtml +=
-                                    '<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                                    row.process_id + '">@lang('request.return_the_request')</button>';
-                            }
-
-
-                            buttonsHtml +=
-                                '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                                row.id + '">@lang('request.view_request')</button>';
-
-                            return buttonsHtml;
-                        }
                     },
 
 
@@ -826,229 +1247,15 @@
                 ],
             });
 
-            $(document).on('click', 'a.change_status', function(e) {
-                e.preventDefault();
-
-                $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value'))
-                    .change();
-                $('#change_status_modal').find('#request_id').val($(this).data('request-id'));
-                $('#change_status_modal').modal('show');
-
-
+            $('#status_filter, #type_filter').change(function() {
+                requests_table.ajax.reload();
             });
-
-
-            $(document).on('submit', 'form#change_status_form', function(e) {
-                e.preventDefault();
-                var data = $(this).serialize();
-                var ladda = Ladda.create(document.querySelector('.update-offer-status'));
-                ladda.start();
-                $.ajax({
-                    method: $(this).attr('method'),
-                    url: $(this).attr('action'),
-                    dataType: 'json',
-                    data: data,
-                    success: function(result) {
-                        ladda.stop();
-                        if (result.success == true) {
-                            $('div#change_status_modal').modal('hide');
-                            toastr.success(result.msg);
-                            requests_table.ajax.reload();
-
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                });
-            });
-            $('#requests_table').on('click', '.btn-return', function() {
-                var requestId = $(this).data('request-id');
-                $('#returnModal').modal('show');
-                $('#returnModal').data('id', requestId);
-            });
-
-
-            $('#returnModalForm').submit(function(e) {
-                e.preventDefault();
-
-                var requestId = $('#returnModal').data('id');
-                var reason = $('#reasonInput').val();
-
-                $.ajax({
-                    url: "{{ route('returnRequest') }}",
-                    method: "POST",
-                    data: {
-                        requestId: requestId,
-                        reason: reason
-                    },
-                    success: function(result) {
-
-                        if (result.success == true) {
-                            $('#returnModal').modal('hide');
-                            toastr.success(result.msg);
-                            requests_table.ajax.reload();
-
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                });
-            });
-
-
-            $(document).on('click', '.btn-view-request', function() {
-                var requestId = $(this).data('request-id');
-
-                // var data = requests_table.row(this).data();
-                // var requestId = data.id;
-
-
-                if (requestId) {
-                    $.ajax({
-                        url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
-                        method: 'GET',
-                        success: function(response) {
-                            console.log(response);
-
-                            var workflowContainer = $('#workflow-container');
-                            var activitiesList = $('#activities-list');
-                            var attachmentsList = $('#attachments-list');
-                            var workerList = $('#worker-list');
-
-                            workflowContainer.html('');
-                            workerList.html('');
-                            activitiesList.html('');
-                            attachmentsList.html('');
-
-                            for (var i = 0; i < response.workflow.length; i++) {
-
-                                var status = response.workflow[i].status ? response.workflow[i]
-                                    .status.toLowerCase() : 'grey';
-                                var circle = '<div class="workflow-circle ' + status + '">';
-                                circle += '<p class="department-name">' + response.workflow[i]
-                                    .department + '</p>';
-                                circle += '</div>';
-
-                                workflowContainer.append(circle);
-
-
-                                if (i < response.workflow.length - 1) {
-                                    workflowContainer.append(
-                                        '<i class="fas fa-arrow-left workflow-arrow ' +
-                                        status + '-arrow"></i>');
-                                }
-                            }
-
-                            //  worker info
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('request.worker_name') }}' + ': ' + response
-                                .user_info.worker_full_name + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('request.nationality') }}' + ': ' + response
-                                .user_info.nationality + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('request.project_name') }}' + ': ' + response
-                                .user_info.assigned_to + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('request.eqama_number') }}' + ': ' + response
-                                .user_info.id_proof_number + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('request.contract_end_date') }}' + ': ' +
-                                response.user_info.contract_end_date + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('request.eqama_end_date') }}' + ': ' +
-                                response.user_info.eqama_end_date + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('request.passport_number') }}' + ': ' +
-                                response.user_info.passport_number + '</p>');
-
-
-
-                            //activities
-
-                            // activitiesList.append('<p class="worker-info">' + '{{ __('request.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
-
-                            for (var j = 0; j < response.followup_processes.length; j++) {
-                                var activity = '<li>';
-
-                                activity += '<p>' +
-                                    '{{ __('request.department_name') }}' + ': ' +
-                                    response.followup_processes[j].department.name;
-
-                                activity += '<p class="{{ __('request.status') }} ' +
-                                    response.followup_processes[j].status.toLowerCase() + '">' +
-                                    '<strong>{{ __('request.status') }}:</strong> ' +
-                                    response.followup_processes[j].status + '</p>';
-
-
-                                activity += '<p>' + '{{ __('request.reason') }}' + ': ';
-                                if (response.followup_processes[j].reason) {
-                                    activity += '<strong>' + response.followup_processes[j]
-                                        .reason + '</strong>';
-                                } else {
-                                    activity += '{{ __('request.not_exist') }}';
-                                }
-                                activity += '<p>' + '{{ __('request.note') }}' + ': ';
-                                if (response.followup_processes[j].status_note) {
-                                    activity += '<strong>' + response.followup_processes[j]
-                                        .status_note + '</strong>';
-                                } else {
-                                    activity += '{{ __('request.not_exist') }}';
-                                }
-                                activity += '</p>';
-                                activity += '<p style="color: green;">' +
-                                    '{{ __('request.updated_by') }}' + ': ' + (
-                                        response.followup_processes[j].updated_by ||
-                                        '{{ __('request.not_exist') }}') + '</p>';
-                                activity += '</li>';
-
-                                activitiesList.append(activity);
-                            }
-
-                            for (var j = 0; j < response.attachments.length; j++) {
-                                var attachment = '<li>';
-
-                                attachment += '<p>';
-
-                                attachment += '<a href="{{ url('uploads') }}/' + response
-                                    .attachments[j].file_path +
-                                    '" target="_blank" onclick="openAttachment(\'' + response
-                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
-                                    '{{ trans('followup::lang.attach') }} ' + (j + 1) + '</a>';
-
-                                attachment += '</p>';
-                                attachment += '</li>';
-
-                                attachmentsList.append(attachment);
-                            }
-
-                            $('#attachmentForm').attr('action',
-                                '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
-                                .replace(':requestId', response.request_info.id));
-
-                            $('#attachmentForm input[name="requestId"]').val(requestId);
-
-
-                            $('#requestModal').modal('show');
-                        },
-                        error: function(error) {
-                            console.log(error);
-                        }
-                    });
-                }
-            });
-
-
-
-
         });
     </script>
 
-
     <script>
         $(document).ready(function() {
-            var users = @json($users);
+            var users = @json($all_users);
             var mainReasonSelect = $('#mainReasonSelect');
             var subReasonContainer = $('#sub_reason_container');
             var subReasonSelect = $('#subReasonSelect');
@@ -1057,13 +1264,12 @@
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
 
-
                 $.ajax({
                     url: '/get-non-saudi-users',
                     type: 'POST',
                     data: {
                         _token: csrfToken,
-                        users: @json($users)
+                        users: @json($all_users)
                     },
                     success: function(data) {
                         console.log(data.users);
@@ -1086,6 +1292,8 @@
                     }
                 });
             }
+
+
             mainReasonSelect.on('change', function() {
                 var selectedMainReason = $(this).val();
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -1116,6 +1324,7 @@
                 });
 
             });
+
 
             $('#requestType').change(handleTypeChange);
 
@@ -1210,6 +1419,7 @@
                             $('#date_of_take_off').hide();
                             $('#time_of_take_off').hide();
                         }
+
                         if (selectedType === 'residenceEditRequest') {
                             $('#resEditType').show();
                             fetchUsersWithSaudiNationality();
@@ -1267,7 +1477,33 @@
                             fetchUsersWithSaudiNationality();
 
                         }
+                        if (selectedType === 'interviewsRequest') {
 
+                            $('#project_name').show();
+                            $('#interview_date').show();
+                            $('#interview_time').show();
+                            $('#interview_place').show();
+
+                        } else {
+                            $('#interview_date').hide();
+                            $('#interview_time').hide();
+                            $('#interview_place').hide();
+
+                        }
+                        if (selectedType === 'salaryInquiryRequest') {
+                            $('#nationlity').show();
+                            $('#profession').show();
+                            $('#number_of_salary_inquiry').show();
+                            $('#job_title').show();
+
+                        } else {
+                            $('#nationlity').hide();
+                            $('#profession').hide();
+                            $('#number_of_salary_inquiry').hide();
+                            $('#job_title').hide();
+
+
+                        }
 
                     },
                     error: function(xhr) {
@@ -1285,9 +1521,6 @@
                 });
 
             });
-
-
-
 
 
         });
