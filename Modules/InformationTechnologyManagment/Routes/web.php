@@ -11,6 +11,7 @@
 |
 */
 
-Route::prefix('informationtechnologymanagment')->group(function() {
+Route::prefix('informationtechnologymanagment')->group(function () {
     Route::get('/', 'InformationTechnologyManagmentController@index');
+    Route::get('/dashboard', [Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])->name('informationtechnologymanagment.dashboard');
 });
