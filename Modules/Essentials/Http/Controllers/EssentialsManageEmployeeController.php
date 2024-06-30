@@ -157,7 +157,7 @@ class EssentialsManageEmployeeController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->with([
                 'userAllowancesAndDeductions',
-                'appointment'
+                'activeAppointmet'
             ])
             ->where('users.is_cmmsn_agnt', 0)
             ->whereIn('user_type', ['employee', 'manager'])
