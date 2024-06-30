@@ -49,10 +49,10 @@ class EssentialsContractsFinishReasonsController extends Controller
 
             return datatables()->of($reasons)
                 ->addColumn('employee_type', function ($row) {
-                    return trans('essentials::lang.'.$row->employee_type);
+                    return trans('essentials::lang.' . $row->employee_type);
                 })
                 ->addColumn('reason_type', function ($row) {
-                    return trans('essentials::lang.'.$row->reason_type);
+                    return trans('essentials::lang.' . $row->reason_type);
                 })
                 ->addColumn('reason', function ($row) {
                     if ($row->reason_type == 'sub_main') {
@@ -71,14 +71,19 @@ class EssentialsContractsFinishReasonsController extends Controller
                     if ($is_admin || $can_delete_finish_contracts) {
                         $html = '';
 
-                        $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="'.route('finish_contract.destroy', ['id' => $row->id]).'"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                        $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('finish_contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
                         return $html;
                     }
                 })
                 ->rawColumns(['action'])
                 ->removeColumn('main_reson_id')
-
+                ->filterColumn('reason', function ($query, $keyword) {
+                    $query->whereRaw("reason like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('sub_reason', function ($query, $keyword) {
+                    $query->whereRaw("sub_reason like ?", ["%{$keyword}%"]);
+                })
                 ->make(true);
         }
 
@@ -110,12 +115,14 @@ class EssentialsContractsFinishReasonsController extends Controller
 
         try {
             $input = $request->only(
-                ['employee_type',
+                [
+                    'employee_type',
                     'reason',
                     'main_reason_select',
                     'sub_reason',
                     'reason_type',
-                ]);
+                ]
+            );
 
             $input['employee_type'] = $input['employee_type'];
 
@@ -129,14 +136,15 @@ class EssentialsContractsFinishReasonsController extends Controller
 
             EssentailsReasonWish::create($input);
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
-
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -176,7 +184,6 @@ class EssentialsContractsFinishReasonsController extends Controller
      */
     public function update(Request $request, $id)
     {
-
     }
 
     /**
@@ -192,19 +199,19 @@ class EssentialsContractsFinishReasonsController extends Controller
             EssentailsReasonWish::where('id', $id)
                 ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
 
         return $output;
-
     }
 }

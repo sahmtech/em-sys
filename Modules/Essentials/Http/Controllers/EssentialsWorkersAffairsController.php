@@ -134,15 +134,15 @@ class EssentialsWorkersAffairsController extends Controller
             $users = $users->where('users.status', request()->input('status_fillter'));
         }
 
-        if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
-            $start = request()->filter_start_date;
-            $end = request()->filter_end_date;
+        // if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+        //     $start = request()->filter_start_date;
+        //     $end = request()->filter_end_date;
 
-            $users->whereHas('contract', function ($query) use ($start, $end) {
-                $query->whereDate('contract_end_date', '>=', $start)
-                    ->whereDate('contract_end_date', '<=', $end);
-            });
-        }
+        //     $users->whereHas('contract', function ($query) use ($start, $end) {
+        //         $query->whereDate('contract_end_date', '>=', $start)
+        //             ->whereDate('contract_end_date', '<=', $end);
+        //     });
+        // }
         if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
             $users = $users->where('users.nationality_id', request()->nationality);
@@ -150,15 +150,18 @@ class EssentialsWorkersAffairsController extends Controller
         $start_date = request()->get('start_date');
         $end_date = request()->get('end_date');
 
+        error_log($start_date);
+        error_log($end_date);
+
         if (!is_null($start_date)) {
-            $users = $users->whereHas('OfficialDocument', function ($query) use ($start_date) {
-                $query->where('type', 'residence_permit')->whereDate('expiration_date', '>=', $start_date);
+            $users = $users->whereHas('contract', function ($query) use ($start_date) {
+                $query->whereDate('contract_end_date', '>=', $start_date);
             });
         }
 
         if (!is_null($end_date)) {
-            $users = $users->whereHas('OfficialDocument', function ($query) use ($end_date) {
-                $query->where('type', 'residence_permit')->whereDate('expiration_date', '<=', $end_date);
+            $users = $users->whereHas('contract', function ($query) use ($end_date) {
+                $query->whereDate('contract_end_date', '<=', $end_date);
             });
         }
         // return $users->where('users.id_proof_number',2222222222)->first()->essentials_admission_to_works;

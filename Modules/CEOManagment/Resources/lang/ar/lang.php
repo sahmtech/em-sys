@@ -1,7 +1,8 @@
 <?php
 return [
     'CEOmanagement_dashboard' => 'الصفحة الرئيسية للرئيس التنفيذي',
-    'CEO_Managment' => 'إدارة التشغيل (القطاع الحكومي)',
+    // 'CEO_Managment' => 'إدارة التشغيل (القطاع الحكومي)',
+    'CEO_Managment' => 'الرئيس التنفيذي',
     'requests' => 'الطلبات',
     'escalate_requests' => 'الطلبات المصعّدة',
     'requests_by_sequential' => 'الطلبات حسب التسلسل',
@@ -93,7 +94,12 @@ return [
     'edit_request_tasks' => 'تعديل مهمات الطلب',
     'cant_edit_type_it_have_procedures' => 'لا يمكن تعديل هذا النوع من الطلبات لوجود إجراءات متعلقة به',
 
-    'delete_request_type_tasks' => 'حذف مهمات الطلبات'
+    'delete_request_type_tasks' => 'حذف مهمات الطلبات',
+    'selfish_service' => 'خدمة ذاتية',
+    'can_not_be_selfish_service' => 'لا يمكن تقديم الطلب من صاحبه شخصياَ',
+    'can_be_selfish_service' => 'يمكن تقديم الطلب من صاحبه شخصياً',
+    'make_selfish_service' => 'اجعل هذا النوع من الطلبات يقبل خدمة ذاتية'
+
 
 
 

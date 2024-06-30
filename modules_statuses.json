@@ -25,5 +25,7 @@
     "HelpDesk": true,
     "LegalAffairs": true,
     "CEOManagment": true,
-    "GeneralManagmentOffice": true
+    "GeneralManagmentOffice": true,
+    "OperationsManagmentGovernment": true,
+    "InformationTechnologyManagment": true
 }

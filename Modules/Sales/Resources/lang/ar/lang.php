@@ -471,8 +471,19 @@ return [
     'first_choice' => 'الخيار الأول',
     'second_choice' => 'الخيار الثاني',
     'attachment' => 'الملف',
-    'message' => 'الرسالة'
-
+    'message' => 'الرسالة',
+    'click_here_to_add_qualified_client' => 'اضغط هنا لإضافة عميل مؤهل',
+    'add_qualified_contact' => 'إضافة عميل مؤهل',
+    'View_File' => 'عرض المرفق',
+    'add_salary' => 'إضافة راتب',
+    'close' => 'إغلاق',
+    'save_salary' => 'رد على الطلب',
+    'salary' => 'الراتب',
+    'answered_with_salary' => 'تم الإجابة براتب:',
+    'not_answered_yet' => 'لم يتم الإجابة بعد',
+    'answered_salary' => 'الراتب المجاب',
+    'edit_qualified_contact' => 'تعديل بيانات عميل مؤهل',
+    'edit_converted_contact' => 'تعديل بيانات عميل محول'
 ];
 
 // ''=>'',

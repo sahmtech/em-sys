@@ -24,8 +24,8 @@ class RequestTypeController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_edit_requests_type = auth()->user()->can('ceomanagment.edit_requests_type');
-        $can_delete_requests_type = auth()->user()->can('ceomanagment.delete_requests_type');
+        $can_edit_requests_type = auth()->user()->can('generalmanagement.edit_requests_type');
+        $can_delete_requests_type = auth()->user()->can('generalmanagement.delete_requests_type');
 
         $allRequestsTypes = [
             'exitRequest',
@@ -107,6 +107,17 @@ class RequestTypeController extends Controller
         return view('ceomanagment::requests_types.index')->with(compact('missingTypes'));
     }
 
+    public function updateSelfishService($id)
+    {
+        $requestType = RequestsType::find($id);
+        error_log($requestType);
+        if ($requestType) {
+            $requestType->selfish_service = 1;
+            $requestType->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 400);
+    }
 
     public function store(Request $request)
     {
@@ -124,8 +135,9 @@ class RequestTypeController extends Controller
 
 
         try {
-            $input = $request->only(['type', 'for']);
+            $input = $request->only(['type', 'for', 'selfish_service']);
             $input['prefix'] = $this->getTypePrefix($input['type']);
+            $input['selfish_service'] = $input['selfish_service'];
             $requestTypeIds = [];
             if ($input['for'] != 'both') {
 

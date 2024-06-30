@@ -196,6 +196,7 @@ class EssentialsRequestController extends Controller
     {
 
         $user = User::where('id', auth()->user()->id)->first();
+        $user_type = $user->user_type;
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -205,7 +206,11 @@ class EssentialsRequestController extends Controller
         $requestsProcess = null;
         $all_status = ['approved', 'pending', 'rejected'];
 
-        $allRequestTypes = RequestsType::where('for', 'employee')->pluck('type', 'id');
+        if ($user_type == 'admin') {
+            $allRequestTypes = RequestsType::where('for', 'employee')->where('selfish_service', 1)->pluck('type', 'id');
+        } else {
+            $allRequestTypes = RequestsType::where('for', $user_type)->where('selfish_service', 1)->pluck('type', 'id');
+        }
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
 

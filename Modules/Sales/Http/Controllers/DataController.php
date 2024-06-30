@@ -82,8 +82,23 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'sales.add_qualified_contact',
+                        'label' => __('sales::lang.add_qualified_contact'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'sales.edit_lead_contact',
                         'label' => __('sales::lang.edit_lead_contact'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.edit_qualified_contact',
+                        'label' => __('sales::lang.edit_qualified_contact'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.edit_converted_contact',
+                        'label' => __('sales::lang.edit_converted_contact'),
                         'default' => false,
                     ],
                     [

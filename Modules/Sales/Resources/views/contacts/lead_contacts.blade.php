@@ -17,8 +17,6 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
-    
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="cust_table">
                     <thead>
@@ -49,8 +47,7 @@
         @endcomponent
 
 
-        <div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog"
-            aria-labelledby="gridSystemModalLabel">
+        {{-- <div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     {!! Form::open([
@@ -114,7 +111,7 @@
                     {!! Form::close() !!}
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
-        </div>
+        </div> --}}
     </section>
     <div class="modal fade" id="changeStatusContactModal" tabindex="-1" role="dialog"></div>
 @endsection
@@ -151,7 +148,7 @@
                         data: 'id',
                         name: 'id'
                     },
-                    
+
                     {
                         data: 'contact_id',
                         name: 'contact_id',

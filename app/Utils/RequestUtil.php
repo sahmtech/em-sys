@@ -82,6 +82,7 @@ class RequestUtil extends Util
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
+
         $allRequestTypes = RequestsType::pluck('type', 'id');
         //  $requestTypeIds = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
 
@@ -460,7 +461,6 @@ class RequestUtil extends Util
             foreach ($request->user_id as $userId) {
                 $count_of_users = count($request->user_id);
                 if ($userId === null) continue;
-
                 $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
                 if ($isExists && count($request->user_id) == 1) {
                     $output = [
@@ -613,6 +613,7 @@ class RequestUtil extends Util
 
 
                             if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
+
                                 $nextProcedure = WkProcedure::where('business_id', $business_id)->where('request_type_id', $request->type)
                                     ->where('department_id', $procedure->next_department_id)->first();
 
@@ -634,6 +635,7 @@ class RequestUtil extends Util
                                     }
                                 }
                             } else {
+
 
 
                                 $process = RequestProcess::create([
@@ -1841,7 +1843,9 @@ class RequestUtil extends Util
     //only for workcard operations
     public function viewRequestsOperations()
     {
-
+        $can_show_request = auth()
+            ->user()
+            ->can('essentials.show_workcards_request');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
@@ -1892,7 +1896,16 @@ class RequestUtil extends Util
                         if ($row->request_type_id) {
                             return $allRequestTypes[$row->request_type_id];
                         }
+                    })->addColumn('view', function ($row) use ($is_admin, $can_show_request) {
+                        $buttonsHtml = '';
+
+                        if ($is_admin || $can_show_request) {
+                            $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                            $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+                        }
+                        return $buttonsHtml;
                     })
+                    ->rawColumns(['view'])
                     ->make(true);
             }
 

@@ -55,7 +55,7 @@
                                 <th>{{ __('sales::lang.quantity') }}</th>
                                 <th>{{ __('sales::lang.operation_remaining_quantity') }}</th>
                                 <th>{{ __('sales::lang.profession_name') }}</th>
-                                <th>{{ __('sales::lang.specialization_name') }}</th>
+                                {{-- <th>{{ __('sales::lang.specialization_name') }}</th> --}}
                                 <th>{{ __('sales::lang.nationality_name') }}</th>
                                 {{-- <th>{{ __('sales::lang.gender') }}</th> --}}
                                 <th>{{ __('sales::lang.salary') }}</th>
@@ -75,7 +75,7 @@
                                 <td>{{ $query->total_quantity }}</td>
                                 <td>{{ $query->remaining_quantity_for_delegation }}</td>
                                 <td>{{ $professions[$query->profession_id] }}</td>
-                                <td>{{ $specializations[$query->specialization_id] }}</td>
+                                {{-- <td>{{ $specializations[$query->specialization_id] }}</td> --}}
                                 <td>{{ $nationalities[$query->nationality_id] }}</td>
                                 {{-- <td> {{ __('sales::lang.' . $sell_line['service']['gender']) }}</td> --}}
 

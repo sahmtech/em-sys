@@ -157,10 +157,10 @@ class EssentialsManageEmployeeController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->with([
                 'userAllowancesAndDeductions',
-                'appointment'
+                'activeAppointmet'
             ])
             ->where('users.is_cmmsn_agnt', 0)
-            ->where('user_type', '!=', 'worker')
+            ->whereIn('user_type', ['employee', 'manager'])
 
             ->leftJoin('essentials_admission_to_works', function ($join) {
                 $join->on('essentials_admission_to_works.employee_id', '=', 'users.id')

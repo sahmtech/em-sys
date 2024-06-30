@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="form-group">
                     <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
                     {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
@@ -37,7 +37,7 @@
                         'id' => 'specializations-select',
                     ]) !!}
                 </div>
-            </div>
+            </div> --}}
 
 
 
@@ -69,7 +69,7 @@
                             <th>@lang('essentials::lang.mobile_number')</th>
                             <th>@lang('essentials::lang.contry_nationality')</th>
                             <th>@lang('essentials::lang.profession')</th>
-                            <th>@lang('essentials::lang.specialization')</th>
+                            {{-- <th>@lang('essentials::lang.specialization')</th> --}}
                             <th>@lang('sales::lang.offer_price')</th>
                             <th>@lang('internationalrelations::lang.accepte_from_worker')</th>
                             <th>@lang('messages.action')</th>
@@ -77,15 +77,15 @@
                     </thead>
                 </table>
                 <div style="margin-bottom: 10px;">
-                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.send_price_offer_to_worker'))
-                    <button type="button" class="btn btn-success btn-sm custom-btn" id="change-status-selected">
-                        @lang('internationalrelations::lang.send_offer_price')
-                    </button>
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.send_price_offer_to_worker'))
+                        <button type="button" class="btn btn-success btn-sm custom-btn" id="change-status-selected">
+                            @lang('internationalrelations::lang.send_offer_price')
+                        </button>
                     @endif
-                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.accepte_offer_from_worker'))
-                    <button type="button" class="btn btn-warning btn-sm custom-btn" id="accepted-selected">
-                        @lang('internationalrelations::lang.accepte_from_worker')
-                    </button>
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.accepte_offer_from_worker'))
+                        <button type="button" class="btn btn-warning btn-sm custom-btn" id="accepted-selected">
+                            @lang('internationalrelations::lang.accepte_from_worker')
+                        </button>
                     @endif
                 </div>
 
@@ -110,7 +110,7 @@
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('internationalrelations::lang.add_price_offer_for_selected_workers') . ':') !!}
                                     <br>
-                                    
+
                                     {!! Form::file('file', ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
                                 </div>
 
@@ -128,7 +128,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="uploadAcceptanceFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadAcceptanceFilesModalLabel" aria-hidden="true">
+            <div class="modal fade" id="uploadAcceptanceFilesModal" tabindex="-1" role="dialog"
+                aria-labelledby="uploadAcceptanceFilesModalLabel" aria-hidden="true">
 
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -143,7 +144,7 @@
                             <form id="uploadAcceptanceFilesForm">
 
                                 <input type="hidden" name="selectedRowsData" id="selectedRowsData2" />
-                               
+
                                 <div class="form-group col-md-6">
                                     {!! Form::label('file', __('internationalrelations::lang.add_acceptance_offer_for_selected_workers') . ':') !!}
                                     <br>
@@ -185,7 +186,7 @@
                 ajax: {
                     url: "{{ route('accepted_workers') }}",
                     data: function(d) {
-                        d.specialization = $('#specializations-select').val();
+                        // d.specialization = $('#specializations-select').val();
                         d.profession = $('#professions-select').val();
                         d.agency = $('#agency_filter').val();
 
@@ -226,10 +227,10 @@
                         "data": "profession_id",
 
                     },
-                    {
-                        "data": "specialization_id",
+                    // {
+                    //     "data": "specialization_id",
 
-                    },
+                    // },
                     {
                         "data": "is_price_offer_sent",
                         "render": function(data, type, row) {
@@ -267,7 +268,7 @@
 
             });
 
-            $('#specializations-select, #professions-select, #agency_filter').change(
+            $(' #professions-select, #agency_filter').change(
                 function() {
                     users_table.ajax.reload();
 
@@ -300,7 +301,7 @@
                 $('#fileInputsContainer').empty();
                 var selectFileLabel = '{{ __('sales::lang.uploade_file_for') }}';
 
-               
+
 
                 $('#uploadFilesModal').modal('show');
             });
@@ -349,7 +350,7 @@
                 $('#acceptanceFileInputsContainer').empty();
                 var selectFileLabel = '{{ __('sales::lang.uploade_file_for') }}';
 
-               
+
 
                 $('#uploadAcceptanceFilesModal').modal('show');
             });

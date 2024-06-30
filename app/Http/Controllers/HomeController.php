@@ -294,6 +294,9 @@ class HomeController extends Controller
         $CEODashPermission = [
             ['value' => 'ceomanagment.CEOmanagement_dashboard'],
         ];
+        $OperationMangmentDashPermission = [
+            ['value' => 'operationsmanagmentgovernment.OperationsManagmentGovernment_dashboard'],
+        ];
         $userManagementPermissions = [
             ['value' => 'user.view'],
             ['value' => 'user.create'],
@@ -339,6 +342,9 @@ class HomeController extends Controller
         $legalAffairsPermissions = [
             ['value' => 'legalaffairs.legalAffairs_dashboard'],
         ];
+        $InformationTechnologDashPermission = [
+            ['value' => 'informationtechnologymanagment.InformationTechnology_dashboard'],
+        ];
         $payrollsPermissions = [
             ['value' => 'essentials.payrolls_management'],
         ];
@@ -367,6 +373,8 @@ class HomeController extends Controller
             ['id' => 'general_management',  'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'general_management_office',  'permissions' => $generalManagmentOfficeDashPermission, 'title' => __('generalmanagmentoffice::lang.generalmanagmentoffice'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagmentOffice\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'ceo_management',  'permissions' => $CEODashPermission, 'title' => __('ceomanagment::lang.CEO_Managment'), 'icon' => "fas fa-chart-line", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'operationsmanagmentgovernment',  'permissions' => $OperationMangmentDashPermission, 'title' => __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'), 'icon' => "fas fa-cogs", 'link' => action([\Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])],
+
             // ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
@@ -374,14 +382,18 @@ class HomeController extends Controller
             ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' =>   route('employee_affairs_dashboard')],
             ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls_management'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
+
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
-            ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
+            ['id' => 'informationtechnologymanagment',  'permissions' => $InformationTechnologDashPermission, 'title' => __('informationtechnologymanagment::lang.informationtechnologymanagment'), 'icon' => "fas fa-laptop-code", 'link' => action([\Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])],
+
             ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
             ['id' => 'FollowUp',  'permissions' => $followupDashPermission, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
             ['id' => 'houseingMovements',  'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'movements',  'permissions' => $movmentsPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' =>   action([MovmentDashboardController::class, 'index'])],
             ['id' => 'internationalrelations',  'permissions' => $internationalrelationsDashPermission, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'legalAffairs',  'permissions' => $legalAffairsPermissions, 'title' => __('legalaffairs::lang.legalaffairs'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
+            ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
+
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             // ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' => route('accountingLanding'),],

@@ -3,7 +3,7 @@ function submittedDataFunc(response) {
     if (response.success) {
 
 
-
+        console.log(response.client);
         var submittedData = response.client;
 
         var resultItem = response.selectedData;
@@ -18,7 +18,7 @@ function submittedDataFunc(response) {
         var newRow = '<tr class="product_row">' +
 
             '<td class="text-center">' + response.profession + '</td>' +
-            '<td class="text-center">' + response.specialization + '</td>' +
+            // '<td class="text-center">' + response.specialization + '</td>' +
             '<td class="text-center">' + response.nationality + '</td>' +
             '<td class="text-center">' + translatedGender + '</td>' +
 
@@ -57,7 +57,7 @@ function submittedDataFunc(response) {
 
 function updatePriceTotal() {
     var totalPrice = 0;
-    $('.product_row').each(function () {
+    $('.product_row').each(function() {
         totalPrice += parseFloat($(this).find('.total-column').text());
     });
     $('#price_total_input').val(totalPrice);
@@ -65,7 +65,15 @@ function updatePriceTotal() {
     var totalMonthlyAmount = parseFloat($('#total_monthly_amount').text()) || 0;
     var priceTotal = parseFloat($('.price_total').text()) || 0;
 
-    var totalSum = totalMonthlyAmount + priceTotal;
+    var totalSum = 0;
+    console.log($('#contract_form').val());
+    if ($('#contract_form').val() == 'operating_fees') {
+        totalSum = priceTotal;
+    } else {
+        totalSum = totalMonthlyAmount + priceTotal;
+    }
+
+
 
 
     $('#total_sum_value').text(totalSum.toFixed(2));
@@ -102,16 +110,14 @@ function updateArray(resultsArrayItem, productIdsItem, quantity) {
 
 
 }
+
 function updateSumOfQuantityArr() {
     var quantityArr = JSON.parse($('#quantityArr').val());
 
-    quantityArrDisplay = quantityArr.reduce(function (accumulator, currentValue) {
+    quantityArrDisplay = quantityArr.reduce(function(accumulator, currentValue) {
         return accumulator + parseInt(currentValue, 10);
     }, 0);
 
     $('#quantityArrDisplay').val(quantityArrDisplay);
     $('#quantityArrDisplay2').text(quantityArrDisplay);
 }
-
-
-

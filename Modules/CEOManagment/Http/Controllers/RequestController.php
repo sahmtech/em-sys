@@ -29,8 +29,6 @@ class RequestController extends Controller
     {
         $this->moduleUtil = $moduleUtil;
         $this->requestUtil = $requestUtil;
-
-       
     }
     public function index()
     {
@@ -44,8 +42,9 @@ class RequestController extends Controller
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
 
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+
             ->where(function ($query) {
-                $query->where('name', 'like', '%تنفيذ%');
+                $query->where('name', 'LIKE', '%تنفيذ%');
             })
             ->pluck('id')->toArray();
 
