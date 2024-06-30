@@ -160,7 +160,7 @@ class EssentialsManageEmployeeController extends Controller
                 'activeAppointmet'
             ])
             ->where('users.is_cmmsn_agnt', 0)
-            ->whereIn('user_type', ['employee', 'manager'])
+            ->whereIn('user_type', ['employee', 'manager', 'department_head'])
 
             ->leftJoin('essentials_admission_to_works', function ($join) {
                 $join->on('essentials_admission_to_works.employee_id', '=', 'users.id')
@@ -419,7 +419,7 @@ class EssentialsManageEmployeeController extends Controller
             ->with(['essentialsEmployeesInsurance', 'activeAdmission', 'activeAppointmet', 'activeInternationalCertificate', 'activeCarRegistration', 'activeDriversLicense', 'activeNationalId', 'activeIban', 'activeResidencePermit', 'activePassport', 'activeOfficialDocument', 'activeContract'])
             ->where(function ($query) {
                 $query->where(function ($q1) {
-                    $q1->whereIn('user_type', ['employee', 'manager'])
+                    $q1->whereIn('user_type', ['employee', 'manager', 'department_head'])
                         ->where(function ($q2) {
                             $q2->whereDoesntHave('activeContract')
                                 ->orWhereDoesntHave('activeOfficialDocument')
@@ -693,7 +693,7 @@ class EssentialsManageEmployeeController extends Controller
             ->with(['essentialsEmployeesInsurance', 'activeAdmission', 'activeAppointmet', 'activeInternationalCertificate', 'activeCarRegistration', 'activeDriversLicense', 'activeNationalId', 'activeIban', 'activeResidencePermit', 'activePassport', 'activeOfficialDocument', 'activeContract'])
             ->where(function ($query) {
                 $query->where(function ($q1) {
-                    $q1->whereIn('user_type', ['employee', 'manager'])
+                    $q1->whereIn('user_type', ['employee', 'manager', 'department_head'])
                         ->where(function ($q2) {
                             $q2->whereDoesntHave('activeContract')
                                 ->orWhereDoesntHave('activeOfficialDocument')
@@ -754,19 +754,19 @@ class EssentialsManageEmployeeController extends Controller
                 $usersWithNullAdmission->whereDoesntHave('activeResidencePermit');
             }
             if ($missing_files_filter == 'Iban') {
-                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeIban');
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager', 'department_head'])->whereDoesntHave('activeIban');
             }
             if ($missing_files_filter == 'national_id') {
-                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeNationalId');
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager', 'department_head'])->whereDoesntHave('activeNationalId');
             }
             if ($missing_files_filter == 'drivers_license') {
-                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeDriversLicense');
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager', 'department_head'])->whereDoesntHave('activeDriversLicense');
             }
             if ($missing_files_filter == 'car_registration') {
-                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeCarRegistration');
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager', 'department_head'])->whereDoesntHave('activeCarRegistration');
             }
             if ($missing_files_filter == 'international_certificate') {
-                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager'])->whereDoesntHave('activeInternationalCertificate');
+                $usersWithNullAdmission->whereIn('user_type', ['employee', 'manager', 'department_head'])->whereDoesntHave('activeInternationalCertificate');
             }
         }
 
@@ -810,7 +810,7 @@ class EssentialsManageEmployeeController extends Controller
                                 }
                             }
                         }
-                        if ($row->user_type == 'employee' || $row->user_type == 'manager') {
+                        if ($row->user_type == 'employee' || $row->user_type == 'manager' || $row->user_type == 'department_head') {
                             try {
                                 if ($row->activePassport->is_active == 0) {
                                     $missings_files .= __('essentials::lang.passport') . '\n';
@@ -1413,7 +1413,7 @@ class EssentialsManageEmployeeController extends Controller
         $documents = new Collection();
 
         if (
-            $user && ($user->user_type == 'employee' || $user->user_type == 'manager')
+            $user && ($user->user_type == 'employee' || $user->user_type == 'manager' || $user->user_type == 'department_head')
         ) {
             $officialDocuments = $user->OfficialDocument()->where('is_active', 1)->get();
 
