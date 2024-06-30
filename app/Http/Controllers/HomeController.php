@@ -384,7 +384,7 @@ class HomeController extends Controller
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
 
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
-            ['id' => 'informationtechnologymanagment',  'permissions' => $InformationTechnologDashPermission, 'title' => __('informationtechnologymanagment::lang.informationtechnologymanagment'), 'icon' => "fas fa-laptop-code", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'informationtechnologymanagment',  'permissions' => $InformationTechnologDashPermission, 'title' => __('informationtechnologymanagment::lang.informationtechnologymanagment'), 'icon' => "fas fa-laptop-code", 'link' => action([\Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])],
 
             ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
             ['id' => 'FollowUp',  'permissions' => $followupDashPermission, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
