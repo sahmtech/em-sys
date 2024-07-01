@@ -261,7 +261,13 @@ class WkProcedureController extends Controller
             if (count($check_repeated) !== count(array_unique($check_repeated))) {
                 throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
             }
+            if ($request->customer_department) {
+                $request_type = RequestsType::where('id', $type)->first();
 
+                $request_type->start_from_customer = 1;
+                $request_type->customer_department = $request->customer_department;
+                $request_type->save();
+            }
             $previousStepIds = [];
             foreach ($add_modal_department_id_start as $start_dep) {
                 if ($start_dep) {

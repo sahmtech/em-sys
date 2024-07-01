@@ -10,8 +10,10 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
-Route::prefix('informationtechnologymanagment')->group(function () {
-    Route::get('/', 'InformationTechnologyManagmentController@index');
-    Route::get('/dashboard', [Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])->name('informationtechnologymanagment.dashboard');
+    Route::prefix('informationtechnologymanagment')->group(function () {
+        Route::get('/', 'InformationTechnologyManagmentController@index');
+        Route::get('/dashboard', [Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])->name('informationtechnologymanagment.dashboard');
+    });
 });

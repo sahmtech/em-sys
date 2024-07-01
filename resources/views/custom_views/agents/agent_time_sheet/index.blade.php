@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.payroll'))
+@section('title', __('agent.time_sheet'))
 
 @section('content')
 
     <section class="content-header">
-        <h1> @lang('agent.payroll')
+        <h1> @lang('agent.time_sheet')
         </h1>
     </section>
     <!-- Main content -->
@@ -16,13 +16,13 @@
                         <li class="active">
                             <a href="#payrolls_groups_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-coins" aria-hidden="true"></i>
-                                @lang('agent.payroll_groups')
+                                @lang('agent.time_sheet_groups')
                             </a>
                         </li>
                         <li>
                             <a href="#payrolls_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-layer-group" aria-hidden="true"></i>
-                                @lang('agent.payrolls')
+                                @lang('agent.time_sheet')
                             </a>
                         </li>
                     </ul>

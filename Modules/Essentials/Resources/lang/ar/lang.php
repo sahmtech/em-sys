@@ -1910,6 +1910,9 @@ return [
   'cancle_contract_under_trial' => 'إنهاء العقد خلال الفترة التجريبية',
   'edit_qualification' => 'تعديل المؤهل العلمي',
   'contract_canceled_successfully' => 'تم إنهاء العقد بنجاح',
-  'edit_lead_contact' => 'تعديل عميل محتمل'
+  'edit_lead_contact' => 'تعديل عميل محتمل',
+  'start_from_customer' => 'يمكن للعميل تقديم الطلب',
+  'selectDepartmentStartFrom' => 'الإدارة التي يبدأ عندها ',
+
 
 ];
