@@ -355,6 +355,7 @@ return [
     'canceled_date' => 'تاريخ الإلغاء',
     'notes' => 'ملاحظات',
     'please_select_rows' => 'الرجاء اختيار عمالة',
+    'department_head' => 'رئيس قسم'
 
     //''=>''
 

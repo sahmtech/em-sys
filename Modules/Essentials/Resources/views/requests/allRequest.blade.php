@@ -1217,8 +1217,6 @@
             </div>
         </div>
 
-
-
         {{-- view request activities --}}
         <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog"
             aria-labelledby="activitiesModalLabel" aria-hidden="true">
@@ -1329,12 +1327,12 @@
                         data: 'is_new',
 
                         render: function(data, type, row) {
-                            console.log('11111111111');
+
                             var buttonsHtml = '';
                             var userId = "{{ auth()->user()->id }}";
-                            console.log(userId);
+
                             if (data != '0' && row.created_by == userId) {
-                                console.log('22222222222');
+
                                 buttonsHtml +=
                                     `<button class="btn btn-primary edit-request" data-id="${row.id}" data-type="${row.request_type_id}">@lang('request.edit')</button>`;
                                 buttonsHtml +=

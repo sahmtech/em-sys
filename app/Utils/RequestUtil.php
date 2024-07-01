@@ -1192,7 +1192,7 @@ class RequestUtil extends Util
             'type' => trans("request.{$type}"),
             'started_depatment' => [
                 'id' => $firstStep->started_department_id,
-                'name' => $departments[$firstStep->started_department_id],
+                'name' => $firstStep->started_department_id ? $departments[$firstStep->started_department_id] : null,
             ],
             'created_at' => carbon::parse($request->created_at)->format('y:m:d h:m:i'),
             'updated_at' => carbon::parse($request->updated_at)->format('y:m:d h:m:i'),
