@@ -18,6 +18,7 @@ return [
   'additional_allowances' => 'بدلات إضافية',
   'deductions' => 'الخصومات',
   'time_sheet' => 'تايم شييت',
+  'time_sheet_groups' => 'مجموعات التايم شييت',
   'edit_time_sheet' => 'تعديل',
   'add_time_sheet' => 'إصدار',
   'absence_deductions' => 'خصم الغياب',

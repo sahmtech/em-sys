@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Business;
 use App\BusinessLocation;
 use App\Category;
@@ -20,7 +21,7 @@ use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use App\VariationLocationDetails;
 use Carbon\Carbon;
-use DB;
+
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
@@ -40,6 +41,29 @@ use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Activitylog\Models\Activity;
 
+use App\AccessRole;
+use App\AccessRoleRequest;
+use App\AccessRoleCompany;
+use App\Request as UserRequest;
+use App\RequestProcess;
+use App\RequestAttachment;
+use App\SentNotification;
+use App\SentNotificationsUser;
+use Modules\CEOManagment\Entities\WkProcedure;
+use Modules\CEOManagment\Entities\ProcedureTask;
+use Modules\CEOManagment\Entities\RequestProcedureTask;
+use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\ToDo;
+use Modules\Essentials\Notifications\NewTaskNotification;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
+use Modules\Essentials\Entities\UserLeaveBalance;
+use Modules\Essentials\Entities\EssentialsLeaveType;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\CEOManagment\Entities\Task;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use stdClass;
 
 class AgentController extends Controller
 {
@@ -57,6 +81,9 @@ class AgentController extends Controller
     protected $restUtil;
 
     protected $requestUtil;
+
+    protected $statuses;
+
 
 
 
@@ -81,6 +108,20 @@ class AgentController extends Controller
 
 
         $this->requestUtil = $requestUtil;
+        $this->statuses = [
+            'approved' => [
+                'name' => __('request.approved'),
+                'class' => 'bg-green',
+            ],
+            'rejected' => [
+                'name' => __('request.rejected'),
+                'class' => 'bg-red',
+            ],
+            'pending' => [
+                'name' => __('request.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
     }
     private function __chartOptions2()
     {
@@ -356,6 +397,7 @@ class AgentController extends Controller
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
             $status_filltetr = $this->moduleUtil->getUserStatus();
+
             $user = User::where('id', auth()->user()->id)->first();
             $contact_id =  $user->crm_contact_id;
             $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
@@ -573,115 +615,811 @@ class AgentController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
+    private function getTypePrefix($request_type_id)
+    {
+        $prefix = RequestsType::where('id', $request_type_id)->first()->prefix;
+        return $prefix;
+    }
+    public function makeToDo($request, $business_id)
+    {
 
 
+        $created_by = $request->created_by;
+
+        $request_type = RequestsType::where('id', $request->request_type_id)->first()->type;
+        $input['business_id'] = $business_id;
+        $input['company_id'] = $business_id;
+        $input['created_by'] = $created_by;
+        $input['task'] = "طلب جديد";
+        $input['date'] = Carbon::now();
+        $input['priority'] = 'high';
+        $input['description'] = $request_type;
+        $input['status'] = !empty($input['status']) ? $input['status'] : 'new';
+
+        $process = RequestProcess::where('request_id', $request->id)->latest()->first();
+        $users = [];
+        $userCompanyId = User::where('id', $request->related_to)->first()->company_id;
+        $acessRoleCompany = AccessRoleCompany::where('company_id', $userCompanyId)->pluck('access_role_id')->toArray();
+        $rolesFromAccessRoles = AccessRole::whereIn('id', $acessRoleCompany)->pluck('role_id')->toArray();
+
+        $procedure = $process->procedure_id;
+        $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
+        $viewRequestPermission = $this->getViewRequestsPermission($department_id);
+        if ($viewRequestPermission) {
+            $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+            $rolesIds = $permission_id->roles->pluck('id')->toArray();
+            $users = User::whereHas('roles', function ($query) use ($rolesIds,  $rolesFromAccessRoles) {
+                $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+            })->where('essentials_department_id', $department_id);
+        }
+
+
+        $input['task_id'] = $request->request_no;
+
+        $to_dos = ToDo::create($input);
+        $usersData = $users->get();
+
+        $to_dos->users()->sync($usersData);
+
+
+        $user_ids = $users->pluck('id')->toArray();
+        $to =  $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+            ->pluck('full_name')->toArray();
+        if (!empty($user_ids)) {
+            $to = [];
+            $userName = User::where('id', $request->related_to)->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+                ->pluck('full_name')->toArray()[0];
+            $sentNotification = SentNotification::create([
+                'via' => 'dashboard',
+                'type' => 'GeneralManagementNotification',
+                'title' =>  $input['task'],
+                'msg' => __('request.' . $request_type) . ' ' . $userName,
+                'sender_id' => auth()->user()->id,
+                'to' => json_encode($to),
+            ]);
+            // $details = new stdClass();
+            // $details->title =  $input['task'];
+            // $details->message = $request_type;
+
+            foreach ($user_ids as $user_id) {
+                SentNotificationsUser::create([
+                    'sent_notifications_id' => $sentNotification->id,
+                    'user_id' => $user_id,
+                ]);
+                // User::where('id', $user_id)->first()?->notify(new GeneralNotification($details, false, true));
+            }
+        }
+    }
+    // public function storeAgentRequests(Request $request)
+    // {
+
+    //     try {
+    //         $business_id = request()->session()->get('user.business_id');
+    //         $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+    //         $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
+    //         $end_date = $request->end_date ?? $request->return_date;
+    //         $today = Carbon::today();
+    //         $var = RequestsType::where('id', $request->type)->first();
+    //         $type = $var->type;
+    //         $customer_department = $var->customer_department;
+
+    //         if ($startDate && $type != 'escapeRequest') {
+    //             $startDateCarbon = Carbon::parse($startDate);
+    //             if ($startDateCarbon->lt($today)) {
+    //                 $message = __('request.time_is_gone');
+    //                 return redirect()->back()->withErrors([$message]);
+    //             }
+    //             if ($end_date) {
+
+    //                 $endDateCarbon = Carbon::parse($end_date);
+
+    //                 if ($startDateCarbon->gt($endDateCarbon)) {
+    //                     $message = __('request.start_date_after_end_date');
+    //                     return redirect()->back()->withErrors([$message]);
+    //                 }
+    //             }
+    //         }
+
+
+    //         if ($type == 'leavesAndDepartures' && is_null($request->leaveType)) {
+    //             $output = [
+    //                 'success' => false,
+    //                 'msg' => __('request.please select the type of leave'),
+    //             ];
+    //             return redirect()->back()->withErrors([$output['msg']]);
+    //         }
+
+
+
+    //         $requestTypeFor = RequestsType::findOrFail($request->type)->for;
+    //         $createdByUser = auth()->user();
+    //         $createdBy_type = $createdByUser->user_type;
+    //         $createdBy_department = $createdByUser->essentials_department_id;
+
+    //         $success = 1;
+
+    //         foreach ($request->user_id as $userId) {
+    //             $count_of_users = count($request->user_id);
+    //             if ($userId === null) continue;
+    //             $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
+    //             if ($isExists && count($request->user_id) == 1) {
+    //                 $output = [
+    //                     'success' => 0,
+    //                     'msg' => __('request.this_user_has_this_request_recently'),
+    //                 ];
+    //                 return redirect()->back()->withErrors([$output['msg']]);
+    //             }
+    //             if (!$isExists) {
+
+    //                 if ($type == "exitRequest") {
+
+    //                     $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $userId)->first()->contract_end_date ?? null;
+    //                 }
+    //                 if ($type == "leavesAndDepartures") {
+    //                     $leaveBalance = UserLeaveBalance::where([
+    //                         'user_id' => $userId,
+    //                         'essentials_leave_type_id' => $request->leaveType,
+    //                     ])->first();
+
+    //                     if (!$leaveBalance || $leaveBalance->amount == 0) {
+    //                         if ($count_of_users == 1) {
+    //                             $messageKey = !$leaveBalance ? 'this_user_cant_ask_for_leave_request' : 'this_user_has_not_enough_leave_balance';
+    //                             $message = __("request.$messageKey");
+    //                             DB::rollBack();
+    //                             return redirect()->back()->withErrors([$message]);
+    //                         }
+    //                         continue;
+    //                     } else {
+
+    //                         $startDate = Carbon::parse($startDate);
+    //                         $endDate = Carbon::parse($end_date);
+    //                         $daysRequested = $startDate->diffInDays($endDate) + 1;
+
+    //                         if ($daysRequested > $leaveBalance->amount) {
+    //                             if ($count_of_users == 1) {
+    //                                 $message = __("request.this_user_has_not_enough_leave_balance");
+    //                                 DB::rollBack();
+    //                                 return redirect()->back()->withErrors([$message]);
+    //                             }
+    //                             continue;
+    //                         }
+    //                     }
+    //                 }
+    //                 if ($type == 'cancleContractRequest' && !empty($request->main_reason)) {
+
+    //                     $contract = EssentialsEmployeesContract::where('employee_id', $userId)->firstOrFail();
+    //                     if (is_null($contract->wish_id)) {
+    //                         if ($count_of_users == 1) {
+    //                             $output = [
+    //                                 'success' => false,
+    //                                 'msg' => __('request.no_wishes_found'),
+    //                             ];
+
+    //                             return redirect()->back()->withErrors([$output['msg']]);
+    //                         }
+    //                         continue;
+    //                     }
+    //                     if (now()->diffInMonths($contract->contract_end_date) > 1) {
+    //                         if ($count_of_users == 1) {
+    //                             $output = [
+    //                                 'success' => false,
+    //                                 'msg' => __('request.contract_expired'),
+    //                             ];
+
+    //                             return redirect()->back()->withErrors([$output['msg']]);
+    //                         }
+    //                         continue;
+    //                     }
+    //                 }
+    //                 $Request = new UserRequest;
+
+    //                 $Request->request_no = $this->generateRequestNo($request->type);
+    //                 $Request->related_to = $userId;
+    //                 $Request->request_type_id = $request->type;
+    //                 $Request->start_date = $startDate;
+    //                 $Request->end_date = $end_date;
+    //                 $Request->reason = $request->reason;
+    //                 $Request->note = $request->note;
+    //                 $Request->attachment = $attachmentPath;
+    //                 $Request->essentials_leave_type_id = $request->leaveType;
+    //                 $Request->escape_time = $request->escape_time;
+    //                 $Request->installmentsNumber = $request->installmentsNumber;
+    //                 $Request->monthlyInstallment = $request->monthlyInstallment;
+    //                 $Request->advSalaryAmount = $request->amount;
+    //                 $Request->created_by = auth()->user()->id;
+    //                 $Request->insurance_classes_id = $request->ins_class;
+    //                 $Request->baladyCardType = $request->baladyType;
+    //                 $Request->resCardEditType = $request->resEditType;
+    //                 $Request->workInjuriesDate = $request->workInjuriesDate;
+    //                 $Request->contract_main_reason_id = $request->main_reason;
+    //                 $Request->contract_sub_reason_id = $request->sub_reason;
+    //                 $Request->visa_number = $request->visa_number;
+    //                 $Request->atmCardType = $request->atmType;
+    //                 $Request->authorized_entity = $request->authorized_entity;
+    //                 $Request->commissioner_info = $request->commissioner_info;
+    //                 $Request->trip_type = $request->trip_type;
+    //                 $Request->Take_off_location = $request->Take_off_location;
+    //                 $Request->destination = $request->destination;
+    //                 $Request->weight_of_furniture = $request->weight_of_furniture;
+    //                 $Request->date_of_take_off = $request->date_of_take_off;
+    //                 $Request->time_of_take_off = $request->time_of_take_off;
+    //                 $Request->return_date = $request->return_date_of_trip;
+
+
+    //                 $Request->job_title_id = $request->job_title;
+    //                 $Request->specialization_id = $request->profession;
+    //                 $Request->nationality_id = $request->nationlity;
+    //                 $Request->number_of_salary_inquiry = $request->number_of_salary_inquiry;
+
+    //                 $Request->sale_project_id = $request->project_name;
+    //                 $Request->interview_date = $request->interview_date;
+    //                 $Request->interview_time = $request->interview_time;
+    //                 $Request->interview_place = $request->interview_place;
+
+
+
+
+    //                 $Request->save();
+
+
+
+    //                 if ($attachmentPath) {
+    //                     RequestAttachment::create([
+    //                         'request_id' => $Request->id,
+    //                         'file_path' => $attachmentPath,
+    //                     ]);
+    //                 }
+    //                 if ($Request) {
+    //                     $process = null;
+
+
+    //                     $procedure = WkProcedure::where('business_id', $business_id)
+    //                         ->where('request_type_id', $request->type)->where('start', 1)->where('department_id', $customer_department)->first();
+
+
+    //                     if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
+
+    //                         $nextProcedure = WkProcedure::where('business_id', $business_id)->where('request_type_id', $request->type)
+    //                             ->where('department_id', $procedure->next_department_id)->first();
+
+
+    //                         $process =   RequestProcess::create([
+
+    //                             'request_id' => $Request->id,
+    //                             'procedure_id' => $nextProcedure ? $nextProcedure->id : null,
+    //                             'status' => 'pending',
+
+    //                         ]);
+    //                         if ($nextProcedure->action_type = 'task') {
+    //                             $procedureTasks = ProcedureTask::where('procedure_id', $nextProcedure->id)->get();
+    //                             foreach ($procedureTasks as $task) {
+    //                                 $requestTasks = new RequestProcedureTask();
+    //                                 $requestTasks->request_id = $Request->id;
+    //                                 $requestTasks->procedure_task_id = $task->id;
+    //                                 $requestTasks->save();
+    //                             }
+    //                         }
+    //                     } else {
+
+
+
+    //                         $process = RequestProcess::create([
+
+    //                             'request_id' => $Request->id,
+    //                             'procedure_id' => $procedure ? $procedure->id : null,
+    //                             'status' => 'pending',
+
+    //                         ]);
+    //                     }
+
+
+    //                     if (!$process) {
+
+    //                         RequestAttachment::where('request_id', $Request->id)->delete();
+    //                         $Request->delete();
+    //                     }
+    //                 } else {
+
+    //                     $success = 0;
+    //                 }
+    //             }
+    //         }
+
+    //         if ($success) {
+    //             $this->makeToDo($Request, $business_id);
+    //             $output = [
+    //                 'success' => 1,
+    //                 'msg' => __('messages.added_success'),
+    //             ];
+    //             return redirect()->back()->with('success', $output['msg']);
+    //         } else {
+    //             $output = [
+    //                 'success' => 0,
+    //                 'msg' => __('messages.something_went_wrong'),
+    //             ];
+    //             return redirect()->back()->withErrors([$output['msg']]);
+    //         }
+    //     } catch (\Exception $e) {
+    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    //         error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    //         $output = [
+    //             'success' => false,
+    //             'msg' => __('messages.something_went_wrong'),
+    //         ];
+    //     }
+    // }
     public function storeAgentRequests(Request $request)
     {
+        DB::beginTransaction();
+
         try {
-            $business_id = request()->session()->get('user.business_id');
-            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-                ->where(function ($query) {
-                    $query->where('name', 'LIKE', '%متابعة%')
-                        ->orWhere(function ($query) {
-                            $query->where('name', 'LIKE', '%تشغيل%')
-                                ->where('name', 'LIKE', '%أعمال%');
-                        })->orWhere(function ($query) {
-                            $query->where('name', 'LIKE', '%تشغيل%')
-                                ->where('name', 'LIKE', '%شركات%');
-                        });
-                })
-                ->pluck('id')->toArray();
-            return $this->requestUtil->storeRequest($request, $departmentIds);
+            $business_id = $request->session()->get('user.business_id');
+            $attachmentPath = $request->hasFile('attachment') ? $request->attachment->store('/requests_attachments') : null;
+            $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
+            $end_date = $request->end_date ?? $request->return_date;
+            $today = Carbon::today();
+            $requestType = RequestsType::findOrFail($request->type);
+            $type = $requestType->type;
+            $customer_department = $requestType->customer_department;
+
+            if ($this->isInvalidDateRange($type, $startDate, $end_date, $today)) {
+                return redirect()->back()->withErrors([__('request.time_is_gone')]);
+            }
+
+            if ($type == 'leavesAndDepartures' && is_null($request->leaveType)) {
+                return redirect()->back()->withErrors([__('request.please select the type of leave')]);
+            }
+
+            $createdByUser = auth()->user();
+            $createdBy_type = $createdByUser->user_type;
+
+            foreach ($request->user_id as $userId) {
+                if ($userId === null) continue;
+
+                if ($this->hasPendingRequest($userId, $request->type, $request->user_id)) {
+                    return redirect()->back()->withErrors([__('request.this_user_has_this_request_recently')]);
+                }
+
+                if (!$this->processUserRequest($userId, $request, $type, $startDate, $end_date, $customer_department, $createdBy_type, $business_id, $attachmentPath)) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors([__('messages.something_went_wrong')]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', __('messages.added_success'));
         } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
+            error_log($e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
+            return redirect()->back()->withErrors([__('messages.something_went_wrong')]);
         }
     }
 
-    public function agentRequests()
+    private function isInvalidDateRange($type, $startDate, $end_date, $today)
     {
-
-        // $business_id = request()->session()->get('user.business_id');
-
-
-        // $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-        // $ContactsLocation = SalesProject::all()->pluck('name', 'id');
-
-        // $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
-        // $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
-
-        // $user = User::where('id', auth()->user()->id)->first();
-        // $contact_id =  $user->crm_contact_id;
-        // $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        // $requestsProcess = FollowupWorkerRequest::select([
-        //     'followup_worker_requests.request_no',
-        //     'followup_worker_requests_process.id as process_id',
-        //     'followup_worker_requests.id',
-        //     'followup_worker_requests.type as type',
-        //     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-        //     'followup_worker_requests.created_at',
-        //     'followup_worker_requests_process.status',
-        //     'followup_worker_requests_process.status_note as note',
-        //     'followup_worker_requests.reason',
-        //     'essentials_wk_procedures.department_id as department_id',
-        //     'users.id_proof_number',
-        //     'essentials_wk_procedures.can_return',
-        //     'users.assigned_to'
-
-        // ])
-        //     ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-        //     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-        //     ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-        //     ->where('user_type', 'worker')
-        //     ->whereIn('assigned_to', $projectsIds);
-
-
-        // if (request()->ajax()) {
-
-
-        //     return DataTables::of($requestsProcess ?? [])
-
-        //         ->editColumn('created_at', function ($row) {
-
-
-        //             return Carbon::parse($row->created_at);
-        //         })
-        //         ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
-        //             $item = $ContactsLocation[$row->assigned_to] ?? '';
-
-        //             return $item;
-        //         })
-        //         ->editColumn('status', function ($row) {
-
-
-
-        //             $status = trans('followup::lang.' . $row->status) ?? ' ';
-
-
-        //             return $status;
-        //         })
-
-        //         ->rawColumns(['status'])
-
-
-        //         ->make(true);
-        // }
-        // $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        // $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $projectsIds)->select(
-        //     'id',
-        //     DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        //  ' - ',COALESCE(id_proof_number,'')) as full_name")
-        // )->pluck('full_name', 'id');
-
-        // $statuses = $this->statuses;
-
-
-
-        // return view('custom_views.agents.requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+        if ($startDate && $type != 'escapeRequest') {
+            $startDateCarbon = Carbon::parse($startDate);
+            if ($startDateCarbon->lt($today)) {
+                return true;
+            }
+            if ($end_date) {
+                $endDateCarbon = Carbon::parse($end_date);
+                if ($startDateCarbon->gt($endDateCarbon)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
+    private function hasPendingRequest($userId, $requestTypeId, $userIds)
+    {
+        $isExists = UserRequest::where('related_to', $userId)
+            ->where('request_type_id', $requestTypeId)
+            ->where('status', 'pending')
+            ->first();
+
+        return $isExists && count($userIds) == 1;
+    }
+
+    private function processUserRequest($userId, $request, $type, $startDate, $end_date, $customer_department, $createdBy_type, $business_id, $attachmentPath)
+    {
+        if ($type == "exitRequest") {
+            $startDate = DB::table('essentials_employees_contracts')
+                ->where('employee_id', $userId)
+                ->first()
+                ->contract_end_date ?? null;
+        }
+
+        if ($type == "leavesAndDepartures" && !$this->validateLeaveBalance($userId, $request, $startDate, $end_date, $request->user_id)) {
+            return false;
+        }
+
+        if ($type == 'cancleContractRequest' && !$this->validateContractCancellation($userId, $request, $request->user_id)) {
+            return false;
+        }
+
+        $newRequest = $this->createUserRequest($request, $userId, $startDate, $end_date, $attachmentPath);
+
+        if ($attachmentPath) {
+            RequestAttachment::create([
+                'request_id' => $newRequest->id,
+                'file_path' => $attachmentPath,
+            ]);
+        }
+
+        return $this->processRequestProcedure($newRequest, $request->type, $business_id, $customer_department, $createdBy_type);
+    }
+
+    private function validateLeaveBalance($userId, $request, $startDate, $end_date, $userIds)
+    {
+        $leaveBalance = UserLeaveBalance::where([
+            'user_id' => $userId,
+            'essentials_leave_type_id' => $request->leaveType,
+        ])->first();
+
+        if (!$leaveBalance || $leaveBalance->amount == 0) {
+            if (count($userIds) == 1) {
+                $messageKey = !$leaveBalance ? 'this_user_cant_ask_for_leave_request' : 'this_user_has_not_enough_leave_balance';
+                return redirect()->back()->withErrors([__("request.$messageKey")]);
+            }
+            return false;
+        }
+
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($end_date);
+        $daysRequested = $startDate->diffInDays($endDate) + 1;
+
+        if ($daysRequested > $leaveBalance->amount) {
+            if (count($userIds) == 1) {
+                return redirect()->back()->withErrors([__("request.this_user_has_not_enough_leave_balance")]);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private function validateContractCancellation($userId, $request, $userIds)
+    {
+        $contract = EssentialsEmployeesContract::where('employee_id', $userId)->firstOrFail();
+        if (is_null($contract->wish_id)) {
+            if (count($userIds) == 1) {
+                return redirect()->back()->withErrors([__('request.no_wishes_found')]);
+            }
+            return false;
+        }
+        if (now()->diffInMonths($contract->contract_end_date) > 1) {
+            if (count($userIds) == 1) {
+                return redirect()->back()->withErrors([__('request.contract_expired')]);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private function createUserRequest($request, $userId, $startDate, $end_date, $attachmentPath)
+    {
+        return UserRequest::create([
+            'request_no' => $this->generateRequestNo($request->type),
+            'related_to' => $userId,
+            'request_type_id' => $request->type,
+            'start_date' => $startDate,
+            'end_date' => $end_date,
+            'reason' => $request->reason,
+            'note' => $request->note,
+            'attachment' => $attachmentPath,
+            'essentials_leave_type_id' => $request->leaveType,
+            'escape_time' => $request->escape_time,
+            'installmentsNumber' => $request->installmentsNumber,
+            'monthlyInstallment' => $request->monthlyInstallment,
+            'advSalaryAmount' => $request->amount,
+            'created_by' => auth()->user()->id,
+            'insurance_classes_id' => $request->ins_class,
+            'baladyCardType' => $request->baladyType,
+            'resCardEditType' => $request->resEditType,
+            'workInjuriesDate' => $request->workInjuriesDate,
+            'contract_main_reason_id' => $request->main_reason,
+            'contract_sub_reason_id' => $request->sub_reason,
+            'visa_number' => $request->visa_number,
+            'atmCardType' => $request->atmType,
+            'authorized_entity' => $request->authorized_entity,
+            'commissioner_info' => $request->commissioner_info,
+            'trip_type' => $request->trip_type,
+            'Take_off_location' => $request->Take_off_location,
+            'destination' => $request->destination,
+            'weight_of_furniture' => $request->weight_of_furniture,
+            'date_of_take_off' => $request->date_of_take_off,
+            'time_of_take_off' => $request->time_of_take_off,
+            'return_date' => $request->return_date_of_trip,
+            'job_title_id' => $request->job_title,
+            'specialization_id' => $request->profession,
+            'nationality_id' => $request->nationlity,
+            'number_of_salary_inquiry' => $request->number_of_salary_inquiry,
+            'sale_project_id' => $request->project_name,
+            'interview_date' => $request->interview_date,
+            'interview_time' => $request->interview_time,
+            'interview_place' => $request->interview_place,
+        ]);
+    }
+
+    private function processRequestProcedure($request, $requestTypeId, $business_id, $customer_department, $createdBy_type)
+    {
+        $procedure = WkProcedure::where('business_id', $business_id)
+            ->where('request_type_id', $requestTypeId)
+            ->where('start', 1)
+            ->where('department_id', $customer_department)
+            ->first();
+
+        if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
+            $nextProcedure = WkProcedure::where('business_id', $business_id)
+                ->where('request_type_id', $requestTypeId)
+                ->where('department_id', $procedure->next_department_id)
+                ->first();
+
+            $process = RequestProcess::create([
+                'request_id' => $request->id,
+                'procedure_id' => $nextProcedure ? $nextProcedure->id : null,
+                'status' => 'pending',
+            ]);
+
+            if ($nextProcedure && $nextProcedure->action_type == 'task') {
+                $this->createRequestProcedureTasks($request->id, $nextProcedure->id);
+            }
+        } else {
+            $process = RequestProcess::create([
+                'request_id' => $request->id,
+                'procedure_id' => $procedure ? $procedure->id : null,
+                'status' => 'pending',
+            ]);
+        }
+
+        if (!$process) {
+            RequestAttachment::where('request_id', $request->id)->delete();
+            $request->delete();
+            return false;
+        }
+
+        $this->makeToDo($request, $business_id);
+        return true;
+    }
+
+    private function createRequestProcedureTasks($requestId, $procedureId)
+    {
+        $procedureTasks = ProcedureTask::where('procedure_id', $procedureId)->get();
+        foreach ($procedureTasks as $task) {
+            RequestProcedureTask::create([
+                'request_id' => $requestId,
+                'procedure_task_id' => $task->id,
+            ]);
+        }
+    }
+    public function generateRequestNo($request_type_id)
+    {
+        $type = RequestsType::where('id', $request_type_id)->first()->type;
+        $RequestsTypes = RequestsType::where('type', $type)->pluck('id')->toArray();
+
+        $latestRecord = UserRequest::whereIn('request_type_id', $RequestsTypes)->orderBy('request_no', 'desc')->first();
+
+        if ($latestRecord) {
+            $latestRefNo = $latestRecord->request_no;
+            $prefix = $this->getTypePrefix($request_type_id);
+            $numericPart = (int)substr($latestRefNo, strlen($prefix));
+            $numericPart++;
+            $input['request_no'] = $prefix . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+        } else {
+            $input['request_no'] = $this->getTypePrefix($request_type_id) . '0001';
+        }
+
+        return $input['request_no'];
+    }
+    public function agentRequests()
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+
+        $requestTypes = RequestsType::where('start_from_customer', 1)
+            ->get()
+            ->mapWithKeys(function ($requestType) {
+                return [$requestType->id => $requestType->type];
+            })
+            ->unique()
+            ->toArray();
+
+
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $statuses = $this->statuses;
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->pluck('reason', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
+
+        $contact_id =  $user->crm_contact_id;
+        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+        $created_users = User::select(
+            'id',
+            DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name")
+        )->pluck('full_name', 'id');
+
+        $users = User::where('user_type', 'worker')
+            ->whereIn('users.assigned_to', $projectsIds)
+            ->where(function ($query) {
+                $query->where('status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('status', 'inactive')
+                            ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->pluck('id')
+            ->unique()
+            ->toArray();
+
+        $all_users = User::whereIn('id', $users)
+            ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))
+            ->get();
+
+        $all_users = $all_users->pluck('full_name', 'id');
+
+        $requestsProcess = null;
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
+
+        $requestsProcess = UserRequest::select([
+
+            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
+
+            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+
+            'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+
+
+
+        ])
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('requests.id', '=', 'latest_process.request_id');
+            })
+            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+            ->leftjoin('procedure_tasks', 'procedure_tasks.procedure_id', '=', 'wk_procedures.id')
+            ->leftjoin('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+            ->leftjoin('request_procedure_tasks', function ($join) {
+                $join->on('request_procedure_tasks.procedure_task_id', '=', 'procedure_tasks.id')
+                    ->on('request_procedure_tasks.request_id', '=', 'requests.id');
+            })
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+
+            ->whereIn('requests.related_to', $users)
+            ->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
+
+        if (request()->input('status') && request()->input('status') !== 'all') {
+
+            $requestsProcess->where('process.status', request()->input('status'));
+        }
+
+
+        if (request()->input('type') && request()->input('type') !== 'all') {
+
+            $types = RequestsType::where('type', request()->input('type'))->pluck('id')->toArray();
+            $requestsProcess->whereIn('requests.request_type_id', $types);
+        }
+        $requests = $requestsProcess->get();
+
+        foreach ($requests as $request) {
+            $tasksDetails = DB::table('request_procedure_tasks')
+                ->join('procedure_tasks', 'procedure_tasks.id', '=', 'request_procedure_tasks.procedure_task_id')
+                ->join('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+                ->where('procedure_tasks.procedure_id', $request->procedure_id)
+                ->where('request_procedure_tasks.request_id', $request->id)
+                ->select('tasks.description', 'request_procedure_tasks.id', 'request_procedure_tasks.procedure_task_id', 'tasks.link', 'request_procedure_tasks.isDone', 'procedure_tasks.procedure_id')
+                ->get();
+
+
+            $request->tasksDetails = $tasksDetails;
+        }
+
+        if (request()->ajax()) {
+
+
+            return DataTables::of($requests ?? [])
+                ->editColumn('created_at', function ($row) {
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                    if ($row->request_type_id) {
+                        return $allRequestTypes[$row->request_type_id];
+                    }
+                })
+                ->editColumn('assigned_to', function ($row) use ($saleProjects) {
+                    if ($row->assigned_to) {
+                        return $saleProjects[$row->assigned_to];
+                    } else {
+                        return '';
+                    }
+                })
+                ->addColumn('created_user', function ($row) use ($created_users) {
+
+                    return $created_users[$row->created_by];
+                })
+                ->editColumn('status', function ($row) {
+                    if ($row->status) {
+                        $status = trans('request.' . $row->status);
+
+                        return $status;
+                    }
+                })
+
+                ->editColumn('can_return', function ($row) {
+                    $buttonsHtml = '';
+
+
+
+                    $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                    $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+
+
+                    return $buttonsHtml;
+                })
+
+                ->rawColumns(['status', 'request_type_id', 'can_return', 'created_user', 'assigned_to'])
+
+
+
+                ->make(true);
+        }
+        $all_status = ['approved', 'pending', 'rejected'];
+        return view('custom_views.agents.requests.allRequest')->with(compact(
+            'users',
+            'all_users',
+            'requestTypes',
+            'statuses',
+            'main_reasons',
+            'classes',
+            'saleProjects',
+            'leaveTypes',
+            'job_titles',
+            'specializations',
+            'nationalities',
+            'allRequestTypes',
+            'all_status'
+        ));
+    }
+    public function getViewRequestsPermission($department)
+    {
+        $departments = [
+            'followup' => ['names' => ['%متابعة%'], 'permission' => 'followup.view_followup_requests'],
+            'accounting' => ['names' => ['%حاسب%', '%مالي%'], 'permission' => 'accounting.view_accounting_requests'],
+            'workcard' => ['names' => ['%حكومية%'], 'permission' => 'essentials.view_workcards_request'],
+            'hr' => ['names' => ['%بشرية%'], 'permission' => 'essentials.view_HR_requests'],
+            'employee_affairs' => ['names' => ['%موظف%'], 'permission' => 'essentials.view_employees_affairs_requests'],
+            'insurance' => ['names' => ['%تأمين%'], 'permission' => 'essentials.crud_insurance_requests'],
+            'payroll' => ['names' => ['%رواتب%'], 'permission' => 'essentials.view_payroll_requests'],
+            'housing' => ['names' => ['%سكن%'], 'permission' => 'housingmovements.crud_htr_requests'],
+            'international_relations' => ['names' => ['%دولي%'], 'permission' => 'internationalrelations.view_ir_requests'],
+            'legal' => ['names' => ['%قانوني%'], 'permission' => 'legalaffairs.view_legalaffairs_requests'],
+            'sales' => ['names' => ['%مبيعات%'], 'permission' => 'sales.view_sales_requests'],
+            'ceo' => ['names' => ['%تنفيذ%'], 'permission' => 'ceomanagment.view_CEO_requests'],
+            'general' => ['names' => ['%مجلس%', '%عليا%'], 'permission' => 'generalmanagement.view_president_requests']
+        ];
+
+        foreach ($departments as $dept => $info) {
+            $deptIds = EssentialsDepartment::where(function ($query) use ($info) {
+                foreach ($info['names'] as $name) {
+                    $query->orWhere('name', 'like', $name);
+                }
+            })->pluck('id')->toArray();
+
+            if (in_array($department, $deptIds)) {
+
+                return $info['permission'];
+            }
+        }
+
+        return null;
+    }
     public function agentWorkersRequests()
     {
 

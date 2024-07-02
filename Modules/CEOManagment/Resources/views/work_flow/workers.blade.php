@@ -94,7 +94,7 @@
                                 <div class="clearfix"></div>
 
 
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-7">
                                     {!! Form::label('add_modal_department_id_start', __('essentials::lang.managment') . ':*') !!}
                                     {!! Form::select('add_modal_department_id_start[]', $departments, null, [
                                         'class' => 'form-control select2',
@@ -103,6 +103,22 @@
                                         'placeholder' => __('essentials::lang.selectDepartment'),
                                         'multiple' => 'multiple',
                                         'style' => 'height:40px',
+                                    ]) !!}
+                                </div>
+                                <div class="form-group col-md-7">
+                                    <label for="start_from_customer" name='start_from_customer'>
+                                        <input type="checkbox" id="start_from_customer">
+                                        @lang('essentials::lang.start_from_customer')
+                                    </label>
+                                </div>
+
+                                <div class="form-group col-md-6" id="customer_department_div" style="display:none;">
+                                    {!! Form::label('customer_department', __('essentials::lang.select_department') . ':*') !!}
+                                    {!! Form::select('customer_department', [], null, [
+                                        'class' => 'form-control select2',
+                                        'id' => 'customer_department',
+                                        'placeholder' => __('essentials::lang.selectDepartmentStartFrom'),
+                                        'style' => 'width:100%;',
                                     ]) !!}
                                 </div>
                                 <div id="workflow-step_add_modal">
@@ -544,6 +560,39 @@
 
                 ]
             });
+            $('#start_from_customer').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#customer_department_div').show();
+                    updateCustomerDepartmentOptions();
+                } else {
+                    $('#customer_department_div').hide();
+                }
+            });
+
+            // Update the customer department dropdown when the department selection changes
+            $('#add_modal_department_id_start').change(function() {
+                if ($('#start_from_customer').is(':checked')) {
+                    updateCustomerDepartmentOptions();
+                }
+            });
+
+            // Function to update the customer department options
+            function updateCustomerDepartmentOptions() {
+                var selectedDepartments = $('#add_modal_department_id_start').val();
+                var customerDepartmentSelect = $('#customer_department');
+
+                customerDepartmentSelect.empty(); // Clear existing options
+
+                if (selectedDepartments) {
+                    selectedDepartments.forEach(function(dept) {
+                        var deptName = $('#add_modal_department_id_start option[value="' + dept + '"]')
+                            .text();
+                        customerDepartmentSelect.append(new Option(deptName, dept));
+                    });
+                }
+
+                customerDepartmentSelect.trigger('change'); // Notify any JS event listeners about the change
+            }
             $(document).on('click', 'button.delete_procedure_button', function() {
                 swal({
                     title: LANG.sure,
