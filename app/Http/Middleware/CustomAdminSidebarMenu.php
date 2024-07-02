@@ -448,6 +448,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_timesheet_wk')) {
+
+                $menu->url(
+                    action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'timesheet_wk']),
+                    __('ceomanagment::lang.timesheet'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'timesheet_wk')]
+                );
+            }
         });
     }
     public function OperationsManagmentGovernmentMenu()
@@ -478,7 +486,7 @@ class CustomAdminSidebarMenu
     }
     public function InformationTechnologyManagmentMenu()
     {
-        error_log('11111111111111111');
+
         Menu::create('admin-sidebar-menu', function ($menu) {
 
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
