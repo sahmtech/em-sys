@@ -806,7 +806,7 @@ class PayrollController extends Controller
         $employee_ids = User::with('contract');
 
         if ($user_type == "worker") {
-            $employee_ids = $employee_ids->whereIn('company_id', $projects_ids)->where('user_type', 'worker');
+            $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
         }
@@ -1090,13 +1090,14 @@ class PayrollController extends Controller
             }
             $usersArr = User::whereIn('id', $employee_ids)->select([
                 'users.*',
+
                 DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
 
             ])->get();
             $user = $usersArr->first();
             $user_type = $user->user_type;
             $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
-            if ($user->contract->contract_type_id == $remote_id) {
+            if ($user->contract?->contract_type_id == $remote_id) {
                 $user_type =  "remote_employee";
             }
 
@@ -1124,6 +1125,7 @@ class PayrollController extends Controller
                         $other_allowance += floatval($allowance->amount ?? "0");
                     }
                 }
+
                 $salary = $user->essentials_salary + $other_allowance;
                 $essentials_allowances = json_decode($payroll_group_transaction->essentials_allowances);
                 $over_time_hours = 0;
