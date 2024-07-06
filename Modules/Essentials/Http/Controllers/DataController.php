@@ -1494,7 +1494,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.show_official_documents'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'essentials.crud_employee_shifts',
+                        'label' => __('essentials::lang.crud_employee_shifts'),
+                        'default' => false,
+                    ],
                     //add_employee_families
                     [
                         'value' => 'essentials.add_employee_families',

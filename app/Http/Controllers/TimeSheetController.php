@@ -33,6 +33,7 @@ use Modules\Essentials\Entities\PayrollGroup;
 use Modules\Essentials\Entities\PayrollGroupTransaction;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\CEOManagment\Entities\TimeSheetWorkflow;
 
 class TimeSheetController extends Controller
 {
@@ -84,6 +85,11 @@ class TimeSheetController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
+        $businessIdsWithCustomerInStep1 = TimeSheetWorkflow::where('step_number', 1)
+            ->where('clients_allowed', 1)
+            ->pluck('business_id')
+            ->unique();
+        $business = Business::whereIn('id', $businessIdsWithCustomerInStep1)->pluck('name', 'id');
         // if (!$is_admin) {
         //     $userProjects = [];
         //     $userBusinesses = [];
@@ -203,7 +209,7 @@ class TimeSheetController extends Controller
         $departments = Category::forDropdown($business_id, 'hrm_department');
         $designations = Category::forDropdown($business_id, 'hrm_designation');
         // $locations =    BusinessLocation::pluck('name', 'id');
-        return view('custom_views.agents.agent_time_sheet.index')->with(compact('workers', 'departments', 'designations', 'projects'));
+        return view('custom_views.agents.agent_time_sheet.index')->with(compact('workers', 'business', 'departments', 'designations', 'projects'));
     }
 
     private function getAllowanceAndDeductionJson($payroll)

@@ -99,6 +99,19 @@
                                 'placeholder' => __('lang_v1.all'),
                             ]) !!}
                         </div>
+                        <div>
+                            <div class="form-group col-md-12">
+                                {!! Form::label('business', __('essentials::lang.company') . ':*') !!}
+                                <div class="clearfix"></div>
+                                {!! Form::select('business', $business, null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('essentials::lang.business'),
+                                    'required',
+                                    'style' => 'height:40px',
+                                    'id' => 'business_id',
+                                ]) !!}
+                            </div>
+                        </div>
                         <div class="form-group">
                             {!! Form::label('employee_ids', __('essentials::lang.employee') . ':*') !!}
                             <button type="button" class="btn btn-primary btn-xs select-all">

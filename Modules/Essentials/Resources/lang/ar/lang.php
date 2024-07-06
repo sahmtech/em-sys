@@ -35,6 +35,9 @@ return [
   "reminders" => "الأحداث",
   "event_name" => "اسم الحدث",
   "time" => "الوقت",
+  "start_time" => "توقيت البدء",
+  "end_time" => "توقيت الانتهاء",
+
   "repeat" => "عدد مرات التكرار",
   "one_time" => "مره واحده",
   "every_day" => "كل يوم",
@@ -1913,6 +1916,13 @@ return [
   'edit_lead_contact' => 'تعديل عميل محتمل',
   'start_from_customer' => 'يمكن للعميل تقديم الطلب',
   'selectDepartmentStartFrom' => 'الإدارة التي يبدأ عندها ',
+  'crud_users_shifts' => 'إضافة/تعديل/حذف فترات الدوام',
+  'users_shifts' => 'فترات الدوام',
+  'shift_name' => 'اسم الفترة',
+  'add_user_shift' => 'إضافة فترة دوام',
+  'select_user' => 'اختر مستخدم',
+  'select_shift' => 'اختر فترة دوام',
+
 
 
 ];

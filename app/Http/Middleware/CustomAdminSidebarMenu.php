@@ -1208,6 +1208,13 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'official_documents'],
                     );
                 }
+                if ($is_admin  || auth()->user()->can('essentials.crud_users_shifts')) {
+                    $menu->url(
+                        route('users_shifts'),
+                        __('essentials::lang.users_shifts'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'users_shifts'],
+                    );
+                }
 
                 if ($is_admin  || auth()->user()->can('essentials.crud_employee_families')) {
                     $menu->url(

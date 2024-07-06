@@ -221,6 +221,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/updateEmployeeOfficalDocuments', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'updateEmployeeOfficalDocuments'])->name('updateEmployeeOfficalDocuments');
         Route::get('/official_documents/scan', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'scan'])->name('scan');
 
+
+
+
+        Route::get('/users_shifts', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'users_shifts'])->name('users_shifts');
+        Route::post('/storeUserShift', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'storeUserShift'])->name('storeUserShift');
+        Route::get('/users_shifts/{id}/edit', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'editUserShift'])->name('editUserShift');
+        Route::put('/users_shifts/{id}', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'updateUserShift'])->name('updateUserShift');
+        Route::delete('/users_shifts/{id}', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'deleteUserShift'])->name('deleteUserShift');
+
+
+
         Route::get('/employee_families', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'index'])->name('employee_families');
         Route::post('/storeEmployeeFamily', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'store'])->name('storeEmployeeFamily');
         Route::delete('/employee_families/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'destroy'])->name('employee_families.destroy');
