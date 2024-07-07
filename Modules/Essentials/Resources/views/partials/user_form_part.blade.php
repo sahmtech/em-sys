@@ -82,14 +82,17 @@
     <div class="col-md-3">
         <div class="form-group">
             {!! Form::label('shift', __('essentials::lang.shift_time') . ':*') !!}
-            {!! Form::select('shift', $shifts, !empty($user->shift_id) ? $user->shift_id : null, [
+            {!! Form::select('shift[]', $shifts, !empty($user->shift_id) ? $user->shift_id : null, [
                 'class' => 'form-control select2',
                 'required',
+                'multiple',
                 'style' => 'height:40px',
-                'placeholder' => __('essentials::lang.shift'),
+                'placeholder' => __('essentials::lang.shift_time'),
             ]) !!}
         </div>
     </div>
+
+
 
 
 </div>

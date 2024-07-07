@@ -1193,7 +1193,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
-
+        $shifts = Shift::pluck('name', 'id');
 
 
         $blood_types = [
@@ -1217,6 +1217,7 @@ class EssentialsManageEmployeeController extends Controller
                 'blood_types',
                 'spacializations',
                 'professions',
+                'shifts',
                 'contact',
                 'locations',
                 'banks',

@@ -95,8 +95,10 @@
                                             <tr>
                                                 <th>@lang('lang_v1.name')</th>
                                                 <th>@lang('essentials::lang.shift_type')</th>
+                                                <th>@lang('essentials::lang.work_hours')</th>
                                                 <th>@lang('restaurant.start_time')</th>
                                                 <th>@lang('restaurant.end_time')</th>
+                                                <th>@lang('essentials::lang.work_days')</th>
                                                 <th>@lang('essentials::lang.holiday')</th>
                                                 <th>@lang('messages.action')</th>
                                             </tr>
@@ -344,12 +346,20 @@
                         name: 'type'
                     },
                     {
+                        data: 'work_hours',
+                        name: 'work_hours'
+                    },
+                    {
                         data: 'start_time',
                         name: 'start_time'
                     },
                     {
                         data: 'end_time',
                         name: 'end_time'
+                    },
+                    {
+                        data: 'work_days',
+                        name: 'work_days'
                     },
                     {
                         data: 'holidays',
@@ -381,8 +391,10 @@
                     var shift_type = $(this).val();
                     if (shift_type == 'fixed_shift') {
                         $('div.time_div').fadeIn();
+                        $('.flexible_shift_hours').hide();
                     } else if (shift_type == 'flexible_shift') {
                         $('div.time_div').fadeOut();
+                        $('.flexible_shift_hours').show();
                     }
                 });
 

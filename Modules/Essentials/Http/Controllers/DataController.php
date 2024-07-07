@@ -982,20 +982,20 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_timesheet'),
                         'default' => false,
                     ],
-                 
-                   
+
+
                     [
                         'value' => 'essentials.view_timesheet_payroll_groups',
                         'label' => __('essentials::lang.view_timesheet_groups'),
                         'default' => false,
                     ],
-                
+
                     [
                         'value' => 'essentials.show_payroll_timesheet',
                         'label' => __('essentials::lang.show_timesheet'),
                         'default' => false,
                     ],
-                   
+
 
                 ]
 
@@ -2333,7 +2333,10 @@ class DataController extends Controller
             else {
                 $user_travel = null;
             }
-
+            if (!empty($user)) {
+                $shift_ids = EssentialsUserShift::where('user_id', $user->id)->where('is_active', 1)->pluck('essentials_shift_id')->toArray();
+                $user->shift_id = $shift_ids;
+            }
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
@@ -2487,20 +2490,24 @@ class DataController extends Controller
 
                 $qualification2->save();
             }
-            if (
-                request()->input('shift')
-            ) {
+            if (request()->input('shift')) {
+                $shiftIds = array_filter(request()->input('shift'), function ($value) {
+                    return !is_null($value);
+                });
                 EssentialsUserShift::where('user_id', $user->id)
-
                     ->update(['is_active' => 0]);
 
-                EssentialsUserShift::create([
-                    'user_id' =>  $user->id,
-                    'essentials_shift_id' => request()->input('shift'),
 
-                    'is_active' => 1,
-                ]);
+                foreach ($shiftIds as $shiftId) {
+
+                    EssentialsUserShift::create([
+                        'user_id' => $user->id,
+                        'essentials_shift_id' => $shiftId,
+                        'is_active' => 1,
+                    ]);
+                }
             }
+
 
 
 

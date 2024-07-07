@@ -52,7 +52,7 @@ class ShiftController extends Controller
                     'user_type',
                     'start_time',
                     'end_time',
-                    'holidays',
+                    'holidays', 'work_days', 'work_hours'
                 ]);
 
             return Datatables::of($shifts)
@@ -66,6 +66,13 @@ class ShiftController extends Controller
 
                     return $end_time_formated;
                 })
+                ->editColumn('work_hours', function ($row) {
+                    if ($row->work_hours) {
+                        return  $row->work_hours . '' . __('essentials::lang.hours');
+                    } else {
+                        return '';
+                    }
+                })
                 ->editColumn('type', function ($row) {
                     return __('essentials::lang.' . $row->type);
                 })
@@ -77,6 +84,17 @@ class ShiftController extends Controller
 
                         return implode(', ', $holidays);
                     }
+                })
+                ->editColumn('work_days', function ($row) {
+                    if (!empty($row->work_days)) {
+                        $work_days = json_decode($row->work_days, true);
+                        $work_days = array_map(function ($item) {
+                            return __('lang_v1.' . $item);
+                        }, $work_days);
+
+                        return implode(', ', $work_days);
+                    }
+                    return '';
                 })
                 ->addColumn('action', function ($row) {
                     $html = '<a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ShiftController::class, 'edit'], [$row->id]) . '" data-container="#edit_shift_modal" class="btn-modal btn btn-xs btn-primary"><i class="fas fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</a>';
@@ -248,10 +266,12 @@ class ShiftController extends Controller
      */
     public function storeUserShift(Request $request)
     {
-        // Validate the request data
+        error_log(json_encode($request->all()));
+
         $validatedData = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'shift_id' => 'required|exists:essentials_shifts,id',
+            'shift_id' => 'required|array',
+            'shift_id.*' => 'exists:essentials_shifts,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
         ]);
@@ -262,28 +282,28 @@ class ShiftController extends Controller
             ->update(['is_active' => 0]);
 
 
-        EssentialsUserShift::create([
-            'user_id' => $validatedData['user_id'],
-            'essentials_shift_id' => $validatedData['shift_id'],
-            'start_date' => $validatedData['start_date'],
-            'end_date' => $validatedData['end_date'],
-            'is_active' => 1,
-        ]);
+        foreach ($validatedData['shift_id'] as $shiftId) {
+            EssentialsUserShift::create([
+                'user_id' => $validatedData['user_id'],
+                'essentials_shift_id' => $shiftId,
+                'start_date' => $validatedData['start_date'],
+                'end_date' => $validatedData['end_date'],
+                'is_active' => 1,
+            ]);
+        }
 
         return response()->json(['message' => __('messages.added_successfully')]);
     }
 
 
-
     public function store(Request $request)
     {
+        error_log(json_encode($request->all()));
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         try {
-            $input = $request->only(['name', 'type', 'holidays']);
+            $input = $request->only(['name', 'type', 'holidays', 'work_days', 'work_hours']);
 
             if ($input['type'] != 'flexible_shift') {
                 $input['start_time'] = $this->moduleUtil->uf_time($request->input('start_time'));
@@ -301,6 +321,9 @@ class ShiftController extends Controller
 
             $input['business_id'] = $business_id;
 
+
+            $input['work_days'] = json_encode($input['work_days']);
+
             Shift::create($input);
 
             $output = [
@@ -308,17 +331,18 @@ class ShiftController extends Controller
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
+            error_log($e->getMessage());
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
-
             ];
         }
 
         return $output;
     }
+
 
     /**
      * Show the specified resource.
@@ -366,7 +390,7 @@ class ShiftController extends Controller
 
 
 
-            $input = $request->only(['name', 'type', 'holidays']);
+            $input = $request->only(['name', 'type', 'holidays', 'work_days', 'work_hours']);
 
             if ($input['type'] != 'flexible_shift') {
                 $input['start_time'] = $this->moduleUtil->uf_time($request->input('start_time'));
@@ -387,7 +411,9 @@ class ShiftController extends Controller
             } else {
                 $input['holidays'] = null;
             }
-
+            if (!empty($input['work_days'])) {
+                $input['work_days'] = json_encode($input['work_days']);
+            }
             $shift = Shift::where('business_id', $business_id)
                 ->where('id', $id)
                 ->update($input);

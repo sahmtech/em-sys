@@ -65,11 +65,14 @@
                         </div>
                         <div class="form-group">
                             <label for="shift_id">@lang('essentials::lang.select_shift')</label>
-                            <select class="form-control" id="shift_id" name="shift_id" required>
-                                @foreach ($shifts as $id => $name)
-                                    <option value="{{ $id }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
+                            <div class='col-md-12'>
+                                <select class="form-control select2" id="shift_id" name="shift_id[]" multiple required>
+                                    <option value="" disabled selected>@lang('essentials::lang.select_shift')</option>
+                                    @foreach ($shifts as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="start_date">@lang('essentials::lang.start_date')</label>

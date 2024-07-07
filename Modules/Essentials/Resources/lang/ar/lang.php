@@ -1245,6 +1245,7 @@ return [
   'escalates_to' => 'يُصعّد إلى',
   'escalates_after' => 'يُصعّد بعد',
   'in_hours' => 'بالساعات',
+  'hours' => 'ساعات',
   'you_have_no_access_role' => 'ليس لديك صلاحية الوصول لأي شركة أو مشروع',
 
   'escalate_requests' => 'الطلبات المصعّدة',
@@ -1936,7 +1937,8 @@ return [
   'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
   'show_timesheet' => 'عرض معلومات التايم شيت',
   'deal_timesheet' => 'اعتماد التايم شيت',
-  'shift_time' => 'فترة العمل'
+  'shift_time' => 'فترة العمل',
+  'work_hours' => 'ساعات الدوام'
 
 
 ];
