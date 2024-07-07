@@ -630,6 +630,11 @@ return [
   'IBAN_number' => 'رقم الآيبان',
   'Branch' => 'الفرع',
   'employee_tax_number' => 'الرقم الضريبي للموظف',
+  'tax_number' => 'الرقم الضريبي ',
+  'back' => 'عودة',
+  'due' => 'آجل',
+  'draft' => 'مسودة',
+  'final' => 'نهائية',
   'HR_Department' => 'فرع الموارد البشرية',
   'HR_Department_branch' => 'قسم الموارد البشرية ',
   'Job_title' => 'المسمى الوظيفي',
@@ -1922,7 +1927,15 @@ return [
   'add_user_shift' => 'إضافة فترة دوام',
   'select_user' => 'اختر مستخدم',
   'select_shift' => 'اختر فترة دوام',
+  'payroll_cant_be_deleted_if_final' => 'لا يمكن الحذف في حال كانت الفاتورة نهائية',
 
+  'crud_timesheet' => 'إدارة التايم شيت',
+  'create_timesheet' => 'إضافة تايم شيت',
+  'edit_timesheet' => 'تعديل تايم شيت',
+  'view_timesheet_groups' => 'عرض مجموعات التايم شيت',
+  'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
+  'show_timesheet' => 'عرض معلومات التايم شيت',
+  'deal_timesheet' => 'اعتماد التايم شيت'
 
 
 ];

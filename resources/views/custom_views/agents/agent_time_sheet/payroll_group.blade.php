@@ -3,13 +3,11 @@
 
 @section('content')
 
-
     <section class="content-header">
         <h1>
             <span>@lang('agent.time_sheet_for')</span> {{ $date }}
         </h1>
     </section>
-
 
     <section class="content">
         <div class="row">
@@ -23,32 +21,20 @@
                 'id' => 'add_payroll_step1',
             ]) !!}
             {!! Form::hidden('payroll_group_name', strip_tags($group_name)) !!}
+            {!! Form::hidden('action', $action) !!}
+            @if ($action === 'edit')
+                {!! Form::hidden('timesheet_group_id', $id) !!}
+            @endif
             <div class="table-responsive">
                 <div style="margin-bottom: 10px;">
                     <div class="col-md-12">
-                        {{-- <div class="col-md-1">
-                            <form action="{{ route('agentTimeSheet.timeSheet') }}" method="POST">
-                                @csrf <!-- Laravel CSRF token for security -->
-                                <input type="hidden" name="editWorkerIds" id='editWorkerIds'>
-                                <input type="hidden" name="month_year" value="{{ $month_year }}">
-                                <!-- Example hidden input -->
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-edit"></i>
-                                    @lang('worker.edit')
-                                </button>
-                            </form>
-                        </div> --}}
-
                         <div class="col-md-1">
-
-
                             <input type="hidden" name="totals" id="totals">
                             <input type="hidden" name="ids" id="ids"> <!-- Example hidden input -->
                             <button type="submit" class="btn btn-success">
                                 <i class="fa fa-check"></i>
                                 @lang('worker.submit')
                             </button>
-
                         </div>
                         <div class="col-md-4">
                             {!! Form::label('payroll_group_status', __('sale.status') . ':*') !!}
@@ -62,12 +48,11 @@
                             <p class="help-block text-muted">@lang('essentials::lang.payroll_cant_be_deleted_if_final')</p>
                         </div>
                         <div class="col-md-4">
-                            <h4 style="  color: red;" class="total_payrolls"></h4>
+                            <h4 style="color: red;" class="total_payrolls"></h4>
                             {!! Form::hidden('total_payrolls', null, [
                                 'id' => 'total_payrolls',
                             ]) !!}
                             {!! Form::hidden('transaction_date', $date) !!}
-
                         </div>
                     </div>
                     <div class="clearfix"></div>
@@ -318,13 +303,9 @@
                         @endforeach
                     </tbody>
                 </table>
-
             </div>
             {!! Form::close() !!}
         @endcomponent
-
-
-
     </section>
     <!-- /.content -->
 
@@ -333,47 +314,14 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-
             $('td.editable span[contenteditable="true"]').on('input', function() {
                 var index = $(this).data('index');
                 var field = $(this).data('field');
                 var newValue = $(this).text();
 
                 $('input.form-hidden[data-index="' + index + '"][data-field="' + field + '"]').val(
-                    newValue);
-                // if (field === 'absence_day' || field === 'basic' || field === 'other_allowances') {
-                //     updateAbsenceAmount(index);
-                // }
-                // if (field === 'total_salary' || field === 'basic' || field === 'over_time_h') {
-                //     updateOverTime(index);
-                // }
-                // if (field === 'monthly_cost' || field === 'wd') {
-                //     updateCost2(index);
-                // }
-                // if (field === 'cost2' || field === 'other_addition' || field === 'absence_amount' ||
-                //     field === 'other_deduction' || field === 'over_time') {
-                //     updateInvoiceValue(index);
-                // }
-                // if (field === 'monthly_cost') {
-                //     updateVat(index);
-                // }
-                // if (field === 'invoice_value') {
-                //     updateTotal(index);
-                // }
+                newValue);
 
-                // if (field === 'absence_amount' || field === 'other_deduction') {
-                //     updateDeductions(index);
-                // }
-
-                // if (field === 'over_time' || field === 'other_addition') {
-                //     updateAdditions(index);
-                // }
-
-                // if (field === 'total_salary' || field === 'wd' || field === 'additions' || field ===
-                //     'deductions') {
-                //     updateFinalSalary(index);
-                //     updateTotalPayrolls();
-                // }
                 updateAbsenceAmount(index);
                 updateOverTime(index);
                 updateTotalSalary(index);
@@ -385,7 +333,6 @@
                 updateAdditions(index);
                 updateFinalSalary(index);
                 updateTotalPayrolls();
-
             });
         });
 
@@ -422,22 +369,21 @@
 
         function updateAbsenceAmount(index) {
             var absence_day = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='absence_day']")
-                .val()) || 0;
+            .val()) || 0;
             var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='basic']").val()) || 0;
             var other_allowances = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='other_allowances']").val()) || 0;
             var absence_amount = absence_day * (basic + other_allowances) / 30;
             $("span[data-index='" + index + "'][data-field='absence_amount']").text(absence_amount.toFixed(0));
-            $("input.form-hidden[data-index='" + index + "'][data-field='absence_amount']").val(absence_amount.toFixed(
-                0));
+            $("input.form-hidden[data-index='" + index + "'][data-field='absence_amount']").val(absence_amount.toFixed(0));
         }
 
         function updateOverTime(index) {
             var total_salary = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='total_salary']")
-                .val()) || 0;
+            .val()) || 0;
             var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='basic']").val()) || 0;
-            var over_time_h = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='over_time_h']").val()) || 0;
+            var over_time_h = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time_h']")
+            .val()) || 0;
             var over_time = ((total_salary / 30 / 8) + (basic / 30 / 16)) * over_time_h;
             $("span[data-index='" + index + "'][data-field='over_time']").text(over_time.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='over_time']").val(over_time.toFixed(0));
@@ -447,10 +393,9 @@
             var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='basic']").val()) || 0;
             var other_allowances = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='other_allowances']").val()) || 0;
-            var housing = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='housing']").val()) || 0;
-            var transport = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='transport']").val()) || 0;
+            var housing = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='housing']").val()) || 0;
+            var transport = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='transport']").val()) ||
+                0;
             var total_salary = basic + other_allowances + housing + transport;
             $("span[data-index='" + index + "'][data-field='total_salary']").text(total_salary.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='total_salary']").val(total_salary.toFixed(0));
@@ -458,28 +403,23 @@
 
         function updateCost2(index) {
             var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
-                .val()) || 0;
-            var wd = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='wd']").val()) || 0;
+            .val()) || 0;
+            var wd = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='wd']").val()) || 0;
             var cost2 = monthly_cost / 30 * wd;
             $("span[data-index='" + index + "'][data-field='cost2']").text(cost2.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='cost2']").val(cost2.toFixed(0));
         }
 
         function updateInvoiceValue(index) {
-            var cost2 = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='cost2']")
-                .val()) || 0;
+            var cost2 = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='cost2']").val()) || 0;
             var other_addition = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='other_addition']")
                 .val()) || 0;
             var absence_amount = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='absence_amount']")
                 .val()) || 0;
             var other_deduction = parseFloat($("input.form-hidden[data-index='" + index +
-                    "'][data-field='other_deduction']")
-                .val()) || 0;
-            var over_time = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time']")
-                .val()) || 0;
-            var wd = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='wd']").val()) || 0;
+                "'][data-field='other_deduction']").val()) || 0;
+            var over_time = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time']").val()) ||
+                0;
             var invoice_value = cost2 + other_addition - absence_amount - other_deduction + over_time;
             $("span[data-index='" + index + "'][data-field='invoice_value']").text(invoice_value.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='invoice_value']").val(invoice_value.toFixed(0));
@@ -487,8 +427,7 @@
 
         function updateVat(index) {
             var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
-                .val()) || 0;
-
+            .val()) || 0;
             var vat = monthly_cost * 0.15;
             $("span[data-index='" + index + "'][data-field='vat']").text(vat.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='vat']").val(vat.toFixed(0));
@@ -497,7 +436,6 @@
         function updateTotal(index) {
             var invoice_value = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='invoice_value']")
                 .val()) || 0;
-
             var total = invoice_value * 1.15;
             $("span[data-index='" + index + "'][data-field='total']").text(total.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='total']").val(total.toFixed(0));
@@ -507,16 +445,15 @@
             var absence_amount = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='absence_amount']")
                 .val()) || 0;
             var other_deduction = parseFloat($("input.form-hidden[data-index='" + index +
-                    "'][data-field='other_deduction']")
-                .val()) || 0;
+                "'][data-field='other_deduction']").val()) || 0;
             var deductions = absence_amount + other_deduction;
             $("span[data-index='" + index + "'][data-field='deductions']").text(deductions.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='deductions']").val(deductions.toFixed(0));
         }
 
         function updateAdditions(index) {
-            var over_time = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time']")
-                .val()) || 0;
+            var over_time = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time']").val()) ||
+                0;
             var other_addition = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='other_addition']")
                 .val()) || 0;
             var additions = over_time + other_addition;
@@ -526,13 +463,12 @@
 
         function updateFinalSalary(index) {
             var total_salary = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='total_salary']")
-                .val()) || 0;
-            var wd = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='wd']").val()) || 0;
-            var additions = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='additions']").val()) || 0;
-            var deductions = parseFloat($("input.form-hidden[data-index='" + index +
-                "'][data-field='deductions']").val()) || 0;
+            .val()) || 0;
+            var wd = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='wd']").val()) || 0;
+            var additions = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='additions']").val()) ||
+                0;
+            var deductions = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='deductions']")
+            .val()) || 0;
             var final_salary = ((total_salary / 30) * wd) + additions - deductions;
             $("span[data-index='" + index + "'][data-field='final_salary']").text(final_salary.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='final_salary']").val(final_salary.toFixed(0));

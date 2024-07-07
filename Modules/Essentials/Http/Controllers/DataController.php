@@ -12,6 +12,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Modules\Essentials\Entities\Shift;
+use Modules\Essentials\Entities\EssentialsUserShift;
 
 use Menu;
 use Modules\Essentials\Entities\EssentialsContractType;
@@ -837,10 +839,41 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
-
-
+                    [
+                        'value' => 'essentials.crud_timesheet',
+                        'label' => __('essentials::lang.crud_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.create_timesheet',
+                        'label' => __('essentials::lang.create_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_timesheet',
+                        'label' => __('essentials::lang.edit_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_timesheet_groups',
+                        'label' => __('essentials::lang.view_timesheet_groups'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_timesheet_users',
+                        'label' => __('essentials::lang.view_timesheet_users'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_timesheet',
+                        'label' => __('essentials::lang.show_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.deal_timesheet',
+                        'label' => __('essentials::lang.deal_timesheet'),
+                        'default' => false,
+                    ],
 
                 ]
 
@@ -944,6 +977,25 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_worker_project'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.crud_payroll_timesheet',
+                        'label' => __('essentials::lang.crud_timesheet'),
+                        'default' => false,
+                    ],
+                 
+                   
+                    [
+                        'value' => 'essentials.view_timesheet_payroll_groups',
+                        'label' => __('essentials::lang.view_timesheet_groups'),
+                        'default' => false,
+                    ],
+                
+                    [
+                        'value' => 'essentials.show_payroll_timesheet',
+                        'label' => __('essentials::lang.show_timesheet'),
+                        'default' => false,
+                    ],
+                   
 
                 ]
 
@@ -2290,12 +2342,14 @@ class DataController extends Controller
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::where('type', 'acadmic')->pluck('name', 'id');
             $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+            $shifts = Shift::pluck('name', 'id');
             $companies = Company::all()->pluck('name', 'id');
             return view(
                 'essentials::partials.user_form_part',
                 compact(
                     'companies',
                     'job_titles',
+                    'shifts',
                     'contract',
                     'nationalities',
                     'travel_ticket_categorie',
@@ -2347,6 +2401,7 @@ class DataController extends Controller
 
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
+            //  $user->essentials_shift_id = request()->input('shift');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period') ?? 'month';
@@ -2432,7 +2487,20 @@ class DataController extends Controller
 
                 $qualification2->save();
             }
+            if (
+                request()->input('shift')
+            ) {
+                EssentialsUserShift::where('user_id', $user->id)
 
+                    ->update(['is_active' => 0]);
+
+                EssentialsUserShift::create([
+                    'user_id' =>  $user->id,
+                    'essentials_shift_id' => request()->input('shift'),
+
+                    'is_active' => 1,
+                ]);
+            }
 
 
 

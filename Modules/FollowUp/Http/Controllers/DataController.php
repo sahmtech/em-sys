@@ -232,7 +232,7 @@ class DataController extends Controller
                         'default' => false,
 
                     ],
-                    
+
                     [
                         'value' => 'followup.view_worker_details',
                         'label' => __('followup::lang.view_workerProject_details'),
@@ -355,10 +355,10 @@ class DataController extends Controller
                     // ],
 
 
-                   
-                  
-                    
-                    
+
+
+
+
                     // [
                     //     'value' => 'followup.view_request_escalate_requests',
                     //     'label' => __('followup::lang.view_request_escalate_requests'),
@@ -495,12 +495,46 @@ class DataController extends Controller
                         'label' => __('followup::lang.return_request'),
                         'default' => false,
                     ],
-                       [
+                    [
                         'value' => 'followup.followup_view_department_employees',
                         'label' => __('followup::lang.followup_view_department_employees'),
                         'default' => false,
                     ],
-        
+                    [
+                        'value' => 'followup.crud_timesheet',
+                        'label' => __('followup::lang.crud_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.create_timesheet',
+                        'label' => __('followup::lang.create_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.edit_timesheet',
+                        'label' => __('followup::lang.edit_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.view_timesheet_groups',
+                        'label' => __('followup::lang.view_timesheet_groups'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.view_timesheet_users',
+                        'label' => __('followup::lang.view_timesheet_users'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.show_timesheet',
+                        'label' => __('followup::lang.show_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.deal_timesheet',
+                        'label' => __('followup::lang.deal_timesheet'),
+                        'default' => false,
+                    ],
                 ]
 
             ],

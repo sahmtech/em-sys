@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Business;
 use App\BusinessLocation;
+use App\TimesheetUser;
 use App\User;
+use App\TimesheetGroup;
+
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\RestaurantUtil;
@@ -77,6 +80,7 @@ class TimeSheetController extends Controller
 
     public function index()
     {
+
         $business_id = request()->session()->get('user.business_id');
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
@@ -85,11 +89,7 @@ class TimeSheetController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
-        $businessIdsWithCustomerInStep1 = TimeSheetWorkflow::where('step_number', 1)
-            ->where('clients_allowed', 1)
-            ->pluck('business_id')
-            ->unique();
-        $business = Business::whereIn('id', $businessIdsWithCustomerInStep1)->pluck('name', 'id');
+
         // if (!$is_admin) {
         //     $userProjects = [];
         //     $userBusinesses = [];
@@ -208,8 +208,8 @@ class TimeSheetController extends Controller
 
         $departments = Category::forDropdown($business_id, 'hrm_department');
         $designations = Category::forDropdown($business_id, 'hrm_designation');
-        // $locations =    BusinessLocation::pluck('name', 'id');
-        return view('custom_views.agents.agent_time_sheet.index')->with(compact('workers', 'business', 'departments', 'designations', 'projects'));
+
+        return view('custom_views.agents.agent_time_sheet.index')->with(compact('workers', 'departments', 'designations', 'projects'));
     }
 
     private function getAllowanceAndDeductionJson($payroll)
@@ -271,77 +271,81 @@ class TimeSheetController extends Controller
     public function submitTmeSheet(Request $request)
     {
         $business_id = 1;
+        $action = $request->input('action'); // Get the action (create or edit)
+        $timesheet_group_id = $request->input('timesheet_group_id'); // Get the timesheet group ID for edit action
+
         try {
             DB::beginTransaction();
-            $payroll_group['business_id'] = $business_id;
-            $payroll_group['name'] = $request->input('payroll_group_name');
-            $payroll_group['status'] = $request->input('payroll_group_status');
-            $payroll_group['gross_total'] = $request->input('total_payrolls');
-            $payroll_group['created_by'] = auth()->user()->id;
-            $payroll_group = PayrollGroup::create($payroll_group);
-            $transaction_date = $request->transaction_date;
 
-            //ref_no,
-            $transaction_ids = [];
-            $employees_details = $request->payrolls;
-            foreach ($employees_details as $employee_details) {
-                $payroll['expense_for'] = $employee_details['id'];
-                $payroll['transaction_date'] = $transaction_date;
-                $payroll['business_id'] = $business_id;
-                $payroll['created_by'] = auth()->user()->id;
-                $payroll['type'] = 'payroll';
-                $payroll['payment_status'] = 'due';
-                $payroll['status'] = 'final';
-                $payroll['total_before_tax'] = $employee_details['invoice_value'];
-                $payroll['essentials_amount_per_unit_duration'] = $employee_details['monthly_cost'];
+            $timesheet_group_data = [
+                'business_id' => $business_id,
+                'name' => $request->input('payroll_group_name'),
+                'status' => $request->input('payroll_group_status'),
+                'total' => $request->input('total_payrolls'),
+                'timesheet_date' => $request->transaction_date,
+                'created_by' => auth()->user()->id,
+            ];
 
-                $allowances_and_deductions = $this->getAllowanceAndDeductionJson($employee_details);
-                $payroll['essentials_allowances'] = $allowances_and_deductions['essentials_allowances'];
-                $payroll['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
-                $payroll['final_total'] = $employee_details['total'];
-                //Update reference count
-                $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
+            if ($action === 'edit' && $timesheet_group_id) {
+                // Update existing timesheet group
+                $timesheet_group = TimesheetGroup::findOrFail($timesheet_group_id);
+                $timesheet_group->update($timesheet_group_data);
 
-                //Generate reference number
-                if (empty($payroll['ref_no'])) {
-                    $settings = request()->session()->get('business.essentials_settings');
-                    $settings = !empty($settings) ? json_decode($settings, true) : [];
-                    $prefix = !empty($settings['payroll_ref_no_prefix']) ? $settings['payroll_ref_no_prefix'] : '';
-                    $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
-                }
-                unset(
-                    $payroll['allowance_names'],
-                    $payroll['allowance_types'],
-                    $payroll['allowance_percent'],
-                    $payroll['allowance_amounts'],
-                    $payroll['deduction_names'],
-                    $payroll['deduction_types'],
-                    $payroll['deduction_percent'],
-                    $payroll['deduction_amounts'],
-                    $payroll['total']
-                );
-
-                $transaction = Transaction::create($payroll);
-                $transaction_ids[] = $transaction->id;
-
-                // if ($notify_employee && $payroll_group->status == 'final') {
-                //     $transaction->action = 'created';
-                //     $transaction->transaction_for->notify(new PayrollNotification($transaction));
-                // }
+                // Delete existing timesheet users
+                TimesheetUser::where('timesheet_group_id', $timesheet_group_id)->delete();
+            } else {
+                // Create new timesheet group
+                $timesheet_group = TimesheetGroup::create($timesheet_group_data);
             }
 
-            $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
+            $payrolls = $request->input('payrolls', []);
+
+            foreach ($payrolls as $payroll) {
+                $user = User::find($payroll['id']);
+
+                if ($user) {
+                    TimesheetUser::create([
+                        'user_id' => $user->id,
+                        'timesheet_group_id' => $timesheet_group->id,
+                        'nationality_id' => $user->nationality_id,
+                        'id_proof_number' => $user->id_proof_number,
+                        'monthly_cost' => $payroll['monthly_cost'],
+                        'work_days' => $payroll['wd'],
+                        'absence_days' => $payroll['absence_day'],
+                        'absence_amount' => $payroll['absence_amount'],
+                        'over_time_hours' => $payroll['over_time_h'],
+                        'over_time_amount' => $payroll['over_time'],
+                        'other_deduction' => $payroll['other_deduction'],
+                        'other_addition' => $payroll['other_addition'],
+                        'cost_2' => $payroll['cost2'],
+                        'invoice_value' => $payroll['invoice_value'],
+                        'vat' => $payroll['vat'],
+                        'total' => $payroll['total'],
+                        'project_id' => $payroll['assigned_to'] ?? null,
+                        'basic' => $payroll['basic'],
+                        'housing' => $payroll['housing'],
+                        'transport' => $payroll['transport'],
+                        'other_allowances' => $payroll['other_allowances'],
+                        'total_salary' => $payroll['total_salary'],
+                        'deductions' => $payroll['deductions'],
+                        'additions' => $payroll['additions'],
+                        'final_salary' => $payroll['final_salary'],
+                        'created_by' => auth()->user()->id
+                    ]);
+                }
+            }
 
             DB::commit();
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.added_success'),
+                'msg' => ($action === 'edit') ? __('lang_v1.updated_success') : __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log($e->getMessage());
 
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
@@ -350,110 +354,314 @@ class TimeSheetController extends Controller
         return redirect()->route('agentTimeSheet.index')->with('status', $output);
     }
 
-    public function payrolls()
+
+    // public function agentTimeSheetGroups()
+    // {
+    //     $user = User::where('id', auth()->user()->id)->first();
+    //     $payrolls = TimesheetGroup::where('timesheet_groups.created_by', $user->id)->select([
+    //         'timesheet_groups.id',
+    //         'timesheet_groups.name',
+    //         'timesheet_groups.payment_status',
+    //         'timesheet_groups.status',
+    //         'timesheet_groups.total',
+    //         'timesheet_groups.created_at',
+    //         'timesheet_groups.created_by',
+    //     ]);
+
+    //     $all_users = User::where('status', '!=', 'inactive')
+    //         ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
+    //         ->get();
+    //     $users = $all_users->pluck('full_name', 'id');
+
+    //     return DataTables::of($payrolls)
+    //         ->addColumn('action', function ($row) {
+    //             $html = '<div class="btn-group">
+    //                         <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+    //                             data-toggle="dropdown" aria-expanded="false">' .
+    //                 __('messages.actions') .
+    //                 '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
+    //                         </button>
+    //                         <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+    //             $html .= '<li><a href="' . route('agentTimeSheet.showTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+    //             $html .= '</ul></div>';
+    //             return $html;
+    //         })
+    //         ->editColumn('total', '<span class="display_currency" data-currency_symbol="true">{{$total}}</span>')
+    //         ->editColumn('created_at', function ($row) {
+    //             return \Carbon\Carbon::parse($row->created_at)->format('Y-m-d H:i:s');
+    //         })
+    //         ->editColumn('created_by', function ($row) use ($users) {
+    //             return $users[$row->created_by];
+    //         })
+    //         ->editColumn('payment_status', function ($row) {
+    //             return __('essentials::lang.' . $row->payment_status);
+    //         })
+    //         ->editColumn('status', function ($row) {
+    //             return __('essentials::lang.' . $row->status);
+    //         })
+    //         ->rawColumns(['created_by', 'action', 'total', 'payment_status', 'status'])
+    //         ->make(true);
+    // }
+    public function agentTimeSheetGroups()
     {
         $user = User::where('id', auth()->user()->id)->first();
-        $contact_id =  $user->crm_contact_id;
-        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $workers_ids =  User::where('user_type', 'worker')
-            ->whereIn('users.assigned_to', $projectsIds)
-            ->pluck('id')->toArray();
-        $payrolls = Transaction::whereIn('transactions.expense_for', $workers_ids)->where('type', 'payroll')
-            ->join('users as u', 'u.id', '=', 'transactions.expense_for')
-            ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
-            ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
-            ->leftJoin('essentials_payroll_group_transactions as epgt', 'transactions.id', '=', 'epgt.transaction_id')
-            ->leftJoin('essentials_payroll_groups as epg', 'epgt.payroll_group_id', '=', 'epg.id')
-            ->select([
-                'transactions.id',
-                DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                'final_total',
-                'transaction_date',
-                'ref_no',
-                'transactions.payment_status',
-                'dept.name as department',
-                'dsgn.name as designation',
-                'epgt.payroll_group_id',
-            ]);
-        return Datatables::of($payrolls)
-            ->addColumn(
-                'action',
-                function ($row) {
+        $payrolls = TimesheetGroup::where('timesheet_groups.created_by', $user->id)->select([
+            'timesheet_groups.id',
+            'timesheet_groups.name',
+            'timesheet_groups.payment_status',
+            'timesheet_groups.status',
+            'timesheet_groups.total',
+            'timesheet_groups.created_at',
+            'timesheet_groups.created_by',
+        ]);
 
-                    $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                    data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
-                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                    </span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+        $all_users = User::where('status', '!=', 'inactive')
+            ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
+            ->get();
+        $users = $all_users->pluck('full_name', 'id');
 
-                    $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
-
-                    // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
-
-                    if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
-                        $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
-                    }
-
-                    $html .= '</ul></div>';
-
-                    return $html;
+        return DataTables::of($payrolls)
+            ->addColumn('action', function ($row) {
+                $html = '<div class="btn-group">
+                            <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                data-toggle="dropdown" aria-expanded="false">' .
+                    __('messages.actions') .
+                    '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+                $html .= '<li><a href="' . route('agentTimeSheet.showTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+                if ($row->status == 'draft') {
+                    $html .= '<li><a href="' . route('agentTimeSheet.editTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</a></li>';
                 }
-            )
-            ->addColumn('transaction_date', function ($row) {
-                $transaction_date = \Carbon::parse($row->transaction_date);
-
-                return $transaction_date->format('F Y');
+                $html .= '</ul></div>';
+                return $html;
             })
-            ->editColumn('final_total', '<span class="display_currency" data-currency_symbol="true">{{$final_total}}</span>')
-            ->filterColumn('user', function ($query, $keyword) {
-                $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+            ->editColumn('total', '<span class="display_currency" data-currency_symbol="true">{{$total}}</span>')
+            ->editColumn('created_at', function ($row) {
+                return \Carbon\Carbon::parse($row->created_at)->format('Y-m-d H:i:s');
             })
-            ->editColumn(
-                'payment_status',
-                '<a href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'show\'], [$id])}}" class="view_payment_modal payment-status-label no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label @payment_status($payment_status)">{{__(\'lang_v1.\' . $payment_status)}}
-                    </span></a>
-                    <span class="print_section">{{__(\'lang_v1.\' . $payment_status)}}</span>
-                    '
-            )
-            ->removeColumn('id')
-            ->rawColumns(['action', 'final_total', 'payment_status'])
+            ->editColumn('created_by', function ($row) use ($users) {
+                return $users[$row->created_by];
+            })
+            ->editColumn('payment_status', function ($row) {
+                return __('lang_v1.' . $row->payment_status);
+            })
+            ->editColumn('status', function ($row) {
+                return __('lang_v1.' . $row->status);
+            })
+            ->rawColumns(['created_by', 'action', 'total', 'payment_status', 'status'])
             ->make(true);
     }
+    public function editTimeSheet($id)
+    {
+
+        $timesheetGroup = TimesheetGroup::findOrFail($id);
+
+        $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)->get();
+        $employee_ids = $timesheetUsers->pluck('user_id')->toArray();
+        $payrolls = [];
+        foreach ($timesheetUsers as $user) {
+            $user2 = User::where('id', $user->user_id)->first();
+            $payrolls[] = [
+                'id' => $user->user_id,
+                'name' => $user2->first_name . ' '  . $user2->last_name,
+                'nationality' => $user2->country->nationality ?? '',
+                'residency' => $user->id_proof_number,
+                'monthly_cost' => $user->monthly_cost,
+
+                'wd' => $user->work_days,
+                'absence_day' => $user->absence_days,
+                'absence_amount' => $user->absence_amount,
+                'over_time_h' => $user->over_time_hours,
+                'over_time' => $user->over_time_amount,
+                'other_deduction' => $user->other_deduction,
+                'other_addition' => $user->other_addition,
+                'cost2' => $user->cost_2,
+                'invoice_value' => $user->invoice_value,
+                'vat' => $user->vat,
+                'total' => $user->total,
+                'sponser' => $user->project_id,
+                'basic' => $user->basic,
+                'housing' => $user->housing,
+                'transport' => $user->transport,
+                'other_allowances' => $user->other_allowances,
+                'total_salary' => $user->total_salary,
+                'deductions' => $user->deductions,
+                'additions' => $user->additions,
+                'final_salary' => $user->final_salary,
+            ];
+        }
+
+        $date = \Carbon\Carbon::parse($timesheetGroup->created_at)->format('F Y');
+        $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
+        $month_year = \Carbon\Carbon::parse($timesheetGroup->created_at)->format('m/Y');
+        $action = 'edit';
+        return view('custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
+    }
+
+
+    public function showTimeSheet($id)
+    {
+        error_log($id);
+        $timesheetGroup = TimesheetGroup::find($id);
+        $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
+            ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+            ->select([
+                'timesheet_users.*',
+                'u.first_name',
+                'u.mid_name',
+                'u.last_name',
+                'u.bank_details',
+            ])
+            ->get();
+
+        $timesheetUsers->each(function ($item) {
+            $bankDetails = json_decode($item->bank_details, true);
+            $item->bank_name = $bankDetails['bank_name'] ?? '';
+            $item->branch = $bankDetails['branch'] ?? '';
+            $item->iban_number = $bankDetails['iban_number'] ?? '';
+            $item->account_holder_name = $bankDetails['account_holder_name'] ?? '';
+            $item->account_number = $bankDetails['account_number'] ?? '';
+            $item->tax_number = $bankDetails['tax_number'] ?? '';
+        });
+
+        return view('custom_views.agents.agent_time_sheet.show', compact('timesheetGroup', 'timesheetUsers'));
+    }
+    // public function showTimeSheet($id)
+    // {
+    //     $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
+    //         ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+    //         ->select([
+    //             'timesheet_users.*',
+    //             'u.first_name',
+    //             'u.mid_name',
+    //             'u.last_name',
+    //             'u.bank_details',
+    //         ])
+    //         ->get();
+
+    //     $timesheetUsers->each(function ($item) {
+    //         $bankDetails = json_decode($item->bank_details, true);
+    //         $item->bank_name = $bankDetails['bank_name'] ?? '';
+    //         $item->branch = $bankDetails['branch'] ?? '';
+    //         $item->iban_number = $bankDetails['iban_number'] ?? '';
+    //         $item->account_holder_name = $bankDetails['account_holder_name'] ?? '';
+    //         $item->account_number = $bankDetails['account_number'] ?? '';
+    //         $item->tax_number = $bankDetails['tax_number'] ?? '';
+    //     });
+
+    //     return view('timesheet.show', compact('timesheetUsers'));
+    // }
+
+    // $query = TimeSheetGroup::all();
+    // $business_id = $query->first()->business_id;
+    // $payroll = $query->findOrFail($id);
+
+    // $transaction_date = \Carbon::parse($payroll->transaction_date);
+
+    // $department = Category::where('category_type', 'hrm_department')
+    //     ->find($payroll->transaction_for->essentials_department_id);
+
+    // $designation = Category::where('category_type', 'hrm_designation')
+    //     ->find($payroll->transaction_for->essentials_designation_id);
+
+    // $location = BusinessLocation::where('business_id', $business_id)
+    //     ->find($payroll->transaction_for->location_id);
+
+    // $month_name = $transaction_date->format('F');
+    // $year = $transaction_date->format('Y');
+    // $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
+    // $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
+    // $bank_details = json_decode($payroll->transaction_for->bank_details, true);
+    // $payment_types = $this->moduleUtil->payment_types();
+    // $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_total);
+
+    // $start_of_month = \Carbon::parse($payroll->transaction_date);
+    // $end_of_month = \Carbon::parse($payroll->transaction_date)->endOfMonth();
+
+    // $leaves = EssentialsLeave::where('business_id', $business_id)
+    //     ->where('user_id', $payroll->transaction_for->id)
+    //     ->whereDate('start_date', '>=', $start_of_month)
+    //     ->whereDate('end_date', '<=', $end_of_month)
+    //     ->get();
+
+    // $total_leaves = 0;
+    // $days_in_a_month = \Carbon::parse($start_of_month)->daysInMonth;
+    // foreach ($leaves as $key => $leave) {
+    //     $start_date = \Carbon::parse($leave->start_date);
+    //     $end_date = \Carbon::parse($leave->end_date);
+
+    //     $diff = $start_date->diffInDays($end_date);
+    //     $diff += 1;
+    //     $total_leaves += $diff;
+    // }
+
+    // $total_days_present = $this->essentialsUtil->getTotalDaysWorkedForGivenDateOfAnEmployee(
+    //     $business_id,
+    //     $payroll->transaction_for->id,
+    //     $start_of_month->format('Y-m-d'),
+    //     $end_of_month->format('Y-m-d')
+    // );
+
+    // $total_work_duration = $this->essentialsUtil->getTotalWorkDuration(
+    //     'hour',
+    //     $payroll->transaction_for->id,
+    //     $business_id,
+    //     $start_of_month->format('Y-m-d'),
+    //     $end_of_month->format('Y-m-d')
+    // );
+
+    // return view('custom_views.agents.agent_time_sheet.show')
+    //     ->with(compact(
+    //         'payroll',
+    //         'month_name',
+    //         'allowances',
+    //         'deductions',
+    //         'year',
+    //         'payment_types',
+    //         'bank_details',
+    //         'designation',
+    //         'department',
+    //         'final_total_in_words',
+    //         'total_leaves',
+    //         'days_in_a_month',
+    //         'total_work_duration',
+    //         'location',
+    //         'total_days_present'
+    //     ));
+
 
     public function showPayroll($id)
     {
 
-        $query = Transaction::with(['transaction_for', 'payment_lines']);
-        $business_id = $query->first()->business_id;
-        $payroll = $query->findOrFail($id);
+        $payroll = TimesheetUser::where('id', $id)->first();
+        $business_id = $payroll->business_id;
+
 
         $transaction_date = \Carbon::parse($payroll->transaction_date);
 
         $department = Category::where('category_type', 'hrm_department')
-            ->find($payroll->transaction_for->essentials_department_id);
+            ->find($payroll->user->essentials_department_id);
 
         $designation = Category::where('category_type', 'hrm_designation')
-            ->find($payroll->transaction_for->essentials_designation_id);
+            ->find($payroll->user->essentials_designation_id);
 
         $location = BusinessLocation::where('business_id', $business_id)
-            ->find($payroll->transaction_for->location_id);
+            ->find($payroll->user->location_id);
 
         $month_name = $transaction_date->format('F');
         $year = $transaction_date->format('Y');
         $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
         $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
-        $bank_details = json_decode($payroll->transaction_for->bank_details, true);
+        $bank_details = json_decode($payroll->user->bank_details, true);
         $payment_types = $this->moduleUtil->payment_types();
-        $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_total);
+        $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_salary);
 
         $start_of_month = \Carbon::parse($payroll->transaction_date);
         $end_of_month = \Carbon::parse($payroll->transaction_date)->endOfMonth();
 
         $leaves = EssentialsLeave::where('business_id', $business_id)
-            ->where('user_id', $payroll->transaction_for->id)
+            ->where('user_id', $payroll->user->id)
             ->whereDate('start_date', '>=', $start_of_month)
             ->whereDate('end_date', '<=', $end_of_month)
             ->get();
@@ -471,14 +679,14 @@ class TimeSheetController extends Controller
 
         $total_days_present = $this->essentialsUtil->getTotalDaysWorkedForGivenDateOfAnEmployee(
             $business_id,
-            $payroll->transaction_for->id,
+            $payroll->user->id,
             $start_of_month->format('Y-m-d'),
             $end_of_month->format('Y-m-d')
         );
 
         $total_work_duration = $this->essentialsUtil->getTotalWorkDuration(
             'hour',
-            $payroll->transaction_for->id,
+            $payroll->user->id,
             $business_id,
             $start_of_month->format('Y-m-d'),
             $end_of_month->format('Y-m-d')
@@ -637,6 +845,131 @@ class TimeSheetController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
+
+    // public function agentTimeSheetUsers()
+    // {
+    //     $user = User::where('id', auth()->user()->id)->first();
+    //     $contact_id =  $user->crm_contact_id;
+    //     $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+    //     $workers_ids =  User::where('user_type', 'worker')
+    //         ->whereIn('users.assigned_to', $projectsIds)
+    //         ->pluck('id')->toArray();
+    //     $payrolls = Transaction::whereIn('transactions.expense_for', $workers_ids)->where('type', 'payroll')
+    //         ->join('users as u', 'u.id', '=', 'transactions.expense_for')
+    //         ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
+    //         ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
+    //         ->leftJoin('essentials_payroll_group_transactions as epgt', 'transactions.id', '=', 'epgt.transaction_id')
+    //         ->leftJoin('essentials_payroll_groups as epg', 'epgt.payroll_group_id', '=', 'epg.id')
+    //         ->select([
+    //             'transactions.id',
+    //             DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+    //             'final_total',
+    //             'transaction_date',
+    //             'ref_no',
+    //             'transactions.payment_status',
+    //             'dept.name as department',
+    //             'dsgn.name as designation',
+    //             'epgt.payroll_group_id',
+    //         ]);
+    //     return Datatables::of($payrolls)
+    //         ->addColumn(
+    //             'action',
+    //             function ($row) {
+
+    //                 $html = '<div class="btn-group">
+    //                             <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+    //                                 data-toggle="dropdown" aria-expanded="false">' .
+    //                     __('messages.actions') .
+    //                     '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+    //                                 </span>
+    //                             </button>
+    //                             <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+    //                 $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+    //                 // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
+
+    //                 if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
+    //                     $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
+    //                 }
+
+    //                 $html .= '</ul></div>';
+
+    //                 return $html;
+    //             }
+    //         )
+    //         ->addColumn('transaction_date', function ($row) {
+    //             $transaction_date = \Carbon::parse($row->transaction_date);
+
+    //             return $transaction_date->format('F Y');
+    //         })
+    //         ->editColumn('final_total', '<span class="display_currency" data-currency_symbol="true">{{$final_total}}</span>')
+    //         ->filterColumn('user', function ($query, $keyword) {
+    //             $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+    //         })
+    //         ->editColumn(
+    //             'payment_status',
+    //             '<a href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'show\'], [$id])}}" class="view_payment_modal payment-status-label no-print" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}"><span class="label @payment_status($payment_status)">{{__(\'lang_v1.\' . $payment_status)}}
+    //                 </span></a>
+    //                 <span class="print_section">{{__(\'lang_v1.\' . $payment_status)}}</span>
+    //                 '
+    //         )
+    //         ->removeColumn('id')
+    //         ->rawColumns(['action', 'final_total', 'payment_status'])
+    //         ->make(true);
+    // }
+    public function agentTimeSheetUsers()
+    {
+        $timesheetUsers = TimesheetUser::join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+            ->join('timesheet_groups', 'timesheet_groups.id', '=', 'timesheet_users.timesheet_group_id')
+            ->select([
+                'u.first_name',
+                'u.last_name',
+                'u.id_proof_number',
+                'timesheet_groups.timesheet_date',
+                'timesheet_users.final_salary',
+                'timesheet_groups.payment_status',
+                'timesheet_groups.name',
+                'timesheet_users.id'
+            ]);
+
+        return DataTables::of($timesheetUsers)
+            ->addColumn('user', function ($row) {
+                return $row->first_name . ' ' . $row->last_name;
+            })
+            ->addColumn(
+                'action',
+                function ($row) {
+
+                    $html = '<div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                    data-toggle="dropdown" aria-expanded="false">' .
+                        __('messages.actions') .
+                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+                    $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+                    // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
+
+                    if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
+                        $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
+                    }
+
+                    $html .= '</ul></div>';
+
+                    return $html;
+                }
+            )
+            ->editColumn('payment_status', function ($row) {
+                return __('lang_v1.' . $row->payment_status);
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
 
 
     public function viewPayrollGroup($id)

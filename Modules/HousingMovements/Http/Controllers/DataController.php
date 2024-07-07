@@ -258,8 +258,42 @@ class DataController extends Controller
                     //     'label' => __('housingmovements::lang.'),
                     //     'default' => false,
                     // ],
-                ]
-
+                ],
+                [
+                    'value' => 'housingmovements.crud_timesheet',
+                    'label' => __('housingmovements::lang.crud_timesheet'),
+                    'default' => false,
+                ],
+                [
+                    'value' => 'housingmovements.create_timesheet',
+                    'label' => __('housingmovements::lang.create_timesheet'),
+                    'default' => false,
+                ],
+                [
+                    'value' => 'housingmovements.edit_timesheet',
+                    'label' => __('housingmovements::lang.edit_timesheet'),
+                    'default' => false,
+                ],
+                [
+                    'value' => 'housingmovements.view_timesheet_groups',
+                    'label' => __('housingmovements::lang.view_timesheet_groups'),
+                    'default' => false,
+                ],
+                [
+                    'value' => 'housingmovements.view_timesheet_users',
+                    'label' => __('housingmovements::lang.view_timesheet_users'),
+                    'default' => false,
+                ],
+                [
+                    'value' => 'housingmovements.show_timesheet',
+                    'label' => __('housingmovements::lang.show_timesheet'),
+                    'default' => false,
+                ],
+                [
+                    'value' => 'housingmovements.housingmovements.deal_timesheet',
+                    'label' => __('housingmovements::lang.deal_timesheet'),
+                    'default' => false,
+                ],
             ],
         ];
     }

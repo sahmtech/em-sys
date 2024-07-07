@@ -232,6 +232,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
 
+
         Route::get('/employee_families', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'index'])->name('employee_families');
         Route::post('/storeEmployeeFamily', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'store'])->name('storeEmployeeFamily');
         Route::delete('/employee_families/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'destroy'])->name('employee_families.destroy');
@@ -375,6 +376,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/pay_residencyPrint', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyPrint'])->name('pay_residencyPrint');
         Route::get('/pay_residencyDelivery', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyDelivery'])->name('pay_residencyDelivery');
         Route::get('/pay_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'advanceSalaryRequest'])->name('pay_advanceSalaryRequest');
+
+        Route::get('/pay_agent_time_sheet', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'PayrollIndex'])
+            ->name('payroll.agentTimeSheetIndex');
+        Route::get('/timesheet-group/{id}/show', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'showPayrollTimeSheet'])->name('payroll.agentTimeSheet.showTimeSheet');
+        Route::get('/pay_agentTimeSheetGroups', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroupsPayroll'])->name('payroll.agentTimeSheetGroups');
     });
 
     Route::prefix('hrm')->group(function () {
@@ -390,6 +396,16 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/leave/activity/{id}', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'activity']);
         Route::get('/user-leave-summary', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getUserLeaveSummary']);
         Route::get('/get-admission-date',  [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getAdmissionDate'])->name('get-admission-date');
+
+        Route::get('/agent_time_sheet', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'index'])
+            ->name('hrm.agentTimeSheetIndex');
+        Route::get('/create', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'create'])->name('hrm.agentTimeSheet.create');
+        Route::post('/submitTmeSheet', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'submitTmeSheet'])->name('hrm.agentTimeSheet.submitTmeSheet');
+        Route::get('/agentTimeSheetUsers', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'agentTimeSheetUsers'])->name('hrm.agentTimeSheetUsers');
+        Route::get('/agentTimeSheetGroups', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroups'])->name('hrm.agentTimeSheetGroups');
+        Route::get('/timesheet-group/{id}/show', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'showTimeSheet'])->name('hrm.agentTimeSheet.showTimeSheet');
+        Route::get('time_sheet/edit/{id}', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('hrm.agentTimeSheet.editTimeSheet');
+        Route::get('agent/time_sheet/deal/{id}', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('hrm.agentTimeSheet.dealTimeSheet');
 
 
 

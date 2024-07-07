@@ -1086,11 +1086,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::prefix('time_sheet')->group(function () {
             Route::get('/index', [TimeSheetController::class, 'index'])->name('agentTimeSheet.index');
-            Route::get('/payroll-group-datatable', [TimeSheetController::class, 'payrollGroupDatatable'])->name('agentTimeSheet.payrollGroupDatatable');
+            Route::get('/agentTimeSheetGroups', [TimeSheetController::class, 'agentTimeSheetGroups'])->name('agentTimeSheetGroups');
             Route::get('/create', [TimeSheetController::class, 'create'])->name('agentTimeSheet.create');
             Route::get('/getPayrollGroup', [TimeSheetController::class, 'getPayrollGroup'])->name('agentTimeSheet.getPayrollGroup');
-            Route::get('/payrolls', [TimeSheetController::class, 'payrolls'])->name('agentTimeSheet.payrolls');
+            Route::get('/agentTimeSheetUsers', [TimeSheetController::class, 'agentTimeSheetUsers'])->name('agentTimeSheetUsers');
             Route::get('/showPayroll/{id}', [TimeSheetController::class, 'showPayroll'])->name('agentTimeSheet.showPayroll');
+
+            Route::get('/timesheet-group/{id}/show', [TimeSheetController::class, 'showTimeSheet'])->name('agentTimeSheet.showTimeSheet');
             Route::get('/getWorkersBasedOnProject', [TimeSheetController::class, 'getWorkersBasedOnProject'])->name('agentTimeSheet.getWorkersBasedOnProject');
             // Route::get('/get_sheet/{id}', [TimeSheetController::class, 'timeSheet'])->name('agentTimeSheet.timeSheet');
             Route::get('/timeSheet', [TimeSheetController::class, 'timeSheet'])->name('agentTimeSheet.timeSheet');
@@ -1099,6 +1101,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             //viewPayrollGroup
             Route::get('/view/{id}/payroll-group', [TimeSheetController::class, 'viewPayrollGroup'])->name('agentTimeSheet.viewPayrollGroup');
             Route::get('/edit/{id}/payroll-group', [TimeSheetController::class, 'getEditPayrollGroup'])->name('agentTimeSheet.getEditPayrollGroup');
+            Route::get('time_sheet/edit/{id}', [TimeSheetController::class, 'editTimeSheet'])->name('agentTimeSheet.editTimeSheet');
         });
     });
     Route::get('/employee_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_requests'])->name('employee_requests');
