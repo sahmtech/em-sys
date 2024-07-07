@@ -1935,7 +1935,8 @@ return [
   'view_timesheet_groups' => 'عرض مجموعات التايم شيت',
   'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
   'show_timesheet' => 'عرض معلومات التايم شيت',
-  'deal_timesheet' => 'اعتماد التايم شيت'
+  'deal_timesheet' => 'اعتماد التايم شيت',
+  'shift_time' => 'فترة العمل'
 
 
 ];
