@@ -33,3 +33,13 @@
 .skin-black .main-header .navbar .custom_header_icon {
     color: #12142e !important;
 } */
+
+
+.table-container {
+    max-height: calc(100vh - 200px);
+    overflow-y: scroll;
+}
+
+.table-responsive {
+    overflow-x: hidden;
+}

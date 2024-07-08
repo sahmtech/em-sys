@@ -44,5 +44,8 @@ return [
     'undefined' => 'غير محدد',
     'bed_count_exceeded' => 'عدد العمالة تجاوز عدد الأسرة المتاحة في الغرفة المحددة',
     'support' => 'الدعم الفني',
-    'update_requests_access_role' => 'صلاحية إنشاء الطلبات'
+    'update_requests_access_role' => 'صلاحية إنشاء الطلبات',
+    'confirm_delete' => 'تأكيد الحذف',
+    'are_you_sure' => 'هل أنت متأكد؟',
+    'added_successfully' => 'تم الحفظ بنجاح'
 ];

@@ -18,6 +18,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/housingmovements_department_employees', [Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'department_employees'])->name('housingmovements_department_employees');
         // Route::get('/dashboard-movment', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
 
+        Route::get('/agent_time_sheet', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'index'])
+            ->name('housingmovements.agentTimeSheetIndex');
+        Route::get('/create', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'create'])->name('housingmovements.agentTimeSheet.create');
+        Route::post('/submitTmeSheet', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'submitTmeSheet'])->name('housingmovements.agentTimeSheet.submitTmeSheet');
+        Route::get('/agentTimeSheetUsers', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'agentTimeSheetUsers'])->name('housingmovements.agentTimeSheetUsers');
+        Route::get('/agentTimeSheetGroups', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroups'])->name('housingmovements.agentTimeSheetGroups');
+        Route::get('/timesheet-group/{id}/show', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'showTimeSheet'])->name('housingmovements.agentTimeSheet.showTimeSheet');
+        Route::get('time_sheet/edit/{id}', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('housingmovements.agentTimeSheet.editTimeSheet');
+        Route::get('agent/time_sheet/deal/{id}', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('housingmovements.agentTimeSheet.dealTimeSheet');
+
+
         //requests 
         Route::get('/hm.requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index'])->name('hm.requests');
         Route::get('/hm.requestsFillter', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'requestsFillter'])->name('hm.requestsFillter');

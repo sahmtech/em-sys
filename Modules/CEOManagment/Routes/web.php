@@ -48,12 +48,16 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/getParentDepartments/{businessId}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'getParentDepartments'])
             ->name('getParentDepartments');
+        Route::get('/getDepartmentsForWk/{businessId}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'getDepartmentsForWk'])->name('getDepartmentsForWk');
 
         Route::get('/employeesProcedures', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures'])->name('employeesProcedures');
         Route::get('/workersProcedures', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures'])->name('workersProcedures');
+        Route::get('/timesheet_wk', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'timesheet_wk'])->name('timesheet_wk');
 
         Route::post('/storeEmployeeProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeEmployeeProcedure'])->name('storeEmployeeProcedure');
         Route::post('/storeWorkerProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeWorkerProcedure'])->name('storeWorkerProcedure');
+        Route::post('/storeTimeSheetProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeTimeSheetProcedure'])->name('storeTimeSheetProcedure');
+
 
 
         Route::put('/updateProcedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'update'])->name('updateProcedure');

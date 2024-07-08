@@ -98,7 +98,16 @@ return [
     'selfish_service' => 'خدمة ذاتية',
     'can_not_be_selfish_service' => 'لا يمكن تقديم الطلب من صاحبه شخصياَ',
     'can_be_selfish_service' => 'يمكن تقديم الطلب من صاحبه شخصياً',
-    'make_selfish_service' => 'اجعل هذا النوع من الطلبات يقبل خدمة ذاتية'
+    'make_selfish_service' => 'اجعل هذا النوع من الطلبات يقبل خدمة ذاتية',
+    'timesheet' => 'تايم شيت',
+    'view_timesheet_wk' =>  'عرض مسير التايم شيت',
+    'timesheet_wk' => ' مسير التايم شيت',
+    'select_departments_can_create_the_time_sheet' => 'اختر الإدارات التي يمكنها إضافة التايم شيت',
+    'can_the_customer_add_it?' => 'هل يمكن للعميل إنشائه؟',
+    'select_departments_for_this_step' => 'اختر الإدارات لهذه الخطوة ',
+    'check_to_add_cutomer_to_this_step' => 'انقر لإضافة العميل إلى هذه الخطوة',
+    'client' => 'العميل'
+
 
 
 

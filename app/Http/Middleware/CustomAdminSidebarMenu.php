@@ -448,6 +448,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_timesheet_wk')) {
+
+                $menu->url(
+                    action([\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'timesheet_wk']),
+                    __('ceomanagment::lang.timesheet'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'timesheet_wk')]
+                );
+            }
         });
     }
     public function OperationsManagmentGovernmentMenu()
@@ -478,7 +486,7 @@ class CustomAdminSidebarMenu
     }
     public function InformationTechnologyManagmentMenu()
     {
-        error_log('11111111111111111');
+
         Menu::create('admin-sidebar-menu', function ($menu) {
 
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -1200,6 +1208,13 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'official_documents'],
                     );
                 }
+                if ($is_admin  || auth()->user()->can('essentials.crud_users_shifts')) {
+                    $menu->url(
+                        route('users_shifts'),
+                        __('essentials::lang.users_shifts'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'users_shifts'],
+                    );
+                }
 
                 if ($is_admin  || auth()->user()->can('essentials.crud_employee_families')) {
                     $menu->url(
@@ -1347,6 +1362,16 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'list_of_employess')]
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.crud_payroll_timesheet')) {
+                $menu->url(
+                    route('payroll.agentTimeSheetIndex'),
+                    __('agent.time_sheet'),
+                    [
+                        'icon' => 'fas fa-coins',
+                        'active' => request()->segment(1) == 'payrolls' && request()->segment(2) == 'agent_time_sheet'
+                    ]
+                );
+            }
         });
     }
 
@@ -1397,8 +1422,16 @@ class CustomAdminSidebarMenu
                 );
             }
 
-
-
+            if ($is_admin  || auth()->user()->can('essentials.crud_timesheet')) {
+                $menu->url(
+                    route('hrm.agentTimeSheetIndex'),
+                    __('agent.time_sheet'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'pay_agent_time_sheet'
+                    ]
+                );
+            }
             //employee reports 
             if ($is_admin  || auth()->user()->can('essentials.employees_reports_view')) {
 
@@ -1676,10 +1709,16 @@ class CustomAdminSidebarMenu
 
                 );
             }
-
-
-
-
+            if ($is_admin  || auth()->user()->can('followup.crud_timesheet')) {
+                $menu->url(
+                    route('followup.agentTimeSheetIndex'),
+                    __('agent.time_sheet'),
+                    [
+                        'icon' => 'fa fas fa-meteor',
+                        'active' => request()->segment(1) == 'followup' && request()->segment(2) == 'agent_time_sheet'
+                    ]
+                );
+            }
             if ($is_admin  || auth()->user()->can('followup.crud_recruitmentRequests')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'index']), __('followup::lang.recruitmentRequests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'recruitmentRequests']);
@@ -1753,6 +1792,7 @@ class CustomAdminSidebarMenu
 
                 );
             }
+
             if ($is_admin  || auth()->user()->can('followup.followup_view_department_employees')) {
                 $menu->url(
 
@@ -1985,8 +2025,16 @@ class CustomAdminSidebarMenu
                     ],
                 );
             }
-
-
+            if ($is_admin  || auth()->user()->can('housingmovements.crud_timesheet')) {
+                $menu->url(
+                    route('housingmovements.agentTimeSheetIndex'),
+                    __('agent.time_sheet'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'agent_time_sheet'
+                    ]
+                );
+            }
             // if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_trevelers') || auth()->user()->can('housingmovements.view_GM_escalate_requests')) {
             // $menu->url(
             //     action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index']),

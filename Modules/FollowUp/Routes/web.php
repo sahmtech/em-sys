@@ -41,6 +41,16 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         // Route::PUT('/updateOrder/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'update'])->name('updateOrder');
         // Route::get('/getUpdatedData/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'getUpdatedData'])->name('getUpdatedData');
 
+        Route::get('/agent_time_sheet', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'index'])
+            ->name('followup.agentTimeSheetIndex');
+        Route::get('/create', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'create'])->name('followup.agentTimeSheet.create');
+        Route::post('/submitTmeSheet', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'submitTmeSheet'])->name('followup.agentTimeSheet.submitTmeSheet');
+        Route::get('/agentTimeSheetUsers', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'agentTimeSheetUsers'])->name('followup.agentTimeSheetUsers');
+        Route::get('/agentTimeSheetGroups', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroups'])->name('followup.agentTimeSheetGroups');
+        Route::get('/timesheet-group/{id}/show', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'showTimeSheet'])->name('followup.agentTimeSheet.showTimeSheet');
+        Route::get('time_sheet/edit/{id}', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('followup.agentTimeSheet.editTimeSheet');
+        Route::get('agent/time_sheet/deal/{id}', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('followup.agentTimeSheet.dealTimeSheet');
+
 
         Route::prefix('contactLocations')->group(function () {
             Route::get('/', [\App\Http\Controllers\ContactLocationController::class, 'index'])->name('sale.contactLocations');

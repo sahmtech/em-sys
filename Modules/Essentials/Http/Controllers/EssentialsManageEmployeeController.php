@@ -13,6 +13,8 @@ use App\Utils\NewArrivalUtil;
 use App\BusinessLocation;
 use App\User;
 use App\Category;
+use Modules\Essentials\Entities\Shift;
+
 use App\Company;
 use App\Transaction;
 use App\Contact;
@@ -78,7 +80,6 @@ class EssentialsManageEmployeeController extends Controller
         return response()->json($categories);
     }
 
-
     public function fetch_user($id)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -131,7 +132,7 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
-
+        $shifts = Shift::pluck('name', 'id');
         // $contract = EssentialsEmployeesContract::all()
         // ->where()->pluck('contract_end_date', 'id');
         $companies = Company::all()->pluck('name', 'id');
@@ -355,6 +356,7 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.employee_affairs.index')
             ->with(compact(
                 'departments',
+                'shifts',
                 'contract_types',
                 'nationalities',
                 'specializations',
@@ -1055,6 +1057,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function create()
     {
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -1081,7 +1084,7 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
         $contacts = SalesProject::pluck('name', 'id');
-
+        $shifts = Shift::pluck('name', 'id');
         $blood_types = [
             'A+' => 'A positive (A+).',
             'A-' => 'A negative (A-).',
@@ -1104,6 +1107,7 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.employee_affairs.create')
             ->with(compact(
                 'roles',
+                'shifts',
                 'countries',
                 'professions',
                 'spacializations',
@@ -1189,7 +1193,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
-
+        $shifts = Shift::pluck('name', 'id');
 
 
         $blood_types = [
@@ -1213,6 +1217,7 @@ class EssentialsManageEmployeeController extends Controller
                 'blood_types',
                 'spacializations',
                 'professions',
+                'shifts',
                 'contact',
                 'locations',
                 'banks',

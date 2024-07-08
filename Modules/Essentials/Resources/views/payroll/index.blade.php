@@ -91,10 +91,21 @@
                         'method' => 'get',
                         'id' => 'add_payroll_step1',
                     ]) !!}
-
-                    <div class="modal-body">
+                    <div class="modal-header">
                         <div class="col-md-12">
-
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
+                                    {!! Form::select('companies[]', $companies, null, [
+                                        'class' => 'form-control select2',
+                                        'style' => 'width: 100%;',
+                                        'id' => 'companies',
+                                    
+                                        'multiple',
+                                        // 'placeholder' => __('lang_v1.all'),
+                                    ]) !!}
+                                </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('user_type', __('essentials::lang.user_type') . ':*') !!}
@@ -134,19 +145,9 @@
                                     ]) !!}
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
-                                    {!! Form::select('companies[]', $companies, null, [
-                                        'class' => 'form-control select2',
-                                        'style' => 'width: 100%;',
-                                        'id' => 'companies',
-                                    
-                                        'multiple',
-                                        // 'placeholder' => __('lang_v1.all'),
-                                    ]) !!}
-                                </div>
-                            </div>
+
+
+
                         </div>
 
                         {{-- <div class="form-group">
@@ -198,7 +199,7 @@
         $(document).ready(function() {
             // Initially hide both to manage the correct display on load
             $('#projects').closest('.col-md-12').hide();
-            $('#companies').closest('.col-md-12').hide();
+            // $('#companies').closest('.col-md-12').hide();
 
             // Function to show/hide projects or companies based on the user type
             function toggleProjectsAndCompanies() {
@@ -208,14 +209,12 @@
                     // If the user is a worker, show projects and hide companies
                     $('#projects').closest('.col-md-12').show();
                     $('#projects').attr('required', 'required'); // Add required attribute to projects
-                    $('#companies').closest('.col-md-12').hide();
-                    $('#companies').removeAttr('required'); // Remove required attribute from companies
+
                 } else {
                     // For any other user type, show companies and hide projects
                     $('#projects').closest('.col-md-12').hide();
                     $('#projects').removeAttr('required'); // Remove required attribute from projects
-                    $('#companies').closest('.col-md-12').show();
-                    $('#companies').attr('required', 'required'); // Add required attribute to companies
+
                 }
             }
 

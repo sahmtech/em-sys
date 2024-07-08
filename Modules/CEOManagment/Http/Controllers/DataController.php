@@ -48,6 +48,11 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.view_request'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'ceomanagment.view_timesheet_wk',
+                        'label' => __('ceomanagment::lang.view_timesheet_wk'),
+                        'default' => false,
+                    ],
 
                 ]
             ]

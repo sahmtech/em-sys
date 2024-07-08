@@ -330,7 +330,14 @@ return [
     'eqama_number' => 'رقم الإقامة',
     'please add the eqama number' => 'الرجاء إدخال رقم الإقامة',
     'new_arrival_for_workers' => 'الوصول الجديد للعمال',
-    'added_successfully' => 'أضيف بنجاح'
+    'added_successfully' => 'أضيف بنجاح',
+    'crud_timesheet' => 'إدارة التايم شيت',
+    'create_timesheet' => 'إضافة تايم شيت',
+    'edit_timesheet' => 'تعديل تايم شيت',
+    'view_timesheet_groups' => 'عرض مجموعات التايم شيت',
+    'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
+    'show_timesheet' => 'عرض معلومات التايم شيت',
+    'deal_timesheet' => 'اعتماد التايم شيت'
 
 
 
