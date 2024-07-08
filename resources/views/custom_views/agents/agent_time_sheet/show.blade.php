@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-lg" role="document">
+{{-- <div class="modal-dialog modal-lg" role="document">
   	<div class="modal-content">
   		<div class="modal-header no-print">
 	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -13,7 +13,7 @@
 		      	<table class="table table-bordered" id="payroll-view">
 		      		<tr>
 		      			<td colspan="3">
-			      			@if(!empty(Session::get('business.logo')))
+			      			@if (!empty(Session::get('business.logo')))
 			                  <img src="{{ asset( 'uploads/business_logos/' . Session::get('business.logo') ) }}" alt="Logo" style="width: auto; max-height: 50px; margin: auto;">
 			                @endif
 			                <div class="pull-right text-center">
@@ -44,14 +44,14 @@
 
 		      					<br>
 		      					<strong>@lang('lang_v1.primary_work_location'):</strong>
-		      					@if(!empty($location))
+		      					@if (!empty($location))
 		      						{{$location->name}}
 		      					@else
 		      						{{__('report.all_locations')}}
 		      					@endif
 		      					<br>
 
-		      					@if(!empty($payroll->transaction_for->id_proof_name) && !empty($payroll->transaction_for->id_proof_number))
+		      					@if (!empty($payroll->transaction_for->id_proof_name) && !empty($payroll->transaction_for->id_proof_number))
 		      						<strong>
 		      							{{ucfirst($payroll->transaction_for->id_proof_name)}}:
 		      						</strong>
@@ -159,8 +159,7 @@
 									</span>
 								</div>
 								<div style="width: 20% !important;float: right;">
-									@if(!empty($allowances['allowance_types'][$key]) 
-		                    		&& $allowances['allowance_types'][$key] == 'percent')
+									@if (!empty($allowances['allowance_types'][$key]) && $allowances['allowance_types'][$key] == 'percent')
 		                    			{{@num_format($allowances['allowance_percents'][$key])}}%
 		                    		@endif
 								</div>
@@ -185,8 +184,7 @@
 									</span>
 								</div>
 								<div style="width: 20% !important;float: right;">
-									@if(!empty($deductions['deduction_types'][$key]) 
-			                    		&& $deductions['deduction_types'][$key] == 'percent')
+									@if (!empty($deductions['deduction_types'][$key]) && $deductions['deduction_types'][$key] == 'percent')
 		                    			{{@num_format($deductions['deduction_percents'][$key])}}%
 		                    		@endif
 								</div>
@@ -286,7 +284,7 @@
 									<td>
 									  	{{ $payment_types[$payment_line->method]}}
 									</td>
-									<td>@if($payment_line->note) 
+									<td>@if ($payment_line->note) 
 									  {{ ucfirst($payment_line->note) }}
 									  @else
 									  --
@@ -322,4 +320,117 @@
 	#payroll-view>tbody>tr>td, #payroll-view>tfoot>tr>td {
 		border: 1px solid #1d1a1a;
 	}
-</style>
+</style> --}}
+@extends('layouts.app')
+@section('title', __('agent.time_sheet'))
+
+@section('content')
+    <section class="content-header">
+        <h1> @lang('agent.time_sheet') - {{ $timesheetGroup->name }} </h1>
+    </section>
+
+    <section class="content">
+
+        <div class="box">
+            <div class="box-header with-border text-center">
+                @if (!empty(Session::get('business.logo')))
+                    <img src="{{ asset('uploads/business_logos/' . Session::get('business.logo')) }}" alt="Logo"
+                        style="width: auto; max-height: 50px;">
+                @endif
+                <h3 class="box-title">{{ Session::get('business.name') ?? '' }}</h3>
+                <br>
+                <small>{!! Session::get('business.business_address') ?? '' !!}</small>
+                <br>
+                {{-- <h4>@lang('agent.time_sheet_for_the_month', ['month' => date('F', strtotime($timesheetGroup->created_at)), 'year' => date('Y', strtotime($timesheetGroup->created_at))])</h4> --}}
+
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>@lang('essentials::lang.user')</th>
+                            <th>@lang('essentials::lang.the_total')</th>
+                            <th>@lang('lang_v1.bank_name')</th>
+                            <th>@lang('lang_v1.branch')</th>
+                            <th>@lang('essentials::lang.IBAN_number')</th>
+                            <th>@lang('essentials::lang.account_holder_name')</th>
+                            <th>@lang('lang_v1.account_number')</th>
+                            <th>@lang('essentials::lang.tax_number')</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($timesheetUsers as $user)
+                            <tr>
+                                <td>{{ $user->first_name }} {{ $user->mid_name }} {{ $user->last_name }}</td>
+                                <td>{{ number_format($user->total, 2) }}</td>
+                                <td>{{ $user->bank_name }}</td>
+                                <td>{{ $user->branch }}</td>
+                                <td>{{ $user->iban_number }}</td>
+                                <td>{{ $user->account_holder_name }}</td>
+                                <td>{{ $user->account_number }}</td>
+                                <td>{{ $user->tax_number }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="box-footer text-right">
+
+                <button onclick="window.print()" class="btn btn-primary"><i class="fa fa-print"></i>
+                    @lang('messages.print')</button>
+                <a href="{{ route('agentTimeSheet.index') }}" class="btn btn-default">@lang('essentials::lang.back')</a>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@section('css')
+    <style>
+        .content-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .box {
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .box-header {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .box-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        @media print {
+
+            .box-header,
+            .box-footer,
+            .btn {
+                display: none;
+            }
+
+            .content {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            .box {
+                box-shadow: none;
+                border: none;
+            }
+        }
+    </style>
+@endsection

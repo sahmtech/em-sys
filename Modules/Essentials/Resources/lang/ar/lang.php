@@ -35,6 +35,9 @@ return [
   "reminders" => "الأحداث",
   "event_name" => "اسم الحدث",
   "time" => "الوقت",
+  "start_time" => "توقيت البدء",
+  "end_time" => "توقيت الانتهاء",
+
   "repeat" => "عدد مرات التكرار",
   "one_time" => "مره واحده",
   "every_day" => "كل يوم",
@@ -627,6 +630,11 @@ return [
   'IBAN_number' => 'رقم الآيبان',
   'Branch' => 'الفرع',
   'employee_tax_number' => 'الرقم الضريبي للموظف',
+  'tax_number' => 'الرقم الضريبي ',
+  'back' => 'عودة',
+  'due' => 'آجل',
+  'draft' => 'مسودة',
+  'final' => 'نهائية',
   'HR_Department' => 'فرع الموارد البشرية',
   'HR_Department_branch' => 'قسم الموارد البشرية ',
   'Job_title' => 'المسمى الوظيفي',
@@ -1237,6 +1245,7 @@ return [
   'escalates_to' => 'يُصعّد إلى',
   'escalates_after' => 'يُصعّد بعد',
   'in_hours' => 'بالساعات',
+  'hours' => 'ساعات',
   'you_have_no_access_role' => 'ليس لديك صلاحية الوصول لأي شركة أو مشروع',
 
   'escalate_requests' => 'الطلبات المصعّدة',
@@ -1913,6 +1922,23 @@ return [
   'edit_lead_contact' => 'تعديل عميل محتمل',
   'start_from_customer' => 'يمكن للعميل تقديم الطلب',
   'selectDepartmentStartFrom' => 'الإدارة التي يبدأ عندها ',
+  'crud_users_shifts' => 'إضافة/تعديل/حذف فترات الدوام',
+  'users_shifts' => 'فترات الدوام',
+  'shift_name' => 'اسم الفترة',
+  'add_user_shift' => 'إضافة فترة دوام',
+  'select_user' => 'اختر مستخدم',
+  'select_shift' => 'اختر فترة دوام',
+  'payroll_cant_be_deleted_if_final' => 'لا يمكن الحذف في حال كانت الفاتورة نهائية',
+
+  'crud_timesheet' => 'إدارة التايم شيت',
+  'create_timesheet' => 'إضافة تايم شيت',
+  'edit_timesheet' => 'تعديل تايم شيت',
+  'view_timesheet_groups' => 'عرض مجموعات التايم شيت',
+  'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
+  'show_timesheet' => 'عرض معلومات التايم شيت',
+  'deal_timesheet' => 'اعتماد التايم شيت',
+  'shift_time' => 'فترة العمل',
+  'work_hours' => 'ساعات الدوام'
 
 
 ];

@@ -22,7 +22,7 @@
                 </div>
             </div>
         @endif
-        @if ($is_employee_allowed)
+        {{-- @if ($is_employee_allowed)
             <div class="row">
                 <div class="col-md-12 text-center">
                     <button type="button"
@@ -47,12 +47,12 @@
                     @endif
                 </div>
             </div>
-        @endif
+        @endif --}}
         <div class="row">
             <div class="col-md-12">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        @if(auth()->user()->hasRole("Admin#1") ||  auth()->user()->can("essentials.crud_shift"))
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_shift'))
                             <li class="active">
                                 <a href="#shifts_tab" data-toggle="tab" aria-expanded="true">
                                     <i class="fas fa-user-clock" aria-hidden="true"></i>
@@ -61,7 +61,7 @@
                                 </a>
                             </li>
                         @endif
-                        
+
                         <li @if (!auth()->user()->can('essentials.crud_all_attendance')) class="active" @endif>
                             <a href="#attendance_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-check-square"
                                     aria-hidden="true"></i> @lang('essentials::lang.all_attendance')</a>
@@ -95,8 +95,10 @@
                                             <tr>
                                                 <th>@lang('lang_v1.name')</th>
                                                 <th>@lang('essentials::lang.shift_type')</th>
+                                                <th>@lang('essentials::lang.work_hours')</th>
                                                 <th>@lang('restaurant.start_time')</th>
                                                 <th>@lang('restaurant.end_time')</th>
+                                                <th>@lang('essentials::lang.work_days')</th>
                                                 <th>@lang('essentials::lang.holiday')</th>
                                                 <th>@lang('messages.action')</th>
                                             </tr>
@@ -129,7 +131,7 @@
                                         ]) !!}
                                     </div>
                                 </div>
-                                @can('essentials.crud_all_attendance')
+                                {{-- @can('essentials.crud_all_attendance')
                                     <div class="col-md-6 spacer">
                                         <button type="button" class="btn btn-primary btn-modal pull-right"
                                             data-href="{{ action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'create']) }}"
@@ -138,7 +140,7 @@
                                             @lang('essentials::lang.add_latest_attendance')
                                         </button>
                                     </div>
-                                @endcan
+                                @endcan --}}
                             </div>
                             <div id="user_attendance_summary" class="hide">
                                 <h3>
@@ -168,18 +170,18 @@
                                 </table>
                             </div>
                         </div>
-                        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.crud_attendance_by_shift"))
-                        <div class="tab-pane" id="attendance_by_shift_tab">
-                            @include('essentials::attendance.attendance_by_shift')
-                        </div>
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_attendance_by_shift'))
+                            <div class="tab-pane" id="attendance_by_shift_tab">
+                                @include('essentials::attendance.attendance_by_shift')
+                            </div>
                         @endif
 
-                        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.crud_attendance_by_date"))
-                        <div class="tab-pane" id="attendance_by_date_tab">
-                            @include('essentials::attendance.attendance_by_date')
-                        </div>
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.crud_attendance_by_date'))
+                            <div class="tab-pane" id="attendance_by_date_tab">
+                                @include('essentials::attendance.attendance_by_date')
+                            </div>
                         @endif
-                        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.import_attendance"))
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.import_attendance'))
                             <div class="tab-pane" id="import_attendance_tab">
                                 @include('essentials::attendance.import_attendance')
                             </div>
@@ -344,12 +346,20 @@
                         name: 'type'
                     },
                     {
+                        data: 'work_hours',
+                        name: 'work_hours'
+                    },
+                    {
                         data: 'start_time',
                         name: 'start_time'
                     },
                     {
                         data: 'end_time',
                         name: 'end_time'
+                    },
+                    {
+                        data: 'work_days',
+                        name: 'work_days'
                     },
                     {
                         data: 'holidays',
@@ -381,8 +391,10 @@
                     var shift_type = $(this).val();
                     if (shift_type == 'fixed_shift') {
                         $('div.time_div').fadeIn();
+                        $('.flexible_shift_hours').hide();
                     } else if (shift_type == 'flexible_shift') {
                         $('div.time_div').fadeOut();
+                        $('.flexible_shift_hours').show();
                     }
                 });
 

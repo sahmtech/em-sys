@@ -10,6 +10,7 @@ return [
     'hijri_dob' => 'تاريخ الميلاد الهجري',
     'add_qualification' => 'المؤهلات العلمية',
     'cancel' => 'إلغاء',
+    'draft' => 'مسودة',
     "select_from_users_list" => "اختر من قائمة المستخدمين",
     "select_from_commisssion_agents_list" => "اختر من قائمة المناديب",
     "add_sales_commission_agent" => "إضافة مندوب",
@@ -1504,6 +1505,11 @@ return [
     'Ref' => 'المرجع ',
     'adjustable' => 'يمكن التعديل بعد الاضافة',
     'transfer_account' => 'حساب التحويل',
+    'approved' => 'الاعتماد',
+    'approve' => 'اعتماد',
+    'is_approved' => 'تم الاعتماد',
+    'is_not_approved' => 'لم يتم الاعتماد',
+
 
 
 

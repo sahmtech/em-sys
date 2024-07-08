@@ -2,10 +2,8 @@
 @section('title', __('agent.time_sheet'))
 
 @section('content')
-
     <section class="content-header">
-        <h1> @lang('agent.time_sheet')
-        </h1>
+        <h1> @lang('agent.time_sheet') </h1>
     </section>
     <!-- Main content -->
     <section class="content">
@@ -44,9 +42,9 @@
                                         <thead>
                                             <tr>
                                                 <th>@lang('essentials::lang.name')</th>
-                                                <th>@lang('sale.status')</th>
                                                 <th>@lang('sale.payment_status')</th>
-                                                <th>@lang('essentials::lang.total_gross_amount')</th>
+                                                <th>@lang('sale.status')</th>
+                                                <th>@lang('essentials::lang.total')</th>
                                                 <th>@lang('lang_v1.added_by')</th>
                                                 <th>@lang('lang_v1.created_at')</th>
                                                 <th>@lang('messages.action')</th>
@@ -62,12 +60,13 @@
                                     <table class="table table-bordered table-striped" id="payrolls_table" style="width: 100%;">
                                         <thead>
                                             <tr>
-                                                <th>@lang('essentials::lang.employee')</th>
-                                                <th>@lang('essentials::lang.month_year')</th>
-                                                <th>@lang('purchase.ref_no')</th>
-                                                <th>@lang('sale.total_amount')</th>
+                                                <th>@lang('essentials::lang.name')</th>
+                                                <th>@lang('essentials::lang.user')</th>
+                                                <th>@lang('essentials::lang.Identity_proof_name')</th>
+
+                                                <th>@lang('essentials::lang.final_salary')</th>
                                                 <th>@lang('sale.payment_status')</th>
-                                                <th>@lang('messages.action')</th>
+                                                <th>@lang('essentials::lang.action')</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -82,13 +81,7 @@
         <div class="modal fade" id="payroll_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-
-                    {!! Form::open([
-                        'url' => route('agentTimeSheet.create'),
-                        'method' => 'get',
-                        'id' => 'add_payroll_step1',
-                    ]) !!}
-
+                    {!! Form::open(['url' => route('agentTimeSheet.create'), 'method' => 'get', 'id' => 'add_payroll_step1']) !!}
                     <div class="modal-body">
                         <div class="form-group">
                             {!! Form::label('projects', __('agent.projects') . ':*') !!}
@@ -101,12 +94,8 @@
                         </div>
                         <div class="form-group">
                             {!! Form::label('employee_ids', __('essentials::lang.employee') . ':*') !!}
-                            <button type="button" class="btn btn-primary btn-xs select-all">
-                                @lang('lang_v1.select_all')
-                            </button>
-                            <button type="button" class="btn btn-primary btn-xs deselect-all">
-                                @lang('lang_v1.deselect_all')
-                            </button>
+                            <button type="button" class="btn btn-primary btn-xs select-all">@lang('lang_v1.select_all')</button>
+                            <button type="button" class="btn btn-primary btn-xs deselect-all">@lang('lang_v1.deselect_all')</button>
                             {!! Form::select('employee_ids[]', $workers, null, [
                                 'class' => 'form-control select2',
                                 'required',
@@ -115,7 +104,6 @@
                                 'id' => 'employee_ids',
                             ]) !!}
                         </div>
-
                         <div class="form-group">
                             {!! Form::label('month_year', __('essentials::lang.month_year') . ':*') !!}
                             <div class="input-group">
@@ -129,299 +117,232 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">@lang('essentials::lang.proceed')</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
-
                     {!! Form::close() !!}
-
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div>
 
-        <div class="modal fade" id="add_allowance_deduction_modal" tabindex="-1" role="dialog"
-            aria-labelledby="gridSystemModalLabel"></div>
-    </section>
-    <!-- /.content -->
-    <!-- /.content -->
-    <div class="modal fade payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    </div>
+        <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewModalLabel">Time Sheet Users</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="timesheetUsersTable" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Total Amount</th>
+                                    <th>Bank Name</th>
+                                    <th>Branch</th>
+                                    <th>IBAN</th>
+                                    <th>Account Holder</th>
+                                    <th>Account Number</th>
+                                    <th>Tax Number</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    </div>
-
-@endsection
-
-@section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
-
-
-            $(document).on('change',
-                '#user_id_filter, #month_year_filter, #department_id, #designation_id, #location_id_filter',
-                function() {
-                    payrolls_table.ajax.reload();
-                });
-
-            if ($('#add_payroll_step1').length) {
-                $('#add_payroll_step1').validate();
-                $('#employee_id').select2({
-                    dropdownParent: $('#payroll_modal')
-                });
-            }
-
-            $('div.view_modal').on('shown.bs.modal', function(e) {
-                __currency_convert_recursively($('.view_modal'));
-            });
-
-            $('#month_year, #month_year_filter').datepicker({
-                autoclose: true,
-                format: 'mm/yyyy',
-                minViewMode: "months"
-            });
-
-            //pay components
-
-            $('#add_allowance_deduction_modal').on('shown.bs.modal', function(e) {
-                var $p = $(this);
-                $('#add_allowance_deduction_modal .select2').select2({
-                    dropdownParent: $p
-                });
-                $('#add_allowance_deduction_modal #applicable_date').datepicker();
-
-            });
-
-            $(document).on('submit', 'form#add_allowance_form', function(e) {
+        <script>
+            $(document).on('click', '.btn-modal', function(e) {
                 e.preventDefault();
-                $(this).find('button[type="submit"]').attr('disabled', true);
-                var data = $(this).serialize();
+                var url = $(this).data('href');
 
-                $.ajax({
-                    method: $(this).attr('method'),
-                    url: $(this).attr('action'),
-                    dataType: 'json',
-                    data: data,
-                    success: function(result) {
-                        if (result.success == true) {
-                            $('div#add_allowance_deduction_modal').modal('hide');
-                            toastr.success(result.msg);
-                            ad_pc_table.ajax.reload();
-                        } else {
-                            toastr.error(result.msg);
+                $('#viewModal').modal('show');
+                $('#timesheetUsersTable').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: url,
+                    destroy: true, // To ensure the table is reinitialized each time
+                    columns: [{
+                            data: 'employee_name',
+                            name: 'employee_name'
+                        },
+                        {
+                            data: 'total_amount',
+                            name: 'total_amount'
+                        },
+                        {
+                            data: 'bank_name',
+                            name: 'bank_name'
+                        },
+                        {
+                            data: 'branch',
+                            name: 'branch'
+                        },
+                        {
+                            data: 'iban_number',
+                            name: 'iban_number'
+                        },
+                        {
+                            data: 'account_holder_name',
+                            name: 'account_holder_name'
+                        },
+                        {
+                            data: 'account_number',
+                            name: 'account_number'
+                        },
+                        {
+                            data: 'tax_number',
+                            name: 'tax_number'
                         }
-                    },
+                    ]
                 });
             });
+        </script>
+    @endsection
 
-            ad_pc_table = $('#ad_pc_table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'index']) }}",
-                columns: [{
-                        data: 'description',
-                        name: 'description'
+    @section('javascript')
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(document).on('change',
+                    '#user_id_filter, #month_year_filter, #department_id, #designation_id, #location_id_filter',
+                    function() {
+                        payrolls_table.ajax.reload();
+                    });
+
+                if ($('#add_payroll_step1').length) {
+                    $('#add_payroll_step1').validate();
+                    $('#employee_id').select2({
+                        dropdownParent: $('#payroll_modal')
+                    });
+                }
+
+                $('div.view_modal').on('shown.bs.modal', function(e) {
+                    __currency_convert_recursively($('.view_modal'));
+                });
+
+                $('#month_year, #month_year_filter').datepicker({
+                    autoclose: true,
+                    format: 'mm/yyyy',
+                    minViewMode: "months"
+                });
+
+                payrolls_table = $('#payrolls_table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('agentTimeSheetUsers') }}",
                     },
-                    {
-                        data: 'type',
-                        name: 'type'
-                    },
-                    {
-                        data: 'amount',
-                        name: 'amount'
-                    },
-                    {
-                        data: 'applicable_date',
-                        name: 'applicable_date'
-                    },
-                    {
-                        data: 'employees',
+                    columnDefs: [{
+                        orderable: false,
                         searchable: false,
-                        orderable: false
-                    },
-                    {
-                        data: 'action',
-                        name: 'action'
-                    }
-                ],
-                fnDrawCallback: function(oSettings) {
-                    __currency_convert_recursively($('#ad_pc_table'));
-                },
-            });
+                    }],
 
-            $(document).on('click', '.delete-allowance', function(e) {
-                e.preventDefault();
-                swal({
-                    title: LANG.sure,
-                    icon: 'warning',
-                    buttons: true,
-                    dangerMode: true,
-                }).then(willDelete => {
-                    if (willDelete) {
-                        var href = $(this).data('href');
-                        var data = $(this).serialize();
+                    columns: [{
+                            data: 'name',
+                            name: 'name'
+                        }, {
+                            data: 'user',
+                            name: 'user'
+                        },
+                        {
+                            data: 'id_proof_number',
+                            name: 'id_proof_number'
+                        },
 
-                        $.ajax({
-                            method: 'DELETE',
-                            url: href,
-                            dataType: 'json',
-                            data: data,
-                            success: function(result) {
-                                if (result.success == true) {
-                                    toastr.success(result.msg);
-                                    ad_pc_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            },
-                        });
-                    }
-                });
-            });
-
-
-
-            $(document).on('click', '.delete-payroll', function(e) {
-                e.preventDefault();
-                swal({
-                    title: LANG.sure,
-                    icon: 'warning',
-                    buttons: true,
-                    dangerMode: true,
-                }).then(willDelete => {
-                    if (willDelete) {
-                        var href = $(this).attr('href');
-                        var data = $(this).serialize();
-
-                        $.ajax({
-                            method: 'DELETE',
-                            url: href,
-                            dataType: 'json',
-                            data: data,
-                            success: function(result) {
-                                if (result.success == true) {
-                                    toastr.success(result.msg);
-                                    payroll_group_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            },
-                        });
-                    }
-                });
-            });
-
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            payrolls_table = $('#payrolls_table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('agentTimeSheet.payrolls') }}",
-                },
-                columnDefs: [{
-
-                    orderable: false,
-                    searchable: false,
-                }, ],
-                aaSorting: [
-                    [4, 'desc']
-                ],
-                columns: [{
-                        data: 'user',
-                        name: 'user'
-                    },
-                    {
-                        data: 'transaction_date',
-                        name: 'transaction_date'
-                    },
-                    {
-                        data: 'ref_no',
-                        name: 'ref_no'
-                    },
-                    {
-                        data: 'final_total',
-                        name: 'final_total'
-                    },
-                    {
-                        data: 'payment_status',
-                        name: 'payment_status'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action'
-                    },
-                ],
-            });
-
-
-            //payroll groups
-
-            payroll_group_table = $('#payroll_group_table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('agentTimeSheet.payrollGroupDatatable') }}",
-                aaSorting: [
-                    [6, 'desc']
-                ],
-                columns: [{
-                        data: 'name',
-                        name: 'essentials_payroll_groups.name'
-                    },
-                    {
-                        data: 'status',
-                        name: 'essentials_payroll_groups.status'
-                    },
-                    {
-                        data: 'payment_status',
-                        name: 'essentials_payroll_groups.payment_status'
-                    },
-                    {
-                        data: 'gross_total',
-                        name: 'essentials_payroll_groups.gross_total'
-                    },
-                    {
-                        data: 'added_by',
-                        name: 'added_by'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'essentials_payroll_groups.created_at',
-                        searchable: false
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        searchable: false,
-                        orderable: false
-                    }
-                ]
-            });
-            $(document).on('change', '#projects', function() {
-                let project_id = $(this).val();
-                $.ajax({
-                    method: 'GET',
-                    url: "{{ route('agentTimeSheet.getWorkersBasedOnProject') }}",
-                    dataType: 'json',
-                    data: {
-                        'project_id': project_id
-                    },
-                    success: function(result) {
-                        if (result.success == true) {
-                            $('#employee_ids').empty();
-                            $.each(result.workers, function(id, worker) {
-                                $('#employee_ids').append($('<option>', {
-                                    value: id,
-                                    text: worker
-                                }));
-                            });
-                            $('#employee_ids').select2();
+                        {
+                            data: 'final_salary',
+                            name: 'final_salary'
+                        },
+                        {
+                            data: 'payment_status',
+                            name: 'payment_status'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
                         }
-                    }
+                    ],
+                });
+
+                payroll_group_table = $('#payroll_group_table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('agentTimeSheetGroups') }}",
+                    columns: [{
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'payment_status',
+                            name: 'payment_status'
+                        },
+                        {
+                            data: 'status',
+                            name: 'status'
+                        },
+                        {
+                            data: 'total',
+                            name: 'total'
+                        },
+                        {
+                            data: 'created_by',
+                            name: 'created_by'
+                        },
+                        {
+                            data: 'created_at',
+                            name: 'created_at'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ],
+                });
+
+                $(document).on('change', '#projects', function() {
+                    let project_id = $(this).val();
+                    $.ajax({
+                        method: 'GET',
+                        url: "{{ route('agentTimeSheet.getWorkersBasedOnProject') }}",
+                        dataType: 'json',
+                        data: {
+                            'project_id': project_id
+                        },
+                        success: function(result) {
+                            if (result.success == true) {
+                                $('#employee_ids').empty();
+                                $.each(result.workers, function(id, worker) {
+                                    $('#employee_ids').append($('<option>', {
+                                        value: id,
+                                        text: worker
+                                    }));
+                                });
+                                $('#employee_ids').select2();
+                            }
+                        }
+                    });
                 });
             });
-        });
-    </script>
-    <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
-@endsection
+        </script>
+        <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
+        <script>
+            $(document).on('click', '.btn-modal', function(e) {
+                // Ensure it does not prevent the default action
+                e.preventDefault();
+                var url = $(this).attr('href');
+                window.location.href = url;
+            });
+        </script>
+
+
+    @endsection

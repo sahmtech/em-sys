@@ -355,8 +355,13 @@ return [
     'canceled_date' => 'تاريخ الإلغاء',
     'notes' => 'ملاحظات',
     'please_select_rows' => 'الرجاء اختيار عمالة',
-    'department_head' => 'رئيس قسم'
-
+    'department_head' => 'رئيس قسم',
+    'crud_timesheet' => 'إدارة التايم شيت',
+    'create_timesheet' => 'إضافة تايم شيت',
+    'edit_timesheet' => 'تعديل تايم شيت',
+    'view_timesheet_groups' => 'عرض مجموعات التايم شيت',
+    'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
+    'show_timesheet' => 'عرض معلومات التايم شيت',
     //''=>''
-
+    'deal_timesheet' => 'اعتماد التايم شيت'
 ];

@@ -13,6 +13,8 @@ use App\BusinessLocation;
 use App\Utils\ModuleUtil;
 use App\User;
 use App\Company;
+use Modules\Essentials\Entities\Shift;
+use Modules\Essentials\Entities\EssentialsUserShift;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -355,7 +357,7 @@ class EssentialsWorkersAffairsController extends Controller
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
-
+        $shifts = Shift::pluck('name', 'id');
         $contacts = SalesProject::pluck('name', 'id')->toArray();
         $contacts = [null => __('essentials::lang.undefined')] + $contacts;
 
@@ -410,6 +412,7 @@ class EssentialsWorkersAffairsController extends Controller
             ->with(compact(
                 'departments',
                 'countries',
+                'shifts',
                 'spacializations',
                 'nationalities',
                 'username_ext',
@@ -713,7 +716,7 @@ class EssentialsWorkersAffairsController extends Controller
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
 
-
+        $shifts = Shift::pluck('name', 'id');
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
         if ($user->status == 'active') {
@@ -721,7 +724,10 @@ class EssentialsWorkersAffairsController extends Controller
         } else {
             $is_checked_checkbox = false;
         }
-
+        if (!empty($user)) {
+            $shift_ids = EssentialsUserShift::where('user_id', $user->id)->where('is_active', 1)->pluck('essentials_shift_id')->toArray();
+            $user->shift_id = $shift_ids;
+        }
         $locations = BusinessLocation::where('business_id', $business_id)
             ->get();
 
@@ -742,6 +748,7 @@ class EssentialsWorkersAffairsController extends Controller
                 'officalDocuments',
                 'projects',
                 'contacts',
+                'shifts',
                 'spacializations',
                 'qualification',
                 'resident_doc',

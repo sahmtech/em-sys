@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\Shift;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 class ShiftController extends Controller
 {
@@ -36,9 +37,8 @@ class ShiftController extends Controller
      */
     public function index()
     {
+
         $business_id = request()->session()->get('user.business_id');
-
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
@@ -52,7 +52,7 @@ class ShiftController extends Controller
                     'user_type',
                     'start_time',
                     'end_time',
-                    'holidays',
+                    'holidays', 'work_days', 'work_hours'
                 ]);
 
             return Datatables::of($shifts)
@@ -66,6 +66,13 @@ class ShiftController extends Controller
 
                     return $end_time_formated;
                 })
+                ->editColumn('work_hours', function ($row) {
+                    if ($row->work_hours) {
+                        return  $row->work_hours . '' . __('essentials::lang.hours');
+                    } else {
+                        return '';
+                    }
+                })
                 ->editColumn('type', function ($row) {
                     return __('essentials::lang.' . $row->type);
                 })
@@ -78,8 +85,19 @@ class ShiftController extends Controller
                         return implode(', ', $holidays);
                     }
                 })
+                ->editColumn('work_days', function ($row) {
+                    if (!empty($row->work_days)) {
+                        $work_days = json_decode($row->work_days, true);
+                        $work_days = array_map(function ($item) {
+                            return __('lang_v1.' . $item);
+                        }, $work_days);
+
+                        return implode(', ', $work_days);
+                    }
+                    return '';
+                })
                 ->addColumn('action', function ($row) {
-                    $html = '<a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ShiftController::class, 'edit'], [$row->id]) . '" data-container="#edit_shift_modal" class="btn-modal btn btn-xs btn-primary"><i class="fas fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</a> &nbsp;<a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ShiftController::class, 'getAssignUsers'], [$row->id]) . '" data-container="#user_shift_modal" class="btn-modal btn btn-xs btn-success"><i class="fas fa-users" aria-hidden="true"></i> ' . __('essentials::lang.assign_users') . '</a>';
+                    $html = '<a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ShiftController::class, 'edit'], [$row->id]) . '" data-container="#edit_shift_modal" class="btn-modal btn btn-xs btn-primary"><i class="fas fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</a>';
 
                     return $html;
                 })
@@ -88,6 +106,147 @@ class ShiftController extends Controller
                 ->make(true);
         }
     }
+
+    public function users_shifts(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1');
+
+        $crud_users_shifts = auth()->user()->can('essentials.crud_users_shifts');
+        if (!$crud_users_shifts) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $userIds = User::where('user_type', '!=', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $shifts = Shift::pluck('name', 'id');
+        $users_shifts = EssentialsUserShift::join('users as u', 'u.id', '=', 'essentials_user_shifts.user_id')
+            ->join('essentials_shifts as shift', 'shift.id', '=', 'essentials_user_shifts.essentials_shift_id')
+            ->whereIn('u.id', $userIds)
+            ->where(function ($query) {
+                $query->where('u.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('u.status', 'inactive')
+                            ->whereIn('u.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->select([
+                'essentials_user_shifts.id',
+                'u.id_proof_number as id_proof_number',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'essentials_user_shifts.start_date',
+                'essentials_user_shifts.end_date',
+                'shift.name',
+                'shift.type',
+                'shift.start_time',
+                'shift.end_time',
+                'shift.holidays',
+                'u.emp_number',
+                'essentials_user_shifts.is_active',
+
+            ])
+            ->orderBy('essentials_user_shifts.id', 'desc');
+
+        if ($request->ajax()) {
+            return Datatables::of($users_shifts)
+                ->editColumn('type', function ($row) {
+                    return __('essentials::lang.' . $row->type);
+                })
+                ->editColumn('holidays', function ($row) {
+                    if (!empty($row->holidays)) {
+                        $holidays = is_array($row->holidays) ? $row->holidays : json_decode($row->holidays, true);
+                        $holidays = array_map(function ($item) {
+                            return __('lang_v1.' . trim($item));
+                        }, $holidays);
+
+                        return implode(', ', $holidays);
+                    }
+                })
+                ->filterColumn('user', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->where("u.id_proof_number", 'like', "%{$keyword}%");
+                })
+                ->make(true);
+        }
+
+        $all_users = User::whereIn('id', $userIds)
+            ->where(function ($query) {
+                $query->where('status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('status', 'inactive')
+                            ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, ''), ' - ', COALESCE(id_proof_number, '')) as full_name"))
+            ->get();
+
+        $users = $all_users->pluck('full_name', 'id');
+
+        return view('essentials::employee_affairs.users_shifts.index')->with(compact('users', 'shifts'));
+    }
+
+    public function editUserShift($id)
+    {
+        $shift = EssentialsUserShift::findOrFail($id);
+        return response()->json($shift);
+    }
+
+    public function updateUserShift(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'shift_id' => 'required|exists:essentials_shifts,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $shift = EssentialsUserShift::findOrFail($id);
+            $shift->update([
+                'user_id' => $validatedData['user_id'],
+                'essentials_shift_id' => $validatedData['shift_id'],
+                'start_date' => $validatedData['start_date'],
+                'end_date' => $validatedData['end_date'],
+                'is_active' => 1,
+            ]);
+
+            DB::commit();
+
+            return response()->json(['message' => __('messages.shift_updated_successfully')]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => __('messages.error_occurred'), 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteUserShift($id)
+    {
+        try {
+            $shift = EssentialsUserShift::findOrFail($id);
+            $shift->delete();
+
+            $output = [
+                'success' => true,
+                'msg' => __('messages.deleted_successfully'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return response()->json($output);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -105,15 +264,46 @@ class ShiftController extends Controller
      * @param  Request  $request
      * @return Response
      */
+    public function storeUserShift(Request $request)
+    {
+        error_log(json_encode($request->all()));
+
+        $validatedData = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'shift_id' => 'required|array',
+            'shift_id.*' => 'exists:essentials_shifts,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ]);
+
+
+        EssentialsUserShift::where('user_id', $validatedData['user_id'])
+
+            ->update(['is_active' => 0]);
+
+
+        foreach ($validatedData['shift_id'] as $shiftId) {
+            EssentialsUserShift::create([
+                'user_id' => $validatedData['user_id'],
+                'essentials_shift_id' => $shiftId,
+                'start_date' => $validatedData['start_date'],
+                'end_date' => $validatedData['end_date'],
+                'is_active' => 1,
+            ]);
+        }
+
+        return response()->json(['message' => __('messages.added_successfully')]);
+    }
+
+
     public function store(Request $request)
     {
+        error_log(json_encode($request->all()));
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         try {
-            $input = $request->only(['name', 'type', 'holidays']);
+            $input = $request->only(['name', 'type', 'holidays', 'work_days', 'work_hours']);
 
             if ($input['type'] != 'flexible_shift') {
                 $input['start_time'] = $this->moduleUtil->uf_time($request->input('start_time'));
@@ -131,6 +321,9 @@ class ShiftController extends Controller
 
             $input['business_id'] = $business_id;
 
+
+            $input['work_days'] = json_encode($input['work_days']);
+
             Shift::create($input);
 
             $output = [
@@ -138,17 +331,18 @@ class ShiftController extends Controller
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
+            error_log($e->getMessage());
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
-
             ];
         }
 
         return $output;
     }
+
 
     /**
      * Show the specified resource.
@@ -194,9 +388,9 @@ class ShiftController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-       
 
-            $input = $request->only(['name', 'type', 'holidays']);
+
+            $input = $request->only(['name', 'type', 'holidays', 'work_days', 'work_hours']);
 
             if ($input['type'] != 'flexible_shift') {
                 $input['start_time'] = $this->moduleUtil->uf_time($request->input('start_time'));
@@ -217,7 +411,9 @@ class ShiftController extends Controller
             } else {
                 $input['holidays'] = null;
             }
-
+            if (!empty($input['work_days'])) {
+                $input['work_days'] = json_encode($input['work_days']);
+            }
             $shift = Shift::where('business_id', $business_id)
                 ->where('id', $id)
                 ->update($input);

@@ -3,6 +3,8 @@
 namespace Modules\CEOManagment\Http\Controllers;
 
 use App\Business;
+use App\Contact;
+
 use App\Request as UserRequest;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -16,6 +18,8 @@ use Modules\CEOManagment\Entities\ProcedureTask;
 use Modules\CEOManagment\Entities\ProcedureEscalation;
 use Modules\CEOManagment\Entities\Task;
 use Modules\CEOManagment\Entities\WkProcedure;
+use Modules\CEOManagment\Entities\TimeSheetWorkflow;
+
 use Modules\CEOManagment\Entities\RequestProcedureTask;
 
 
@@ -690,5 +694,65 @@ class WkProcedureController extends Controller
         }
 
         return $output;
+    }
+
+
+    public function timesheet_wk()
+    {
+        $businessWithWorkflows = TimeSheetWorkflow::distinct()->pluck('business_id')->toArray();
+        $business = Business::whereNotIn('id', $businessWithWorkflows)->pluck('name', 'id');
+        $all_business = Business::pluck('name', 'id');
+        $workflows = TimeSheetWorkflow::all();
+        $departments = EssentialsDepartment::pluck('name', 'id');
+        $clients = Contact::all();
+
+        return view('ceomanagment::work_flow.time_sheet', compact('workflows', 'all_business', 'business', 'departments', 'clients'));
+    }
+    public function getDepartmentsForWk($businessId)
+    {
+
+        $departments = EssentialsDepartment::where('business_id', $businessId)->pluck('name', 'id');
+        return response()->json($departments);
+    }
+
+
+    public function storeTimeSheetProcedure(Request $request)
+    {
+        $data = $request->all();
+        $businessId = $data['business'];
+
+        foreach ($data['steps'] as $stepNumber => $step) {
+
+            if (isset($step['departments'])) {
+                $departments = array_filter($step['departments'], function ($departmentId) {
+                    return !is_null($departmentId);
+                });
+
+
+                if (count($departments) > 0) {
+                    foreach ($departments as $departmentId) {
+                        TimeSheetWorkflow::create([
+                            'department_id' => $departmentId,
+                            'business_id' => $businessId,
+                            'step_number' => $stepNumber,
+                            // 'clients_allowed' => isset($step['clients_allowed']) ? $step['clients_allowed'] : 0,
+
+                        ]);
+                    }
+
+
+                    if (isset($step['clients_allowed']) && $step['clients_allowed'] == 1) {
+                        TimeSheetWorkflow::create([
+                            'department_id' => null,
+                            'business_id' => $businessId,
+                            'step_number' => $stepNumber,
+                            'clients_allowed' => 1,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Workflow added successfully.');
     }
 }
