@@ -557,7 +557,7 @@ class TimeSheetController extends Controller
         $designations = Category::forDropdown($business_id, 'hrm_designation');
 
 
-        return view('essentials::custom_views.agents.agent_time_sheet.Payroll_index', compact('workers', 'departments', 'designations', 'projects'));
+        return view('essentials::custom_views.agents.agent_time_sheet.payroll_index', compact('workers', 'departments', 'designations', 'projects'));
     }
 
 
