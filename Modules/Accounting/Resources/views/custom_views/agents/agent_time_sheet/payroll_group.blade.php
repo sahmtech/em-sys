@@ -16,7 +16,7 @@
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             {!! Form::open([
-                'url' => route('followup.agentTimeSheet.submitTmeSheet'),
+                'url' => route('accounting.agentTimeSheet.submitTmeSheet'),
                 'method' => 'post',
                 'id' => 'add_payroll_step1',
             ]) !!}

@@ -100,8 +100,7 @@
             <div class="box-footer text-right">
                 <button onclick="window.print()" class="btn btn-primary"><i class="fa fa-print"></i>
                     @lang('messages.print')</button>
-                <a href="{{ route('housingmovements.agentTimeSheetIndex') }}"
-                    class="btn btn-default">@lang('essentials::lang.back')</a>
+                <a href="{{ route('accounting.agentTimeSheetIndex') }}" class="btn btn-default">@lang('essentials::lang.back')</a>
             </div>
         </div>
     </section>

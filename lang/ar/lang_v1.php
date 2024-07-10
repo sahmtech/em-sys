@@ -1538,6 +1538,13 @@ return [
     'the email is already exist' => 'الايميل المدخل موجود سابقا',
     'the number is already exist' => 'رقم الهاتف المدخل موجود سابقا',
 
+    'approved_by' => 'تم الاعتماد من قبل',
+    'is_invoice_issued' => 'رفع الفاتورة للعميل',
+    'is_payrolls_issued' => 'صدور الرواتب',
+    'issued' => 'صدرت',
+    'is_not_issued' => 'لم تصدر',
+    'accounting_approved_by' => 'اعتماد المالية من قبل',
+    'is_approved_by_accounting' => 'الاعتماد من المالية',
 
 
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\HousingMovements\Http\Controllers;
+namespace Modules\Accounting\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -15,8 +15,7 @@ use App\Category;
 use Carbon\Carbon;
 use DB;
 use Yajra\DataTables\Facades\DataTables;
-use Modules\FollowUp\Entities\FollowupUserAccessProject;
-
+use Illuminate\Support\Facades\Session;
 
 class TimeSheetController extends Controller
 {
@@ -77,7 +76,7 @@ class TimeSheetController extends Controller
         $designations = Category::forDropdown($business_id, 'hrm_designation');
 
 
-        return view('housingmovements::custom_views.agents.agent_time_sheet.index', compact('workers', 'departments', 'designations', 'projects'));
+        return view('accounting::custom_views.agents.agent_time_sheet.index', compact('workers', 'departments', 'designations', 'projects'));
     }
 
     public function create()
@@ -138,30 +137,37 @@ class TimeSheetController extends Controller
         $date = (Carbon::createFromFormat('m/Y', request()->input('month_year')))->format('F Y');
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
-        return view('housingmovements::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'date', 'project_id', 'month_year', 'payrolls', 'action'));
+        return view('accounting::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'date', 'project_id', 'month_year', 'payrolls', 'action'));
     }
 
     public function agentTimeSheetGroups()
     {
+
+        $company_id = Session::get('selectedCompanyId');
+        error_log($company_id);
         $user = User::where('id', auth()->user()->id)->first();
-        $payrolls = TimesheetGroup::where(function ($query) use ($user) {
-            $query->where('timesheet_groups.created_by', $user->id)
-                ->orWhere('timesheet_groups.status', 'final');
-        })->select([
-            'timesheet_groups.id',
-            'timesheet_groups.name',
-            'timesheet_groups.project_id',
-            'timesheet_groups.is_invoice_issued',
-            'timesheet_groups.is_payrolls_issued',
-            'timesheet_groups.status',
-            'timesheet_groups.total',
-            'timesheet_groups.created_at',
-            'timesheet_groups.created_by',
-            'timesheet_groups.is_approved',
-            'timesheet_groups.approved_by',
+        $payrolls = TimesheetGroup::where('timesheet_groups.is_approved', 1)->whereHas('timesheetUsers.user', function ($query) use ($company_id) {
+            $query->where('company_id', $company_id);
+        })
+            ->select([
+
+                'timesheet_groups.id',
+                'timesheet_groups.name',
+                'timesheet_groups.project_id',
+                'timesheet_groups.is_invoice_issued',
+                'timesheet_groups.is_payrolls_issued',
+                'timesheet_groups.status',
+                'timesheet_groups.total',
+                'timesheet_groups.created_at',
+                'timesheet_groups.created_by',
+                'timesheet_groups.is_approved',
+                'timesheet_groups.approved_by',
+                'timesheet_groups.is_approved_by_accounting',
+                'timesheet_groups.accounting_approved_by',
 
 
-        ]);
+
+            ]);
 
         $all_users = User::where('status', '!=', 'inactive')
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
@@ -178,14 +184,14 @@ class TimeSheetController extends Controller
                     '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-                if ($is_admin || $user->can('housingmovements.show_timesheet')) {
-                    $html .= '<li><a href="' . route('housingmovements.agentTimeSheet.showTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+                if ($is_admin || $user->can('accounting.show_timesheet')) {
+                    $html .= '<li><a href="' . route('accounting.agentTimeSheet.showTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
                 }
-                if ($row->status == 'draft' && ($is_admin || $user->can('housingmovements.edit_timesheet'))) {
-                    $html .= '<li><a href="' . route('housingmovements.agentTimeSheet.editTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</a></li>';
-                }
-                if (($is_admin && $row->status == 'final' && $row->is_approved == 0) || ($row->created_by != $user->id && $user->can('housingmovements.deal_timesheet') && $row->status == 'final' && $row->is_approved == 0)) {
-                    $html .= '<li><a href="' . route('housingmovements.agentTimeSheet.dealTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-check" aria-hidden="true"></i> ' . __('lang_v1.approve') . '</a></li>';
+                // if ($row->status == 'draft' && ($is_admin || $user->can('accounting.edit_timesheet'))) {
+                //     $html .= '<li><a href="' . route('accounting.agentTimeSheet.editTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</a></li>';
+                // }
+                if ($row->is_approved_by_accounting == 0) {
+                    $html .= '<li><a href="' . route('accounting.agentTimeSheet.approvedTimeSheetByAccounting', ['id' => $row->id]) . '"><i class="fa fa-check" aria-hidden="true"></i> ' . __('lang_v1.approve') . '</a></li>';
                 }
                 $html .= '</ul></div>';
                 return $html;
@@ -207,14 +213,65 @@ class TimeSheetController extends Controller
             ->editColumn('status', function ($row) {
                 return __('lang_v1.' . $row->status);
             })
-            ->editColumn('approved_by', function ($row) use ($users) {
-                if ($row->approved_by) {
-                    return $users[$row->approved_by];
+            ->editColumn('accounting_approved_by', function ($row) use ($users) {
+                if ($row->accounting_approved_by) {
+                    return $users[$row->accounting_approved_by];
                 } else {
                     return '';
                 }
             })
-            ->rawColumns(['created_by', 'approved_by', 'action', 'total', 'status'])
+            ->rawColumns(['created_by', 'accounting_approved_by', 'action', 'total', 'status'])
+            ->make(true);
+    }
+    public function agentTimeSheetUsers()
+    {
+        $timesheetUsers = TimesheetUser::join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+            ->join('timesheet_groups', 'timesheet_groups.id', '=', 'timesheet_users.timesheet_group_id')
+            ->select([
+                'u.first_name',
+                'u.last_name',
+                'u.id_proof_number',
+                'timesheet_groups.timesheet_date',
+                'timesheet_users.final_salary',
+                'timesheet_groups.payment_status',
+                'timesheet_groups.name',
+                'timesheet_users.id'
+            ]);
+
+        return DataTables::of($timesheetUsers)
+            ->addColumn('user', function ($row) {
+                return $row->first_name . ' ' . $row->last_name;
+            })
+            ->addColumn(
+                'action',
+                function ($row) {
+
+                    $html = '<div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                    data-toggle="dropdown" aria-expanded="false">' .
+                        __('messages.actions') .
+                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+                    $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+                    // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
+
+                    if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
+                        $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
+                    }
+
+                    $html .= '</ul></div>';
+
+                    return $html;
+                }
+            )
+            ->editColumn('payment_status', function ($row) {
+                return __('lang_v1.' . $row->payment_status);
+            })
+            ->rawColumns(['action'])
             ->make(true);
     }
     public function dealTimeSheet($id)
@@ -225,14 +282,14 @@ class TimeSheetController extends Controller
             $timesheetGroup->approved_by = auth()->user()->id;
             $timesheetGroup->save();
 
-            return redirect()->route('housingmovements.agentTimeSheetIndex')->with('status', [
+            return redirect()->route('accounting.agentTimeSheetIndex')->with('status', [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ]);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            return redirect()->route('housingmovements.agentTimeSheetIndex')->with('status', [
+            return redirect()->route('accounting.agentTimeSheetIndex')->with('status', [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ]);
@@ -281,7 +338,7 @@ class TimeSheetController extends Controller
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $month_year = \Carbon\Carbon::parse($timesheetGroup->created_at)->format('m/Y');
         $action = 'edit';
-        return view('housingmovements::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
+        return view('accounting::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
     }
 
     public function submitTmeSheet(Request $request)
@@ -368,66 +425,18 @@ class TimeSheetController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        return redirect()->route('housingmovements.agentTimeSheetIndex')->with('status', $output);
+        return redirect()->route('accounting.agentTimeSheetIndex')->with('status', $output);
     }
 
-    public function agentTimeSheetUsers()
-    {
-        $timesheetUsers = TimesheetUser::join('users as u', 'u.id', '=', 'timesheet_users.user_id')
-            ->join('timesheet_groups', 'timesheet_groups.id', '=', 'timesheet_users.timesheet_group_id')
-            ->select([
-                'u.first_name',
-                'u.last_name',
-                'u.id_proof_number',
-                'timesheet_groups.timesheet_date',
-                'timesheet_users.final_salary',
-                'timesheet_groups.payment_status',
-                'timesheet_groups.name',
-                'timesheet_users.id'
-            ]);
 
-        return DataTables::of($timesheetUsers)
-            ->addColumn('user', function ($row) {
-                return $row->first_name . ' ' . $row->last_name;
-            })
-            ->addColumn(
-                'action',
-                function ($row) {
-
-                    $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                    data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
-                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                    </span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-
-                    $html .= '<li><a href="#" data-href="' . route('agentTimeSheet.showPayroll', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
-
-                    // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
-
-                    if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
-                        $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
-                    }
-
-                    $html .= '</ul></div>';
-
-                    return $html;
-                }
-            )
-            ->editColumn('payment_status', function ($row) {
-                return __('lang_v1.' . $row->payment_status);
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    }
 
     public function showTimeSheet($id)
     {
+        $company_id = Session::get('selectedCompanyId');
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+            ->where('u.company_id', $company_id)
             ->select([
                 'timesheet_users.*',
                 'u.first_name',
@@ -483,6 +492,27 @@ class TimeSheetController extends Controller
             ];
         });
 
-        return view('housingmovements::custom_views.agents.agent_time_sheet.show', compact('timesheetGroup', 'payrolls'));
+        return view('accounting::custom_views.agents.agent_time_sheet.show', compact('timesheetGroup', 'payrolls'));
+    }
+    public function approvedTimeSheetByAccounting($id)
+    {
+        try {
+            $timesheetGroup = TimesheetGroup::findOrFail($id);
+            $timesheetGroup->is_approved_by_accounting = 1;
+            $timesheetGroup->accounting_approved_by = auth()->user()->id;
+            $timesheetGroup->save();
+
+            return redirect()->route('accounting.agentTimeSheetIndex')->with('status', [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ]);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return redirect()->route('accounting.agentTimeSheetIndex')->with('status', [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
+        }
     }
 }

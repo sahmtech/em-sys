@@ -21,6 +21,7 @@
                 'id' => 'add_payroll_step1',
             ]) !!}
             {!! Form::hidden('payroll_group_name', strip_tags($group_name)) !!}
+            {!! Form::hidden('project_id', $project_id) !!}
             {!! Form::hidden('action', $action) !!}
             @if ($action === 'edit')
                 {!! Form::hidden('timesheet_group_id', $id) !!}

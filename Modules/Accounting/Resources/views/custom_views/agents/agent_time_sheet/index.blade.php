@@ -11,7 +11,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <ul class="nav nav-tabs">
-                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.view_timesheet_groups'))
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.view_timesheet_groups'))
                             <li class="active">
                                 <a href="#payrolls_groups_tab" data-toggle="tab" aria-expanded="true">
                                     <i class="fas fa-coins" aria-hidden="true"></i>
@@ -19,7 +19,7 @@
                                 </a>
                             </li>
                         @endif
-                        {{-- @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.view_timesheet_users'))
+                        {{-- @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.view_timesheet_users'))
                             <li>
                                 <a href="#payrolls_tab" data-toggle="tab" aria-expanded="true">
                                     <i class="fas fa-layer-group" aria-hidden="true"></i>
@@ -32,7 +32,7 @@
                         <br><br>
                         <div class="tab-pane active" id="payrolls_groups_tab">
                             <div class="col-md-12">
-                                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.create_timesheet'))
+                                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.create_timesheet'))
                                     <button type="button" class="btn btn-primary " data-toggle="modal"
                                         data-target="#payroll_modal">
                                         <i class="fa fa-plus"></i>
@@ -53,11 +53,10 @@
                                                 <th>@lang('essentials::lang.total')</th>
                                                 <th>@lang('lang_v1.added_by')</th>
                                                 <th>@lang('lang_v1.created_at')</th>
-                                                <th>@lang('lang_v1.approved')</th>
-                                                <th>@lang('lang_v1.approved_by')</th>
+                                                <th>@lang('lang_v1.is_approved_by_accounting')</th>
+                                                <th>@lang('lang_v1.accounting_approved_by')</th>
                                                 <th>@lang('lang_v1.is_invoice_issued')</th>
                                                 <th>@lang('lang_v1.is_payrolls_issued')</th>
-
                                                 <th>@lang('messages.action')</th>
                                             </tr>
                                         </thead>
@@ -65,7 +64,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.view_timesheet_users'))
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.view_timesheet_users'))
                             <div class="tab-pane" id="payrolls_tab">
                                 <div class="col-md-12">
                                     <div class="table-responsive">
@@ -96,7 +95,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     {!! Form::open([
-                        'url' => route('followup.agentTimeSheet.create'),
+                        'url' => route('accounting.agentTimeSheet.create'),
                         'method' => 'get',
                         'id' => 'add_payroll_step1',
                     ]) !!}
@@ -254,7 +253,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{ route('followup.agentTimeSheetUsers') }}",
+                        url: "{{ route('accounting.agentTimeSheetUsers') }}",
                     },
                     columnDefs: [{
                         orderable: false,
@@ -281,6 +280,7 @@
                             data: 'payment_status',
                             name: 'payment_status'
                         },
+
                         {
                             data: 'action',
                             name: 'action',
@@ -293,7 +293,7 @@
                 payroll_group_table = $('#payroll_group_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ route('followup.agentTimeSheetGroups') }}",
+                    ajax: "{{ route('accounting.agentTimeSheetGroups') }}",
                     columns: [{
                             data: 'name',
                             name: 'name'
@@ -319,7 +319,7 @@
                             data: 'created_at',
                             name: 'created_at'
                         }, {
-                            data: 'is_approved',
+                            data: 'is_approved_by_accounting',
                             render: function(data, type, row) {
                                 if (data === 1) {
                                     return '@lang('lang_v1.is_approved')';
@@ -330,9 +330,10 @@
                                 }
                             }
                         }, {
-                            data: 'approved_by',
-                            name: 'approved_by'
-                        }, {
+                            data: 'accounting_approved_by',
+                            name: 'accounting_approved_by'
+                        },
+                        {
                             data: 'is_invoice_issued',
                             render: function(data, type, row) {
                                 if (data === 1) {

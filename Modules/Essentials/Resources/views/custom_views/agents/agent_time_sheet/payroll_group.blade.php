@@ -21,6 +21,7 @@
                 'id' => 'add_payroll_step1',
             ]) !!}
             {!! Form::hidden('payroll_group_name', strip_tags($group_name)) !!}
+            {!! Form::hidden('project_id', $project_id) !!}
             {!! Form::hidden('action', $action) !!}
             @if ($action === 'edit')
                 {!! Form::hidden('timesheet_group_id', $id) !!}
@@ -29,6 +30,7 @@
                 <div style="margin-bottom: 10px;">
                     <div class="col-md-12">
                         <div class="col-md-1">
+
                             <input type="hidden" name="totals" id="totals">
                             <input type="hidden" name="ids" id="ids"> <!-- Example hidden input -->
                             <button type="submit" class="btn btn-success">
