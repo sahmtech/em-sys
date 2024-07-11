@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employees_appointments'))
 
 @section('content')
-   
+
     <section class="content-header">
         <h1>@lang('essentials::lang.employees_appointments')</h1>
     </section>
@@ -81,11 +81,12 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.owner_id')</th>
                                     <th>@lang('essentials::lang.national_id_number')</th>
                                     <th>@lang('essentials::lang.department')</th>
                                     <th>@lang('essentials::lang.location')</th>
                                     <th>@lang('essentials::lang.job_title')</th>
-                                    <th>@lang('essentials::lang.is_active' )</th> 
+                                    <th>@lang('essentials::lang.is_active')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -137,15 +138,14 @@
                                         'required',
                                     ]) !!}
                                 </div>
-                            
+
                                 <div class="form-group col-md-6">
-                                            {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
-                                            {!! Form::date('start_from', null, [
-                                                'class' => 'form-control',
-                                                'placeholder' => __('essentials::lang.start_date'),
-                                               
-                                            ]) !!}
-                                        </div>
+                                    {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
+                                    {!! Form::date('start_from', null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('essentials::lang.start_date'),
+                                    ]) !!}
+                                </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
@@ -157,7 +157,7 @@
                                     ]) !!}
 
                                 </div>
-                               
+
 
 
 
@@ -175,7 +175,7 @@
         </div>
     </section>
     @include('essentials::employee_affairs.employee_appointments.change_status')
-   
+
 @endsection
 @section('javascript')
 
@@ -220,7 +220,7 @@
             });
 
             var appointments_table;
-         
+
 
             appointments_table = $('#appointments_table').DataTable({
                 processing: true,
@@ -247,6 +247,10 @@
                         data: 'user'
                     },
                     {
+                        data: 'employee_id',
+
+                    },
+                    {
                         data: 'id_proof_number'
                     },
                     {
@@ -255,15 +259,18 @@
                     {
                         data: 'business_location_id'
                     },
-                 
+
                     {
                         data: 'profession_id'
                     },
-                 
+
                     {
                         data: 'is_active',
-                        render: function (data, type, row) {
-                            return data == 1 ? '<span class="text-success">' + '{{ __("essentials::lang.active") }}' + '</span>' : '<span class="text-danger">' + '{{ __("essentials::lang.not_active") }}' + '</span>';
+                        render: function(data, type, row) {
+                            return data == 1 ? '<span class="text-success">' +
+                                '{{ __('essentials::lang.active') }}' + '</span>' :
+                                '<span class="text-danger">' +
+                                '{{ __('essentials::lang.not_active') }}' + '</span>';
                         }
                     },
 
@@ -274,10 +281,10 @@
 
                 ],
             });
-            
 
-         
-       
+
+
+
 
             function reloadDataTable() {
                 appointments_table.ajax.reload();
@@ -319,10 +326,10 @@
             //activate ---------------------------------------------------
             $(document).on('click', 'a.change_activity', function(e) {
                 e.preventDefault();
-                
+
                 var appointmentId = $(this).data('appointment-id');
                 var origValue = 0;
-            
+
                 console.log(appointmentId);
                 console.log(origValue);
 
@@ -332,8 +339,8 @@
 
 
                 $.ajax({
-                    url:  editUrl, 
-                    type: 'POST', 
+                    url: editUrl,
+                    type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
                         origValue: origValue,

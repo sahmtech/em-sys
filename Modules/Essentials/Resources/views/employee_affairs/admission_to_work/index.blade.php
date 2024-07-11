@@ -66,6 +66,8 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.owner_id')</th>
+
                                     <th>@lang('essentials::lang.national_id_number')</th>
 
                                     <th>@lang('essentials::lang.admissions_date')</th>
@@ -204,6 +206,10 @@
                 columns: [{
                         data: 'user',
                         name: 'user'
+                    },
+                    {
+                        data: 'employee_id',
+
                     },
                     {
                         data: 'id_proof_number',

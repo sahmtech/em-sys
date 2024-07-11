@@ -72,6 +72,7 @@ class EssentialsEmployeeContractController extends Controller
                 'u.id_proof_number as id_proof_number',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' ,COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_contracts.contract_number',
+                'essentials_employees_contracts.employee_id',
                 'essentials_employees_contracts.contract_start_date',
                 'essentials_employees_contracts.contract_end_date',
                 'essentials_employees_contracts.contract_duration',
