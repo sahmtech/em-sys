@@ -23,7 +23,7 @@
                 'id' => 'add_payroll_step1',
             ]) !!}
             {!! Form::hidden('payroll_group_name', strip_tags($group_name)) !!}
-            <div class="table-responsive">
+            <div class="table-responsive2">
                 <div style="margin-bottom: 10px;">
                     <div class="col-md-12">
                         <div class="col-md-1">
@@ -64,366 +64,378 @@
                     <div class="clearfix"></div>
                     <br>
                 </div>
-                <table class="table table-bordered table-striped" id="workers_table_timesheet"
-                    style="table-layout: fixed !important;">
-                    <thead>
-                        <tr>
-                            <th style="width: 50px;">#</th>
-                            <th style="width:100px;">@lang('essentials::lang.name')</th>
+                <div class="custom-scrollbar"
+                    style="overflow-x: auto; top: 60px; left: 0; right: 0; height: 20px; background: #f1f1f1;">
+                    <div style="width: 2000px; height: 1px;"></div> <!-- Adjust width to be larger than the table's width -->
+                </div>
+                <div class="table-container" style="position: relative;">
+                    <div class="table-responsive table-responsive2">
+                        <table class="table table-bordered table-striped" id="workers_table_timesheet"
+                            style="table-layout: fixed !important;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th style="width:100px;">@lang('essentials::lang.name')</th>
 
-                            <th style="width:75px;">@lang('essentials::lang.nationality')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.nationality')</th>
 
-                            @if ($user_type == 'worker')
-                                <th style="width:100px;">@lang('essentials::lang.residence_permit')</th>
-                                <th style="width:75px;">@lang('essentials::lang.project_name')</th>
-                                <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
-                            @endif
-                            @if ($user_type != 'worker')
-                                <th style="width:100px;">@lang('essentials::lang.identity_card_number')</th>
-                            @endif
-                            @if ($user_type != 'remote_employee' && $user_type != 'worker')
-                                <th style="width:75px;">@lang('essentials::lang.profession')</th>
-                            @endif
-                            <th style="width:75px;">@lang('essentials::lang.work_days')</th>
-                            <th style="width:75px;">@lang('essentials::lang.salary')</th>
-                            <th style="width:75px;">@lang('essentials::lang.housing_allowance')</th>
-                            <th style="width:75px;">@lang('essentials::lang.transportation_allowance')</th>
-                            <th style="width:75px;">@lang('essentials::lang.other_allowance')</th>
-                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total')</th>
-                            <th style="width:75px;">@lang('essentials::lang.violations')</th>
-                            <th style="width:75px;">@lang('essentials::lang.absence')</th>
-                            <th style="width:75px;">@lang('essentials::lang.late_hours')</th>
-                            <th style="width:75px;">@lang('essentials::lang.other_deductions')</th>
-                            <th style="width:75px;">@lang('essentials::lang.loan')</th>
-                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_deduction')</th>
-                            @if ($user_type != 'remote_employee')
-                                <th style="width:75px;">@lang('essentials::lang.over_time_hours')</th>
-                                <th style="width:75px;">@lang('essentials::lang.additional_addition')</th>
-                                @if ($user_type != 'worker')
-                                    <th style="width:75px;">@lang('essentials::lang.other_additions')</th>
-                                @endif
-                                <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_additions')</th>
-                            @endif
-                            <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.final_salary')</th>
-                            @if ($user_type != 'remote_employee')
-                                <th style="width:75px;">@lang('essentials::lang.payment_method')</th>
-                            @endif
-                            <th style="width:75px;">@lang('essentials::lang.notes')</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($payrolls as $index => $payroll)
-                            <tr class="payroll_row">
-                                <td name="id">{{ $payroll['id'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][id]', $payroll['id'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'id',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td name="name">{{ $payroll['name'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][name]', $payroll['name'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'name',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td name="nationality">{{ $payroll['nationality'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][nationality]', $payroll['nationality'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'nationality',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td name="identity_card_number">{{ $payroll['identity_card_number'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][identity_card_number]', $payroll['identity_card_number'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'identity_card_number',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                @if ($user_type == 'worker')
-                                    <td name="project_name">{{ $payroll['project_name'] }}
-                                        {!! Form::hidden('payrolls[' . $index . '][project_name]', $payroll['project_name'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'project_name',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
-                                    </td>
-                                    <td name="region">{{ $payroll['region'] }}
-                                        {!! Form::hidden('payrolls[' . $index . '][region]', $payroll['region'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'region',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
-                                    </td>
-                                @endif
-                                @if ($user_type != 'remote_employee' && $user_type != 'worker')
-                                    <td name="profession">{{ $payroll['profession'] }}
-                                        {!! Form::hidden('payrolls[' . $index . '][profession]', $payroll['profession'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'profession',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
-                                    </td>
-                                @endif
-                                <td class="editable" name="work_days"> <span contenteditable="true"
-                                        data-index="{{ $index }}"
-                                        data-field="work_days">{{ $payroll['work_days'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][work_days]', $payroll['work_days'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'work_days',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td name="salary"><span data-index="{{ $index }}"
-                                        data-field="salary">{{ $payroll['salary'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][salary]', $payroll['salary'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'salary',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td name="housing_allowance"><span data-index="{{ $index }}"
-                                        data-field="housing_allowance">{{ $payroll['housing_allowance'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][housing_allowance]', $payroll['housing_allowance'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'housing_allowance',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td name="transportation_allowance"><span data-index="{{ $index }}"
-                                        data-field="transportation_allowance">{{ $payroll['transportation_allowance'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][transportation_allowance]', $payroll['transportation_allowance'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'transportation_allowance',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td name="other_allowance"><span data-index="{{ $index }}"
-                                        data-field="other_allowance">{{ $payroll['other_allowance'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][other_allowance]', $payroll['other_allowance'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'other_allowance',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td style="background-color: rgb(185, 182, 182);" name="total"> <span
-                                        data-index="{{ $index }}" data-field="total">{{ $payroll['total'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][total]', $payroll['total'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'total',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td class="editable" name="violations"> <span contenteditable="true"
-                                        data-index="{{ $index }}"
-                                        data-field="violations">{{ $payroll['violations'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][violations]', $payroll['violations'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'violations',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td class="editable" name="absence"> <span contenteditable="true"
-                                        data-index="{{ $index }}" data-field="absence">{{ $payroll['absence'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][absence]', $payroll['absence'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'absence',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                    {!! Form::hidden('payrolls[' . $index . '][absence_deduction]', $payroll['absence_deduction'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'absence_deduction',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td class="editable" name="late"> <span contenteditable="true"
-                                        data-index="{{ $index }}" data-field="late">{{ $payroll['late'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][late]', $payroll['late'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'late',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                    {!! Form::hidden('payrolls[' . $index . '][late_deduction]', $payroll['late_deduction'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'late_deduction',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td class="editable" name="other_deductions"> <span contenteditable="true"
-                                        data-index="{{ $index }}"
-                                        data-field="other_deductions">{{ $payroll['other_deductions'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][other_deductions]', $payroll['other_deductions'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'other_deductions',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td class="editable" name="loan"> <span contenteditable="true"
-                                        data-index="{{ $index }}" data-field="loan">{{ $payroll['loan'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][loan]', $payroll['loan'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'loan',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                <td style="background-color: rgb(185, 182, 182);" name="total_deduction"><span
-                                        data-index="{{ $index }}"
-                                        data-field="total_deduction">{{ $payroll['total_deduction'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][total_deduction]', $payroll['total_deduction'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'total_deduction',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                @if ($user_type != 'remote_employee')
-                                    <td class="editable" name="over_time_hours"> <span contenteditable="true"
-                                            data-index="{{ $index }}"
-                                            data-field="over_time_hours">{{ $payroll['over_time_hours'] }}</span>
-                                        {!! Form::hidden('payrolls[' . $index . '][over_time_hours]', $payroll['over_time_hours'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'over_time_hours',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
-                                        {!! Form::hidden('payrolls[' . $index . '][over_time_hours_addition]', $payroll['over_time_hours_addition'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'over_time_hours_addition',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
-                                    </td>
-
-                                    <td class="editable" name="additional_addition"> <span contenteditable="true"
-                                            data-index="{{ $index }}"
-                                            data-field="additional_addition">{{ $payroll['additional_addition'] }}</span>
-                                        {!! Form::hidden('payrolls[' . $index . '][additional_addition]', $payroll['additional_addition'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'additional_addition',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
-                                    </td>
+                                    @if ($user_type == 'worker')
+                                        <th style="width:100px;">@lang('essentials::lang.residence_permit')</th>
+                                        <th style="width:75px;">@lang('essentials::lang.project_name')</th>
+                                        <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
+                                    @endif
                                     @if ($user_type != 'worker')
-                                        <td class="editable" name="other_additions"> <span contenteditable="true"
-                                                data-index="{{ $index }}"
-                                                data-field="other_additions">{{ $payroll['other_additions'] }}</span>
-                                            {!! Form::hidden('payrolls[' . $index . '][other_additions]', $payroll['other_additions'], [
+                                        <th style="width:100px;">@lang('essentials::lang.identity_card_number')</th>
+                                    @endif
+                                    @if ($user_type != 'remote_employee' && $user_type != 'worker')
+                                        <th style="width:75px;">@lang('essentials::lang.profession')</th>
+                                    @endif
+                                    <th style="width:75px;">@lang('essentials::lang.work_days')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.salary')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.housing_allowance')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.transportation_allowance')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.other_allowance')</th>
+                                    <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.violations')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.absence')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.late_hours')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.other_deductions')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.loan')</th>
+                                    <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_deduction')</th>
+                                    @if ($user_type != 'remote_employee')
+                                        <th style="width:75px;">@lang('essentials::lang.over_time_hours')</th>
+                                        <th style="width:75px;">@lang('essentials::lang.additional_addition')</th>
+                                        @if ($user_type != 'worker')
+                                            <th style="width:75px;">@lang('essentials::lang.other_additions')</th>
+                                        @endif
+                                        <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_additions')</th>
+                                    @endif
+                                    <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.final_salary')</th>
+                                    @if ($user_type != 'remote_employee')
+                                        <th style="width:75px;">@lang('essentials::lang.payment_method')</th>
+                                    @endif
+                                    <th style="width:75px;">@lang('essentials::lang.notes')</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($payrolls as $index => $payroll)
+                                    <tr class="payroll_row">
+                                        <td name="id">{{ $payroll['id'] }}
+                                            {!! Form::hidden('payrolls[' . $index . '][id]', $payroll['id'], [
                                                 'data-index' => $index,
-                                                'data-field' => 'other_additions',
+                                                'data-field' => 'id',
                                                 'class' => 'form-hidden',
                                             ]) !!}
                                         </td>
+                                        <td name="name">{{ $payroll['name'] }}
+                                            {!! Form::hidden('payrolls[' . $index . '][name]', $payroll['name'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'name',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td name="nationality">{{ $payroll['nationality'] }}
+                                            {!! Form::hidden('payrolls[' . $index . '][nationality]', $payroll['nationality'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'nationality',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td name="identity_card_number">{{ $payroll['identity_card_number'] }}
+                                            {!! Form::hidden('payrolls[' . $index . '][identity_card_number]', $payroll['identity_card_number'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'identity_card_number',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        @if ($user_type == 'worker')
+                                            <td name="project_name">{{ $payroll['project_name'] }}
+                                                {!! Form::hidden('payrolls[' . $index . '][project_name]', $payroll['project_name'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'project_name',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+                                            <td name="region">{{ $payroll['region'] }}
+                                                {!! Form::hidden('payrolls[' . $index . '][region]', $payroll['region'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'region',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+                                        @endif
+                                        @if ($user_type != 'remote_employee' && $user_type != 'worker')
+                                            <td name="profession">{{ $payroll['profession'] }}
+                                                {!! Form::hidden('payrolls[' . $index . '][profession]', $payroll['profession'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'profession',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+                                        @endif
+                                        <td class="editable" name="work_days"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="work_days">{{ $payroll['work_days'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][work_days]', $payroll['work_days'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'work_days',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td name="salary"><span data-index="{{ $index }}"
+                                                data-field="salary">{{ $payroll['salary'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][salary]', $payroll['salary'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'salary',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td name="housing_allowance"><span data-index="{{ $index }}"
+                                                data-field="housing_allowance">{{ $payroll['housing_allowance'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][housing_allowance]', $payroll['housing_allowance'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'housing_allowance',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td name="transportation_allowance"><span data-index="{{ $index }}"
+                                                data-field="transportation_allowance">{{ $payroll['transportation_allowance'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][transportation_allowance]', $payroll['transportation_allowance'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'transportation_allowance',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td name="other_allowance"><span data-index="{{ $index }}"
+                                                data-field="other_allowance">{{ $payroll['other_allowance'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][other_allowance]', $payroll['other_allowance'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'other_allowance',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td style="background-color: rgb(185, 182, 182);" name="total"> <span
+                                                data-index="{{ $index }}"
+                                                data-field="total">{{ $payroll['total'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][total]', $payroll['total'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'total',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td class="editable" name="violations"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="violations">{{ $payroll['violations'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][violations]', $payroll['violations'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'violations',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td class="editable" name="absence"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="absence">{{ $payroll['absence'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][absence]', $payroll['absence'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'absence',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                            {!! Form::hidden('payrolls[' . $index . '][absence_deduction]', $payroll['absence_deduction'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'absence_deduction',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td class="editable" name="late"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="late">{{ $payroll['late'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][late]', $payroll['late'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'late',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                            {!! Form::hidden('payrolls[' . $index . '][late_deduction]', $payroll['late_deduction'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'late_deduction',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td class="editable" name="other_deductions"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="other_deductions">{{ $payroll['other_deductions'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][other_deductions]', $payroll['other_deductions'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'other_deductions',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td class="editable" name="loan"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="loan">{{ $payroll['loan'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][loan]', $payroll['loan'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'loan',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td style="background-color: rgb(185, 182, 182);" name="total_deduction"><span
+                                                data-index="{{ $index }}"
+                                                data-field="total_deduction">{{ $payroll['total_deduction'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][total_deduction]', $payroll['total_deduction'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'total_deduction',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        @if ($user_type != 'remote_employee')
+                                            <td class="editable" name="over_time_hours"> <span contenteditable="true"
+                                                    data-index="{{ $index }}"
+                                                    data-field="over_time_hours">{{ $payroll['over_time_hours'] }}</span>
+                                                {!! Form::hidden('payrolls[' . $index . '][over_time_hours]', $payroll['over_time_hours'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'over_time_hours',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                                {!! Form::hidden('payrolls[' . $index . '][over_time_hours_addition]', $payroll['over_time_hours_addition'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'over_time_hours_addition',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+
+                                            <td class="editable" name="additional_addition"> <span contenteditable="true"
+                                                    data-index="{{ $index }}"
+                                                    data-field="additional_addition">{{ $payroll['additional_addition'] }}</span>
+                                                {!! Form::hidden('payrolls[' . $index . '][additional_addition]', $payroll['additional_addition'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'additional_addition',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+                                            @if ($user_type != 'worker')
+                                                <td class="editable" name="other_additions"> <span contenteditable="true"
+                                                        data-index="{{ $index }}"
+                                                        data-field="other_additions">{{ $payroll['other_additions'] }}</span>
+                                                    {!! Form::hidden('payrolls[' . $index . '][other_additions]', $payroll['other_additions'], [
+                                                        'data-index' => $index,
+                                                        'data-field' => 'other_additions',
+                                                        'class' => 'form-hidden',
+                                                    ]) !!}
+                                                </td>
+                                            @endif
+                                            <td style="background-color: rgb(185, 182, 182);" name="total_additions"><span
+                                                    data-index="{{ $index }}"
+                                                    data-field="total_additions">{{ $payroll['total_additions'] }}</span>
+                                                {!! Form::hidden('payrolls[' . $index . '][total_additions]', $payroll['total_additions'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'total_additions',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+                                        @endif
+                                        <td style="background-color: rgb(185, 182, 182);" name="final_salary"><span
+                                                data-index="{{ $index }}"
+                                                data-field="final_salary">{{ $payroll['final_salary'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][final_salary]', $payroll['final_salary'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'final_salary',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        @if ($user_type != 'remote_employee')
+                                            <td class="editable" name="payment_method"> <span contenteditable="true"
+                                                    data-index="{{ $index }}"
+                                                    data-field="payment_method">{{ $payroll['payment_method'] }}</span>
+                                                {!! Form::hidden('payrolls[' . $index . '][payment_method]', $payroll['payment_method'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'payment_method',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+                                        @endif
+                                        <td class="editable" name="notes"> <span contenteditable="true"
+                                                data-index="{{ $index }}"
+                                                data-field="notes">{{ $payroll['notes'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][notes]', $payroll['notes'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'notes',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2">
+                                        @lang('essentials::lang.the_total')
+                                    </td>
+                                    @if ($user_type != 'remote_employee' && $user_type != 'worker')
+                                        <td>
+                                        </td>
                                     @endif
-                                    <td style="background-color: rgb(185, 182, 182);" name="total_additions"><span
-                                            data-index="{{ $index }}"
-                                            data-field="total_additions">{{ $payroll['total_additions'] }}</span>
-                                        {!! Form::hidden('payrolls[' . $index . '][total_additions]', $payroll['total_additions'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'total_additions',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
+                                    @if ($user_type == 'worker')
+                                        <td>
+                                        </td>
+                                        <td>
+                                        </td>
+                                    @endif
+                                    <td>
                                     </td>
-                                @endif
-                                <td style="background-color: rgb(185, 182, 182);" name="final_salary"><span
-                                        data-index="{{ $index }}"
-                                        data-field="final_salary">{{ $payroll['final_salary'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][final_salary]', $payroll['final_salary'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'final_salary',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                @if ($user_type != 'remote_employee')
-                                    <td class="editable" name="payment_method"> <span contenteditable="true"
-                                            data-index="{{ $index }}"
-                                            data-field="payment_method">{{ $payroll['payment_method'] }}</span>
-                                        {!! Form::hidden('payrolls[' . $index . '][payment_method]', $payroll['payment_method'], [
-                                            'data-index' => $index,
-                                            'data-field' => 'payment_method',
-                                            'class' => 'form-hidden',
-                                        ]) !!}
+                                    <td>
                                     </td>
-                                @endif
-                                <td class="editable" name="notes"> <span contenteditable="true"
-                                        data-index="{{ $index }}" data-field="notes">{{ $payroll['notes'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][notes]', $payroll['notes'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'notes',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2">
-                                @lang('essentials::lang.the_total')
-                            </td>
-                            @if ($user_type != 'remote_employee' && $user_type != 'worker')
-                                <td>
-                                </td>
-                            @endif
-                            @if ($user_type == 'worker')
-                                <td>
-                                </td>
-                                <td>
-                                </td>
-                            @endif
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-
-
-                            <td name="the_total_salary">
-                            </td>
-                            <td name="the_total_housing_allowance">
-                            </td>
-                            <td name="the_total_transportation_allowance">
-                            </td>
-                            <td name="the_total_other_allowance">
-                            </td>
-                            <td name="the_total_total">
-                            </td>
-                            <td name="the_total_violations">
-                            </td>
-                            <td name="the_total_absence">
-                            </td>
-                            <td name="the_total_late">
-                            </td>
-                            <td name="the_total_other_deductions">
-                            </td>
-                            <td name="the_total_loan">
-                            </td>
-                            <td name="the_total_total_deduction">
-                            </td>
-                            @if ($user_type != 'remote_employee')
-                                <td name="the_total_over_time_hours">
-                                </td>
-                                <td name="the_total_additional_addition">
-                                </td>
-                                @if ($user_type != 'worker')
-                                    <td name="the_total_other_additions">
+                                    <td>
                                     </td>
-                                @endif
-                                <td name="the_total_total_additions">
-                                </td>
-                            @endif
-                            <td style="  color: red;" name="the_total_final_salary">
 
-                            </td>
-                            @if ($user_type != 'remote_employee')
-                                <td>
-                                </td>
-                            @endif
-                            <td>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
 
+                                    <td name="the_total_salary">
+                                    </td>
+                                    <td name="the_total_housing_allowance">
+                                    </td>
+                                    <td name="the_total_transportation_allowance">
+                                    </td>
+                                    <td name="the_total_other_allowance">
+                                    </td>
+                                    <td name="the_total_total">
+                                    </td>
+                                    <td name="the_total_violations">
+                                    </td>
+                                    <td name="the_total_absence">
+                                    </td>
+                                    <td name="the_total_late">
+                                    </td>
+                                    <td name="the_total_other_deductions">
+                                    </td>
+                                    <td name="the_total_loan">
+                                    </td>
+                                    <td name="the_total_total_deduction">
+                                    </td>
+                                    @if ($user_type != 'remote_employee')
+                                        <td name="the_total_over_time_hours">
+                                        </td>
+                                        <td name="the_total_additional_addition">
+                                        </td>
+                                        @if ($user_type != 'worker')
+                                            <td name="the_total_other_additions">
+                                            </td>
+                                        @endif
+                                        <td name="the_total_total_additions">
+                                        </td>
+                                    @endif
+                                    <td style="  color: red;" name="the_total_final_salary">
+
+                                    </td>
+                                    @if ($user_type != 'remote_employee')
+                                        <td>
+                                        </td>
+                                    @endif
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
             {!! Form::close() !!}
         @endcomponent
@@ -439,7 +451,17 @@
     <script>
         var is_remote = {!! json_encode($user_type) !!} == "remote_employee" ? true : false;
         var is_worker = {!! json_encode($user_type) !!} == "worker" ? true : false;
+
         $(document).ready(function() {
+
+
+            $('.custom-scrollbar').on('scroll', function() {
+                $('.table-responsive2').scrollLeft($(this).scrollLeft());
+            });
+
+            $('.table-responsive2').on('scroll', function() {
+                $('.custom-scrollbar').scrollLeft($(this).scrollLeft());
+            });
 
             $('td.editable span[contenteditable="true"]').on('input', function() {
                 var index = $(this).data('index');

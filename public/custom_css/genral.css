@@ -21,6 +21,12 @@
 .table-td-width-25px {
     width: 25px !important;
 }
+.table-td-width-200px {
+    width: 200px !important;
+}
+.table-td-width-custom {
+    width: 500px !important;
+}
 
 
 /* .custom_header_icon {
@@ -33,3 +39,13 @@
 .skin-black .main-header .navbar .custom_header_icon {
     color: #12142e !important;
 } */
+
+
+.table-container {
+    max-height: calc(100vh - 200px);
+    overflow-y: scroll;
+}
+
+.table-responsive2 {
+    overflow-x: hidden !important;
+}
