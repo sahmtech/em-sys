@@ -50,21 +50,20 @@ class TimeSheetController extends Controller
             $projects = FollowupUserAccessProject::where('user_id', $currentUser->id)
                 ->pluck('sales_project_id')
                 ->toArray();
+            $projects = SalesProject::whereIn('id', $projects)->pluck('name', 'id')->toArray();
         }
 
-        // Get worker IDs based on access
         $worker_ids = User::whereIn('id', $userIds)
             ->whereIn('assigned_to', $projects)
             ->pluck('id')
             ->toArray();
 
-        // Intersect worker IDs with user IDs
+
         $userIds = array_intersect($userIds, $worker_ids);
 
-        // Get business ID from session
         $business_id = request()->session()->get('user.business_id');
 
-        // Get workers with concatenated names
+
         $workers = User::where('user_type', 'worker')
             ->whereIn('users.assigned_to', $userIds)
             ->select(

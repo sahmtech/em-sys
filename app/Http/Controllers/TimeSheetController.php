@@ -1218,25 +1218,27 @@ class TimeSheetController extends Controller
 
     public function getWorkersBasedOnProject(Request $request)
     {
+
         $workers = [];
+
+        $query = User::where('user_type', 'worker')
+            ->select(
+                'users.id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker")
+            );
+
         if ($request->project_id == 'all') {
-            $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
-            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-            $workers =  User::where('user_type', 'worker')
-                ->whereIn('users.assigned_to', $projectsIds)
-                ->select(
-                    'users.*',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                )->pluck('worker', 'id')->toArray();
+            $user = User::find(auth()->user()->id);
+            $contact_id = $user->crm_contact_id;
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique();
+            $query->whereIn('users.assigned_to', $projectsIds);
         } else {
-            $workers =  User::where('user_type', 'worker')
-                ->where('users.assigned_to', $request->project_id)
-                ->select(
-                    'users.*',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                )->pluck('worker', 'id')->toArray();
+            $query->where('users.assigned_to', $request->project_id);
         }
+
+        $workers = $query->pluck('worker', 'id')->toArray();
+
+
 
         return [
             'success' => true,
@@ -1244,6 +1246,7 @@ class TimeSheetController extends Controller
             'workers' => $workers,
         ];
     }
+
 
     public function getPayrollGroup()
     {

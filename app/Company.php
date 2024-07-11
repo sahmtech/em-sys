@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Essentials\Entities\EssentialsCompaniesInsurancesContract;
+
 class Company extends Model
 {
     use HasFactory;
@@ -133,8 +134,13 @@ class Company extends Model
     public function getBusinessAddressAttribute()
     {
         $location = $this->locations->first();
-        $address = $location->landmark . ', ' . $location->city .
-            ', ' . $location->state . '<br>' . $location->country . ', ' . $location->zip_code;
+
+        if ($location) {
+            $address = $location->landmark . ', ' . $location->city .
+                ', ' . $location->state . '<br>' . $location->country . ', ' . $location->zip_code;
+        } else {
+            $address = 'Address not available';
+        }
 
         return $address;
     }
@@ -148,5 +154,4 @@ class Company extends Model
     {
         return $this->hasMany(\App\Contact::class, 'business_id');
     }
-
 }
