@@ -96,6 +96,8 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee_number')</th>
+                                    <th>@lang('essentials::lang.owner_id')</th>
+
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('essentials::lang.contract_number')</th>
@@ -523,7 +525,10 @@
                 columns: [{
                         data: 'emp_number'
                     },
+                    {
+                        data: 'employee_id',
 
+                    },
                     {
                         data: 'user'
                     },

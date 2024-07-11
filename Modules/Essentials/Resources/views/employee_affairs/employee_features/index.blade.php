@@ -3,13 +3,11 @@
 
 
 @section('content')
-   
-    <section class="content-header">
-    @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_navbar_employee_features"))
-     
-        @include('essentials::layouts.nav_employee_features')
 
-    @endif  
+    <section class="content-header">
+        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_navbar_employee_features'))
+            @include('essentials::layouts.nav_employee_features')
+        @endif
         <h1>@lang('essentials::lang.allowances')
         </h1>
         <section class="content">
@@ -17,18 +15,17 @@
             <div class="row">
                 <div class="col-md-12">
                     @component('components.widget', ['class' => 'box-solid'])
-                   
-                    @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.add_employee_features"))
-                        @slot('tool')
-                            <div class="box-tools">
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_employee_features'))
+                            @slot('tool')
+                                <div class="box-tools">
 
-                                <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                                    data-target="#addEmployeeAllowanceModal">
-                                    <i class="fa fa-plus"></i> @lang('messages.add')
-                                </button>
-                            </div>
-                        @endslot
-                    @endif
+                                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                                        data-target="#addEmployeeAllowanceModal">
+                                        <i class="fa fa-plus"></i> @lang('messages.add')
+                                    </button>
+                                </div>
+                            @endslot
+                        @endif
 
 
                         <div class="table-responsive">
@@ -37,6 +34,8 @@
                                     <tr>
 
                                         <th>@lang('essentials::lang.employee')</th>
+                                        <th>@lang('essentials::lang.owner_id')</th>
+
                                         <th>@lang('essentials::lang.allowance')</th>
                                         <th>@lang('essentials::lang.amount')</th>
                                         <th>@lang('messages.action')</th>
@@ -45,7 +44,7 @@
                             </table>
                         </div>
                     @endcomponent
-                    
+
                     <div class="modal fade" id="addEmployeeAllowanceModal" tabindex="-1" role="dialog"
                         aria-labelledby="gridSystemModalLabel">
                         <div class="modal-dialog" role="document">
@@ -138,6 +137,10 @@
 
                         {
                             data: 'user'
+                        },
+                        {
+                            data: 'user_id',
+
                         },
                         {
                             data: 'description'

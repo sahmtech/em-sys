@@ -70,6 +70,8 @@
                             <thead>
                                 <tr>
                                     <th class='table-td-width-60px'>@lang('essentials::lang.employee')</th>
+                                    <th class='table-td-width-60px'>@lang('essentials::lang.owner_id')</th>
+
                                     <th class='table-td-width-100px'>@lang('essentials::lang.qualification_type')</th>
                                     {{-- <th class='table-td-width-60px'>@lang('essentials::lang.major')</th> --}}
                                     <th class='table-td-width-60px'>@lang('essentials::lang.general_specialization')</th>
@@ -367,7 +369,10 @@
                 columns: [{
                         data: 'user'
                     },
+                    {
+                        data: 'employee_id',
 
+                    },
                     {
                         data: 'qualification_type',
                         render: function(data, type, row) {
