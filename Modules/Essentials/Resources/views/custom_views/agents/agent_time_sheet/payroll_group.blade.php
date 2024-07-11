@@ -32,7 +32,7 @@
                         <div class="col-md-1">
 
                             <input type="hidden" name="totals" id="totals">
-                            <input type="hidden" name="ids" id="ids"> <!-- Example hidden input -->
+                            <input type="hidden" name="ids" id="ids">
                             <button type="submit" class="btn btn-success">
                                 <i class="fa fa-check"></i>
                                 @lang('worker.submit')
@@ -178,7 +178,7 @@
                                     ]) !!}
                                 </td>
 
-                                <td name="cost2" class="editable">
+                                <td name="cost2">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="cost2">{{ $payroll['cost2'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][cost2]', $payroll['cost2'], [
@@ -336,6 +336,7 @@
                 updateFinalSalary(index);
                 updateTotalPayrolls();
             });
+            // initializeCalculations();
         });
 
         function updateTotalPayrolls() {
@@ -403,11 +404,30 @@
             $("input.form-hidden[data-index='" + index + "'][data-field='total_salary']").val(total_salary.toFixed(0));
         }
 
+        // function updateCost2(index) {
+        //     var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
+        //         .val()) || 0;
+        //     var wd = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='wd']").val()) || 0;
+        //     var cost2 = monthly_cost / 30 * wd;
+        //     $("span[data-index='" + index + "'][data-field='cost2']").text(cost2.toFixed(0));
+        //     $("input.form-hidden[data-index='" + index + "'][data-field='cost2']").val(cost2.toFixed(0));
+        // }
         function updateCost2(index) {
             var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
                 .val()) || 0;
             var wd = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='wd']").val()) || 0;
-            var cost2 = monthly_cost / 30 * wd;
+            var absence_amount = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='absence_amount']")
+                .val()) || 0;
+            var over_time = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time']").val()) ||
+                0;
+            var other_deduction = parseFloat($("input.form-hidden[data-index='" + index +
+                "'][data-field='other_deduction']").val()) || 0;
+            var other_addition = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='other_addition']")
+                .val()) || 0;
+
+            var base_cost = (monthly_cost / 30) * wd;
+            var cost2 = base_cost + over_time + other_addition - absence_amount - other_deduction;
+
             $("span[data-index='" + index + "'][data-field='cost2']").text(cost2.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='cost2']").val(cost2.toFixed(0));
         }

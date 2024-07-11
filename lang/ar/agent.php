@@ -31,6 +31,7 @@ return [
   'payrolls' => 'مسيرات الرواتب',
   'payroll' => 'مسير الرواتب',
   'time_sheet_for_the_month' => 'تايم شيت لشهر',
+  'payroll_for' => 'مسيرالرواتب لـ'
 
 
 ];

@@ -24,8 +24,6 @@
                     <div class="tab-content">
                         <br><br>
                         <div class="tab-pane active" id="payrolls_groups_tab">
-
-                            <br><br><br>
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="payroll_group_table"

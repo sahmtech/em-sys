@@ -474,7 +474,7 @@ class TimeSheetController extends Controller
     {
 
         $timesheetGroup = TimesheetGroup::findOrFail($id);
-
+        $project_id = request()->input('projects');
         $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)->get();
         $employee_ids = $timesheetUsers->pluck('user_id')->toArray();
         $payrolls = [];
@@ -514,7 +514,7 @@ class TimeSheetController extends Controller
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $month_year = \Carbon\Carbon::parse($timesheetGroup->created_at)->format('m/Y');
         $action = 'edit';
-        return view('custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
+        return view('custom_views.agents.agent_time_sheet.payroll_group')->with(compact('project_id', 'employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
     }
 
 

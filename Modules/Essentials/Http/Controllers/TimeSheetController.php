@@ -239,7 +239,7 @@ class TimeSheetController extends Controller
     }
     public function editTimeSheet($id)
     {
-
+        $project_id = request()->input('projects');
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)->get();
         $employee_ids = $timesheetUsers->pluck('user_id')->toArray();
@@ -279,7 +279,7 @@ class TimeSheetController extends Controller
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $month_year = \Carbon\Carbon::parse($timesheetGroup->created_at)->format('m/Y');
         $action = 'edit';
-        return view('essentials::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
+        return view('essentials::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('project_id', 'employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
     }
 
     public function submitTmeSheet(Request $request)
@@ -303,11 +303,8 @@ class TimeSheetController extends Controller
             ];
 
             if ($action === 'edit' && $timesheet_group_id) {
-                // Update existing timesheet group
                 $timesheet_group = TimesheetGroup::findOrFail($timesheet_group_id);
                 $timesheet_group->update($timesheet_group_data);
-
-                // Delete existing timesheet users
                 TimesheetUser::where('timesheet_group_id', $timesheet_group_id)->delete();
             } else {
                 // Create new timesheet group

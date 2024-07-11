@@ -406,7 +406,18 @@
             var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
                 .val()) || 0;
             var wd = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='wd']").val()) || 0;
-            var cost2 = monthly_cost / 30 * wd;
+            var absence_amount = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='absence_amount']")
+                .val()) || 0;
+            var over_time = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time']").val()) ||
+                0;
+            var other_deduction = parseFloat($("input.form-hidden[data-index='" + index +
+                "'][data-field='other_deduction']").val()) || 0;
+            var other_addition = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='other_addition']")
+                .val()) || 0;
+
+            var base_cost = (monthly_cost / 30) * wd;
+            var cost2 = base_cost + over_time + other_addition - absence_amount - other_deduction;
+
             $("span[data-index='" + index + "'][data-field='cost2']").text(cost2.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='cost2']").val(cost2.toFixed(0));
         }

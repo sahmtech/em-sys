@@ -380,6 +380,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/pay_agent_time_sheet', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'PayrollIndex'])
             ->name('payroll.agentTimeSheetIndex');
         Route::get('/timesheet-group/{id}/show', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'showPayrollTimeSheet'])->name('payroll.agentTimeSheet.showTimeSheet');
+        Route::get('/timesheet-group/{id}/issuePayrolls', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'issuePayrolls'])->name('payroll.agentTimeSheet.issuePayrolls');
         Route::get('/pay_agentTimeSheetGroups', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroupsPayroll'])->name('payroll.agentTimeSheetGroups');
     });
 
