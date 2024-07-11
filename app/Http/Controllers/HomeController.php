@@ -394,7 +394,7 @@ class HomeController extends Controller
             ['id' => 'legalAffairs',  'permissions' => $legalAffairsPermissions, 'title' => __('legalaffairs::lang.legalaffairs'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
             ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
 
-            ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
+            // ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             // ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' => route('accountingLanding'),],
             ['id' => 'assetManagement',  'permissions' => $assetPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],

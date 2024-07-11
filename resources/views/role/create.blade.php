@@ -11,7 +11,9 @@
     <!-- Main content -->
     <section class="content">
         @php
-            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $pos_settings = !empty(session('business.pos_settings'))
+                ? json_decode(session('business.pos_settings'), true)
+                : [];
         @endphp
         @component('components.widget')
             {!! Form::open([
@@ -242,7 +244,7 @@
                 </div>
             </div>
             @include('role.partials.module_permissions')
-            <div class="col-md-12">
+            {{-- <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="row check_group">
                         <div class="col-md-12">
@@ -299,8 +301,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-12">
+            </div> --}}
+            {{-- <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="row check_group">
                         <div class="col-md-12">
@@ -411,7 +413,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="row check_group">
@@ -480,7 +482,7 @@
                     </div>
                 </div>
             </div>
-            @if (in_array('purchases', $enabled_modules) || in_array('stock_adjustment', $enabled_modules))
+            {{-- @if (in_array('purchases', $enabled_modules) || in_array('stock_adjustment', $enabled_modules))
                 <div class="col-md-12">
                     <div class="box box-primary">
                         <div class="row check_group">
@@ -572,7 +574,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
             @if (!empty($common_settings['enable_purchase_requisition']))
                 <div class="col-md-12">
@@ -1547,68 +1549,68 @@
                 </div>
             </div>
 
-            @if (in_array('expenses', $enabled_modules))
-                <div class="col-md-12">
-                    <div class="box box-primary">
-                        <div class="row check_group">
-                            <div class="col-md-12">
-                                <h4>@lang('lang_v1.expense')
-                                </h4>
+            {{-- @if (in_array('expenses', $enabled_modules)) --}}
+            {{-- <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="row check_group">
+                        <div class="col-md-12">
+                            <h4>@lang('lang_v1.expense')
+                            </h4>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="checkbox">
+                                <label class="custom_permission_lable">
+                                    <input type="checkbox" class="check_all input-icheck">
+                                    {{ __('role.select_all') }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label class="custom_permission_lable">
+                                        {!! Form::radio('radio_option[expense_view]', 'all_expense.access', false, ['class' => 'input-icheck']) !!}
+                                        {{ __('lang_v1.access_all_expense') }}
+                                    </label>
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        <input type="checkbox" class="check_all input-icheck">
-                                        {{ __('role.select_all') }}
+                                        {!! Form::radio('radio_option[expense_view]', 'view_own_expense', false, ['class' => 'input-icheck']) !!}
+                                        {{ __('lang_v1.view_own_expense') }}
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <div class="col-md-4">
-                                    <div class="checkbox">
-                                        <label class="custom_permission_lable">
-                                            {!! Form::radio('radio_option[expense_view]', 'all_expense.access', false, ['class' => 'input-icheck']) !!}
-                                            {{ __('lang_v1.access_all_expense') }}
-                                        </label>
-                                    </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label class="custom_permission_lable">
+                                        {!! Form::checkbox('permissions[]', 'expense.add', false, ['class' => 'input-icheck']) !!}
+                                        {{ __('expense.add_expense') }}
+                                    </label>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="checkbox">
-                                        <label class="custom_permission_lable">
-                                            {!! Form::radio('radio_option[expense_view]', 'view_own_expense', false, ['class' => 'input-icheck']) !!}
-                                            {{ __('lang_v1.view_own_expense') }}
-                                        </label>
-                                    </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label class="custom_permission_lable">
+                                        {!! Form::checkbox('permissions[]', 'expense.edit', false, ['class' => 'input-icheck']) !!}
+                                        {{ __('expense.edit_expense') }}
+                                    </label>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="checkbox">
-                                        <label class="custom_permission_lable">
-                                            {!! Form::checkbox('permissions[]', 'expense.add', false, ['class' => 'input-icheck']) !!}
-                                            {{ __('expense.add_expense') }}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="checkbox">
-                                        <label class="custom_permission_lable">
-                                            {!! Form::checkbox('permissions[]', 'expense.edit', false, ['class' => 'input-icheck']) !!}
-                                            {{ __('expense.edit_expense') }}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="checkbox">
-                                        <label class="custom_permission_lable">
-                                            {!! Form::checkbox('permissions[]', 'expense.delete', false, ['class' => 'input-icheck']) !!}
-                                            {{ __('lang_v1.delete_expense') }}
-                                        </label>
-                                    </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label class="custom_permission_lable">
+                                        {!! Form::checkbox('permissions[]', 'expense.delete', false, ['class' => 'input-icheck']) !!}
+                                        {{ __('lang_v1.delete_expense') }}
+                                    </label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+            </div> --}}
+            {{-- @endif --}}
 
 
             <div class="col-md-12">

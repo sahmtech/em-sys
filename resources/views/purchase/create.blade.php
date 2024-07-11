@@ -90,13 +90,15 @@
                         $search_disable = false;
                     @endphp
                 @else
-                    @php$default_location = null;
+                    @php
+                        $default_location = null;
                         $search_disable = true;
                     @endphp
                 @endif
                 <div class="col-sm-3">
                     <div class="form-group">
                         {!! Form::label('location_id', __('purchase.business_location') . ':*') !!}
+
                         @show_tooltip(__('tooltip.purchase_location'))
                         {!! Form::select(
                             'location_id',
