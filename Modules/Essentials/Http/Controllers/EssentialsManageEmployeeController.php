@@ -89,10 +89,111 @@ class EssentialsManageEmployeeController extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
+    public function attachements()
+    {
+        $users = User::where(function ($query) {
+            $query->whereHas('activeOfficialDocument')->orWhereHas('activeContract');
+        })->with(
+            'contract',
+            'activePassport',
+            'activeResidencePermit',
+            'activeIban',
+            'activeNationalId',
+            'activeDriversLicense',
+            'activeCarRegistration',
+            'activeInternationalCertificate',
+            'activeAppointmet',
+            'activeAdmission',
+            'essentials_qualification'
+        );
+
+        if (request()->ajax()) {
+            return Datatables::of($users)
+                ->addColumn(
+                    'full_name',
+                    function ($row) {
+                        return ($row?->first_name ?? '') . ' ' . ($row?->mid_name ?? '') . ' ' . ($row?->last_name ?? '');
+                    }
+                )
+                ->addColumn(
+                    'id_proof_number',
+                    function ($row) {
+                        return $row?->id_proof_number ?? '';
+                    }
+                )
+                ->addColumn(
+                    'contract',
+                    function ($row) {
+                        return $row?->contract?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activeResidencePermit',
+                    function ($row) {
+                        return $row?->activeResidencePermit?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activeNationalId',
+                    function ($row) {
+                        return $row?->activeNationalId?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activePassport',
+                    function ($row) {
+                        return $row?->activePassport?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activeInternationalCertificate',
+                    function ($row) {
+                        return $row?->activeInternationalCertificate?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activeDriversLicense',
+                    function ($row) {
+                        return $row?->activeDriversLicense?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activeIban',
+                    function ($row) {
+                        return $row?->activeIban?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activeCarRegistration',
+                    function ($row) {
+                        return $row?->activeCarRegistration?->file_path ?? '';
+                    }
+                )
+                ->addColumn(
+                    'activeQualification',
+                    function ($row) {
+                        return $row?->essentials_qualification?->file_path ?? '';
+                    }
+                )
+                ->rawColumns([
+                    'full_name',
+                    'id_proof_number',
+                    'contract',
+                    'activePassport',
+                    'activeResidencePermit',
+                    'activeIban',
+                    'activeNationalId',
+                    'activeDriversLicense',
+                    'activeCarRegistration',
+                    'activeInternationalCertificate',
+                    'activeAppointmet',
+                    'activeAdmission',
+                    'activeQualification'
+                ])
+                ->make(true);
+        }
+        return view('essentials::attachements');
+    }
 
 
     public function index(Request $request)

@@ -83,6 +83,7 @@ class TimeSheetController extends Controller
 
     public function create()
     {
+        $project_id = request()->input('projects');
         $employee_ids = request()->input('employee_ids');
         $month_year = request()->input('month_year');
         $workers = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
@@ -138,7 +139,7 @@ class TimeSheetController extends Controller
         $date = (Carbon::createFromFormat('m/Y', request()->input('month_year')))->format('F Y');
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
-        return view('essentials::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'date', 'month_year', 'payrolls', 'action'));
+        return view('essentials::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'project_id', 'date', 'month_year', 'payrolls', 'action'));
     }
 
     public function agentTimeSheetGroups()
@@ -151,19 +152,22 @@ class TimeSheetController extends Controller
         })->select([
             'timesheet_groups.id',
             'timesheet_groups.name',
-            'timesheet_groups.payment_status',
+            'timesheet_groups.project_id',
+            'timesheet_groups.is_invoice_issued',
+            'timesheet_groups.is_payrolls_issued',
             'timesheet_groups.status',
             'timesheet_groups.total',
             'timesheet_groups.created_at',
             'timesheet_groups.created_by',
             'timesheet_groups.is_approved',
+            'timesheet_groups.approved_by',
         ]);
 
         $all_users = User::where('status', '!=', 'inactive')
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
             ->get();
         $users = $all_users->pluck('full_name', 'id');
-
+        $projects = SalesProject::pluck('name', 'id');
         return DataTables::of($payrolls)
             ->addColumn('action', function ($row) use ($user, $is_admin) {
                 $html = '<div class="btn-group">
@@ -192,13 +196,24 @@ class TimeSheetController extends Controller
             ->editColumn('created_by', function ($row) use ($users) {
                 return $users[$row->created_by];
             })
-            ->editColumn('payment_status', function ($row) {
-                return __('lang_v1.' . $row->payment_status);
+            ->editColumn('approved_by', function ($row) use ($users) {
+                if ($row->approved_by) {
+                    return $users[$row->approved_by];
+                } else {
+                    return '';
+                }
+            })
+            ->editColumn('project_id', function ($row) use ($projects) {
+                if ($row->project_id) {
+                    return $projects[$row->project_id];
+                } else {
+                    return '';
+                }
             })
             ->editColumn('status', function ($row) {
                 return __('lang_v1.' . $row->status);
             })
-            ->rawColumns(['created_by', 'action', 'total', 'payment_status', 'status'])
+            ->rawColumns(['created_by', 'approved_by', 'action', 'total', 'status'])
             ->make(true);
     }
     public function dealTimeSheet($id)
@@ -224,7 +239,7 @@ class TimeSheetController extends Controller
     }
     public function editTimeSheet($id)
     {
-
+        $project_id = request()->input('projects');
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)->get();
         $employee_ids = $timesheetUsers->pluck('user_id')->toArray();
@@ -264,21 +279,23 @@ class TimeSheetController extends Controller
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $month_year = \Carbon\Carbon::parse($timesheetGroup->created_at)->format('m/Y');
         $action = 'edit';
-        return view('essentials::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
+        return view('essentials::custom_views.agents.agent_time_sheet.payroll_group')->with(compact('project_id', 'employee_ids', 'group_name', 'id', 'date', 'month_year', 'payrolls', 'action'));
     }
 
     public function submitTmeSheet(Request $request)
     {
+
         $business_id = 1;
         $action = $request->input('action');
         $timesheet_group_id = $request->input('timesheet_group_id');
 
         try {
             DB::beginTransaction();
-
+            $translatedTimeSheetFor = __('agent.time_sheet_for');
             $timesheet_group_data = [
                 'business_id' => $business_id,
-                'name' => $request->input('payroll_group_name'),
+                'project_id' => $request->project_id,
+                'name' => $translatedTimeSheetFor . ' ' . $request->transaction_date,
                 'status' => $request->input('payroll_group_status'),
                 'total' => $request->input('total_payrolls'),
                 'timesheet_date' => $request->transaction_date,
@@ -286,11 +303,8 @@ class TimeSheetController extends Controller
             ];
 
             if ($action === 'edit' && $timesheet_group_id) {
-                // Update existing timesheet group
                 $timesheet_group = TimesheetGroup::findOrFail($timesheet_group_id);
                 $timesheet_group->update($timesheet_group_data);
-
-                // Delete existing timesheet users
                 TimesheetUser::where('timesheet_group_id', $timesheet_group_id)->delete();
             } else {
                 // Create new timesheet group
@@ -404,10 +418,10 @@ class TimeSheetController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
     public function showTimeSheet($id)
     {
-
-        $timesheetGroup = TimesheetGroup::find($id);
+        $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
             ->select([
@@ -429,12 +443,48 @@ class TimeSheetController extends Controller
             $item->tax_number = $bankDetails['tax_number'] ?? '';
         });
 
-        return view('essentials::custom_views.agents.agent_time_sheet.show', compact('timesheetGroup', 'timesheetUsers'));
+        $payrolls = $timesheetUsers->map(function ($user) {
+            return [
+                'id' => $user->user_id,
+                'name' => $user->first_name . ' '  . $user->last_name,
+                'nationality' => $user->country->nationality ?? '',
+                'residency' => $user->id_proof_number,
+                'monthly_cost' => $user->monthly_cost,
+                'wd' => $user->work_days,
+                'absence_day' => $user->absence_days,
+                'absence_amount' => $user->absence_amount,
+                'over_time_h' => $user->over_time_hours,
+                'over_time' => $user->over_time_amount,
+                'other_deduction' => $user->other_deduction,
+                'other_addition' => $user->other_addition,
+                'cost2' => $user->cost_2,
+                'invoice_value' => $user->invoice_value,
+                'vat' => $user->vat,
+                'total' => $user->total,
+                'sponser' => $user->project_id,
+                'basic' => $user->basic,
+                'housing' => $user->housing,
+                'transport' => $user->transport,
+                'other_allowances' => $user->other_allowances,
+                'total_salary' => $user->total_salary,
+                'deductions' => $user->deductions,
+                'additions' => $user->additions,
+                'final_salary' => $user->final_salary,
+                'bank_name' => $user->bank_name,
+                'branch' => $user->branch,
+                'iban_number' => $user->iban_number,
+                'account_holder_name' => $user->account_holder_name,
+                'account_number' => $user->account_number,
+                'tax_number' => $user->tax_number,
+            ];
+        });
+
+        return view('essentials::custom_views.agents.agent_time_sheet.show', compact('timesheetGroup', 'payrolls'));
     }
+
     public function showPayrollTimeSheet($id)
     {
-
-        $timesheetGroup = TimesheetGroup::find($id);
+        $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
             ->select([
@@ -456,7 +506,43 @@ class TimeSheetController extends Controller
             $item->tax_number = $bankDetails['tax_number'] ?? '';
         });
 
-        return view('essentials::custom_views.agents.agent_time_sheet.payroll_show', compact('timesheetGroup', 'timesheetUsers'));
+        $payrolls = $timesheetUsers->map(function ($user) {
+            return [
+                'id' => $user->user_id,
+                'name' => $user->first_name . ' '  . $user->last_name,
+                'nationality' => $user->country->nationality ?? '',
+                'residency' => $user->id_proof_number,
+                'monthly_cost' => $user->monthly_cost,
+                'wd' => $user->work_days,
+                'absence_day' => $user->absence_days,
+                'absence_amount' => $user->absence_amount,
+                'over_time_h' => $user->over_time_hours,
+                'over_time' => $user->over_time_amount,
+                'other_deduction' => $user->other_deduction,
+                'other_addition' => $user->other_addition,
+                'cost2' => $user->cost_2,
+                'invoice_value' => $user->invoice_value,
+                'vat' => $user->vat,
+                'total' => $user->total,
+                'sponser' => $user->project_id,
+                'basic' => $user->basic,
+                'housing' => $user->housing,
+                'transport' => $user->transport,
+                'other_allowances' => $user->other_allowances,
+                'total_salary' => $user->total_salary,
+                'deductions' => $user->deductions,
+                'additions' => $user->additions,
+                'final_salary' => $user->final_salary,
+                'bank_name' => $user->bank_name,
+                'branch' => $user->branch,
+                'iban_number' => $user->iban_number,
+                'account_holder_name' => $user->account_holder_name,
+                'account_number' => $user->account_number,
+                'tax_number' => $user->tax_number,
+            ];
+        });
+
+        return view('essentials::custom_views.agents.agent_time_sheet.payroll_show', compact('timesheetGroup', 'payrolls'));
     }
     /**
      * Show the form for creating a new resource.
@@ -569,19 +655,23 @@ class TimeSheetController extends Controller
         $payrolls = TimesheetGroup::where('timesheet_groups.is_approved', 1)->select([
             'timesheet_groups.id',
             'timesheet_groups.name',
-            'timesheet_groups.payment_status',
+            'timesheet_groups.project_id',
+            'timesheet_groups.is_invoice_issued',
+            'timesheet_groups.is_payrolls_issued',
             'timesheet_groups.status',
             'timesheet_groups.total',
             'timesheet_groups.created_at',
             'timesheet_groups.created_by',
             'timesheet_groups.is_approved',
+            'timesheet_groups.approved_by',
+
         ]);
 
         $all_users = User::where('status', '!=', 'inactive')
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
             ->get();
         $users = $all_users->pluck('full_name', 'id');
-
+        $projects = SalesProject::pluck('name', 'id');
         return DataTables::of($payrolls)
             ->addColumn('action', function ($row) use ($user, $is_admin) {
                 $html = '<div class="btn-group">
@@ -605,13 +695,24 @@ class TimeSheetController extends Controller
             ->editColumn('created_by', function ($row) use ($users) {
                 return $users[$row->created_by];
             })
-            ->editColumn('payment_status', function ($row) {
-                return __('lang_v1.' . $row->payment_status);
+            ->editColumn('project_id', function ($row) use ($projects) {
+                if ($row->project_id) {
+                    return $projects[$row->project_id];
+                } else {
+                    return '';
+                }
             })
             ->editColumn('status', function ($row) {
                 return __('lang_v1.' . $row->status);
             })
-            ->rawColumns(['created_by', 'action', 'total', 'payment_status', 'status'])
+            ->editColumn('approved_by', function ($row) use ($users) {
+                if ($row->approved_by) {
+                    return $users[$row->approved_by];
+                } else {
+                    return '';
+                }
+            })
+            ->rawColumns(['created_by', 'approved_by', 'action', 'total', 'status'])
             ->make(true);
     }
 }

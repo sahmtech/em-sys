@@ -1,336 +1,12 @@
-{{-- <div class="modal-dialog modal-lg" role="document">
-  	<div class="modal-content">
-  		<div class="modal-header no-print">
-	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	      		<span aria-hidden="true">&times;</span>
-	      	</button>
-	      	<h4 class="modal-title no-print">
-	      		{!! __('essentials::lang.payroll_of_employee', ['employee' => $payroll->transaction_for->user_full_name, 'date' => $month_name . ' ' . $year]) !!}
-	      	</h4>
-	    </div>
-	    <div class="modal-body">
-	    	<div class="table-responsive">
-		      	<table class="table table-bordered" id="payroll-view">
-		      		<tr>
-		      			<td colspan="3">
-			      			@if (!empty(Session::get('business.logo')))
-			                  <img src="{{ asset( 'uploads/business_logos/' . Session::get('business.logo') ) }}" alt="Logo" style="width: auto; max-height: 50px; margin: auto;">
-			                @endif
-			                <div class="pull-right text-center">
-			                	<strong class="font-23">
-			                		{{Session::get('business.name') ?? ''}}
-			                	</strong>
-			                	<br>
-			                	{!!Session::get('business.business_address') ?? ''!!}
-			                </div>
-			                <br>
-			                <div style="text-align: center;padding-top: 40px;">
-			                	@lang('essentials::lang.payslip_for_the_month', ['month' => $month_name, 'year' => $year])
-			                </div>
-		                </td>
-		      		</tr>
-		      		<tr>
-		      			<td colspan="3">
-		      				<div class="pull-left" style="width: 50% !important;">
-		      					<strong>@lang('essentials::lang.employee'):</strong>
-		      					{{$payroll->transaction_for->user_full_name}}<br>
-
-		      					<strong>@lang('essentials::lang.department'):</strong>
-		      					{{$department->name ?? ''}}
-		      					<br>
-
-		      					<strong>@lang('essentials::lang.designation'):</strong>
-		      					{{$designation->name ?? ''}}
-
-		      					<br>
-		      					<strong>@lang('lang_v1.primary_work_location'):</strong>
-		      					@if (!empty($location))
-		      						{{$location->name}}
-		      					@else
-		      						{{__('report.all_locations')}}
-		      					@endif
-		      					<br>
-
-		      					@if (!empty($payroll->transaction_for->id_proof_name) && !empty($payroll->transaction_for->id_proof_number))
-		      						<strong>
-		      							{{ucfirst($payroll->transaction_for->id_proof_name)}}:
-		      						</strong>
-		      						{{$payroll->transaction_for->id_proof_number}}
-		      						<br>
-		      					@endif
-
-		      					<strong>@lang('lang_v1.tax_payer_id'):</strong>
-		      					{{$bank_details['tax_payer_id'] ?? ''}}
-		      					<br>
-		      				</div>
-		      				<div class="pull-right" style="width: 50% !important;">
-		      					<strong>@lang('lang_v1.bank_name'):</strong>
-		      					{{$bank_details['bank_name'] ?? ''}}
-		      					<br>
-
-		      					<strong>@lang('lang_v1.branch'):</strong>
-		      					{{$bank_details['branch'] ?? ''}}
-		      					<br>
-
-		      					<strong>@lang('lang_v1.bank_code'):</strong>
-		      					{{$bank_details['bank_code'] ?? ''}}
-		      					<br>
-		      					
-		      					<strong>@lang('lang_v1.account_holder_name'):</strong>
-		      					{{$bank_details['account_holder_name'] ?? ''}}
-		      					<br>
-
-		      					<strong>@lang('lang_v1.bank_account_no'):</strong>
-		      					{{$bank_details['account_number'] ?? ''}}
-		      					<br>
-		      				</div>
-		      			</td>
-		      		</tr>
-		      		<tr>
-		      			<td>
-		      				<strong>@lang('essentials::lang.total_work_duration'):</strong>
-		      				{{(int)$total_work_duration}}
-		      			</td>
-		      			<td>
-		      				<strong>@lang('essentials::lang.days_present'):</strong>
-		      				{{$total_days_present}}
-		      			</td>
-		      			<td>
-		      				<strong>@lang('essentials::lang.days_absent'):</strong>
-		      				{{$total_leaves}}
-		      			</td>
-		      		</tr>
-		      		<tr>
-		      			<td colspan="3"></td>
-		      		</tr>
-		      		<tr>
-						<td colspan="2" style="width: 50% !important;">
-							<div style="width: 50% !important; float: left;">
-								<strong>@lang('essentials::lang.allowances')</strong>
-							</div>
-							<div style="width: 30% !important;float: right;">
-								<strong>@lang('sale.amount')</strong>
-							</div>
-							<div style="width: 20% !important;float: right;">
-								<strong>@lang('essentials::lang.rate')</strong>
-							</div>
-						</td>
-						<td style="width: 50% !important;">
-							<div style="width: 50% !important; float: left;">
-								<strong>@lang('essentials::lang.deductions')</strong>
-							</div>
-							<div style="width: 30% !important;float: right;">
-								<strong>@lang('sale.amount')</strong>
-							</div>
-							<div style="width: 20% !important;float: right;">
-								<strong>@lang('essentials::lang.rate')</strong>
-							</div>
-						</td>
-					</tr>
-		      		<tr>
-						<td colspan="2" style="width: 50% !important;">
-							@php
-		                        $total_earnings = $payroll->essentials_duration * $payroll->essentials_amount_per_unit_duration;
-		                    @endphp
-		                    <div style="width: 50% !important; float: left;">
-								@lang('essentials::lang.salary')
-							</div>
-							<div style="width: 30% !important;float: right;">
-								<span class="display_currency" data-currency_symbol="true">
-									{{$payroll->essentials_duration * $payroll->essentials_amount_per_unit_duration}}
-								</span>
-								<br>
-								<small>
-									(
-									{{@num_format($payroll->essentials_duration)}} {{$payroll->essentials_duration_unit}} * {{@num_format($payroll->essentials_amount_per_unit_duration)}}
-									)
-								</small>
-							</div>
-							<div style="width: 20% !important;float: right;">
-								
-							</div><br><br>
-		                    @forelse($allowances['allowance_names'] as $key => $value)
-								<div style="width: 50% !important; float: left;">
-									{{$value}}
-								</div>
-								<div style="width: 30% !important;float: right;">
-									<span class="display_currency" data-currency_symbol="true">
-										{{$allowances['allowance_amounts'][$key]}}
-									</span>
-								</div>
-								<div style="width: 20% !important;float: right;">
-									@if (!empty($allowances['allowance_types'][$key]) && $allowances['allowance_types'][$key] == 'percent')
-		                    			{{@num_format($allowances['allowance_percents'][$key])}}%
-		                    		@endif
-								</div>
-								@php
-		                            $total_earnings += !empty($allowances['allowance_amounts'][$key]) ? $allowances['allowance_amounts'][$key] : 0;
-		                        @endphp
-							@empty
-		                       
-		                    @endforelse
-						</td>
-						<td colspan="2" style="width: 50% !important;">
-							@php
-		                        $total_deduction = 0;
-		                    @endphp
-		                    @forelse($deductions['deduction_names'] as $key => $value)
-								<div style="width: 50% !important; float: left;">
-									{{$value}}
-								</div>
-								<div style="width: 30% !important;float: right;">
-									<span class="display_currency" data-currency_symbol="true">
-										{{$deductions['deduction_amounts'][$key]}}
-									</span>
-								</div>
-								<div style="width: 20% !important;float: right;">
-									@if (!empty($deductions['deduction_types'][$key]) && $deductions['deduction_types'][$key] == 'percent')
-		                    			{{@num_format($deductions['deduction_percents'][$key])}}%
-		                    		@endif
-								</div>
-								@php
-		                            $total_deduction += !empty($deductions['deduction_amounts'][$key]) ? $deductions['deduction_amounts'][$key] : 0;
-		                        @endphp
-							@empty
-		                       <div style="width: 100% !important; text-align: center;">
-		                       		@lang('lang_v1.none')
-		                       </div>
-		                    @endforelse
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" style="width: 50% !important;">
-							<div style="width: 50% !important; float: left;">
-								<strong>
-									@lang('essentials::lang.total_earnings'):
-								</strong>
-							</div>
-							<div style="width: 30% !important;float: right;">
-								<strong>
-									<span class="display_currency" data-currency_symbol="true">
-										{{$total_earnings}}
-									</span>
-								</strong>
-							</div>
-							<div style="width: 20% !important;float: right;">
-								
-							</div>
-						</td>
-						<td style="width: 50% !important;">
-							<div style="width: 50% !important; float: left;">
-								<strong>
-									@lang('essentials::lang.total_deductions'):
-								</strong>
-							</div>
-							<div style="width: 30% !important;float: right;">
-								<strong>
-									<span class="display_currency" data-currency_symbol="true">
-										{{$total_deduction}}
-									</span>
-								</strong>
-							</div>
-							<div style="width: 20% !important;float: right;">
-								
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="3" style="text-align: right;">
-							<div style="width: 43% !important;float: right;padding-right: 49px">
-								<span class="display_currency" data-currency_symbol="true">
-									{{$total_earnings - $total_deduction}}
-								</span>
-							</div>
-							<div style="width: 57% !important;">
-								<strong>
-									@lang('essentials::lang.net_pay')
-								</strong>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="3">
-							<strong>@lang('essentials::lang.in_words'):</strong> {{ucfirst($final_total_in_words)}}
-						</td>
-					</tr>
-					<tr>
-						<td colspan="3">
-							<strong>{{ __('sale.payment_info') }}:</strong>
-							<table class="table bg-gray table-slim">
-							<tr class="bg-green">
-								<th>#</th>
-								<th>{{ __('messages.date') }}</th>
-								<th>{{ __('purchase.ref_no') }}</th>
-								<th>{{ __('sale.amount') }}</th>
-								<th>{{ __('sale.payment_mode') }}</th>
-								<th>{{ __('sale.payment_note') }}</th>
-							</tr>
-							@php
-								$total_paid = 0;
-							@endphp
-							@forelse($payroll->payment_lines as $payment_line)
-								@php
-									if($payment_line->is_return == 1){
-									  $total_paid -= $payment_line->amount;
-									} else {
-									  $total_paid += $payment_line->amount;
-									}
-								@endphp
-								<tr>
-									<td>{{ $loop->iteration }}</td>
-									<td>{{ @format_date($payment_line->paid_on) }}</td>
-									<td>{{ $payment_line->payment_ref_no }}</td>
-									<td><span class="display_currency" data-currency_symbol="true">{{ $payment_line->amount }}</span></td>
-									<td>
-									  	{{ $payment_types[$payment_line->method]}}
-									</td>
-									<td>@if ($payment_line->note) 
-									  {{ ucfirst($payment_line->note) }}
-									  @else
-									  --
-									  @endif
-									</td>
-								</tr>
-							@empty
-								<tr><td colspan="6" class="text-center">@lang('purchase.no_records_found')</td></tr>
-							@endforelse
-						</table>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="3">
-							<strong>@lang('brand.note'):</strong><br>
-							{{$payroll->staff_note ?? ''}}
-						</td>
-					</tr>
-		      	</table>
-	      	</div>
-	    </div>
-	    <div class="modal-footer no-print">
-	      	<button type="button" class="btn btn-primary" aria-label="Print" onclick="$(this).closest('div.modal-content').find('.modal-body').printThis();">
-	      		<i class="fa fa-print"></i> @lang( 'messages.print' )
-      		</button>
-	      	<button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-	    </div>
-  	</div><!-- /.modal-content -->
-</div><!-- /.modal-dialog -->
-<style type="text/css">
-	#payroll-view>thead>tr>th, #payroll-view>tbody>tr>th,
-	#payroll-view>tfoot>tr>th, #payroll-view>thead>tr>td,
-	#payroll-view>tbody>tr>td, #payroll-view>tfoot>tr>td {
-		border: 1px solid #1d1a1a;
-	}
-</style> --}}
 @extends('layouts.app')
 @section('title', __('agent.time_sheet'))
 
 @section('content')
     <section class="content-header">
-        <h1> @lang('agent.time_sheet') - {{ $timesheetGroup->name }} </h1>
+        <h1>{{ $timesheetGroup->name }}</h1>
     </section>
 
     <section class="content">
-
         <div class="box">
             <div class="box-header with-border text-center">
                 @if (!empty(Session::get('business.logo')))
@@ -341,41 +17,87 @@
                 <br>
                 <small>{!! Session::get('business.business_address') ?? '' !!}</small>
                 <br>
-                {{-- <h4>@lang('agent.time_sheet_for_the_month', ['month' => date('F', strtotime($timesheetGroup->created_at)), 'year' => date('Y', strtotime($timesheetGroup->created_at))])</h4> --}}
-
+                <h4>
+                    {{ $timesheetGroup->name }}
+                </h4>
             </div>
             <div class="box-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>@lang('essentials::lang.user')</th>
-                            <th>@lang('essentials::lang.the_total')</th>
-                            <th>@lang('lang_v1.bank_name')</th>
-                            <th>@lang('lang_v1.branch')</th>
-                            <th>@lang('essentials::lang.IBAN_number')</th>
-                            <th>@lang('essentials::lang.account_holder_name')</th>
-                            <th>@lang('lang_v1.account_number')</th>
-                            <th>@lang('essentials::lang.tax_number')</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($timesheetUsers as $user)
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
                             <tr>
-                                <td>{{ $user->first_name }} {{ $user->mid_name }} {{ $user->last_name }}</td>
-                                <td>{{ number_format($user->total, 2) }}</td>
-                                <td>{{ $user->bank_name }}</td>
-                                <td>{{ $user->branch }}</td>
-                                <td>{{ $user->iban_number }}</td>
-                                <td>{{ $user->account_holder_name }}</td>
-                                <td>{{ $user->account_number }}</td>
-                                <td>{{ $user->tax_number }}</td>
+                                <th>@lang('worker.name')</th>
+                                <th>@lang('worker.nationality')</th>
+                                <th>@lang('worker.eqama_number')</th>
+                                <th>@lang('worker.monthly_cost')</th>
+                                <th>@lang('worker.wd')</th>
+                                <th>@lang('worker.absence_day')</th>
+                                <th>@lang('worker.absence_amount')</th>
+                                <th>@lang('worker.over_time_h')</th>
+                                <th>@lang('worker.over_time')</th>
+                                <th>@lang('worker.other_deduction')</th>
+                                <th>@lang('worker.other_addition')</th>
+                                <th>@lang('worker.cost2')</th>
+                                <th>@lang('worker.invoice_value')</th>
+                                <th>@lang('worker.vat')</th>
+                                <th>@lang('worker.total')</th>
+                                <th>@lang('worker.sponser')</th>
+                                <th>@lang('worker.basic')</th>
+                                <th>@lang('worker.housing')</th>
+                                <th>@lang('worker.transport')</th>
+                                <th>@lang('worker.other_allowances')</th>
+                                <th>@lang('worker.total_salary')</th>
+                                <th>@lang('worker.deductions')</th>
+                                <th>@lang('worker.additions')</th>
+                                <th>@lang('worker.final_salary')</th>
+                                {{-- <th>@lang('lang_v1.bank_name')</th>
+                                <th>@lang('lang_v1.branch')</th>
+                                <th>@lang('essentials::lang.IBAN_number')</th>
+                                <th>@lang('essentials::lang.account_holder_name')</th>
+                                <th>@lang('lang_v1.account_number')</th>
+                                <th>@lang('essentials::lang.tax_number')</th> --}}
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($payrolls as $user)
+                                <tr>
+                                    <td>{{ $user['name'] }}</td>
+                                    <td>{{ $user['nationality'] }}</td>
+                                    <td>{{ $user['residency'] }}</td>
+                                    <td>{{ number_format($user['monthly_cost'], 2) }}</td>
+                                    <td>{{ $user['wd'] }}</td>
+                                    <td>{{ $user['absence_day'] }}</td>
+                                    <td>{{ number_format($user['absence_amount'], 2) }}</td>
+                                    <td>{{ $user['over_time_h'] }}</td>
+                                    <td>{{ number_format($user['over_time'], 2) }}</td>
+                                    <td>{{ number_format($user['other_deduction'], 2) }}</td>
+                                    <td>{{ number_format($user['other_addition'], 2) }}</td>
+                                    <td>{{ number_format($user['cost2'], 2) }}</td>
+                                    <td>{{ number_format($user['invoice_value'], 2) }}</td>
+                                    <td>{{ number_format($user['vat'], 2) }}</td>
+                                    <td>{{ number_format($user['total'], 2) }}</td>
+                                    <td>{{ $user['sponser'] }}</td>
+                                    <td>{{ number_format($user['basic'], 2) }}</td>
+                                    <td>{{ number_format($user['housing'], 2) }}</td>
+                                    <td>{{ number_format($user['transport'], 2) }}</td>
+                                    <td>{{ number_format($user['other_allowances'], 2) }}</td>
+                                    <td>{{ number_format($user['total_salary'], 2) }}</td>
+                                    <td>{{ number_format($user['deductions'], 2) }}</td>
+                                    <td>{{ number_format($user['additions'], 2) }}</td>
+                                    <td>{{ number_format($user['final_salary'], 2) }}</td>
+                                    {{-- <td>{{ $user['bank_name'] }}</td>
+                                    <td>{{ $user['branch'] }}</td>
+                                    <td>{{ $user['iban_number'] }}</td>
+                                    <td>{{ $user['account_holder_name'] }}</td>
+                                    <td>{{ $user['account_number'] }}</td>
+                                    <td>{{ $user['tax_number'] }}</td> --}}
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="box-footer text-right">
-
                 <button onclick="window.print()" class="btn btn-primary"><i class="fa fa-print"></i>
                     @lang('messages.print')</button>
                 <a href="{{ route('housingmovements.agentTimeSheetIndex') }}"
@@ -408,6 +130,10 @@
             font-weight: bold;
         }
 
+        .table-responsive {
+            overflow-x: auto;
+        }
+
         .table th,
         .table td {
             text-align: center;
@@ -431,6 +157,17 @@
             .box {
                 box-shadow: none;
                 border: none;
+            }
+
+            table {
+                width: 100%;
+                table-layout: fixed;
+                font-size: 10px;
+            }
+
+            .table th,
+            .table td {
+                padding: 2px;
             }
         }
     </style>

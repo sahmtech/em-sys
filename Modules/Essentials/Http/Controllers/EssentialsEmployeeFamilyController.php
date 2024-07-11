@@ -56,6 +56,8 @@ class EssentialsEmployeeFamilyController extends Controller
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_families.full_name as family',
                 'essentials_employees_families.gender',
+                'essentials_employees_families.employee_id',
+
                 'essentials_employees_families.dob',
                 'essentials_employees_families.address',
                 'essentials_employees_families.relative_relation',

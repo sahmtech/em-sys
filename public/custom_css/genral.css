@@ -21,6 +21,12 @@
 .table-td-width-25px {
     width: 25px !important;
 }
+.table-td-width-200px {
+    width: 200px !important;
+}
+.table-td-width-custom {
+    width: 500px !important;
+}
 
 
 /* .custom_header_icon {
@@ -40,6 +46,6 @@
     overflow-y: scroll;
 }
 
-.table-responsive {
-    overflow-x: hidden;
+.table-responsive2 {
+    overflow-x: hidden !important;
 }

@@ -1253,6 +1253,12 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
+                $menu->url(
+
+                    route('attachements'),
+                    __('essentials::lang.attachements'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'attachements'],
+                );
             }
         });
     }
@@ -2264,12 +2270,23 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
                 );
             }
+
             if (($is_admin  || auth()->user()->can('accounting.opening_balances'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
                     __('accounting::lang.opening_balances'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.crud_timesheet')) {
+                $menu->url(
+                    route('accounting.agentTimeSheetIndex'),
+                    __('agent.time_sheet'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'accounting' && request()->segment(2) == 'agent_time_sheet'
+                    ]
                 );
             }
             if (($is_admin  || auth()->user()->can('accounting.receipt_vouchers'))) {

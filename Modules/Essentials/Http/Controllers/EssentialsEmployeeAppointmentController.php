@@ -91,6 +91,8 @@ class EssentialsEmployeeAppointmentController extends Controller
             //->where('u.status', '!=', 'inactive')
             ->select([
                 'essentials_employee_appointmets.id',
+                'essentials_employee_appointmets.employee_id',
+
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ',COALESCE(u.mid_name, ''),' ', COALESCE(u.last_name, '')) as user"),
                 'u.id_proof_number',
                 'essentials_employee_appointmets.business_location_id',

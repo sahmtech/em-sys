@@ -271,6 +271,41 @@ class DataController extends Controller
                         'label' => __('accounting::lang.add_request'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'accounting.crud_timesheet',
+                        'label' => __('accounting::lang.crud_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.create_timesheet',
+                        'label' => __('accounting::lang.create_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.edit_timesheet',
+                        'label' => __('accounting::lang.edit_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.view_timesheet_groups',
+                        'label' => __('accounting::lang.view_timesheet_groups'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.view_timesheet_users',
+                        'label' => __('accounting::lang.view_timesheet_users'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.show_timesheet',
+                        'label' => __('accounting::lang.show_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.accounting.deal_timesheet',
+                        'label' => __('accounting::lang.deal_timesheet'),
+                        'default' => false,
+                    ],
                 ]
 
             ],

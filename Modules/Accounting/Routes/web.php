@@ -34,8 +34,19 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('accounting-business-settings', 'SettingsController@getBusinessSettings_accounting')->name('accounting-business-settings');
 
 
-    
-    
+    Route::get('/agent_time_sheet', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'index'])
+        ->name('accounting.agentTimeSheetIndex');
+    Route::get('/create', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'create'])->name('accounting.agentTimeSheet.create');
+    Route::post('/submitTmeSheet', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'submitTmeSheet'])->name('accounting.agentTimeSheet.submitTmeSheet');
+    Route::get('/agentTimeSheetUsers', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'agentTimeSheetUsers'])->name('accounting.agentTimeSheetUsers');
+    Route::get('/agentTimeSheetGroups', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroups'])->name('accounting.agentTimeSheetGroups');
+    Route::get('/timesheet-group/{id}/show', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'showTimeSheet'])->name('accounting.agentTimeSheet.showTimeSheet');
+    Route::get('time_sheet/edit/{id}', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('accounting.agentTimeSheet.editTimeSheet');
+    Route::get('agent/time_sheet/deal/{id}', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('accounting.agentTimeSheet.dealTimeSheet');
+    Route::get('agent/time_sheet/approvedTimeSheetByAccounting/{id}', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'approvedTimeSheetByAccounting'])->name('accounting.agentTimeSheet.approvedTimeSheetByAccounting');
+
+
+
     Route::get('open-create-dialog/{id}', 'CoaController@open_create_dialog')->name('open_create_dialog');
     Route::get('get-account-sub-types', 'CoaController@getAccountSubTypes');
     Route::get('get-account-details-types', 'CoaController@getAccountDetailsType');

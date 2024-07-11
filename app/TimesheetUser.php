@@ -11,6 +11,11 @@ class TimesheetUser extends Model
     protected $guarded = ['id'];
     public function user()
     {
-        return $this->belongsTo(\App\User::class, 'user_id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function timesheetGroup()
+    {
+        return $this->belongsTo(TimesheetGroup::class);
     }
 }

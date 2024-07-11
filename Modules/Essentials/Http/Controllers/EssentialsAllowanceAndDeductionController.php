@@ -123,6 +123,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
                 ->whereIn('u.id', $userIds)->where('u.status', '!=', 'inactive')
                 ->select([
                     'allowance.id as id',
+                    'essentials_user_allowance_and_deductions.user_id',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'allowance.description',
                     'essentials_user_allowance_and_deductions.amount',

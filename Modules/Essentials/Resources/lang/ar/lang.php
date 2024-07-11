@@ -1250,7 +1250,7 @@ return [
 
   'escalate_requests' => 'الطلبات المصعّدة',
   'requests_by_sequential' => 'الطلبات حسب التسلسل',
-
+  'owner_id' => ' id صاحب الطلب',
   'essentials_dashboard' => 'الصفحة الرئيسية للموارد البشرية',
   'essentials_work_cards_dashboard' => 'الصفحة الرئيسية للعلاقات الحكومية',
   'select_operation' => 'اختر نوع العملية ',
@@ -1938,7 +1938,8 @@ return [
   'show_timesheet' => 'عرض معلومات التايم شيت',
   'deal_timesheet' => 'اعتماد التايم شيت',
   'shift_time' => 'فترة العمل',
-  'work_hours' => 'ساعات الدوام'
+  'work_hours' => 'ساعات الدوام',
+  'attachements' => 'المرفقات',
 
 
 ];
