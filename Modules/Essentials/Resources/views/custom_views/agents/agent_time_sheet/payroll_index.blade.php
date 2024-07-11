@@ -24,8 +24,6 @@
                     <div class="tab-content">
                         <br><br>
                         <div class="tab-pane active" id="payrolls_groups_tab">
-
-                            <br><br><br>
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="payroll_group_table"
@@ -33,12 +31,15 @@
                                         <thead>
                                             <tr>
                                                 <th>@lang('essentials::lang.name')</th>
-                                                <th>@lang('sale.payment_status')</th>
+                                                <th>@lang('essentials::lang.project')</th>
                                                 <th>@lang('sale.status')</th>
                                                 <th>@lang('essentials::lang.total')</th>
                                                 <th>@lang('lang_v1.added_by')</th>
                                                 <th>@lang('lang_v1.created_at')</th>
                                                 <th>@lang('lang_v1.approved')</th>
+                                                <th>@lang('lang_v1.approved_by')</th>
+                                                <th>@lang('lang_v1.is_invoice_issued')</th>
+                                                <th>@lang('lang_v1.is_payrolls_issued')</th>
                                                 <th>@lang('messages.action')</th>
                                             </tr>
                                         </thead>
@@ -94,9 +95,10 @@
                             data: 'name',
                             name: 'name'
                         },
+
                         {
-                            data: 'payment_status',
-                            name: 'payment_status'
+                            data: 'project_id',
+                            name: 'project_id'
                         },
                         {
                             data: 'status',
@@ -121,6 +123,32 @@
                                     return '@lang('lang_v1.is_approved')';
                                 } else if (data === 0) {
                                     return '@lang('lang_v1.is_not_approved')';
+                                } else {
+                                    return " ";
+                                }
+                            }
+                        }, {
+                            data: 'approved_by',
+                            name: 'approved_by'
+                        }, {
+                            data: 'is_invoice_issued',
+                            render: function(data, type, row) {
+                                if (data === 1) {
+                                    return '@lang('lang_v1.issued')';
+                                } else if (data === 0) {
+                                    return '@lang('lang_v1.is_not_issued')';
+                                } else {
+                                    return " ";
+                                }
+                            }
+                        },
+                        {
+                            data: 'is_payrolls_issued',
+                            render: function(data, type, row) {
+                                if (data === 1) {
+                                    return '@lang('lang_v1.issued')';
+                                } else if (data === 0) {
+                                    return '@lang('lang_v1.is_not_issued')';
                                 } else {
                                     return " ";
                                 }

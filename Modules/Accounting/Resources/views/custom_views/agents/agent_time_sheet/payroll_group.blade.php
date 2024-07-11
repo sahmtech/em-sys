@@ -16,7 +16,7 @@
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             {!! Form::open([
-                'url' => route('hrm.agentTimeSheet.submitTmeSheet'),
+                'url' => route('accounting.agentTimeSheet.submitTmeSheet'),
                 'method' => 'post',
                 'id' => 'add_payroll_step1',
             ]) !!}
@@ -30,9 +30,8 @@
                 <div style="margin-bottom: 10px;">
                     <div class="col-md-12">
                         <div class="col-md-1">
-
                             <input type="hidden" name="totals" id="totals">
-                            <input type="hidden" name="ids" id="ids">
+                            <input type="hidden" name="ids" id="ids"> <!-- Example hidden input -->
                             <button type="submit" class="btn btn-success">
                                 <i class="fa fa-check"></i>
                                 @lang('worker.submit')
@@ -65,7 +64,7 @@
                     <thead>
                         <tr>
                             <th style="width: 50px;">#</th>
-                            <th style="width: 100px;">@lang('essentials::lang.name')</th>
+                            <th style="width: 100px;">@lang('worker.name')</th>
                             <th style="width: 100px;">@lang('worker.nationality')</th>
                             <th style="width: 100px;">@lang('worker.eqama_number')</th>
                             <th style="width: 100px;">@lang('worker.monthly_cost')</th>
@@ -178,7 +177,7 @@
                                     ]) !!}
                                 </td>
 
-                                <td name="cost2">
+                                <td name="cost2" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="cost2">{{ $payroll['cost2'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][cost2]', $payroll['cost2'], [
@@ -336,7 +335,6 @@
                 updateFinalSalary(index);
                 updateTotalPayrolls();
             });
-            // initializeCalculations();
         });
 
         function updateTotalPayrolls() {
@@ -404,14 +402,6 @@
             $("input.form-hidden[data-index='" + index + "'][data-field='total_salary']").val(total_salary.toFixed(0));
         }
 
-        // function updateCost2(index) {
-        //     var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
-        //         .val()) || 0;
-        //     var wd = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='wd']").val()) || 0;
-        //     var cost2 = monthly_cost / 30 * wd;
-        //     $("span[data-index='" + index + "'][data-field='cost2']").text(cost2.toFixed(0));
-        //     $("input.form-hidden[data-index='" + index + "'][data-field='cost2']").val(cost2.toFixed(0));
-        // }
         function updateCost2(index) {
             var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
                 .val()) || 0;

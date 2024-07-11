@@ -23,13 +23,15 @@ return [
   'add_time_sheet' => 'إصدار',
   'absence_deductions' => 'خصم الغياب',
   'time_sheet_for' => 'تايم شييت لـ',
+  'time_sheet_for_' => 'تايم شييت لـ',
   'total_payrolls' => 'الإجمالي الكلي',
   'details' => 'التفاصيل',
   'view_payroll_group' => 'عرض مجموعة مسير الرواتب',
   'payroll_groups' => 'مجموعات مسير الرواتب',
   'payrolls' => 'مسيرات الرواتب',
   'payroll' => 'مسير الرواتب',
-
+  'time_sheet_for_the_month' => 'تايم شيت لشهر',
+  'payroll_for' => 'مسيرالرواتب لـ'
 
 
 ];

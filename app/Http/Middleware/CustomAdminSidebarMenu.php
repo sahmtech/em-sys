@@ -2270,12 +2270,23 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
                 );
             }
+
             if (($is_admin  || auth()->user()->can('accounting.opening_balances'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
                     __('accounting::lang.opening_balances'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.crud_timesheet')) {
+                $menu->url(
+                    route('accounting.agentTimeSheetIndex'),
+                    __('agent.time_sheet'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'accounting' && request()->segment(2) == 'agent_time_sheet'
+                    ]
                 );
             }
             if (($is_admin  || auth()->user()->can('accounting.receipt_vouchers'))) {
