@@ -748,6 +748,8 @@ class PayrollController extends Controller
 
             $payroll_group_data = [
                 'business_id' => $timesheet->business_id,
+                'timesheet_group_id' => $timesheet->id,
+                //
                 'company_id' => $timesheet->company_id,
                 'name' => $translatedTimeSheetFor . ' ' . $timesheet->timesheet_date,
                 'status' => $timesheet->status,
@@ -791,12 +793,12 @@ class PayrollController extends Controller
                     $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
                 }
 
-        
+
                 $transaction = Transaction::create($payroll);
                 $transaction_ids[] = $transaction->id;
             }
 
-    
+
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
 
 

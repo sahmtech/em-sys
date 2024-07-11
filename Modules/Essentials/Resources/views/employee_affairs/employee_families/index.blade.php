@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employee_families'))
 
 @section('content')
-  
+
     <section class="content-header">
         <h1>@lang('essentials::lang.employee_families')</h1>
     </section>
@@ -28,10 +28,11 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
-                                    
+                                    <th>@lang('essentials::lang.owner_id')</th>
+
                                     <th>@lang('essentials::lang.family')</th>
                                     <th>@lang('essentials::lang.gender')</th>
-                                   
+
                                     <th>@lang('essentials::lang.dob')</th>
                                     <th>@lang('essentials::lang.relative_relation')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
@@ -76,8 +77,8 @@
                                         'required',
                                     ]) !!}
                                 </div>
-                               
-                              
+
+
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('gender', __('essentials::lang.gender') . ':*') !!}
@@ -89,11 +90,11 @@
                                     ) !!}
                                 </div>
 
-                                 <div class="form-group col-md-6">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('dob', __('essentials::lang.dob') . ':') !!}
                                     {!! Form::date('dob', null, [
                                         'class' => 'form-control',
-                                       
+                                    
                                         'placeholder' => __('essentials::lang.dob'),
                                     ]) !!}
                                 </div>
@@ -168,10 +169,14 @@
                         data: 'user'
                     },
                     {
+                        data: 'employee_id',
+
+                    },
+                    {
                         data: 'family'
                     },
 
-                    
+
                     {
                         data: 'gender',
                         render: function(data, type, row) {
@@ -186,10 +191,10 @@
                         }
                     },
                     {
-                        data:"dob"
+                        data: "dob"
                     },
-                   
-                  
+
+
                     {
                         data: 'relative_relation',
                         render: function(data, type, row) {
@@ -203,8 +208,7 @@
                                 return '@lang('essentials::lang.spouse')';
                             } else if (data === 'child') {
                                 return '@lang('essentials::lang.child')';
-                            }
-                            else if (data === 'wife') {
+                            } else if (data === 'wife') {
                                 return '@lang('essentials::lang.wife')';
                             } else {
                                 return '@lang('essentials::lang.other')';

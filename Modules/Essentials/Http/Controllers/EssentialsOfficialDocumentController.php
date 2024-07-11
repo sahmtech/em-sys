@@ -63,6 +63,7 @@ class EssentialsOfficialDocumentController extends Controller
             // ->where('essentials_official_documents.is_active', 1)
             ->select([
                 'essentials_official_documents.id',
+                'essentials_official_documents.employee_id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'essentials_official_documents.type',
                 'essentials_official_documents.is_active',

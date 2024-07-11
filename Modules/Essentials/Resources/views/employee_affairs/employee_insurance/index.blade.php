@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employee_insurance'))
 
 @section('content')
-  
+
     <section class="content-header">
         <h1>@lang('essentials::lang.employee_insurance')</h1>
     </section>
@@ -12,17 +12,17 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
-                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.add_employees_insurances"))
-                    @slot('tool')
-                        <div class="box-tools">
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_employees_insurances'))
+                        @slot('tool')
+                            <div class="box-tools">
 
-                            <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                                data-target="#addEmployeesInsuranceModal">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </button>
-                        </div>
-                    @endslot
-                @endif
+                                <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                                    data-target="#addEmployeesInsuranceModal">
+                                    <i class="fa fa-plus"></i> @lang('messages.add')
+                                </button>
+                            </div>
+                        @endslot
+                    @endif
 
 
                     <div class="table-responsive">
@@ -30,9 +30,11 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.owner_id')</th>
+
                                     <th>@lang('essentials::lang.english_name')</th>
                                     <th>@lang('essentials::lang.Birth_date')</th>
-                                   
+
                                     <th>@lang('essentials::lang.Residency_no')</th>
                                     <th>@lang('essentials::lang.insurance_company')</th>
                                     <th>@lang('essentials::lang.insurance_class')</th>
@@ -71,20 +73,20 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
-                                     {!! Form::select('insurance_class', $insurance_classes, null, [
+                                    {!! Form::select('insurance_class', $insurance_classes, null, [
                                         'class' => 'form-control',
                                         'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.insurance_class'),
                                         'required',
                                         'id' => 'classSelect',
                                     ]) !!}
-                                  
+
                                 </div>
                                 <div id="error-message" class="text-danger"></div>
 
-                              
 
-                            
+
+
 
 
 
@@ -101,7 +103,7 @@
             </div>
 
             <div class="modal fade" id="editemployeeInsurance" tabindex="-1" role="dialog">
-        </div>
+            </div>
     </section>
 @endsection
 @section('javascript')
@@ -126,19 +128,22 @@
 
                 },
 
-                columns: [
-                    {
+                columns: [{
                         data: 'user'
                     },
                     {
-                        data:'english_name'
+                        data: 'employee_id',
+
+                    },
+                    {
+                        data: 'english_name'
                     },
                     {
                         data: 'dob'
                     },
-                   
+
                     {
-                        data:'proof_number'
+                        data: 'proof_number'
                     },
                     {
                         data: 'insurance_company_id'
@@ -186,53 +191,53 @@
             var employeeSelect = $('#employeeSelect');
             var classSelect = $('#classSelect');
 
-            employeeSelect.on('change', function () {
-   
-            var selectedEmployee = $(this).val();
-               console.log(selectedEmployee);
-                    var csrfToken = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        url: '{{ route('classes') }}',
-                        type: 'POST',
-                        data: {
-                            _token: csrfToken,
-                            employee_id: selectedEmployee
-                        },
-                        success: function (data) {
+            employeeSelect.on('change', function() {
+
+                var selectedEmployee = $(this).val();
+                console.log(selectedEmployee);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('classes') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        employee_id: selectedEmployee
+                    },
+                    success: function(data) {
                         classSelect.empty();
                         console.log(data);
 
                         if ('message' in data) {
-                            
-                            
+
+
                             var errorMessage = data.message;
                             $('#error-message').text(errorMessage).show();
                         } else {
-                            
-                            $.each(data, function (id, name) {
+
+                            $.each(data, function(id, name) {
                                 classSelect.append($('<option>', {
                                     value: id,
                                     text: name
                                 }));
                             });
-                            
 
-                            
+
+
                             $('#error-message').hide();
                         }
                     },
-                    error: function (xhr, status, error) {
-                        
+                    error: function(xhr, status, error) {
+
                         console.error(xhr.responseText);
                     }
-                    });
+                });
 
             });
-         
 
-           });
+
+        });
     </script>
 
-      
+
 
 @endsection

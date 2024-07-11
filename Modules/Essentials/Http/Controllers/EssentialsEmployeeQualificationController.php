@@ -58,6 +58,7 @@ class EssentialsEmployeeQualificationController extends Controller
                 'essentials_employees_qualifications.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.mid_name, '') ,' ' , COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_qualifications.qualification_type',
+                'essentials_employees_qualifications.employee_id',
                 'essentials_employees_qualifications.sub_specialization',
                 'essentials_employees_qualifications.specialization',
                 'essentials_employees_qualifications.graduation_year',
