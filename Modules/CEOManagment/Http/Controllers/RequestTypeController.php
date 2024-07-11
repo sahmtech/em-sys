@@ -137,7 +137,7 @@ class RequestTypeController extends Controller
         try {
             $input = $request->only(['type', 'for', 'selfish_service']);
             $input['prefix'] = $this->getTypePrefix($input['type']);
-            $input['selfish_service'] = $input['selfish_service'];
+            $input['selfish_service'] = $input['selfish_service'] ?? 0;
             $requestTypeIds = [];
             if ($input['for'] != 'both') {
 
