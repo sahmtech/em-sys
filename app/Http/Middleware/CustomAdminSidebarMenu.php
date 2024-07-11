@@ -1253,6 +1253,12 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
+                $menu->url(
+
+                    route('attachements'),
+                    __('essentials::lang.attachements'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'attachements'],
+                );
             }
         });
     }
@@ -1359,7 +1365,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'list_of_employess']),
                     __('essentials::lang.list_of_emp'),
-                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'payroll_list_of_emp')]
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'list_of_employess')]
                 );
             }
             if ($is_admin  || auth()->user()->can('essentials.crud_payroll_timesheet')) {

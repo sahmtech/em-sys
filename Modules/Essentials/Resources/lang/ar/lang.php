@@ -1938,7 +1938,8 @@ return [
   'show_timesheet' => 'عرض معلومات التايم شيت',
   'deal_timesheet' => 'اعتماد التايم شيت',
   'shift_time' => 'فترة العمل',
-  'work_hours' => 'ساعات الدوام'
+  'work_hours' => 'ساعات الدوام',
+  'attachements' => 'المرفقات',
 
 
 ];
