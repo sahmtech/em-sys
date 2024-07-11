@@ -21,9 +21,11 @@
 .table-td-width-25px {
     width: 25px !important;
 }
-
-.table-td-width-custom {
+.table-td-width-200px {
     width: 200px !important;
+}
+.table-td-width-custom {
+    width: 500px !important;
 }
 
 

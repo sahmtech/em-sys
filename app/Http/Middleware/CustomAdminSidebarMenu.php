@@ -1253,6 +1253,12 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
+                $menu->url(
+
+                    route('attachements'),
+                    __('essentials::lang.attachements'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'attachements'],
+                );
             }
         });
     }

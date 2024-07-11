@@ -36,8 +36,8 @@
                     <thead>
                         <tr>
                             <th class="table-td-width-25px">#</th>
-                            <th class="table-td-width-custom">@lang('followup::lang.emp_name')</th>
-                            <th class="table-td-width-custom">@lang('essentials::lang.eqama_number')</th>
+                            <th class="table-td-width-200px">@lang('followup::lang.emp_name')</th>
+                            <th class="table-td-width-100px">@lang('essentials::lang.eqama_number')</th>
                             <th class="table-td-width-custom">@lang('essentials::lang.contract')</th>
                             <th class="table-td-width-custom">@lang('essentials::lang.residence_permit')</th>
                             <th class="table-td-width-custom">@lang('essentials::lang.national_id')</th>
