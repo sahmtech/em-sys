@@ -22,6 +22,10 @@
     width: 25px !important;
 }
 
+.table-td-width-custom {
+    width: 200px !important;
+}
+
 
 /* .custom_header_icon {
     background-color: #fabc14;
@@ -40,6 +44,6 @@
     overflow-y: scroll;
 }
 
-.table-responsive {
-    overflow-x: hidden;
+.table-responsive2 {
+    overflow-x: hidden !important;
 }

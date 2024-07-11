@@ -23,7 +23,7 @@
     @endphp
 
 
-    @if ($user->user_type == 'employee' || $user->user_type == 'manager')
+    @if ($user == null || ($user->user_type == 'employee' || $user->user_type == 'manager'))
         <div class="col-md-12 box box-primary">
             <h4>@lang('essentials::lang.personal_info'):</h4>
             <div class="form-group col-md-3">

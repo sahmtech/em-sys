@@ -23,7 +23,7 @@
                 'id' => 'add_payroll_step1',
             ]) !!}
             {!! Form::hidden('payroll_group_name', strip_tags($group_name)) !!}
-            <div class="table-responsive">
+            <div class="table-responsive2">
                 <div style="margin-bottom: 10px;">
                     <div class="col-md-12">
                         <div class="col-md-1">
@@ -69,7 +69,7 @@
                     <div style="width: 2000px; height: 1px;"></div> <!-- Adjust width to be larger than the table's width -->
                 </div>
                 <div class="table-container" style="position: relative;">
-                    <div class="table-responsive">
+                    <div class="table-responsive table-responsive2">
                         <table class="table table-bordered table-striped" id="workers_table_timesheet"
                             style="table-layout: fixed !important;">
                             <thead>
@@ -456,10 +456,10 @@
 
 
             $('.custom-scrollbar').on('scroll', function() {
-                $('.table-responsive').scrollLeft($(this).scrollLeft());
+                $('.table-responsive2').scrollLeft($(this).scrollLeft());
             });
 
-            $('.table-responsive').on('scroll', function() {
+            $('.table-responsive2').on('scroll', function() {
                 $('.custom-scrollbar').scrollLeft($(this).scrollLeft());
             });
 
