@@ -31,7 +31,7 @@
                                 alt="User profile picture" id="profileImage">
                         </a>
                         <h3 class="profile-username text-center">
-                            {{ $user->first_name . ' ' .$user->mid_name .' '. $user->last_name }}
+                            {{ $user->first_name . ' ' . $user->mid_name . ' ' . $user->last_name }}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
@@ -126,9 +126,9 @@
                                                 @if ($document->file_path || $document->attachment)
                                                     <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
                                                         data-file-url="{{ $document->file_path ?? $document->attachment }}">
-                                                       
+
                                                         @if ($document instanceof \Modules\Essentials\Entities\EssentialsOfficialDocument)
-                                                            {{ trans('followup::lang.' .$document->type) }}
+                                                            {{ trans('followup::lang.' . $document->type) }}
                                                         @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesContract)
                                                             {{ trans('followup::lang.contract_file') }}
                                                         @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesQualification)
@@ -184,7 +184,7 @@
                     <ul class="nav nav-tabs nav-justified">
                         <li class="active">
                             <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user"
-                                    aria-hidden="true"></i> @lang('essentials::lang.employee_info')</a>
+                                    aria-hidden="true"></i> @lang('essentials::lang.worker_info')</a>
                         </li>
                         <li>
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true">
@@ -198,7 +198,7 @@
                                 <i class="fas fa-clock" aria-hidden="true"></i>
 
 
-                                @lang('followup::lang.timesheet')</a>
+                                @lang('agent.time_sheet')</a>
                         </li>
 
                         <li>
@@ -279,23 +279,25 @@
                                             {{ $user->id_proof_number ?? ($user->border_no ?? '') }}</p>
 
                                     </div>
-                                       <div class="clearfix"></div>
+                                    <div class="clearfix"></div>
                                     <div class="col-md-4">
                                         <p><strong>@lang('essentials::lang.passport_number'):</strong>
-                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->number ?? '' }}</p>
+                                            {{ $user->OfficialDocument()->where('is_active', 1)->where('type', 'passport')->first()->number ?? '' }}
+                                        </p>
                                     </div>
 
-                                     <div class="col-md-4">
+                                    <div class="col-md-4">
                                         <p><strong>@lang('essentials::lang.passport_expire_date'):</strong>
-                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->expiration_date ?? '' }}</p>
+                                            {{ $user->OfficialDocument()->where('is_active', 1)->where('type', 'passport')->first()->expiration_date ?? '' }}
+                                        </p>
                                     </div>
 
                                     <div class="clearfix"></div>
-                                      <div class="col-md-4">
+                                    <div class="col-md-4">
                                         <p><strong>@lang('essentials::lang.border_number'):</strong>
                                             {{ $user->border_no ?? '' }}</p>
                                     </div>
-                                  
+
 
                                     <div class="clearfix"></div>
                                     <hr>
@@ -319,8 +321,8 @@
                                         @endif
 
                                     </div>
-                                    
-                                 
+
+
 
                                     <div class="col-md-4">
                                         <p><strong>@lang('followup::lang.customer_name'):</strong>
@@ -356,7 +358,9 @@
                                         <h4>@lang('lang_v1.bank_details'):</h4>
                                     </div>
                                     @php
-                                        $bank_details = !empty($user->bank_details) ? json_decode($user->bank_details, true) : [];
+                                        $bank_details = !empty($user->bank_details)
+                                            ? json_decode($user->bank_details, true)
+                                            : [];
                                     @endphp
                                     <div class="col-md-4">
                                         <p><strong>@lang('lang_v1.account_holder_name'):</strong>
