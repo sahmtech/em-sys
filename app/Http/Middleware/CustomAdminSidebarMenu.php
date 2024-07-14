@@ -57,13 +57,15 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, ['all-accounting',])) {
             $this->allAccountingMenu();
-        } elseif (Str::startsWith($currentPath, ['accounting', 'sells'])) {
+        } elseif (Str::startsWith($currentPath, ['accounting', 'sells', 'expense', 'purchase', 'contacts', 'customer'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
             $this->followUpMenu();
-        } elseif (Str::startsWith($currentPath, 'purchase')) {
-            $this->purchasesMenu();
-        } elseif (Str::startsWith($currentPath, ['movment', 'dashboard-movment'])) {
+        }
+        //  elseif (Str::startsWith($currentPath, 'purchase')) {
+        //     $this->purchasesMenu();
+        // }
+        elseif (Str::startsWith($currentPath, ['movment', 'dashboard-movment'])) {
             $this->movmentMenu();
         } elseif (Str::startsWith($currentPath, ['legalaffairs',])) {
             $this->legalAffairsMenu();
@@ -2239,139 +2241,266 @@ class CustomAdminSidebarMenu
 
                 $menu->url(
                     action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
-                    __('accounting::lang.accounting'),
+                    __('accounting::lang.accounting_dashboard'),
                     [
                         'icon' => 'fas fa-money-check fa',
                         'style' => config('app.env') == 'demo' ? 'background-color: #D483D9;' : '',
                         'active' => request()->segment(1) == 'accounting'
                     ]
                 );
-            }
-            // if ($is_admin) {
-            $menu->url(
-                action([\App\Http\Controllers\SellController::class, 'index']),
-                __('lang_v1.pills'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
-            );
-            // }
-            if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
+                $menu->dropdown(
+                    __('accounting::lang.accounting'),
+                    function ($sub) use ($is_admin) {
+                        // if ($is_admin) {
+                        $sub->url(
+                            action([\App\Http\Controllers\SellController::class, 'index']),
+                            __('lang_v1.pills'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
+                        );
+                        // }
+                        if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
 
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index']),
-                    __('accounting::lang.chart_of_accounts'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'chart-of-accounts']
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index']),
+                                __('accounting::lang.chart_of_accounts'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'chart-of-accounts']
+                            );
+                        }
+                        if (($is_admin  || auth()->user()->can('accounting.cost_center'))) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\CostCenterController::class, 'index']),
+                                __('accounting::lang.cost_center'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
+                            );
+                        }
+
+                        if (($is_admin  || auth()->user()->can('accounting.opening_balances'))) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
+                                __('accounting::lang.opening_balances'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
+                            );
+                        }
+                        if ($is_admin  || auth()->user()->can('accounting.crud_timesheet')) {
+                            $sub->url(
+                                route('accounting.agentTimeSheetIndex'),
+                                __('agent.time_sheet'),
+                                [
+                                    'icon' => 'fa fas fa-plus-circle',
+                                    'active' => request()->segment(1) == 'accounting' && request()->segment(2) == 'agent_time_sheet'
+                                ]
+                            );
+                        }
+                        if (($is_admin  || auth()->user()->can('accounting.receipt_vouchers'))) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\ReceiptVouchersController::class, 'index']),
+                                __('accounting::lang.receipt_vouchers'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'receipt_vouchers']
+                            );
+                        }
+                        if (($is_admin  || auth()->user()->can('accounting.payment_vouchers'))) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\PaymentVouchersController::class, 'index']),
+                                __('accounting::lang.payment_vouchers'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'payment_vouchers']
+                            );
+                        }
+                        if (($is_admin  || auth()->user()->can('accounting.journal_entry'))) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\JournalEntryController::class, 'index']),
+                                __('accounting::lang.journal_entry'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
+                            );
+                        }
+
+                        if ($is_admin  || auth()->user()->can('accounting.view_accounting_requests')) {
+                            $sub->url(
+
+                                action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
+                                __('accounting::lang.requests'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
+                            );
+                        }
+
+
+
+
+                        if ($is_admin  || auth()->user()->can('accounting.automatedMigration')) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
+                                __('accounting::lang.automatedMigration'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'automated-migration']
+                            );
+                        }
+                        if ($is_admin  || auth()->user()->can('accounting.transfer')) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index']),
+                                __('accounting::lang.transfer'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transfer']
+                            );
+                        }
+                        if ($is_admin  || auth()->user()->can('accounting.transactions')) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\TransactionController::class, 'index']),
+                                __('accounting::lang.transactions'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transactions']
+                            );
+                        }
+                        if ($is_admin  || auth()->user()->can('accounting.manage_budget')) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
+                                __('accounting::lang.budget'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'budget']
+                            );
+                        }
+                        if ($is_admin  || auth()->user()->can('accounting.reports')) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index']),
+                                __('accounting::lang.reports'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'reports']
+                            );
+                        }
+                        if ($is_admin  || auth()->user()->can('accounting.settings')) {
+
+                            $sub->url(
+                                action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
+                                __('messages.settings'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+                            );
+                        }
+                    },
+                    ['icon' => 'fas fa-money-check fa',]
                 );
             }
-            if (($is_admin  || auth()->user()->can('accounting.cost_center'))) {
+            //Expense dropdown
+            if (
+                in_array('expenses', $enabled_modules) &&
+                (auth()->user()->can('all_expense.access')
+                    || auth()->user()->can('view_own_expense'))
+            ) {
+                $menu->dropdown(
+                    __('expense.expenses'),
+                    function ($sub) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ExpenseController::class, 'index']),
+                            __('lang_v1.list_expenses'),
+                            ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]
+                        );
 
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\CostCenterController::class, 'index']),
-                    __('accounting::lang.cost_center'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
+                        if (auth()->user()->can('expense.add')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ExpenseController::class, 'create']),
+                                __('expense.add_expense'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']
+                            );
+                        }
+
+                        if (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ExpenseCategoryController::class, 'index']),
+                                __('expense.expense_categories'),
+                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'expense-categories']
+                            );
+                        }
+                    },
+                    ['icon' => 'fas fa-shopping-basket ']
                 );
-            }
+            };
+            if ((auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('purchase.update'))) {
+                $menu->dropdown(
+                    __('purchase.purchases'),
+                    function ($sub) use ($common_settings) {
+                        if (!empty($common_settings['enable_purchase_requisition']) && (auth()->user()->can('purchase_requisition.view_all') || auth()->user()->can('purchase_requisition.view_own'))) {
+                            $sub->url(
+                                action([\App\Http\Controllers\PurchaseRequisitionController::class, 'index']),
+                                __('lang_v1.purchase_requisition'),
+                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchase-requisition']
+                            );
+                        }
 
-            if (($is_admin  || auth()->user()->can('accounting.opening_balances'))) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
-                    __('accounting::lang.opening_balances'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
+                        if (!empty($common_settings['enable_purchase_order']) && (auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own'))) {
+                            $sub->url(
+                                action([\App\Http\Controllers\PurchaseOrderController::class, 'index']),
+                                __('lang_v1.purchase_order'),
+                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchase-order']
+                            );
+                        }
+                        if (auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\PurchaseController::class, 'index']),
+                                __('purchase.list_purchase'),
+                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchases' && request()->segment(2) == null]
+                            );
+                        }
+                        if (auth()->user()->can('purchase.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\PurchaseController::class, 'create']),
+                                __('purchase.add_purchase'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'purchases' && request()->segment(2) == 'create']
+                            );
+                        }
+                        if (auth()->user()->can('purchase.update')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\PurchaseReturnController::class, 'index']),
+                                __('lang_v1.list_purchase_return'),
+                                ['icon' => 'fa fas fa-undo', 'active' => request()->segment(1) == 'purchase-return']
+                            );
+                        }
+                    },
+                    ['icon' => 'fas fa-cart-plus ', 'id' => 'tour_step6']
                 );
-            }
-            if ($is_admin  || auth()->user()->can('accounting.crud_timesheet')) {
-                $menu->url(
-                    route('accounting.agentTimeSheetIndex'),
-                    __('agent.time_sheet'),
-                    [
-                        'icon' => 'fa fas fa-plus-circle',
-                        'active' => request()->segment(1) == 'accounting' && request()->segment(2) == 'agent_time_sheet'
-                    ]
-                );
-            }
-            if (($is_admin  || auth()->user()->can('accounting.receipt_vouchers'))) {
+            };
 
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\ReceiptVouchersController::class, 'index']),
-                    __('accounting::lang.receipt_vouchers'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'receipt_vouchers']
-                );
-            }
-            if (($is_admin  || auth()->user()->can('accounting.payment_vouchers'))) {
+            if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own')) {
+                $menu->dropdown(
+                    __('contact.contacts'),
+                    function ($sub) {
+                        if (auth()->user()->can('supplier.view') || auth()->user()->can('supplier.view_own')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ContactController::class, 'index'], ['type' => 'supplier']),
+                                __('report.supplier'),
+                                ['icon' => 'fa fas fa-star', 'active' => request()->input('type') == 'supplier']
+                            );
+                        }
+                        if (auth()->user()->can('customer.view') || auth()->user()->can('customer.view_own')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ContactController::class, 'index'], ['type' => 'customer']),
+                                __('report.customer'),
+                                ['icon' => 'fa fas fa-star', 'active' => request()->input('type') == 'customer']
+                            );
+                            $sub->url(
+                                action([\App\Http\Controllers\CustomerGroupController::class, 'index']),
+                                __('lang_v1.customer_groups'),
+                                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'customer-group']
+                            );
+                        }
+                        if (auth()->user()->can('supplier.create') || auth()->user()->can('customer.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ContactController::class, 'getImportContacts']),
+                                __('lang_v1.import_contacts'),
+                                ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'contacts' && request()->segment(2) == 'import']
+                            );
+                        }
 
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\PaymentVouchersController::class, 'index']),
-                    __('accounting::lang.payment_vouchers'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'payment_vouchers']
-                );
-            }
-            if (($is_admin  || auth()->user()->can('accounting.journal_entry'))) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\JournalEntryController::class, 'index']),
-                    __('accounting::lang.journal_entry'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
-                );
-            }
-
-            if ($is_admin  || auth()->user()->can('accounting.view_accounting_requests')) {
-                $menu->url(
-
-                    action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
-                    __('accounting::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
-                );
-            }
-
-
-
-
-            if ($is_admin  || auth()->user()->can('accounting.automatedMigration')) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
-                    __('accounting::lang.automatedMigration'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'automated-migration']
-                );
-            }
-            if ($is_admin  || auth()->user()->can('accounting.transfer')) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index']),
-                    __('accounting::lang.transfer'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transfer']
-                );
-            }
-            if ($is_admin  || auth()->user()->can('accounting.transactions')) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\TransactionController::class, 'index']),
-                    __('accounting::lang.transactions'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transactions']
-                );
-            }
-            if ($is_admin  || auth()->user()->can('accounting.manage_budget')) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
-                    __('accounting::lang.budget'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'budget']
-                );
-            }
-            if ($is_admin  || auth()->user()->can('accounting.reports')) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index']),
-                    __('accounting::lang.reports'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'reports']
-                );
-            }
-            if ($is_admin  || auth()->user()->can('accounting.settings')) {
-
-                $menu->url(
-                    action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
-                    __('messages.settings'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+                        if (!empty(env('GOOGLE_MAP_API_KEY'))) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ContactController::class, 'contactMap']),
+                                __('lang_v1.map'),
+                                ['icon' => 'fa fas fa-map-marker-alt', 'active' => request()->segment(1) == 'contacts' && request()->segment(2) == 'map']
+                            );
+                        }
+                    },
+                    ['icon' => 'fas fa-id-card ', 'id' => 'tour_step4']
                 );
             }
         });
@@ -2892,44 +3021,6 @@ class CustomAdminSidebarMenu
                 );
             };
 
-            //Expense dropdown
-            if (
-                in_array('expenses', $enabled_modules) &&
-                (auth()->user()->can('all_expense.access')
-                    || auth()->user()->can('view_own_expense'))
-            ) {
-                $menu->dropdown(
-                    __('expense.expenses'),
-                    function ($sub) {
-                        $sub->url(
-                            action([\App\Http\Controllers\ExpenseController::class, 'index']),
-                            __('lang_v1.list_expenses'),
-                            ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]
-                        );
-
-                        if (auth()->user()->can('expense.add')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\ExpenseController::class, 'create']),
-                                __('expense.add_expense'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']
-                            );
-                        }
-
-                        if (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\ExpenseCategoryController::class, 'index']),
-                                __('expense.expense_categories'),
-                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'expense-categories']
-                            );
-                        }
-                    },
-                    ['icon' => 'fas fa-shopping-basket ']
-                );
-            };
-
-
-
-
             //Booking menu
             if (in_array('booking', $enabled_modules) && (auth()->user()->can('crud_all_bookings') || auth()->user()->can('crud_own_bookings'))) {
                 $menu->url(action([\App\Http\Controllers\Restaurant\BookingController::class, 'index']), __('restaurant.bookings'), ['icon' => 'fas fa fa-calendar-check', 'active' => request()->segment(1) == 'bookings']);
@@ -2952,67 +3043,67 @@ class CustomAdminSidebarMenu
         });
     }
 
-    public function purchasesMenu()
-    {
+    // public function purchasesMenu()
+    // {
 
-        Menu::create('admin-sidebar-menu', function ($menu) {
-            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
-            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+    //     Menu::create('admin-sidebar-menu', function ($menu) {
+    //         $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+    //         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+    //         $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+    //         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //         $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
-            $menu->url(route('purchases.index'),   __('purchase.purchases'), ['icon' => 'fas fa-cart-plus']);
-            //$menu->header("");
-            //$menu->header("");
+    //         $menu->url(route('purchases.index'),   __('purchase.purchases'), ['icon' => 'fas fa-cart-plus']);
+    //         //$menu->header("");
+    //         //$menu->header("");
 
-            //Purchase dropdown
-            if ((auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('purchase.update'))) {
-                $menu->dropdown(
-                    __('purchase.purchases'),
-                    function ($sub) use ($common_settings) {
-                        if (!empty($common_settings['enable_purchase_requisition']) && (auth()->user()->can('purchase_requisition.view_all') || auth()->user()->can('purchase_requisition.view_own'))) {
-                            $sub->url(
-                                action([\App\Http\Controllers\PurchaseRequisitionController::class, 'index']),
-                                __('lang_v1.purchase_requisition'),
-                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchase-requisition']
-                            );
-                        }
+    //         //Purchase dropdown
+    //         if ((auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('purchase.update'))) {
+    //             $menu->dropdown(
+    //                 __('purchase.purchases'),
+    //                 function ($sub) use ($common_settings) {
+    //                     if (!empty($common_settings['enable_purchase_requisition']) && (auth()->user()->can('purchase_requisition.view_all') || auth()->user()->can('purchase_requisition.view_own'))) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\PurchaseRequisitionController::class, 'index']),
+    //                             __('lang_v1.purchase_requisition'),
+    //                             ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchase-requisition']
+    //                         );
+    //                     }
 
-                        if (!empty($common_settings['enable_purchase_order']) && (auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own'))) {
-                            $sub->url(
-                                action([\App\Http\Controllers\PurchaseOrderController::class, 'index']),
-                                __('lang_v1.purchase_order'),
-                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchase-order']
-                            );
-                        }
-                        if (auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\PurchaseController::class, 'index']),
-                                __('purchase.list_purchase'),
-                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchases' && request()->segment(2) == null]
-                            );
-                        }
-                        if (auth()->user()->can('purchase.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\PurchaseController::class, 'create']),
-                                __('purchase.add_purchase'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'purchases' && request()->segment(2) == 'create']
-                            );
-                        }
-                        if (auth()->user()->can('purchase.update')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\PurchaseReturnController::class, 'index']),
-                                __('lang_v1.list_purchase_return'),
-                                ['icon' => 'fa fas fa-undo', 'active' => request()->segment(1) == 'purchase-return']
-                            );
-                        }
-                    },
-                    ['icon' => 'fas fa-cart-plus ', 'id' => 'tour_step6']
-                );
-            }
-        });
-    }
+    //                     if (!empty($common_settings['enable_purchase_order']) && (auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own'))) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\PurchaseOrderController::class, 'index']),
+    //                             __('lang_v1.purchase_order'),
+    //                             ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchase-order']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\PurchaseController::class, 'index']),
+    //                             __('purchase.list_purchase'),
+    //                             ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'purchases' && request()->segment(2) == null]
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('purchase.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\PurchaseController::class, 'create']),
+    //                             __('purchase.add_purchase'),
+    //                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'purchases' && request()->segment(2) == 'create']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('purchase.update')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\PurchaseReturnController::class, 'index']),
+    //                             __('lang_v1.list_purchase_return'),
+    //                             ['icon' => 'fa fas fa-undo', 'active' => request()->segment(1) == 'purchase-return']
+    //                         );
+    //                     }
+    //                 },
+    //                 ['icon' => 'fas fa-cart-plus ', 'id' => 'tour_step6']
+    //             );
+    //         }
+    //     });
+    // }
 
     public function productsMenu()
     {

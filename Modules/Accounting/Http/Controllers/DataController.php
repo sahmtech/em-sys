@@ -302,10 +302,188 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'accounting.accounting.deal_timesheet',
+                        'value' => 'accounting.deal_timesheet',
                         'label' => __('accounting::lang.deal_timesheet'),
                         'default' => false,
                     ],
+
+                ]
+
+            ],
+            [
+                'group_name' => __('lang_v1.expense'),
+                'group_permissions' => [
+
+                    [
+                        'value' => 'all_expense.access',
+                        'label' => __('lang_v1.access_all_expense'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'view_own_expense.access',
+                        'label' => __('lang_v1.view_own_expense'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'expense.add',
+                        'label' => __('expense.add_expense'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'expense.edit',
+                        'label' => __('expense.edit_expense'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'expense.delete',
+                        'label' => __('lang_v1.delete_expense'),
+                        'default' => false,
+                    ],
+
+                ]
+
+            ],
+            [
+                'group_name' => __('role.purchase'),
+                'group_permissions' => [
+
+                    [
+                        'value' => 'purchase.view',
+                        'label' => __('lang_v1.view_all_purchase_n_stock_adjustment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'view_own_purchase',
+                        'label' => __('lang_v1.view_own_purchase_n_stock_adjustment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'purchase.create',
+                        'label' => __('role.purchase.create'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'purchase.update',
+                        'label' => __('role.purchase.update'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'purchase.delete',
+                        'label' => __('role.purchase.delete'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'purchase.payments',
+                        'label' => __('lang_v1.add_purchase_payment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'edit_purchase_payment',
+                        'label' => __('lang_v1.edit_purchase_payment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'delete_purchase_payment',
+                        'label' => __('lang_v1.delete_purchase_payment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'purchase.update_status',
+                        'label' => __('lang_v1.update_status'),
+                        'default' => false,
+                    ],
+
+
+                ]
+
+            ],
+            [
+                'group_name' => __('role.customer'),
+                'group_permissions' => [
+                    [
+                        'value' => 'customer.view',
+                        'label' => __('lang_v1.view_all_customer'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer.view_own',
+                        'label' => __('lang_v1.view_own_customer'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer_with_no_sell_one_month',
+                        'label' => __('lang_v1.customer_with_no_sell_one_month'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer_with_no_sell_three_month',
+                        'label' => __('lang_v1.customer_with_no_sell_three_month'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer_with_no_sell_six_month',
+                        'label' => __('lang_v1.customer_with_no_sell_six_month'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer_with_no_sell_one_year',
+                        'label' => __('lang_v1.customer_with_no_sell_one_year'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer_irrespective_of_sell',
+                        'label' => __('lang_v1.customer_irrespective_of_sell'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer.create',
+                        'label' => __('role.customer.create'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer.update',
+                        'label' => __('role.customer.update'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'customer.delete',
+                        'label' => __('role.customer.delete'),
+                        'default' => false,
+                    ],
+
+                ]
+
+            ],
+            [
+                'group_name' => __('role.supplier'),
+                'group_permissions' => [
+                    [
+                        'value' => 'supplier.view',
+                        'label' => __('lang_v1.view_all_supplier'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'supplier.view_own',
+                        'label' => __('lang_v1.view_own_supplier'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'supplier.create',
+                        'label' => __('role.supplier.create'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'supplier.update',
+                        'label' => __('role.supplier.update'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'supplier.delete',
+                        'label' => __('role.supplier.delete'),
+                        'default' => false,
+                    ],
+
+
                 ]
 
             ],
