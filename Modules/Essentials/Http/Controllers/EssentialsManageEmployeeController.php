@@ -116,6 +116,12 @@ class EssentialsManageEmployeeController extends Controller
                     }
                 )
                 ->addColumn(
+                    'profile_image',
+                    function ($row) {
+                        return $row?->profile_image ?? '';
+                    }
+                )
+                ->addColumn(
                     'id_proof_number',
                     function ($row) {
                         return $row?->id_proof_number ?? '';

@@ -20,6 +20,7 @@ use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\FailedRowsExport;
+use App\Exports\FailedRowsExportAttac;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsCountry;
@@ -108,6 +109,206 @@ class EssentialsEmployeeUpdateImportController extends Controller
         }
     }
 
+    public function importAttachements(Request $request)
+    {
+        error_log("Start importing attachments");
+
+        $errors = [];
+        $failedRows = [];
+
+        try {
+            ini_set('max_execution_time', 0);
+
+            if ($request->hasFile('import_file')) {
+                $file = $request->file('import_file');
+                $data = Excel::toArray([], $file);
+                $imported_data = array_splice($data[0], 1);
+
+                DB::beginTransaction();
+
+                foreach ($imported_data as $key => $row) {
+                    $row_no = $key + 2;
+
+                    if ($this->isEmptyRow($row)) {
+                        continue;
+                    }
+
+                    $emp_array = $this->prepareEmployeeDataForAttach($row);
+                    $validationResult = $this->validateEmployeeDataForAttach($emp_array);
+
+                    error_log($validationResult['isValid']);
+
+                    if ($validationResult['isValid'] === true) {
+                        error_log('Valid data row');
+                        $this->addFile($emp_array);
+                    } else {
+                        error_log("Validation failed for row $row_no");
+                        $errors[] = "Validation failed for row $row_no";
+                        $failedRows[] = [
+                            'Row' => $row_no,
+                            'Data' => $emp_array,
+                            'Errors' => $validationResult['errors']
+                        ];
+                    }
+                }
+
+                DB::commit();
+
+                if (count($failedRows) > 0) {
+                    return $this->exportFailedRowsAttac($failedRows);
+                } else {
+                    return redirect()->back()->with('status', [
+                        'success' => 1,
+                        'msg' => 'Success',
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File: ' . $e->getFile() . ' Line: ' . $e->getLine() . ' Message: ' . $e->getMessage());
+            return redirect()->route('attachements')->with('notification', ['success' => 0, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    private function isEmptyRow($row)
+    {
+        foreach ($row as $cell) {
+            if (!is_null($cell)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private function prepareEmployeeDataForAttach($row)
+    {
+        error_log(json_encode($row));
+        return [
+            'id' => $row[0],
+            'full_name' => $row[1],
+            'id_proof_number' => $row[2],
+            'profile_image' => $row[3],
+            'contract' => $row[4],
+            'activeResidencePermit' => $row[5],
+            'activeNationalId' => $row[6],
+            'activePassport' => $row[7],
+            'activeInternationalCertificate' => $row[8],
+            'activeDriversLicense' => $row[9],
+            'activeIban' => $row[10],
+            'activeCarRegistration' => $row[11],
+            'activeQualification' => $row[12],
+        ];
+    }
+
+    private function validateEmployeeDataForAttach($emp_array)
+    {
+        $errors = [];
+        error_log($emp_array['full_name']);
+
+        if (empty($emp_array['full_name'])) {
+            $errors[] = 'Full name is required';
+        }
+        error_log($emp_array['id_proof_number']);
+        if (empty($emp_array['id_proof_number'])) {
+
+            $errors[] = 'ID proof number is required';
+        } else {
+            error_log($emp_array['id_proof_number']);
+            $existingEmployee = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
+            if (!$existingEmployee) {
+                $errors[] = 'User not found';
+            }
+        }
+
+        return [
+            'isValid' => empty($errors),
+            'errors' => $errors
+        ];
+    }
+
+    private function addFile($emp_array)
+    {
+        try {
+            $user = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
+
+            if ($user) {
+                error_log($user->id);
+                error_log($user->profile_image);
+
+                if (!empty($emp_array['profile_image'])) {
+                    error_log('New profile image: ' . $emp_array['profile_image']);
+                    $user->profile_image = $emp_array['profile_image'];
+
+                    if ($user->isDirty('profile_image')) {
+                        $user->save();
+                    }
+
+                    if (!empty($emp_array['contract'])) {
+
+                        $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->where('is_active', 1)->orderBy('created_at', 'desc')->first();
+                        if ($contract) {
+                            $contract->file_path = $emp_array['contract'];
+                            $contract->save();
+                        } else {
+                            EssentialsEmployeesContract::create([
+                                'employee_id' => $user->id,
+                                'file_path' => $emp_array['contract'],
+                            ]);
+                        }
+                    }
+
+                    $this->updateOrAddDocument($user->id, $emp_array['activeResidencePermit'], 'residence_permit');
+                    $this->updateOrAddDocument($user->id, $emp_array['activeNationalId'], 'national_id');
+                    $this->updateOrAddDocument($user->id, $emp_array['activePassport'], 'Passport');
+                    $this->updateOrAddDocument($user->id, $emp_array['activeInternationalCertificate'], 'international_certificate');
+                    $this->updateOrAddDocument($user->id, $emp_array['activeDriversLicense'], 'drivers_license');
+                    $this->updateOrAddDocument($user->id, $emp_array['activeIban'], 'Iban');
+                    $this->updateOrAddDocument($user->id, $emp_array['activeCarRegistration'], 'car_registration');
+
+                    if (!empty($emp_array['activeQualification'])) {
+                        $qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->orderBy('created_at', 'desc')->first();
+                        if ($qualification) {
+                            $qualification->file_path = $emp_array['activeQualification'];
+                            $qualification->save();
+                        } else {
+                            EssentialsEmployeesQualification::create([
+                                'employee_id' => $user->id,
+                                'file_path' => $emp_array['activeQualification'],
+                            ]);
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            error_log('An error occurred while adding file: ' . $e->getMessage());
+        }
+    }
+
+    private function updateOrAddDocument($user_id, $file_path, $type)
+    {
+        error_log($type);
+
+        if (!empty($file_path)) {
+            $document = EssentialsOfficialDocument::where('employee_id', $user_id)->where('type', $type)->orderBy('created_at', 'desc')->where('is_active', 1)->first();
+            if ($document) {
+                //  $document->update(['file_path' => $file_path]);
+                $document->file_path = $file_path;
+                $document->save();
+            } else {
+                EssentialsOfficialDocument::create([
+                    'employee_id' => $user_id,
+                    'type' => $type,
+                    'file_path' => $file_path,
+                ]);
+            }
+        }
+    }
+    private function exportFailedRowsAttac($failedRows)
+    {
+        $export = new FailedRowsExportAttac($failedRows);
+        return Excel::download($export, 'failed_rows.xlsx');
+    }
     private function exportFailedRows($failedRows)
     {
         $export = new FailedRowsExport($failedRows);

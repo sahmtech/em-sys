@@ -1940,6 +1940,6 @@ return [
   'shift_time' => 'فترة العمل',
   'work_hours' => 'ساعات الدوام',
   'attachements' => 'المرفقات',
-
+  'worker_info' => 'معلومات العامل'
 
 ];

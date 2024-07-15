@@ -831,6 +831,24 @@ class PayrollController extends Controller
         $user = User::find(auth()->user()->id);
         $is_admin = $user->hasRole('Admin#1');
 
+        $companies_ids = Company::pluck('id')->toArray();
+
+        if (!$is_admin) {
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+        }
+        $companies = Company::whereIn('id',  $companies_ids)->pluck('name', 'id')->toArray();
+
+        $projects = SalesProject::all()->pluck('name', 'id')->toArray();
         $payrolls = TimesheetGroup::where('timesheet_groups.is_approved_by_accounting', 1)
             ->select([
                 'timesheet_groups.id',
@@ -890,15 +908,123 @@ class PayrollController extends Controller
 
 
 
+    // public function create()
+    // {
+    //     return request()->all();
+    //     $companies_ids = request()->input('companies');
+    //     $projects_ids = request()->input('projects');
+    //     $user_type = request()->input('user_type');
+    //     $employee_ids = User::with('contract');
+
+    //     if ($user_type == "worker") {
+    //         $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
+    //     } elseif ($user_type == "employee" || $user_type == "remote_employee") {
+    //         $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
+    //     }
+    //     if ($user_type == "remote_employee") {
+    //         $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
+    //         $employee_ids = $employee_ids->whereHas('contract', function ($query) use ($remote_id) {
+    //             $query->where('contract_type_id', $remote_id);
+    //         });
+    //     }
+    //     $employee_ids = $employee_ids->whereNot('status', 'inactive')->pluck('id')->toArray();
+
+    //     $month_year = request()->input('month_year');
+    //     $employees = User::with(['appointment.profession', 'assignedTo', 'essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
+    //         ->whereIn('users.id',  $employee_ids)
+    //         ->select(
+    //             'users.*',
+    //             'users.id as user_id',
+    //             DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
+    //             'users.id_proof_number',
+    //             'users.essentials_pay_period',
+    //             'users.essentials_salary',
+    //             'users.essentials_pay_period as wd',
+    //         )->get();
+
+    //     $businesses = Business::pluck('name', 'id',);
+    //     $currentDateTime = Carbon::now('Asia/Riyadh');
+    //     $month = $currentDateTime->month;
+    //     $year = $currentDateTime->year;
+    //     $start_of_month = $currentDateTime->copy()->startOfMonth();
+    //     $end_of_month = $currentDateTime->copy()->endOfMonth();
+    //     $payrolls = [];
+    //     foreach ($employees as $worker) {
+    //         $housing_allowance = 0;
+    //         $transportation_allowance = 0;
+    //         $other_allowance = 0;
+    //         $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
+    //         foreach ($allowances as $allowance) {
+    //             $allowance_dsc =   $allowance?->essentials_allowance_and_deduction?->description;
+    //             if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+    //                 $housing_allowance = $allowance->amount;
+    //             } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+    //                 $transportation_allowance = $allowance->amount;
+    //             } else {
+    //                 $other_allowance += floatval($allowance->amount ?? "0");
+    //             }
+    //         }
+    //         $salary = $worker->essentials_salary + $other_allowance;
+    //         if ($worker->user_type == "worker") {
+
+    //             $project_name = $worker->assignedTo?->name ?? '';
+    //         }
+    //         if ($worker->user_type == "employee") {
+    //             $profession = $worker->appointment?->profession?->name ?? '';
+    //         }
+    //         $payrolls[] = [
+    //             'id' => $worker->user_id,
+    //             'name' => $worker->name ?? '',
+    //             'nationality' => User::find($worker->id)->country?->nationality ?? '',
+    //             'identity_card_number' => $worker->id_proof_number ?? '',
+    //             'project_name' => $project_name ?? '',
+    //             'region' => $region ?? '',
+    //             'profession' => $profession ?? '',
+    //             'work_days' => 30,
+    //             'salary' => number_format($worker->essentials_salary, 0, '.', ''),
+    //             'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
+    //             'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
+    //             'other_allowance' => number_format($other_allowance, 0, '.', ''),
+    //             'total' => number_format($salary, 0, '.', ''),
+    //             'violations' => 0,
+    //             'absence' => 0,
+    //             'late' => 0,
+    //             'late_deduction' => 0,
+    //             'absence_deduction' => 0,
+    //             'other_deductions' => 0,
+    //             'loan' => 0,
+    //             'total_deduction' => 0,
+    //             'over_time_hours' => 0,
+    //             'over_time_hours_addition' => 0,
+    //             'additional_addition' => 0,
+    //             'other_additions' => 0,
+    //             'total_additions' => 0,
+    //             'final_salary' => 0,
+    //             'payment_method' => '',
+    //             'notes' => '',
+    //         ];
+    //     }
+
+    //     $date = (Carbon::createFromFormat('m/Y', request()->input('month_year') ?? Carbon::now()->format('m/Y')))->format('F Y');
+    //     $transaction_date = request()->input('month_year');
+    //     $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
+    //     $action = 'create';
+
+    //     return view('essentials::payroll.create')->with(compact('user_type', 'employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action'));
+    // }
+
+
     public function create()
     {
-        $companies_ids = request()->input('companies');
-        $projects_ids = request()->input('projects');
+        $companies_ids = request()->input('companies', []);
+        $projects_ids = request()->input('projects', []);
         $user_type = request()->input('user_type');
+        $month_year = request()->input('month_year');
+
         $employee_ids = User::with('contract');
 
         if ($user_type == "worker") {
-            $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
+            $employee_ids = $employee_ids->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
         }
@@ -910,9 +1036,14 @@ class PayrollController extends Controller
         }
         $employee_ids = $employee_ids->whereNot('status', 'inactive')->pluck('id')->toArray();
 
-        $month_year = request()->input('month_year');
-        $employees = User::with(['appointment.profession', 'assignedTo', 'essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
-            ->whereIn('users.id',  $employee_ids)
+        $employees = User::with([
+            'appointment.profession',
+            'assignedTo',
+            'essentialsUserShifts.shift',
+            'transactions',
+            'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'
+        ])
+            ->whereIn('users.id', $employee_ids)
             ->select(
                 'users.*',
                 'users.id as user_id',
@@ -920,80 +1051,124 @@ class PayrollController extends Controller
                 'users.id_proof_number',
                 'users.essentials_pay_period',
                 'users.essentials_salary',
-                'users.essentials_pay_period as wd',
+                'users.essentials_pay_period as wd'
             )->get();
 
-        $businesses = Business::pluck('name', 'id',);
+        if ($user_type == "worker") {
+            $timesheet_users = TimesheetUser::whereIn('user_id', $employee_ids)->get();
+        } else {
+            $timesheet_users = collect([]);
+        }
+
+        $businesses = Business::pluck('name', 'id');
         $currentDateTime = Carbon::now('Asia/Riyadh');
         $month = $currentDateTime->month;
         $year = $currentDateTime->year;
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
+
         foreach ($employees as $worker) {
             $housing_allowance = 0;
             $transportation_allowance = 0;
             $other_allowance = 0;
-            $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
-            foreach ($allowances as $allowance) {
-                $allowance_dsc =   $allowance?->essentials_allowance_and_deduction?->description;
-                if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
-                    $housing_allowance = $allowance->amount;
-                } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
-                    $transportation_allowance = $allowance->amount;
-                } else {
-                    $other_allowance += floatval($allowance->amount ?? "0");
+            $timesheet = $timesheet_users->where('user_id', $worker->id)->first();
+            if ($worker->user_type == "worker" && $timesheet) {
+                $housing_allowance = $timesheet->housing;
+                $transportation_allowance = $timesheet->transport;
+                $other_allowance = $timesheet->other_allowances;
+                $monthly_cost = $timesheet->monthly_cost;
+                $work_days = $timesheet->work_days;
+                $absence_days = $timesheet->absence_days;
+                $absence_amount = $timesheet->absence_amount;
+                $over_time_hours = $timesheet->over_time_hours;
+                $over_time_amount = $timesheet->over_time_amount;
+                $other_deduction = $timesheet->other_deduction;
+                $other_addition = $timesheet->other_addition;
+                $salary = $timesheet->cost_2;
+                $invoice_value = $timesheet->invoice_value;
+                $vat = $timesheet->vat;
+                $total = $timesheet->total;
+                $basic = $timesheet->basic;
+                $total_salary = $timesheet->total_salary;
+                $deductions = $timesheet->deductions;
+                $additions = $timesheet->additions;
+                $final_salary = $timesheet->final_salary;
+                $project_name = $timesheet->project_id;
+            } else {
+                $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
+                foreach ($allowances as $allowance) {
+                    $allowance_dsc = $allowance?->essentials_allowance_and_deduction?->description;
+                    if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+                        $housing_allowance = number_format($allowance->amount, 0, '.', '');
+                    } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+                        $transportation_allowance = number_format($allowance->amount, 0, '.', '');
+                    } else {
+                        $other_allowance += floatval($allowance->amount ?? "0");
+                    }
                 }
-            }
-            $salary = $worker->essentials_salary + $other_allowance;
-            if ($worker->user_type == "worker") {
-
+                $salary = number_format($worker->essentials_salary + $other_allowance, 0, '.', '');
+                $monthly_cost = number_format($worker->essentials_salary, 0, '.', '');
+                $work_days = 30; // Assuming 30 days in a month for now
+                $absence_days = 0;
+                $absence_amount = 0;
+                $over_time_hours = 0;
+                $over_time_amount = 0;
+                $other_deduction = 0;
+                $other_addition = 0;
+                $invoice_value = null;
+                $vat = null;
+                $total = null;
+                $basic = null;
+                $total_salary = null;
+                $deductions = 0;
+                $additions = 0;
+                $final_salary = null;
                 $project_name = $worker->assignedTo?->name ?? '';
             }
-            if ($worker->user_type == "employee") {
-                $profession = $worker->appointment?->profession?->name ?? '';
-            }
+
+            $profession = $worker->appointment?->profession?->name ?? '';
+
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
                 'identity_card_number' => $worker->id_proof_number ?? '',
                 'project_name' => $project_name ?? '',
-                'region' => $region ?? '',
+                'region' => '',
                 'profession' => $profession ?? '',
-                'work_days' => 30,
-                'salary' => number_format($worker->essentials_salary, 0, '.', ''),
-                'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
-                'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
-                'other_allowance' => number_format($other_allowance, 0, '.', ''),
-                'total' => number_format($salary, 0, '.', ''),
+                'work_days' => $work_days,
+                'salary' => $monthly_cost,
+                'housing_allowance' => $housing_allowance,
+                'transportation_allowance' => $transportation_allowance,
+                'other_allowance' => $other_allowance,
+                'total' => $salary,
                 'violations' => 0,
-                'absence' => 0,
+                'absence' => $absence_days,
                 'late' => 0,
                 'late_deduction' => 0,
-                'absence_deduction' => 0,
-                'other_deductions' => 0,
+                'absence_deduction' => $absence_amount,
+                'other_deductions' => $other_deduction,
                 'loan' => 0,
-                'total_deduction' => 0,
-                'over_time_hours' => 0,
-                'over_time_hours_addition' => 0,
+                'total_deduction' => $other_deduction,
+                'over_time_hours' => $over_time_hours,
+                'over_time_hours_addition' => $over_time_amount,
                 'additional_addition' => 0,
-                'other_additions' => 0,
-                'total_additions' => 0,
-                'final_salary' => 0,
+                'other_additions' => $additions,
+                'total_additions' => $additions,
+                'final_salary' => $final_salary,
                 'payment_method' => '',
                 'notes' => '',
             ];
         }
 
-        $date = (Carbon::createFromFormat('m/Y', request()->input('month_year') ?? Carbon::now()->format('m/Y')))->format('F Y');
-        $transaction_date = request()->input('month_year');
+        $date = (Carbon::createFromFormat('m/Y', $month_year ?? Carbon::now()->format('m/Y')))->format('F Y');
+        $transaction_date = $month_year;
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
 
         return view('essentials::payroll.create')->with(compact('user_type', 'employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action'));
     }
-
 
     public function store(Request $request)
     {
