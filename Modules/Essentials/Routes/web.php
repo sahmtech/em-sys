@@ -126,6 +126,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
     Route::prefix('employee_affairs')->group(function () {
         Route::get('/attachements', [Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'attachements'])->name('attachements');
+        Route::post('/attachements/import', [Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'importAttachements'])->name('attachements.import');
 
         Route::get('/employee_affairs_dashboard', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'employee_affairs_dashboard'])->name('employee_affairs_dashboard');
         Route::get('/finsish_contract_duration', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'finsish_contract_duration'])->name('finsish_contract_duration');

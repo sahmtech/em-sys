@@ -2,8 +2,6 @@
 @section('title', __('essentials::lang.attachements'))
 
 @section('content')
-
-
     <section class="content-header">
         <h1>
             <span>@lang('essentials::lang.attachements')</span>
@@ -12,24 +10,6 @@
 
     <!-- Main content -->
     <section class="content">
-        {{-- <div class="row">
-            <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('employee_name_filter', __('sales::lang.contact_name') . ':') !!}
-                            {!! Form::select('employee_name_filter', $contacts2, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                                'id' => 'employee_name_filter',
-                            ]) !!}
-
-                        </div>
-                    </div>
-                @endcomponent
-            </div>
-        </div> --}}
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="employees_table" style="table-layout: fixed !important;">
@@ -38,6 +18,7 @@
                             <th class="table-td-width-25px">#</th>
                             <th class="table-td-width-200px">@lang('followup::lang.emp_name')</th>
                             <th class="table-td-width-100px">@lang('essentials::lang.eqama_number')</th>
+                            <th class="table-td-width-custom">@lang('essentials::lang.profile_image')</th>
                             <th class="table-td-width-custom">@lang('essentials::lang.contract')</th>
                             <th class="table-td-width-custom">@lang('essentials::lang.residence_permit')</th>
                             <th class="table-td-width-custom">@lang('essentials::lang.national_id')</th>
@@ -53,11 +34,16 @@
             </div>
         @endcomponent
 
-
-
+        <form action="{{ route('attachements.import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group">
+                <label for="import_file">Import Excel File:</label>
+                <input type="file" name="import_file" id="import_file" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Import</button>
+        </form>
     </section>
     <!-- /.content -->
-
 @endsection
 
 @section('javascript')
@@ -65,8 +51,6 @@
         $(document).ready(function() {
             $('#employees_table').DataTable({
                 processing: true,
-                // serverSide: true,
-
                 ajax: {
                     url: "{{ route('attachements') }}",
                     data: function(d) {
@@ -83,6 +67,9 @@
                     },
                     {
                         data: 'id_proof_number'
+                    },
+                    {
+                        data: 'profile_image'
                     },
                     {
                         data: 'contract'
