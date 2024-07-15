@@ -34,6 +34,8 @@ class AccountingAccount extends Model
         return $this->belongsTo(\Modules\Accounting\Entities\AccountingAccountType::class, 'detail_type_id');
     }
 
+  
+
     /**
      * Accounts Dropdown
      *
@@ -42,14 +44,14 @@ class AccountingAccount extends Model
      */
     public static function forDropdown($business_id, $company_id = null, $with_data = false, $q = '')
     {
-        $query = AccountingAccount::where('accounting_accounts.business_id', $business_id)
-            ->where(function ($query) {
-                $query->where('users.status', 'active')
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->where('users.status', 'inactive')
-                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
-                    });
-            });
+        $query = AccountingAccount::where('accounting_accounts.business_id', $business_id);
+            // ->where(function ($query) {
+            //     $query->where('users.status', 'active')
+            //     ->orWhere(function ($subQuery) {
+            //             $subQuery->where('users.status', 'inactive')
+            //                 ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+            //         });
+            // });
         if ($company_id) {
             $query = $query->where('accounting_accounts.company_id', $company_id);
         }
