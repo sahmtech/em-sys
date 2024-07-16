@@ -68,7 +68,7 @@
                             <p>@lang('accounting::lang.add_auto_migration_help')</p>
                             <a href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@store_deflute_auto_migration') }}"
                                 data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@store_deflute_auto_migration') }}"
-                                data-container="#create_defulat_account_modal" class="btn btn-success btn-xs btn-modal">
+                                 class="btn btn-success btn-xs ">
                                 <i class="fas fa-plus"></i> @lang('accounting::lang.add_new_auto_migration')
                             </a>
                         </div>
@@ -103,8 +103,8 @@
         </div>
     </section>
 
-    <div class="modal fade" id="create_account_modal" tabindex="-1" role="dialog"></div>
-    <div class="modal fade" id="create_defulat_account_modal" tabindex="-1" role="dialog"></div>
+    {{-- <div class="modal fade" id="create_account_modal" tabindex="-1" role="dialog"></div> --}}
+    {{-- <div class="modal fade" id="create_defulat_account_modal" tabindex="-1" role="dialog"></div> --}}
     <div class="modal fade" id="delete_auto_migration" tabindex="-1" role="dialog">
         @include('accounting::AutomatedMigration.deleteDialog')
     </div>

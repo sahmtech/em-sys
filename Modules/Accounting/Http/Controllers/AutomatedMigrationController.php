@@ -67,7 +67,6 @@ class AutomatedMigrationController extends Controller
             }
          
 
-
             if (!empty(request()->input('type_fillter')) && request()->input('type_fillter') !== 'all') {
 
 
@@ -163,7 +162,7 @@ class AutomatedMigrationController extends Controller
                 )
 
 
-                ->rawColumns(['action', 'businessLocation_name', 'active'])
+                ->rawColumns(['action', 'active'])
                 ->make(true);
         }
         $mappingSettings = AccountingMappingSettingAutoMigration::where('company_id', $company_id)->get();
@@ -189,13 +188,16 @@ class AutomatedMigrationController extends Controller
             DB::beginTransaction();
             $this->accountingUtil->deflute_auto_migration($request);
 
+           
+            DB::commit();
+
             $output = [
                 'success' => 1,
                 'msg' => __('lang_v1.added_success')
             ];
-            DB::commit();
-
-            return redirect()->back()->with('status', $output);
+    
+    
+            return redirect()->route('automated-migration.index')->with('status', $output);
         } catch (Exception $e) {
             DB::rollBack();
             $output = [
@@ -204,7 +206,8 @@ class AutomatedMigrationController extends Controller
             ];
 
 
-            return redirect()->back()->with('status', $output);
+            return redirect()->route('automated-migration.index')->with('status', $output);
+
         }
     }
     /**
