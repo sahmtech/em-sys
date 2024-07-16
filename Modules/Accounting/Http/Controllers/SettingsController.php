@@ -22,6 +22,8 @@ use App\Unit;
 use App\User;
 use DateTimeZone;
 use Illuminate\Support\Facades\Session;
+use Modules\Accounting\Entities\AccountingAccTransMappingSettingAutoMigration;
+use Modules\Accounting\Entities\AccountingMappingSettingAutoMigration;
 use Yajra\DataTables\Facades\DataTables;
 
 class SettingsController extends Controller
@@ -96,6 +98,13 @@ class SettingsController extends Controller
 
         AccountingAccountType::where('business_id', $business_id)->where('company_id', $company_id)
             ->delete();
+
+        AccountingMappingSettingAutoMigration::where('company_id', $company_id)
+        ->delete();
+        
+        AccountingAccTransMappingSettingAutoMigration::where('company_id', $company_id)
+        ->delete();
+
 
         AccountingAccTransMapping::where('business_id', $business_id)->where('company_id', $company_id)->delete();
 

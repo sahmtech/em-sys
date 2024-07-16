@@ -21,15 +21,17 @@
                         'id' => 'update_auto_migration',
                     ]) !!}
                     @component('components.widget', ['class' => 'box-primary'])
+                      
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    {!! Form::label('name_ar', __('اسم الترحيل') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                    {!! Form::text('migration_name', $mappingSetting->name, [
+                                    {!! Form::label('name_ar', __('accounting::lang.migration_name') . '  ') !!}
+                                    {!! Form::text('migration_name', __('accounting::lang.' . $mappingSetting->name), [
                                         'class' => 'form-control',
                                         'required',
-                                        'placeholder' => __('اسم الترحيل'),
+                                        'placeholder' => __('accounting::lang.migration_name'),
                                         'id' => 'name_ar',
+                                        'readonly',
                                     ]) !!}
                                 </div>
                             </div>
@@ -44,67 +46,45 @@
 
                             <div class="col-sm-3">
 
-                                {!! Form::label('account_sub_type', __('نوع العملية') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                <select class="form-control" name="type" id="account_sub_type"style="padding: 3px" required>
-                                    <option value="">@lang('messages.please_select')</option>
-                                    <option value="sell" @if ($mappingSetting->type == 'sell') selected @endif>
-                                        @lang('accounting::lang.autoMigration.sell')
-                                    </option>
-                                    <option value="sell_return" @if ($mappingSetting->type == 'sell_return') selected @endif>
-                                        @lang('accounting::lang.autoMigration.sell_return')</option>
-                                    <option value="opening_stock" @if ($mappingSetting->type == 'opening_stock') selected @endif>
-                                        @lang('accounting::lang.autoMigration.opening_stock')</option>
-                                    <option value="purchase" @if ($mappingSetting->type == 'purchase') selected @endif>
-                                        @lang('accounting::lang.autoMigration.purchase_')</option>
-                                    <option value="purchase_order" @if ($mappingSetting->type == 'purchase_order') selected @endif>
-                                        @lang('accounting::lang.autoMigration.purchase_order')</option>
-                                    <option value="purchase_return" @if ($mappingSetting->type == 'purchase_return') selected @endif>
-                                        @lang('accounting::lang.autoMigration.purchase_return')</option>
-                                    <option value="expens" @if ($mappingSetting->type == 'expens') selected @endif>
-                                        @lang('accounting::lang.autoMigration.expens_')</option>
-                                    <option value="sell_transfer" @if ($mappingSetting->type == 'sell_transfer') selected @endif>
-                                        @lang('accounting::lang.autoMigration.sell_transfer')</option>
-                                    <option value="purchase_transfer" @if ($mappingSetting->type == 'purchase_transfer') selected @endif>
-                                        @lang('accounting::lang.autoMigration.purchase_transfer')</option>
-                                    <option value="payroll" @if ($mappingSetting->type == 'payroll') selected @endif>
-                                        @lang('accounting::lang.autoMigration.payroll')</option>
-                                    <option value="opening_balance" @if ($mappingSetting->type == 'opening_balance') selected @endif>
-                                        @lang('accounting::lang.autoMigration.opening_balance')</option>
-                                </select>
+                                {!! Form::label('account_sub_type', __('accounting::lang.operatio_type') . '  ') !!}
+                                {!! Form::text('type', __('accounting::lang.autoMigration.' . $mappingSetting->type), [
+                                    'class' => 'form-control',
+                                    'required',
+                                
+                                    'id' => 'type',
+                                    'readonly',
+                                ]) !!}
+
                             </div>
 
                             <div class="col-sm-3">
-                                {!! Form::label('account_sub_type', __('حالة الدفع') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                <select class="form-control" name="payment_status" id="account_sub_type" style="padding: 3px"
-                                    required>
-                                    <option value="">@lang('messages.please_select')</option>
-                                    <option value="paid" @if ($mappingSetting->payment_status == 'paid') selected @endif>
-                                        @lang('accounting::lang.autoMigration.paid')</option>
-                                    <option value="due" @if ($mappingSetting->payment_status == 'due') selected @endif>
-                                        @lang('accounting::lang.autoMigration.due')</option>
-                                    <option value="partial" @if ($mappingSetting->payment_status == 'partial') selected @endif>
-                                        @lang('accounting::lang.autoMigration.partial')</option>
-                                </select>
+                                {!! Form::label('account_sub_type', __('accounting::lang.payment_stauts') . '  ') !!}
+                                {!! Form::text('payment_status', __('accounting::lang.autoMigration.' . $mappingSetting->payment_status), [
+                                    'class' => 'form-control',
+                                    'required',
+                                
+                                    'id' => 'payment_status',
+                                    'readonly',
+                                ]) !!}
+
                             </div>
 
                             <div class="col-sm-3">
-                                {!! Form::label('account_sub_type', __('طريقة الدفع') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                <select class="form-control" name="method" id="account_sub_type"style="padding: 3px" required>
-                                    <option value="">@lang('messages.please_select')</option>
-                                    <option value="cash" @if ($mappingSetting->method == 'cash') selected @endif>
-                                        @lang('accounting::lang.autoMigration.cash')</option>
-                                    <option value="card" @if ($mappingSetting->method == 'card') selected @endif>
-                                        @lang('accounting::lang.autoMigration.card')</option>
-                                    <option value="bank_transfer" @if ($mappingSetting->method == 'bank_transfer') selected @endif>
-                                        @lang('accounting::lang.autoMigration.bank_transfer')</option>
-                                    <option value="cheque" @if ($mappingSetting->method == 'cheque') selected @endif>
-                                        @lang('accounting::lang.autoMigration.cheque')</option>
-                                </select>
+                                {!! Form::label('account_sub_type', __('accounting::lang.payment_method') . '  ') !!}
+                                {!! Form::text('method', __('accounting::lang.autoMigration.' . $mappingSetting->method), [
+                                    'class' => 'form-control',
+                                    'required',
+                                
+                                    'id' => 'method',
+                                    'readonly',
+                                ]) !!}
+
                             </div>
 
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <h4 style="text-align: start">@lang('accounting::lang.first_journal')</h4>
+                                    <h4 style="text-align: start">@lang('accounting::lang.first_journal')<span style="color: red; font-size:10px">
+                                            *</span></h4>
 
                                     <table class="table table-bordered table-striped hide-footer" id="journal_table1">
                                         <thead>
@@ -112,20 +92,24 @@
                                                 <th class="col-md-1">#
                                                 </th>
                                                 <th class="col-md-3">@lang('accounting::lang.account')</th>
-                                                <th class="col-md-3">@lang('accounting::lang.debit') / @lang('accounting::lang.credit')</th>
+                                                <th class="col-md-2">@lang('accounting::lang.debit') / @lang('accounting::lang.credit')</th>
                                                 <th class="col-md-3">@lang('accounting::lang.amount')</th>
+                                                {{-- <th class="col-md-3">@lang('accounting::lang.deposetTo_account')</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody id="tbody1">
                                             @foreach ($journal_entry_1 as $index => $journal_entry)
                                                 <tr>
                                                     <td style="display: flex;font-size: smaller;align-items:center">
-                                                        <a type="button" class="fa fa-trash fa-2x cursor-pointer"
-                                                            href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
-                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
-                                                            data-id="1" name="1" value="{{ $journal_entry->id }}"
-                                                            style="background: transparent; border: 0px;color: red;
+                                                        @if (auth()->user()->can('Admin#1') ||auth()->user()->can('superadmin') ||
+                                                                auth()->user()->can('accounting.destroy_acc_trans_mapping_setting'))
+                                                            <a type="button" class="fa fa-trash fa-2x cursor-pointer"
+                                                                href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                                data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                                data-id="1" name="1" value="{{ $journal_entry->id }}"
+                                                                style="background: transparent; border: 0px;color: red;
                                                             font-size: small;"></a>
+                                                        @endif
                                                         <button type="button"
                                                             class="fa fa-plus-square fa-2x text-primary cursor-pointer"
                                                             data-id="1" name="1" value="1"
@@ -184,6 +168,24 @@
                                                                 @lang('accounting::lang.autoMigration.discount_amount')</option>
                                                         </select>
                                                     </td>
+
+                                                    {{-- <td>
+
+                                                        <select class="form-control accounts-dropdown account_id"
+                                                            style="width: 100%;" name="account_id1[{{ $index + 1 }}]">
+                                                            <option value="">يرجى الاختيار
+                                                            </option>
+                                                            <option value="{{ $journal_entry->accounting_account_id }}"
+                                                                selected>
+
+                                                                {{ $journal_entry->account_name }} - <small
+                                                                    class="text-muted">
+                                                                    @lang('accounting::lang.' . $journal_entry->account_primary_type)
+                                                                    -
+                                                                    @lang('accounting::lang.' . $journal_entry->account_sub_type)</small>
+                                                            </option>
+                                                        </select>
+                                                    </td> --}}
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -222,12 +224,15 @@
                                             @foreach ($journal_entry_2 as $index => $journal_entry)
                                                 <tr>
                                                     <td style="display: flex;font-size: smaller;align-items:center">
-                                                        <a type="button" class="fa fa-trash fa-2x cursor-pointer"
-                                                            href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
-                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
-                                                            data-id="2" name="2" value="{{ $journal_entry->id }}"
-                                                            style="background: transparent; border: 0px;color: red;
+                                                        @if (auth()->user()->can('Admin#'.request()->session()->get('user.business_id'))  ||auth()->user()->can('superadmin') ||
+                                                                auth()->user()->can('accounting.destroy_acc_trans_mapping_setting'))
+                                                            <a type="button" class="fa fa-trash fa-2x cursor-pointer"
+                                                                href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                                data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                                data-id="2" name="2" value="{{ $journal_entry->id }}"
+                                                                style="background: transparent; border: 0px;color: red;
                                                             font-size: small;"></a>
+                                                        @endif
                                                         <button type="button"
                                                             class="fa fa-plus-square fa-2x text-primary cursor-pointer"
                                                             data-id="1" name="2" value="2"
@@ -244,8 +249,7 @@
                                                             <option value="{{ $journal_entry->accounting_account_id }}"
                                                                 selected>
 
-                                                                {{ $journal_entry->account_name }} - <small
-                                                                    class="text-muted">
+                                                                {{ $journal_entry->account_name }} - <small class="text-muted">
                                                                     @lang('accounting::lang.' . $journal_entry->account_primary_type)
                                                                     -
                                                                     @lang('accounting::lang.' . $journal_entry->account_sub_type)</small>

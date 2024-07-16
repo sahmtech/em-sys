@@ -8,9 +8,11 @@ use App\Business;
 use App\Company;
 use App\Transaction;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 // use CarbonCarbon;
 use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingAccountType;
+use Modules\Accounting\Entities\AccountingMappingSettingAutoMigration;
 use Modules\Accounting\Entities\AccountingUserAccessCompany;
 
 class AccountingUtil extends Util
@@ -814,6 +816,66 @@ class AccountingUtil extends Util
             'Prepaid expenses'=>__('accounting::lang.Prepaid expenses'),
             
         ];
+    }
+
+    public function deflute_auto_migration($request)
+    {
+        $user_id = request()->session()->get('user.id');
+        $business_id = request()->session()->get('user.business_id');
+        $names = [
+            'sales_bill',
+            'sell_return_bill',
+            'opening_stock',
+            'purchase_bill',
+            'purchase_return_bill',
+            'expens_bill',
+            'sell_transfer',
+            'purchase_transfer',
+            'payroll',
+            
+        ];
+        $types = [
+            'sell',
+            'sell_return',
+            'opening_stock',
+            'purchase',
+            'purchase_return',
+            'expense',
+            'sell_transfer',
+            'purchase_transfer',
+            'payroll',
+           
+        ];
+        $payment_status = [
+            'paid',
+            'due',
+            'partial',
+        ];
+
+        $methods = [
+            'cash',
+            'card',
+            'bank_transfer',
+            'cheque',
+        ];
+
+        foreach ($types as $key => $value) {
+            foreach ($payment_status as $paymentStatus) {
+                foreach ($methods as $method) {
+                    AccountingMappingSettingAutoMigration::create([
+                        'name' => $names[$key],
+                        'type' => $value,
+                        'company_id' => Session::get('selectedCompanyId'),
+                        'status' => 'final',
+                        'payment_status' => $paymentStatus,
+                        'method' => $method,
+                        'created_by' => $user_id,
+                        'business_id' => $business_id,
+                        'active' => false,
+                    ]);
+                }
+            }
+        }
     }
     
 }

@@ -79,6 +79,8 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('automated-migration-delete-dialog/{id}', 'AutomatedMigrationController@delete_dialog');
     Route::get('automated-migration-active-toggle/{id}', 'AutomatedMigrationController@active_toggle');
     Route::get('automated-migration-delete-acc-trans-mapping/{id}', 'AutomatedMigrationController@destroy_acc_trans_mapping_setting');
+    Route::get('create-deflute-auto-migration', [\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'create_deflute_auto_migration'])->name('create_deflute_auto_migration');
+    Route::get('store-deflute-auto-migration', [\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'store_deflute_auto_migration'])->name('store_deflute_auto_migration');
 
 
     //requests 
