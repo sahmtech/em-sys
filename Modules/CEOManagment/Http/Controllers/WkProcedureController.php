@@ -99,6 +99,7 @@ class WkProcedureController extends Controller
                                 if (!$end) {
                                     $loopStep = WkProcedure::where('department_id', $loopStep->next_department_id)
                                         ->where('request_type_id', $loopStep->request_type_id)
+                                        ->where('business_id', $loopStep->business_id)
                                         ->with(['department', 'nextDepartment'])
                                         ->first();
                                 }
@@ -191,7 +192,7 @@ class WkProcedureController extends Controller
                                 $end = $loopStep->end;
 
                                 if (!$end) {
-                                    $loopStep = WkProcedure::where('department_id', $loopStep->next_department_id)
+                                    $loopStep = WkProcedure::where('department_id', $loopStep->next_department_id)->where('business_id', $loopStep->business_id)
                                         ->where('request_type_id', $loopStep->request_type_id)
                                         ->with(['department', 'nextDepartment'])
                                         ->first();
@@ -335,7 +336,7 @@ class WkProcedureController extends Controller
 
             foreach ($steps  as $index => $step) {
                 $start_dep = $step['add_modal_department_id_steps'][0];
-                $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+                //  $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                 $workflowStep = WkProcedure::create([
                     'request_type_id' => $type,
                     'request_owner_type' => 'worker',

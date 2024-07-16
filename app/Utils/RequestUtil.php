@@ -418,7 +418,7 @@ class RequestUtil extends Util
 
 
         try {
-            $business_id = request()->session()->get('user.business_id');
+            //  $business_id = request()->session()->get('user.business_id');
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
@@ -550,7 +550,7 @@ class RequestUtil extends Util
                         }
                     }
                     $Request = new UserRequest;
-
+                    error_log($business_id);
                     $Request->request_no = $this->generateRequestNo($request->type);
                     $Request->related_to = $userId;
                     $Request->request_type_id = $request->type;
@@ -610,10 +610,12 @@ class RequestUtil extends Util
                     if ($Request) {
                         $process = null;
                         if ($userType == 'worker') {
+                            error_log($request->type);
+                            error_log($business_id);
 
                             $procedure = WkProcedure::where('business_id', $business_id)
-                                ->where('request_type_id', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
-
+                                //     ->where('request_type_id', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
+                                ->where('request_type_id', $request->type)->where('start', 1)->first();
 
                             if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
 
@@ -676,7 +678,11 @@ class RequestUtil extends Util
                                     }
                                 } else {
 
-                                    $procedure = WkProcedure::Where('request_type_id', $request->type)->where('start', '1')->first();
+                                    $procedure = WkProcedure::Where('request_type_id', $request->type)->where('business_id', $business_id)->where('start', '1')->first();
+                                    error_log('****************************');
+                                    error_log($procedure->id);
+                                    error_log('****************************');
+
                                     if (!$procedure) {
                                         $output = [
                                             'success' => false,
@@ -685,7 +691,7 @@ class RequestUtil extends Util
                                         return redirect()->back()->withErrors([$output['msg']]);
                                     }
                                     if ((in_array($procedure->department_id, $departmentIds))) {
-                                        $nextProcedure = WkProcedure::Where('request_type_id', $request->type)->where('department_id', $procedure->next_department_id)->first();
+                                        $nextProcedure = WkProcedure::Where('request_type_id', $request->type)->where('business_id', $business_id)->where('department_id', $procedure->next_department_id)->first();
                                         if ($nextProcedure) {
                                             $process = RequestProcess::create([
                                                 'started_department_id' => $departmentIds[0],
@@ -721,7 +727,7 @@ class RequestUtil extends Util
                                 }
                             } else if (($createdBy_type == 'admin' && (in_array($department_id, $departmentIds))) || ($createdBy_type == 'manager' && (in_array($createdBy_department, $departmentIds)))) {
 
-                                $procedure = WkProcedure::Where('request_type_id', $request->type)->where('start', '1')->first();
+                                $procedure = WkProcedure::Where('request_type_id', $request->type)->where('business_id', $business_id)->where('start', '1')->first();
                                 if (!$procedure) {
                                     $output = [
                                         'success' => false,
@@ -730,7 +736,7 @@ class RequestUtil extends Util
                                     return redirect()->back()->withErrors([$output['msg']]);
                                 }
                                 if ((in_array($procedure->department_id, $departmentIds))) {
-                                    $nextProcedure = WkProcedure::Where('request_type_id', $request->type)->where('department_id', $procedure->next_department_id)->first();
+                                    $nextProcedure = WkProcedure::Where('request_type_id', $request->type)->where('business_id', $business_id)->where('department_id', $procedure->next_department_id)->first();
                                     if ($nextProcedure) {
                                         $process = RequestProcess::create([
                                             'started_department_id' => $departmentIds[0],
@@ -937,6 +943,8 @@ class RequestUtil extends Util
 
             $requestProcess = RequestProcess::where('request_id', $request->request_id)->where('status', 'pending')->where('sub_status', null)->first();
             $procedure = WkProcedure::where('id', $requestProcess->procedure_id)->first()->can_reject;
+            $procedure_business_id = WkProcedure::where('id', $requestProcess->procedure_id)->first()->business_id;
+
 
 
             if ($procedure == 0 && $request->status == 'rejected') {
@@ -1001,6 +1009,7 @@ class RequestUtil extends Util
                     $nextDepartmentId = $procedure->next_department_id;
                     $nextProcedure = WkProcedure::where('department_id', $nextDepartmentId)
                         ->where('request_type_id', $requestProcess->request->request_type_id)
+                        ->where('business_id', $procedure_business_id)
                         ->first();
 
                     if ($nextProcedure) {
@@ -1094,6 +1103,7 @@ class RequestUtil extends Util
                     $nextDepartmentId = $procedure->next_department_id;
 
                     $nextProcedure = WkProcedure::where('department_id', $nextDepartmentId)
+                    ->where('business_id', $procedure->business_id)
                         ->where('request_type_id', $procedure->request_type_id)
                         ->first();
                     if ($nextProcedure) {
@@ -1215,7 +1225,7 @@ class RequestUtil extends Util
                 'next_department' => optional(DB::table('essentials_departments')->where('id', $currentStep->next_department_id)->first())->name,
             ];
 
-            $currentStep = WkProcedure::where('request_type_id', $request->request_type_id)
+            $currentStep = WkProcedure::where('request_type_id', $request->request_type_id)->where('business_id', $currentStep->business_id)
                 ->where('department_id', $currentStep->next_department_id)
                 ->first();
         }
@@ -1381,7 +1391,9 @@ class RequestUtil extends Util
 
         $firstStep = RequestProcess::where('id', $request->process[0]->id)->first();
 
-        $firstProcedure = WkProcedure::where('request_type_id', $request->request_type_id)->first();
+        $firstProcedure = WkProcedure::where('id', $firstStep->procedure_id)->first();
+
+
         if ($firstStep->superior_department_id) {
             $workflow[] = [
                 'id' => null,
@@ -1391,10 +1403,14 @@ class RequestUtil extends Util
                 'next_department' => optional(DB::table('essentials_departments')->where('id', $firstProcedure->department_id)->first())->name,
             ];
         }
+        $requestproceduretype = WkProcedure::where('id', $firstStep->procedure_id)->first()->request_type_id;
+        $requestprocedurebusiness = WkProcedure::where('id', $firstStep->procedure_id)->first()->business_id;
+
 
 
         if ($firstStep->superior_department_id == $firstProcedure->department_id) {
-            $firstProcedures = WkProcedure::where('request_type_id', $request->request_type_id)->get();
+
+            $firstProcedures = WkProcedure::where('request_type_id', $requestproceduretype)->where('business_id', $requestprocedurebusiness)->get();
 
             if (count($firstProcedures) <= 1) {
                 $firstProcedure = null;
@@ -1402,7 +1418,6 @@ class RequestUtil extends Util
                 $firstProcedure = $firstProcedures[1];
             }
         }
-
 
         while ($firstProcedure && !$firstProcedure->end) {
 
@@ -1414,7 +1429,7 @@ class RequestUtil extends Util
                 'next_department' => optional(DB::table('essentials_departments')->where('id', $firstProcedure->next_department_id)->first())->name,
             ];
 
-            $firstProcedure = WkProcedure::where('request_type_id', $request->request_type_id)
+            $firstProcedure = WkProcedure::where('request_type_id', $requestproceduretype)->where('business_id', $requestprocedurebusiness)
                 ->where('department_id', $firstProcedure->next_department_id)
                 ->first();
         }
@@ -2343,12 +2358,13 @@ class RequestUtil extends Util
     public function fetchUsersByType(Request $request)
     {
         $type = $request->get('type');
-
+        error_log($type);
         $for = RequestsType::where('id', $type)->value('for');
-        if ($for = 'worker') {
+        if ($for == 'worker') {
             $user_type = ['worker'];
+            error_log($for);
         }
-        if ($for = 'employee') {
+        if ($for == 'employee') {
             $user_type = ['employee', 'manager', 'department_head'];
         }
         $users = User::whereIn('user_type', $user_type)

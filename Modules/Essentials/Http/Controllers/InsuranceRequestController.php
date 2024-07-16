@@ -11,6 +11,7 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use App\AccessRole;
 use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
+use Illuminate\Support\Facades\DB;
 
 class InsuranceRequestController extends Controller
 {

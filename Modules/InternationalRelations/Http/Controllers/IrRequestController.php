@@ -12,6 +12,7 @@ use App\AccessRole;
 use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
 
+use Illuminate\Support\Facades\DB;
 
 class IrRequestController extends Controller
 {
