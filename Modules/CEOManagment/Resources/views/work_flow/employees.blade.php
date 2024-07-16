@@ -48,6 +48,7 @@
 
 
                             <th>@lang('essentials::lang.type')</th>
+                            <th>@lang('essentials::lang.business')</th>
                             <th>@lang('essentials::lang.steps')</th>
                             {{-- <th>@lang('essentials::lang.escalations')</th> --}}
                             <th>@lang('messages.action')</th>
@@ -74,7 +75,19 @@
                     <div class="modal-body">
                         <div>
                             <div class="row stepsClass">
-
+                                <div>
+                                    <div class="form-group col-md-6">
+                                        {!! Form::label('business', __('essentials::lang.company') . ':*') !!}
+                                        <div class="clearfix"></div>
+                                        {!! Form::select('business', $business, null, [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('essentials::lang.business'),
+                                            'required',
+                                            'style' => 'height:40px',
+                                            'id' => 'business_id',
+                                        ]) !!}
+                                    </div>
+                                </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('type', __('essentials::lang.procedure_type') . ':*') !!}
                                     {!! Form::select(
@@ -86,7 +99,7 @@
                                             'id' => 'type_select',
                                             'placeholder' => __('essentials::lang.procedure_type'),
                                             'required',
-                                            'style' => 'width:100%; height:40px',
+                                            'style' => 'height:40px',
                                         ],
                                     ) !!}
                                     <div class="checkbox">
@@ -433,6 +446,25 @@
 
 
             });
+            $('#business_id').change(function() {
+                var businessId = $(this).val();
+
+                $.ajax({
+                    url: '{{ route('fetch.emp.request.types.by.business') }}',
+                    type: 'GET',
+                    data: {
+                        business_id: businessId
+                    },
+                    success: function(response) {
+                        $('#type_select').empty();
+                        $.each(response.types, function(key, value) {
+                            $('#type_select').append('<option value="' + key + '">' +
+                                value + '</option>');
+                        });
+                        $('#type_select').trigger('change');
+                    }
+                });
+            });
             $('.select2').select2({
                 width: '100%'
             });
@@ -517,6 +549,9 @@
                                 return data;
                             }
                         }
+                    },
+                    {
+                        data: 'business_id'
                     },
                     {
                         data: 'steps'

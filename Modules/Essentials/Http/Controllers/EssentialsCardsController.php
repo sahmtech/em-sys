@@ -3,6 +3,7 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\AccessRole;
+use App\AccessRoleRequest;
 use App\AccessRoleCompany;
 use App\Category;
 use App\Company;
@@ -278,6 +279,11 @@ class EssentialsCardsController extends Controller
         }
 
         $ownerTypes = ['worker'];
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where('name', 'LIKE', '%حكومية%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
         return $this->requestUtil->getRequests(
             $departmentIds,
@@ -285,7 +291,8 @@ class EssentialsCardsController extends Controller
             'essentials::cards.allrequest',
             $can_change_status,
             $can_return_request,
-            $can_show_request
+            $can_show_request,
+            $requestsTypes
         );
     }
 
@@ -1409,6 +1416,11 @@ class EssentialsCardsController extends Controller
                 ->back()
                 ->with('status', $output);
         }
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where('name', 'LIKE', '%دولي%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
         $ownerTypes = ['employee', 'manager'];
 
@@ -1418,7 +1430,8 @@ class EssentialsCardsController extends Controller
             'essentials::cards.allrequest',
             $can_change_status,
             $can_return_request,
-            $can_show_request
+            $can_show_request,
+            $requestsTypes
         );
     }
 

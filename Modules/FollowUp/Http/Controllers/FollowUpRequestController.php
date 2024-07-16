@@ -3,7 +3,7 @@
 namespace Modules\FollowUp\Http\Controllers;
 
 use App\AccessRole;
-use App\AccessRoleBusiness;
+use App\AccessRoleRequest;
 use App\Utils\RequestUtil;
 use App\AccessRoleProject;
 use App\Business;
@@ -84,8 +84,23 @@ class FollowUpRequestController extends Controller
             return redirect()->back()->with('status', $output);
         }
         $ownerTypes = ['worker'];
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
+            })->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'followup::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, [], true);
+
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'followup::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], true);
     }
 
     public function store(Request $request)

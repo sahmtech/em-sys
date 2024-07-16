@@ -2,7 +2,6 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\AccessRole;
 use App\AccessRoleBusiness;
 use App\AccessRoleCompany;
 use App\AccountTransaction;
@@ -42,6 +41,9 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use App\TimesheetUser;
 use App\TimesheetGroup;
+use App\AccessRole;
+use Modules\CEOManagment\Entities\RequestsType;
+use App\AccessRoleRequest;
 
 class PayrollController extends Controller
 {
@@ -497,8 +499,13 @@ class PayrollController extends Controller
         }
 
         $ownerTypes = ['employee', 'manager', 'worker'];
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where('name', 'LIKE', '%رواتب%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::payroll.payrollRequests', $can_change_status, $can_return_request, $can_show_request);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::payroll.payrollRequests', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
     }
 
     public function storePayrollRequest(Request $request)
