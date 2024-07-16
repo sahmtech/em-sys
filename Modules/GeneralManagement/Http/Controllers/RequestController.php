@@ -5,7 +5,9 @@ namespace Modules\GeneralManagement\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Routing\Controller;
-use App\User;;
+use App\User;
+use App\AccessRole;
+use App\AccessRoleRequest;
 
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
@@ -82,7 +84,16 @@ class RequestController extends Controller
             ->pluck('id')->toArray();
 
         $ownerTypes = ['employee', 'manager', 'worker'];
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment);
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مجلس%')
+                    ->orWhere('name', 'like', '%عليا%')
+                    ->orWhere('name', 'like', '%عام%');
+            })->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment);
     }
 
     public function escalateRequests()

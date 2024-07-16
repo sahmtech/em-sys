@@ -8,6 +8,9 @@ use App\Utils\RequestUtil;
 use Illuminate\Routing\Controller;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use App\AccessRole;
+use Modules\CEOManagment\Entities\RequestsType;
+use App\AccessRoleRequest;
 
 class InsuranceRequestController extends Controller
 {
@@ -22,7 +25,6 @@ class InsuranceRequestController extends Controller
     public function __construct(RequestUtil $requestUtil)
     {
         $this->requestUtil = $requestUtil;
-      
     }
 
     public function index()
@@ -46,30 +48,33 @@ class InsuranceRequestController extends Controller
             return redirect()->back()->with('status', $output);
         }
 
-        $ownerTypes=['employee','manager'];
+        $ownerTypes = ['employee', 'manager'];
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where('name', 'LIKE', '%تأمين%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
-        return $this->requestUtil->getRequests( $departmentIds, $ownerTypes, 'essentials::requests.insurance_requests' , $can_change_status, $can_return_request, $can_show_request);
-       
-
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::requests.insurance_requests', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
     }
 
 
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-      
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%تأمين%')
-        ->pluck('id')->toArray();
 
-       return $this->requestUtil->storeRequest($request, $departmentIds);
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%تأمين%')
+            ->pluck('id')->toArray();
+
+        return $this->requestUtil->storeRequest($request, $departmentIds);
     }
-  
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
      */
- 
+
     public function create()
     {
         return view('essentials::create');

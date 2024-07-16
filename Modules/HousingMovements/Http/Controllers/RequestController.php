@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Utils\RequestUtil;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use App\AccessRole;
+use Modules\CEOManagment\Entities\RequestsType;
+use App\AccessRoleRequest;
 
 
 class RequestController extends Controller
@@ -38,9 +41,13 @@ class RequestController extends Controller
             ];
             return redirect()->back()->with('status', $output);
         }
-        $ownerTypes = ['employee','worker', 'manager'];
-
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'housingmovements::requests.allRequest', $can_change_status, $can_return_request, $can_show_request);
+        $ownerTypes = ['employee', 'worker', 'manager'];
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where('name', 'LIKE', '%سكن%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'housingmovements::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
     }
 
     public function store(Request $request)
@@ -73,7 +80,11 @@ class RequestController extends Controller
             return redirect()->back()->with('status', $output);
         }
         $ownerTypes = ['employee', 'manager'];
-
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'housingmovements::requests.allRequestFillter', $can_change_status ,$can_return_request, $can_show_request);
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where('name', 'LIKE', '%سكن%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'housingmovements::requests.allRequestFillter', $can_change_status, $can_return_request, $can_show_request, $requestsTypes,);
     }
 }

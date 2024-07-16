@@ -73,7 +73,7 @@ class RequestUtil extends Util
 
 
     ////// get requests /////////////////// 
-    public function getRequests($departmentIds,  $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null)
+    public function getRequests($departmentIds,  $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null)
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -86,21 +86,25 @@ class RequestUtil extends Util
         $allRequestTypes = RequestsType::pluck('type', 'id');
         //  $requestTypeIds = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
 
-        $requestTypeIds = WkProcedure::distinct()
-            ->with('request_type')
-            ->whereIn('department_id', $departmentIds)
-            ->whereIn('request_owner_type', $ownerTypes)
-            ->where('start', '1')
-            ->pluck('request_type_id')
+        // $requestTypeIds = WkProcedure::distinct()
+        //     ->with('request_type')
+        //     ->whereIn('department_id', $departmentIds)
+        //     ->whereIn('request_owner_type', $ownerTypes)
+        //     ->where('start', '1')
+        //     ->pluck('request_type_id')
+        //     ->toArray();
+
+        $requestTypes = RequestsType::whereIn('id', $requestsTypes)
+            ->get()
+            ->map(function ($requestType) {
+                return [
+                    'id' => $requestType->id,
+                    'type' => $requestType->type,
+                    'for' => $requestType->for,
+                ];
+            })
             ->toArray();
 
-        $requestTypes = RequestsType::whereIn('id', $requestTypeIds)
-            ->get()
-            ->mapWithKeys(function ($requestType) {
-                return [$requestType->id => $requestType->type];
-            })
-            ->unique()
-            ->toArray();
 
 
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
@@ -128,7 +132,7 @@ class RequestUtil extends Util
             $userIds = array_intersect($userIds, $ids);
         }
         $users = User::whereIn('id', $userIds)
-            ->whereIn('user_type', $ownerTypes)
+            // ->whereIn('user_type', $ownerTypes)
             ->where(function ($query) {
                 $query->where('status', 'active')
                     ->orWhere(function ($subQuery) {
@@ -154,8 +158,6 @@ class RequestUtil extends Util
             'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
-
-
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -413,6 +415,7 @@ class RequestUtil extends Util
     ////// store request /////////////////// 
     public function storeRequest($request, $departmentIds)
     {
+
 
         try {
             $business_id = request()->session()->get('user.business_id');
@@ -1729,9 +1732,7 @@ class RequestUtil extends Util
     public function getUnsignedWorkers(Request $request)
     {
 
-
         $workerIds = array_keys($request->input('users', []));
-
 
         $workers = User::whereNull('assigned_to')->where('user_type', 'worker')->whereIn('id', $workerIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
 
@@ -2336,5 +2337,24 @@ class RequestUtil extends Util
             ];
         }
         return $output;
+    }
+
+
+    public function fetchUsersByType(Request $request)
+    {
+        $type = $request->get('type');
+
+        $for = RequestsType::where('id', $type)->value('for');
+        if ($for = 'worker') {
+            $user_type = ['worker'];
+        }
+        if ($for = 'employee') {
+            $user_type = ['employee', 'manager', 'department_head'];
+        }
+        $users = User::whereIn('user_type', $user_type)
+            ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, ''), ' - ', COALESCE(id_proof_number, '')) as full_name"))
+            ->pluck('full_name', 'id');
+
+        return response()->json(['users' => $users]);
     }
 }

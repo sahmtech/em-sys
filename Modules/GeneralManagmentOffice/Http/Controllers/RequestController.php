@@ -5,6 +5,8 @@ namespace Modules\GeneralManagmentOffice\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use App\AccessRole;
+use App\AccessRoleRequest;
 
 use App\User;
 use Yajra\DataTables\Facades\DataTables;
@@ -72,7 +74,14 @@ class RequestController extends Controller
             ->pluck('id')->toArray();
 
         $ownerTypes = ['employee', 'manager', 'worker'];
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagmentoffice::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $departmentIdsForGeneralManagment);
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مكتب%');
+            })->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagmentoffice::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment);
     }
 
     /**

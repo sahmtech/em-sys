@@ -376,7 +376,12 @@
                                 {!! Form::label('type', __('request.type') . ':*') !!}
                                 {!! Form::select(
                                     'type',
-                                    collect($requestTypes)->mapWithKeys(fn($type, $id) => [$id => trans("request.$type")])->toArray(),
+                                    collect($requestTypes)->mapWithKeys(function ($requestType) {
+                                            return [
+                                                $requestType['id'] =>
+                                                    trans('request.' . $requestType['type']) . ' - ' . trans('request.' . $requestType['for']),
+                                            ];
+                                        })->toArray(),
                                     null,
                                     [
                                         'class' => 'form-control',
@@ -387,6 +392,8 @@
                                     ],
                                 ) !!}
                             </div>
+
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('user_id', __('request.name') . ':*') !!}
                                 {!! Form::select('user_id[]', $users, null, [
@@ -1752,6 +1759,26 @@
             var mainReasonSelect = $('#mainReasonSelect');
             var subReasonContainer = $('#sub_reason_container');
             var subReasonSelect = $('#subReasonSelect');
+
+            $('#requestType').change(function() {
+                var requestType = $(this).val();
+
+                $.ajax({
+                    url: '{{ route('fetch.users.by.type') }}',
+                    type: 'GET',
+                    data: {
+                        type: requestType
+                    },
+                    success: function(response) {
+                        $('#worker').empty();
+                        $.each(response.users, function(key, value) {
+                            $('#worker').append('<option value="' + key + '">' + value +
+                                '</option>');
+                        });
+                        $('#worker').trigger('change');
+                    }
+                });
+            });
 
             function fetchUsersWithSaudiNationality() {
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');

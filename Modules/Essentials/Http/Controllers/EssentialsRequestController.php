@@ -8,6 +8,7 @@ use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use App\User;
 use App\AccessRole;
+use App\AccessRoleRequest;
 use Carbon\Carbon;
 use App\Request as Req;
 use Modules\CEOManagment\Entities\RequestsType;
@@ -62,11 +63,13 @@ class EssentialsRequestController extends Controller
             ];
             return redirect()->back()->with('status', $output);
         }
-        // $roles = DB::table('roles')->where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
-        // $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $roles = DB::table('roles')->where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
         $ownerTypes = ['employee', 'manager', 'worker'];
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::requests.allRequest', $can_change_status, $can_return_request, $can_show_request);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
     }
 
     public function store(Request $request)
@@ -104,8 +107,13 @@ class EssentialsRequestController extends Controller
         }
 
         $ownerTypes = ['employee', 'manager'];
+        $roles = DB::table('roles')->where('business_id', $business_id)
+            ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
     }
 
 
