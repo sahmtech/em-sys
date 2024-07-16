@@ -53,6 +53,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/employeesProcedures', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'employeesProcedures'])->name('employeesProcedures');
         Route::get('/workersProcedures', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'workersProcedures'])->name('workersProcedures');
         Route::get('/timesheet_wk', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'timesheet_wk'])->name('timesheet_wk');
+        Route::get('/fetch-w-request-types-by-business', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'fetchWorkerRequestTypesByBusiness'])->name('fetch.w.request.types.by.business');
+        Route::get('/fetch-emp-request-types-by-business', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'fetchEmployeeRequestTypesByBusiness'])->name('fetch.emp.request.types.by.business');
+
 
         Route::post('/storeEmployeeProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeEmployeeProcedure'])->name('storeEmployeeProcedure');
         Route::post('/storeWorkerProcedure', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'storeWorkerProcedure'])->name('storeWorkerProcedure');

@@ -48,6 +48,8 @@
 
 
                             <th>@lang('essentials::lang.type')</th>
+                            <th>@lang('essentials::lang.business')</th>
+
                             <th>@lang('essentials::lang.steps')</th>
                             {{-- <th>@lang('essentials::lang.escalations')</th> --}}
                             <th>@lang('messages.action')</th>
@@ -74,7 +76,19 @@
                     <div class="modal-body">
                         <div>
                             <div class="row stepsClass">
-
+                                <div>
+                                    <div class="form-group col-md-6">
+                                        {!! Form::label('business', __('essentials::lang.company') . ':*') !!}
+                                        <div class="clearfix"></div>
+                                        {!! Form::select('business', $business, null, [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('essentials::lang.business'),
+                                            'required',
+                                            'style' => 'height:40px',
+                                            'id' => 'business_id',
+                                        ]) !!}
+                                    </div>
+                                </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('type', __('essentials::lang.procedure_type') . ':*') !!}
                                     {!! Form::select(
@@ -86,7 +100,7 @@
                                             'id' => 'type_select',
                                             'placeholder' => __('essentials::lang.procedure_type'),
                                             'required',
-                                            'style' => 'width:100%;',
+                                            'style' => 'height:40px',
                                         ],
                                     ) !!}
                                 </div>
@@ -101,17 +115,23 @@
                                         'id' => 'add_modal_department_id_start',
                                         'required',
                                         'placeholder' => __('essentials::lang.selectDepartment'),
-                                        'multiple' => 'multiple',
+                                        // 'multiple' => 'multiple',
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-7">
+                                {{-- <div class="form-group col-md-7">
                                     <label for="start_from_customer" name='start_from_customer'>
                                         <input type="checkbox" id="start_from_customer">
                                         @lang('essentials::lang.start_from_customer')
                                     </label>
+                                </div> --}}
+                                <div class="form-group col-md-7">
+                                    <label for="start_from_customer">
+                                        <input type="checkbox" id="start_from_customer" name="start_from_customer"
+                                            value="1">
+                                        @lang('essentials::lang.start_from_customer')
+                                    </label>
                                 </div>
-
                                 <div class="form-group col-md-6" id="customer_department_div" style="display:none;">
                                     {!! Form::label('customer_department', __('essentials::lang.select_department') . ':*') !!}
                                     {!! Form::select('customer_department', [], null, [
@@ -463,6 +483,25 @@
 
 
             });
+            $('#business_id').change(function() {
+                var businessId = $(this).val();
+
+                $.ajax({
+                    url: '{{ route('fetch.w.request.types.by.business') }}',
+                    type: 'GET',
+                    data: {
+                        business_id: businessId
+                    },
+                    success: function(response) {
+                        $('#type_select').empty();
+                        $.each(response.types, function(key, value) {
+                            $('#type_select').append('<option value="' + key + '">' +
+                                value + '</option>');
+                        });
+                        $('#type_select').trigger('change');
+                    }
+                });
+            });
             $('.select2').select2({
                 width: '100%'
             });
@@ -546,6 +585,8 @@
                                 return data;
                             }
                         }
+                    }, {
+                        data: 'business_id'
                     },
                     {
                         data: 'steps'
@@ -560,14 +601,14 @@
 
                 ]
             });
-            $('#start_from_customer').change(function() {
-                if ($(this).is(':checked')) {
-                    $('#customer_department_div').show();
-                    updateCustomerDepartmentOptions();
-                } else {
-                    $('#customer_department_div').hide();
-                }
-            });
+            // $('#start_from_customer').change(function() {
+            //     if ($(this).is(':checked')) {
+            //         $('#customer_department_div').show();
+            //         updateCustomerDepartmentOptions();
+            //     } else {
+            //         $('#customer_department_div').hide();
+            //     }
+            // });
 
             // Update the customer department dropdown when the department selection changes
             $('#add_modal_department_id_start').change(function() {
@@ -581,7 +622,7 @@
                 var selectedDepartments = $('#add_modal_department_id_start').val();
                 var customerDepartmentSelect = $('#customer_department');
 
-                customerDepartmentSelect.empty(); // Clear existing options
+                customerDepartmentSelect.empty();
 
                 if (selectedDepartments) {
                     selectedDepartments.forEach(function(dept) {
