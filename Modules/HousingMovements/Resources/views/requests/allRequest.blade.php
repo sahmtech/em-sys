@@ -1436,6 +1436,7 @@
                             $('div#change_status_modal').modal('hide');
                             toastr.success(result.msg);
                             requests_table.ajax.reload();
+                            window.location.reload();
 
                         } else {
                             toastr.error(result.msg);
@@ -1469,7 +1470,7 @@
                             $('#returnModal').modal('hide');
                             toastr.success(result.msg);
                             requests_table.ajax.reload();
-
+                            window.location.reload();
                         } else {
                             toastr.error(result.msg);
                         }

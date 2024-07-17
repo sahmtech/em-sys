@@ -52,7 +52,8 @@ class WkProcedureController extends Controller
                 ->orWhere('name', 'like', '%عام%')
                 ->orWhere('name', 'like', '%تنفيذ%');
         })
-            ->pluck('name', 'id')->toArray();
+            ->pluck('name', 'id')->unique()->toArray();
+
         $requestsType = RequestsType::where('for', 'employee')->pluck('type', 'id');
         $actualTypes = WkProcedure::distinct()->where('request_owner_type', 'employee')->pluck('request_type_id')->toArray();
 
@@ -81,27 +82,44 @@ class WkProcedureController extends Controller
                     try {
                         $stepsData = WkProcedure::where('request_type_id', $procedure->request_type_id)
                             ->where('business_id', $procedure->business_id)
-                            ->with(['department', 'nextDepartment'])->where('start', 1)
+                            ->with(['department', 'nextDepartment'])
+                            ->where('start', 1)
                             ->orderBy('start', 'desc')
                             ->get();
-
                         $stepsFormatted = [];
 
                         foreach ($stepsData as $step) {
                             $sequence = [];
                             $end = false;
                             $loopStep = $step;
+                            $visitedDepartments = [];
+
                             while (!$end) {
                                 $departmentName = $loopStep->department->name;
                                 $sequence[] = $departmentName;
+
+                                // Check if this step has already been visited
+                                if (isset($visitedDepartments[$loopStep->department_id])) {
+                                    // If already visited, break the loop to avoid infinite loop
+                                    break;
+                                } else {
+                                    // Mark the department as visited
+                                    $visitedDepartments[$loopStep->department_id] = true;
+                                }
+
                                 $end = $loopStep->end;
 
                                 if (!$end) {
                                     $loopStep = WkProcedure::where('department_id', $loopStep->next_department_id)
-                                        ->where('request_type_id', $loopStep->request_type_id)
                                         ->where('business_id', $loopStep->business_id)
+                                        ->where('request_type_id', $loopStep->request_type_id)
                                         ->with(['department', 'nextDepartment'])
                                         ->first();
+
+                                    // If no next step found, break the loop
+                                    if (!$loopStep) {
+                                        break;
+                                    }
                                 }
                             }
 
@@ -110,7 +128,6 @@ class WkProcedureController extends Controller
                         }
                         return '<ul>' . implode('', $stepsFormatted) . '</ul>';
                     } catch (\Exception $e) {
-                        error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                         return '';
                     }
                 })->addColumn('action', function ($row) use ($is_admin, $can_delete_procedures, $can_edit_procedures) {
@@ -141,43 +158,38 @@ class WkProcedureController extends Controller
 
         $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
 
-        $escalates_departments = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->Where('name', 'like', '%مجلس%')
-                    ->orWhere('name', 'like', '%عليا%')->orWhere('name', 'like', '%عام%');
-            })
-            ->pluck('name', 'id')->toArray();
+        $escalates_departments = EssentialsDepartment::where(function ($query) {
+            $query->Where('name', 'like', '%مجلس%')
+                ->orWhere('name', 'like', '%عليا%')
+                ->orWhere('name', 'like', '%عام%')
+                ->orWhere('name', 'like', '%تنفيذ%');
+        })
+            ->pluck('name', 'id')->unique()->toArray();
         $requestsType = RequestsType::where('for', 'worker')->pluck('type', 'id');
         $actualTypes = WkProcedure::distinct()->where('request_owner_type', 'worker')->pluck('request_type_id')->toArray();
 
         $missingTypes = array_diff_key($requestsType->toArray(), array_flip($actualTypes));
-
 
         $procedures = WkProcedure::where('request_owner_type', 'worker')
             ->select('business_id', 'request_type_id', 'id')
             ->groupBy('business_id', 'request_type_id')
             ->with('department');
 
-
-
         if (request()->ajax()) {
-
             return DataTables::of($procedures)
                 ->editColumn('request_type_id', function ($row) use ($requestsType) {
                     $item = $requestsType[$row->request_type_id] ?? '';
-
                     return $item;
                 })->editColumn('business_id', function ($row) use ($business) {
                     $item = $business[$row->business_id] ?? '';
-
                     return $item;
                 })
                 ->addColumn('steps', function ($procedure) {
                     try {
-
                         $stepsData = WkProcedure::where('request_type_id', $procedure->request_type_id)
                             ->where('business_id', $procedure->business_id)
-                            ->with(['department', 'nextDepartment'])->where('start', 1)
+                            ->with(['department', 'nextDepartment'])
+                            ->where('start', 1)
                             ->orderBy('start', 'desc')
                             ->get();
                         $stepsFormatted = [];
@@ -186,16 +198,34 @@ class WkProcedureController extends Controller
                             $sequence = [];
                             $end = false;
                             $loopStep = $step;
+                            $visitedDepartments = [];
+
                             while (!$end) {
                                 $departmentName = $loopStep->department->name;
                                 $sequence[] = $departmentName;
+
+                                // Check if this step has already been visited
+                                if (isset($visitedDepartments[$loopStep->department_id])) {
+                                    // If already visited, break the loop to avoid infinite loop
+                                    break;
+                                } else {
+                                    // Mark the department as visited
+                                    $visitedDepartments[$loopStep->department_id] = true;
+                                }
+
                                 $end = $loopStep->end;
 
                                 if (!$end) {
-                                    $loopStep = WkProcedure::where('department_id', $loopStep->next_department_id)->where('business_id', $loopStep->business_id)
+                                    $loopStep = WkProcedure::where('department_id', $loopStep->next_department_id)
+                                        ->where('business_id', $loopStep->business_id)
                                         ->where('request_type_id', $loopStep->request_type_id)
                                         ->with(['department', 'nextDepartment'])
                                         ->first();
+
+                                    // If no next step found, break the loop
+                                    if (!$loopStep) {
+                                        break;
+                                    }
                                 }
                             }
 
@@ -204,13 +234,11 @@ class WkProcedureController extends Controller
                         }
                         return '<ul>' . implode('', $stepsFormatted) . '</ul>';
                     } catch (\Exception $e) {
-
                         return '';
                     }
                 })->addColumn('action', function ($row) use ($is_admin, $can_delete_procedures, $can_edit_procedures) {
                     $html = '';
                     if ($is_admin || $can_edit_procedures) {
-
                         $html .= '<a href="#" class="btn btn-xs btn-primary edit-procedure" data-id="' . $row->id . '" data-url="' . route('getProcedure', ['procedure_id' => $row->id]) . '">' . __('messages.edit') . '</a>&nbsp;';
                     }
                     if ($is_admin || $can_delete_procedures) {
@@ -221,9 +249,13 @@ class WkProcedureController extends Controller
                 ->rawColumns(['steps', 'action'])
                 ->make(true);
         }
+
         $tasks = Task::all()->pluck('description', 'id');
         return view('ceomanagment::work_flow.workers')->with(compact('departments', 'business', 'tasks', 'escalates_departments', 'missingTypes'));
     }
+
+
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -233,10 +265,18 @@ class WkProcedureController extends Controller
     {
 
         $procedureType = WkProcedure::where('id', $procedure_id)->first()->request_type_id;
+        $procedureBusiness = WkProcedure::where('id', $procedure_id)->first()->business_id;
 
-        $procedures = WkProcedure::with('department')->where('request_type_id', $procedureType)->get();
+
+        $procedures = WkProcedure::with('department')->where('request_type_id', $procedureType)->where('business_id', $procedureBusiness)->get();
         $superior_dep =  RequestsType::where('id', $procedureType)->first()->goes_to_superior;
-        error_log($superior_dep);
+        $escalates_departments = EssentialsDepartment::where(function ($query) {
+            $query->Where('name', 'like', '%مجلس%')
+                ->orWhere('name', 'like', '%عليا%')
+                ->orWhere('name', 'like', '%عام%')
+                ->orWhere('name', 'like', '%تنفيذ%');
+        })
+            ->pluck('name', 'id')->toArray();
         foreach ($procedures as $procedure) {
             $escalations = ProcedureEscalation::where('procedure_id', $procedure->id)->get();
             $tasks = ProcedureTask::where('procedure_id', $procedure->id)->get();
@@ -252,8 +292,9 @@ class WkProcedureController extends Controller
         }
 
 
-        return response()->json(['procedures' => $procedures, 'superior_dep' => $superior_dep]);
+        return response()->json(['procedures' => $procedures, 'superior_dep' => $superior_dep, 'escalates_departments' => $escalates_departments]);
     }
+
     public function fetchWorkerRequestTypesByBusiness(Request $request)
     {
         $businessId = $request->get('business_id');
@@ -304,9 +345,9 @@ class WkProcedureController extends Controller
             foreach ($steps  as $index => $step) {
                 $check_repeated[] = $step['add_modal_department_id_steps'][0];
             }
-            if (count($check_repeated) !== count(array_unique($check_repeated))) {
-                throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
-            }
+            // if (count($check_repeated) !== count(array_unique($check_repeated))) {
+            //     throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
+            // }
             if ($request->start_from_customer) {
                 $request_type = RequestsType::where('id', $type)->first();
 
@@ -405,9 +446,9 @@ class WkProcedureController extends Controller
             foreach ($steps  as $index => $step) {
                 $check_repeated[] = $step['add_modal_department_id_steps'][0];
             }
-            if (count($check_repeated) !== count(array_unique($check_repeated))) {
-                throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
-            }
+            // if (count($check_repeated) !== count(array_unique($check_repeated))) {
+            //     throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
+            // }
             RequestsType::where('id', $type)->update(['goes_to_superior' => $request->superior_department]);
 
             $previousStepIds = [];

@@ -953,7 +953,7 @@ class AgentController extends Controller
         DB::beginTransaction();
 
         try {
-            $business_id = $request->session()->get('user.business_id');
+
             $attachmentPath = $request->hasFile('attachment') ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
@@ -975,7 +975,7 @@ class AgentController extends Controller
 
             foreach ($request->user_id as $userId) {
                 if ($userId === null) continue;
-
+                $business_id = User::where('id', $userId)->first()->business_id;
                 if ($this->hasPendingRequest($userId, $request->type, $request->user_id)) {
                     return redirect()->back()->withErrors([__('request.this_user_has_this_request_recently')]);
                 }
@@ -1043,6 +1043,7 @@ class AgentController extends Controller
         $newRequest = $this->createUserRequest($request, $userId, $startDate, $end_date, $attachmentPath);
 
         if ($attachmentPath) {
+            error_log('attachmentPath');
             RequestAttachment::create([
                 'request_id' => $newRequest->id,
                 'file_path' => $attachmentPath,
@@ -1100,6 +1101,7 @@ class AgentController extends Controller
 
     private function createUserRequest($request, $userId, $startDate, $end_date, $attachmentPath)
     {
+        error_log($userId);
         return UserRequest::create([
             'request_no' => $this->generateRequestNo($request->type),
             'related_to' => $userId,
@@ -1141,16 +1143,18 @@ class AgentController extends Controller
             'interview_time' => $request->interview_time,
             'interview_place' => $request->interview_place,
         ]);
+        error_log('request stored');
     }
 
     private function processRequestProcedure($request, $requestTypeId, $business_id, $customer_department, $createdBy_type)
     {
+        error_log('processRequestProcedure');
         $procedure = WkProcedure::where('business_id', $business_id)
             ->where('request_type_id', $requestTypeId)
             ->where('start', 1)
             ->where('department_id', $customer_department)
             ->first();
-
+        error_log($procedure->id);
         if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
             $nextProcedure = WkProcedure::where('business_id', $business_id)
                 ->where('request_type_id', $requestTypeId)
@@ -1166,12 +1170,15 @@ class AgentController extends Controller
             if ($nextProcedure && $nextProcedure->action_type == 'task') {
                 $this->createRequestProcedureTasks($request->id, $nextProcedure->id);
             }
+            $this->makeToDo($request, $business_id);
         } else {
+            error_log($request->id);
             $process = RequestProcess::create([
                 'request_id' => $request->id,
                 'procedure_id' => $procedure ? $procedure->id : null,
                 'status' => 'pending',
             ]);
+            $this->makeToDo($request, $business_id);
         }
 
         if (!$process) {
@@ -1180,10 +1187,9 @@ class AgentController extends Controller
             return false;
         }
 
-        $this->makeToDo($request, $business_id);
+
         return true;
     }
-
     private function createRequestProcedureTasks($requestId, $procedureId)
     {
         $procedureTasks = ProcedureTask::where('procedure_id', $procedureId)->get();
@@ -1219,14 +1225,23 @@ class AgentController extends Controller
 
         $allRequestTypes = RequestsType::pluck('type', 'id');
 
-        $requestTypes = RequestsType::where('start_from_customer', 1)
+        // $requestTypes = RequestsType::where('start_from_customer', 1)
+        //     ->get()
+        //     ->mapWithKeys(function ($requestType) {
+        //         return [$requestType->id => $requestType->type];
+        //     })
+        //     ->unique()
+        //     ->toArray();
+        $requestTypes = RequestsType::where('start_from_customer', 1)->where('for', 'worker')
             ->get()
-            ->mapWithKeys(function ($requestType) {
-                return [$requestType->id => $requestType->type];
+            ->map(function ($requestType) {
+                return [
+                    'id' => $requestType->id,
+                    'type' => $requestType->type,
+                    'for' => $requestType->for,
+                ];
             })
-            ->unique()
             ->toArray();
-
 
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
@@ -1238,12 +1253,13 @@ class AgentController extends Controller
         $saleProjects = SalesProject::all()->pluck('name', 'id');
 
         $contact_id =  $user->crm_contact_id;
+
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
         $created_users = User::select(
             'id',
             DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name")
         )->pluck('full_name', 'id');
-
+        // error_log($projectsIds[0]);
         $users = User::where('user_type', 'worker')
             ->whereIn('users.assigned_to', $projectsIds)
             ->where(function ($query) {
@@ -1420,7 +1436,7 @@ class AgentController extends Controller
 
         return null;
     }
- 
+
     /**
      * Retrieves purchase and sell details for a given time period.
      *
