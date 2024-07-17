@@ -2350,16 +2350,33 @@ class RequestUtil extends Util
     public function fetchUsersByType(Request $request)
     {
         $type = $request->get('type');
-        error_log($type);
-        $for = RequestsType::where('id', $type)->value('for');
+        $requestType = RequestsType::find($type);
+
+        if (!$requestType) {
+            return response()->json(['error' => 'Invalid type'], 400);
+        }
+
+        $for = $requestType->for;
+        $user_type = $requestType->user_type;
+        $query = User::query();
+
+        $nationality = EssentialsCountry::where('nationality', 'LIKE', '%سعودي%')->pluck('id')->toArray();
+
+        if ($user_type == 'resident') {
+            $query->whereNotIn('nationality_id', $nationality);
+        } elseif ($user_type == 'citizen') {
+            $query->whereIn('nationality_id', $nationality);
+        }
+
         if ($for == 'worker') {
-            $user_type = ['worker'];
-            error_log($for);
+            $userTypes = ['worker'];
+        } elseif ($for == 'employee') {
+            $userTypes = ['employee', 'manager', 'department_head'];
+        } else {
+            $userTypes = [];
         }
-        if ($for == 'employee') {
-            $user_type = ['employee', 'manager', 'department_head'];
-        }
-        $users = User::whereIn('user_type', $user_type)
+
+        $users = $query->whereIn('user_type', $userTypes)
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, ''), ' - ', COALESCE(id_proof_number, '')) as full_name"))
             ->pluck('full_name', 'id');
 

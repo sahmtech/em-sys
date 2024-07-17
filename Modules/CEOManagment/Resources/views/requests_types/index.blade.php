@@ -121,12 +121,32 @@
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <div class="checkbox">
-                                        <label style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                            {!! Form::checkbox('selfish_service', '1', false) !!}
-                                            @lang('ceomanagment::lang.selfish_service')
-                                        </label>
+
+                                    <div class="form-group col-md-6" class="checkbox">
+                                        {!! Form::label('user_type', __('ceomanagment::lang.user_type') . ':*') !!}
+                                        {!! Form::select(
+                                            'user_type',
+                                            [
+                                                'resident' => __('ceomanagment::lang.resident'),
+                                                'citizen' => __('ceomanagment::lang.citizen'),
+                                                'both' => __('ceomanagment::lang.both'),
+                                            ],
+                                            null,
+                                            [
+                                                'class' => 'form-control',
+                                                'placeholder' => __('ceomanagment::lang.select_type'),
+                                                'required',
+                                                'style' => 'height:37px',
+                                            ],
+                                        ) !!}
                                     </div>
+
+                                </div>
+                                <div class="form-group col-md-6" class="checkbox">
+                                    <label style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                        {!! Form::checkbox('selfish_service', '1', false) !!}
+                                        @lang('ceomanagment::lang.selfish_service')
+                                    </label>
                                 </div>
                             </div>
                         </div>

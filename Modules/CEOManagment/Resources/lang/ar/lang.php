@@ -106,8 +106,10 @@ return [
     'can_the_customer_add_it?' => 'هل يمكن للعميل إنشائه؟',
     'select_departments_for_this_step' => 'اختر الإدارات لهذه الخطوة ',
     'check_to_add_cutomer_to_this_step' => 'انقر لإضافة العميل إلى هذه الخطوة',
-    'client' => 'العميل'
-
+    'client' => 'العميل',
+    'resident' => 'مقيم',
+    'citizen' => 'مواطن',
+    '.user_type' => 'نوع صاحب الطلب'
 
 
 
