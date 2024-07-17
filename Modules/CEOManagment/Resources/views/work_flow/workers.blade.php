@@ -313,7 +313,7 @@
                                         'id' => 'edit_modal_department_id_start',
                                         'required',
                                         'placeholder' => __('essentials::lang.selectDepartment'),
-                                        'multiple' => 'multiple',
+                                        // 'multiple' => 'multiple',
                                         'style' => 'height:40px',
                                     ]) !!}
                                 </div>

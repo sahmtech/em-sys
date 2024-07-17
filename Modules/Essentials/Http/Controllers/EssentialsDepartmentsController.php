@@ -34,98 +34,6 @@ class EssentialsDepartmentsController extends Controller
     }
 
 
-    public function treeIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-
-
-
-
-
-
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-        $departments = EssentialsDepartment::where('parent_department_id', '=', 0)
-            ->where('business_id', '=', $business_id)->get();
-        $alldepartments = EssentialsDepartment::pluck('name', 'id')
-            ->where('business_id', '=', $business_id)->all();
-
-        return view('essentials::settings.partials.departments.index',  compact('departments', 'alldepartments'));
-    }
-
-    public function storeNode(Request $request)
-    {
-        $order = EssentialsDepartment::first();
-        $business_id = request()->session()->get('user.business_id');
-
-        if (is_null($order)) {
-            $newNode = EssentialsDepartment::create([
-                'name' => $request->input('new_text'),
-                'parent_department_id' => 0,
-                'level' => 1,
-                'business_id' => $business_id
-            ]);
-
-            return response()->json(['message' => 'Node added successfully'], 200);
-        } else {
-
-
-            $Pid = $request->input('parent_id');
-            $level = $request->input('level');
-
-            $newNode = EssentialsDepartment::create([
-                'name' => $request->input('new_text'),
-                'parent_department_id' => $Pid,
-                'level' => $level + 1,
-                'business_id' => $business_id
-            ]);
-
-            return response()->json(['message' => 'Node added successfully'], 200);
-        }
-    }
-
-    public function updateNode(Request $request, $id)
-    {
-        $newText = $request->input('new_text');
-
-        $model = EssentialsDepartment::findOrFail($id);
-
-        $model->name =  $newText;
-
-        $model->save();
-
-
-        return response()->json(['message' => 'Node edited successfully']);
-    }
-
-
-    private function deleteNodeRecursively($node)
-    {
-        foreach ($node->childs as $child) {
-            $this->deleteNodeRecursively($child);
-        }
-
-        $node->delete();
-    }
-
-    public function deletenode($id)
-    {
-
-        $node = EssentialsDepartment::find($id);
-
-        if (!$node) {
-            return response()->json(['error' => 'Node not found'], 404);
-        } else {
-
-            $this->deleteNodeRecursively($node);
-
-            return response()->json(['message' => 'Node and its children deleted successfully']);
-        }
-    }
-
 
     public function index()
     {
@@ -169,7 +77,7 @@ class EssentialsDepartmentsController extends Controller
                             ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active', 1)
                             ->where('essentials_employee_appointmets.type', 'appoint')
                             ->where('essentials_employee_appointmets.is_active', 1)
-                            ->where('users.user_type', 'manager')
+                            ->whereIn('users.user_type', ['manager', 'department_head'])
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
                             ->first();
 
@@ -199,7 +107,7 @@ class EssentialsDepartmentsController extends Controller
                             ->where('essentials_employee_appointmets.department_id', $row->id)->where('essentials_employee_appointmets.is_active', 1)
                             ->where('essentials_employee_appointmets.type', 'delegating')
                             ->where('essentials_employee_appointmets.is_active', 1)
-                            ->where('users.user_type', 'manager')
+                            ->whereIn('users.user_type', ['manager', 'department_head'])
                             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
                             ->first();
 
