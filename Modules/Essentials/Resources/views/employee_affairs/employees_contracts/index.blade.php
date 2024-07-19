@@ -549,8 +549,7 @@
                         render: function(data, type, row) {
                             var unit = row.contract_per_period;
                             if (data !== null && data !== undefined) {
-                                var translatedUnit = (unit === 'years') ? '@lang('essentials::lang.years')' :
-                                    '@lang('essentials::lang.months')';
+                                var translatedUnit = '@lang('essentials::lang.years')';
                                 return data + ' ' + translatedUnit;
                             } else {
                                 return '';
