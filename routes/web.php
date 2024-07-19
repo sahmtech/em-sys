@@ -223,64 +223,64 @@ include_once 'install_r.php';
 //     }
 // });
 
-// Route::get('/fix_emp', function () {
-//     DB::beginTransaction();
-//     try {
+Route::get('/fix_emp', function () {
+    DB::beginTransaction();
+    try {
 
-//         $companySequences = [];
+        $companySequences = [];
 
-//         $users = User::whereNot('company_id', 2)->get();
+        $users = User::whereNot('company_id', 2)->get();
 
-//         foreach ($users as $user) {
-//             if (!isset($companySequences[$user->company_id])) {
-//                 $companySequences[$user->company_id] = 1;
-//             } else {
-//                 $companySequences[$user->company_id]++;
-//             }
+        foreach ($users as $user) {
+            if (!isset($companySequences[$user->company_id])) {
+                $companySequences[$user->company_id] = 1;
+            } else {
+                $companySequences[$user->company_id]++;
+            }
 
-//             $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
-//             $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
-//             $newEmpNumber = $companyPart . $sequencePart;
+            $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
+            $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
+            $newEmpNumber = $companyPart . $sequencePart;
 
-//             $user->emp_number = $newEmpNumber;
-//             $user->save();
-//         }
-//         DB::commit();
-//         return response()->json(['message' => 'Success',]);
-//     } catch (Exception $e) {
-//         DB::rollback();
-//         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
-//     }
-// });
-// Route::get('/fix_emp2', function () {
-//     DB::beginTransaction();
-//     try {
+            $user->emp_number = $newEmpNumber;
+            $user->save();
+        }
+        DB::commit();
+        return response()->json(['message' => 'Success',]);
+    } catch (Exception $e) {
+        DB::rollback();
+        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+    }
+});
+Route::get('/fix_emp2', function () {
+    DB::beginTransaction();
+    try {
 
-//         $companySequences = [];
+        $companySequences = [];
 
-//         $users = User::where('company_id', 2)->whereRaw('LENGTH(emp_number) > 6')->get();
+        $users = User::where('company_id', 2)->whereRaw('LENGTH(emp_number) > 6')->get();
 
-//         foreach ($users as $user) {
-//             if (!isset($companySequences[$user->company_id])) {
-//                 $companySequences[$user->company_id] = 2;
-//             } else {
-//                 $companySequences[$user->company_id]++;
-//             }
+        foreach ($users as $user) {
+            if (!isset($companySequences[$user->company_id])) {
+                $companySequences[$user->company_id] = 2;
+            } else {
+                $companySequences[$user->company_id]++;
+            }
 
-//             $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
-//             $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
-//             $newEmpNumber = $companyPart . $sequencePart;
+            $sequencePart = str_pad($companySequences[$user->company_id], 5, '0', STR_PAD_LEFT);
+            $companyPart = str_pad($user->company_id, 2, '0', STR_PAD_LEFT);
+            $newEmpNumber = $companyPart . $sequencePart;
 
-//             $user->emp_number = $newEmpNumber;
-//             $user->save();
-//         }
-//         DB::commit();
-//         return response()->json(['message' => 'Success',]);
-//     } catch (Exception $e) {
-//         DB::rollback();
-//         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
-//     }
-// });
+            $user->emp_number = $newEmpNumber;
+            $user->save();
+        }
+        DB::commit();
+        return response()->json(['message' => 'Success',]);
+    } catch (Exception $e) {
+        DB::rollback();
+        return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
+    }
+});
 
 // Route::get('/swap_k', function () {
 //     DB::beginTransaction();
