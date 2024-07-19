@@ -6,7 +6,7 @@ use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use App\Category;
 use App\AccessRole;
 use App\AccessRoleCompany;
-use App\AccessRoleProject;
+use App\Transaction;
 use App\Contact;
 use App\ContactLocation;
 use App\BusinessLocation;
@@ -15,6 +15,8 @@ use App\User;
 use App\Company;
 use Modules\Essentials\Entities\Shift;
 use Modules\Essentials\Entities\EssentialsUserShift;
+use Carbon\Carbon;
+use App\TimesheetUser;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -986,14 +988,48 @@ class EssentialsWorkersAffairsController extends Controller
         }
         return redirect()->route('show_workers_affairs', ['id' => $id])->with('status', $output);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
+    public function getSalaries(Request $request, $id)
     {
-        //
+        try {
+            $date = $request->input('month_year');
+            $monthYearString = Carbon::parse($date)->format('F Y');
+
+            $salaries = Transaction::join('essentials_payroll_group_transactions', 'essentials_payroll_group_transactions.transaction_id', '=', 'transaction.id')
+                ->join('essentials_payroll_groups', 'essentials_payroll_groups.id', '=', 'essentials_payroll_group_transactions.payroll_group_id')
+                ->where('timesheet_users.expense_for', $id)
+                ->where('transactions.transaction_date', $monthYearString)
+                ->select('transactions.*', 'timesheet_groups.essentials_payroll_groups.*');
+
+            $salaries = $salaries->get();
+
+            return view('essentials::employee_affairs.workers_affairs.salaries', compact('salaries'));
+        } catch (\Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return back()->with('error', 'An error occurred while fetching the timesheets.');
+        }
+    }
+
+    public function getTimesheet(Request $request, $id)
+    {
+        try {
+
+
+            $date = $request->input('month_year');
+            $monthYearString = Carbon::parse($date)->format('F Y');
+
+
+            $timesheets = TimesheetUser::join('timesheet_groups', 'timesheet_users.timesheet_group_id', '=', 'timesheet_groups.id')
+                ->where('timesheet_users.user_id', $id)
+                ->where('timesheet_groups.timesheet_date', $monthYearString)
+                ->select('timesheet_users.*', 'timesheet_groups.timesheet_date as group_date');
+
+            $timesheets = $timesheets->get();
+
+
+            return view('essentials::employee_affairs.workers_affairs.timesheet', compact('timesheets'));
+        } catch (\Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return back()->with('error', 'An error occurred while fetching the timesheets.');
+        }
     }
 }
