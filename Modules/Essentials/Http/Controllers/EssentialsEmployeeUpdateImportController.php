@@ -334,8 +334,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
     {
         error_log($excelDate);
 
-
         $datePatternYMD = '/^\d{4}-\d{2}-\d{2}$/';
+        $datePatternDMY = '/^\d{2}\/\d{2}\/\d{4}$/';
 
         if (!$excelDate) {
             error_log('111111');
@@ -344,9 +344,14 @@ class EssentialsEmployeeUpdateImportController extends Controller
             error_log('222222222');
             error_log($excelDate);
             return $excelDate;
+        } elseif (preg_match($datePatternDMY, $excelDate)) {
+            error_log('5555555');
+            $date = \DateTime::createFromFormat('d/m/Y', $excelDate);
+            $convertedDate = $date->format('Y-m-d');
+            error_log("Converted date: " . $convertedDate);
+            return $convertedDate;
         } elseif (is_numeric($excelDate)) {
             error_log('333333');
-
             $excelDate = (int)$excelDate;
             $unixDate = ($excelDate - 25569) * 86400;
             $convertedDate = gmdate("Y-m-d", $unixDate);
@@ -358,6 +363,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
             return $excelDate;
         }
     }
+
 
 
     private function validate($emp_array)
@@ -1360,8 +1366,8 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 if ((!isset($formated_data['emp_number']) || $formated_data['emp_number'] == null)) {
                     $formated_data['emp_number'] = $this->moduleUtil->generateEmpNumber($formated_data['company_id']);
                 }
+                if (isset($formated_data['assigned_to']) && $formated_data['assigned_to'] != null && !is_numeric($formated_data['assigned_to'])) {
 
-                if (!is_numeric($formated_data['assigned_to'])) {
 
                     $formated_data['sub_status'] = $formated_data['assigned_to'];
                     $formated_data['assigned_to'] = null;
