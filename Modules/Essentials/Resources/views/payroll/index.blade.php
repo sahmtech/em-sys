@@ -97,6 +97,27 @@
                                 @endforeach
                             </select>
                         </div>
+                        {{-- <div class="form-group" id="projects_container" style="display: none;">
+                            {!! Form::label('project_name', __('request.project_name') . ':*') !!}
+                            {!! Form::select('project_name', $projects, null, [
+                                'class' => 'form-control select2',
+                                'style' => 'height: 40px',
+                                'multiple' => 'multiple',
+                                'name' => 'projects[]',
+                                'placeholder' => __('request.select_project'),
+                            ]) !!}
+                        </div>
+                        <div class="form-group" id="companies_container" style="display: none;">
+                            {!! Form::label('companies', __('essentials::lang.companies') . ':*') !!}
+                            {!! Form::select('companies', $companies, null, [
+                                'class' => 'form-control select2',
+                                'style' => 'height: 40px',
+                                'multiple' => 'multiple',
+                                'name' => 'companies[]',
+                                'placeholder' => __('essentials::lang.companies'),
+                            ]) !!}
+                        </div> --}}
+
                         <div class="form-group">
                             {!! Form::label('month_year', __('essentials::lang.month_year') . ':*') !!}
                             <div class="input-group">
