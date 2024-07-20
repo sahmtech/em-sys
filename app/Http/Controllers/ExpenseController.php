@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Account;
 use App\AccountTransaction;
 use App\BusinessLocation;
+use App\Business;
 use App\Contact;
 use App\ExpenseCategory;
 use App\TaxRate;
@@ -301,8 +302,8 @@ class ExpenseController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id, false, true);
 
         $bl_attributes = $business_locations['attributes'];
-        $business_locations = $business_locations['locations'];
-
+        // $business_locations = $business_locations['locations'];
+        $business_locations = Business::pluck('name', 'id');
         $expense_categories = ExpenseCategory::where('business_id', $business_id)
             ->whereNull('parent_id')
             ->pluck('name', 'id');
@@ -329,6 +330,16 @@ class ExpenseController extends Controller
 
         return view('expense.create')
             ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'contacts'));
+    }
+    public function getUsersByLocation(Request $request)
+    {
+        $locationId = $request->input('location_id');
+
+        $query = User::query();
+        $users = $query->where('business_id', $locationId)
+            ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, ''), ' - ', COALESCE(id_proof_number, '')) as full_name"))
+            ->pluck('full_name', 'id');
+        return response()->json(['users' => $users]);
     }
 
     /**

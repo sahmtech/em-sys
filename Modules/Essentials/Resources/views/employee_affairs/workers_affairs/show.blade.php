@@ -187,20 +187,17 @@
                                     aria-hidden="true"></i> @lang('essentials::lang.worker_info')</a>
                         </li>
                         <li>
-                            <a href="#activities_tab" data-toggle="tab" aria-expanded="true">
+                            <a href="#salaries_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-money-check" aria-hidden="true"></i>
-
-                                @lang('followup::lang.salaries')</a>
+                                @lang('followup::lang.salaries')
+                            </a>
                         </li>
-
                         <li>
-                            <a href="#activities_tab" data-toggle="tab" aria-expanded="true">
+                            <a href="#time_sheet_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
-
-
-                                @lang('agent.time_sheet')</a>
+                                @lang('agent.time_sheet')
+                            </a>
                         </li>
-
                         <li>
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square"
                                     aria-hidden="true"></i> @lang('lang_v1.activities')</a>
@@ -565,7 +562,48 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="tab-pane" id="salaries_tab">
+                            <form id="salary_form">
+                                @csrf
+                                <div class="form-group">
+                                    {!! Form::label('month_year', __('essentials::lang.month_year') . ':*') !!}
+                                    <div class="input-group">
+                                        {!! Form::text('month_year', null, [
+                                            'class' => 'form-control',
+                                            'id' => 'salary_month',
+                                            'name' => 'month_year',
+                                            'placeholder' => __('essentials::lang.month_year'),
+                                            'required',
+                                            'readonly',
+                                        ]) !!}
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">@lang('essentials::lang.get_salaries')</button>
+                            </form>
+                            <div id="salary_results"></div>
+                        </div>
+                        <div class="tab-pane" id="time_sheet_tab">
+                            <form id="timesheet_form">
+                                @csrf
+                                <div class="form-group">
+                                    {!! Form::label('month_year', __('essentials::lang.month_year') . ':*') !!}
+                                    <div class="input-group">
+                                        {!! Form::text('month_year', null, [
+                                            'class' => 'form-control',
+                                            'id' => 'timesheet_month',
+                                            'name' => 'month_year',
+                                            'placeholder' => __('essentials::lang.month_year'),
+                                            'required',
+                                            'readonly',
+                                        ]) !!}
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">@lang('essentials::lang.get_timesheet')</button>
+                            </form>
+                            <div id="timesheet_results"></div>
+                        </div>
 
 
                         <div class="tab-pane" id="activities_tab">
@@ -584,7 +622,48 @@
 @section('javascript')
     <!-- document & note.js -->
 
+    <script>
+        $(document).ready(function() {
+            // Initialize the date picker
+            $('#salary_month, #timesheet_month').datepicker({
+                format: "yyyy-mm",
+                minViewMode: 1,
+                autoclose: true
+            });
 
+            // Handle salary form submission
+            $('#salary_form').on('submit', function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: "{{ route('worker.salaries', $user->id) }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    success: function(data) {
+                        $('#salary_results').html(data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+
+            // Handle timesheet form submission
+            $('#timesheet_form').on('submit', function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: "{{ route('worker.timesheet', $user->id) }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    success: function(data) {
+                        $('#timesheet_results').html(data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#profileImageLink').on('click', function(e) {

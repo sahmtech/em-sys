@@ -1940,6 +1940,17 @@ return [
   'shift_time' => 'فترة العمل',
   'work_hours' => 'ساعات الدوام',
   'attachements' => 'المرفقات',
-  'worker_info' => 'معلومات العامل'
+  'worker_info' => 'معلومات العامل',
+  'get_timesheet' => 'عرض التايم شيت',
+  'group_date' => 'تاريخ التايم شيت',
+  'work_days' => 'أيام العمل',
+  'absence_days' => 'أيام الغياب',
+  'over_time_hours' => 'ساعات العمل الاضافية',
+  'no_time_sheet' => 'لا يوجد',
+  'get_salaries' => 'عرض الراتب'
+
+
+
+
 
 ];
