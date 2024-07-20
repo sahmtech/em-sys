@@ -122,7 +122,7 @@
                             {!! Form::label('contract_form', __('sales::lang.contract_form') . ':*') !!}
                             {!! Form::select(
                                 'contract_form',
-                                ['operating_fees' => __('sales::lang.first_choice'), 'monthly_cost' => __('sales::lang.second_choice')],
+                                ['monthly_cost' => __('sales::lang.first_choice'), 'operating_fees' => __('sales::lang.second_choice')],
                                 null,
                                 [
                                     'id' => 'contract_form',

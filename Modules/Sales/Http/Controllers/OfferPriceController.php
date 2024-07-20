@@ -826,7 +826,7 @@ class OfferPriceController extends Controller
             $phpWord = new PhpWord();
 
 
-            if ($query->contract_form == 'monthly_cost') {
+            if ($query->contract_form == 'operating_fees') {
                 $template = Template::with('sections')->where('id', 1)->first();
                 $sections = $template->sections->sortBy('order');
 
@@ -948,7 +948,7 @@ class OfferPriceController extends Controller
 
 
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
-            } else if ($query->contract_form == 'operating_fees') {
+            } else if ($query->contract_form == 'monthly_cost') {
                 $template = Template::with('sections')->where('id', 2)->first();
                 $sections = $template->sections->sortBy('order');
                 $food = 0;

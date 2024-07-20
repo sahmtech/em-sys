@@ -2,7 +2,7 @@
 @section('title', __('sales::lang.qualified_contacts'))
 
 @section('content')
-@include('sales::layouts.nav_contact')
+    @include('sales::layouts.nav_contact')
 
     <section class="content-header">
         <h1>
@@ -11,14 +11,11 @@
     </section>
 
 
-   
+
     <section class="content">
-      
+
 
         @component('components.widget', ['class' => 'box-primary'])
-       
-
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="cust_table">
                     <thead>
@@ -27,7 +24,7 @@
                                 <input type="checkbox" id="select-all">
                             </th> --}}
                             <th>#</th>
-                            <th>@lang('sales::lang.contact_number')</th>
+                            {{-- <th>@lang('sales::lang.contact_number')</th> --}}
                             <th>@lang('sales::lang.supplier_business_name')</th>
                             <th>@lang('sales::lang.commercial_register_no')</th>
                             <th>@lang('sales::lang.qualified_by')</th>
@@ -51,7 +48,7 @@
         @endcomponent
 
 
-      
+
     </section>
     <!-- /.content -->
 
@@ -61,10 +58,9 @@
 
 
     <script type="text/javascript">
-       
         $(document).ready(function() {
             var customers_table = $('#cust_table').DataTable({
-         
+
                 ajax: {
                     url: "{{ route('qualified_contacts') }}",
 
@@ -85,16 +81,16 @@
                         data: 'id',
                         name: 'id'
                     },
-                    {
-                        data: 'contact_id',
-                        name: 'contact_id',
-                        render: function(data, type, row) {
-                            var link = '<a href="' +
-                                '{{ route('contacts-profile', ['id' => ':id']) }}'
-                                .replace(':id', row.id) + '">' + data + '</a>';
-                            return link;
-                        }
-                    },
+                    // {
+                    //     data: 'contact_id',
+                    //     name: 'contact_id',
+                    //     render: function(data, type, row) {
+                    //         var link = '<a href="' +
+                    //             '{{ route('contacts-profile', ['id' => ':id']) }}'
+                    //             .replace(':id', row.id) + '">' + data + '</a>';
+                    //         return link;
+                    //     }
+                    // },
                     {
                         data: 'supplier_business_name',
                         name: 'supplier_business_name'
@@ -166,8 +162,6 @@
             });
 
         });
-
-
     </script>
 
 @endsection

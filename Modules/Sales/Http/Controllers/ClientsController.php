@@ -199,45 +199,40 @@ class ClientsController extends Controller
 
 
 
-
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
                 ->select([
                     'id', 'supplier_business_name', 'type', 'contact_id', 'qualified_by', 'qualified_on',
-                    'commercial_register_no', 'mobile', 'email', 'city'
-
-                ])->where('business_id', $business_id)->where('type', 'qualified');
+                    'commercial_register_no', 'mobile', 'email', 'city', 'updated_at'
+                ])
+                ->where('business_id', $business_id)
+                ->where('type', 'qualified')
+                ->orderBy('updated_at', 'desc'); // Added orderBy clause
 
             return Datatables::of($contacts)
-
                 ->addColumn('action', function ($row) use ($can_create_offer_price, $can_edit_contact, $can_view_contact_info, $is_admin) {
+                    $html = '';
                     if ($is_admin || $can_edit_contact) {
-                        $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id, 'page' => 'qualified']) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                        $html .= '<a href="' . route('sale.clients.edit', ['id' => $row->id, 'page' => 'qualified']) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                     }
-                    // $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                     if ($is_admin || $can_view_contact_info) {
                         $html .= '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>';
                     }
                     if ($is_admin || $can_create_offer_price) {
-                        $html .= '&nbsp;<a href="' . route('create_offer_price_qualified_contacts', ['id' => $row->id, 'status' => 'quotation']) . '" class="btn btn-xs btn-warning" style="margin-top: 3px;"><i class="fa fa-plus"></i> ' . __('lang_v1.add_quotation') . '</a>'; // New view button
+                        $html .= '&nbsp;<a href="' . route('create_offer_price_qualified_contacts', ['id' => $row->id, 'status' => 'quotation']) . '" class="btn btn-xs btn-warning" style="margin-top: 3px;"><i class="fa fa-plus"></i> ' . __('lang_v1.add_quotation') . '</a>';
                     }
                     return $html;
                 })
                 ->editColumn('qualified_by', function ($row) use ($users) {
-                    if ($row->qualified_by) {
-                        return $users[$row->qualified_by];
-                    } else {
-                        return " ";
-                    }
+                    return $row->qualified_by ? $users[$row->qualified_by] : " ";
                 })
-
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
-
                 ->rawColumns(['action'])
                 ->make(true);
         }
+
 
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
