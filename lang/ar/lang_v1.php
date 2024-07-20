@@ -1467,6 +1467,8 @@ return [
     'privacy_policy' => 'سياسة الخصوصية',
     'finished_success' => 'تم الإنهاء بنجاح',
     'pills' => 'الفواتير',
+    'sells_pills' => 'فواتير المبيعات',
+    'paid_date' => 'تاريخ الدفع',
     'create_pill' => 'إنشاء فاتورة',
     'all_notifications' => 'جميع الإشعارات',
     'notification_sender' => 'المرسل',

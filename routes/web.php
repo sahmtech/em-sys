@@ -573,6 +573,7 @@ Route::get('/clear_cache', function () {
 Route::get('/privacy-policy', function () {
     return view('privacy_policy');
 });
+Route::get('/get-users-by-location', [ExpenseController::class, 'getUsersByLocation'])->name('get_users_by_location');
 
 // Route::get('/userFromContact', function () {
 //     $contacts = Contact::where('type', 'lead')->get();
