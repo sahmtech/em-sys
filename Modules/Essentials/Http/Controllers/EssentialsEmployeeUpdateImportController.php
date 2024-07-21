@@ -521,7 +521,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 }
 
                 if (isset($emp_array['user_type']) && $emp_array['user_type'] != null) {
-                    if ($emp_array['user_type'] != 'worker' && $emp_array['user_type'] != 'employee' && $emp_array['user_type'] != 'manager') {
+                    if ($emp_array['user_type'] != 'worker' && $emp_array['user_type'] != 'department_head' && $emp_array['user_type'] != 'employee' && $emp_array['user_type'] != 'manager') {
                         $errors[] = __('essentials::lang.employee_type_not_defined');
                     }
                 }
