@@ -130,6 +130,8 @@ class RoleController extends Controller
             'employee' => __('essentials::lang.employee'),
             'manager' => __('essentials::lang.manager'),
             'worker' => __('essentials::lang.worker'),
+            'department_head' => __('essentials::lang.department_head'),
+
         ];
         return view('role.edit_create_access_role')
             ->with(compact('userTypesNames', 'userTypes', 'selectedUserTypes', 'accessRole', 'companies', 'accessRoleCompanies'));
