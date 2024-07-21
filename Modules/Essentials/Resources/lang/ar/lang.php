@@ -1947,7 +1947,8 @@ return [
   'absence_days' => 'أيام الغياب',
   'over_time_hours' => 'ساعات العمل الاضافية',
   'no_time_sheet' => 'لا يوجد',
-  'get_salaries' => 'عرض الراتب'
+  'get_salaries' => 'عرض الراتب',
+  'department_head' => 'رئيس قسم'
 
 
 
