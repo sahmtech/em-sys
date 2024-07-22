@@ -7,6 +7,7 @@ use App\AccessRoleRequest;
 use App\Utils\RequestUtil;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Illuminate\Support\Facades\Session;
 use Modules\CEOManagment\Entities\RequestsType;
