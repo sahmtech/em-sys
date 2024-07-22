@@ -802,76 +802,67 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
     private function updateOfficalDocument($formated_data, $existingEmployee)
     {
-        if (isset($formated_data['id_proof_name']) && $formated_data['id_proof_name'] != null && $formated_data['id_proof_name'] == 'eqama') {
-            if (isset($formated_data['id_proof_number_expiration_date']) && $formated_data['id_proof_number_expiration_date'] != null) {
-                error_log('here_eqama_update');
-                $previous_proof_date = EssentialsOfficialDocument::where('employee_id',  $existingEmployee->id)
-                    ->where('type', 'residence_permit')
-                    ->where('is_active', 1)
-                    ->first();
-
-                if ($previous_proof_date) {
-                    $proofFile = $previous_proof_date->file_path ?? null;
-                    $previous_proof_date->update(['is_active' => 0]);
-                }
-
-                $residencePermitData =
-                    [
-                        'status' => 'valid',
-                        'is_active' => 1,
-                        'file_path' => $proofFile,
-                        'type' => 'residence_permit',
-                        'employee_id' => $existingEmployee->id,
-                        'number' => $formated_data['id_proof_number'],
-                        'expiration_date' => $formated_data['id_proof_number_expiration_date'],
-                    ];
-                $filteredResidencePermitData = array_filter($residencePermitData, function ($value) {
-                    return $value !== null;
-                });
-
-
-                if (!empty($filteredResidencePermitData)) {
-                    EssentialsOfficialDocument::Create($filteredResidencePermitData);
-                }
-            }
+        if (isset($formated_data['id_proof_name']) && $formated_data['id_proof_name'] === 'eqama') {
+            $this->updateDocument(
+                $formated_data['id_proof_number_expiration_date'] ?? null,
+                'residence_permit',
+                $formated_data['id_proof_number'] ?? null,
+                $existingEmployee->id
+            );
         }
-        if (isset($formated_data['passport_expiration_date']) && $formated_data['passport_expiration_date'] != null) {
-            error_log('here_passport_update');
-            $previous_passport_date = EssentialsOfficialDocument::where('employee_id',  $existingEmployee->id)
-                ->where('type', 'passport')
-                ->where('is_active', 1)
-                ->first();
-            if ($previous_passport_date) {
-                $passportFile = $previous_passport_date->file_path ?? null;
-                $previous_passport_date->update(['is_active' => 0]);
-            }
 
-            $passportData =
-                [
-                    'status' => 'valid',
-                    'is_active' => 1,
-                    'employee_id' => $existingEmployee->id,
-                    'file_path' => $passportFile,
-                    'type' => 'passport',
-                    'number' => $formated_data['passport_number'],
-                    'expiration_date' => $formated_data['passport_expiration_date'],
-                    'created_by' => auth()->user()->id
-                ];
-
-
-            $filteredPassportData = array_filter($passportData, function ($value) {
-                return $value !== null;
-            });
-
-            if (!empty($filteredPassportData)) {
-
-                EssentialsOfficialDocument::Create(
-
-                    $filteredPassportData
-                );
-            }
+        if (isset($formated_data['passport_expiration_date']) && $formated_data['passport_expiration_date'] !== null) {
+            $this->updateDocument(
+                $formated_data['passport_expiration_date'],
+                'passport',
+                $formated_data['passport_number'] ?? null,
+                $existingEmployee->id,
+                auth()->user()->id
+            );
         }
     }
+
+    private function updateDocument($expirationDate, $type, $number, $employeeId, $createdBy = null)
+    {
+        if ($expirationDate === null) {
+            return;
+        }
+
+        $previousDocument = EssentialsOfficialDocument::where('employee_id', $employeeId)
+            ->where('type', $type)
+            ->where('is_active', 1)
+            ->first();
+
+        if ($previousDocument && $previousDocument->expiration_date == $expirationDate && $previousDocument->number == $number) {
+            error_log("No changes detected in $type data");
+            return;
+        }
+
+        if ($previousDocument) {
+            $filePath = $previousDocument->file_path ?? null;
+            $previousDocument->update(['is_active' => 0]);
+        }
+
+        $documentData = [
+            'status' => 'valid',
+            'is_active' => 1,
+            'file_path' => $filePath ?? null,
+            'type' => $type,
+            'employee_id' => $employeeId,
+            'number' => $number,
+            'expiration_date' => $expirationDate,
+            'created_by' => $createdBy
+        ];
+
+        $filteredDocumentData = array_filter($documentData, function ($value) {
+            return $value !== null;
+        });
+
+        if (!empty($filteredDocumentData)) {
+            EssentialsOfficialDocument::create($filteredDocumentData);
+        }
+    }
+
 
     private function createOrUpdateAllowanceAndDeduction($formated_data, $existingEmployee)
     {
@@ -929,83 +920,53 @@ class EssentialsEmployeeUpdateImportController extends Controller
         }
     }
 
-    private function updateAppointmet($formated_data, $existingEmployee)
+    private function updateAppointmet($formatted_data, $existingEmployee)
     {
-
-
-        if ($formated_data && ((isset($formated_data['essentials_department_id']) && $formated_data['essentials_department_id'] != null) || (isset($formated_data['profession_id']) && $formated_data['profession_id'] != null))) {
+        if ($formatted_data && ((isset($formatted_data['essentials_department_id']) && $formatted_data['essentials_department_id'] != null) || (isset($formatted_data['profession_id']) && $formatted_data['profession_id'] != null))) {
 
             $contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
-            $start_from = $formated_data['appointment_start_from'] ?? null;
+            $start_from = $formatted_data['appointment_start_from'] ?? null;
 
-            if ($contract && $start_from === null) {
-                $start_from = $contract->contract_start_date;
-            }
-            $previous_appointment = EssentialsEmployeeAppointmet::where('employee_id',  $existingEmployee->id)->where('is_active', 1)->first();
+            // if ($contract && $start_from === null) {
+            //     $start_from = $contract->contract_start_date;
+            // }
+
+            $previous_appointment = EssentialsEmployeeAppointmet::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
+
             if ($previous_appointment) {
-                $previous_appointment->update(['is_active' => 0, 'end_at' => Carbon::today()]);
-            }
-
-
-            if (isset($formated_data['essentials_department_id']) && $formated_data['essentials_department_id'] != null) {
-
-
-                $appointmentData = [];
-                if ($existingEmployee->user_type == 'worker') {
-
-                    $appointmentData =
-                        [
-                            'employee_id' => $existingEmployee->id,
-                            'start_from' =>   $start_from,
-                            'department_id' => null,
-                            'profession_id' => $formated_data['profession_id'],
-                            'is_active' => 1,
-
-                        ];
+                if (
+                    $previous_appointment->essentials_department_id == $formatted_data['essentials_department_id'] &&
+                    $previous_appointment->profession_id == $formatted_data['profession_id'] &&
+                    $previous_appointment->start_from == $start_from
+                ) {
+                    return;
                 } else {
 
-                    $appointmentData =
-                        [
-                            'employee_id' => $existingEmployee->id,
-                            'start_from' =>   $start_from,
-                            'department_id' => $formated_data['essentials_department_id'],
-                            'profession_id' => $formated_data['profession_id'],
-                            'is_active' => 1,
-
-                        ];
+                    $previous_appointment->update(['is_active' => 0, 'end_at' => Carbon::today()]);
                 }
+            }
 
+            $appointmentData = [
+                'employee_id' => $existingEmployee->id,
+                'start_from' => $start_from,
+                'profession_id' => $formatted_data['profession_id'],
+                'is_active' => 1
+            ];
 
-                $filteredAppointmentData = array_filter($appointmentData, function ($value) {
-                    return $value !== null;
-                });
+            if ($existingEmployee->user_type == 'worker') {
+                $appointmentData['department_id'] = null;
+            } else {
+                $appointmentData['department_id'] = $formatted_data['essentials_department_id'];
+            }
 
-                if (!empty($filteredAppointmentData)) {
+            $filteredAppointmentData = array_filter($appointmentData, function ($value) {
+                return $value !== null;
+            });
 
-
-                    $new_appointement = EssentialsEmployeeAppointmet::Create($filteredAppointmentData);
-                    $existingEmployee->essentials_department_id = $filteredAppointmentData['department_id'];
-                    $existingEmployee->save();
-                }
-            } elseif ((isset($formated_data['profession_id']) && $formated_data['profession_id'] != null) && (!isset($formated_data['essentials_department_id']) || $formated_data['essentials_department_id'] == null)) {
-
-
-                if ($previous_appointment) {
-                    $appointmentData = [
-                        'employee_id' => $existingEmployee->id,
-                        'start_from' =>   $start_from,
-                        'department_id' => $previous_appointment->department_id,
-                        'profession_id' => $formated_data['profession_id'],
-                        'is_active' => 1,
-                    ];
-
-                    $filteredAppointmentData = array_filter($appointmentData, function ($value) {
-                        return $value !== null;
-                    });
-
-
-                    $new_appointement = EssentialsEmployeeAppointmet::Create($filteredAppointmentData);
-                }
+            if (!empty($filteredAppointmentData)) {
+                EssentialsEmployeeAppointmet::create($filteredAppointmentData);
+                $existingEmployee->essentials_department_id = $filteredAppointmentData['department_id'];
+                $existingEmployee->save();
             }
         }
     }
@@ -1015,64 +976,49 @@ class EssentialsEmployeeUpdateImportController extends Controller
         error_log('here_contract');
         if (!empty($formated_data) && (isset($formated_data['contract_start_date']) || isset($formated_data['contract_end_date']) || isset($formated_data['contract_type_id']))) {
             error_log('here_contract_update');
+
+            $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
+
+            if ($previous_contract && $this->isSameContract($previous_contract, $formated_data)) {
+                error_log('No changes detected in contract data');
+                return;
+            }
+
             if ((isset($formated_data['contract_start_date']) && $formated_data['contract_start_date'] != null) || (isset($formated_data['contract_end_date']) && $formated_data['contract_end_date'] != null)) {
 
-                $previous_contract = EssentialsEmployeesContract::where('employee_id', $existingEmployee->id)->where('is_active', 1)->first();
-
+                $file = $previous_contract->file_path ?? null;
                 if ($previous_contract) {
-                    $file = $previous_contract->file_path ?? null;
                     $previous_contract->update(['is_active' => 0]);
                 }
 
                 $contract = new EssentialsEmployeesContract();
 
-                if ((isset($formated_data['contract_start_date']) && $formated_data['contract_start_date'] != null) && (!isset($formated_data['contract_end_date']) || $formated_data['contract_end_date'] == null)) {
-
+                if (isset($formated_data['contract_start_date']) && !isset($formated_data['contract_end_date'])) {
                     $contract_start_date = $formated_data['contract_start_date'];
-
-                    $date = Carbon::parse($contract_start_date);
-                    $date->addYear();
+                    $date = Carbon::parse($contract_start_date)->addYear();
+                    $contract->contract_start_date = $contract_start_date;
                     $contract->contract_end_date = $date;
-                    $contract->contract_start_date = $formated_data['contract_start_date'];
                     $contract->contract_duration = 1;
-                } else if ((!isset($formated_data['contract_start_date']) || $formated_data['contract_start_date'] == null) && (isset($formated_data['contract_end_date']) && $formated_data['contract_end_date'] != null)) {
+                } elseif (!isset($formated_data['contract_start_date']) && isset($formated_data['contract_end_date'])) {
                     $contract_end_date = $formated_data['contract_end_date'];
-                    $date = Carbon::parse($contract_end_date);
-                    $date->subYear();
+                    $date = Carbon::parse($contract_end_date)->subYear();
                     $contract->contract_start_date = $date;
-
-                    $contract->contract_end_date = $formated_data['contract_end_date'];
+                    $contract->contract_end_date = $contract_end_date;
                     $contract->contract_duration = 1;
                 } else {
-                    $contract_end_date = $formated_data['contract_end_date'];
                     $contract_start_date = $formated_data['contract_start_date'];
-
-
+                    $contract_end_date = $formated_data['contract_end_date'];
                     $start = Carbon::parse($contract_start_date);
                     $end = Carbon::parse($contract_end_date);
-
                     $contract_duration = $start->diffInYears($end);
-                    $contract->contract_start_date = $formated_data['contract_start_date'];
-                    $contract->contract_end_date = $formated_data['contract_end_date'];
+                    $contract->contract_start_date = $contract_start_date;
+                    $contract->contract_end_date = $contract_end_date;
                     $contract->contract_duration = $contract_duration;
                 }
 
                 $contract->file_path = $file;
                 $contract->employee_id  = $existingEmployee->id;
-                if ((!isset($formated_data['contract_number']) || $formated_data['contract_number'] == null)) {
-                    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
-                    if ($latestRecord) {
-                        $latestRefNo = $latestRecord->contract_number;
-                        $numericPart = (int)substr($latestRefNo, 3);
-                        $numericPart++;
-                        $formated_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-                    } else {
-                        $formated_data['contract_number'] = 'EC0001';
-                    }
-                    $contract->contract_number = $formated_data['contract_number'];
-                } else {
-                    $contract->contract_number = $formated_data['contract_number'];
-                }
+                $contract->contract_number = $this->generateContractNumber($formated_data);
                 $contract->probation_period = $formated_data["probation_period"] ?? 1;
                 $contract->is_renewable = $formated_data['is_renewable'] ?? 1;
                 $contract->contract_type_id  = $formated_data["contract_type_id"] ?? null;
@@ -1082,6 +1028,30 @@ class EssentialsEmployeeUpdateImportController extends Controller
             }
         }
     }
+
+    private function isSameContract($previous_contract, $formated_data)
+    {
+        return $previous_contract->contract_start_date == ($formated_data['contract_start_date'] ?? $previous_contract->contract_start_date)
+            && $previous_contract->contract_end_date == ($formated_data['contract_end_date'] ?? $previous_contract->contract_end_date)
+            && $previous_contract->contract_type_id == ($formated_data['contract_type_id'] ?? $previous_contract->contract_type_id);
+    }
+
+    private function generateContractNumber(&$formated_data)
+    {
+        if (!isset($formated_data['contract_number']) || $formated_data['contract_number'] == null) {
+            $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->contract_number;
+                $numericPart = (int)substr($latestRefNo, 2);
+                $numericPart++;
+                $formated_data['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+            } else {
+                $formated_data['contract_number'] = 'EC0001';
+            }
+        }
+        return $formated_data['contract_number'];
+    }
+
     private function updateUser($formated_data, $existingEmployee)
     {
 
