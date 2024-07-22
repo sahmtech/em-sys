@@ -202,16 +202,25 @@ class WkProcedureController extends Controller
 
                             while (!$end) {
                                 $departmentName = $loopStep->department->name;
-                                $sequence[] = $departmentName;
 
-                                // Check if this step has already been visited
+                                // Check if this department has been visited before
                                 if (isset($visitedDepartments[$loopStep->department_id])) {
-                                    // If already visited, break the loop to avoid infinite loop
-                                    break;
-                                } else {
-                                    // Mark the department as visited
-                                    $visitedDepartments[$loopStep->department_id] = true;
+                                    // Skip to the next occurrence of this department
+                                    $loopStep = WkProcedure::where('department_id', $loopStep->department_id)
+                                        ->where('business_id', $loopStep->business_id)
+                                        ->where('request_type_id', $loopStep->request_type_id)
+                                        ->where('id', '>', $visitedDepartments[$loopStep->department_id])
+                                        ->with(['department', 'nextDepartment'])
+                                        ->first();
+
+                                    // If no next occurrence found, break the loop
+                                    if (!$loopStep) {
+                                        break;
+                                    }
                                 }
+
+                                $sequence[] = $departmentName;
+                                $visitedDepartments[$loopStep->department_id] = $loopStep->id; // Update the last occurrence of this department
 
                                 $end = $loopStep->end;
 
@@ -236,7 +245,8 @@ class WkProcedureController extends Controller
                     } catch (\Exception $e) {
                         return '';
                     }
-                })->addColumn('action', function ($row) use ($is_admin, $can_delete_procedures, $can_edit_procedures) {
+                })
+                ->addColumn('action', function ($row) use ($is_admin, $can_delete_procedures, $can_edit_procedures) {
                     $html = '';
                     if ($is_admin || $can_edit_procedures) {
                         $html .= '<a href="#" class="btn btn-xs btn-primary edit-procedure" data-id="' . $row->id . '" data-url="' . route('getProcedure', ['procedure_id' => $row->id]) . '">' . __('messages.edit') . '</a>&nbsp;';
