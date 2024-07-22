@@ -2357,24 +2357,28 @@ class RequestUtil extends Util
         }
 
         $for = $requestType->for;
-        $user_type = $requestType->user_type;
+        $user_type = $requestType->user_type ?? null;
         $query = User::query();
 
-        $nationality = EssentialsCountry::where('nationality', 'LIKE', '%سعودي%')->pluck('id')->toArray();
+        $nationalityIds = EssentialsCountry::where('nationality', 'LIKE', '%سعودي%')->pluck('id');
+        if ($user_type) {
+            $isCitizen = $user_type === 'citizen';
+            $isResident = $user_type === 'resident';
 
-        if ($user_type == 'resident') {
-            $query->whereNotIn('nationality_id', $nationality);
-        } elseif ($user_type == 'citizen') {
-            $query->whereIn('nationality_id', $nationality);
+            if ($isCitizen) {
+                $query->whereIn('nationality_id', $nationalityIds);
+            } elseif ($isResident) {
+                $query->whereNotIn('nationality_id', $nationalityIds);
+            }
         }
 
-        if ($for == 'worker') {
-            $userTypes = ['worker'];
-        } elseif ($for == 'employee') {
-            $userTypes = ['employee', 'manager', 'department_head'];
-        } else {
-            $userTypes = [];
-        }
+        $userTypes = match ($for) {
+            'worker' => ['worker'],
+            'employee' => ['employee', 'manager', 'department_head'],
+            default => [],
+        };
+
+
 
         $users = $query->whereIn('user_type', $userTypes)
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, ''), ' - ', COALESCE(id_proof_number, '')) as full_name"))
