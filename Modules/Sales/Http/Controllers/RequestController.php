@@ -33,8 +33,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('sales.show_sale_request');
 
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%مبيعات%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%مبيعات%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
@@ -60,8 +59,7 @@ class RequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%مبيعات%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%مبيعات%')
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }

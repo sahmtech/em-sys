@@ -104,10 +104,9 @@ class RequestController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->Where('name', 'like', '%مكتب%');
-            })
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->Where('name', 'like', '%مكتب%');
+        })
             ->pluck('id')->toArray();
 
 

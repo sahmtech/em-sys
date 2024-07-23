@@ -472,11 +472,13 @@ class EssentialsCardsController extends Controller
             ->user()
             ->can('essentials.show_workcards_request');
 
-        $departmentIds = EssentialsDepartment::where(
-            'business_id',
-            $business_id
-        )
-            ->where('name', 'LIKE', '%حكومية%')
+        $departmentIds = EssentialsDepartment::
+            // where(
+            //     'business_id',
+            //     $business_id
+            // )
+            //     ->
+            where('name', 'LIKE', '%حكومية%')
             ->pluck('id')
             ->toArray();
 
@@ -515,11 +517,7 @@ class EssentialsCardsController extends Controller
             ->session()
             ->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where(
-            'business_id',
-            $business_id
-        )
-            ->where('name', 'LIKE', '%حكومية%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%حكومية%')
             ->pluck('id')
             ->toArray();
 
@@ -1611,11 +1609,7 @@ class EssentialsCardsController extends Controller
         $can_show_request = auth()
             ->user()
             ->can('essentials.show_workcards_request');
-        $departmentIds = EssentialsDepartment::where(
-            'business_id',
-            $business_id
-        )
-            ->where('name', 'LIKE', '%دولي%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%دولي%')
             ->pluck('id')
             ->toArray();
 

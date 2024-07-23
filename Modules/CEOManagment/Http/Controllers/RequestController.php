@@ -41,7 +41,7 @@ class RequestController extends Controller
         $can_return_request = auth()->user()->can('ceomanagment.return_request');
         $can_show_request = auth()->user()->can('ceomanagment.view_request');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
+        $departmentIds = EssentialsDepartment::pluck('id')->toArray();
 
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
 
