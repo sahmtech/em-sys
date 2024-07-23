@@ -19,13 +19,13 @@ class InteractiveServicesController extends Controller
      *ER visa has two types, single entry or multiple entries, also, the ER visa can be of a specific
      *duration in days, or a specific date the resident must return to the kingdom before it.
      */
-    public function issueExitReEntryVisa()
+    public function issueExitReEntryVisa($iqamaNumber, $visaDuration)
     {
         try {
             $body_data = [
-                "iqamaNumber" => "2000000000",
+                "iqamaNumber" => $iqamaNumber,
                 "visaType" => 1,
-                "visaDuration" => 50,
+                "visaDuration" =>  $visaDuration,
             ];
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/exit-reentry/issue', 'POST', $body_data);
 
@@ -35,16 +35,23 @@ class InteractiveServicesController extends Controller
             // Decode the base-64 string
             $pdfContent = base64_decode($base64Pdf);
 
+            $filePath = storage_path('app/public/muqeem/exit-reentry/' . $iqamaNumber . '.pdf');
+
+            // Save the PDF content to the defined file path
+            file_put_contents($filePath, $pdfContent);
+
             // Display the PDF content as a response to display in the browser
-            return response($pdfContent, 200)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="document.pdf"');
+            // return response($pdfContent, 200)
+            //     ->header('Content-Type', 'application/pdf')
+            //     ->header('Content-Disposition', 'inline; filename="document.pdf"');
             return response()->json([
+                'success' => 1,
                 'message' => 'Request Issue Exit Re-Entry Visa Successful',
+                'file_path' => $filePath,
                 'data' => $report,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['success' => 0, 'error' => $e->getMessage()], 500);
         }
     }
 

@@ -7,6 +7,7 @@ use App\AccessRoleRequest;
 use App\AccessRoleCompany;
 use App\Category;
 use App\Company;
+use App\Http\Controllers\InteractiveServicesController;
 use App\Request as UserRequest;
 use App\Transaction;
 use App\User;
@@ -43,13 +44,20 @@ class EssentialsCardsController extends Controller
     protected $moduleUtil;
 
     protected $requestUtil;
+    protected $interactiveServicesController;
+
+
+
+
 
     public function __construct(
         ModuleUtil $moduleUtil,
-        RequestUtil $requestUtil
+        RequestUtil $requestUtil,
+        InteractiveServicesController $interactiveServicesController
     ) {
         $this->moduleUtil = $moduleUtil;
         $this->requestUtil = $requestUtil;
+        $this->interactiveServicesController = $interactiveServicesController;
     }
 
     public function calculateFees($selectedValue)
@@ -174,8 +182,14 @@ class EssentialsCardsController extends Controller
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $user_ids = $request->user_ids;
-            DB::beginTransaction();
+            $duration = $request->duration ?? 10;
+
+
+
             foreach ($user_ids as $user_id) {
+                $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
+                $res = $this->interactiveServicesController($id_proof_number, $duration);
+                return $res;
                 EssentailsEmployeeOperation::create([
                     'operation_type' => 'return_visa',
                     'start_date' => $start_date,
@@ -184,7 +198,7 @@ class EssentialsCardsController extends Controller
                     'created_by' => auth()->user()->id,
                 ]);
             }
-            DB::commit();
+
             $output = [
                 'success' => 1,
                 'msg' => __('lang_v1.added_success'),
