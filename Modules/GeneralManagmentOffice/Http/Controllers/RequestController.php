@@ -65,7 +65,7 @@ class RequestController extends Controller
         $can_change_status = auth()->user()->can('generalmanagmentoffice.change_request_status');
         $can_return_request = auth()->user()->can('generalmanagmentoffice.return_request');
         $can_show_request = auth()->user()->can('generalmanagmentoffice.view_request');
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
+        $departmentIds = EssentialsDepartment::pluck('id')->toArray();
 
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {

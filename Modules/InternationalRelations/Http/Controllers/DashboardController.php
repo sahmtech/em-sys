@@ -32,8 +32,7 @@ class DashboardController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $business_id = request()->session()->get('user.business_id');
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%دولي%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%دولي%')
             ->pluck('id')->toArray();
         $requestsProcess_count = UserRequest::where('request_processes.status', 'pending')->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
             ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')

@@ -117,8 +117,7 @@ class ContractsController extends Controller
                 ->make(true);
         }
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
+        $departmentIds = EssentialsDepartment:where(function ($query) {
                 $query->where('name', 'LIKE', '%مبيعات%');
             })->pluck('id')->toArray();
 

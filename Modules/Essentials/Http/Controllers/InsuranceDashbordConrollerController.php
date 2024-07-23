@@ -12,6 +12,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use App\Request as UserRequest;
+
 class InsuranceDashbordConrollerController extends Controller
 {
     protected $moduleUtil;
@@ -35,12 +36,11 @@ class InsuranceDashbordConrollerController extends Controller
         }
 
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%تأمين%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%تأمين%')
             ->pluck('id')->toArray();
 
 
-     
+
         $requestsProcess_count = UserRequest::where('request_processes.status', 'pending')->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
             ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'requests.related_to')->whereIn('department_id', $departmentIds)
@@ -50,10 +50,10 @@ class InsuranceDashbordConrollerController extends Controller
         $insuranceCompanies_count = Contact::where('contacts.type', 'insurance')->count();
 
         $insuranceContracts_count = DB::table('essentials_insurance_contracts')->count();
-        $insuranceCompaniesContracts_count=Company::where('business_id',$business_id)
-        ->with(['essentialsCompaniesInsurancesContract'])
-        ->count();
-        return view('essentials::insurance.dashboard.insurance_dashboard', compact('requestsProcess_count','insuranceCompaniesContracts_count','insuranceContracts_count', 'insuranceCompanies_count'));
+        $insuranceCompaniesContracts_count = Company::where('business_id', $business_id)
+            ->with(['essentialsCompaniesInsurancesContract'])
+            ->count();
+        return view('essentials::insurance.dashboard.insurance_dashboard', compact('requestsProcess_count', 'insuranceCompaniesContracts_count', 'insuranceContracts_count', 'insuranceCompanies_count'));
     }
 
     /**

@@ -48,17 +48,16 @@ class FollowupUserAccessProjectController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->where('name', 'LIKE', '%متابعة%')
-                    ->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%أعمال%');
-                    })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
-            })
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->where('name', 'LIKE', '%متابعة%')
+                ->orWhere(function ($query) {
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%أعمال%');
+                })->orWhere(function ($query) {
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%شركات%');
+                });
+        })
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
