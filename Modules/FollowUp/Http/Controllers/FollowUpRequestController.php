@@ -83,7 +83,7 @@ class FollowUpRequestController extends Controller
             return redirect()->back()->with('status', $output);
         }
         $ownerTypes = ['worker'];
-        $roles = DB::table('roles')->where('business_id', $business_id)
+        $roles = DB::table('roles')
             ->where(function ($query) {
                 $query->where('name', 'LIKE', '%متابعة%')
                     ->orWhere(function ($query) {

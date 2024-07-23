@@ -84,7 +84,7 @@ class RequestController extends Controller
             ->pluck('id')->toArray();
 
         $ownerTypes = ['employee', 'manager', 'worker'];
-        $roles = DB::table('roles')->where('business_id', $business_id)
+        $roles = DB::table('roles')
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')

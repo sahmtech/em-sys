@@ -33,9 +33,9 @@ class RequestController extends Controller
 
         $company_id = Session::get('selectedCompanyId');
         $departmentIds = EssentialsDepartment::where(function ($query) {
-                $query->where('name', 'like', '%حاسب%')
-                    ->orWhere('name', 'like', '%مالي%');
-            })
+            $query->where('name', 'like', '%حاسب%')
+                ->orWhere('name', 'like', '%مالي%');
+        })
             ->pluck('id')->toArray();
 
         if (empty($departmentIds)) {
@@ -45,7 +45,7 @@ class RequestController extends Controller
             ];
             return redirect()->back()->with('status', $output);
         }
-        $roles = DB::table('roles')->where('business_id', $business_id)
+        $roles = DB::table('roles')
             ->where(function ($query) {
                 $query->where('name', 'like', '%حاسب%')
                     ->orWhere('name', 'like', '%مالي%');

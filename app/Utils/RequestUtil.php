@@ -1856,8 +1856,7 @@ class RequestUtil extends Util
             ->can('essentials.show_workcards_request');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%حكومية%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%حكومية%')
             ->pluck('id')
             ->toArray();
 
