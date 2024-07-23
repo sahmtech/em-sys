@@ -487,8 +487,7 @@ class PayrollController extends Controller
         $can_return_request = auth()->user()->can('essentials.return_payroll_request');
         $can_show_request = auth()->user()->can('essentials.show_payroll_request');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%رواتب%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%رواتب%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
@@ -514,8 +513,7 @@ class PayrollController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%رواتب%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%رواتب%')
             ->pluck('id')->toArray();
 
         return $this->requestUtil->storeRequest($request, $departmentIds);

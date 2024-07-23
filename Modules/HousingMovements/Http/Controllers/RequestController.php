@@ -32,8 +32,7 @@ class RequestController extends Controller
         $can_return_request = auth()->user()->can('housingmovements.return_the_request');
         $can_show_request = auth()->user()->can('housingmovements.view_request');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%سكن%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
@@ -55,8 +54,7 @@ class RequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%سكن%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
@@ -70,8 +68,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('housingmovements.view_request');
 
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%سكن%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [

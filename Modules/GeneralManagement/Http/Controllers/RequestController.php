@@ -73,7 +73,7 @@ class RequestController extends Controller
         $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
         $can_return_request = auth()->user()->can('generalmanagement.return_request');
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
+        $departmentIds = EssentialsDepartment::pluck('id')->toArray();
 
         $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
             ->where(function ($query) {
@@ -106,11 +106,10 @@ class RequestController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->Where('name', 'like', '%مجلس%')
-                    ->orWhere('name', 'like', '%عليا%')->orWhere('name', 'like', '%عام%');
-            })
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->Where('name', 'like', '%مجلس%')
+                ->orWhere('name', 'like', '%عليا%')->orWhere('name', 'like', '%عام%');
+        })
             ->pluck('id')->toArray();
 
 

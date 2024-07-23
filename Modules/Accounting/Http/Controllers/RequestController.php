@@ -32,8 +32,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('accounting.show_request');
 
         $company_id = Session::get('selectedCompanyId');
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
+        $departmentIds = EssentialsDepartment::where(function ($query) {
                 $query->where('name', 'like', '%حاسب%')
                     ->orWhere('name', 'like', '%مالي%');
             })
@@ -66,11 +65,10 @@ class RequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->where('name', 'like', '%حاسب%')
-                    ->orWhere('name', 'like', '%مالي%');
-            })
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->where('name', 'like', '%حاسب%')
+                ->orWhere('name', 'like', '%مالي%');
+        })
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }

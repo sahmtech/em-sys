@@ -34,8 +34,7 @@ class RequestController extends Controller
         $can_return_request = auth()->user()->can('legalaffairs.return_request');
         $can_show_request = auth()->user()->can('legalaffairs.show_request');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%قانوني%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%قانوني%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
@@ -73,8 +72,7 @@ class RequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%قانوني%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%قانوني%')
             ->pluck('id')->toArray();
 
         return $this->requestUtil->storeRequest($request, $departmentIds);

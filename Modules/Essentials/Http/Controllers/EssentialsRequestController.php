@@ -52,8 +52,7 @@ class EssentialsRequestController extends Controller
         $can_return_request = auth()->user()->can('essentials.return_essentials_request');
         $can_show_request = auth()->user()->can('essentials.show_essentials_request');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')
             ->pluck('id')->toArray();
 
         if (empty($departmentIds)) {
@@ -77,8 +76,7 @@ class EssentialsRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')
             ->pluck('id')->toArray();
 
         return $this->requestUtil->storeRequest($request, $departmentIds);
@@ -95,8 +93,7 @@ class EssentialsRequestController extends Controller
         $can_return_request = auth()->user()->can('essentials.return_employees_request');
         $can_show_request = auth()->user()->can('essentials.show_employees_request');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%موظف%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
@@ -122,8 +119,7 @@ class EssentialsRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%موظف%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
 
         return $this->requestUtil->storeRequest($request, $departmentIds);
