@@ -251,8 +251,7 @@ class FollowUpWorkerController extends Controller
         }
         $allRequestTypes = RequestsType::pluck('type', 'id');
         $business_id = request()->session()->get('user.business_id');
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
+        $departmentIds = EssentialsDepartment:where(function ($query) {
                 $query->where('name', 'LIKE', '%متابعة%')
                     ->orWhere(function ($query) {
                         $query->where('name', 'LIKE', '%تشغيل%')

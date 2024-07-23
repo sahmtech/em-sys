@@ -94,7 +94,7 @@ class SalesController extends Controller
         $workers = User::where('user_type', 'worker');
         $workers_count = $workers->count();
         $active_workers_count = $workers->where('status', 'active')
-        ->count();
+            ->count();
         $inactive_workers_count = $workers->whereNot('status', 'active')->count();
         $under_study_price_offers = Transaction::where([['business_id', $user->business_id], ['type', 'sell'], ['sub_type', 'service'], ['status', 'under_study']])->count();
 
@@ -779,8 +779,7 @@ class SalesController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%مبيعات%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%مبيعات%')
             ->pluck('id')->toArray();
 
         $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {

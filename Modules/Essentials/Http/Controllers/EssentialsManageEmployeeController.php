@@ -564,8 +564,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $allRequestTypes = RequestsType::pluck('type', 'id');
 
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%موظف%')
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
 
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')

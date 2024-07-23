@@ -48,11 +48,10 @@ class AccountingUserAccessCompaniesController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->where('name', 'like', '%حاسب%')
-                    ->orWhere('name', 'like', '%مالي%');
-            })
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->where('name', 'like', '%حاسب%')
+                ->orWhere('name', 'like', '%مالي%');
+        })
 
             ->pluck('id')->toArray();
 

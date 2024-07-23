@@ -55,14 +55,13 @@ class HousingMovementsController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->where('name', 'LIKE', '%سكن%')
-                    ->where('name', 'LIKE', '%حرك%');
-            })
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->where('name', 'LIKE', '%سكن%')
+                ->where('name', 'LIKE', '%حرك%');
+        })
             ->pluck('id')->toArray();
 
-        $users = User::whereIn('id', $userIds)->whereIn('user_type',['employee','manager'])->whereHas('appointment', function ($query) use ($departmentIds) {
+        $users = User::whereIn('id', $userIds)->whereIn('user_type', ['employee', 'manager'])->whereHas('appointment', function ($query) use ($departmentIds) {
             $query->whereIn('department_id', $departmentIds)->where('is_active', 1);
         })->select([
             'users.*',

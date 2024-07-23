@@ -36,7 +36,7 @@ class DashboardController extends Controller
     protected $requestUtil;
 
 
-    public function __construct(ModuleUtil $moduleUtil,RequestUtil $requestUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
         $this->moduleUtil = $moduleUtil;
         $this->requestUtil = $requestUtil;
@@ -71,7 +71,7 @@ class DashboardController extends Controller
         $empty_rooms_count = HtrRoom::whereNotIn('id', $HtrRoomsWorkersHistory_roomIds)->count();
 
         $available_shopping_count = User::whereIn('id', $userIds)->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids)->count();
-     
+
 
         $business_id = request()->session()->get('user.business_id');
 
@@ -80,21 +80,20 @@ class DashboardController extends Controller
         // $can_return_request = auth()->user()->can('housingmovements.return_the_request');
         // $can_show_request = auth()->user()->can('housingmovements.view_request');
         $allRequestTypes = RequestsType::pluck('type', 'id');
-       
-        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%سكن%')
-        ->pluck('id')->toArray();
+
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
+            ->pluck('id')->toArray();
 
 
         $requestsProcess = null;
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
-        $leavesTypes= RequestsType::where('type','leavesAndDepartures')->pluck('id')->toArray();
+        $leavesTypes = RequestsType::where('type', 'leavesAndDepartures')->pluck('id')->toArray();
         $leaves_count = UserRequest::leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
-        ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->whereIn('requests.request_type_id',$leavesTypes)  ->where(function ($query) use ($departmentIds) {
-            $query->whereIn('wk_procedures.department_id', $departmentIds)
-                ->orWhereIn('request_processes.superior_department_id', $departmentIds);
-        })->count();
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')->whereIn('requests.related_to', $userIds)->whereIn('requests.request_type_id', $leavesTypes)->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('request_processes.superior_department_id', $departmentIds);
+            })->count();
         $requestsProcess = UserRequest::select([
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
@@ -131,14 +130,14 @@ class DashboardController extends Controller
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
                 })
-                ->editColumn('status', function ($row)  {
+                ->editColumn('status', function ($row) {
                     $status = trans('request.' . $row->status);
-                  
+
                     return $status;
                 })
                 // ->editColumn('can_return', function ($row) use ($is_admin, $can_show_request) {
                 //     $buttonsHtml = '';
-                   
+
                 //     if ($is_admin || $can_show_request) {
                 //         $buttonsHtml .= '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' . $row->id . '">' . trans('essentials::lang.view_request') . '</button>';
                 //     }
