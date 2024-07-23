@@ -31,4 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+
+    'muqeem' => [
+        'base_url' => env('MUQEEM_BASE_URL'),
+        'api_id' => env('MUQEEM_API_ID'),
+        'app_key' => env('MUQEEM_APP_KEY'),
+        'username' => env('MUQEEM_USER_NAME'),
+        'password' => env('MUQEEM_PASSWORD'),
+    ],
+
 ];

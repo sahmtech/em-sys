@@ -3,7 +3,7 @@
 
 @section('content')
 
-    @include('essentials::layouts.nav_cards_operations')
+
 
 
     <head>
@@ -280,7 +280,7 @@
         @endif
     @endif
     <section class="content">
-
+        @include('essentials::layouts.nav_cards_operations')
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">

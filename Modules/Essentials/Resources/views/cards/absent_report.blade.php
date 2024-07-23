@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.work_cards_operation'))
+@section('title', __('essentials::lang.absent_report'))
 
 @section('content')
 
@@ -9,121 +9,38 @@
     <!-- Main content -->
     <section class="content">
         @include('essentials::layouts.nav_cards_operations')
-        @component('components.filters', ['title' => __('report.filters')])
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="offer_type_filter">@lang('essentials::lang.proof_numbers'):</label>
-                    {!! Form::select('proof_numbers_select', $proof_numbers->pluck('full_name', 'id'), null, [
-                        'class' => 'form-control select2',
-                        'multiple' => 'multiple',
-                        'style' => 'height:40px',
-                    
-                        'name' => 'proof_numbers_select[]',
-                        'id' => 'proof_numbers_select',
-                    ]) !!}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="business_filter">@lang('essentials::lang.business_single'):</label>
-                    {!! Form::select('select_business_id', $companies, null, [
-                        'class' => 'form-control select2',
-                        'id' => 'select_business_id',
-                        'style' => 'height:40px; width:100%',
-                        'placeholder' => __('lang_v1.all'),
-                        'required',
-                        'autofocus',
-                    ]) !!}
-                </div>
-            </div>
-            {{-- <div class="col-md-3">
-                <div class="form-group">
-                    <label for="specializations_filter">@lang('essentials::lang.major'):</label>
-                    {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
-                        'class' => 'form-control select2',
-                        'style' => 'height:40px; width:100%',
-                        'placeholder' => __('lang_v1.all'),
-                        'id' => 'specializations-select',
-                    ]) !!}
-                </div>
-            </div> --}}
 
-
-
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="nationalities_filter">@lang('essentials::lang.nationality'):</label>
-                    {!! Form::select('nationalities_select', $nationalities, request('nationalities_select'), [
-                        'class' => 'form-control select2',
-                        'placeholder' => __('lang_v1.all'),
-                        'style' => 'height:40px; width:100%',
-                        'id' => 'nationalities_select',
-                    ]) !!}
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="status_filter">@lang('essentials::lang.status'):</label>
-                    <select class="form-control select2" name="status_filter" required id="status_filter"
-                        style="height:40px; width:100%;">
-                        <option value="all">@lang('lang_v1.all')</option>
-                        <option value="active">@lang('sales::lang.active')</option>
-                        <option value="inactive">@lang('sales::lang.inactive')</option>
-                        <option value="terminated">@lang('sales::lang.terminated')</option>
-                        <option value="vecation">@lang('sales::lang.vecation')</option>
-
-
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="offer_type_filter">@lang('essentials::lang.project'):</label>
-                    {!! Form::select('contact-select', $sales_projects, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'height:40px',
-                        'placeholder' => __('lang_v1.all'),
-                    
-                        'id' => 'contact-select',
-                    ]) !!}
-                </div>
-            </div>
-        @endcomponent
         @component('components.widget', ['class' => 'box-primary'])
+            @slot('tool')
+                <div class="box-tools">
+
+                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                        data-target="#absentreportModal">
+                        <i class="fa fa-plus"></i> @lang('messages.add')
+                    </button>
+                </div>
+            @endslot
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="operation_table">
                     <thead>
                         <tr>
-                            <th>
-                                <input type="checkbox" class="largerCheckbox" id="chkAll" />
-                            </th>
-
-
-                            <th>@lang('essentials::lang.profile_image')</th>
-                            <th>@lang('essentials::lang.employee_number')</th>
-
                             <th>@lang('essentials::lang.employee_name')</th>
-                            <th>@lang('essentials::lang.project')</th>
                             <th>@lang('essentials::lang.Identity_proof_id')</th>
+                            <th>@lang('essentials::lang.employee_number')</th>
                             <th>@lang('essentials::lang.contry_nationality')</th>
-                            <th>@lang('essentials::lang.total_salary')</th>
-                            <th>@lang('essentials::lang.admissions_date')</th>
-                            <th>@lang('essentials::lang.contract_end_date')</th>
-
                             <th>@lang('essentials::lang.department')</th>
                             <th>@lang('essentials::lang.profession')</th>
                             <th>@lang('essentials::lang.mobile_number')</th>
-                            <th>@lang('business.email')</th>
                             <th>@lang('essentials::lang.status')</th>
+                            <th>@lang('essentials::lang.start_date')</th>
+                            <th>@lang('essentials::lang.end_date')</th>
                             <th>@lang('messages.view')</th>
-
                         </tr>
                     </thead>
 
 
-                    <tfoot>
+                    {{-- <tfoot>
                         <tr>
                             <td colspan="16">
                                 <div style="display: flex; width: 100%;">
@@ -162,7 +79,7 @@
                                 </div>
                             </td>
                         </tr>
-                    </tfoot>
+                    </tfoot> --}}
 
 
 
@@ -171,13 +88,68 @@
         @endcomponent
         <div class="col-md-8 selectedDiv" style="display:none;">
         </div>
-        @include('essentials::cards.partials.return_visa_modal')
 
+
+
+
+
+
+        <!-- Modal for Return Visa -->
+        <div class="modal fade" id="absentreportModal" tabindex="-1" role="dialog" aria-labelledby="returnVisaModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="returnVisaModalLabel">{{ __('essentials::lang.absent_report') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {!! Form::open([
+                        'url' => action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report']),
+                        'method' => 'post',
+                        'id' => 'bulk_absent_edit_form',
+                    ]) !!}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            {!! Form::label('user_ids', __('essentials::lang.employee') . ':*') !!}
+                            {!! Form::select('user_ids[]', $users, null, [
+                                'class' => 'form-control select2',
+                                'required',
+                                'style' => 'width: 100%;',
+                                'multiple',
+                                'id' => 'user_ids',
+                            ]) !!}
+                        </div>
+
+                        <!-- Add end date input -->
+                        <div class="form-group">
+                            {!! Form::label('end_date', __('essentials::lang.end_date')) !!}
+                            {!! Form::date('end_date', null, ['class' => 'form-control datepicker', 'autocomplete' => 'off', 'required']) !!}
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="clearfix"></div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+
+
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+        {{-- 
         @include('essentials::cards.partials.final_visa_modal')
 
         @include('essentials::cards.partials.absent_report_modal')
 
-        @include('essentials::cards.partials.renew_operation_modal')
+        @include('essentials::cards.partials.renew_operation_modal') --}}
     </section>
 
 @stop
@@ -216,90 +188,42 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('work_cards_operation') }}",
+                    url: "{{ route('getEssentailsEmployeeOperation') }}",
                     data: function(d) {
-
-                        d.nationality = $('#nationalities_select').val();
-                        d.status = $('#status_filter').val();
-                        d.business = $('#select_business_id').val();
-                        d.proof_numbers = $('#proof_numbers_select').val();
-                        d.project = $('#contact-select').val();
-
-                        console.log(d);
+                        d.type = 'absent_report'
                     },
                 },
-
-
                 "columns": [{
-                        data: 'checkbox',
-                        name: 'checkbox',
-                        orderable: false,
-                        searchable: false
-                    },
-
-                    {
-                        "data": "profile_image",
-                        "render": function(data, type, row) {
-                            if (data) {
-
-                                var imageUrl = '/uploads/' + data;
-                                return '<img src="' + imageUrl +
-                                    '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
-                            } else {
-                                return '@lang('essentials::lang.no_image')';
-                            }
-                        }
+                        data: "employee_name",
+                        namne: "employee_name",
                     },
                     {
-                        "data": "emp_number"
-                    },
-
-                    {
-                        "data": "full_name",
-                        "render": function(data, type, row) {
-                            if (data) {
-                                data = '<a href="/work_cards/operations_show_employee/' + row.id +
-                                    '">' + data + '</a>';
-                            }
-                            return data;
-                        }
+                        data: "id_proof_number",
+                        namne: "id_proof_number",
                     },
                     {
-                        data: "project"
-                    },
-
-                    {
-                        "data": "id_proof_number"
+                        data: "employee_number",
+                        namne: "employee_number",
                     },
                     {
-                        "data": "nationality"
+                        data: "nationality",
+                        namne: "nationality",
                     },
                     {
-                        "data": "total_salary"
+                        data: "department",
+                        namne: "department",
                     },
                     {
-                        "data": "admissions_date"
+                        data: "profession",
+                        namne: "profession",
                     },
                     {
-                        "data": "contract_end_date"
-                    },
-
-                    {
-                        "data": "essentials_department_id"
+                        data: "mobile_number",
+                        namne: "mobile_number",
                     },
                     {
-                        "data": "profession",
-                        name: 'profession'
-                    },
-
-                    {
-                        "data": "contact_number"
-                    },
-                    {
-                        "data": "email"
-                    },
-                    {
-                        data: 'status',
+                        data: "status",
+                        namne: "status",
                         render: function(data, type, row) {
                             if (data === 'active') {
                                 return '@lang('essentials::lang.active')';
@@ -315,27 +239,18 @@
                         }
                     },
                     {
-                        "data": "view"
+                        data: "start_date",
+                        namne: "start_date",
                     },
-
+                    {
+                        data: "end_date",
+                        namne: "end_date",
+                    },
+                    {
+                        data: "view",
+                        namne: "view",
+                    },
                 ],
-                "createdRow": function(row, data, dataIndex) {
-                    var contractEndDate = data.contract_end_date;
-                    console.log(contractEndDate);
-                    var currentDate = moment().format("YYYY-MM-DD");
-
-                    if (contractEndDate !== null && contractEndDate !== undefined) {
-                        var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
-
-                        if (daysRemaining <= 0) {
-                            $('td', row).eq(9).addClass('text-danger');
-                        } else if (daysRemaining <= 25) {
-                            $('td', row).eq(9).addClass(
-                                'text-warning');
-                        }
-                    }
-                }
-
             });
 
             $('#proof_numbers_select').on('change', function() {

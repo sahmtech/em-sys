@@ -2,8 +2,7 @@
 
 // use App\Http\Controllers\Modules;
 // use Illuminate\Support\Facades\Route;
-
-
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
@@ -107,7 +106,19 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/post_absent_report_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report_data'])->name('post_absent_report_data');
         Route::post('/Wk_storeRequest', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'storeRequest'])->name('Wk_storeRequest');
 
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        Route::get('/exit_re_entry_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'exit_re_entry_visa'])->name('exit_re_entry_visa');
+        Route::get('/final_exit_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'final_exit_visa'])->name('final_exit_visa');
+        Route::get('/absent_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'absent_report'])->name('absent_report');
+        Route::get('/get_essentails_employee_operation',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'getEssentailsEmployeeOperation'])->name('getEssentailsEmployeeOperation');
+        Route::post('/post_exit_re_entry_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_exit_re_entry_visa'])->name('post_exit_re_entry_visa');
+        Route::post('/post_final_exit_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_final_exit_visa'])->name('post_final_exit_visa');
+        Route::post('/post_absent_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report'])->name('post_absent_report');
 
+        Route::get('/exit-reentry', [\App\Http\Controllers\InteractiveServicesController::class, 'issueExitReEntryVisa'])->name("issueExitReEntryVisa");
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////
         Route::get('/workers', [\Modules\Essentials\Http\Controllers\EssentialsWorkCardsWorkerController::class, 'index'])->name('work_cards-workers');
         Route::get('/workers/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkCardsWorkerController::class, 'show'])->name('work_cards-showWorker');
 

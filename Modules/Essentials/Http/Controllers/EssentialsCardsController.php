@@ -68,6 +68,219 @@ class EssentialsCardsController extends Controller
         }
     }
 
+    public function exit_re_entry_visa()
+    {
+        $users = User::whereIn('user_type', ['worker', 'employee', 'manager'])
+            ->select(
+                'users.id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name")
+            )
+            ->pluck('name', 'id')
+            ->toArray();
+        return view('essentials::cards.exit_re_entry_visa')->with(compact('users'));
+    }
+
+
+    public function final_exit_visa()
+    {
+        $users = User::whereIn('user_type', ['worker', 'employee', 'manager'])
+            ->select(
+                'users.id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name")
+            )
+            ->pluck('name', 'id')
+            ->toArray();
+        return view('essentials::cards.final_exit_visa')->with(compact('users'));
+    }
+
+    public function absent_report()
+    {
+        $users = User::whereIn('user_type', ['worker', 'employee', 'manager'])
+            ->select(
+                'users.id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name")
+            )
+            ->pluck('name', 'id')
+            ->toArray();
+        return view('essentials::cards.absent_report')->with(compact('users'));
+    }
+
+    public function getEssentailsEmployeeOperation()
+    {
+        $type = request()->type;
+        // $type = 'return_visa';
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $essentailsEmployeeOperation =  EssentailsEmployeeOperation::with('user.country', 'user.appointment')
+            ->where('operation_type', $type);
+
+        // $row = $essentailsEmployeeOperation->first();
+        // return  $professions[$row->user->appointment->profession_id];
+        if (request()->ajax()) {
+            return Datatables::of($essentailsEmployeeOperation)
+                ->addColumn('employee_name', function ($row) {
+                    return ($row->user?->first_name ?? '') . ' ' . ($row->user?->mid_name ?? '') . ' ' . ($row->user?->last_name ?? '');
+                })
+                ->addColumn('id_proof_number', function ($row) {
+                    return $row->user?->id_proof_number ?? '';
+                })
+                ->addColumn('employee_number', function ($row) {
+                    return $row->user?->emp_number ?? '';
+                })
+                ->addColumn('nationality', function ($row) {
+                    return $row->user?->country?->nationality ?? '';
+                })
+                ->addColumn('department', function ($row) use ($departments) {
+                    return $departments[$row->user?->essentials_department_id] ?? '';
+                })
+                ->addColumn('profession', function ($row) use ($professions) {
+                    return $professions[$row->user?->appointment?->profession_id] ?? '';
+                })
+                ->addColumn('mobile_number', function ($row) {
+                    return $row->user?->contact_number ?? '';
+                })
+                ->addColumn('status', function ($row) {
+                    return $row->user?->status ?? '';
+                })
+                ->addColumn('view', function ($row) {
+                    return '';
+                })
+                ->addColumn('start_date', function ($row) {
+                    return $row->start_date ?? '';
+                })
+                ->addColumn('end_date', function ($row) {
+                    return $row->end_date ?? '';
+                })
+                ->rawColumns([
+                    'start_date',
+                    'end_date',
+                    'employee_name',
+                    'id_proof_number',
+                    'employee_number',
+                    'nationality',
+                    'department',
+                    'profession',
+                    'mobile_number',
+                    'status',
+                    'view',
+                ])
+                ->make(true);
+        }
+    }
+
+    public function post_exit_re_entry_visa(Request $request)
+    {
+        try {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $user_ids = $request->user_ids;
+            DB::beginTransaction();
+            foreach ($user_ids as $user_id) {
+                EssentailsEmployeeOperation::create([
+                    'operation_type' => 'return_visa',
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'employee_id' => $user_id,
+                    'created_by' => auth()->user()->id,
+                ]);
+            }
+            DB::commit();
+            $output = [
+                'success' => 1,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency(
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
+                    $e->getMessage()
+            );
+
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
+        }
+
+        return response()->json($output);
+    }
+    public function post_final_exit_visa(Request $request)
+    {
+        try {
+            $end_date = $request->end_date;
+            $user_ids = $request->user_ids;
+            DB::beginTransaction();
+            foreach ($user_ids as $user_id) {
+                EssentailsEmployeeOperation::create([
+                    'operation_type' => 'final_visa',
+                    'end_date' => $end_date,
+                    'employee_id' => $user_id,
+                    'created_by' => auth()->user()->id,
+                ]);
+                user::where('id', $user_id)->update([
+                    'status' => 'inactive',
+                    'sub_status' => 'final_visa'
+                ]);
+            }
+            DB::commit();
+            $output = [
+                'success' => 1,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency(
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
+                    $e->getMessage()
+            );
+
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
+        }
+
+        return response()->json($output);
+    }
+    public function post_absent_report(Request $request)
+    {
+        try {
+            $end_date = $request->end_date;
+            $user_ids = $request->user_ids;
+            DB::beginTransaction();
+            foreach ($user_ids as $user_id) {
+                EssentailsEmployeeOperation::create([
+                    'operation_type' => 'absent_report',
+                    'end_date' => $end_date,
+                    'employee_id' => $user_id,
+                    'created_by' => auth()->user()->id,
+                ]);
+                user::where('id', $user_id)->update([
+                    'status' => 'inactive',
+                    'sub_status' => 'absent_report'
+                ]);
+            }
+            DB::commit();
+            $output = [
+                'success' => 1,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency(
+                'File:' .
+                    $e->getFile() .
+                    'Line:' .
+                    $e->getLine() .
+                    'Message:' .
+                    $e->getMessage()
+            );
+
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
+        }
+
+        return response()->json($output);
+    }
+
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
