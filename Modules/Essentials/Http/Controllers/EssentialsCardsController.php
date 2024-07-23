@@ -494,7 +494,7 @@ class EssentialsCardsController extends Controller
         }
 
         $ownerTypes = ['worker'];
-        $roles = DB::table('roles')->where('business_id', $business_id)
+        $roles = DB::table('roles')
             ->where('name', 'LIKE', '%حكومية%')->pluck('id')->toArray();
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
@@ -1623,8 +1623,7 @@ class EssentialsCardsController extends Controller
                 ->back()
                 ->with('status', $output);
         }
-        $roles = DB::table('roles')->where('business_id', $business_id)
-            ->where('name', 'LIKE', '%دولي%')->pluck('id')->toArray();
+        $roles = DB::table('roles')->where('name', 'LIKE', '%دولي%')->pluck('id')->toArray();
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();

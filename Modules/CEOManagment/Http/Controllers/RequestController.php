@@ -51,7 +51,7 @@ class RequestController extends Controller
             ->pluck('id')->toArray();
 
         $ownerTypes = ['employee', 'manager', 'worker'];
-        $roles = DB::table('roles')->where('business_id', $business_id)->where('name', 'LIKE', '%تنفيذ%')->pluck('id')->toArray();
+        $roles = DB::table('roles')->where('name', 'LIKE', '%تنفيذ%')->pluck('id')->toArray();
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();

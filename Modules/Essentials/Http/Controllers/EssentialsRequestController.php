@@ -104,7 +104,7 @@ class EssentialsRequestController extends Controller
         }
 
         $ownerTypes = ['employee', 'manager'];
-        $roles = DB::table('roles')->where('business_id', $business_id)
+        $roles = DB::table('roles')
             ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
@@ -210,7 +210,7 @@ class EssentialsRequestController extends Controller
         $requestsProcess = null;
         $all_status = ['approved', 'pending', 'rejected'];
 
-        if ($user_type == 'admin') {
+        if ($user_type == 'admin' || $user_type == 'department_head' || $user_type == 'manager') {
             $allRequestTypes = RequestsType::where('for', 'employee')->where('selfish_service', 1)->pluck('type', 'id');
         } else {
             $allRequestTypes = RequestsType::where('for', $user_type)->where('selfish_service', 1)->pluck('type', 'id');
@@ -234,9 +234,9 @@ class EssentialsRequestController extends Controller
             ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'requests.related_to')->where('process.sub_status', null);
 
-        $userDepartment = EssentialsDepartment::where('business_id', $business_id)->pluck('id')->toArray();
+        $userDepartment = EssentialsDepartment::pluck('id')->toArray();
 
-        if ($is_admin) {
+        if (!$is_admin) {
             $requestsProcess = $requestsProcess->where('requests.related_to', $user->id);
             $userDepartment = [$user->essentials_department_id];
         }

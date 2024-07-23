@@ -498,7 +498,7 @@ class PayrollController extends Controller
         }
 
         $ownerTypes = ['employee', 'manager', 'worker'];
-        $roles = DB::table('roles')->where('business_id', $business_id)
+        $roles = DB::table('roles')
             ->where('name', 'LIKE', '%رواتب%')->pluck('id')->toArray();
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
