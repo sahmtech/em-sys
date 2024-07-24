@@ -23,13 +23,12 @@ class InteractiveServicesController extends Controller
     {
         try {
             $body_data = [
-                "iqamaNumber" => $iqamaNumber,
+                "iqamaNumber" => "2000000000",
                 "visaType" => 1,
-                "visaDuration" =>  $visaDuration,
+                "visaDuration" => 50,
             ];
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/exit-reentry/issue', 'POST', $body_data);
 
-            return response()->json(['success' => 0, 'error' =>   $report], 500);
             // Retrieve the base-64 encoded PDF string from the response
             $base64Pdf = $report['ervisaPDF'];
 
@@ -52,12 +51,7 @@ class InteractiveServicesController extends Controller
                 'data' => $report,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => 0, 'error' =>  'File:' .
-                $e->getFile() .
-                'Line:' .
-                $e->getLine() .
-                'Message:' .
-                $e->getMessage()], 500);
+            return response()->json(['success' => 0, 'error' => $e->getMessage()], 500);
         }
     }
 

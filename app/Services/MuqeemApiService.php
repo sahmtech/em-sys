@@ -65,36 +65,26 @@ class MuqeemApiService
 
     public function callApiEndpoint($endpoint, $method = 'GET', $data = [])
     {
-        try {
-            if (!$this->accessToken) {
-                $this->authenticate();
-            }
-            // dd($this->accessToken);
-
-            $url = $this->baseUrl . '/' . ltrim($endpoint, '/');
-            $headers = [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'app-id' => $this->apiId,
-                'app-key' => $this->appKey,
-                'Authorization' => 'Bearer ' . $this->accessToken,
-            ];
-            $options = [
-                'headers' => $headers,
-                'json' => $data,
-            ];
-
-            $response = $this->httpClient->request($method, $url, $options);
-
-            return json_decode($response->getBody()->getContents(), true);
-        } catch (\Exception $e) {
-            return
-                'File:' .
-                $e->getFile() .
-                'Line:' .
-                $e->getLine() .
-                'Message:' .
-                $e->getMessage();
+        if (!$this->accessToken) {
+            $this->authenticate();
         }
+        // dd($this->accessToken);
+
+        $url = $this->baseUrl . '/' . ltrim($endpoint, '/');
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'app-id' => $this->apiId,
+            'app-key' => $this->appKey,
+            'Authorization' => 'Bearer ' . $this->accessToken,
+        ];
+        $options = [
+            'headers' => $headers,
+            'json' => $data,
+        ];
+
+        $response = $this->httpClient->request($method, $url, $options);
+
+        return json_decode($response->getBody()->getContents(), true);
     }
 }
