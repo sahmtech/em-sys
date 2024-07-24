@@ -1018,9 +1018,9 @@ return [
   'emp_name' => 'اسم الموظف',
   'eqama_end_date' => 'تاريخ انتهاء الإقامة ',
 
-  'absent_report' => 'رفع بلاغ هروب',
+  'absent_report' => 'بلاغ هروب',
   'final_visa' => 'تأشيرة خروج نهائي ',
-  'return_visa' => 'تأشسيرة خروج وعودة ',
+  'return_visa' => 'تأشيرة خروج وعودة ',
   'insurance_classes_id_not_found' => 'فئة التأمين غير موجودة ',
   'insurance_cخةحشىغ_id_not_found' => 'شركة التأمين غير موجودة ',
   'absentee_report' => 'بلاغ تغيب العمال ',

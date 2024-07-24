@@ -45,7 +45,7 @@
                         <li @if (request()->segment(2) == 'final_exit_visa') class="active" @endif>
                             <a href="{{ route('final_exit_visa') }}">
                                 <i class="fas fa-check" aria-hidden="true" style="font-size: smaller;"></i>
-                                @lang('essentials::lang.view_final_visa')
+                                @lang('essentials::lang.final_visa')
                             </a>
                         </li>
                     @endif
