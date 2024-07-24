@@ -2372,7 +2372,7 @@ class DataController extends Controller
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
             $user_department = EssentialsDepartment::find($user->essentials_department_id);
-            $user_designstion = Category::find($user->essentials_designation_id);
+            //    $user_designstion = Category::find($user->essentials_designation_id);
             $work_location = BusinessLocation::find($user->location_id);
             $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->select([
                 'essentials_employees_contracts.id',
@@ -2386,7 +2386,7 @@ class DataController extends Controller
                 'essentials_employees_contracts.is_renewable',
 
             ])->where('is_active', 1)->first();
-            return view('essentials::partials.user_details_part', compact('contract', 'user_department', 'user_designstion', 'user', 'work_location'))
+            return view('essentials::partials.user_details_part', compact('contract', 'user_department', 'user', 'work_location'))
                 ->render();
         }
     }
@@ -2577,269 +2577,496 @@ class DataController extends Controller
 
         //update
         if ($data['event'] == 'user_updated') {
-
-            error_log('i am here');
             $user = $data['model_instance'];
-            $user->essentials_department_id = request()->input('essentials_department_id');
-            $user->essentials_designation_id = request()->input('essentials_designation_id');
-            $user->essentials_salary = request()->input('essentials_salary');
-            $user->essentials_pay_period = request()->input('essentials_pay_period') ?? 'month';
-            $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
-            $user->user_type = request()->input('user_type');
-            $user->company_id = request()->input('company_id');
 
-            if (request()->input('max_anuual_leave_days') != null) {
-                $user->max_anuual_leave_days = request()->input('max_anuual_leave_days');
-            }
-            if (request()->input('health_insurance')) {
-                $user->has_insurance = request()->input('health_insurance');
-            }
-            if (request()->input('border_no') == 3) {
-
-                $user->border_no = null;
-            }
-
-            if (request()->input('contact_number') == 05) {
-
-                $user->contact_number = null;
-            }
+            $user->fill([
+                'essentials_department_id' => request()->input('essentials_department_id'),
+                'essentials_designation_id' => request()->input('essentials_designation_id'),
+                'essentials_salary' => request()->input('essentials_salary'),
+                'essentials_pay_period' => request()->input('essentials_pay_period') ?? 'month',
+                'essentials_pay_cycle' => request()->input('essentials_pay_cycle'),
+                'user_type' => request()->input('user_type'),
+                'company_id' => request()->input('company_id'),
+                'max_anuual_leave_days' => request()->input('max_anuual_leave_days') ?? $user->max_anuual_leave_days,
+                'has_insurance' => request()->input('health_insurance') ?? $user->has_insurance,
+                'border_no' => request()->input('border_no') == 3 ? null : $user->border_no,
+                'contact_number' => request()->input('contact_number') == 5 ? null : $user->contact_number,
+            ]);
 
             if (request()->input('can_add_category') == 0) {
                 EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->delete();
             }
 
-
             $user->save();
 
-            if (request()->input('id_proof_name') == "national_id") {
-                $id = $data['model_instance']['id'];
-                $existing_doc = EssentialsOfficialDocument::where('number', request()->input('id_proof_number'))
-                    ->where('type', 'national_id')
-                    ->where('is_active', 1)
-                    ->where('employee_id', '=', $id)
-                    ->first();
-                if (!$existing_doc) {
-                    $national_id_doc = EssentialsOfficialDocument::where('is_active', 1)->where('type', 'national_id')
-                        ->where('employee_id', $id)->first();
-                    if ($national_id_doc) {
-                        $national_id_doc->is_active = 0;
-                        $national_id_doc->status = 'expired';
-                        $national_id_doc->updated_by = Auth::user()->id;
-                        $national_id_doc->save();
-                    }
-                    $new_national_id = new EssentialsOfficialDocument();
-                    $new_national_id->type = 'national_id';
-                    $new_national_id->status = 'valid';
-                    $new_national_id->is_active = 1;
-                    $new_national_id->issue_date = \Carbon::now();
-                    $new_national_id->employee_id = $user->id;
-                    $new_national_id->created_by = Auth::user()->id;
-                    $new_national_id->save();
-                }
-            } else if (request()->input('id_proof_name') == "eqama") {
-                $id = $data['model_instance']['id'];
-                $existing_doc = EssentialsOfficialDocument::where('number', request()->input('id_proof_number'))
-                    ->where('type', 'residence_permit')
-                    ->where('is_active', 1)
-                    ->where('employee_id', '=', $id)
-                    ->first();
-                if (!$existing_doc) {
-                    $residence_permit_doc = EssentialsOfficialDocument::where('is_active', 1)
-                        ->where('type', 'residence_permit')
-                        ->where('employee_id', $id)->first();
-                    if ($residence_permit_doc) {
-                        $residence_permit_doc->is_active = 0;
-                        $residence_permit_doc->status = 'expired';
-                        $residence_permit_doc->updated_by = Auth::user()->id;
-                        $residence_permit_doc->save();
-                    }
-                    $new_residence_permit = new EssentialsOfficialDocument();
-                    $new_residence_permit->type = 'residence_permit';
-                    $new_residence_permit->status = 'valid';
-                    $new_residence_permit->is_active = 1;
-                    $new_residence_permit->issue_date = \Carbon::now();
-                    $new_residence_permit->employee_id = $user->id;
-                    $new_residence_permit->number = request()->input('id_proof_number');
-                    $new_residence_permit->expiration_date = request()->input('expiration_date');
-                    $new_residence_permit->created_by = Auth::user()->id;
-                    $new_residence_permit->save();
-                }
+            $id = $user->id;
+
+            // Handle Qualification
+            if (request()->input('qualification_type') || request()->input('graduation_year') || request()->input('graduation_institution') || request()->input('specialization') || request()->input('great_degree')) {
+                EssentialsEmployeesQualification::updateOrCreate(
+                    ['employee_id' => $id],
+                    [
+                        'qualification_type' => request()->input('qualification_type'),
+                        'specialization' => request()->input('general_specialization'),
+                        'sub_specialization' => request()->input('sub_specialization'),
+                        'graduation_year' => request()->input('graduation_year'),
+                        'graduation_institution' => request()->input('graduation_institution'),
+                        'graduation_country' => request()->input('graduation_country'),
+                        'degree' => request()->input('degree'),
+                        'marksName' => request()->input('marksName'),
+                        'great_degree' => request()->input('great_degree'),
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ]
+                );
             }
 
-
-
-            $id = $data['model_instance']['id'];
-            if (
-                request()->input('qualification_type') || request()->input('graduation_year') ||
-                request()->input('graduation_institution') || request()->input('specialization') || request()->input('great_degree')
-            ) {
-
-                $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
-                if (!$qualification2) {
-                    $qualification2 = new EssentialsEmployeesQualification();
-                    $qualification2->created_by = Auth::user()->id;
-                }
-
-                $qualification2->qualification_type = request()->input('qualification_type');
-                $qualification2->specialization = request()->input('general_specialization');
-                $qualification2->sub_specialization  = request()->input('sub_specialization');
-                $qualification2->graduation_year =  request()->input('graduation_year');
-                $qualification2->graduation_institution =  request()->input('graduation_institution');
-                $qualification2->employee_id = $user->id;
-                $qualification2->graduation_country = request()->input('graduation_country');
-                $qualification2->degree =  request()->input('degree');
-                $qualification2->marksName =  request()->input('marksName');
-                $qualification2->great_degree =  request()->input('great_degree');
-                $qualification2->updated_by = Auth::user()->id;
-                // if (request()->hasFile('qualification_file')) {
-                //     $file = request()->file('qualification_file');
-                //     $filePath = $file->store('/employee_qualifications');
-                //     $qualification2->file_path = $filePath;
-                // }
-                $qualification2->save();
-            }
-
-            $id = $data['model_instance']['id'];
-
+            // Handle Contract
             $contract = EssentialsEmployeesContract::where('employee_id', $id)->where('is_active', 1)->first();
 
-            $delete_contract_file =  request()->input('delete_contract_file') ?? null;
-
-
-            if ($delete_contract_file && $delete_contract_file == 1) {
-
-                $filePath =  !empty($contract->file_path) ? $contract->file_path ?? null : null;
-                if ($filePath) {
-                    $contract->file_path = null;
-                    $contract->deleted_by = Auth::user()->id;
-                    $contract->deleted_at = \Carbon::now();
-
-                    Storage::delete($filePath);
+            if (request()->input('delete_contract_file') == 1 && $contract) {
+                if ($contract->file_path) {
+                    Storage::delete($contract->file_path);
+                    $contract->update([
+                        'file_path' => null,
+                        'deleted_by' => Auth::user()->id,
+                        'deleted_at' => \Carbon::now(),
+                    ]);
                 }
             }
 
-
-            //dd(request()->input('contract_type'));
-            if (
-                request()->input('contract_number') != null || request()->input('contract_type') != null
-                || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
-                || request()->input('contract_file')
-
-            ) {
-
-
-
-                $contractDuration =  request()->input('contract_duration');
-                $contract_per_period = request()->input('contract_duration_unit');
-                $contract = EssentialsEmployeesContract::where('employee_id', $id)->where('is_active', 1)->first();
-
+            if (request()->input('contract_number') || request()->input('contract_type') || request()->input('contract_start_date') || request()->input('contract_end_date') || request()->input('contract_file')) {
                 if ($contract) {
-                    $contract->is_active = 0;
-                    $contract->status = 'canceled';
-                    $contract->updated_by = Auth::user()->id;
-                    $contract->save();
-                }
-                $contract = new EssentialsEmployeesContract();
-                $contract->employee_id = $user->id;
-                $contract->contract_number = request()->input('contract_number');
-                $contract->contract_start_date = request()->input('contract_start_date');
-                $contract->contract_end_date = request()->input('contract_end_date');
-                $contract->contract_duration = $contractDuration;
-                $contract->contract_per_period = $contract_per_period;
-                $contract->probation_period = request()->input('probation_period');
-                $contract->is_renewable = request()->input('is_renewable');
-                $contract->contract_type_id = request()->input('contract_type');
-                $contract->created_by = Auth::user()->id;
-                $contract->is_active = 1;
-
-
-
-                if (request()->hasFile('contract_file')) {
-                    $file = request()->file('contract_file');
-                    $filePath = $file->store('/employee_contracts');
-                    $contract->file_path = $filePath;
-                } elseif (request()->input('existing_contract_file')) {
-
-                    $contract->file_path = request()->input('existing_contract_file');
-                }
-
-
-                $contract->save();
-                //dd($contract);
-            }
-
-            if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
-
-                $travel_ticket_categorie = EssentialsEmployeeTravelCategorie::where('employee_id', $id)->first();
-
-                if ($travel_ticket_categorie) {
-                    $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
-                    $travel_ticket_categorie->updated_by = Auth::user()->id;
-                    $travel_ticket_categorie->save();
+                    $contract->update([
+                        'contract_number' => request()->input('contract_number'),
+                        'contract_start_date' => request()->input('contract_start_date'),
+                        'contract_end_date' => request()->input('contract_end_date'),
+                        'contract_duration' => request()->input('contract_duration'),
+                        'contract_per_period' => request()->input('contract_duration_unit'),
+                        'probation_period' => request()->input('probation_period'),
+                        'is_renewable' => request()->input('is_renewable'),
+                        'contract_type_id' => request()->input('contract_type'),
+                        'updated_by' => Auth::user()->id,
+                        'file_path' => request()->hasFile('contract_file') ? request()->file('contract_file')->store('/employee_contracts') : request()->input('existing_contract_file'),
+                    ]);
                 } else {
-                    $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
-                    $travel_ticket_categorie->employee_id = $user->id;
-                    $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
-
-                    $travel_ticket_categorie->created_by = Auth::user()->id;
-                    $travel_ticket_categorie->save();
+                    EssentialsEmployeesContract::create([
+                        'employee_id' => $user->id,
+                        'contract_number' => request()->input('contract_number'),
+                        'contract_start_date' => request()->input('contract_start_date'),
+                        'contract_end_date' => request()->input('contract_end_date'),
+                        'contract_duration' => request()->input('contract_duration'),
+                        'contract_per_period' => request()->input('contract_duration_unit'),
+                        'probation_period' => request()->input('probation_period'),
+                        'is_renewable' => request()->input('is_renewable'),
+                        'contract_type_id' => request()->input('contract_type'),
+                        'created_by' => Auth::user()->id,
+                        'is_active' => 1,
+                        'file_path' => request()->hasFile('contract_file') ? request()->file('contract_file')->store('/employee_contracts') : request()->input('existing_contract_file'),
+                    ]);
                 }
             }
 
-            if (request()->input('essentials_department_id')) {
-
-                $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id)->update(['is_active' => 0, 'updated_by' => Auth::user()->id]);
-
-                if (request()->input('profession')) {
-                    $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
-                    $essentials_employee_appointmets->employee_id = $user->id;
-                    $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
-                    $essentials_employee_appointmets->is_active = 1;
-                    $essentials_employee_appointmets->type = 'appoint';
-                    $essentials_employee_appointmets->created_by = Auth::user()->id;
-                    if (request()->input('sponsor_id') != 'other_suponser') {
-                        $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
-                    } else {
-                        $essentials_employee_appointmets->sponsor_name =  request()->input('new_sponsor_name');
-                    }
-                    $essentials_employee_appointmets->profession_id = request()->input('profession');
-                    $essentials_employee_appointmets->save();
-                }
+            // Handle ID Proof
+            if (request()->input('id_proof_name') == "national_id" || request()->input('id_proof_name') == "eqama") {
+                $type = request()->input('id_proof_name') == "national_id" ? 'national_id' : 'residence_permit';
+                EssentialsOfficialDocument::updateOrCreate(
+                    [
+                        'type' => $type,
+                        'employee_id' => $id,
+                    ],
+                    [
+                        'status' => 'valid',
+                        'is_active' => 1,
+                        'issue_date' => \Carbon::now(),
+                        'number' => request()->input('id_proof_number'),
+                        'expiration_date' => request()->input('expiration_date'),
+                        'created_by' => Auth::user()->id,
+                    ]
+                );
             }
 
+            // Handle Travel Categories
+            if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
+                EssentialsEmployeeTravelCategorie::updateOrCreate(
+                    ['employee_id' => $id],
+                    [
+                        'categorie_id' => request()->input('travel_ticket_categorie'),
+                        'updated_by' => Auth::user()->id,
+                    ]
+                );
+            }
 
-            if (request()->selectedData) {
+            // Handle Appointments
+            if (request()->input('essentials_department_id') || request()->input('profession')) {
+                EssentialsEmployeeAppointmet::updateOrCreate(
+                    ['employee_id' => $id],
+                    [
+                        'department_id' => request()->input('essentials_department_id'),
+                        'is_active' => 1,
+                        'type' => 'appoint',
+                        'created_by' => Auth::user()->id,
+                        'sponsor_company' => request()->input('sponsor_id') != 'other_suponser' ? request()->input('sponsor_id') : null,
+                        'sponsor_name' => request()->input('sponsor_id') == 'other_suponser' ? request()->input('new_sponsor_name') : null,
+                        'profession_id' => request()->input('profession'),
+                    ]
+                );
+            }
+
+            // Handle Allowances and Deductions
+            if (request()->input('selectedData')) {
                 EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)->delete();
-                $jsonData = json_decode(request()->selectedData, true);
+                $jsonData = json_decode(request()->input('selectedData'), true);
                 foreach ($jsonData as $item) {
-
-
                     try {
-                        $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
-                        $userAllowancesAndDeduction->user_id = $user->id;
-                        $userAllowancesAndDeduction->created_by = Auth::user()->id;
-                        $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
-
-                        if ($item['amount'] != Null) {
-                            $userAllowancesAndDeduction->amount = $item['amount'];
-                        } else {
-                            $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
-                                ->where('id', $item['salaryType'])
-                                ->first();
-
-                            if ($allowanceDeduction) {
-                                $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
-                            }
-                        }
-                        $userAllowancesAndDeduction->save();
+                        EssentialsUserAllowancesAndDeduction::create([
+                            'user_id' => $user->id,
+                            'created_by' => Auth::user()->id,
+                            'allowance_deduction_id' => (int)$item['salaryType'],
+                            'amount' => $item['amount'] ?? Db::table('essentials_allowances_and_deductions')->where('id', $item['salaryType'])->value('amount'),
+                        ]);
                     } catch (\Exception $e) {
                         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
                         error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                     }
                 }
             }
         }
+
+
+        // if ($data['event'] == 'user_updated') {
+
+        //     error_log('i am here');
+        //     $user = $data['model_instance'];
+        //     $user->essentials_department_id = request()->input('essentials_department_id');
+        //     $user->essentials_designation_id = request()->input('essentials_designation_id');
+        //     $user->essentials_salary = request()->input('essentials_salary');
+        //     $user->essentials_pay_period = request()->input('essentials_pay_period') ?? 'month';
+        //     $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
+        //     $user->user_type = request()->input('user_type');
+        //     $user->company_id = request()->input('company_id');
+
+        //     if (request()->input('max_anuual_leave_days') != null) {
+        //         $user->max_anuual_leave_days = request()->input('max_anuual_leave_days');
+        //     }
+        //     if (request()->input('health_insurance')) {
+        //         $user->has_insurance = request()->input('health_insurance');
+        //     }
+        //     if (request()->input('border_no') == 3) {
+
+        //         $user->border_no = null;
+        //     }
+
+        //     if (request()->input('contact_number') == 05) {
+
+        //         $user->contact_number = null;
+        //     }
+
+        //     if (request()->input('can_add_category') == 0) {
+        //         EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->delete();
+        //     }
+
+
+        //     $user->save();
+
+
+
+
+
+        //     $id = $data['model_instance']['id'];
+        //     if (
+        //         request()->input('qualification_type') || request()->input('graduation_year') ||
+        //         request()->input('graduation_institution') || request()->input('specialization') || request()->input('great_degree')
+        //     ) {
+
+        //         $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
+        //         if (!$qualification2) {
+        //             $qualification2 = new EssentialsEmployeesQualification();
+        //             $qualification2->created_by = Auth::user()->id;
+        //         }
+
+        //         $qualification2->qualification_type = request()->input('qualification_type');
+        //         $qualification2->specialization = request()->input('general_specialization');
+        //         $qualification2->sub_specialization  = request()->input('sub_specialization');
+        //         $qualification2->graduation_year =  request()->input('graduation_year');
+        //         $qualification2->graduation_institution =  request()->input('graduation_institution');
+        //         $qualification2->employee_id = $user->id;
+        //         $qualification2->graduation_country = request()->input('graduation_country');
+        //         $qualification2->degree =  request()->input('degree');
+        //         $qualification2->marksName =  request()->input('marksName');
+        //         $qualification2->great_degree =  request()->input('great_degree');
+        //         $qualification2->updated_by = Auth::user()->id;
+        //         // if (request()->hasFile('qualification_file')) {
+        //         //     $file = request()->file('qualification_file');
+        //         //     $filePath = $file->store('/employee_qualifications');
+        //         //     $qualification2->file_path = $filePath;
+        //         // }
+        //         $qualification2->save();
+        //     }
+
+        //     $id = $data['model_instance']['id'];
+
+        //     $contract = EssentialsEmployeesContract::where('employee_id', $id)->where('is_active', 1)->first();
+
+        //     $delete_contract_file =  request()->input('delete_contract_file') ?? null;
+
+
+        //     if ($delete_contract_file && $delete_contract_file == 1) {
+
+        //         $filePath =  !empty($contract->file_path) ? $contract->file_path ?? null : null;
+        //         if ($filePath) {
+        //             $contract->file_path = null;
+        //             $contract->deleted_by = Auth::user()->id;
+        //             $contract->deleted_at = \Carbon::now();
+
+        //             Storage::delete($filePath);
+        //         }
+        //     }
+
+
+        //     //dd(request()->input('contract_type'));
+        //     // if (
+        //     //     request()->input('contract_number') != null || request()->input('contract_type') != null
+        //     //     || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
+        //     //     || request()->input('contract_file')
+
+        //     // ) {
+
+
+
+        //     //     $contractDuration =  request()->input('contract_duration');
+        //     //     $contract_per_period = request()->input('contract_duration_unit');
+        //     //     $contract = EssentialsEmployeesContract::where('employee_id', $id)->where('is_active', 1)->first();
+
+        //     //     if ($contract) {
+        //     //         $contract->is_active = 0;
+        //     //         $contract->status = 'canceled';
+        //     //         $contract->updated_by = Auth::user()->id;
+        //     //         $contract->save();
+        //     //     }
+        //     //     $contract = new EssentialsEmployeesContract();
+        //     //     $contract->employee_id = $user->id;
+        //     //     $contract->contract_number = request()->input('contract_number');
+        //     //     $contract->contract_start_date = request()->input('contract_start_date');
+        //     //     $contract->contract_end_date = request()->input('contract_end_date');
+        //     //     $contract->contract_duration = $contractDuration;
+        //     //     $contract->contract_per_period = $contract_per_period;
+        //     //     $contract->probation_period = request()->input('probation_period');
+        //     //     $contract->is_renewable = request()->input('is_renewable');
+        //     //     $contract->contract_type_id = request()->input('contract_type');
+        //     //     $contract->created_by = Auth::user()->id;
+        //     //     $contract->is_active = 1;
+
+
+
+        //     //     if (request()->hasFile('contract_file')) {
+        //     //         $file = request()->file('contract_file');
+        //     //         $filePath = $file->store('/employee_contracts');
+        //     //         $contract->file_path = $filePath;
+        //     //     } elseif (request()->input('existing_contract_file')) {
+
+        //     //         $contract->file_path = request()->input('existing_contract_file');
+        //     //     }
+
+
+        //     //     $contract->save();
+        //     //     //dd($contract);
+        //     // }
+        //     $inputs = request()->all();
+        //     if ($inputs['contract_number'] || $inputs['contract_type'] || $inputs['contract_start_date'] || $inputs['contract_end_date'] || $inputs['contract_file']) {
+        //         if ($contract) {
+        //             $contract->update([
+        //                 'contract_number' => $inputs['contract_number'],
+        //                 'contract_start_date' => $inputs['contract_start_date'],
+        //                 'contract_end_date' => $inputs['contract_end_date'],
+        //                 'contract_duration' => $inputs['contract_duration'],
+        //                 'contract_per_period' => $inputs['contract_duration_unit'],
+        //                 'probation_period' => $inputs['probation_period'],
+        //                 'is_renewable' => $inputs['is_renewable'],
+        //                 'contract_type_id' => $inputs['contract_type'],
+        //                 'updated_by' => Auth::user()->id,
+        //             ]);
+        //             if (request()->hasFile('contract_file')) {
+        //                 $filePath = request()->file('contract_file')->store('/employee_contracts');
+        //                 $contract->update(['file_path' => $filePath]);
+        //             } elseif ($inputs['existing_contract_file']) {
+        //                 $contract->update(['file_path' => $inputs['existing_contract_file']]);
+        //             }
+        //         } else {
+        //             EssentialsEmployeesContract::create([
+        //                 'employee_id' => $user->id,
+        //                 'contract_number' => $inputs['contract_number'],
+        //                 'contract_start_date' => $inputs['contract_start_date'],
+        //                 'contract_end_date' => $inputs['contract_end_date'],
+        //                 'contract_duration' => $inputs['contract_duration'],
+        //                 'contract_per_period' => $inputs['contract_duration_unit'],
+        //                 'probation_period' => $inputs['probation_period'],
+        //                 'is_renewable' => $inputs['is_renewable'],
+        //                 'contract_type_id' => $inputs['contract_type'],
+        //                 'created_by' => Auth::user()->id,
+        //                 'is_active' => 1,
+        //                 'file_path' => request()->hasFile('contract_file') ? request()->file('contract_file')->store('/employee_contracts') : $inputs['existing_contract_file'],
+        //             ]);
+        //         }
+        //     }
+        //     if ($inputs['id_proof_name'] == "national_id" || $inputs['id_proof_name'] == "eqama") {
+        //         $id = $data['model_instance']['id'];
+        //         $type = $inputs['id_proof_name'] == "national_id" ? 'national_id' : 'residence_permit';
+        //         $existing_doc = EssentialsOfficialDocument::where('number', $inputs['id_proof_number'])
+        //             ->where('type', $type)
+        //             ->where('is_active', 1)
+        //             ->where('employee_id', $id)
+        //             ->first();
+
+        //         EssentialsOfficialDocument::updateOrCreate(
+        //             [
+        //                 'type' => $type,
+        //                 'employee_id' => $id,
+        //             ],
+        //             [
+        //                 'status' => 'valid',
+        //                 'is_active' => 1,
+        //                 'issue_date' => \Carbon::now(),
+        //                 'number' => $inputs['id_proof_number'],
+        //                 'expiration_date' => $inputs['expiration_date'],
+        //                 'created_by' => Auth::user()->id,
+        //             ]
+        //         );
+        //     }
+        //     //     if (!$existing_doc) {
+        //     //         $national_id_doc = EssentialsOfficialDocument::where('is_active', 1)->where('type', 'national_id')
+        //     //             ->where('employee_id', $id)->first();
+        //     //         if ($national_id_doc) {
+        //     //             $national_id_doc->is_active = 0;
+        //     //             $national_id_doc->status = 'expired';
+        //     //             $national_id_doc->updated_by = Auth::user()->id;
+        //     //             $national_id_doc->save();
+        //     //         }
+        //     //         $new_national_id = new EssentialsOfficialDocument();
+        //     //         $new_national_id->type = 'national_id';
+        //     //         $new_national_id->status = 'valid';
+        //     //         $new_national_id->is_active = 1;
+        //     //         $new_national_id->issue_date = \Carbon::now();
+        //     //         $new_national_id->employee_id = $user->id;
+        //     //         $new_national_id->created_by = Auth::user()->id;
+        //     //         $new_national_id->save();
+        //     //     }
+        //     // } else if (request()->input('id_proof_name') == "eqama") {
+        //     //     $id = $data['model_instance']['id'];
+        //     //     $existing_doc = EssentialsOfficialDocument::where('number', request()->input('id_proof_number'))
+        //     //         ->where('type', 'residence_permit')
+        //     //         ->where('is_active', 1)
+        //     //         ->where('employee_id', '=', $id)
+        //     //         ->first();
+        //     //     if (!$existing_doc) {
+        //     //         $residence_permit_doc = EssentialsOfficialDocument::where('is_active', 1)
+        //     //             ->where('type', 'residence_permit')
+        //     //             ->where('employee_id', $id)->first();
+        //     //         if ($residence_permit_doc) {
+        //     //             $residence_permit_doc->is_active = 0;
+        //     //             $residence_permit_doc->status = 'expired';
+        //     //             $residence_permit_doc->updated_by = Auth::user()->id;
+        //     //             $residence_permit_doc->save();
+        //     //         }
+        //     //         $new_residence_permit = new EssentialsOfficialDocument();
+        //     //         $new_residence_permit->type = 'residence_permit';
+        //     //         $new_residence_permit->status = 'valid';
+        //     //         $new_residence_permit->is_active = 1;
+        //     //         $new_residence_permit->issue_date = \Carbon::now();
+        //     //         $new_residence_permit->employee_id = $user->id;
+        //     //         $new_residence_permit->number = request()->input('id_proof_number');
+        //     //         $new_residence_permit->expiration_date = request()->input('expiration_date');
+        //     //         $new_residence_permit->created_by = Auth::user()->id;
+        //     //         $new_residence_permit->save();
+        //     //     }
+        //     // }
+        //     if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
+
+        //         $travel_ticket_categorie = EssentialsEmployeeTravelCategorie::where('employee_id', $id)->first();
+
+        //         if ($travel_ticket_categorie) {
+        //             $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
+        //             $travel_ticket_categorie->updated_by = Auth::user()->id;
+        //             $travel_ticket_categorie->save();
+        //         } else {
+        //             $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
+        //             $travel_ticket_categorie->employee_id = $user->id;
+        //             $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
+
+        //             $travel_ticket_categorie->created_by = Auth::user()->id;
+        //             $travel_ticket_categorie->save();
+        //         }
+        //     }
+
+        //     // if ($inputs['essentials_department_id'] || $inputs['profession']) {
+
+        //     //     $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id);
+
+
+        //     //         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
+        //     //         $essentials_employee_appointmets->employee_id = $user->id;
+        //     //         $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
+        //     //         $essentials_employee_appointmets->is_active = 1;
+        //     //         $essentials_employee_appointmets->type = 'appoint';
+        //     //         $essentials_employee_appointmets->created_by = Auth::user()->id;
+        //     //         if (request()->input('sponsor_id') != 'other_suponser') {
+        //     //             $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
+        //     //         } else {
+        //     //             $essentials_employee_appointmets->sponsor_name =  request()->input('new_sponsor_name');
+        //     //         }
+        //     //         $essentials_employee_appointmets->profession_id = request()->input('profession');
+        //     //         $essentials_employee_appointmets->save();
+        //     //     }
+        //     // }
+        //     if ($inputs['essentials_department_id'] || $inputs['profession']) {
+        //         EssentialsEmployeeAppointmet::updateOrCreate(
+        //             ['employee_id' => $id],
+        //             [
+        //                 'department_id' => $inputs['essentials_department_id'],
+        //                 'is_active' => 1,
+        //                 'type' => 'appoint',
+        //                 'created_by' => Auth::user()->id,
+        //                 'sponsor_company' => $inputs['sponsor_id'] != 'other_suponser' ? $inputs['sponsor_id'] : null,
+        //                 'sponsor_name' => $inputs['sponsor_id'] == 'other_suponser' ? $inputs['new_sponsor_name'] : null,
+        //                 'profession_id' => $inputs['profession'],
+        //             ]
+        //         );
+        //     }
+
+
+        //     if (request()->selectedData) {
+        //         EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)->delete();
+        //         $jsonData = json_decode(request()->selectedData, true);
+        //         foreach ($jsonData as $item) {
+
+
+        //             try {
+        //                 $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+        //                 $userAllowancesAndDeduction->user_id = $user->id;
+        //                 $userAllowancesAndDeduction->created_by = Auth::user()->id;
+        //                 $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
+
+        //                 if ($item['amount'] != Null) {
+        //                     $userAllowancesAndDeduction->amount = $item['amount'];
+        //                 } else {
+        //                     $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+        //                         ->where('id', $item['salaryType'])
+        //                         ->first();
+
+        //                     if ($allowanceDeduction) {
+        //                         $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+        //                     }
+        //                 }
+        //                 $userAllowancesAndDeduction->save();
+        //             } catch (\Exception $e) {
+        //                 \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+        //                 error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        //             }
+        //         }
+        //     }
+        // }
+
     }
 
 
