@@ -110,22 +110,24 @@ class InteractiveServicesController extends Controller
     }
 
     //This service allows an organization to issue a final exit visa for one of its resident.
-    public function issueFinalExitVisa()
+    public function issueFinalExitVisa($iqamaNumber)
     {
         try {
             $body_data = [
-                "iqamaNumber" => "2000000000",
+                "iqamaNumber" => $iqamaNumber,
             ];
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/final-exit/issue', 'POST', $body_data);
-            return response()->json([
+            return [
+                'success' => 1,
                 'message' => 'Request Final Exit Visa Successful',
                 'data' => $report,
-            ]);
+            ];
         } catch (\Exception $e) {
-            return response()->json([
+            return [
+                'success' => 0,
                 'error' => $e->getMessage(),
                 'full_error' => $e->getResponse()->getBody()->getContents(),
-            ], 500);
+            ];
         }
     }
 
