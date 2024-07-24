@@ -35,7 +35,7 @@ class InteractiveServicesController extends Controller
             // Decode the base-64 string
             $pdfContent = base64_decode($base64Pdf);
 
-            $filePath = storage_path('app/public/muqeem/exit-reentry/' . $iqamaNumber . '.pdf');
+            $filePath = storage_path('/uploads/muqeem/exit-reentry/' . $iqamaNumber . '.pdf');
 
             // Save the PDF content to the defined file path
             file_put_contents($filePath, $pdfContent);
