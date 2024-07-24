@@ -196,12 +196,13 @@ class EssentialsCardsController extends Controller
                 $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
 
                 $res = $this->interactiveServicesController->issueExitReEntryVisa((string) $id_proof_number, $duration);
-                return $res;
+                // return $res;
                 EssentailsEmployeeOperation::create([
                     'operation_type' => 'return_visa',
                     'start_date' => $start_date,
                     'end_date' => $end_date,
                     'employee_id' => $user_id,
+                    'file_path' => $res['file_path'],
                     'created_by' => auth()->user()->id,
                 ]);
             }
