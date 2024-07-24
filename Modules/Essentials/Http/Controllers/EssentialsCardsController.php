@@ -250,7 +250,7 @@ class EssentialsCardsController extends Controller
                     ]);
                     $outputs .= $id_proof_number . 'added_success \n';
                 } else {
-
+                    return $res;
                     $outputs .= $id_proof_number . 'failed \n';
                 }
             }
