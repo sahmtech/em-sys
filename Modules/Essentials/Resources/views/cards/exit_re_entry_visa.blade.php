@@ -33,8 +33,7 @@
                             <th>@lang('essentials::lang.profession')</th>
                             <th>@lang('essentials::lang.mobile_number')</th>
                             <th>@lang('essentials::lang.status')</th>
-                            <th>@lang('essentials::lang.start_date')</th>
-                            <th>@lang('essentials::lang.end_date')</th>
+                            <th>@lang('essentials::lang.duration')</th>
                             <th>@lang('messages.view')</th>
                         </tr>
                     </thead>
@@ -117,7 +116,12 @@
                         <!-- Add start date input -->
                         <div class="form-group">
                             {!! Form::label('duration', __('essentials::lang.duration_in_days')) !!}
-                            {!! Form::text('duration', null, ['class' => 'form-control', 'required', 'placeholder' => '7']) !!}
+                            {!! Form::text('duration', null, [
+                                'class' => 'form-control',
+                                'required',
+                                'placeholder' => '7',
+                                'id' => 'duration',
+                            ]) !!}
                         </div>
                     </div>
 
@@ -258,12 +262,8 @@
                         }
                     },
                     {
-                        data: "start_date",
-                        namne: "start_date",
-                    },
-                    {
-                        data: "end_date",
-                        namne: "end_date",
+                        data: "duration",
+                        namne: "duration",
                     },
                     {
                         data: "view",
@@ -334,7 +334,11 @@
             $('#bulk_edit_form').submit(function(e) {
 
                 e.preventDefault();
-
+                var duration = $('#duration').val();
+                if (isNaN(duration) || duration < 7) {
+                    toastr.error('Duration must be an integer not less than 7 days.');
+                    return;
+                }
                 var formData = $(this).serializeArray();
                 console.log(formData);
                 console.log($(this).attr('action'));

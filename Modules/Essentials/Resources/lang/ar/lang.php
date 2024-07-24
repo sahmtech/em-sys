@@ -1951,6 +1951,7 @@ return [
   'department_head' => 'رئيس قسم',
 
   'duration_in_days' => 'المدة بالإيام',
+  'duration' => 'المدة',
 
 
 
