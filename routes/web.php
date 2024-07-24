@@ -575,6 +575,16 @@ Route::get('/privacy-policy', function () {
 });
 Route::get('/get-users-by-location', [ExpenseController::class, 'getUsersByLocation'])->name('get_users_by_location');
 
+Route::get('/updateWorkersNotAssigned', function () {
+
+    DB::table('users')
+        ->where('user_type', 'worker')
+        ->whereNull('assigned_to')
+        ->where('company_id', 2)
+        ->update(['status' => 'active', 'sub_status' => null]);
+
+    return response()->json(['message' => 'Workers updated successfully.']);
+});
 // Route::get('/userFromContact', function () {
 //     $contacts = Contact::where('type', 'lead')->get();
 //     foreach ($contacts as $contact) {
