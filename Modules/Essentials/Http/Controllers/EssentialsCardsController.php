@@ -238,7 +238,7 @@ class EssentialsCardsController extends Controller
             foreach ($user_ids as $user_id) {
                 $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
                 $res = $this->interactiveServicesController->issueFinalExitVisa((string) $id_proof_number,);
-
+                return $res;
                 if ($res['success'] == 1) {
                     EssentailsEmployeeOperation::create([
                         'operation_type' => 'final_visa',
@@ -251,6 +251,7 @@ class EssentialsCardsController extends Controller
                     ]);
                     $outputs .= $id_proof_number . 'added_success \n';
                 } else {
+
                     $outputs .= $id_proof_number . 'failed \n';
                 }
             }
