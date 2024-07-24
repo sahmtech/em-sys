@@ -726,7 +726,7 @@ return [
     'projects_workers' => 'Projects worker',
     'employee_finish_contracts' => 'Employees whose contract has expired',
     'employee_almost_finish_contracts' => 'Employees whose contract expires within 15 days',
-
+    'duration_in_days' => 'duration in days',
 
 
 

@@ -116,16 +116,9 @@
                         </div>
                         <!-- Add start date input -->
                         <div class="form-group">
-                            {!! Form::label('start_date', __('essentials::lang.start_date')) !!}
-                            {!! Form::date('start_date', null, ['class' => 'form-control datepicker', 'autocomplete' => 'off', 'required']) !!}
+                            {!! Form::label('duration', __('essentials::lang.duration_in_days')) !!}
+                            {!! Form::text('duration', null, ['class' => 'form-control', 'required', 'placeholder' => '7']) !!}
                         </div>
-                        <!-- Add end date input -->
-                        <div class="form-group">
-                            {!! Form::label('end_date', __('essentials::lang.end_date')) !!}
-                            {!! Form::date('end_date', null, ['class' => 'form-control datepicker', 'autocomplete' => 'off', 'required']) !!}
-                        </div>
-
-
                     </div>
 
 
@@ -137,6 +130,24 @@
                     </div>
 
                     {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addDocFileModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="modal-body">
+                                <iframe id="iframeDocViewer" width="100%" height="300px" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="printDocButton">@lang('messages.print')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -180,6 +191,18 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $(document).on('click', '.view_doc_file_modal', function(e) {
+                e.preventDefault();
+                var fileUrl = $(this).data('href') ?? null;
+                var doc_id = $(this).data('id');
+                $('#iframeDocViewer').attr('src', fileUrl);
+                // Open the modal
+                $('#addDocFileModal').modal('show');
+            });
+
+
+
             var operation_table = $('#operation_table').DataTable({
                 processing: true,
                 serverSide: true,

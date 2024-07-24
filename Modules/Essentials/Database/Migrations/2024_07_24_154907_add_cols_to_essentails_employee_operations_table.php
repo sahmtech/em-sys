@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::table('essentails_employee_operations', function (Blueprint $table) {
             $table->string('file_path')->nullable()->after('employee_id');
+            $table->string('duration')->nullable()->after('employee_id');
         });
     }
 

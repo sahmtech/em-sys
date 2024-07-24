@@ -157,17 +157,20 @@ class EssentialsCardsController extends Controller
                     return $row->user?->status ?? '';
                 })
                 ->addColumn('view', function ($row) {
-                    return '';
+                    $html = '';
+                    if ($row->file_path) {
+                        $html .= '<button class="btn btn-xs btn-info btn-modal view_doc_file_modal" data-id="' . $row->id . '" data-href="/' . $row->file_path . '"> ' . __('essentials::lang.file') . '</button>  &nbsp;';
+                    } else {
+                        $html .= ' &nbsp; <button class="btn btn-xs btn-secondary btn-modal view_doc_file_modal" data-id="' . $row->id . '" > ' . __('essentials::lang.file') . '</button>  &nbsp;';
+                    }
+
+                    return  $html;
                 })
-                ->addColumn('start_date', function ($row) {
-                    return $row->start_date ?? '';
-                })
-                ->addColumn('end_date', function ($row) {
-                    return $row->end_date ?? '';
+                ->addColumn('duration', function ($row) {
+                    return $row->duration ?? '';
                 })
                 ->rawColumns([
-                    'start_date',
-                    'end_date',
+                    'duration',
                     'employee_name',
                     'id_proof_number',
                     'employee_number',
@@ -185,8 +188,6 @@ class EssentialsCardsController extends Controller
     public function post_exit_re_entry_visa(Request $request)
     {
         try {
-            $start_date = $request->start_date;
-            $end_date = $request->end_date;
             $user_ids = $request->user_ids;
             $duration = $request->duration ?? 10;
 
@@ -200,8 +201,7 @@ class EssentialsCardsController extends Controller
                 if ($res['success'] == 1) {
                     EssentailsEmployeeOperation::create([
                         'operation_type' => 'return_visa',
-                        'start_date' => $start_date,
-                        'end_date' => $end_date,
+                        'duration' => $duration,
                         'employee_id' => $user_id,
                         'file_path' => $res['file_path'],
                         'created_by' => auth()->user()->id,
