@@ -79,6 +79,8 @@ class EssentialsCardsController extends Controller
     public function exit_re_entry_visa()
     {
         $users = User::whereIn('user_type', ['worker', 'employee', 'manager'])
+            ->where('id_proof_name', 'eqama')
+            ->where('id_proof_number', 'regexp', '^[2][0-9]{9}$')
             ->select(
                 'users.id',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name")
@@ -92,6 +94,8 @@ class EssentialsCardsController extends Controller
     public function final_exit_visa()
     {
         $users = User::whereIn('user_type', ['worker', 'employee', 'manager'])
+            ->where('id_proof_name', 'eqama')
+            ->where('id_proof_number', 'regexp', '^[2][0-9]{9}$')
             ->select(
                 'users.id',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name")
@@ -104,6 +108,8 @@ class EssentialsCardsController extends Controller
     public function absent_report()
     {
         $users = User::whereIn('user_type', ['worker', 'employee', 'manager'])
+            ->where('id_proof_name', 'eqama')
+            ->where('id_proof_number', 'regexp', '^[2][0-9]{9}$')
             ->select(
                 'users.id',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name")
