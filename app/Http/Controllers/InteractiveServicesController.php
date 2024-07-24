@@ -30,30 +30,41 @@ class InteractiveServicesController extends Controller
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/exit-reentry/issue', 'POST', $body_data);
 
             // Retrieve the base-64 encoded PDF string from the response
-            // $base64Pdf = $report['ervisaPDF'];
+            $base64Pdf = $report['ervisaPDF'];
 
-            // // Decode the base-64 string
-            // $pdfContent = base64_decode($base64Pdf);
+            // Decode the base-64 string
+            $pdfContent = base64_decode($base64Pdf);
 
-            // $filePath = public_path('uploads') . '/muqeem/exit_reentry/' . $iqamaNumber . '.pdf';
+            $directoryPath = public_path('uploads/muqeem/exit_reentry');
 
-            // // Save the PDF content to the defined file path
-            // file_put_contents($filePath, $pdfContent);
+            // Ensure the directory exists
+            if (!File::exists($directoryPath)) {
+                File::makeDirectory($directoryPath, 0755, true);
+            }
 
-            // Display the PDF content as a response to display in the browser
-            // return response($pdfContent, 200)
-            //     ->header('Content-Type', 'application/pdf')
-            //     ->header('Content-Disposition', 'inline; filename="document.pdf"');
+            $filePath = $directoryPath . '/' . $iqamaNumber . '.pdf';
+
+            // Save the PDF content to the defined file path
+            file_put_contents($filePath, $pdfContent);
+
+            // Check if the file was created
+            if (!File::exists($filePath)) {
+                throw new \Exception('Failed to save the PDF file.');
+            }
+
             return response()->json([
                 'success' => 1,
                 'message' => 'Request Issue Exit Re-Entry Visa Successful',
-                // 'file_path' => $filePath,
+                'file_path' => $filePath,
                 'data' => $report,
             ]);
         } catch (\Exception $e) {
+            // Log the error for debugging purposes
+            \Log::error('Error in issueExitReEntryVisa: ' . $e->getMessage());
             return response()->json(['success' => 0, 'error' => $e->getMessage()], 500);
         }
     }
+
 
     //This service allows an organization to cancel an exit re-entry visa for one of its resident.
     public function cancleExitReEntryVisa()
