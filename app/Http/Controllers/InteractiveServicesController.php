@@ -53,16 +53,16 @@ class InteractiveServicesController extends Controller
                 throw new \Exception('Failed to save the PDF file.');
             }
 
-            return response()->json([
+            return [
                 'success' => 1,
                 'message' => 'Request Issue Exit Re-Entry Visa Successful',
                 'file_path' => $filePath,
                 'data' => $report,
-            ]);
+            ];
         } catch (\Exception $e) {
             // Log the error for debugging purposes
             \Log::error('Error in issueExitReEntryVisa: ' . $e->getMessage());
-            return response()->json(['success' => 0, 'error' => $e->getMessage()], 500);
+            return ['success' => 0, 'error' => $e->getMessage()];
         }
     }
 

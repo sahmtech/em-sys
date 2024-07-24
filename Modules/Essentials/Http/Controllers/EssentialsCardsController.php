@@ -191,25 +191,29 @@ class EssentialsCardsController extends Controller
             $duration = $request->duration ?? 10;
 
 
-
+            $outputs = '';
             foreach ($user_ids as $user_id) {
                 $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
 
                 $res = $this->interactiveServicesController->issueExitReEntryVisa((string) $id_proof_number, $duration);
                 // return $res;
-                EssentailsEmployeeOperation::create([
-                    'operation_type' => 'return_visa',
-                    'start_date' => $start_date,
-                    'end_date' => $end_date,
-                    'employee_id' => $user_id,
-                    'file_path' => $res['file_path'],
-                    'created_by' => auth()->user()->id,
-                ]);
+                if ($res['success'] == '1') {
+                    EssentailsEmployeeOperation::create([
+                        'operation_type' => 'return_visa',
+                        'start_date' => $start_date,
+                        'end_date' => $end_date,
+                        'employee_id' => $user_id,
+                        'file_path' => $res['file_path'],
+                        'created_by' => auth()->user()->id,
+                    ]);
+                    $outputs .= $id_proof_number . 'added_success \n';
+                } else {
+                    $outputs .= $id_proof_number . 'failed \n';
+                }
             }
-
             $output = [
                 'success' => 1,
-                'msg' => __('lang_v1.added_success'),
+                'msg' =>  $outputs,
             ];
         } catch (\Exception $e) {
             \Log::emergency(
