@@ -251,16 +251,16 @@ class FollowUpWorkerController extends Controller
         }
         $allRequestTypes = RequestsType::pluck('type', 'id');
         $business_id = request()->session()->get('user.business_id');
-        $departmentIds = EssentialsDepartment:where(function ($query) {
-                $query->where('name', 'LIKE', '%متابعة%')
-                    ->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%أعمال%');
-                    })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
-            })
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->where('name', 'LIKE', '%متابعة%')
+                ->orWhere(function ($query) {
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%أعمال%');
+                })->orWhere(function ($query) {
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%شركات%');
+                });
+        })
             ->pluck('id')->toArray();
         $requestTypeIds = WkProcedure::distinct()
             ->with('request_type')
