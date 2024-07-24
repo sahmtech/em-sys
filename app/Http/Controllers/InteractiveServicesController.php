@@ -23,7 +23,7 @@ class InteractiveServicesController extends Controller
     {
         try {
             $body_data = [
-                "iqamaNumber" => "2000000000",
+                "iqamaNumber" => "98295647394",
                 "visaType" => 1,
                 "visaDuration" =>  50,
             ];
