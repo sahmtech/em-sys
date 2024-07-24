@@ -188,6 +188,8 @@ class EssentialsCardsController extends Controller
 
             foreach ($user_ids as $user_id) {
                 $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
+                error_log($id_proof_number);
+                error_log($duration);
                 $res = $this->interactiveServicesController->issueExitReEntryVisa($id_proof_number, $duration);
                 return $res;
                 EssentailsEmployeeOperation::create([

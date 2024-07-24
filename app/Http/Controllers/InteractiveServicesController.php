@@ -29,6 +29,7 @@ class InteractiveServicesController extends Controller
             ];
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/exit-reentry/issue', 'POST', $body_data);
 
+            return response()->json(['success' => 0, 'error' =>   $report], 500);
             // Retrieve the base-64 encoded PDF string from the response
             $base64Pdf = $report['ervisaPDF'];
 
