@@ -197,7 +197,7 @@ class EssentialsCardsController extends Controller
 
                 $res = $this->interactiveServicesController->issueExitReEntryVisa((string) $id_proof_number, $duration);
                 // return $res;
-                if ($res['success'] == '1') {
+                if ($res['success'] == 1) {
                     EssentailsEmployeeOperation::create([
                         'operation_type' => 'return_visa',
                         'start_date' => $start_date,
