@@ -201,7 +201,7 @@ class EssentialsCardsController extends Controller
                 if ($res['success'] == 1) {
                     EssentailsEmployeeOperation::create([
                         'operation_type' => 'return_visa',
-                        'duration' => $duration,
+                        'duration' => $res['visaDuration'],
                         'employee_id' => $user_id,
                         'file_path' => $res['file_path'],
                         'created_by' => auth()->user()->id,
