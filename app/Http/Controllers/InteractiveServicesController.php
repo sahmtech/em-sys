@@ -51,7 +51,12 @@ class InteractiveServicesController extends Controller
                 'data' => $report,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => 0, 'error' => $e->getMessage()], 500);
+            return response()->json(['success' => 0, 'error' =>  'File:' .
+                $e->getFile() .
+                'Line:' .
+                $e->getLine() .
+                'Message:' .
+                $e->getMessage()], 500);
         }
     }
 
