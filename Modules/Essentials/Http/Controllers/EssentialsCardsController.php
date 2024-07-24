@@ -235,6 +235,7 @@ class EssentialsCardsController extends Controller
         try {
             $user_ids = $request->user_ids;
             $outputs = '';
+            $suc = 1;
             foreach ($user_ids as $user_id) {
                 $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
                 $res = $this->interactiveServicesController->issueFinalExitVisa((string) $id_proof_number);
@@ -248,14 +249,14 @@ class EssentialsCardsController extends Controller
                         'status' => 'inactive',
                         'sub_status' => 'final_visa'
                     ]);
-                    $outputs .= $id_proof_number . 'added_success \n';
+                    $outputs .= $id_proof_number . ' added_success \n';
                 } else {
-                    return $res;
-                    $outputs .= $id_proof_number . 'failed \n';
+                    $suc = 0;
+                    $outputs .= $id_proof_number . ' failed \n';
                 }
             }
             $output = [
-                'success' => 1,
+                'success' => $suc,
                 'msg' =>  $outputs,
             ];
         } catch (\Exception $e) {
