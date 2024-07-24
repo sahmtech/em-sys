@@ -56,7 +56,7 @@ class InteractiveServicesController extends Controller
             return [
                 'success' => 1,
                 'message' => 'Request Issue Exit Re-Entry Visa Successful',
-                'file_path' => $filePath,
+                'file_path' => 'muqeem/exit_reentry/' . $iqamaNumber . '.pdf',
                 'data' => $report,
             ];
         } catch (\Exception $e) {

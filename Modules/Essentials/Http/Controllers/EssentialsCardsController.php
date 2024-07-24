@@ -159,7 +159,7 @@ class EssentialsCardsController extends Controller
                 ->addColumn('view', function ($row) {
                     $html = '';
                     if ($row->file_path) {
-                        $html .= '<button class="btn btn-xs btn-info btn-modal view_doc_file_modal" data-id="' . $row->id . '" data-href="/' . $row->file_path . '"> ' . __('essentials::lang.file') . '</button>  &nbsp;';
+                        $html .= '<button class="btn btn-xs btn-info btn-modal view_doc_file_modal" data-id="' . $row->id . '" data-href="/uploads/' . $row->file_path . '"> ' . __('essentials::lang.file') . '</button>  &nbsp;';
                     } else {
                         $html .= ' &nbsp; <button class="btn btn-xs btn-secondary btn-modal view_doc_file_modal" data-id="' . $row->id . '" > ' . __('essentials::lang.file') . '</button>  &nbsp;';
                     }
