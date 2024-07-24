@@ -112,6 +112,7 @@ class InteractiveServicesController extends Controller
     //This service allows an organization to issue a final exit visa for one of its resident.
     public function issueFinalExitVisa($iqamaNumber)
     {
+
         try {
             $body_data = [
                 "iqamaNumber" => $iqamaNumber,
