@@ -249,10 +249,10 @@ class EssentialsCardsController extends Controller
                         'status' => 'inactive',
                         'sub_status' => 'final_visa'
                     ]);
-                    $outputs .= $id_proof_number . '   added_success      ';
+                    $outputs .= $id_proof_number . ' added_success      ';
                 } else {
                     $suc = 0;
-                    $outputs .= $id_proof_number . '   failed      ';
+                    $outputs .= $id_proof_number . ' failed      ';
                 }
             }
             $output = [
