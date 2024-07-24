@@ -33,9 +33,6 @@
                             <th>@lang('essentials::lang.profession')</th>
                             <th>@lang('essentials::lang.mobile_number')</th>
                             <th>@lang('essentials::lang.status')</th>
-
-                            <th>@lang('essentials::lang.date')</th>
-                            <th>@lang('messages.view')</th>
                         </tr>
                     </thead>
 
@@ -131,11 +128,7 @@
                                 'id' => 'user_ids',
                             ]) !!}
                         </div>
-                        <!-- Add end date input -->
-                        <div class="form-group">
-                            {!! Form::label('end_date', __('essentials::lang.end_date')) !!}
-                            {!! Form::date('end_date', null, ['class' => 'form-control datepicker', 'autocomplete' => 'off', 'required']) !!}
-                        </div>
+
                     </div>
 
 
@@ -247,14 +240,6 @@
                         }
                     },
 
-                    {
-                        data: "end_date",
-                        namne: "end_date",
-                    },
-                    {
-                        data: "view",
-                        namne: "view",
-                    },
                 ],
             });
 

@@ -233,25 +233,30 @@ class EssentialsCardsController extends Controller
     public function post_final_exit_visa(Request $request)
     {
         try {
-            $end_date = $request->end_date;
             $user_ids = $request->user_ids;
-            DB::beginTransaction();
+            $outputs = '';
             foreach ($user_ids as $user_id) {
-                EssentailsEmployeeOperation::create([
-                    'operation_type' => 'final_visa',
-                    'end_date' => $end_date,
-                    'employee_id' => $user_id,
-                    'created_by' => auth()->user()->id,
-                ]);
-                user::where('id', $user_id)->update([
-                    'status' => 'inactive',
-                    'sub_status' => 'final_visa'
-                ]);
+                $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
+                $res = $this->interactiveServicesController->issueFinalExitVisa((string) $id_proof_number,);
+
+                if ($res['success'] == 1) {
+                    EssentailsEmployeeOperation::create([
+                        'operation_type' => 'final_visa',
+                        'employee_id' => $user_id,
+                        'created_by' => auth()->user()->id,
+                    ]);
+                    user::where('id', $user_id)->update([
+                        'status' => 'inactive',
+                        'sub_status' => 'final_visa'
+                    ]);
+                    $outputs .= $id_proof_number . 'added_success \n';
+                } else {
+                    $outputs .= $id_proof_number . 'failed \n';
+                }
             }
-            DB::commit();
             $output = [
                 'success' => 1,
-                'msg' => __('lang_v1.added_success'),
+                'msg' =>  $outputs,
             ];
         } catch (\Exception $e) {
             \Log::emergency(
