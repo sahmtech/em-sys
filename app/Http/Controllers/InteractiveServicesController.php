@@ -30,15 +30,15 @@ class InteractiveServicesController extends Controller
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/exit-reentry/issue', 'POST', $body_data);
 
             // Retrieve the base-64 encoded PDF string from the response
-            $base64Pdf = $report['ervisaPDF'];
+            // $base64Pdf = $report['ervisaPDF'];
 
-            // Decode the base-64 string
-            $pdfContent = base64_decode($base64Pdf);
+            // // Decode the base-64 string
+            // $pdfContent = base64_decode($base64Pdf);
 
-            $filePath = public_path('uploads') . '/muqeem/exit_reentry/' . $iqamaNumber . '.pdf';
+            // $filePath = public_path('uploads') . '/muqeem/exit_reentry/' . $iqamaNumber . '.pdf';
 
-            // Save the PDF content to the defined file path
-            file_put_contents($filePath, $pdfContent);
+            // // Save the PDF content to the defined file path
+            // file_put_contents($filePath, $pdfContent);
 
             // Display the PDF content as a response to display in the browser
             // return response($pdfContent, 200)
@@ -47,7 +47,7 @@ class InteractiveServicesController extends Controller
             return response()->json([
                 'success' => 1,
                 'message' => 'Request Issue Exit Re-Entry Visa Successful',
-                'file_path' => $filePath,
+                // 'file_path' => $filePath,
                 'data' => $report,
             ]);
         } catch (\Exception $e) {
