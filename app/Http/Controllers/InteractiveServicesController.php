@@ -115,7 +115,7 @@ class InteractiveServicesController extends Controller
 
         try {
             $body_data = [
-                "iqamaNumber" =>  "2000555000",
+                "iqamaNumber" => $iqamaNumber,
             ];
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/final-exit/issue', 'POST', $body_data);
             return [
