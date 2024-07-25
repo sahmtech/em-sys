@@ -25,6 +25,11 @@ use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\Sales\Entities\SalesProject;
 use Illuminate\Support\Facades\DB as FacadesDB;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Sales\Entities\salesContract;
 
 class ApiCustomerController extends ApiController
@@ -169,8 +174,117 @@ class ApiCustomerController extends ApiController
         }
     }
 
+    public function agentWorker()
+    {
+        try {
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
 
 
+            $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+            $professions = EssentialsProfession::all()->pluck('name', 'id');
+
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
+                ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
+                ->with(['country', 'contract', 'OfficialDocument']);
+
+            $users->select(
+                'users.id',
+                'users.*',
+                'users.id_proof_number',
+                'users.nationality_id',
+                'users.essentials_salary',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                'sales_projects.name as contact_name'
+            );
+
+
+            $worker = [];
+            foreach ($users as $user) {
+
+                $residencePermitDocument = $user->OfficialDocument
+                    ->where('type', 'residence_permit')
+                    ->first();
+                if ($residencePermitDocument) {
+
+                    $residencePermitDocument = $residencePermitDocument?->expiration_date ?? '';
+                } else {
+
+                    $residencePermitDocument = '';
+                }
+
+                $professionId = $appointments[$user->id] ?? '';
+                $professionName = $professions[$professionId] ?? '';
+
+
+                $status = $user->status;
+                if ($status == 'active') {
+                    $status = __('essentials::lang.active');
+                } else if ($status == 'vecation') {
+                    $status = __('essentials::lang.vecation');
+                } else if ($status == 'inactive') {
+                    $status = __('essentials::lang.inactive');
+                } else if ($status == 'terminated') {
+                    $status = __('essentials::lang.terminated');
+                } else {
+                    $status = '';
+                }
+                $gender = $user->gender;
+                if ($gender == 'male') {
+                    $gender = __('lang_v1.male');
+                } else if ($gender == 'female') {
+                    $gender = __('lang_v1.female');
+                } else {
+                    $gender = __('lang_v1.others');
+                }
+
+                $bank_details = json_decode($user->bank_details);
+                $bank_code = $bank_details->bank_code ?? '';
+                $worker[] = [
+                    'nationality' => $user->country?->nationality ?? '',
+                    'name' => $user->worker ?? '',
+                    'residence_permit' => $this->getDocumentnumber($user, 'residence_permit'),
+                    'contact_name' => $user->contact_name,
+                    'residence_permit_expiration' => $residencePermitDocument,
+                    'admissions_date' => $user->essentials_admission_to_works?->admissions_date ?? '',
+                    'contract_end_date' => $user->contract?->contract_end_date ?? '',
+                    'contact_number' => $user->contact_number ?? '',
+                    'email' => $user->email,
+                    'profession' => $professionName,
+                    'status' =>  $status,
+                    'salary' => $user->essentials_salary,
+                    'total_salary' => $user->total_salary,
+                    'gender' => $gender,
+                    'marital_status' => $user->marital_status,
+                    'blood_group' => $user->blood_group,
+                    'bank_code' =>    $bank_code,
+                ];
+            }
+
+            $res = [
+                'worker' => $worker,
+            ];
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return $this->otherExceptions($e);
+        }
+    }
+
+
+    private function getDocumentnumber($user, $documentType)
+    {
+        foreach ($user->OfficialDocument as $off) {
+            if ($off->type == $documentType) {
+                return $off->number;
+            }
+        }
+
+        return ' ';
+    }
 
     public function updateUserInfo(Request $request)
     {
