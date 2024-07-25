@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Business;
 use App\BusinessLocation;
@@ -133,9 +133,22 @@ class ApiCustomerController extends ApiController
 
             $cont = [];
             foreach ($contracts as $row) {
+                $contract_form = '';
+                if ($row->contract_form == 'monthly_cost') {
+                    $contract_form = __('sales::lang.monthly_cost');
+                } elseif ($row->contract_form == 'operating_fees') {
+                    $contract_form = __('sales::lang.operating_fees');
+                } else {
+                    $contract_form = '';
+                }
                 $cont[] = [
+                    'id' => $row->id,
                     'contact_id' => $contacts[$row->contact_id] ?? '',
-
+                    'number_of_contract' => $row->number_of_contract,
+                    'status' => $row->status,
+                    'start_date' => $row->start_date,
+                    'end_date' => $row->end_date,
+                    'contract_form' =>  $contract_form,
                 ];
             }
 

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\ApiCustomerController;
+use App\Http\Controllers\API\ApiCustomerController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(function () {
