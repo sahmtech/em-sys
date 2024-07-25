@@ -454,10 +454,25 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         $errors[] = __('essentials::lang.sub_specialization_id_not_found');
                     }
                 }
+                // if (isset($emp_array['assigned_to']) && $emp_array['assigned_to'] != null) {
+                //     if (is_numeric($emp_array['assigned_to'])) {
+                //         $doesntExiste = SalesProject::where('id', $emp_array['assigned_to'])->first() == null;
+                //         if ($doesntExiste) {
+                //             $errors[] = __('essentials::lang.sales_project_id_not_found');
+                //         }
+                //     }
+                // }
                 if (isset($emp_array['assigned_to']) && $emp_array['assigned_to'] != null) {
-                    if (is_numeric($emp_array['assigned_to'])) {
-                        $doesntExiste = SalesProject::where('id', $emp_array['assigned_to'])->first() == null;
+                    $assignedTo = trim($emp_array['assigned_to']);
+                    if (is_numeric($assignedTo)) {
+                        $doesntExiste = SalesProject::where('id', $assignedTo)->first() == null;
                         if ($doesntExiste) {
+                            $errors[] = __('essentials::lang.sales_project_id_not_found');
+                        }
+                    } else {
+                        $validCategories = array_map('trim', ['vacation', 'reserved', 'escape', 'final_exit', 'return_exit']);
+                        if (in_array($assignedTo, $validCategories)) {
+                        } else {
                             $errors[] = __('essentials::lang.sales_project_id_not_found');
                         }
                     }
@@ -1079,11 +1094,11 @@ class EssentialsEmployeeUpdateImportController extends Controller
 
             if (isset($formated_data['assigned_to']) && $formated_data['assigned_to'] != null && !is_numeric($formated_data['assigned_to'])) {
 
-
                 $formated_data['sub_status'] = $formated_data['assigned_to'];
                 $formated_data['assigned_to'] = null;
                 $formated_data['status'] = 'inactive';
             }
+
             $formated_data['allowance_data'] = null;
 
 
@@ -1091,6 +1106,10 @@ class EssentialsEmployeeUpdateImportController extends Controller
             $dataToUpdate = array_filter($formated_data, function ($value) {
                 return !is_null($value);
             });
+
+            if (isset($formated_data['assigned_to']) && $formated_data['assigned_to'] == null) {
+                $dataToUpdate['assigned_to'] = null;
+            }
             $existingEmployee->update($dataToUpdate);
         }
     }
@@ -1348,7 +1367,9 @@ class EssentialsEmployeeUpdateImportController extends Controller
                 $dataToUpdate = array_filter($formated_data, function ($value) {
                     return !is_null($value);
                 });
-
+                if (isset($formated_data['assigned_to']) && $formated_data['assigned_to'] == null) {
+                    $dataToUpdate['assigned_to'] = null;
+                }
                 // $user = new User();
 
                 $user = User::create($dataToUpdate);
