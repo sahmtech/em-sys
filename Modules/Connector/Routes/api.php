@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ApiCustomerController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(function () {
@@ -121,5 +122,13 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
     Route::post('clock-in', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'clockin']);
 });
+
+
+Route::middleware('auth:api', 'timezone')->prefix('connector/api/customer')->group(function () {
+    Route::get('/info', [ApiCustomerController::class, 'getCustomerInfo']);
+    Route::get('/projects', [ApiCustomerController::class, 'agentProjects']);
+    Route::get('/contracts', [ApiCustomerController::class, 'agentContracts']);
+});
+
 
 Route::post('connector/api/essentials/resetPassword', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'resetPassword']);
