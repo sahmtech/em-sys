@@ -585,6 +585,19 @@ Route::get('/updateWorkersNotAssigned', function () {
 
     return response()->json(['message' => 'Workers updated successfully.']);
 });
+Route::get('/updateWorkersNotAssignedAt24', function () {
+    $targetDate = '2024-07-24';
+    DB::table('users')
+        ->where('user_type', 'worker')
+        ->whereNull('assigned_to')
+        ->where(function ($query) use ($targetDate) {
+            $query->whereDate('created_at', $targetDate)
+                ->orWhereDate('updated_at', $targetDate);
+        })
+        ->update(['status' => 'active', 'sub_status' => null]);
+
+    return response()->json(['message' => 'Workers updated successfully.']);
+});
 // Route::get('/userFromContact', function () {
 //     $contacts = Contact::where('type', 'lead')->get();
 //     foreach ($contacts as $contact) {
