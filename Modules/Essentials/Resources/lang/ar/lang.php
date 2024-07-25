@@ -1006,7 +1006,7 @@ return [
   'all_finish_residency' => 'جميع الاقامات المنتهية ',
   'workcards_allrequest' => 'الطلبات',
   'work_cards_vaction_requests' => 'طلبات الإجازات',
-  'work_cards_operation' => 'العمليات',
+  'work_cards_operation' => 'عمليات الجوازات',
   'expired_residencies' => 'الاقامات التي شارفت على الانتهاء خلال 15 يوم  ',
   'allexpired_residencies' => 'جميع الاقامات المنتهية ',
   'lateforvaction' => 'الموظفين المتاخرين من الإجازات',
