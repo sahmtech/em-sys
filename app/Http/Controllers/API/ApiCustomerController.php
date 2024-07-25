@@ -82,8 +82,9 @@ class ApiCustomerController extends ApiController
     public function agentProjects()
     {
         try {
-            $business_id = request()->session()->get('user.business_id');
+            // $business_id = request()->session()->get('user.business_id');
             $user = User::where('id', auth()->user()->id)->first();
+            $business_id = $user->business_id;
             $contact_id =  $user->crm_contact_id;
             $SalesProjects = SalesProject::where('contact_id', $contact_id)->get();
             $cities = EssentialsCity::forDropdown();
