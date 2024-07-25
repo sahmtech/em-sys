@@ -1,4 +1,3 @@
-<!-- resources/views/partials/salaries.blade.php -->
 @if ($salaries->isEmpty())
     <p>@lang('followup::lang.no_salaries')</p>
 @else

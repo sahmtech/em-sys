@@ -992,15 +992,14 @@ class EssentialsWorkersAffairsController extends Controller
     {
         try {
             $date = $request->input('month_year');
-            $monthYearString = Carbon::parse($date)->format('F Y');
+            $monthYearString = Carbon::parse($date)->format('Y-m'); // Assuming you need the format as 'Y-m'
 
-            $salaries = Transaction::join('essentials_payroll_group_transactions', 'essentials_payroll_group_transactions.transaction_id', '=', 'transaction.id')
+            $salaries = Transaction::join('essentials_payroll_group_transactions', 'essentials_payroll_group_transactions.transaction_id', '=', 'transactions.id')
                 ->join('essentials_payroll_groups', 'essentials_payroll_groups.id', '=', 'essentials_payroll_group_transactions.payroll_group_id')
-                ->where('timesheet_users.expense_for', $id)
-                ->where('transactions.transaction_date', $monthYearString)
-                ->select('transactions.*', 'timesheet_groups.essentials_payroll_groups.*');
-
-            $salaries = $salaries->get();
+                ->where('transactions.expense_for', $id)
+                ->whereRaw("DATE_FORMAT(transactions.transaction_date, '%Y-%m') = ?", [$monthYearString])
+                ->select('transactions.*', 'essentials_payroll_groups.*')
+                ->get();
 
             return view('essentials::employee_affairs.workers_affairs.salaries', compact('salaries'));
         } catch (\Exception $e) {
@@ -1008,6 +1007,7 @@ class EssentialsWorkersAffairsController extends Controller
             return back()->with('error', 'An error occurred while fetching the timesheets.');
         }
     }
+
 
     public function getTimesheet(Request $request, $id)
     {
