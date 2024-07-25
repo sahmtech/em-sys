@@ -141,63 +141,30 @@ class ApiCustomerController extends ApiController
                 } else {
                     $contract_form = '';
                 }
+                $status = '';
+                if ($row->status == 'valid') {
+                    $status = __('sales::lang.valid');
+                } else {
+                    $status = __('sales::lang.finished');
+                }
                 $cont[] = [
                     'id' => $row->id,
                     'contact_id' => $contacts[$row->contact_id] ?? '',
                     'number_of_contract' => $row->number_of_contract,
-                    'status' => $row->status,
+                    'status' =>  $status,
                     'start_date' => $row->start_date,
                     'end_date' => $row->end_date,
                     'contract_form' =>  $contract_form,
                 ];
             }
 
-            // return Datatables::of($contracts)
-
-
-            //     ->editColumn('contact_id', function ($row) use ($contacts) {
-            //         $item = $contacts[$row->contact_id] ?? '';
-
-            //         return $item;
-            //     })
-
-
-            //     ->addColumn(
-            //         'action',
-            //         function ($row) {
-            //             $html = '';
-            //             $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
-            //             $html .= '&nbsp;';
-
-            //             if (!empty($row->file)) {
-            //                 $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file . '\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
-            //             } else {
-            //                 $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
-            //             }
-            //             $html .= '&nbsp;';
-            //             $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
-            //             return $html;
-            //         }
-            //     )
-
-
-
-            //     ->filterColumn('number_of_contract', function ($query, $keyword) {
-            //         $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
-            //     })
-
-            //     ->rawColumns(['action'])
-            //     ->make(true);
-
-
-
-
-
-            return view('custom_views.agents.agent_contracts');
+            $res = [
+                'contracts' => $cont,
+            ];
+            return new CommonResource($res);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return $this->otherExceptions($e);
         }
     }
 
