@@ -7,6 +7,7 @@ use App\BusinessLocation;
 use App\BusinessLocationPolygonMarker;
 use App\Category;
 use App\Contact;
+use App\RequestProcess;
 use App\Transaction;
 use App\User;
 use App\Utils\ModuleUtil;
@@ -31,6 +32,10 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Sales\Entities\salesContract;
+use App\Request as UserRequest;
+use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentialsLeaveType;
 
 class ApiCustomerController extends ApiController
 {
@@ -273,7 +278,161 @@ class ApiCustomerController extends ApiController
             return $this->otherExceptions($e);
         }
     }
+    public function agentRequests()
+    {
+        try {
+            $user = User::where('id', auth()->user()->id)->first();
 
+            $allRequestTypes = RequestsType::pluck('type', 'id');
+
+
+            $saleProjects = SalesProject::all()->pluck('name', 'id');
+
+            $contact_id =  $user->crm_contact_id;
+
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $created_users = User::select(
+                'id',
+                DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name")
+            )->pluck('full_name', 'id');
+            // error_log($projectsIds[0]);
+            $users = User::where('user_type', 'worker')
+                ->whereIn('users.assigned_to', $projectsIds)
+                ->where(function ($query) {
+                    $query->where('status', 'active')
+                        ->orWhere(function ($subQuery) {
+                            $subQuery->where('status', 'inactive')
+                                ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
+                        });
+                })
+                ->pluck('id')
+                ->unique()
+                ->toArray();
+
+            $all_users = User::whereIn('id', $users)
+                ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))
+                ->get();
+
+            $all_users = $all_users->pluck('full_name', 'id');
+
+            $requestsProcess = null;
+            $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
+
+            $requestsProcess = UserRequest::select([
+
+                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
+
+                'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+
+                'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+
+
+
+            ])
+                ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                    $join->on('requests.id', '=', 'latest_process.request_id');
+                })
+                ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+                ->leftjoin('procedure_tasks', 'procedure_tasks.procedure_id', '=', 'wk_procedures.id')
+                ->leftjoin('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+                ->leftjoin('request_procedure_tasks', function ($join) {
+                    $join->on('request_procedure_tasks.procedure_task_id', '=', 'procedure_tasks.id')
+                        ->on('request_procedure_tasks.request_id', '=', 'requests.id');
+                })
+                ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+
+                ->whereIn('requests.related_to', $users)
+                ->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
+
+
+
+
+            $requests = $requestsProcess->get();
+
+            foreach ($requests as $request) {
+                $tasksDetails = DB::table('request_procedure_tasks')
+                    ->join('procedure_tasks', 'procedure_tasks.id', '=', 'request_procedure_tasks.procedure_task_id')
+                    ->join('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+                    ->where('procedure_tasks.procedure_id', $request->procedure_id)
+                    ->where('request_procedure_tasks.request_id', $request->id)
+                    ->select('tasks.description', 'request_procedure_tasks.id', 'request_procedure_tasks.procedure_task_id', 'tasks.link', 'request_procedure_tasks.isDone', 'procedure_tasks.procedure_id')
+                    ->get();
+
+
+                $request->tasksDetails = $tasksDetails;
+            }
+
+            $requests_arr = [];
+            foreach ($requests as $row) {
+                $tmp = '';
+                if ($row->request_type_id) {
+                    $tmp = $allRequestTypes[$row->request_type_id];
+                }
+
+
+                // Custom render logic based on request type
+                $requestTypeMap = [
+                    'exitRequest' => __('request.exitRequest'),
+                    'returnRequest' => __('request.returnRequest'),
+                    'escapeRequest' => __('request.escapeRequest'),
+                    'advanceSalary' => __('request.advanceSalary'),
+                    'leavesAndDepartures' => __('request.leavesAndDepartures'),
+                    'atmCard' => __('request.atmCard'),
+                    'residenceRenewal' => __('request.residenceRenewal'),
+                    'workerTransfer' => __('request.workerTransfer'),
+                    'residenceCard' => __('request.residenceCard'),
+                    'workInjuriesRequest' => __('request.workInjuriesRequest'),
+                    'residenceEditRequest' => __('request.residenceEditRequest'),
+                    'baladyCardRequest' => __('request.baladyCardRequest'),
+                    'mofaRequest' => __('request.mofaRequest'),
+                    'insuranceUpgradeRequest' => __('request.insuranceUpgradeRequest'),
+                    'chamberRequest' => __('request.chamberRequest'),
+                    'WarningRequest' => __('request.WarningRequest'),
+                    'cancleContractRequest' => __('request.cancleContractRequest'),
+                    'passportRenewal' => __('request.passportRenewal'),
+                    'AjirAsked' => __('request.AjirAsked'),
+                    'AlternativeWorker' => __('request.AlternativeWorker'),
+                    'TransferringGuaranteeFromExternalClient' => __('request.TransferringGuaranteeFromExternalClient'),
+                    'Permit' => __('request.Permit'),
+                    'FamilyInsurace' => __('request.FamilyInsurace'),
+                    'Ajir_link' => __('request.Ajir_link'),
+                    'ticketReservationRequest' => __('request.ticketReservationRequest'),
+                    'authorizationRequest' => __('request.authorizationRequest'),
+                    'salaryInquiryRequest' => __('request.salaryInquiryRequest'),
+                    'interviewsRequest' => __('request.interviewsRequest'),
+
+                ];
+
+                $tmp = $requestTypeMap[$tmp] || $tmp;
+
+
+
+
+                $requests_arr[] = [
+                    'request_no' => $row->request_no,
+                    'user' => $row->user,
+                    'id_proof_number' => $row->id_proof_number,
+                    'assigned_to' => $row->assigned_to ? $saleProjects[$row->assigned_to] : '',
+                    'request_type' => $tmp,
+                    'created_at' => Carbon::parse($row->created_at),
+                    'created_user' => $created_users[$row->created_by],
+                    'status' => $row->status ? __('request.' . $row->status) : '',
+                    'note' => $row->note,
+                ];
+            }
+
+            $res = [
+                'requests' => $requests_arr,
+            ];
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return $this->otherExceptions($e);
+        }
+    }
 
     private function getDocumentnumber($user, $documentType)
     {

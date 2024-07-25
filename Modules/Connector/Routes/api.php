@@ -129,6 +129,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/customer')->gro
     Route::get('/projects', [ApiCustomerController::class, 'agentProjects']);
     Route::get('/contracts', [ApiCustomerController::class, 'agentContracts']);
     Route::get('/workers', [ApiCustomerController::class, 'agentWorker']);
+    Route::get('/requests', [ApiCustomerController::class, 'agentRequests']);
 });
 
 
