@@ -1,6 +1,6 @@
 function submittedDataFunc(response) {
     if (response.success) {
-        console.log(response.client);
+
         var submittedData = response.client;
         var resultItem = response.selectedData;
         var quantity = response.quantity;
@@ -9,7 +9,7 @@ function submittedDataFunc(response) {
         var newTotal2 = submittedData.monthly_cost_for_one * quantity;
         var newTotal = submittedData.monthly_cost_for_one;
         var translatedGender = genderTranslations[submittedData.gender];
-        console.log(translatedGender);
+
         var newRow = '<tr class="product_row" data-client-id="' + submittedData.id + '">' +
             '<td class="text-center">' + response.profession + '</td>' +
             '<td class="text-center">' + response.nationality + '</td>' +
@@ -26,6 +26,18 @@ function submittedDataFunc(response) {
         if (action === 'edit') {
             var $existingRow = $('#pos_table tbody').find('tr[data-client-id="' + submittedData.id + '"]');
             $existingRow.remove();
+            var index = quantityArr.findIndex((quantity, i) => productIds[i] === submittedData.id);
+            if (index > -1) {
+                quantityArr.splice(index, 1);
+                productIds.splice(index, 1);
+                resultsArray.splice(index, 1);
+            }
+            $('#productData').val(JSON.stringify(resultsArray));
+            $('#productIds').val(JSON.stringify(productIds));
+            $('#quantityArr').val(JSON.stringify(quantityArr));
+
+            updateSumOfQuantityArr();
+
 
         } else {
             var totalQuantity = parseInt($('.total_quantity').text());
@@ -74,7 +86,7 @@ $(document).on('click', '.delete-client', function() {
 
                 // Update total quantity
                 var totalQuantity = parseInt($('.total_quantity').text());
-                $('.total_quantity').text(totalQuantity - quantityToRemove);
+                $('.total_quantity').text(totalQuantity - 1);
 
                 // Remove the item from the quantity array and update
                 var index = quantityArr.findIndex((quantity, i) => productIds[i] === clientId);
@@ -215,7 +227,7 @@ function updatePriceTotal() {
     var priceTotal = parseFloat($('.price_total').text()) || 0;
 
     var totalSum = 0;
-    console.log($('#contract_form').val());
+
     if ($('#contract_form').val() == 'operating_fees') {
         totalSum = priceTotal;
     } else {
@@ -249,11 +261,11 @@ function updateArray(resultsArrayItem, productIdsItem, quantity) {
 
 function updateSumOfQuantityArr() {
     var quantityArr = JSON.parse($('#quantityArr').val());
-
+    console.error(quantityArr);
     quantityArrDisplay = quantityArr.reduce(function(accumulator, currentValue) {
         return accumulator + parseInt(currentValue, 10);
     }, 0);
-
+    console.error(quantityArrDisplay);
     $('#quantityArrDisplay').val(quantityArrDisplay);
     $('#quantityArrDisplay2').text(quantityArrDisplay);
 }
