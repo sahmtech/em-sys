@@ -483,7 +483,8 @@ return [
     'not_answered_yet' => 'لم يتم الإجابة بعد',
     'answered_salary' => 'الراتب المجاب',
     'edit_qualified_contact' => 'تعديل بيانات عميل مؤهل',
-    'edit_converted_contact' => 'تعديل بيانات عميل محول'
+    'edit_converted_contact' => 'تعديل بيانات عميل محول',
+    'actions' => 'العمليات',
 ];
 
 // ''=>'',

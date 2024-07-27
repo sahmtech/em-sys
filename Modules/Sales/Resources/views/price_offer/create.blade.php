@@ -835,7 +835,27 @@
     <script>
         var genderTranslations = {
             male: "{{ __('sales::lang.male') }}",
+            female: "{{ __('sales::lang.female') }}",
 
+
+        };
+    </script>
+    <script>
+        const allowanceTypeTranslations = {
+            'housing_allowance': @json(__('sales::lang.housing_allowance')),
+            'food_allowance': @json(__('sales::lang.food_allowance')),
+            'transportation_allowance': @json(__('sales::lang.transportation_allowance')),
+            'overtime_hours': @json(__('sales::lang.overtime_hours')),
+            'GOSI': @json(__('sales::lang.GOSI')),
+            'vacation_salary': @json(__('sales::lang.vacation_salary')),
+            'end_of_service': @json(__('sales::lang.end_of_service')),
+            'administrative_fees': @json(__('sales::lang.administrative_fees')),
+            'other_allowances': @json(__('sales::lang.other_allowances'))
+        };
+
+        const typeTranslations = {
+            'cash': @json(__('sales::lang.cash')),
+            'insured_by_the_other': @json(__('sales::lang.insured_by_the_other'))
         };
     </script>
     <script type="text/javascript">

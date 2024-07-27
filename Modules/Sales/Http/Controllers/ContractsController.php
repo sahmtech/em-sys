@@ -117,9 +117,9 @@ class ContractsController extends Controller
                 ->make(true);
         }
 
-        $departmentIds = EssentialsDepartment:where(function ($query) {
-                $query->where('name', 'LIKE', '%مبيعات%');
-            })->pluck('id')->toArray();
+        $departmentIds = EssentialsDepartment::where(function ($query) {
+            $query->where('name', 'LIKE', '%مبيعات%');
+        })->pluck('id')->toArray();
 
         $query = User::whereHas('appointment', function ($query) use ($departmentIds) {
             $query->whereIn('department_id', $departmentIds)
