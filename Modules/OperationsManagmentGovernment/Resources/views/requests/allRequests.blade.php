@@ -1503,10 +1503,16 @@
                             response.workflow.forEach(function(step, i) {
                                 var status = step.status ? step.status.toLowerCase() :
                                     'grey';
-                                var updatedBy = response.followup_processes.find(
-                                        process => process.department.name === step
-                                        .department)?.updated_by ||
-                                    '{{ __('request.not_exist') }}';
+                                if (step.process_id != null) {
+                                    console.log(step.process_id);
+
+                                    var updatedBy = response.followup_processes.find(
+                                            process => process.id === step
+                                            .process_id)?.updated_by ||
+                                        '{{ __('request.not_exist') }}';
+                                } else {
+                                    var updatedBy = '{{ __('request.not_exist') }}';
+                                }
                                 var rectangle = `
                                           <div class="workflow-rectangle ${status}">
                                               <p class="department-name">${step.department}</p>
@@ -1739,7 +1745,7 @@
             var mainReasonSelect = $('#mainReasonSelect');
             var subReasonContainer = $('#sub_reason_container');
             var subReasonSelect = $('#subReasonSelect');
-  $('#requestType').change(function() {
+            $('#requestType').change(function() {
                 var requestType = $(this).val();
 
                 $.ajax({
@@ -1758,6 +1764,7 @@
                     }
                 });
             });
+
             function fetchUsersWithSaudiNationality() {
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
