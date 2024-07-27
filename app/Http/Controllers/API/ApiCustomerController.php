@@ -126,8 +126,26 @@ class ApiCustomerController extends ApiController
                 ->whereIn('requests.related_to', $users)
                 ->groupBy('requests.id')->orderBy('requests.created_at', 'desc')->count();
 
+
+
+
+
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $workers = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
+                ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
+                ->with(['country', 'contract', 'OfficialDocument'])->select(
+                    'users.id',
+                    'users.*',
+                    'users.id_proof_number',
+                    'users.nationality_id',
+                    'users.essentials_salary',
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                    'sales_projects.name as contact_name'
+                )->count();
+
+
             $res = [
-                'workeres' =>   $user->first_name,
+                'workeres' =>   $workers,
                 'contracts' =>   $contracts,
                 'projects' => $SalesProjects,
                 'requests' =>   $requestsProcess,
@@ -280,7 +298,7 @@ class ApiCustomerController extends ApiController
                     'users.essentials_salary',
                     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
                     'sales_projects.name as contact_name'
-                );
+                )->get();
 
 
             $worker = [];
@@ -442,6 +460,36 @@ class ApiCustomerController extends ApiController
             }
 
             $requests_arr = [];
+            $requestTypeMap = (array)[
+                'exitRequest' => __('request.exitRequest'),
+                'returnRequest' => __('request.returnRequest'),
+                'escapeRequest' => __('request.escapeRequest'),
+                'advanceSalary' => __('request.advanceSalary'),
+                'leavesAndDepartures' => __('request.leavesAndDepartures'),
+                'atmCard' => __('request.atmCard'),
+                'residenceRenewal' => __('request.residenceRenewal'),
+                'workerTransfer' => __('request.workerTransfer'),
+                'residenceCard' => __('request.residenceCard'),
+                'workInjuriesRequest' => __('request.workInjuriesRequest'),
+                'residenceEditRequest' => __('request.residenceEditRequest'),
+                'baladyCardRequest' => __('request.baladyCardRequest'),
+                'mofaRequest' => __('request.mofaRequest'),
+                'insuranceUpgradeRequest' => __('request.insuranceUpgradeRequest'),
+                'chamberRequest' => __('request.chamberRequest'),
+                'WarningRequest' => __('request.WarningRequest'),
+                'cancleContractRequest' => __('request.cancleContractRequest'),
+                'passportRenewal' => __('request.passportRenewal'),
+                'AjirAsked' => __('request.AjirAsked'),
+                'AlternativeWorker' => __('request.AlternativeWorker'),
+                'TransferringGuaranteeFromExternalClient' => __('request.TransferringGuaranteeFromExternalClient'),
+                'Permit' => __('request.Permit'),
+                'FamilyInsurace' => __('request.FamilyInsurace'),
+                'Ajir_link' => __('request.Ajir_link'),
+                'ticketReservationRequest' => __('request.ticketReservationRequest'),
+                'authorizationRequest' => __('request.authorizationRequest'),
+                'salaryInquiryRequest' => __('request.salaryInquiryRequest'),
+                'interviewsRequest' => __('request.interviewsRequest'),
+            ];
             foreach ($requests as $row) {
                 $tmp = '';
                 if ($row->request_type_id) {
@@ -450,38 +498,8 @@ class ApiCustomerController extends ApiController
 
 
                 // Custom render logic based on request type
-                $requestTypeMap = [
-                    'exitRequest' => __('request.exitRequest'),
-                    'returnRequest' => __('request.returnRequest'),
-                    'escapeRequest' => __('request.escapeRequest'),
-                    'advanceSalary' => __('request.advanceSalary'),
-                    'leavesAndDepartures' => __('request.leavesAndDepartures'),
-                    'atmCard' => __('request.atmCard'),
-                    'residenceRenewal' => __('request.residenceRenewal'),
-                    'workerTransfer' => __('request.workerTransfer'),
-                    'residenceCard' => __('request.residenceCard'),
-                    'workInjuriesRequest' => __('request.workInjuriesRequest'),
-                    'residenceEditRequest' => __('request.residenceEditRequest'),
-                    'baladyCardRequest' => __('request.baladyCardRequest'),
-                    'mofaRequest' => __('request.mofaRequest'),
-                    'insuranceUpgradeRequest' => __('request.insuranceUpgradeRequest'),
-                    'chamberRequest' => __('request.chamberRequest'),
-                    'WarningRequest' => __('request.WarningRequest'),
-                    'cancleContractRequest' => __('request.cancleContractRequest'),
-                    'passportRenewal' => __('request.passportRenewal'),
-                    'AjirAsked' => __('request.AjirAsked'),
-                    'AlternativeWorker' => __('request.AlternativeWorker'),
-                    'TransferringGuaranteeFromExternalClient' => __('request.TransferringGuaranteeFromExternalClient'),
-                    'Permit' => __('request.Permit'),
-                    'FamilyInsurace' => __('request.FamilyInsurace'),
-                    'Ajir_link' => __('request.Ajir_link'),
-                    'ticketReservationRequest' => __('request.ticketReservationRequest'),
-                    'authorizationRequest' => __('request.authorizationRequest'),
-                    'salaryInquiryRequest' => __('request.salaryInquiryRequest'),
-                    'interviewsRequest' => __('request.interviewsRequest'),
-                ];
-                $tmp = $requestTypeMap[$tmp] || $tmp;
 
+                $tmp = $requestTypeMap[$tmp] ?? '';
 
 
 
