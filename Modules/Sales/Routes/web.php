@@ -62,6 +62,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/saveQuickClient', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'saveQuickClient'])->name('saveQuickClient');
         Route::get('/viewClients', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'index'])->name('viewClients');
         Route::get('/getClientRow', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'getClientRow'])->name('getClientRow');
+        Route::post('/client/delete', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'deleteClient'])->name('tarclientDelete');
+        Route::get('/client/edit/{id}', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'editClient'])->name('sale.editClient');
+        Route::post('/sale/updateClient/{id}', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'updateClient'])->name('sale.updateClient');
 
         Route::get('/Unsupported_workers', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'index'])->name('Unsupported_workers');
         Route::post('/storeUnsupported_workers', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'store'])->name('storeUnsupported_workers');
@@ -95,9 +98,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/UpdateCustomer/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'update'])->name('sale.UpdateCustomer');
         Route::get('/clients/view/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'show'])->name('sale.clients.view');
         Route::delete('/clients/delete/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'destroy'])->name('sale.clients.delete');
-        Route::get('/clients/edit/{id}/{page}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'edit'])->name('sale.clients.edit');
+        //Route::get('/clients/edit/{id}/{page}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'edit'])->name('sale.clients.edit');
         Route::delete('/deleteCustomer/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'deleteContact'])->name('sale.deleteCustomer');
-
+        Route::get('/editClient/{id}', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'editClient'])->name('sale.editClient');
 
         Route::get('/cotracts', [\Modules\Sales\Http\Controllers\ContractsController::class, 'index'])->name('saleContracts');
         Route::post('/storeContract', [\Modules\Sales\Http\Controllers\ContractsController::class, 'store'])->name('storeContract');
@@ -144,6 +147,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //Route::post('/storeSaleOperation', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.storeSaleOperation');
 
         Route::resource('sales_follow-ups', 'Modules\Sales\Http\Controllers\SalesScheduleController')->except(['show']);
+
 
 
         Route::prefix('saleProjects')->group(function () {
