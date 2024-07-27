@@ -125,6 +125,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
 
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/customer')->group(function () {
+    Route::get('/home', [ApiCustomerController::class, 'home']);
     Route::get('/info', [ApiCustomerController::class, 'getCustomerInfo']);
     Route::get('/projects', [ApiCustomerController::class, 'agentProjects']);
     Route::get('/contracts', [ApiCustomerController::class, 'agentContracts']);

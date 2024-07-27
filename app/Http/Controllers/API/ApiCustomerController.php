@@ -63,6 +63,86 @@ class ApiCustomerController extends ApiController
      *
      * @return Response
      */
+
+    public function home()
+    {
+        try {
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+
+
+
+            $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                ->select([
+                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
+                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
+                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                ])->where('contact_id', $contact_id)->count();
+
+            $SalesProjects = SalesProject::where('contact_id', $contact_id)->count();
+
+
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $users = User::where('user_type', 'worker')
+                ->whereIn('users.assigned_to', $projectsIds)
+                ->where(function ($query) {
+                    $query->where('status', 'active')
+                        ->orWhere(function ($subQuery) {
+                            $subQuery->where('status', 'inactive')
+                                ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
+                        });
+                })
+                ->pluck('id')
+                ->unique()
+                ->toArray();
+
+            $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
+            $requestsProcess = UserRequest::select([
+
+                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
+
+                'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+
+                'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+
+
+
+            ])
+                ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                    $join->on('requests.id', '=', 'latest_process.request_id');
+                })
+                ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+                ->leftjoin('procedure_tasks', 'procedure_tasks.procedure_id', '=', 'wk_procedures.id')
+                ->leftjoin('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+                ->leftjoin('request_procedure_tasks', function ($join) {
+                    $join->on('request_procedure_tasks.procedure_task_id', '=', 'procedure_tasks.id')
+                        ->on('request_procedure_tasks.request_id', '=', 'requests.id');
+                })
+                ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+
+                ->whereIn('requests.related_to', $users)
+                ->groupBy('requests.id')->orderBy('requests.created_at', 'desc')->count();
+
+            $res = [
+                'workeres' =>   $user->first_name,
+                'contracts' =>   $contracts,
+                'projects' => $SalesProjects,
+                'requests' =>   $requestsProcess,
+                'bills' => 0,
+            ];
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
+
     public function getCustomerInfo()
     {
 
@@ -189,22 +269,18 @@ class ApiCustomerController extends ApiController
             $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
 
-            $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
             $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
             $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
                 ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
-                ->with(['country', 'contract', 'OfficialDocument']);
-
-            $users->select(
-                'users.id',
-                'users.*',
-                'users.id_proof_number',
-                'users.nationality_id',
-                'users.essentials_salary',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'sales_projects.name as contact_name'
-            );
+                ->with(['country', 'contract', 'OfficialDocument'])->select(
+                    'users.id',
+                    'users.*',
+                    'users.id_proof_number',
+                    'users.nationality_id',
+                    'users.essentials_salary',
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                    'sales_projects.name as contact_name'
+                );
 
 
             $worker = [];
@@ -403,9 +479,7 @@ class ApiCustomerController extends ApiController
                     'authorizationRequest' => __('request.authorizationRequest'),
                     'salaryInquiryRequest' => __('request.salaryInquiryRequest'),
                     'interviewsRequest' => __('request.interviewsRequest'),
-
                 ];
-
                 $tmp = $requestTypeMap[$tmp] || $tmp;
 
 
