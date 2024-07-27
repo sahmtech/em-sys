@@ -1213,11 +1213,10 @@ class RequestUtil extends Util
 
         $workflow = [];
         $currentStep = WkProcedure::where('id', $request->process[0]->procedure_id)->first();
-        $visitedProcedures = []; // To keep track of visited procedure IDs
-
+        $visitedProcedures = [];
         while ($currentStep && !$currentStep->end) {
             if (in_array($currentStep->id, $visitedProcedures)) {
-                // Break the loop if the procedure has already been visited to prevent infinite loop
+
                 break;
             }
             $visitedProcedures[] = $currentStep->id;
@@ -1246,9 +1245,11 @@ class RequestUtil extends Util
         }
 
         if ($currentStep && $currentStep->end == 1) {
+
             $workflow[] = [
                 'id' => $currentStep->id,
                 'process_id' => $this->getProcessIdForStep($request, $currentStep),
+                // 'procedure_id' =>  $currentStep->id ?? null,
                 'status' => $this->getProcessStatusForStep($request, $currentStep),
                 'department' => optional(DB::table('essentials_departments')->where('id', $currentStep->department_id)->first())->name,
                 'next_department' => null,
@@ -1258,10 +1259,11 @@ class RequestUtil extends Util
         $isDone = UserRequest::where('id', $request->id)->first()->is_done;
         $workflow[] = [
             'id' => null,
+
             'status' => $isDone ? 'approved' : '',
             'department' => $isDone ? trans('request.done') : trans('request.not_yet_done'),
         ];
-
+        //  error_log(json_encode($workflow));
         $attachments = null;
         if ($request->attachments) {
             $attachments = $request->attachments->map(function ($attachment) {
@@ -1317,14 +1319,14 @@ class RequestUtil extends Util
                 'reason' => $process->reason,
                 'status_note' => $process->note,
                 'department' => [
-                    'id' => optional($process->procedure->department)->id,
-                    'name' => optional($process->procedure->department)->name,
+                    'id' => optional($process->procedure?->department)->id,
+                    'name' => optional($process->procedure?->department)->name,
                 ],
             ];
 
             $followupProcesses[] = $processInfo;
         }
-
+        //error_log(json_encode($followupProcesses));
         $result = [
             'request_info' => $requestInfo,
             'user_info' => $userInfo,
@@ -1682,7 +1684,10 @@ class RequestUtil extends Util
     {
         return optional($request->process->where('procedure_id', $step->id)->sortByDesc('created_at')->first())->id;
     }
-
+    private function getProcedureIdForStep($request, $step)
+    {
+        return optional($request->process->where('procedure_id', $step->id)->sortByDesc('created_at')->first())->id;
+    }
     private function getProcessStatusForStep($request, $step)
     {
         return optional($request->process->where('procedure_id', $step->id)->sortByDesc('created_at')->first())->status;
