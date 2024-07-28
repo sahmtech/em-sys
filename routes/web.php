@@ -598,6 +598,33 @@ Route::get('/updateWorkersNotAssignedAt24', function () {
 
     return response()->json(['message' => 'Workers updated successfully.']);
 });
+Route::get('/updateUsersBusiness', function () {
+
+    DB::table('users')
+
+        ->update(['business_id' => 1]);
+
+    return response()->json(['message' => ' updated successfully.']);
+});
+Route::get('/updateContactType', function () {
+
+    DB::table('contacts')
+        ->where('type', 'qualified')
+        ->update(['type' => 'converted']);
+
+    return response()->json(['message' => ' updated successfully.']);
+});
+Route::get('/updateWkProcedures', function () {
+
+    DB::table('wk_procedures')
+
+        ->update(['can_return' => 1]);
+
+    return response()->json(['message' => ' updated successfully.']);
+});
+
+
+
 // Route::get('/userFromContact', function () {
 //     $contacts = Contact::where('type', 'lead')->get();
 //     foreach ($contacts as $contact) {
