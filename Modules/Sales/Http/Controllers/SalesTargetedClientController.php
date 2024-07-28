@@ -140,7 +140,7 @@ class SalesTargetedClientController extends Controller
         error_log(json_encode($request->all()));
         try {
             $business_id = $request->session()->get('user.business_id');
-            $input = $request->only(['client_id', 'profession', 'specialization', 'nationality', 'selectedData', 'gender', 'monthly_cost', 'number', 'essentials_salary']);
+            $input = $request->all();
 
             $input2['profession_id'] = $input['profession'];
             $input2['nationality_id'] = $input['nationality'];
@@ -150,7 +150,9 @@ class SalesTargetedClientController extends Controller
             $input2['business_id'] = $business_id;
             $input2['quantity'] = $input['number'];
             $input2['created_by'] = $request->session()->get('user.id');
-
+            $input2['gosi_amount'] = $input['gosiAmount'];
+            $input2['vacation_amount'] = $input['vacationAmount'];
+            $input2['end_service_amount'] = $input['endServiceAmount'];
             $productData = json_decode($input['selectedData'], true);
             $input2['additional_allwances'] = json_encode($productData);
 
