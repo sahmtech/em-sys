@@ -150,7 +150,14 @@ class ApiCustomerController extends ApiController
                 'projects' => $SalesProjects,
                 'requests' =>   $requestsProcess,
                 'bills' => 0,
+                'first_name' =>   $user->first_name,
+                'mid_name' => $user->mid_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'contact_number' => $user->contact_number,
             ];
+
+
 
 
             return new CommonResource($res);
