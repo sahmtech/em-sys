@@ -473,12 +473,9 @@ class RequestUtil extends Util
                     return redirect()->back()->withErrors([$output['msg']]);
                 }
                 if (!$isExists) {
-                    $business_id = 1;
-                    $company_id = User::where('id', $userId)->first()->company_id;
-                    if ($company_id == 2) {
-                        $business_id = 2;
-                    }
 
+                    $user = User::find($userId);
+                    $business_id = ($user && $user->company_id == 2) ? 2 : 1;
                     $userType = User::where('id', $userId)->first()->user_type;
 
 
