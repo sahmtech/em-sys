@@ -271,7 +271,9 @@ class ApiCustomerController extends ApiController
                     'start_date' => $row->start_date,
                     'end_date' => $row->end_date,
                     'contract_form' =>  $contract_form,
-                    'file_path' =>  '/uploads/' . $row->file,
+                    'file_path1' =>  '/uploads/' . $row->file,
+                    'file_path2' =>  asset('/uploads/' . $row->file),
+                    'file_path3' =>  asset($row->file),
                 ];
             }
 
