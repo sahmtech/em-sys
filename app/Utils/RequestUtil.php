@@ -418,7 +418,7 @@ class RequestUtil extends Util
 
 
         try {
-            //  $business_id = request()->session()->get('user.business_id');
+
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
@@ -474,7 +474,8 @@ class RequestUtil extends Util
                 }
                 if (!$isExists) {
 
-                    $business_id = User::where('id', $userId)->first()->business_id;
+                    $user = User::find($userId);
+                    $business_id = ($user && $user->company_id == 2) ? 2 : 1;
                     $userType = User::where('id', $userId)->first()->user_type;
 
 
@@ -550,7 +551,7 @@ class RequestUtil extends Util
                         }
                     }
                     $Request = new UserRequest;
-                    error_log($business_id);
+
                     $Request->request_no = $this->generateRequestNo($request->type);
                     $Request->related_to = $userId;
                     $Request->request_type_id = $request->type;
@@ -610,8 +611,7 @@ class RequestUtil extends Util
                     if ($Request) {
                         $process = null;
                         if ($userType == 'worker') {
-                            error_log($request->type);
-                            error_log($business_id);
+
 
                             $procedure = WkProcedure::where('business_id', $business_id)
                                 //     ->where('request_type_id', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
@@ -843,10 +843,10 @@ class RequestUtil extends Util
 
 
         $created_by = $request->created_by;
-
+        $userCompanyId = User::where('id', $request->related_to)->first()->company_id;
         $request_type = RequestsType::where('id', $request->request_type_id)->first()->type;
         $input['business_id'] = $business_id;
-        $input['company_id'] = $business_id;
+        $input['company_id'] = $userCompanyId;
         $input['created_by'] = $created_by;
         $input['task'] = "طلب جديد";
         $input['date'] = Carbon::now();
@@ -856,7 +856,7 @@ class RequestUtil extends Util
 
         $process = RequestProcess::where('request_id', $request->id)->latest()->first();
         $users = [];
-        $userCompanyId = User::where('id', $request->related_to)->first()->company_id;
+
         error_log('here');
         error_log($userCompanyId);
 
@@ -1029,9 +1029,9 @@ class RequestUtil extends Util
                         }
                     }
 
-                    $business_id = request()->session()->get('user.business_id');
+                    // $business_id = request()->session()->get('user.business_id');
                     $userRequest = UserRequest::where('id', $requestProcess->request_id)->first();
-                    $this->makeToDo($userRequest, $business_id);
+                    $this->makeToDo($userRequest, $procedure_business_id);
                 }
             }
 
@@ -1129,10 +1129,10 @@ class RequestUtil extends Util
                         $process->request->save();
                     }
                 }
-                $business_id = request()->session()->get('user.business_id');
+
 
                 $userRequest = UserRequest::where('id',  $process->request_id)->first();
-                $this->makeToDo($userRequest, $business_id);
+                $this->makeToDo($userRequest, $procedure->business_id);
             }
 
             $process->request->is_new = 0;
@@ -1860,7 +1860,7 @@ class RequestUtil extends Util
             ->user()
             ->can('essentials.show_workcards_request');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $business_id = request()->session()->get('user.business_id');
+
         $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%حكومية%')
             ->pluck('id')
             ->toArray();
