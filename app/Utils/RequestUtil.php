@@ -477,8 +477,17 @@ class RequestUtil extends Util
                     $user = User::find($userId);
                     $business_id = ($user && $user->company_id == 2) ? 2 : 1;
                     $userType = User::where('id', $userId)->first()->user_type;
+                    $procedure = WkProcedure::where('business_id', $business_id)
+                        ->where('request_type_id', $request->type)->where('start', 1)->first();
+                    if (!$procedure) {
 
-
+                        $message = __('request.this_type_has_not_procedure');
+                        $output = [
+                            'success' => false,
+                            'msg' => $message
+                        ];
+                        return redirect()->back()->withErrors([$output['msg']]);
+                    }
                     if (($userType == 'worker' && $requestTypeFor == 'employee') || ($userType == 'employee' && $requestTypeFor == 'worker') || ($userType == 'manager' && $requestTypeFor == 'worker')) {
 
                         $message = __('request.this_type_id_for_') . " " . __('request.' . $requestTypeFor);
@@ -1379,8 +1388,11 @@ class RequestUtil extends Util
 
         $workflow = [];
 
-        $firstProcedure = WkProcedure::where('id', $firstStep->procedure_id)->first();
-        $visitedProcedures = []; // To keep track of visited procedure IDs
+        // $firstProcedure = WkProcedure::where('id', $firstStep->procedure_id)->first();
+        $user = User::find($request->related_to);
+        $business_id = ($user && $user->company_id == 2) ? 2 : 1;
+        $firstProcedure = WkProcedure::where('request_type_id', $request->request_type_id)->where('business_id', $business_id)->where('start', 1)->first();
+        $visitedProcedures = [];
 
         if ($firstStep->superior_department_id) {
             $workflow[] = [
@@ -1388,12 +1400,12 @@ class RequestUtil extends Util
                 'process_id' => $firstStep->id,
                 'status' => $firstStep->status,
                 'department' => optional(DB::table('essentials_departments')->where('id', $firstStep->superior_department_id)->first())->name,
-                'next_department' => optional(DB::table('essentials_departments')->where('id', $firstProcedure->department_id)->first())->name,
+                'next_department' => optional(DB::table('essentials_departments')->where('id', $firstProcedure?->department_id)->first())->name,
             ];
         }
 
-        $requestproceduretype = WkProcedure::where('id', $firstStep->procedure_id)->first()->request_type_id;
-        $requestprocedurebusiness = WkProcedure::where('id', $firstStep->procedure_id)->first()->business_id;
+        $requestproceduretype = $request->request_type_id;
+        $requestprocedurebusiness =  $business_id;
 
         if ($firstStep->superior_department_id == $firstProcedure->department_id) {
             $firstProcedures = WkProcedure::where('request_type_id', $requestproceduretype)
