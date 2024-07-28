@@ -22,7 +22,6 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CombinedPurchaseReturnController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AgentController;
-use App\Http\Controllers\API\ApiCustomerController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardConfiguratorController;
@@ -1128,7 +1127,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/manage_user/makeUser/{id}', [ManageUserController::class, 'makeUser'])->name('makeUser');
 
     Route::prefix('agent')->group(function () {
-        Route::get('/contractssss', [ApiCustomerController::class, 'agentContracts']);
         Route::get('/home', [AgentController::class, 'agentHome'])->name('agent_home');
         Route::get('/workers_requests', [AgentController::class, 'agentWorkersRequests'])->name('agent_workers_requests');
         Route::get('/projects', [AgentController::class, 'agentProjects'])->name('agent_projects');
