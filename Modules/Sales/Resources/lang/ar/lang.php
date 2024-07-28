@@ -1,6 +1,7 @@
 <?php
 return [
     'sales' => 'المبيعات',
+    'sales dep' => 'إدارة المبيعات',
     'customers' => 'العملاء',
     'contracts' => 'العقود',
     'offer_price' => 'عروض الأسعار',
