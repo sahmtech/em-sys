@@ -164,21 +164,24 @@
                                                     $accounts_transactions[$i - 1]['partner_id'] ?? ' ';
                                                 $selected_partner_type =
                                                     $accounts_transactions[$i - 1]['partner_type'] ?? ' ';
-                                                
-                                                if ($selected_partner_type === 'employees') {
-                                                    $partner = $employees[$selected_partner_id];
-                                                } else {
-                                                    $contactsArray = $contacts->toArray();
-                                                    $contact = array_column($contactsArray, null, 'id')[
-                                                        $selected_partner_id
-                                                    ];
-                                                    $partner =
-                                                        $contact['name'] . ' - ' . $contact['supplier_business_name'];
+                                                if ($selected_partner_id) {
+                                                    if ($selected_partner_type === 'employees') {
+                                                        $partner = $employees[$selected_partner_id];
+                                                    } else {
+                                                        $contactsArray = $contacts->toArray();
+                                                        $contact = array_column($contactsArray, null, 'id')[
+                                                            $selected_partner_id
+                                                        ];
+                                                        $partner =
+                                                            $contact['name'] .
+                                                            ' - ' .
+                                                            $contact['supplier_business_name'];
+                                                    }
+                                                    $partner_type =
+                                                        $selected_partner_type === 'employees'
+                                                            ? __('accounting::lang.employees')
+                                                            : __('accounting::lang.customers_suppliers');
                                                 }
-                                                $partner_type =
-                                                    $selected_partner_type === 'employees'
-                                                        ? __('accounting::lang.employees')
-                                                        : __('accounting::lang.customers_suppliers');
                                             }
 
                                         @endphp
