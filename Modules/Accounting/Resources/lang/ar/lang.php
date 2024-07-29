@@ -697,7 +697,14 @@ return [
     'Warehouses' => 'مستودعات',
     'Revenues received in advance' => 'ايرادات مقبوضة مقدماً',
     'Prepaid expenses' => 'مصاريف مدفوعة مقدماً',
+    'edited_by' => 'حررت بواسطة',
+    'select_partner' => 'تحديد الشريك',
+    'employees' => 'الموظفيين',
+    'customers_suppliers' => 'العملاء والمودرين',
+    'choose_option' => 'إختر خيارا',
+    'history_edit_journal'=>'سجلات تعديل القيود',
 
+    'edit_date' => 'تاريخ التعديل',
     'crud_timesheet' => 'إدارة التايم شيت',
     'create_timesheet' => 'إضافة تايم شيت',
     'edit_timesheet' => 'تعديل تايم شيت',
@@ -725,6 +732,8 @@ return [
     'payment_method' => 'طريقة الدفع',
     'migration_list' => 'قائمة الترحيلات',
     'migratio_status' => 'الحالة',
+    'additional_notes' => 'ملاحظات إضافية',
+
     'create_Journal_entry' => 'توليد قيد يومي',
     'operatio_type' => 'نوع العملية',
     'autoMigration' => [

@@ -43,7 +43,7 @@
                     <th>@lang('accounting::lang.journal_date')</th>
                     <th>@lang('purchase.ref_no')</th>
                     <th>@lang('lang_v1.added_by')</th>
-                    <th>@lang('lang_v1.additional_notes')</th>
+                    <th>@lang('accounting::lang.additional_notes')</th>
                 </tr>
                 </thead>
                 <tbody></tbody>
