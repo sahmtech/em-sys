@@ -21,10 +21,10 @@
                             <tr>
                                 <th class="col-md-1">#</th>
                                 <th class="col-md-4">@lang('accounting::lang.account')</th>
-                                <th class="col-md-1">@lang('accounting::lang.select_partner')</th>
+                                <th class="col-md-2">@lang('accounting::lang.select_partner')</th>
 
-                                <th class="col-md-2">@lang('accounting::lang.debit')</th>
-                                <th class="col-md-2">@lang('accounting::lang.credit')</th>
+                                <th class="col-md-1">@lang('accounting::lang.debit')</th>
+                                <th class="col-md-1">@lang('accounting::lang.credit')</th>
                                 <th class="col-md-5">@lang('accounting::lang.additional_notes')</th>
 
                             </tr>
