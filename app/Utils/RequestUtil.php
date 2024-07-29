@@ -362,13 +362,13 @@ class RequestUtil extends Util
                 ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request, $departmentIds, $departmentIdsForGeneralManagment) {
                     $buttonsHtml = '';
                     if ($departmentIdsForGeneralManagment) {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment) && $row->start != '1') {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
                             }
                         }
                     } else {
-                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) && $row->start != '1') {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds)) {
 
 
                             if ($is_admin || $can_return_request) {
@@ -477,8 +477,17 @@ class RequestUtil extends Util
                     $user = User::find($userId);
                     $business_id = ($user && $user->company_id == 2) ? 2 : 1;
                     $userType = User::where('id', $userId)->first()->user_type;
+                    $procedure = WkProcedure::where('business_id', $business_id)
+                        ->where('request_type_id', $request->type)->where('start', 1)->first();
+                    if (!$procedure) {
 
-
+                        $message = __('request.this_type_has_not_procedure');
+                        $output = [
+                            'success' => false,
+                            'msg' => $message
+                        ];
+                        return redirect()->back()->withErrors([$output['msg']]);
+                    }
                     if (($userType == 'worker' && $requestTypeFor == 'employee') || ($userType == 'employee' && $requestTypeFor == 'worker') || ($userType == 'manager' && $requestTypeFor == 'worker')) {
 
                         $message = __('request.this_type_id_for_') . " " . __('request.' . $requestTypeFor);
@@ -1379,8 +1388,11 @@ class RequestUtil extends Util
 
         $workflow = [];
 
-        $firstProcedure = WkProcedure::where('id', $firstStep->procedure_id)->first();
-        $visitedProcedures = []; // To keep track of visited procedure IDs
+        // $firstProcedure = WkProcedure::where('id', $firstStep->procedure_id)->first();
+        $user = User::find($request->related_to);
+        $business_id = ($user && $user->company_id == 2) ? 2 : 1;
+        $firstProcedure = WkProcedure::where('request_type_id', $request->request_type_id)->where('business_id', $business_id)->where('start', 1)->first();
+        $visitedProcedures = [];
 
         if ($firstStep->superior_department_id) {
             $workflow[] = [
@@ -1388,12 +1400,12 @@ class RequestUtil extends Util
                 'process_id' => $firstStep->id,
                 'status' => $firstStep->status,
                 'department' => optional(DB::table('essentials_departments')->where('id', $firstStep->superior_department_id)->first())->name,
-                'next_department' => optional(DB::table('essentials_departments')->where('id', $firstProcedure->department_id)->first())->name,
+                'next_department' => optional(DB::table('essentials_departments')->where('id', $firstProcedure?->department_id)->first())->name,
             ];
         }
 
-        $requestproceduretype = WkProcedure::where('id', $firstStep->procedure_id)->first()->request_type_id;
-        $requestprocedurebusiness = WkProcedure::where('id', $firstStep->procedure_id)->first()->business_id;
+        $requestproceduretype = $request->request_type_id;
+        $requestprocedurebusiness =  $business_id;
 
         if ($firstStep->superior_department_id == $firstProcedure->department_id) {
             $firstProcedures = WkProcedure::where('request_type_id', $requestproceduretype)
@@ -1553,7 +1565,7 @@ class RequestUtil extends Util
 
 
                 $procedure = WkProcedure::find($requestProcess->procedure_id);
-
+                $goes_to_superior = RequestsType::where('id', $procedure->request_type_id)->first()->goes_to_superior;
                 if ($procedure) {
 
                     $departmentId = $procedure->department_id;
@@ -1582,7 +1594,7 @@ class RequestUtil extends Util
                             'msg' => __('request.returned_successfully'),
                         ];
                     } else {
-                        if ($procedure->request_owner_type == 'employee') {
+                        if ($procedure->request_owner_type == 'employee' && $goes_to_superior == 1) {
 
 
                             $requestProcess->update([
@@ -1599,9 +1611,18 @@ class RequestUtil extends Util
                                 'msg' => __('request.returned_successfully'),
                             ];
                         } else {
+                            $requestProcess->update([
+                                'procedure_id' => null,
+                                'superior_department_id' => $firstStep->started_department_id,
+                                'status' => 'pending',
+                                'is_returned' => 1,
+                                'updated_by' => auth()->user()->id,
+                                'note' => __('request.returned_by') . " " . $nameDepartment,
+
+                            ]);
                             $output = [
-                                'success' => false,
-                                'msg' => __('request.there_is_no_department_to_return_for'),
+                                'success' => true,
+                                'msg' => __('request.returned_successfully'),
                             ];
                         }
                     }
@@ -2058,91 +2079,6 @@ class RequestUtil extends Util
     }
 
 
-    // public function getViewRequestsPermission($department)
-    // {
-    //     $accountingDepartmentIds = EssentialsDepartment::where(function ($query) {
-    //         $query->where('name', 'like', '%حاسب%')
-    //             ->orWhere('name', 'like', '%مالي%');
-    //     })
-    //         ->pluck('id')->toArray();
-
-    //     $followupDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%متابعة%')
-    //         ->pluck('id')->toArray();
-
-    //     $workCardDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%حكومية%')
-    //         ->pluck('id')->toArray();
-
-    //     $hrDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')
-    //         ->pluck('id')->toArray();
-    //     $employeeAffairsDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
-    //         ->pluck('id')->toArray();
-    //     $InsuranceDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%تأمين%')
-    //         ->pluck('id')->toArray();
-    //     $payrollDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%رواتب%')
-    //         ->pluck('id')->toArray();
-    //     $HtrDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
-    //         ->pluck('id')->toArray();
-    //     $irDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%دولي%')
-    //         ->pluck('id')->toArray();
-    //     $legalDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%قانوني%')
-    //         ->pluck('id')->toArray();
-    //     $salesDepartmentIds = EssentialsDepartment::where('name', 'LIKE', '%مبيعات%')
-    //         ->pluck('id')->toArray();
-    //     $CeoDepartmentIds = EssentialsDepartment::where(function ($query) {
-    //         $query->where('name', 'like', '%تنفيذ%');
-    //     })
-    //         ->pluck('id')->toArray();
-
-    //     $generalDepartmentIds = EssentialsDepartment::where(function ($query) {
-    //         $query->Where('name', 'like', '%مجلس%')
-    //             ->orWhere('name', 'like', '%عليا%');
-    //     })
-    //         ->pluck('id')->toArray();
-
-
-    //     if (in_array($department, $followupDepartmentIds)) {
-    //         $viewRequestPermission = 'followup.view_followup_requests';
-    //     }
-    //     if (in_array($department, $accountingDepartmentIds)) {
-    //         $viewRequestPermission = 'accounting.view_accounting_requests';
-    //     }
-    //     if (in_array($department, $workCardDepartmentIds)) {
-    //         $viewRequestPermission = 'essentials.view_workcards_request';
-    //     }
-    //     if (in_array($department, $hrDepartmentIds)) {
-    //         $viewRequestPermission = 'essentials.view_HR_requests';
-    //     }
-    //     if (in_array($department, $employeeAffairsDepartmentIds)) {
-    //         $viewRequestPermission = 'essentials.view_employees_affairs_requests';
-    //     }
-
-    //     if (in_array($department, $generalDepartmentIds)) {
-    //         $viewRequestPermission = 'generalmanagement.view_president_requests';
-    //     }
-    //     if (in_array($department, $CeoDepartmentIds)) {
-    //         $viewRequestPermission = 'ceomanagment.view_CEO_requests';
-    //     }
-    //     if (in_array($department, $salesDepartmentIds)) {
-    //         $viewRequestPermission = 'sales.view_sales_requests';
-    //     }
-    //     if (in_array($department, $legalDepartmentIds)) {
-    //         $viewRequestPermission = 'legalaffairs.view_legalaffairs_requests';
-    //     }
-    //     if (in_array($department, $irDepartmentIds)) {
-    //         $viewRequestPermission = 'internationalrelations.view_ir_requests';
-    //     }
-    //     if (in_array($department, $HtrDepartmentIds)) {
-    //         $viewRequestPermission = 'housingmovements.crud_htr_requests';
-    //     }
-    //     if (in_array($department, $payrollDepartmentIds)) {
-    //         $viewRequestPermission = 'essentials.view_payroll_requests';
-    //     }
-    //     if (in_array($department, $InsuranceDepartmentIds)) {
-    //         $viewRequestPermission = 'essentials.crud_insurance_requests';
-    //     }
-
-    //     return  $viewRequestPermission;
-    // }
 
     public function getViewRequestsPermission($department)
     {
