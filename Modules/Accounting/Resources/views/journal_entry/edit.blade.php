@@ -117,11 +117,11 @@
                         <thead>
                             <tr>
                                 <th class="col-md-1">#</th>
-                                <th class="col-md-4">@lang('accounting::lang.account')</th>
+                                <th class="col-md-3">@lang('accounting::lang.account')</th>
                                 <th class="col-md-2">@lang('accounting::lang.select_partner')</th>
-                                <th class="col-md-1">@lang('accounting::lang.debit')</th>
-                                <th class="col-md-1">@lang('accounting::lang.credit')</th>
-                                <th class="col-md-5">@lang('accounting::lang.additional_notes')</th>
+                                <th class="col-md-2">@lang('accounting::lang.debit')</th>
+                                <th class="col-md-2">@lang('accounting::lang.credit')</th>
+                                <th class="col-md-3">@lang('accounting::lang.additional_notes')</th>
 
                             </tr>
                         </thead>
@@ -135,7 +135,7 @@
                                         $credit = '';
                                         $additional_notes = '';
                                         $default_array = [];
-                                        $selected_partner_id = '';
+                                        $selected_partner_id = null;
                                         $selected_partner_type = '';
                                         $partner = '';
                                         $partner_type = '';
@@ -161,7 +161,7 @@
 
                                             if ($i <= count($accounts_transactions)) {
                                                 $selected_partner_id =
-                                                    $accounts_transactions[$i - 1]['partner_id'] ?? ' ';
+                                                    $accounts_transactions[$i - 1]['partner_id'] ?? null;
                                                 $selected_partner_type =
                                                     $accounts_transactions[$i - 1]['partner_type'] ?? ' ';
                                                 if ($selected_partner_id) {
