@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Contact;
 use App\Transaction;
 use App\TransactionPayment;
 use App\User;
@@ -16,7 +17,10 @@ use Modules\Accounting\Entities\AccountingAccTransMapping;
 use App\Utils\Util;
 use Illuminate\Support\Facades\DB;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Modules\Accounting\Entities\AccountingAccountsTransactionHistory;
+use Modules\Accounting\Entities\AccountingAccTransMappingHistory;
 use Modules\Accounting\Utils\AccountingUtil;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -36,7 +40,7 @@ class JournalEntryController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -51,6 +55,7 @@ class JournalEntryController extends Controller
         $can_view_journal = auth()->user()->can('accounting.view_journal');
         $can_edit_journal = auth()->user()->can('accounting.edit_journal');
         $can_delete_journal = auth()->user()->can('accounting.delete_journal');
+        $can_history_edit = auth()->user()->can('accounting.history_edit');
 
 
         if (request()->ajax()) {
@@ -59,7 +64,7 @@ class JournalEntryController extends Controller
                 ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
                 ->where('type', 'journal_entry')
                 ->select([
-                    'accounting_acc_trans_mappings.id', 'ref_no', 'operation_date', 'note',
+                    'accounting_acc_trans_mappings.id', 'ref_no', 'accounting_acc_trans_mappings.path_file', 'operation_date', 'note',
                     DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                 ]);
 
@@ -72,7 +77,7 @@ class JournalEntryController extends Controller
             return Datatables::of($journal)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_view_journal, $can_edit_journal, $can_delete_journal) {
+                    function ($row) use ($is_admin, $can_history_edit, $can_edit_journal, $can_delete_journal) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -81,18 +86,26 @@ class JournalEntryController extends Controller
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-                        if ($is_admin || $can_view_journal) {
-                            $html .= '<li>
-                                <a href="#" data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@show', [$row->id]) . '">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>' . __("messages.view") . '
-                                </a>
-                                </li>';
-                        }
+                        // if ($is_admin || $can_view_journal) {
+                        //     $html .= '<li>
+                        //         <a href="#" data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@show', [$row->id]) . '">
+                        //             <i class="fas fa-eye" aria-hidden="true"></i>' . __("messages.view") . '
+                        //         </a>
+                        //         </li>';
+                        // }
 
                         if ($is_admin || $can_edit_journal) {
                             $html .= '<li>
                                     <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@edit', [$row->id]) . '">
                                         <i class="fas fa-edit"></i>' . __("messages.edit") . '
+                                    </a>
+                                </li>';
+                        }
+
+                        if ($is_admin || $can_history_edit) {
+                            $html .= '<li>
+                                    <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@history_index', [$row->id]) . '">
+                                        <i class="fas fa-history" aria-hidden="true"></i>' . __("messages.history_edit") . '
                                     </a>
                                 </li>';
                         }
@@ -110,28 +123,127 @@ class JournalEntryController extends Controller
                         return $html;
                     }
                 )
-                ->rawColumns(['action'])
+                ->addColumn('path_file', function ($row) {
+                    $html = '';
+                    if (!empty($row->path_file)) {
+                        $html .= '<button class="btn btn-xs btn-info "  onclick="window.location.href = \'/uploads/' . $row->path_file . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                        '&nbsp;';
+                    } else {
+                        $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                    }
+                    return $html;
+                })
+                ->rawColumns(['action', 'path_file'])
                 ->make(true);
         }
 
         return view('accounting::journal_entry.index');
     }
+    public function history_index($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_journal_entry = auth()->user()->can('accounting.journal_entry');
+        if (!($is_admin || $can_journal_entry)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $can_view_journal = auth()->user()->can('accounting.view_journal');
+        $can_edit_journal = auth()->user()->can('accounting.edit_journal');
+        $can_delete_journal = auth()->user()->can('accounting.delete_journal');
+
+
+        if (request()->ajax()) {
+
+            $journal = AccountingAccTransMappingHistory::where('accounting_accounts_transactions_history_id', $id)
+                ->where('accounting_acc_trans_mapping_histories.business_id', $business_id)
+                ->where('accounting_acc_trans_mapping_histories.company_id', $company_id)
+                ->join('users as u', 'accounting_acc_trans_mapping_histories.created_by', 'u.id')
+                ->where('type', 'journal_entry')
+                ->select([
+                    'accounting_acc_trans_mapping_histories.id', 'ref_no', 'operation_date', 'note', 'accounting_acc_trans_mapping_histories.path_file', 'accounting_acc_trans_mapping_histories.created_at',
+                    DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                ]);
+
+            return Datatables::of($journal)
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin, $can_view_journal, $can_edit_journal, $can_delete_journal) {
+                        $html = '<div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                    data-toggle="dropdown" aria-expanded="false">' .
+                            __("messages.actions") .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+                        if ($is_admin || $can_view_journal) {
+                            $html .= '<li>
+                                <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@history_view', [$row->id]) . '"
+                                 data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@history_view', [$row->id]) . '">
+                                        <i class="fas fa-history" aria-hidden="true"></i>' . __("messages.history_edit") . '
+                                   </a>
+                                </li>';
+                        }
+
+
+
+                        $html .= '</ul></div>';
+
+                        return $html;
+                    }
+                )
+                ->addColumn('path_file', function ($row) {
+                    $html = '';
+                    if (!empty($row->path_file)) {
+                        $html .= '<button class="btn btn-xs btn-info "  onclick="window.location.href = \'/uploads/' . $row->path_file . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                        '&nbsp;';
+                    } else {
+                        $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                    }
+                    return $html;
+                })
+                ->rawColumns(['action', 'path_file'])
+                ->make(true);
+        }
+
+        return view('accounting::journal_entry.history_index');
+    }
+
 
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
+
+        // 
+        $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
+ 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $query = User::where('business_id', $business_id)->whereIn('id', $userIds)->whereIn('users.user_type', ['employee', 'department_head', 'manager'])->where('users.status', '!=', 'inactive');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $employees = $all_users->pluck('full_name', 'id');
 
 
-
-
-        return view('accounting::journal_entry.create');
+        return view('accounting::journal_entry.create', compact(['contacts', 'employees']));
     }
 
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -145,6 +257,9 @@ class JournalEntryController extends Controller
             $account_ids = $request->get('account_id');
             $credits = $request->get('credit');
             $debits = $request->get('debit');
+            $additional_notes = $request->get('additional_notes');
+            $selected_partner_ids = $request->get('selected_partner_id');
+            $selected_partner_types = $request->get('selected_partner_type_');
             $journal_date = $request->get('journal_date');
 
             $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
@@ -152,15 +267,7 @@ class JournalEntryController extends Controller
 
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
-            // return [
-            //     'account_ids'=>$account_ids,
-            //     'credits'=>$credits,
-            //     'debits'=>$debits,
-            //     'journal_date'=>$journal_date,
-            //     'accounting_settings'=>$accounting_settings,
-            //     'ref_no'=>$ref_no,
-            //     'ref_count'=>$ref_count,
-            // ];
+
             if (empty($ref_no)) {
                 $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
                     $accounting_settings['journal_entry_prefix'] : '';
@@ -169,9 +276,19 @@ class JournalEntryController extends Controller
                 $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
             }
 
+            if ($request->hasFile('attachment')) {
+                $attachment = $request->file('attachment');
+                $attachment_name = $attachment->store('/journal_entry');
+            }
+
+
+
+
             $acc_trans_mapping = new AccountingAccTransMapping();
             $acc_trans_mapping->business_id = $business_id;
             $acc_trans_mapping->company_id = $company_id;
+            $acc_trans_mapping->path_file = $attachment_name;
+
 
             $acc_trans_mapping->ref_no = $ref_no;
             $acc_trans_mapping->note = $request->get('note');
@@ -197,6 +314,11 @@ class JournalEntryController extends Controller
                         $transaction_row['type'] = 'debit';
                     }
 
+
+
+                    $transaction_row['additional_notes'] = $additional_notes[$index];
+                    $transaction_row['partner_id'] = $selected_partner_ids[$index];
+                    $transaction_row['partner_type'] = $selected_partner_types[$index];
                     $transaction_row['created_by'] = $user_id;
                     $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
                     $transaction_row['sub_type'] = 'journal_entry';
@@ -230,7 +352,7 @@ class JournalEntryController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -239,11 +361,44 @@ class JournalEntryController extends Controller
         return view('accounting::journal_entry.show');
     }
 
+    public function history_view($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
+
+
+
+        $journal = AccountingAccTransMappingHistory::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('type', 'journal_entry')
+            ->where('id', $id)
+            ->firstOrFail();
+        $accounts_transactions = AccountingAccountsTransactionHistory::with('account')
+            ->where('acc_trans_mapping_history_id', $id)
+            ->get()->toArray();
+
+        $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $query = User::where('business_id', $business_id)->whereIn('id', $userIds)->whereIn('users.user_type', ['employee', 'department_head', 'manager'])->where('users.status', '!=', 'inactive');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+                ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $employees = $all_users->pluck('full_name', 'id');
+
+        return view('accounting::journal_entry.history_view')
+            ->with(compact('journal', 'accounts_transactions', 'contacts', 'employees'));
+    }
+
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
-
+        $company_id = Session::get('selectedCompanyId');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -256,14 +411,26 @@ class JournalEntryController extends Controller
             ->where('acc_trans_mapping_id', $id)
             ->get()->toArray();
 
+        $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+       
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $query = User::where('business_id', $business_id)->whereIn('id', $userIds)->whereIn('users.user_type', ['employee', 'department_head', 'manager'])->where('users.status', '!=', 'inactive');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $employees = $all_users->pluck('full_name', 'id');
+
         return view('accounting::journal_entry.edit')
-            ->with(compact('journal', 'accounts_transactions'));
+            ->with(compact('journal', 'accounts_transactions', 'contacts', 'employees'));
     }
 
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -277,6 +444,11 @@ class JournalEntryController extends Controller
             $accounts_transactions_id = $request->get('accounts_transactions_id');
             $credits = $request->get('credit');
             $debits = $request->get('debit');
+            $additional_notes = $request->get('additional_notes');
+
+            $selected_partner_ids = $request->get('selected_partner_id');
+            $selected_partner_types = $request->get('selected_partner_type_');
+
             $journal_date = $request->get('journal_date');
 
             $acc_trans_mapping = AccountingAccTransMapping::where('business_id', $business_id)
@@ -284,8 +456,24 @@ class JournalEntryController extends Controller
                 ->where('type', 'journal_entry')
                 ->where('id', $id)
                 ->firstOrFail();
+            $accountingAccTransMappingHistory = AccountingAccTransMappingHistory::create([
+                'accounting_accounts_transactions_history_id' => $id,
+                "business_id" => $acc_trans_mapping->business_id,
+                "company_id" => $acc_trans_mapping->company_id,
+                "ref_no" => $acc_trans_mapping->ref_no,
+                "type" => $acc_trans_mapping->type,
+                "created_by" => Auth::user()->id,
+                "operation_date" => $acc_trans_mapping->operation_date,
+                "note" => $acc_trans_mapping->note,
+                'path_file' => $acc_trans_mapping->path_file,
+            ]);
+            if ($request->hasFile('attachment')) {
+                $attachment = $request->file('attachment');
+                $attachment_name = $attachment->store('/journal_entry');
+            }
             $acc_trans_mapping->note = $request->get('note');
             $acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
+            $acc_trans_mapping->path_file = $attachment_name;
             $acc_trans_mapping->update();
 
             //save details in account trnsactions table
@@ -304,6 +492,9 @@ class JournalEntryController extends Controller
                         $transaction_row['amount'] = $debits[$index];
                         $transaction_row['type'] = 'debit';
                     }
+                    $transaction_row['additional_notes'] = $additional_notes[$index] ?? '';
+                    $transaction_row['partner_id'] = $selected_partner_ids[$index];
+                    $transaction_row['partner_type'] = $selected_partner_types[$index];
 
                     $transaction_row['created_by'] = $user_id;
                     $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
@@ -312,6 +503,25 @@ class JournalEntryController extends Controller
 
                     if (!empty($accounts_transactions_id[$index])) {
                         $accounts_transactions = AccountingAccountsTransaction::find($accounts_transactions_id[$index]);
+                        AccountingAccountsTransactionHistory::create([
+                            'acc_trans_mapping_history_id' => $accountingAccTransMappingHistory->id,
+                            "accounting_account_id" => $accounts_transactions->accounting_account_id,
+                            "acc_trans_mapping_id" => $accounts_transactions->acc_trans_mapping_id,
+                            "transaction_id" => $accounts_transactions->transaction_id,
+                            "transaction_payment_id" => $accounts_transactions->transaction_payment_id,
+                            "amount" => $accounts_transactions->amount,
+                            "type" => $accounts_transactions->type,
+                            "sub_type" => $accounts_transactions->sub_type,
+                            "map_type" => $accounts_transactions->map_type,
+                            "created_by" => Auth::user()->id,
+                            "operation_date" => $accounts_transactions->operation_date,
+                            "note" => $accounts_transactions->note,
+                            'additional_notes' => $accounts_transactions->additional_notes,
+                            'partner_id' => $accounts_transactions->partner_id,
+                            'partner_type' => $accounts_transactions->partner_type,
+
+
+                        ]);
                         $accounts_transactions->fill($transaction_row);
                         $accounts_transactions->update();
                     } else {
@@ -348,7 +558,7 @@ class JournalEntryController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -371,7 +581,7 @@ class JournalEntryController extends Controller
     public function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -446,7 +656,7 @@ class JournalEntryController extends Controller
     public function saveMap(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 

@@ -840,8 +840,9 @@ class OfferPriceController extends Controller
                     '${PRE_PAY_EN}' => $query->down_payment ?? '',
                     '${BANK_GURANTEE}' => '' ?? '',
                     '${BANK_GURANTEE_EN}' => '' ?? '',
-                    '${CREATED_BY}' => $query->sales_person->first_name ?? '',
-                    '${CREATED_BY_EN}' => $query->sales_person->english_name ?? '',
+                    '${CREATED_BY}' => 'إدارة المبيعات',
+                    //$query->sales_person->first_name ?? '',
+                    '${CREATED_BY_EN}' => 'Sells Department',
                 ];
 
                 foreach ($replacements as $placeholder => $value) {
@@ -918,7 +919,7 @@ class OfferPriceController extends Controller
                                     '${F}' => $others,
                                     '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
                                     '${H}' => $sell_line->quantity ?? 0,
-                                    '${I}' => number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''),
+                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? 0,
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? 0,
                                     '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
@@ -1004,7 +1005,7 @@ class OfferPriceController extends Controller
                                     '${F}' => $others,
                                     '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
                                     '${H}' => $sell_line->quantity ?? 0,
-                                    '${I}' => number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''),
+                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? 0,
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? 0,
                                     '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
@@ -1040,8 +1041,8 @@ class OfferPriceController extends Controller
                     '${PRE_PAY_EN}' => $query->down_payment ?? '',
                     '${BANK_GURANTEE}' => '' ?? '',
                     '${BANK_GURANTEE_EN}' => '' ?? '',
-                    '${CREATED_BY}' => $query->sales_person->first_name ?? '',
-                    '${CREATED_BY_EN}' => $query->sales_person->english_name ?? '',
+                    '${CREATED_BY}' =>  'إدارة المبيعات',
+                    '${CREATED_BY_EN}' => 'Sells Department',
                 ];
 
                 foreach ($replacements as $placeholder => $value) {

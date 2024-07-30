@@ -144,9 +144,13 @@ class TimeSheetController extends Controller
     public function agentTimeSheetGroups()
     {
         $user = User::where('id', auth()->user()->id)->first();
+        $authCompanyId = $user->company_id;
+
         $payrolls = TimesheetGroup::where(function ($query) use ($user) {
             $query->where('timesheet_groups.created_by', $user->id)
                 ->orWhere('timesheet_groups.status', 'final');
+        })->whereHas('timesheetUsers.user', function ($query) use ($authCompanyId) {
+            $query->where('company_id', $authCompanyId)->where('is_approved', 0);
         })->select([
             'timesheet_groups.id',
             'timesheet_groups.name',
@@ -220,12 +224,36 @@ class TimeSheetController extends Controller
     public function dealTimeSheet($id)
     {
         try {
-            $timesheetGroup = TimesheetGroup::findOrFail($id);
-            $timesheetGroup->is_approved = 1;
-            $timesheetGroup->approved_by = auth()->user()->id;
-            $timesheetGroup->save();
+            $authUser = auth()->user();
+            $authCompanyId = $authUser->company_id;
 
-            return redirect()->route('housingmovements.agentTimeSheetIndex')->with('status', [
+            $timesheetGroup = TimesheetGroup::findOrFail($id);
+
+            $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)
+                ->whereHas('user', function ($query) use ($authCompanyId) {
+                    $query->where('company_id', $authCompanyId);
+                })
+                ->get();
+
+            foreach ($timesheetUsers as $timesheetUser) {
+                $timesheetUser->update([
+                    'is_approved' => 1,
+                    'approved_by' => $authUser->id,
+                ]);
+            }
+
+            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
+                ->where('is_approved', 0)
+                ->exists();
+
+            if (!$hasPendingApprovals) {
+                $timesheetGroup->update([
+                    'is_approved' => 1,
+                    'approved_by' => $authUser->id,
+                ]);
+            }
+
+            return redirect()->route('hrm.agentTimeSheetIndex')->with('status', [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ]);
@@ -238,6 +266,7 @@ class TimeSheetController extends Controller
             ]);
         }
     }
+
     public function editTimeSheet($id)
     {
 
@@ -425,16 +454,19 @@ class TimeSheetController extends Controller
 
     public function showTimeSheet($id)
     {
+        $authUser = auth()->user();
+        $authCompanyId = $authUser->company_id;
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+            ->where('u.company_id', $authCompanyId)
             ->select([
                 'timesheet_users.*',
                 'u.first_name',
                 'u.mid_name',
                 'u.last_name',
                 'u.bank_details',
-            ])
+            ])->where('is_approved', 0)
             ->get();
 
         $timesheetUsers->each(function ($item) {

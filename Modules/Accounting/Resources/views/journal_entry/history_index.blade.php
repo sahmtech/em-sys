@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.journal_entry'))
+@section('title', __('accounting::lang.journal_entry') . '-' . __('messages.history_edit'))
 
 @section('content')
 
@@ -8,45 +8,22 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('accounting::lang.journal_entry')</h1>
+        <h1>@lang('accounting::lang.journal_entry') - @lang('messages.history_edit')</h1>
     </section>
     <section class="content no-print">
-        <div class="row">
-            <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters')])
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('journal_entry_date_range_filter', __('report.date_range') . ':') !!}
-                            {!! Form::text('journal_entry_date_range_filter', null, [
-                                'placeholder' => __('lang_v1.select_a_date_range'),
-                                'class' => 'form-control',
-                                'readonly',
-                            ]) !!}
-                        </div>
-                    </div>
-                @endcomponent
-            </div>
-        </div>
-        @component('components.widget', ['class' => 'box-solid'])
-            @can('accounting.add_journal')
-                @slot('tool')
-                    <div class="box-tools">
-                        <a class="btn btn-block btn-primary"
-                            href="{{ action('\Modules\Accounting\Http\Controllers\JournalEntryController@create') }}">
-                            <i class="fas fa-plus"></i> @lang('messages.add')</a>
-                    </div>
-                @endslot
-            @endcan
 
+        @component('components.widget', ['class' => 'box-solid'])
             <table class="table table-bordered table-striped" id="journal_table">
                 <thead>
                     <tr>
                         <th>@lang('messages.action')</th>
                         <th>@lang('accounting::lang.journal_date')</th>
                         <th>@lang('purchase.ref_no')</th>
-                        <th>@lang('lang_v1.added_by')</th>
+                        <th>@lang('accounting::lang.edited_by')</th>
+                        <th>@lang('accounting::lang.edit_date')</th>
                         <th>@lang('accounting::lang.additional_notes')</th>
                         <th>@lang('accounting::lang.attachment')</th>
+
 
                     </tr>
                 </thead>
@@ -60,13 +37,19 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+            var path = window.location.pathname;
 
+            var parts = path.split('/');
+
+            var id = parts[parts.length - 1];
+
+            console.log(id);
             //Journal table
             journal_table = $('#journal_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '/accounting/journal-entry',
+                    url: 'journal-entry/history/'.id,
                     data: function(d) {
                         var start = '';
                         var end = '';
@@ -102,6 +85,19 @@
                     {
                         data: 'added_by',
                         name: 'added_by'
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at',
+                        render: function(data, type, row) {
+                            if (type === 'display' || type === 'filter') {
+                                var date = new Date(data);
+                                var formattedDate = date.toLocaleDateString() + ' ' + date
+                                    .toLocaleTimeString();
+                                return formattedDate;
+                            }
+                            return data;
+                        }
                     },
                     {
                         data: 'note',

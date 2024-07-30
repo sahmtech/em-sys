@@ -20,11 +20,15 @@ return [
     'view' => 'View',
     'delete' => 'Delete',
     'close' => 'Close',
+    'select'=>'Select',
+
     'something_went_wrong' => 'Something went wrong, please try again later',
     'required' => 'This field is required',
     'please_select' => 'Please Select',
     'cancel' => 'Cancel',
     'date' => 'Date',
+    'history_edit'=>'Modification logs',
+
     'filter_by_date' => 'Filter by date',
     'location' => 'Location',
     'go_back' => 'Go Back',

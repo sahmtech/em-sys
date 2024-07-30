@@ -171,6 +171,13 @@ class DataController extends Controller
                         'default' => false
                     ],
                     [
+                        'value' => 'accounting.history_edit',
+                        'label' => __('accounting::lang.history_edit_journal'),
+                        'default' => false
+                    ],
+
+
+                    [
                         'value' => 'accounting.automatedMigration',
                         'label' => __('accounting::lang.automatedMigration'),
                         'default' => false
