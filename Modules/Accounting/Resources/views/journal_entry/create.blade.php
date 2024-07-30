@@ -3,6 +3,8 @@
 @section('title', __('accounting::lang.journal_entry'))
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     {{-- @include('accounting::layouts.nav') --}}
 
@@ -16,6 +18,7 @@
             'url' => action('\Modules\Accounting\Http\Controllers\JournalEntryController@store'),
             'method' => 'post',
             'id' => 'journal_add_form',
+            'files' => true,
         ]) !!}
 
         @component('components.widget', ['class' => 'box-primary'])
@@ -44,7 +47,28 @@
                     </div>
                 </div>
 
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {!! Form::label('upload_document', __('accounting::lang.attach_document') . ':') !!}
+                        <div class="custom-file">
+                            {!! Form::file('attachment', [
+                                'class' => 'custom-file-input',
+                                'id' => 'attachment',
+                                'accept' => '.doc,.docx,.xls,.xlsx,.pdf',
+                            ]) !!}
+                            <label class="custom-file-label" for="attachment">
+                                <i class="fas fa-upload"></i> {{ __('Choose file') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+
             </div>
+
+
+
 
             <div class="row">
                 <div class="col-md-12">
@@ -206,6 +230,24 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $('#myModal').on('shown.bs.modal', function(e) {
+                $('#select-employees').select2({
+                    dropdownParent: $(
+                        '#myModal'),
+                    width: '100%',
+                });
+            });
+
+            $('#myModal').on('shown.bs.modal', function(e) {
+                $('#select-customers_suppliers').select2({
+                    dropdownParent: $(
+                        '#myModal'),
+                    width: '100%',
+                });
+            });
+            
+
             $('#select-employees').change(function() {
                 const id = $('.row-number').val();
 

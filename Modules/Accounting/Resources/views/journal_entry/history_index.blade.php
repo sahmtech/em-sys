@@ -11,9 +11,8 @@
         <h1>@lang('accounting::lang.journal_entry') - @lang('messages.history_edit')</h1>
     </section>
     <section class="content no-print">
-        
+
         @component('components.widget', ['class' => 'box-solid'])
-          
             <table class="table table-bordered table-striped" id="journal_table">
                 <thead>
                     <tr>
@@ -23,6 +22,9 @@
                         <th>@lang('accounting::lang.edited_by')</th>
                         <th>@lang('accounting::lang.edit_date')</th>
                         <th>@lang('accounting::lang.additional_notes')</th>
+                        <th>@lang('accounting::lang.attachment')</th>
+
+
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -100,6 +102,10 @@
                     {
                         data: 'note',
                         name: 'note'
+                    },
+                    {
+                        data: 'path_file',
+                        name: 'path_file'
                     }
                 ]
             });
