@@ -123,6 +123,7 @@
                         <table class="table table-bordered table-striped" id="requests_table">
                             <thead>
                                 <tr>
+                                    <th>@lang('request.company')</th>
                                     <th>@lang('followup::lang.request_number')</th>
                                     <th>@lang('followup::lang.name')</th>
                                     <th>@lang('followup::lang.eqama_number')</th>
@@ -162,8 +163,9 @@
                     url: "{{ route('insurance_requests') }}"
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },

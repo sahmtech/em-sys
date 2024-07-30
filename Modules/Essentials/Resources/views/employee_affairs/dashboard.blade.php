@@ -9,147 +9,149 @@
 
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
-            @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_contract_period_ending"))
-                <div class="col-md-3 " onclick="finsish_contract_duration()" style="cursor: pointer;">
-                    <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                           
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.finsish_contract_duration') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-0">{{$probation_period}}</h4>
+                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_contract_period_ending'))
+                    <div class="col-md-3 " onclick="finsish_contract_duration()" style="cursor: pointer;">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">{{ __('essentials::lang.finsish_contract_duration') }}
+                                            </h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff" id="counter-0">{{ $probation_period }}</h4>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endif
 
-                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_contract_ending"))
-                <div class="col-md-3 " onclick="finish_contracts()" style="cursor: pointer;">
-                    <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                             
-                                <div class="w-title">
-                                   
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.finsish_contract_date') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-1">{{$contract_end_date}}</h4>
-                                    </div>
-                                </div>
-                            </div>
+                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_contract_ending'))
+                    <div class="col-md-3 " onclick="finish_contracts()" style="cursor: pointer;">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
 
-                        </div>
-                    </div>
-                </div>
-                @endif
+                                    <div class="w-title">
 
-
-                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_late_work_admission"))
-                <div class="col-md-3 " onclick="late_admission()" style="cursor: pointer;">
-                    <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.late_admission') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-2">{{$late_vacation}}</h4>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">{{ __('essentials::lang.finsish_contract_date') }}</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff" id="counter-1">{{ $contract_end_date }}</h4>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
-                </div>
-                @endif
-
-                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_missing_employees_info"))
-                <div class="col-md-3 " onclick="uncomplete_profiles()" style="cursor: pointer;">
-                    <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.uncomplemete_profiles') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-3">{{$nullCount}}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
                 @endif
 
 
+                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_late_work_admission'))
+                    <div class="col-md-3 " onclick="late_admission()" style="cursor: pointer;">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">{{ __('essentials::lang.late_admission') }}</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff" id="counter-2">{{ $late_vacation }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-      
-     
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_missing_employees_info'))
+                    <div class="col-md-3 " onclick="uncomplete_profiles()" style="cursor: pointer;">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">{{ __('essentials::lang.uncomplemete_profiles') }}</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff" id="counter-3">{{ $nullCount }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+
+
+
+
 
             </div>
         </div>
-      
+
 
     </section>
 
-<div class="clearfix"></div>
-     <!-- Main content -->
-<section class="content">
+    <div class="clearfix"></div>
+    <!-- Main content -->
+    <section class="content">
 
-<div class="row">
-    <div class="col-md-12 ">
-        @component('components.widget', [
-            'class' => 'box-primary',
-            'title' => __('essentials::lang.requests'),
-        ])
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="requests_table">
-                    <thead>
-                        <tr>
-                            <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.worker_name')</th>
-                            <th>@lang('followup::lang.eqama_number')</th>
-                            <th>@lang('followup::lang.request_type')</th>
-                            <th>@lang('followup::lang.request_date')</th>
-                            <th>@lang('followup::lang.status')</th>
-                            <th>@lang('followup::lang.note')</th>
-                            {{-- <th>@lang('followup::lang.action')</th> --}}
+        <div class="row">
+            <div class="col-md-12 ">
+                @component('components.widget', [
+                    'class' => 'box-primary',
+                    'title' => __('essentials::lang.requests'),
+                ])
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="requests_table">
+                            <thead>
+                                <tr>
+                                    <th>@lang('request.company')</th>
+                                    <th>@lang('followup::lang.request_number')</th>
+                                    <th>@lang('followup::lang.worker_name')</th>
+                                    <th>@lang('followup::lang.eqama_number')</th>
+                                    <th>@lang('followup::lang.request_type')</th>
+                                    <th>@lang('followup::lang.request_date')</th>
+                                    <th>@lang('followup::lang.status')</th>
+                                    <th>@lang('followup::lang.note')</th>
+                                    {{-- <th>@lang('followup::lang.action')</th> --}}
 
 
-                        </tr>
-                    </thead>
-                </table>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                @endcomponent
             </div>
-        @endcomponent
-    </div>
 
 
-</div>
+        </div>
 
 
 
-</section>
-<!-- /.content -->
+    </section>
+    <!-- /.content -->
 @stop
 
 
@@ -157,7 +159,7 @@
 
 @section('javascript')
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -169,8 +171,9 @@
                     url: "{{ route('employee_affairs_dashboard') }}"
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },
@@ -181,7 +184,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                    
+
                     {
                         data: 'request_type_id',
                         render: function(data, type, row) {
@@ -243,24 +246,26 @@
 
         });
     </script>
-<script>
-    function finsish_contract_duration() {
-        window.location.href = "{{ route('finsish_contract_duration') }}";
-    }
+    <script>
+        function finsish_contract_duration() {
+            window.location.href = "{{ route('finsish_contract_duration') }}";
+        }
 
-    function finish_contracts() {
-       
-         window.location.href = "{{ route('finish_contracts') }}";
-    }
+        function finish_contracts() {
 
-    function uncomplete_profiles()
-    {  window.location.href = "{{ route('uncomplete_profiles') }}";}
+            window.location.href = "{{ route('finish_contracts') }}";
+        }
 
-    function final_visa()
-    {  window.location.href = "{{ route('final_visa_index') }}";}
+        function uncomplete_profiles() {
+            window.location.href = "{{ route('uncomplete_profiles') }}";
+        }
 
-    function late_admission(){
-        window.location.href = "{{ route('late_admission') }}";
-    }
-</script>
+        function final_visa() {
+            window.location.href = "{{ route('final_visa_index') }}";
+        }
+
+        function late_admission() {
+            window.location.href = "{{ route('late_admission') }}";
+        }
+    </script>
 @endsection

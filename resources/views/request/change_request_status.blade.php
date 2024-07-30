@@ -25,7 +25,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     {!! Form::label('note', __('followup::lang.note') . ':') !!}
                     {!! Form::textarea('note', null, [
                         'class' => 'form-control',
@@ -33,7 +33,7 @@
                         'rows' => 3,
                     ]) !!}
                 </div>
-
+                {{-- 
                 <div class="form-group col-md-6">
                     {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
                     {!! Form::textarea('reason', null, [
@@ -41,7 +41,7 @@
                         'placeholder' => __('followup::lang.reason'),
                         'rows' => 3,
                     ]) !!}
-                </div>
+                </div> --}}
 
             </div>
 

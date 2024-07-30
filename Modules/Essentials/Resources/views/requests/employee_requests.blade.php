@@ -125,6 +125,7 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
+                            <th>@lang('request.company')</th>
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.eqama_number')</th>
@@ -1041,8 +1042,9 @@
                     url: "{{ route('employee_requests') }}"
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },
@@ -1253,6 +1255,11 @@
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('request.nationality') }}' + ': ' + response
                                 .user_info.nationality + '</p>');
+                            if (response.user_info.company) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.company') }}: ${response.user_info.company}</p>`
+                                );
+                            }
                             if (response.user_info.assigned_to) {
                                 workerList.append('<p class="worker-info">' +
                                     '{{ __('request.project_name') }}' + ': ' +
