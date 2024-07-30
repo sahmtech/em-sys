@@ -535,6 +535,268 @@ class ApiCustomerController extends ApiController
         }
     }
 
+    public function get_agent_request()
+    {
+
+        try {
+            $user = User::where('id', auth()->user()->id)->first();
+
+            $requestTypes = RequestsType::where('start_from_customer', 1)->where('for', 'worker')
+                ->get()
+                ->map(function ($requestType) {
+                    return [
+                        'id' => $requestType->id,
+                        'type' => $requestType->type,
+                        'for' => $requestType->for,
+                    ];
+                })
+                ->toArray();
+
+            $contact_id =  $user->crm_contact_id;
+
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+
+            $users = User::where('user_type', 'worker')
+                ->whereIn('users.assigned_to', $projectsIds)
+                ->where(function ($query) {
+                    $query->where('status', 'active')
+                        ->orWhere(function ($subQuery) {
+                            $subQuery->where('status', 'inactive')
+                                ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
+                        });
+                })
+                ->pluck('id')
+                ->unique()
+                ->toArray();
+
+            $all_users = User::whereIn('id', $users)
+                ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))
+                ->get();
+
+            // $all_users = $all_users->pluck('full_name', 'id');
+
+            $leaveTypes = EssentialsLeaveType::all();
+
+            $classes = EssentialsInsuranceClass::all();
+
+            $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->get();
+
+            $saleProjects = SalesProject::all();
+
+            $job_titles = EssentialsProfession::where('type', 'job_title')->get();
+
+            $specializations = EssentialsSpecialization::all();
+
+            $nationalities = EssentialsCountry::all();
+
+            $res = [
+                'type' => collect($requestTypes)->mapWithKeys(function ($requestType) {
+                    return [
+
+                        $requestType['id'] => [
+                            'key' => $requestType['id'],
+                            'value' => trans('request.' . $requestType['type']) . ' - ' . trans('request.' . $requestType['for']),
+                        ],
+                    ];
+                })->toArray(),
+                'user_id' => collect($all_users)->mapWithKeys(function ($user) {
+                    return [
+
+                        $user->id => [
+                            'key' => $user->id,
+                            'value' => $user->full_name,
+                        ],
+                    ];
+                })->toArray(),
+                // 'leaveType' => collect($leaveTypes)->mapWithKeys(function ($leaveType) {
+                //     return [
+
+                //         $leaveType->id => [
+                //             'key' => $leaveType->id,
+                //             'value' => $leaveType->leave_type,
+                //         ],
+                //     ];
+                // })->toArray(),
+
+                // 'resEditType' => [
+                //     [
+                //         'key' => 'name',
+                //         'value' => __('request.name'),
+                //     ],
+                //     [
+                //         'key' => 'religion',
+                //         'value' => __('request.religion'),
+                //     ]
+                // ],
+                // 'atmType' =>   [
+                //     [
+                //         'key' => 'release',
+                //         'value' => __('request.release'),
+                //     ],
+                //     [
+                //         'key' => 're_issuing',
+                //         'value' => __('request.re_issuing'),
+                //     ],
+                //     [
+                //         'key' => 'update',
+                //         'value' => __('request.update_info'),
+                //     ],
+
+                // ],
+                // 'baladyType' =>  [
+                //     [
+                //         'key' => 'renew',
+                //         'value' =>  __('request.renew'),
+                //     ],
+                //     [
+                //         'key' => 'issuance',
+                //         'value' => __('request.issuance'),
+                //     ],
+                // ],
+                // 'ins_class'  => collect($classes)->mapWithKeys(function ($classe) {
+                //     return [
+
+                //         $classe->id => [
+                //             'key' => $classe->id,
+                //             'value' => $classe->name,
+                //         ],
+                //     ];
+                // })->toArray(),
+                // 'main_reason' => collect($main_reasons)->mapWithKeys(function ($main_reason) {
+                //     return [
+
+                //         $main_reason->id => [
+                //             'key' => $main_reason->id,
+                //             'value' => $main_reason->reason,
+                //         ],
+                //     ];
+                // })->toArray(),
+                // 'trip_type' => [
+                //     [
+                //         'key' => 'round',
+                //         'value' =>  __('request.round_trip'),
+                //     ],
+                //     [
+                //         'key' => 'one_way',
+                //         'value' =>  __('request.one_way_trip'),
+                //     ],
+                // ],
+                // 'project_name' => collect($saleProjects)->mapWithKeys(function ($saleProject) {
+                //     return [
+
+                //         $saleProject->id => [
+                //             'key' => $saleProject->id,
+                //             'value' => $saleProject->name,
+                //         ],
+                //     ];
+                // })->toArray(),
+
+                // 'interview_place' =>   [
+                //     [
+                //         'key' => 'online',
+                //         'value' =>  __('request.online'),
+                //     ],
+                //     [
+                //         'key' => 'housing',
+                //         'value' => __('request.housing_place'),
+                //     ],
+                //     [
+                //         'key' => 'company',
+                //         'value' =>  __('request.company_place'),
+                //     ],
+                //     [
+                //         'key' => 'customer',
+                //         'value' =>  __('request.customer_place'),
+                //     ],
+                // ],
+                // 'profession' => collect($specializations)->mapWithKeys(function ($specialization) {
+                //     return [
+
+                //         $specialization->id => [
+                //             'key' => $specialization->id,
+                //             'value' => $specialization->name,
+                //         ],
+                //     ];
+                // })->toArray(),
+                // 'job_title' => collect($job_titles)->mapWithKeys(function ($job_title) {
+                //     return [
+
+                //         $job_title->id => [
+                //             'key' => $job_title->id,
+                //             'value' => $job_title->name,
+                //         ],
+                //     ];
+                // })->toArray(),
+                // 'nationlity' => collect($nationalities)->mapWithKeys(function ($nationality) {
+                //     return [
+
+                //         $nationality->id => [
+                //             'key' => $nationality->id,
+                //             'value' => $nationality->nationality,
+                //         ],
+                //     ];
+                // })->toArray(),
+
+
+            ];
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage();
+            return $this->otherExceptions($e);
+        }
+    }
+
+    public function store_agent_request(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+
+
+
+            $attachmentPath = $request->hasFile('attachment') ? $request->attachment->store('/requests_attachments') : null;
+            $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
+            $end_date = $request->end_date ?? $request->return_date;
+            $today = Carbon::today();
+            $requestType = RequestsType::findOrFail($request->type);
+            $type = $requestType->type;
+            $customer_department = $requestType->customer_department;
+
+            if ($this->isInvalidDateRange($type, $startDate, $end_date, $today)) {
+                return redirect()->back()->withErrors([__('request.time_is_gone')]);
+            }
+
+            if ($type == 'leavesAndDepartures' && is_null($request->leaveType)) {
+                return redirect()->back()->withErrors([__('request.please select the type of leave')]);
+            }
+
+            $createdByUser = auth()->user();
+            $createdBy_type = $createdByUser->user_type;
+
+            foreach ($request->user_id as $userId) {
+                if ($userId === null) continue;
+                $business_id = User::where('id', $userId)->first()->business_id;
+                if ($this->hasPendingRequest($userId, $request->type, $request->user_id)) {
+                    return redirect()->back()->withErrors([__('request.this_user_has_this_request_recently')]);
+                }
+
+                if (!$this->processUserRequest($userId, $request, $type, $startDate, $end_date, $customer_department, $createdBy_type, $business_id, $attachmentPath)) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors([__('messages.something_went_wrong')]);
+                }
+            }
+
+            DB::commit();
+            return new CommonResource(['msg' => 'تم إنشاء الطلب بنجاح']);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
+
     private function getDocumentnumber($user, $documentType)
     {
         foreach ($user->OfficialDocument as $off) {
