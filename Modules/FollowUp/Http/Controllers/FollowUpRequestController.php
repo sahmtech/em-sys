@@ -18,7 +18,7 @@ use App\Request as UserRequest;
 use Illuminate\Support\Facades\DB;
 use App\User;
 use Modules\Essentials\Entities\EssentialsDepartment;
-
+use App\Company;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 
 use Carbon\Carbon;
@@ -126,7 +126,7 @@ class FollowUpRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -160,6 +160,7 @@ class FollowUpRequestController extends Controller
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
         $filter = request()->query('filter');
+        $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
 
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
@@ -168,7 +169,7 @@ class FollowUpRequestController extends Controller
 
             'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.company_id',
 
 
 
@@ -243,7 +244,11 @@ class FollowUpRequestController extends Controller
                         return $allRequestTypes[$row->request_type_id];
                     }
                 })
-
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
+                    }
+                })
 
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds,  $statuses) {
                     if ($row->status) {

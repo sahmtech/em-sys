@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Yajra\DataTables\Facades\DataTables;
+use App\Company;
 
 class EssentialsCancelContractsController extends Controller
 {
@@ -29,7 +30,7 @@ class EssentialsCancelContractsController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -37,7 +38,7 @@ class EssentialsCancelContractsController extends Controller
 
         $main_reasons = DB::table('essentails_reason_wishes')->pluck('reason', 'id');
         $sub_reasons = DB::table('essentails_reason_wishes')->pluck('sub_reason', 'id');
-
+        $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = null;
 
         $types = RequestsType::where('type', 'cancleContractRequest')->pluck('id')->toArray();
@@ -46,7 +47,7 @@ class EssentialsCancelContractsController extends Controller
 
             'requests.contract_main_reason_id as main_reason',  'requests.note as note', 'requests.contract_sub_reason_id as sub_reason',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
 
             'users.status as userStatus', 'essentials_employees_contracts.contract_end_date as contract_end_date'
 
@@ -64,6 +65,11 @@ class EssentialsCancelContractsController extends Controller
             return DataTables::of($requestsProcess ?? [])
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at);
+                })
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
+                    }
                 })
                 ->editColumn('main_reason', function ($row) use ($main_reasons) {
                     if ($row->main_reason) {

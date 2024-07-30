@@ -92,8 +92,9 @@
                     url: "{{ route('my_requests') }}"
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },

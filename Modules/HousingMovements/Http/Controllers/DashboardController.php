@@ -5,7 +5,7 @@ namespace Modules\HousingMovements\Http\Controllers;
 
 use App\User;
 use Carbon\Carbon;
-
+use App\Company;
 use App\Request as UserRequest;
 use App\RequestProcess;
 use App\Utils\RequestUtil;
@@ -54,7 +54,7 @@ class DashboardController extends Controller
             ]);
         }
 
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -94,6 +94,7 @@ class DashboardController extends Controller
                 $query->whereIn('wk_procedures.department_id', $departmentIds)
                     ->orWhereIn('request_processes.superior_department_id', $departmentIds);
             })->count();
+        $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
@@ -101,7 +102,7 @@ class DashboardController extends Controller
 
             'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -129,6 +130,11 @@ class DashboardController extends Controller
                 })
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
+                })
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
+                    }
                 })
                 ->editColumn('status', function ($row) {
                     $status = trans('request.' . $row->status);
