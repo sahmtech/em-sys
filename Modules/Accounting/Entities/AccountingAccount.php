@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Entities\AccountingAccountType;
 
 class AccountingAccount extends Model
@@ -16,7 +17,10 @@ class AccountingAccount extends Model
 
     public function child_accounts()
     {
-        return $this->hasMany(\Modules\Accounting\Entities\AccountingAccount::class, 'parent_account_id');
+        $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
+        return $this->hasMany(\Modules\Accounting\Entities\AccountingAccount::class, 'parent_account_id')->where('business_id', $business_id)->where('company_id', $company_id);
     }
 
     // public function account_type()
