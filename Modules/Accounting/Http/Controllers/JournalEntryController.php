@@ -56,7 +56,7 @@ class JournalEntryController extends Controller
         $can_edit_journal = auth()->user()->can('accounting.edit_journal');
         $can_delete_journal = auth()->user()->can('accounting.delete_journal');
         $can_history_edit = auth()->user()->can('accounting.history_edit');
-        
+
 
         if (request()->ajax()) {
             $journal = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
@@ -64,7 +64,7 @@ class JournalEntryController extends Controller
                 ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
                 ->where('type', 'journal_entry')
                 ->select([
-                    'accounting_acc_trans_mappings.id', 'ref_no', 'operation_date', 'note',
+                    'accounting_acc_trans_mappings.id', 'ref_no', 'accounting_acc_trans_mappings.path_file', 'operation_date', 'note',
                     DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                 ]);
 
@@ -77,7 +77,7 @@ class JournalEntryController extends Controller
             return Datatables::of($journal)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_view_journal, $can_edit_journal, $can_delete_journal) {
+                    function ($row) use ($is_admin, $can_history_edit, $can_edit_journal, $can_delete_journal) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -123,7 +123,17 @@ class JournalEntryController extends Controller
                         return $html;
                     }
                 )
-                ->rawColumns(['action'])
+                ->addColumn('path_file', function ($row) {
+                    $html = '';
+                    if (!empty($row->path_file)) {
+                        $html .= '<button class="btn btn-xs btn-info "  onclick="window.location.href = \'/uploads/' . $row->path_file . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                        '&nbsp;';
+                    } else {
+                        $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                    }
+                    return $html;
+                })
+                ->rawColumns(['action', 'path_file'])
                 ->make(true);
         }
 
@@ -157,7 +167,7 @@ class JournalEntryController extends Controller
                 ->join('users as u', 'accounting_acc_trans_mapping_histories.created_by', 'u.id')
                 ->where('type', 'journal_entry')
                 ->select([
-                    'accounting_acc_trans_mapping_histories.id', 'ref_no', 'operation_date', 'note', 'accounting_acc_trans_mapping_histories.created_at',
+                    'accounting_acc_trans_mapping_histories.id', 'ref_no', 'operation_date', 'note', 'accounting_acc_trans_mapping_histories.path_file', 'accounting_acc_trans_mapping_histories.created_at',
                     DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                 ]);
 
@@ -189,7 +199,17 @@ class JournalEntryController extends Controller
                         return $html;
                     }
                 )
-                ->rawColumns(['action'])
+                ->addColumn('path_file', function ($row) {
+                    $html = '';
+                    if (!empty($row->path_file)) {
+                        $html .= '<button class="btn btn-xs btn-info "  onclick="window.location.href = \'/uploads/' . $row->path_file . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                        '&nbsp;';
+                    } else {
+                        $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                    }
+                    return $html;
+                })
+                ->rawColumns(['action', 'path_file'])
                 ->make(true);
         }
 
@@ -204,8 +224,14 @@ class JournalEntryController extends Controller
 
         // 
         $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
-
-        $query = User::where('business_id', $business_id)->where('company_id', $company_id)->whereIn('users.user_type', ['employee','department_head','manager'])->where('users.status', '!=', 'inactive');
+ 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $query = User::where('business_id', $business_id)->whereIn('id', $userIds)->whereIn('users.user_type', ['employee', 'department_head', 'manager'])->where('users.status', '!=', 'inactive');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $employees = $all_users->pluck('full_name', 'id');
@@ -241,7 +267,7 @@ class JournalEntryController extends Controller
 
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
-            
+
             if (empty($ref_no)) {
                 $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
                     $accounting_settings['journal_entry_prefix'] : '';
@@ -250,9 +276,19 @@ class JournalEntryController extends Controller
                 $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
             }
 
+            if ($request->hasFile('attachment')) {
+                $attachment = $request->file('attachment');
+                $attachment_name = $attachment->store('/journal_entry');
+            }
+
+
+
+
             $acc_trans_mapping = new AccountingAccTransMapping();
             $acc_trans_mapping->business_id = $business_id;
             $acc_trans_mapping->company_id = $company_id;
+            $acc_trans_mapping->path_file = $attachment_name;
+
 
             $acc_trans_mapping->ref_no = $ref_no;
             $acc_trans_mapping->note = $request->get('note');
@@ -343,8 +379,13 @@ class JournalEntryController extends Controller
             ->get()->toArray();
 
         $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
-
-        $query = User::where('business_id', $business_id)->where('company_id', $company_id)->whereIn('users.user_type', ['employee','department_head','manager'])->where('users.status', '!=', 'inactive');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $query = User::where('business_id', $business_id)->whereIn('id', $userIds)->whereIn('users.user_type', ['employee', 'department_head', 'manager'])->where('users.status', '!=', 'inactive');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $employees = $all_users->pluck('full_name', 'id');
@@ -357,7 +398,7 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -371,8 +412,13 @@ class JournalEntryController extends Controller
             ->get()->toArray();
 
         $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
-
-        $query = User::where('business_id', $business_id)->where('company_id', $company_id)->whereIn('users.user_type', ['employee','department_head','manager'])->where('users.status', '!=', 'inactive');
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+       
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $query = User::where('business_id', $business_id)->whereIn('id', $userIds)->whereIn('users.user_type', ['employee', 'department_head', 'manager'])->where('users.status', '!=', 'inactive');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $employees = $all_users->pluck('full_name', 'id');
@@ -398,6 +444,8 @@ class JournalEntryController extends Controller
             $accounts_transactions_id = $request->get('accounts_transactions_id');
             $credits = $request->get('credit');
             $debits = $request->get('debit');
+            $additional_notes = $request->get('additional_notes');
+
             $selected_partner_ids = $request->get('selected_partner_id');
             $selected_partner_types = $request->get('selected_partner_type_');
 
@@ -417,9 +465,15 @@ class JournalEntryController extends Controller
                 "created_by" => Auth::user()->id,
                 "operation_date" => $acc_trans_mapping->operation_date,
                 "note" => $acc_trans_mapping->note,
+                'path_file' => $acc_trans_mapping->path_file,
             ]);
+            if ($request->hasFile('attachment')) {
+                $attachment = $request->file('attachment');
+                $attachment_name = $attachment->store('/journal_entry');
+            }
             $acc_trans_mapping->note = $request->get('note');
             $acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
+            $acc_trans_mapping->path_file = $attachment_name;
             $acc_trans_mapping->update();
 
             //save details in account trnsactions table

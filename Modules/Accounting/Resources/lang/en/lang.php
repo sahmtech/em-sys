@@ -678,7 +678,11 @@ return [
       'total_before_tax' => 'Total before tax',
       'shipping_charges' => 'Shipping charges',
       'discount_amount' => 'Discount amount',
+      
    ],
+   'attach_document' => 'attach document',
+   'attachment'=>'attachment',
+
 
 
 ];
