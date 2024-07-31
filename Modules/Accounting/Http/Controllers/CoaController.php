@@ -80,6 +80,16 @@ class CoaController extends Controller
                                         JOIN accounting_accounts AS AA ON AAT.accounting_account_id = AA.id
                                         WHERE AAT.accounting_account_id = accounting_accounts.id) AS balance"), 'accounting_accounts.*']);
                     },
+                    'child_accounts.child_accounts.child_accounts' => function ($query) use ($balance_formula) {
+                        $query->select([DB::raw("(SELECT $balance_formula from accounting_accounts_transactions AS AAT
+                                        JOIN accounting_accounts AS AA ON AAT.accounting_account_id = AA.id
+                                        WHERE AAT.accounting_account_id = accounting_accounts.id) AS balance"), 'accounting_accounts.*']);
+                    },
+                    'child_accounts.child_accounts.child_accounts.child_accounts' => function ($query) use ($balance_formula) {
+                        $query->select([DB::raw("(SELECT $balance_formula from accounting_accounts_transactions AS AAT
+                                        JOIN accounting_accounts AS AA ON AAT.accounting_account_id = AA.id
+                                        WHERE AAT.accounting_account_id = accounting_accounts.id) AS balance"), 'accounting_accounts.*']);
+                    },
                 ])
                 ->select([
                     DB::raw("(SELECT $balance_formula
@@ -88,6 +98,7 @@ class CoaController extends Controller
                                     WHERE AAT.accounting_account_id = accounting_accounts.id) AS balance"),
                     'accounting_accounts.*'
                 ]);
+             
 
             if (!empty(request()->input('account_type'))) {
                 $query->where('accounting_accounts.account_primary_type', request()->input('account_type'));
@@ -100,8 +111,9 @@ class CoaController extends Controller
 
             $account_exist = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)->exists();
 
-
+          
             if (request()->input('view_type') == 'table') {
+               
                 return view('accounting::chart_of_accounts.accounts_table')
                     ->with(compact('accounts', 'account_exist'));
             } else {
@@ -114,7 +126,7 @@ class CoaController extends Controller
                             ->orWhere('company_id', $company_id);
                     })
                     ->get();
-
+                    
                 return view('accounting::chart_of_accounts.accounts_tree')
                     ->with(compact('accounts', 'account_exist', 'account_types', 'account_GLC', 'account_sub_types'));
             }
@@ -590,7 +602,7 @@ class CoaController extends Controller
             $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
                 ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
                 ->leftjoin('transactions as T', 'accounting_accounts_transactions.transaction_id', '=', 'T.id')
-                ->leftjoin('users AS U', 'accounting_accounts_transactions.created_by', 'U.id')
+                ->leftjoin('users AS u', 'accounting_accounts_transactions.created_by', 'u.id')
                 ->select(
                     'accounting_accounts_transactions.operation_date',
                     'accounting_accounts_transactions.sub_type',

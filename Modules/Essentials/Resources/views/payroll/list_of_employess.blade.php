@@ -164,6 +164,8 @@
 
                             if (data === 'employee') {
                                 return '@lang('essentials::lang.employee')';
+                            } else if (data === 'manager') {
+                                return '@lang('essentials::lang.manager')';
                             } else if (data === 'worker') {
                                 return '@lang('essentials::lang.worker')';
                             } else if (data === 'remote_employee') {

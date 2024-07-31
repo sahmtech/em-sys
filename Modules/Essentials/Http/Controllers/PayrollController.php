@@ -123,8 +123,10 @@ class PayrollController extends Controller
         }
         $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
         $user_types = [
+            'manager' => __('essentials::lang.manager'),
             "employee" => __('essentials::lang.user_type.employee'),
             "worker" => __('essentials::lang.user_type.worker'),
+            'department_head' => __('essentials::lang.department_head'),
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
         $bank_names = EssentialsBankAccounts::all()->pluck('name', 'id');
@@ -156,7 +158,7 @@ class PayrollController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->whereIn('company_id', $companies_ids)
             ->with(['assignedTo'])
-            ->whereIn('user_type', ['worker', 'employee'])
+            ->whereIn('user_type', ['worker', 'employee', 'manager', 'department_head'])
             ->where('users.status', '!=', 'inactive')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -174,7 +176,7 @@ class PayrollController extends Controller
             $user_type = request()->input('user_type');
             if ($user_type == "worker") {
                 $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'worker');
-            } elseif ($user_type == "employee" || $user_type == "remote_employee") {
+            } elseif ($user_type == "employee" || $user_type == "remote_employee" || $user_type == "manager" || $user_type == "department_head") {
                 $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
             }
             if ($user_type == "remote_employee") {
@@ -481,6 +483,8 @@ class PayrollController extends Controller
         $user_types = [
             "employee" => __('essentials::lang.user_type.employee'),
             "worker" => __('essentials::lang.user_type.worker'),
+            'manager' => __('essentials::lang.manager'),
+            'department_head' => __('essentials::lang.department_head'),
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
@@ -1038,8 +1042,10 @@ class PayrollController extends Controller
 
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
+
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
             $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->whereIn('user_type', ['employee', 'manager', 'department_head']);
+
         }
         if ($user_type == "remote_employee") {
             $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
