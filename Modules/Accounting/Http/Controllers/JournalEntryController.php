@@ -275,19 +275,20 @@ class JournalEntryController extends Controller
                 //Generate reference number
                 $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
             }
-
+            $acc_trans_mapping = new AccountingAccTransMapping();
             if ($request->hasFile('attachment')) {
                 $attachment = $request->file('attachment');
                 $attachment_name = $attachment->store('/journal_entry');
+                $acc_trans_mapping->path_file = $attachment_name;
             }
 
 
 
 
-            $acc_trans_mapping = new AccountingAccTransMapping();
+           
             $acc_trans_mapping->business_id = $business_id;
             $acc_trans_mapping->company_id = $company_id;
-            $acc_trans_mapping->path_file = $attachment_name;
+           
 
 
             $acc_trans_mapping->ref_no = $ref_no;
@@ -470,10 +471,11 @@ class JournalEntryController extends Controller
             if ($request->hasFile('attachment')) {
                 $attachment = $request->file('attachment');
                 $attachment_name = $attachment->store('/journal_entry');
+                $acc_trans_mapping->path_file = $attachment_name;
             }
             $acc_trans_mapping->note = $request->get('note');
             $acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
-            $acc_trans_mapping->path_file = $attachment_name;
+           
             $acc_trans_mapping->update();
 
             //save details in account trnsactions table
