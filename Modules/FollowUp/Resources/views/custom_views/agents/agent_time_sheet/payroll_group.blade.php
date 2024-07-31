@@ -64,6 +64,7 @@
                     <thead>
                         <tr>
                             <th style="width: 50px;">#</th>
+                            <th style="width: 100px;">@lang('essentials::lang.company')</th>
                             <th style="width: 100px;">@lang('worker.name')</th>
                             <th style="width: 100px;">@lang('worker.nationality')</th>
                             <th style="width: 100px;">@lang('worker.eqama_number')</th>
@@ -94,8 +95,12 @@
                     <tbody>
                         @foreach ($payrolls as $index => $payroll)
                             <tr class="payroll_row">
+
                                 <td name="id">{{ $payroll['id'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][id]', $payroll['id']) !!}
+                                </td>
+                                <td name="company">{{ $payroll['company'] }}
+                                    {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company']) !!}
                                 </td>
                                 <td name="name">{{ $payroll['name'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][name]', $payroll['name']) !!}

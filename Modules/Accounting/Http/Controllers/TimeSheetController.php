@@ -14,6 +14,7 @@ use Modules\Sales\Entities\SalesProject;
 use App\Category;
 use Carbon\Carbon;
 use DB;
+use App\Company;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Session;
 
@@ -81,6 +82,7 @@ class TimeSheetController extends Controller
 
     public function create()
     {
+        $companies = Company::pluck('name', 'id');
         $project_id = request()->input('projects');
         $employee_ids = request()->input('employee_ids');
         $month_year = request()->input('month_year');
@@ -109,6 +111,7 @@ class TimeSheetController extends Controller
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',

@@ -1081,7 +1081,7 @@ class PayrollController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
-
+        $companies = Company::pluck('name', 'id');
         foreach ($employees as $worker) {
             $housing_allowance = 0;
             $transportation_allowance = 0;
@@ -1147,6 +1147,7 @@ class PayrollController extends Controller
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'identity_card_number' => $worker->id_proof_number ?? '',
                 'project_name' => $project_name ?? '',
                 'region' => '',
