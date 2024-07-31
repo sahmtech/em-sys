@@ -664,15 +664,15 @@ class ApiCustomerController extends ApiController
                 //         'value' => __('request.issuance'),
                 //     ],
                 // ],
-                // 'ins_class'  => collect($classes)->mapWithKeys(function ($classe) {
-                //     return [
+                'ins_class'  => collect($classes)->mapWithKeys(function ($classe) {
+                    return [
 
-                //         $classe->id => [
-                //             'key' => $classe->id,
-                //             'value' => $classe->name,
-                //         ],
-                //     ];
-                // })->toArray(),
+                        $classe->id => [
+                            'key' => $classe->id,
+                            'value' => $classe->name,
+                        ],
+                    ];
+                })->toArray(),
                 // 'main_reason' => collect($main_reasons)->mapWithKeys(function ($main_reason) {
                 //     return [
 
