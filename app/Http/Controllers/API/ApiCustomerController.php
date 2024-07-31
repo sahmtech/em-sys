@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Business;
 use App\BusinessLocation;
 use App\BusinessLocationPolygonMarker;
@@ -33,9 +35,18 @@ use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Sales\Entities\salesContract;
 use App\Request as UserRequest;
+use App\RequestAttachment;
+use App\SentNotification;
+use App\SentNotificationsUser;
+use Modules\CEOManagment\Entities\ProcedureTask;
+use Modules\CEOManagment\Entities\RequestProcedureTask;
 use Modules\CEOManagment\Entities\RequestsType;
+use Modules\CEOManagment\Entities\WkProcedure;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsLeaveType;
+use Modules\Essentials\Entities\UserLeaveBalance;
+use Spatie\Permission\Models\Permission;
 
 class ApiCustomerController extends ApiController
 {
@@ -753,10 +764,8 @@ class ApiCustomerController extends ApiController
 
         try {
 
-
-
-
             $attachmentPath = $request->hasFile('attachment') ? $request->attachment->store('/requests_attachments') : null;
+            // $duration = $request->duration ?? null;
             $startDate = $request->start_date ?? $request->escape_date ?? $request->exit_date;
             $end_date = $request->end_date ?? $request->return_date;
             $today = Carbon::today();
@@ -779,12 +788,12 @@ class ApiCustomerController extends ApiController
                 if ($userId === null) continue;
                 $business_id = User::where('id', $userId)->first()->business_id;
                 if ($this->hasPendingRequest($userId, $request->type, $request->user_id)) {
-                    return redirect()->back()->withErrors([__('request.this_user_has_this_request_recently')]);
+                    return new CommonResource(['msg' => 'request.this_user_has_this_request_recently']);
                 }
 
                 if (!$this->processUserRequest($userId, $request, $type, $startDate, $end_date, $customer_department, $createdBy_type, $business_id, $attachmentPath)) {
                     DB::rollBack();
-                    return redirect()->back()->withErrors([__('messages.something_went_wrong')]);
+                    return new CommonResource(['msg' => 'messages.something_went_wrong']);
                 }
             }
 
@@ -796,6 +805,9 @@ class ApiCustomerController extends ApiController
             return $this->otherExceptions($e);
         }
     }
+
+
+
 
     private function getDocumentnumber($user, $documentType)
     {
@@ -1050,5 +1062,305 @@ class ApiCustomerController extends ApiController
 
             return $this->otherExceptions($e);
         }
+    }
+
+
+
+
+
+    /////////////////////////////////////////////////////
+    private function getTypePrefix($request_type_id)
+    {
+        $prefix = RequestsType::where('id', $request_type_id)->first()->prefix;
+        return $prefix;
+    }
+    public function generateRequestNo($request_type_id)
+    {
+        $type = RequestsType::where('id', $request_type_id)->first()->type;
+        $RequestsTypes = RequestsType::where('type', $type)->pluck('id')->toArray();
+
+        $latestRecord = UserRequest::whereIn('request_type_id', $RequestsTypes)->orderBy('request_no', 'desc')->first();
+
+        if ($latestRecord) {
+            $latestRefNo = $latestRecord->request_no;
+            $prefix = $this->getTypePrefix($request_type_id);
+            $numericPart = (int)substr($latestRefNo, strlen($prefix));
+            $numericPart++;
+            $input['request_no'] = $prefix . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+        } else {
+            $input['request_no'] = $this->getTypePrefix($request_type_id) . '0001';
+        }
+
+        return $input['request_no'];
+    }
+    private function createUserRequest($request, $userId, $startDate, $end_date, $attachmentPath)
+    {
+        return UserRequest::create([
+            'request_no' => $this->generateRequestNo($request->type),
+            'related_to' => $userId,
+            'request_type_id' => $request->type,
+            'start_date' => $startDate,
+            'end_date' => $end_date,
+            'reason' => $request->reason,
+            'note' => $request->note,
+            'attachment' => $attachmentPath,
+            'essentials_leave_type_id' => $request->leaveType,
+            'escape_time' => $request->escape_time,
+            'installmentsNumber' => $request->installmentsNumber,
+            'monthlyInstallment' => $request->monthlyInstallment,
+            'advSalaryAmount' => $request->amount,
+            'created_by' => auth()->user()->id,
+            'insurance_classes_id' => $request->ins_class,
+            'baladyCardType' => $request->baladyType,
+            'resCardEditType' => $request->resEditType,
+            'workInjuriesDate' => $request->workInjuriesDate,
+            'contract_main_reason_id' => $request->main_reason,
+            'contract_sub_reason_id' => $request->sub_reason,
+            'visa_number' => $request->visa_number,
+            'atmCardType' => $request->atmType,
+            'authorized_entity' => $request->authorized_entity,
+            'commissioner_info' => $request->commissioner_info,
+            'trip_type' => $request->trip_type,
+            'Take_off_location' => $request->Take_off_location,
+            'destination' => $request->destination,
+            'weight_of_furniture' => $request->weight_of_furniture,
+            'date_of_take_off' => $request->date_of_take_off,
+            'time_of_take_off' => $request->time_of_take_off,
+            'return_date' => $request->return_date_of_trip,
+            'job_title_id' => $request->job_title,
+            'specialization_id' => $request->profession,
+            'nationality_id' => $request->nationlity,
+            'number_of_salary_inquiry' => $request->number_of_salary_inquiry,
+            'sale_project_id' => $request->project_name,
+            'interview_date' => $request->interview_date,
+            'interview_time' => $request->interview_time,
+            'interview_place' => $request->interview_place,
+        ]);
+    }
+    private function validateContractCancellation($userId, $request, $userIds)
+    {
+        $contract = EssentialsEmployeesContract::where('employee_id', $userId)->firstOrFail();
+        if (is_null($contract->wish_id)) {
+            if (count($userIds) == 1) {
+                return redirect()->back()->withErrors([__('request.no_wishes_found')]);
+            }
+            return false;
+        }
+        if (now()->diffInMonths($contract->contract_end_date) > 1) {
+            if (count($userIds) == 1) {
+                return redirect()->back()->withErrors([__('request.contract_expired')]);
+            }
+            return false;
+        }
+        return true;
+    }
+    private function validateLeaveBalance($userId, $request, $startDate, $end_date, $userIds)
+    {
+        $leaveBalance = UserLeaveBalance::where([
+            'user_id' => $userId,
+            'essentials_leave_type_id' => $request->leaveType,
+        ])->first();
+
+        if (!$leaveBalance || $leaveBalance->amount == 0) {
+            if (count($userIds) == 1) {
+                $messageKey = !$leaveBalance ? 'this_user_cant_ask_for_leave_request' : 'this_user_has_not_enough_leave_balance';
+                return redirect()->back()->withErrors([__("request.$messageKey")]);
+            }
+            return false;
+        }
+
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($end_date);
+        $daysRequested = $startDate->diffInDays($endDate) + 1;
+
+        if ($daysRequested > $leaveBalance->amount) {
+            if (count($userIds) == 1) {
+                return redirect()->back()->withErrors([__("request.this_user_has_not_enough_leave_balance")]);
+            }
+            return false;
+        }
+        return true;
+    }
+    private function processUserRequest($userId, $request, $type, $startDate, $end_date, $customer_department, $createdBy_type, $business_id, $attachmentPath)
+    {
+        if ($type == "exitRequest") {
+            $startDate = DB::table('essentials_employees_contracts')
+                ->where('employee_id', $userId)
+                ->first()
+                ->contract_end_date ?? null;
+        }
+
+        if ($type == "leavesAndDepartures" && !$this->validateLeaveBalance($userId, $request, $startDate, $end_date, $request->user_id)) {
+            return false;
+        }
+
+        if ($type == 'cancleContractRequest' && !$this->validateContractCancellation($userId, $request, $request->user_id)) {
+            return false;
+        }
+
+        $newRequest = $this->createUserRequest($request, $userId, $startDate, $end_date, $attachmentPath);
+
+        if ($attachmentPath) {
+
+            RequestAttachment::create([
+                'request_id' => $newRequest->id,
+                'file_path' => $attachmentPath,
+            ]);
+        }
+
+        return $this->processRequestProcedure($newRequest, $request->type, $business_id, $customer_department, $createdBy_type);
+    }
+    private function processRequestProcedure($request, $requestTypeId, $business_id, $customer_department, $createdBy_type)
+    {
+        $procedure = WkProcedure::where('business_id', $business_id)
+            ->where('request_type_id', $requestTypeId)
+            ->where('start', 1)
+            ->where('department_id', $customer_department)
+            ->first();
+        if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
+            $nextProcedure = WkProcedure::where('business_id', $business_id)
+                ->where('request_type_id', $requestTypeId)
+                ->where('department_id', $procedure->next_department_id)
+                ->first();
+
+            $process = RequestProcess::create([
+                'request_id' => $request->id,
+                'procedure_id' => $nextProcedure ? $nextProcedure->id : null,
+                'status' => 'pending',
+            ]);
+
+            if ($nextProcedure && $nextProcedure->action_type == 'task') {
+                $this->createRequestProcedureTasks($request->id, $nextProcedure->id);
+            }
+            $this->makeToDo($request, $business_id);
+        } else {
+            error_log($request->id);
+            $process = RequestProcess::create([
+                'request_id' => $request->id,
+                'procedure_id' => $procedure ? $procedure->id : null,
+                'status' => 'pending',
+            ]);
+            $this->makeToDo($request, $business_id);
+        }
+
+        if (!$process) {
+            RequestAttachment::where('request_id', $request->id)->delete();
+            $request->delete();
+            return false;
+        }
+
+
+        return true;
+    }
+    private function createRequestProcedureTasks($requestId, $procedureId)
+    {
+        $procedureTasks = ProcedureTask::where('procedure_id', $procedureId)->get();
+        foreach ($procedureTasks as $task) {
+            RequestProcedureTask::create([
+                'request_id' => $requestId,
+                'procedure_task_id' => $task->id,
+            ]);
+        }
+    }
+    public function makeToDo($request, $business_id)
+    {
+        $created_by = $request->created_by;
+
+        $request_type = RequestsType::where('id', $request->request_type_id)->first()->type;
+        $input['business_id'] = $business_id;
+        $input['company_id'] = $business_id;
+        $input['created_by'] = $created_by;
+        $input['task'] = "طلب جديد";
+        $input['date'] = Carbon::now();
+        $input['priority'] = 'high';
+        $input['description'] = $request_type;
+        $input['status'] = !empty($input['status']) ? $input['status'] : 'new';
+
+        $process = RequestProcess::where('request_id', $request->id)->latest()->first();
+        $users = [];
+        $userCompanyId = User::where('id', $request->related_to)->first()->company_id;
+        $acessRoleCompany = AccessRoleCompany::where('company_id', $userCompanyId)->pluck('access_role_id')->toArray();
+        $rolesFromAccessRoles = AccessRole::whereIn('id', $acessRoleCompany)->pluck('role_id')->toArray();
+
+        $procedure = $process->procedure_id;
+        $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
+        $viewRequestPermission = $this->getViewRequestsPermission($department_id);
+        if ($viewRequestPermission) {
+            $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+            $rolesIds = $permission_id->roles->pluck('id')->toArray();
+            $users = User::whereHas('roles', function ($query) use ($rolesIds,  $rolesFromAccessRoles) {
+                $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+            })->where('essentials_department_id', $department_id);
+        }
+
+
+        $input['task_id'] = $request->request_no;
+
+        $to_dos = ToDo::create($input);
+        $usersData = $users->get();
+
+        $to_dos->users()->sync($usersData);
+
+
+        $user_ids = $users->pluck('id')->toArray();
+        $to =  $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+            ->pluck('full_name')->toArray();
+        if (!empty($user_ids)) {
+            $to = [];
+            $userName = User::where('id', $request->related_to)->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+                ->pluck('full_name')->toArray()[0];
+            $sentNotification = SentNotification::create([
+                'via' => 'dashboard',
+                'type' => 'GeneralManagementNotification',
+                'title' =>  $input['task'],
+                'msg' => __('request.' . $request_type) . ' ' . $userName,
+                'sender_id' => auth()->user()->id,
+                'to' => json_encode($to),
+            ]);
+            // $details = new stdClass();
+            // $details->title =  $input['task'];
+            // $details->message = $request_type;
+
+            foreach ($user_ids as $user_id) {
+                SentNotificationsUser::create([
+                    'sent_notifications_id' => $sentNotification->id,
+                    'user_id' => $user_id,
+                ]);
+                // User::where('id', $user_id)->first()?->notify(new GeneralNotification($details, false, true));
+            }
+        }
+    }
+    public function getViewRequestsPermission($department)
+    {
+        $departments = [
+            'followup' => ['names' => ['%متابعة%'], 'permission' => 'followup.view_followup_requests'],
+            'accounting' => ['names' => ['%حاسب%', '%مالي%'], 'permission' => 'accounting.view_accounting_requests'],
+            'workcard' => ['names' => ['%حكومية%'], 'permission' => 'essentials.view_workcards_request'],
+            'hr' => ['names' => ['%بشرية%'], 'permission' => 'essentials.view_HR_requests'],
+            'employee_affairs' => ['names' => ['%موظف%'], 'permission' => 'essentials.view_employees_affairs_requests'],
+            'insurance' => ['names' => ['%تأمين%'], 'permission' => 'essentials.crud_insurance_requests'],
+            'payroll' => ['names' => ['%رواتب%'], 'permission' => 'essentials.view_payroll_requests'],
+            'housing' => ['names' => ['%سكن%'], 'permission' => 'housingmovements.crud_htr_requests'],
+            'international_relations' => ['names' => ['%دولي%'], 'permission' => 'internationalrelations.view_ir_requests'],
+            'legal' => ['names' => ['%قانوني%'], 'permission' => 'legalaffairs.view_legalaffairs_requests'],
+            'sales' => ['names' => ['%مبيعات%'], 'permission' => 'sales.view_sales_requests'],
+            'ceo' => ['names' => ['%تنفيذ%'], 'permission' => 'ceomanagment.view_CEO_requests'],
+            'general' => ['names' => ['%مجلس%', '%عليا%'], 'permission' => 'generalmanagement.view_president_requests']
+        ];
+
+        foreach ($departments as $dept => $info) {
+            $deptIds = EssentialsDepartment::where(function ($query) use ($info) {
+                foreach ($info['names'] as $name) {
+                    $query->orWhere('name', 'like', $name);
+                }
+            })->pluck('id')->toArray();
+
+            if (in_array($department, $deptIds)) {
+
+                return $info['permission'];
+            }
+        }
+
+        return null;
     }
 }
