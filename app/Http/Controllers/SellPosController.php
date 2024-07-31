@@ -2358,8 +2358,9 @@ class SellPosController extends Controller
         $transaction = Transaction::where('invoice_token', $token)->with(['business', 'location'])->first();
 
         if (!empty($transaction)) {
-            if (Auth()->user->id) {
-                $transaction->location = auth()->user->company_id == 2 ?    $transaction->location = 2 :   $transaction->location = 1;
+            if (Auth()->user()->id) {
+                $company_id = User::where('id', Auth()->user()->id)->first()->company_id;
+                $transaction->location = $company_id == 2 ?    $transaction->location = 2 :   $transaction->location = 1;
             }
             $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
 
