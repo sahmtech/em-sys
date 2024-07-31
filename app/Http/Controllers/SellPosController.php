@@ -2360,7 +2360,7 @@ class SellPosController extends Controller
         if (!empty($transaction)) {
             if (Auth()->user()->id) {
                 $company_id = User::where('id', Auth()->user()->id)->first()->company_id ?? 1;
-                $transaction->location = $company_id == 2 ?    $transaction->location = 2 :   $transaction->location = 1;
+                $transaction->location_id = $company_id == 2 ?   2 :  1;
             }
             $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
 
