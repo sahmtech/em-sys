@@ -476,19 +476,14 @@ class PayrollController extends Controller
         $companies = Company::whereIn('id',  $companies_ids)->pluck('name', 'id')->toArray();
 
         $projects = SalesProject::all()->pluck('name', 'id')->toArray();
-        $employees = User::where('user_type', 'employee')->whereIn('id', $userIds)->select(
-            'users.*',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''),  ' ', COALESCE(users.last_name, '')) as name"),
-        )->pluck('name', 'id')->toArray();
+
         $user_types = [
             "employee" => __('essentials::lang.user_type.employee'),
             "worker" => __('essentials::lang.user_type.worker'),
-            'manager' => __('essentials::lang.manager'),
-            'department_head' => __('essentials::lang.department_head'),
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        return view('essentials::payroll.index')->with(compact('projects', 'companies', 'employees', 'user_types', 'departments'));
+        return view('essentials::payroll.index')->with(compact('projects', 'companies', 'user_types', 'departments'));
     }
     public function requests()
     {
@@ -1043,7 +1038,7 @@ class PayrollController extends Controller
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee" || $user_type == "manager" || $user_type == 'department_head') {
-            $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
+            $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->whereIn('user_type', ['employee', "manager", 'department_head']);
         }
         if ($user_type == "remote_employee") {
             $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;

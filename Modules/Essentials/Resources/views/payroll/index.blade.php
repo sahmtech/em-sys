@@ -154,22 +154,7 @@
 
                     </div>
 
-                    {{-- <div class="form-group">
-                        {!! Form::label('employee_ids', __('essentials::lang.employee') . ':*') !!}
-                        <button type="button" class="btn btn-primary btn-xs select-all">
-                            @lang('lang_v1.select_all')
-                        </button>
-                        <button type="button" class="btn btn-primary btn-xs deselect-all">
-                            @lang('lang_v1.deselect_all')
-                        </button>
-                        {!! Form::select('employee_ids[]', $employees, null, [
-                            'class' => 'form-control select2',
-                            'required',
-                            'style' => 'width: 100%;',
-                            'multiple',
-                            'id' => 'employee_ids',
-                        ]) !!}
-                    </div> --}}
+
 
 
                 </div>
