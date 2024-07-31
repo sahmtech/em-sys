@@ -52,13 +52,7 @@ class BudgetController extends Controller
         $accounts = [];
         if ($fy_year != null) {
             $accounts = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
-                ->where(function ($query) {
-                    $query->where('users.status', 'active')
-                        ->orWhere(function ($subQuery) {
-                            $subQuery->where('users.status', 'inactive')
-                                ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
-                        });
-                })
+                ->where('status', 'active')
                 ->select('name', 'id', 'account_primary_type')
                 ->get();
 
