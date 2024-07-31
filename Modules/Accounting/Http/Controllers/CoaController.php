@@ -590,7 +590,7 @@ class CoaController extends Controller
             $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
                 ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
                 ->leftjoin('transactions as T', 'accounting_accounts_transactions.transaction_id', '=', 'T.id')
-                ->leftjoin('users AS U', 'accounting_accounts_transactions.created_by', 'U.id')
+                ->leftjoin('users AS u', 'accounting_accounts_transactions.created_by', 'u.id')
                 ->select(
                     'accounting_accounts_transactions.operation_date',
                     'accounting_accounts_transactions.sub_type',
