@@ -2358,6 +2358,9 @@ class SellPosController extends Controller
         $transaction = Transaction::where('invoice_token', $token)->with(['business', 'location'])->first();
 
         if (!empty($transaction)) {
+            if (Auth()->user->id) {
+                $transaction->location = auth()->user->company_id == 2 ?    $transaction->location = 2 :   $transaction->location = 1;
+            }
             $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
 
             $receipt = $this->receiptContent($transaction->business_id, $transaction->location_id, $transaction->id, 'browser', false, false, $invoice_layout_id);
@@ -2385,6 +2388,7 @@ class SellPosController extends Controller
      */
     public function invoicePayment($token)
     {
+
         $transaction = Transaction::where('invoice_token', $token)->with(['business', 'contact', 'location'])->first();
         $business = $transaction->business;
         $business_details = $this->businessUtil->getDetails($business->id);

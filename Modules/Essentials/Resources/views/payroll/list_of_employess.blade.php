@@ -320,35 +320,63 @@
 
                     console.log(data);
 
-                    var salaryHtml = '<table class="table table-bordered table-striped">';
+                    var salaryHtml = '<form id="salaryForm">';
+                    salaryHtml += '<table class="table table-bordered table-striped">';
                     salaryHtml +=
-                        '<tr><th name="user_id" style="display:none"></th><td style="display:none">' +
-                        data.user_id + '</td></tr>';
-                    salaryHtml += '<tr><th name="work_days">@lang('essentials::lang.work_days')</th><td>' + data
-                        .work_days + '</td></tr>';
-                    salaryHtml += '<tr><th name="salary">@lang('essentials::lang.salary')</th><td>' + data.salary +
-                        '</td></tr>';
-                    salaryHtml += '<tr><th name="total">@lang('essentials::lang.total')</th><td>' + data.total +
-                        '</td></tr>';
-                    salaryHtml += '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td>' + data
-                        .housing_allowance + '</td></tr>';
+                        '<tr style="display:none"><th name="user_id"></th><td><input type="hidden" name="user_id" value="' +
+                        data.user_id + '"></td></tr>';
                     salaryHtml +=
-                        '<tr><th name="transportation_allowance">@lang('essentials::lang.transportation_allowance')</th><td>' + data
-                        .transportation_allowance + '</td></tr>';
-                    salaryHtml += '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td>' + data
-                        .other_allowance + '</td></tr>';
+                        '<tr><th name="work_days">@lang('essentials::lang.work_days')</th><td><input type="text" name="work_days" value="' +
+                        data.work_days + '" class="form-control"></td></tr>';
+                    salaryHtml +=
+                        '<tr><th name="salary">@lang('essentials::lang.salary')</th><td><input type="text" name="salary" value="' +
+                        data.salary + '" class="form-control"></td></tr>';
+                    salaryHtml +=
+                        '<tr><th name="total">@lang('essentials::lang.total')</th><td><input type="text" name="total" value="' +
+                        data.total + '" class="form-control"></td></tr>';
+                    salaryHtml +=
+                        '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td><input type="text" name="housing_allowance" value="' +
+                        data.housing_allowance + '" class="form-control"></td></tr>';
+                    salaryHtml +=
+                        '<tr><th name="transportation_allowance">@lang('essentials::lang.transportation_allowance')</th><td><input type="text" name="transportation_allowance" value="' +
+                        data.transportation_allowance + '" class="form-control"></td></tr>';
+                    salaryHtml +=
+                        '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td><input type="text" name="other_allowance" value="' +
+                        data.other_allowance + '" class="form-control"></td></tr>';
                     salaryHtml += '</table>';
                     salaryHtml +=
-                        '<button class="btn btn-sm btn-primary edit-salary" data-worker-id="' +
-                        workerId + '">@lang('essentials::lang.edit')</button>';
+                        '<button type="submit" class="btn btn-sm btn-primary">@lang('essentials::lang.submit')</button>';
+                    salaryHtml += '</form>';
 
                     $('#salaryModalBody').html(salaryHtml);
                     $('#salaryInfoModal').modal('show');
+
+                    // Handle form submission
+                    $('#salaryForm').submit(function(e) {
+                        e.preventDefault();
+                        $.ajax({
+                            url: {
+                                payrolls.update.salary
+                            },
+                            type: 'POST',
+                            data: $(this).serialize(),
+                            success: function(response) {
+                                console.log('Form submitted successfully.');
+                                $('#salaryInfoModal').modal('hide');
+                                // Handle success response
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(xhr.responseText);
+                                // Handle error response
+                            }
+                        });
+                    });
                 },
                 error: function(xhr, status, error) {
                     console.error(xhr.responseText);
                 }
-            });
+            })
+
         });
 
 
@@ -362,7 +390,8 @@
             });
 
 
-            $(this).replaceWith('<button class="btn btn-sm btn-success save-salary">@lang('essentials::lang.save')</button>');
+            $(this).replaceWith(
+                '<button class="btn btn-sm btn-success save-salary">@lang('essentials::lang.save')</button>');
         });
 
         $(document).on('click', '.save-salary', function(e) {
