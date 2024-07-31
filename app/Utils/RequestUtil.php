@@ -849,9 +849,13 @@ class RequestUtil extends Util
 
     public function saveAttachment(Request $request, $requestId)
     {
+        error_log(json_encode($request->all()));
+
         if ($request->has('attachments')) {
+            $hasValidAttachment = false;
+
             foreach ($request->attachments as $attachment) {
-                if (isset($attachment['file'])) {
+                if (isset($attachment['file']) && isset($attachment['name'])) {
                     $file = $attachment['file'];
                     $attachmentPath = $file->store('/requests_attachments');
 
@@ -861,20 +865,32 @@ class RequestUtil extends Util
                         'name' => $attachment['name'],
                         'file_path' => $attachmentPath,
                     ]);
+
+                    $hasValidAttachment = true;
                 }
             }
-            $output = [
-                'status' => 'success',
-                'msg' => __('messages.saved_successfully'),
-            ];
+
+            if ($hasValidAttachment) {
+                $output = [
+                    'status' => 'success',
+                    'msg' => __('messages.saved_successfully'),
+                ];
+            } else {
+                $output = [
+                    'status' => 'error',
+                    'msg' => __('request.please_add_valid_file_and_name_before_saving'),
+                ];
+            }
         } else {
             $output = [
                 'status' => 'error',
                 'msg' => __('request.please_add_afile_before_saved'),
             ];
         }
+
         return response()->json($output);
     }
+
 
 
     public function makeToDo($request, $business_id)
