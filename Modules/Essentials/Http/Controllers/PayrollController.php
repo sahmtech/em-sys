@@ -1179,8 +1179,6 @@ class PayrollController extends Controller
 
     public function store(Request $request)
     {
-
-
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
         $company_id = $user->company_id ?? 1;
