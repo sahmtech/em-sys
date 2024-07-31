@@ -7,7 +7,7 @@ use App\BusinessLocation;
 use App\TimesheetUser;
 use App\User;
 use App\TimesheetGroup;
-
+use App\Company;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\RestaurantUtil;
@@ -1782,12 +1782,14 @@ class TimeSheetController extends Controller
         $year = $currentDateTime->year;
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
+        $companies = Company::pluck('name', 'id');
         $payrolls = [];
         foreach ($workers as $worker) {
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',

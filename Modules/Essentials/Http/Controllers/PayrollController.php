@@ -1042,8 +1042,10 @@ class PayrollController extends Controller
 
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
-        } elseif ($user_type == "employee" || $user_type == "remote_employee" || $user_type == "manager" || $user_type == 'department_head') {
-            $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
+
+        } elseif ($user_type == "employee" || $user_type == "remote_employee") {
+            $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->whereIn('user_type', ['employee', 'manager', 'department_head']);
+
         }
         if ($user_type == "remote_employee") {
             $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
@@ -1085,7 +1087,7 @@ class PayrollController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
-
+        $companies = Company::pluck('name', 'id');
         foreach ($employees as $worker) {
             $housing_allowance = 0;
             $transportation_allowance = 0;
@@ -1151,6 +1153,7 @@ class PayrollController extends Controller
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'identity_card_number' => $worker->id_proof_number ?? '',
                 'project_name' => $project_name ?? '',
                 'region' => '',
