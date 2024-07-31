@@ -405,47 +405,26 @@ class PayrollController extends Controller
 
         $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
         if ($user) {
-            foreach ($user->userAllowancesAndDeductions as $allowance) {
-                if ($updatedSalaryData['housing_allowance'] && $updatedSalaryData['housing_allowance'] != null) {
-                    if ($allowance->allowance_deduction_id == 1) {
+            $allowanceMap = [
+                'housing_allowance' => 1,
+                'transportation_allowance' => 2,
+                'other_allowance' => 6
+            ];
 
-                        $allowance->amount = $updatedSalaryData['housing_allowance'];
+            foreach ($allowanceMap as $key => $id) {
+                if (isset($updatedSalaryData[$key]) && $updatedSalaryData[$key] != null) {
+                    $allowance = $user->userAllowancesAndDeductions->firstWhere('allowance_deduction_id', $id);
+                    if ($allowance) {
+                        $allowance->amount = $updatedSalaryData[$key];
                         $allowance->save();
+                    } else {
+                        error_log($id . ' allowance not found, creating new record');
+                        EssentialsUserAllowancesAndDeduction::create([
+                            'user_id' => $userId,
+                            'allowance_deduction_id' => $id,
+                            'amount' => $updatedSalaryData[$key]
+                        ]);
                     }
-                } else {
-                    error_log(11111111);
-                    EssentialsUserAllowancesAndDeduction::create([
-                        'user_id' => $userId,
-                        'allowance_deduction_id' => 1,
-                        'amount' => $updatedSalaryData['housing_allowance']
-                    ]);
-                }
-                if ($updatedSalaryData['transportation_allowance'] && $updatedSalaryData['transportation_allowance'] != null) {
-                    if ($allowance->allowance_deduction_id == 2) {
-                        $allowance->amount = $updatedSalaryData['transportation_allowance'];
-                        $allowance->save();
-                    }
-                } else {
-                    error_log(2222222);
-                    EssentialsUserAllowancesAndDeduction::create([
-                        'user_id' => $userId,
-                        'allowance_deduction_id' => 2,
-                        'amount' => $updatedSalaryData['housing_allowance']
-                    ]);
-                }
-                if ($updatedSalaryData['other_allowance'] && $updatedSalaryData['other_allowance'] != null) {
-                    if ($allowance->allowance_deduction_id == 6) {
-
-                        $allowance->amount = $updatedSalaryData['other_allowance'];
-                        $allowance->save();
-                    }
-                } else {
-                    error_log(3333333);
-                    EssentialsUserAllowancesAndDeduction::create([
-                        'user_id' => $userId,
-                        'allowance_deduction_id' => 6,
-                        'amount' => $updatedSalaryData['housing_allowance']
-                    ]);
                 }
             }
             $user->essentials_salary = $updatedSalaryData['salary'];
