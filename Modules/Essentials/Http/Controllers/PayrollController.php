@@ -156,7 +156,7 @@ class PayrollController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->whereIn('company_id', $companies_ids)
             ->with(['assignedTo'])
-            ->whereIn('user_type', ['worker', 'employee'])
+            ->whereIn('user_type', ['worker', 'employee', 'manager'])
             ->where('users.status', '!=', 'inactive')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -174,7 +174,7 @@ class PayrollController extends Controller
             $user_type = request()->input('user_type');
             if ($user_type == "worker") {
                 $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'worker');
-            } elseif ($user_type == "employee" || $user_type == "remote_employee") {
+            } elseif ($user_type == "employee" || $user_type == "remote_employee" || $user_type == "manager") {
                 $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
             }
             if ($user_type == "remote_employee") {
@@ -1038,7 +1038,7 @@ class PayrollController extends Controller
 
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
-        } elseif ($user_type == "employee" || $user_type == "remote_employee") {
+        } elseif ($user_type == "employee" || $user_type == "remote_employee" || $user_type == "manager") {
             $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
         }
         if ($user_type == "remote_employee") {
