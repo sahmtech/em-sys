@@ -57,13 +57,8 @@ class ReportController extends Controller
 
 
         $first_account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
-            ->where(function ($query) {
-                $query->where('users.status', 'active')
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->where('users.status', 'inactive')
-                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
-                    });
-            })
+            ->where('status', 'active')
+
             ->first();
         $ledger_url = null;
         if (!empty($first_account)) {
