@@ -383,7 +383,7 @@
                 data: updatedData,
                 success: function(response) {
                     $('#salaryInfoModal').modal('hide');
-                    location.reload();
+                    // location.reload();
 
                     console.log('Data updated successfully:', response);
                 },

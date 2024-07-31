@@ -44,6 +44,7 @@ use App\TimesheetGroup;
 use App\AccessRole;
 use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 class PayrollController extends Controller
 {
@@ -377,7 +378,7 @@ class PayrollController extends Controller
                 $housing_allowance = $allowance->amount;
             } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
                 $transportation_allowance = $allowance->amount;
-            } else if (stripos($allowance_dsc, 'other') !== false) {
+            } else if ((stripos($allowance_dsc, 'other') !== false) || (stripos($allowance_dsc, 'خرى') !== false)) {
                 $other_allowance += floatval($allowance->amount ?? "0");
             }
         }
@@ -400,32 +401,59 @@ class PayrollController extends Controller
 
         $userId = $request->input('user_id');
         $updatedSalaryData = $request->except('_token', 'user_id');
-
+        error_log(json_encode($updatedSalaryData));
 
         $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
         if ($user) {
             foreach ($user->userAllowancesAndDeductions as $allowance) {
-                if ($allowance->allowance_deduction_id == 1) {
-                    error_log($updatedSalaryData['housing_allowance']);
-                    $allowance->amount = $updatedSalaryData['housing_allowance'];
-                    $allowance->save();
-                }
+                if ($updatedSalaryData['housing_allowance'] && $updatedSalaryData['housing_allowance'] != null) {
+                    if ($allowance->allowance_deduction_id == 1) {
 
-                if ($allowance->allowance_deduction_id == 2) {
-                    $allowance->amount = $updatedSalaryData['transportation_allowance'];
-                    $allowance->save();
+                        $allowance->amount = $updatedSalaryData['housing_allowance'];
+                        $allowance->save();
+                    }
+                } else {
+                    error_log(11111111);
+                    EssentialsUserAllowancesAndDeduction::create([
+                        'user_id' => $userId,
+                        'allowance_deduction_id' => 1,
+                        'amount' => $updatedSalaryData['housing_allowance']
+                    ]);
                 }
+                if ($updatedSalaryData['transportation_allowance'] && $updatedSalaryData['transportation_allowance'] != null) {
+                    if ($allowance->allowance_deduction_id == 2) {
+                        $allowance->amount = $updatedSalaryData['transportation_allowance'];
+                        $allowance->save();
+                    }
+                } else {
+                    error_log(2222222);
+                    EssentialsUserAllowancesAndDeduction::create([
+                        'user_id' => $userId,
+                        'allowance_deduction_id' => 2,
+                        'amount' => $updatedSalaryData['housing_allowance']
+                    ]);
+                }
+                if ($updatedSalaryData['other_allowance'] && $updatedSalaryData['other_allowance'] != null) {
+                    if ($allowance->allowance_deduction_id == 6) {
 
-                if ($allowance->allowance_deduction_id == 6) {
-                    error_log($updatedSalaryData['other_allowance']);
-                    $allowance->amount = $updatedSalaryData['other_allowance'];
-                    $allowance->save();
+                        $allowance->amount = $updatedSalaryData['other_allowance'];
+                        $allowance->save();
+                    }
+                } else {
+                    error_log(3333333);
+                    EssentialsUserAllowancesAndDeduction::create([
+                        'user_id' => $userId,
+                        'allowance_deduction_id' => 6,
+                        'amount' => $updatedSalaryData['housing_allowance']
+                    ]);
                 }
             }
             $user->essentials_salary = $updatedSalaryData['salary'];
             $user->total_salary = $updatedSalaryData['total'];
             $user->save();
             return response()->json(['message' => 'Salary data updated successfully', $user], 200);
+        } else {
+            return response()->json(['message' => 'user not found'], 200);
         }
     }
 
@@ -1179,6 +1207,7 @@ class PayrollController extends Controller
 
     public function store(Request $request)
     {
+
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
         $company_id = $user->company_id ?? 1;
