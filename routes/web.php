@@ -281,7 +281,22 @@ Route::get('/fix_emp2', function () {
         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
     }
 });
+Route::get('/updateDepartmentIds', function () {
+    $users = User::all();
 
+    foreach ($users as $user) {
+        $appointment = $user->activeAppointmet;
+
+        if ($appointment) {
+            $departmentId = $appointment->department_id;
+
+            $user->essentials_department_id = $departmentId;
+            $user->save();
+        }
+    }
+
+    return response()->json(['message' => 'Users department IDs updated successfully']);
+});
 // Route::get('/swap_k', function () {
 //     DB::beginTransaction();
 //     try {
