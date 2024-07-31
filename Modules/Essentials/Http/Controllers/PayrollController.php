@@ -1040,7 +1040,7 @@ class PayrollController extends Controller
 
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
-        } elseif ($user_type == "employee" || $user_type == "remote_employee" || $user_type == "manager" || $user_type = 'department_head') {
+        } elseif ($user_type == "employee" || $user_type == "remote_employee" || $user_type == "manager" || $user_type == 'department_head') {
             $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
         }
         if ($user_type == "remote_employee") {
