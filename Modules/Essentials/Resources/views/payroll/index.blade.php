@@ -77,6 +77,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 {!! Form::label('companies', __('essentials::lang.company') . ':*') !!}
+
                                 {!! Form::select('companies[]', $companies, null, [
                                     'class' => 'form-control select2',
                                     'style' => 'width: 100%;',
@@ -85,6 +86,9 @@
                                     'multiple',
                                     // 'placeholder' => __('lang_v1.all'),
                                 ]) !!}
+                                <button type="button" class="btn btn-primary btn-xs select-all">@lang('lang_v1.select_all')</button>
+                                <button type="button"
+                                    class="btn btn-primary btn-xs deselect-all">@lang('lang_v1.deselect_all')</button>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -113,17 +117,36 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-12" id="department_container">
+                            <div class="form-group">
+
+                                {!! Form::label('departments', __('essentials::lang.department') . ':') !!}
+
+                                {!! Form::select('departments[]', $departments, null, [
+                                    'class' => 'form-control select2',
+                                    'id' => 'select_department_id',
+                                    'style' => 'height:40px; width:100%',
+                                    'multiple',
+                                ]) !!}
+                                <button type="button" class="btn btn-primary btn-xs select-all">@lang('lang_v1.select_all')</button>
+                                <button type="button"
+                                    class="btn btn-primary btn-xs deselect-all">@lang('lang_v1.deselect_all')</button>
+                            </div>
+                        </div>
                         <div class="col-md-12 ">
                             <div class="form-group" id="projects_container">
                                 {!! Form::label('projects', __('essentials::lang.sales_projects') . ':*') !!}
+
                                 {!! Form::select('projects[]', $projects, null, [
                                     'class' => 'form-control select2',
                                     'style' => 'width: 100%;',
                                     'id' => 'projects',
-                                
                                     'multiple',
                                     // 'placeholder' => __('lang_v1.all'),
                                 ]) !!}
+                                <button type="button" class="btn btn-primary btn-xs select-all">@lang('lang_v1.select_all')</button>
+                                <button type="button"
+                                    class="btn btn-primary btn-xs deselect-all">@lang('lang_v1.deselect_all')</button>
                             </div>
                         </div>
 
@@ -229,8 +252,10 @@
 
                 if (selectedUserType === 'worker') {
                     $('#projects_container').show();
+                    $('#department_container').hide();
                 } else if (selectedUserType === 'employee') {
                     $('#projects_container').hide();
+                    $('#department_container').show();
                 }
             }
 

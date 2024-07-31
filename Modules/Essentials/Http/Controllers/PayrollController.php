@@ -476,8 +476,8 @@ class PayrollController extends Controller
             "worker" => __('essentials::lang.user_type.worker'),
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
-
-        return view('essentials::payroll.index')->with(compact('projects', 'companies', 'employees', 'user_types'));
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        return view('essentials::payroll.index')->with(compact('projects', 'companies', 'employees', 'user_types', 'departments'));
     }
     public function requests()
     {
@@ -1023,6 +1023,7 @@ class PayrollController extends Controller
     {
         $companies_ids = request()->input('companies', []);
         $projects_ids = request()->input('projects', []);
+        $departments_ids = request()->input('departments', []);
         $user_type = request()->input('user_type');
         $month_year = request()->input('month_year');
 
@@ -1031,7 +1032,7 @@ class PayrollController extends Controller
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
-            $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
+            $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
         }
         if ($user_type == "remote_employee") {
             $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
@@ -1049,6 +1050,7 @@ class PayrollController extends Controller
             'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'
         ])
             ->whereIn('users.id', $employee_ids)
+
             ->select(
                 'users.*',
                 'users.id as user_id',
