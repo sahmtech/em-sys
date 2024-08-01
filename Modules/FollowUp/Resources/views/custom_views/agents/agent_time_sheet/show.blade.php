@@ -75,26 +75,20 @@
                                     <td>{{ $user['wd'] }}</td>
                                     <td>{{ number_format($user['basic'], 2) }}</td>
                                     <td>{{ number_format($user['monthly_cost'], 2) }}</td>
-
                                     <td>{{ number_format($user['housing'], 2) }}</td>
                                     <td>{{ number_format($user['transport'], 2) }}</td>
                                     <td>{{ number_format($user['other_allowances'], 2) }}</td>
                                     <td>{{ number_format($user['total_salary'], 2) }}</td>
-
                                     <td>{{ $user['absence_day'] }}</td>
                                     <td>{{ number_format($user['absence_amount'], 2) }}</td>
                                     <td>{{ number_format($user['other_deduction'], 2) }}</td>
                                     <td>{{ $user['over_time_h'] }}</td>
                                     <td>{{ number_format($user['over_time'], 2) }}</td>
-
                                     <td>{{ number_format($user['other_addition'], 2) }}</td>
                                     <td>{{ number_format($user['cost2'], 2) }}</td>
                                     <td>{{ number_format($user['invoice_value'], 2) }}</td>
                                     <td>{{ number_format($user['vat'], 2) }}</td>
                                     <td>{{ number_format($user['total'], 2) }}</td>
-
-
-
                                     <td>{{ number_format($user['deductions'], 2) }}</td>
                                     <td>{{ number_format($user['additions'], 2) }}</td>
                                     <td>{{ number_format($user['final_salary'], 2) }}</td>
