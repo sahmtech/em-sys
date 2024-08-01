@@ -282,7 +282,7 @@ Route::get('/fix_emp2', function () {
     }
 });
 Route::get('/updateDepartmentIds', function () {
-    $users = User::all();
+    $users = User::whereIn('user_type', ['employee', 'manager', 'department_head']);
 
     foreach ($users as $user) {
         $appointment = $user->activeAppointmet;
