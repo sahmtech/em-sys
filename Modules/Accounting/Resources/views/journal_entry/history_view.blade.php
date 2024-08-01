@@ -22,6 +22,7 @@
                                 <th class="col-md-1">#</th>
                                 <th class="col-md-4">@lang('accounting::lang.account')</th>
                                 <th class="col-md-2">@lang('accounting::lang.select_partner')</th>
+                                <th class="col-md-2">@lang('accounting::lang.cost_center')</th>
 
                                 <th class="col-md-1">@lang('accounting::lang.debit')</th>
                                 <th class="col-md-1">@lang('accounting::lang.credit')</th>
@@ -43,13 +44,16 @@
                                         $selected_partner_type = '';
                                         $partner = '-';
                                         $partner_type = '-';
+                                        $cost_center_id =null;
 
                                     @endphp
 
                                     @if (isset($accounts_transactions[$i - 1]))
                                         @php
-
+ 
                                             $account_id = $accounts_transactions[$i - 1]['accounting_account_id'];
+                                            $cost_center_id = $accounts_transactions[$i - 1]['cost_center_id'];
+                                          
                                             $debit =
                                                 $accounts_transactions[$i - 1]['type'] == 'debit'
                                                     ? $accounts_transactions[$i - 1]['amount']
@@ -115,6 +119,16 @@
                                             id="selected_partner_type[{{ $i }}]"
                                             style="background: transparent;border: 0;" value="{{ $partner_type }}">
                                     </th>
+                                    <td>
+                                        <select readonly class="form-control cost_center" style="width: 100%;disabled:true;" name="cost_center[{{ $i }}]">
+                                            <option  value="">يرجى الاختيار</option>
+                                            @foreach ($allCenters as $allCenter)
+                                                <option @if ($cost_center_id == $allCenter->id)
+                                                    selected
+                                                @endif value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
 
                                     <td>
                                         {!! Form::text('debit[' . $i . ']', $debit, [
@@ -165,6 +179,7 @@
         $(document).ready(function() {
             $(document).ready(function() {
                 $('.account_id').prop('disabled', true);
+                $('.cost_center').prop('disabled', true);
             });
             calculate_total();
 

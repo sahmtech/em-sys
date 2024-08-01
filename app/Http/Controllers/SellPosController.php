@@ -618,7 +618,6 @@ class SellPosController extends Controller
                 $this->transactionUtil->activityLog($transaction, 'added');
 
                 DB::commit();
-
                 SellCreatedOrModified::dispatch($transaction);
 
                 if ($request->input('is_save_and_print') == 1) {

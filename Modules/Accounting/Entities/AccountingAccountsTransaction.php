@@ -2,6 +2,8 @@
 
 namespace Modules\Accounting\Entities;
 
+use App\Contact;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class AccountingAccountsTransaction extends Model
@@ -12,6 +14,20 @@ class AccountingAccountsTransaction extends Model
     {
         return $this->belongsTo('Modules\Accounting\Entities\AccountingAccount', 'accounting_account_id');
     }
+
+    public function costCenter(){
+        return $this->belongsTo(CostCenter::class,'cost_center_id');
+    }
+
+    public function employee(){
+        return $this->belongsTo(User::class,'partner_id');
+    }
+
+    public function contact(){
+        return $this->belongsTo(Contact::class,'partner_id');
+    }
+
+    
 
     /**
      * Creates new account transaction
