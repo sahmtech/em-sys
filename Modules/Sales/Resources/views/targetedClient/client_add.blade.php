@@ -262,11 +262,13 @@
 
             $('select[name="salary_type[]"]').each(function(index) {
                 var salaryType = $(this).val();
+                var type = $('input[name="type[]"]').val();
                 var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
 
                 selectedData.push({
                     salaryType: salaryType,
-                    amount: amount
+                    amount: amount,
+                    type: type
                 });
             });
 
