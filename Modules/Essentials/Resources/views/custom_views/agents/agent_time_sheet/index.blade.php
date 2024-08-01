@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_timesheet_users'))
+                        {{-- @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.view_timesheet_users'))
                             <div class="tab-pane" id="payrolls_tab">
                                 <div class="col-md-12">
                                     <div class="table-responsive">
@@ -84,7 +84,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
             </div>
@@ -248,45 +248,45 @@
                     minViewMode: "months"
                 });
 
-                payrolls_table = $('#payrolls_table').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: "{{ route('hrm.agentTimeSheetUsers') }}",
-                    },
-                    columnDefs: [{
-                        orderable: false,
-                        searchable: false,
-                    }],
+                // payrolls_table = $('#payrolls_table').DataTable({
+                //     processing: true,
+                //     serverSide: true,
+                //     ajax: {
+                //         url: "{{ route('hrm.agentTimeSheetUsers') }}",
+                //     },
+                //     columnDefs: [{
+                //         orderable: false,
+                //         searchable: false,
+                //     }],
 
-                    columns: [{
-                            data: 'name',
-                            name: 'name'
-                        }, {
-                            data: 'user',
-                            name: 'user'
-                        },
-                        {
-                            data: 'id_proof_number',
-                            name: 'id_proof_number'
-                        },
+                //     columns: [{
+                //             data: 'name',
+                //             name: 'name'
+                //         }, {
+                //             data: 'user',
+                //             name: 'user'
+                //         },
+                //         {
+                //             data: 'id_proof_number',
+                //             name: 'id_proof_number'
+                //         },
 
-                        {
-                            data: 'final_salary',
-                            name: 'final_salary'
-                        },
-                        {
-                            data: 'payment_status',
-                            name: 'payment_status'
-                        },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        }
-                    ],
-                });
+                //         {
+                //             data: 'final_salary',
+                //             name: 'final_salary'
+                //         },
+                //         {
+                //             data: 'payment_status',
+                //             name: 'payment_status'
+                //         },
+                //         {
+                //             data: 'action',
+                //             name: 'action',
+                //             orderable: false,
+                //             searchable: false
+                //         }
+                //     ],
+                // });
 
                 payroll_group_table = $('#payroll_group_table').DataTable({
                     processing: true,

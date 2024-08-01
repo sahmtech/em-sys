@@ -173,7 +173,7 @@ class TimeSheetController extends Controller
             $query->where('timesheet_groups.created_by', $user->id)
                 ->orWhere('timesheet_groups.status', 'final');
         })->whereHas('timesheetUsers.user', function ($query) use ($companies_ids) {
-            $query->where('company_id', $companies_ids)->where('is_approved', 0);
+            $query->whereIn('company_id', $companies_ids)->where('is_approved', 0);
         })->select([
             'timesheet_groups.id',
             'timesheet_groups.name',
