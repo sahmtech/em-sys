@@ -12,6 +12,7 @@ use App\TimesheetGroup;
 use App\Utils\ModuleUtil;
 use Modules\Sales\Entities\SalesProject;
 use App\Category;
+use App\Company;
 use Carbon\Carbon;
 use DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -106,11 +107,13 @@ class TimeSheetController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
+        $companies = Company::pluck('name', 'id');
         foreach ($workers as $worker) {
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',
