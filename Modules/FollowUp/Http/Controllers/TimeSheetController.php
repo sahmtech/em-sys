@@ -488,6 +488,7 @@ class TimeSheetController extends Controller
                 'name' => $user->first_name . ' '  . $user->last_name,
                 'nationality' => $user->country->nationality ?? '',
                 'residency' => $user->id_proof_number,
+
                 'monthly_cost' => $user->monthly_cost,
                 'wd' => $user->work_days,
                 'absence_day' => $user->absence_days,
