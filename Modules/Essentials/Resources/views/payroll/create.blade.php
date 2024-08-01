@@ -376,7 +376,7 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                            <tfoot>
+                            {{-- <tfoot>
                                 <tr>
                                     <td colspan="2">
                                         @lang('essentials::lang.the_total')
@@ -443,7 +443,7 @@
                                     <td>
                                     </td>
                                 </tr>
-                            </tfoot>
+                            </tfoot> --}}
                         </table>
                     </div>
                 </div>

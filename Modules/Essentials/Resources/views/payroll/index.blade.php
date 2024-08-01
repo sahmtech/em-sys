@@ -231,6 +231,15 @@
             // Initially hide both containers
             $('#projects_container').hide();
 
+
+            if ($('#add_payroll_step1').length) {
+                $('#add_payroll_step1').validate();
+                $('#employee_id').select2({
+                    dropdownParent: $('#payroll_modal')
+                });
+            }
+
+
             // Function to toggle visibility of project and company inputs
             function toggleProjectsAndCompanies() {
                 var selectedUserType = $('#user_type').val();
