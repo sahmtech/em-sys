@@ -52,7 +52,10 @@
                 </thead>
                 <tbody></tbody>
             </table>
+        <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
+
         @endcomponent
+
     </section>
 
 @stop

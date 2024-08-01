@@ -85,31 +85,33 @@ class SellController extends Controller
     public function index()
     {
         $is_admin = $this->businessUtil->is_admin(auth()->user());
+        $company_id = Session::get('selectedCompanyId');
+
 
         if (!$is_admin && !auth()->user()->hasAnyPermission(['sell.view', 'sell.create', 'direct_sell.access', 'direct_sell.view', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping', 'so.view_all', 'so.view_own'])) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
+           $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
         $is_crm = $this->moduleUtil->isModuleInstalled('Crm');
         $is_tables_enabled = $this->transactionUtil->isModuleEnabled('tables');
         $is_service_staff_enabled = $this->transactionUtil->isModuleEnabled('service_staff');
         $is_types_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
 
         if (request()->ajax()) {
-            $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+               $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
             $with = [];
             $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
             $sale_type = !empty(request()->input('sale_type')) ? request()->input('sale_type') : 'sell';
 
-            $sells = $this->transactionUtil->getListSells($business_id, $sale_type);
+            $sells = $this->transactionUtil->getListSells($business_id, $sale_type,$company_id);
 
-            $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $sells->whereIn('transactions.location_id', $permitted_locations);
-            }
+            // $permitted_locations = auth()->user()->permitted_locations();
+            // if ($permitted_locations != 'all') {
+            //     $sells->whereIn('transactions.location_id', $permitted_locations);
+            // }
 
             //Add condition for created_by,used in sales representative sales report
             if (request()->has('created_by')) {
@@ -339,10 +341,11 @@ class SellController extends Controller
 
 
             //$business_details = $this->businessUtil->getDetails($business_id);
-            if ($this->businessUtil->isModuleEnabled('subscription')) {
-                $sells->addSelect('transactions.is_recurring', 'transactions.recur_parent_id');
-            }
+            // if ($this->businessUtil->isModuleEnabled('subscription')) {
+            //     $sells->addSelect('transactions.is_recurring', 'transactions.recur_parent_id');
+            // }
             $sales_order_statuses = Transaction::sales_order_statuses();
+            
             $datatable = Datatables::of($sells)
                 ->addColumn(
                     'action',

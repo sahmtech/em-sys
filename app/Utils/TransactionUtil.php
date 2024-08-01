@@ -26,6 +26,8 @@ use App\Variation;
 use App\VariationLocationDetails;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
+
 
 class TransactionUtil extends Util
 {
@@ -55,8 +57,11 @@ class TransactionUtil extends Util
             $pay_term_number = $contact->pay_term_number;
             $pay_term_type = $contact->pay_term_type;
         }
+        $company_id = Session::get('selectedCompanyId')??null;
+       
         $transaction = Transaction::create([
             'business_id' => $business_id,
+            'company_id'=>$company_id,
             'location_id' => $input['location_id'],
             'type' => $sale_type,
             'status' => $input['status'],
@@ -5026,7 +5031,7 @@ class TransactionUtil extends Util
                 'transactions.recur_interval_type',
                 'transactions.recur_repetitions',
                 'transactions.subscription_repeat_on',
-                'bl.name as location_name',
+                // 'bl.name as location_name',
                 DB::raw("CONCAT(COALESCE(U.surname, ''),' ',COALESCE(U.first_name, ''),' ',COALESCE(U.last_name,'')) as expense_for"),
                 DB::raw("CONCAT(tr.name ,' (', tr.amount ,' )') as tax"),
                 DB::raw('SUM(TP.amount) as amount_paid'),
@@ -5058,12 +5063,12 @@ class TransactionUtil extends Util
             ->leftJoin('users as ss', 'transactions.res_waiter_id', '=', 'ss.id')
             ->leftJoin('users as dp', 'transactions.delivery_person', '=', 'dp.id')
             ->leftJoin('res_tables as tables', 'transactions.res_table_id', '=', 'tables.id')
-            ->join(
-                'business_locations AS bl',
-                'transactions.location_id',
-                '=',
-                'bl.id'
-            )
+            // ->join(
+            //     'business_locations AS bl'
+            //     // 'transactions.location_id',
+            //     // '=',
+            //     // 'bl.id'
+            // )
             ->leftJoin(
                 'transactions AS SR',
                 'transactions.id',
@@ -5121,7 +5126,7 @@ class TransactionUtil extends Util
                 DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                 DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
                         TP.transaction_id=transactions.id) as total_paid'),
-                'bl.name as business_location',
+                // 'bl.name as business_location',
                 DB::raw('COUNT(SR.id) as return_exists'),
                 DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
                         TP2.transaction_id=SR.id ) as return_paid'),
@@ -5163,7 +5168,7 @@ class TransactionUtil extends Util
 
         //Get payment totals before start date
         $prev_payments = $this->__paymentQuery($contact_id, $start, null, $location_id)
-            ->select('transaction_payments.*', 'bl.name as location_name', 't.type as transaction_type', 'is_advance')
+            ->select('transaction_payments.*',  't.type as transaction_type', 'is_advance')
             ->get();
 
         $prev_total_invoice_paid = $prev_payments->where('transaction_type', 'sell')->where('is_return', 0)->sum('amount');
@@ -5177,7 +5182,7 @@ class TransactionUtil extends Util
         //$prev_total_advance_payment = $prev_payments->where('is_advance', 1)->sum('amount');
         $prev_total_advance_payment = $this->__paymentQuery($contact_id, $start, null, $location_id)
             ->select(
-                'bl.name as location_name',
+                // 'bl.name as location_name',
                 't.type as transaction_type',
                 'is_advance',
                 'transaction_payments.id',
@@ -5288,7 +5293,7 @@ class TransactionUtil extends Util
         //Get payment totals between dates
         if ($format == 'format_1' || $format == 'format_3') {
             $payments = $this->__paymentQuery($contact_id, $start, $end, $location_id)
-                ->select('transaction_payments.*', 'bl.name as location_name', 't.type as transaction_type', 't.ref_no', 't.invoice_no')
+                ->select('transaction_payments.*',  't.type as transaction_type', 't.ref_no', 't.invoice_no')
                 ->get();
         } else {
             $payments = [];

@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Entities\AccountingAccountsTransactionHistory;
 use Modules\Accounting\Entities\AccountingAccTransMappingHistory;
+use Modules\Accounting\Entities\CostCenter;
 use Modules\Accounting\Utils\AccountingUtil;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -56,7 +57,7 @@ class JournalEntryController extends Controller
         $can_edit_journal = auth()->user()->can('accounting.edit_journal');
         $can_delete_journal = auth()->user()->can('accounting.delete_journal');
         $can_history_edit = auth()->user()->can('accounting.history_edit');
-
+        $can_print= auth()->user()->can('accounting.print_journal');
 
         if (request()->ajax()) {
             $journal = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
@@ -77,7 +78,7 @@ class JournalEntryController extends Controller
             return Datatables::of($journal)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_history_edit, $can_edit_journal, $can_delete_journal) {
+                    function ($row) use ($is_admin, $can_history_edit,$can_print, $can_edit_journal, $can_delete_journal) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -110,6 +111,17 @@ class JournalEntryController extends Controller
                                 </li>';
                         }
 
+
+                        if ($is_admin || $can_print) {
+                            $html .= '<li>
+                                    <a class=" btn-modal" 
+                                  data-container="#printJournalEntry"
+                                     data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@print', [$row->id]) . '">
+                                        <i class="fa fa-print" aria-hidden="true"></i>' . __("messages.print") . '
+                                    </a>
+                                </li>';
+                        }
+
                         if ($is_admin || $can_delete_journal) {
                             $html .= '<li>
                                     <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@destroy', [$row->id]) . '" class="delete_journal_button">
@@ -138,6 +150,34 @@ class JournalEntryController extends Controller
         }
 
         return view('accounting::journal_entry.index');
+    }
+
+    public function print($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
+        $journal = AccountingAccTransMapping::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('type', 'journal_entry')
+            ->where('id', $id)
+            ->firstOrFail();
+
+          $journal_history = AccountingAccTransMappingHistory::where('accounting_accounts_transactions_history_id', $id)
+            ->latest('created_at')
+            ->first();
+        if ($journal_history) {
+            $journal['latest_update'] = $journal_history->creator->first_name . ' ' . $journal_history->creator->last_name;
+            $journal['latest_update_at'] = $journal_history->created_at;
+        } else {
+            $journal['latest_update'] = ' - ';
+            $journal['latest_update_at'] =null;
+        }
+        $accounts_transactions = AccountingAccountsTransaction::with('account')
+            ->where('acc_trans_mapping_id', $journal->id)
+            ->get();
+
+        return view('accounting::journal_entry.print', compact('journal', 'accounts_transactions'));
     }
     public function history_index($id)
     {
@@ -224,7 +264,7 @@ class JournalEntryController extends Controller
 
         // 
         $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
- 
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -236,8 +276,9 @@ class JournalEntryController extends Controller
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $employees = $all_users->pluck('full_name', 'id');
 
+        $allCenters = CostCenter::query()->get();
 
-        return view('accounting::journal_entry.create', compact(['contacts', 'employees']));
+        return view('accounting::journal_entry.create', compact(['contacts', 'employees', 'allCenters']));
     }
 
     public function store(Request $request)
@@ -261,6 +302,7 @@ class JournalEntryController extends Controller
             $selected_partner_ids = $request->get('selected_partner_id');
             $selected_partner_types = $request->get('selected_partner_type_');
             $journal_date = $request->get('journal_date');
+            $cost_centers =  $request->get('cost_center');
 
             $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
 
@@ -285,10 +327,10 @@ class JournalEntryController extends Controller
 
 
 
-           
+
             $acc_trans_mapping->business_id = $business_id;
             $acc_trans_mapping->company_id = $company_id;
-           
+
 
 
             $acc_trans_mapping->ref_no = $ref_no;
@@ -317,6 +359,7 @@ class JournalEntryController extends Controller
 
 
 
+                    $transaction_row['cost_center_id'] = $cost_centers[$index];
                     $transaction_row['additional_notes'] = $additional_notes[$index];
                     $transaction_row['partner_id'] = $selected_partner_ids[$index];
                     $transaction_row['partner_type'] = $selected_partner_types[$index];
@@ -390,9 +433,10 @@ class JournalEntryController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $employees = $all_users->pluck('full_name', 'id');
+        $allCenters = CostCenter::query()->get();
 
         return view('accounting::journal_entry.history_view')
-            ->with(compact('journal', 'accounts_transactions', 'contacts', 'employees'));
+            ->with(compact('journal', 'accounts_transactions', 'contacts', 'employees', 'allCenters'));
     }
 
     public function edit($id)
@@ -414,7 +458,7 @@ class JournalEntryController extends Controller
 
         $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-       
+
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -423,9 +467,10 @@ class JournalEntryController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $employees = $all_users->pluck('full_name', 'id');
+        $allCenters = CostCenter::query()->get();
 
         return view('accounting::journal_entry.edit')
-            ->with(compact('journal', 'accounts_transactions', 'contacts', 'employees'));
+            ->with(compact('journal', 'accounts_transactions', 'contacts', 'employees', 'allCenters'));
     }
 
     public function update(Request $request, $id)
@@ -446,6 +491,7 @@ class JournalEntryController extends Controller
             $credits = $request->get('credit');
             $debits = $request->get('debit');
             $additional_notes = $request->get('additional_notes');
+            $cost_centers =  $request->get('cost_center');
 
             $selected_partner_ids = $request->get('selected_partner_id');
             $selected_partner_types = $request->get('selected_partner_type_');
@@ -475,7 +521,7 @@ class JournalEntryController extends Controller
             }
             $acc_trans_mapping->note = $request->get('note');
             $acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
-           
+
             $acc_trans_mapping->update();
 
             //save details in account trnsactions table
@@ -494,6 +540,8 @@ class JournalEntryController extends Controller
                         $transaction_row['amount'] = $debits[$index];
                         $transaction_row['type'] = 'debit';
                     }
+                    $transaction_row['cost_center_id'] = $cost_centers[$index];
+
                     $transaction_row['additional_notes'] = $additional_notes[$index] ?? '';
                     $transaction_row['partner_id'] = $selected_partner_ids[$index];
                     $transaction_row['partner_type'] = $selected_partner_types[$index];
@@ -521,6 +569,7 @@ class JournalEntryController extends Controller
                             'additional_notes' => $accounts_transactions->additional_notes,
                             'partner_id' => $accounts_transactions->partner_id,
                             'partner_type' => $accounts_transactions->partner_type,
+                            'cost_center_id' => $accounts_transactions->cost_center_id,
 
 
                         ]);
