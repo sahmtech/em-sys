@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Business;
 use App\BusinessLocation;
 use App\TimesheetUser;
@@ -520,9 +522,33 @@ class TimeSheetController extends Controller
 
     public function showTimeSheet($id)
     {
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
+        }
+
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+            ->whereIn('u.company_id',  $companies_ids)
             ->select([
                 'timesheet_users.*',
                 'u.first_name',
