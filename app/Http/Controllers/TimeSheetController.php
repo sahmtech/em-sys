@@ -1204,12 +1204,14 @@ class TimeSheetController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
+        $companies = Company::pluck('name', 'id');
         foreach ($workers as $worker) {
             $worker_transaction = $worker->transactions->whereIn('id', $transactions_id)->first();
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',
@@ -1223,7 +1225,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => $worker_transaction->final_total / 1.15,
                 'vat' => $worker_transaction->final_total / 0.15,
                 'total' => $worker_transaction->final_total,
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,
@@ -1829,7 +1831,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => '',
                 'vat' => '',
                 'total' => '',
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,

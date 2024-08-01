@@ -81,9 +81,10 @@
 
                                     @if ($user_type == 'worker')
                                         <th style="width:100px;">@lang('essentials::lang.residence_permit')</th>
+                                        <th style="width:75px;">@lang('essentials::lang.company')</th>
+
                                         <th style="width:75px;">@lang('essentials::lang.project_name')</th>
                                         <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
-                                        <th style="width:75px;">@lang('worker.sponser')</th>
                                     @endif
                                     @if ($user_type != 'worker')
                                         <th style="width:100px;">@lang('essentials::lang.identity_card_number')</th>
@@ -151,6 +152,13 @@
                                             ]) !!}
                                         </td>
                                         @if ($user_type == 'worker')
+                                            <td name="company">{{ $payroll['company'] }}
+                                                {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'company',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
                                             <td name="project_name">{{ $payroll['project_name'] }}
                                                 {!! Form::hidden('payrolls[' . $index . '][project_name]', $payroll['project_name'], [
                                                     'data-index' => $index,
@@ -158,17 +166,11 @@
                                                     'class' => 'form-hidden',
                                                 ]) !!}
                                             </td>
+
                                             <td name="region">{{ $payroll['region'] }}
                                                 {!! Form::hidden('payrolls[' . $index . '][region]', $payroll['region'], [
                                                     'data-index' => $index,
                                                     'data-field' => 'region',
-                                                    'class' => 'form-hidden',
-                                                ]) !!}
-                                            </td>
-                                            <td name="sponser">{{ $payroll['sponser'] }}
-                                                {!! Form::hidden('payrolls[' . $index . '][sponser]', $payroll['sponser'], [
-                                                    'data-index' => $index,
-                                                    'data-field' => 'sponser',
                                                     'class' => 'form-hidden',
                                                 ]) !!}
                                             </td>

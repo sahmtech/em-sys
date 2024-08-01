@@ -30,6 +30,7 @@
                                 <th>@lang('worker.nationality')</th>
                                 <th>@lang('worker.eqama_number')</th>
                                 <th>@lang('worker.sponser')</th>
+                                <th>@lang('worker.project')</th>
                                 <th>@lang('worker.wd')</th>
                                 <th>@lang('worker.basic')</th>
                                 <th>@lang('worker.monthly_cost')</th>
@@ -72,6 +73,7 @@
                                     <td>{{ $user['nationality'] }}</td>
                                     <td>{{ $user['residency'] }}</td>
                                     <td>{{ $user['sponser'] }}</td>
+                                    <td>{{ $user['project'] }}</td>
                                     <td>{{ $user['wd'] }}</td>
                                     <td>{{ number_format($user['basic'], 2) }}</td>
                                     <td>{{ number_format($user['monthly_cost'], 2) }}</td>

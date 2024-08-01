@@ -64,11 +64,11 @@
                     <thead>
                         <tr>
                             <th style="width: 50px;">#</th>
-                            <th style="width: 100px;">@lang('essentials::lang.company')</th>
                             <th style="width: 100px;">@lang('worker.name')</th>
                             <th style="width: 100px;">@lang('worker.nationality')</th>
                             <th style="width: 100px;">@lang('worker.eqama_number')</th>
-                            <th style="width: 100px;">@lang('worker.sponser')</th>
+                            <th style="width: 100px;">@lang('essentials::lang.company')</th>
+                            <th style="width: 100px;">@lang('worker.project')</th>
                             <th style="width: 100px;">@lang('worker.wd')</th>
                             <th style="width: 100px;">@lang('worker.basic')</th>
                             <th style="width: 100px;">@lang('worker.monthly_cost')</th>
@@ -99,9 +99,7 @@
                                 <td name="id">{{ $payroll['id'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][id]', $payroll['id']) !!}
                                 </td>
-                                <td name="company">{{ $payroll['company'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company']) !!}
-                                </td>
+
                                 <td name="name">{{ $payroll['name'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][name]', $payroll['name']) !!}
                                 </td>
@@ -111,8 +109,11 @@
                                 <td name="residency">{{ $payroll['residency'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][residency]', $payroll['residency']) !!}
                                 </td>
-                                <td name="sponser">{{ $payroll['sponser'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][sponser]', $payroll['sponser']) !!}</td>
+                                <td name="company">{{ $payroll['company'] }}
+                                    {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company']) !!}
+                                </td>
+                                <td name="project">{{ $payroll['project'] }}
+                                    {!! Form::hidden('payrolls[' . $index . '][project]', $payroll['project']) !!}</td>
                                 </td>
                                 <td name="wd" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"

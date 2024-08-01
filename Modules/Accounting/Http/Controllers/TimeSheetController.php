@@ -108,6 +108,7 @@ class TimeSheetController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
+        $companies = Company::pluck('name', 'id');
         foreach ($workers as $worker) {
             $payrolls[] = [
                 'id' => $worker->user_id,
@@ -127,7 +128,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => '',
                 'vat' => '',
                 'total' => '',
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,
@@ -509,7 +510,8 @@ class TimeSheetController extends Controller
             $item->tax_number = $bankDetails['tax_number'] ?? '';
         });
         $projects = SalesProject::pluck('name', 'id');
-        $payrolls = $timesheetUsers->map(function ($user) use ($projects) {
+        $companies = Company::pluck('name', 'id');
+        $payrolls = $timesheetUsers->map(function ($user) use ($projects, $companies) {
             return [
                 'id' => $user->user_id,
                 'name' => $user->first_name . ' '  . $user->last_name,
@@ -527,7 +529,8 @@ class TimeSheetController extends Controller
                 'invoice_value' => $user->invoice_value,
                 'vat' => $user->vat,
                 'total' => $user->total,
-                'sponser' => $user->assigned_to ? $projects[$user->assigned_to] ?? '' : '',
+                'sponser' => $user->company_id ? ($companies[$user->company_id] ?? '') : '',
+                'project' => $user->assigned_to ? $projects[$user->assigned_to] ?? '' : '',
                 'basic' => $user->basic,
                 'housing' => $user->housing,
                 'transport' => $user->transport,
