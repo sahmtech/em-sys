@@ -1069,6 +1069,22 @@ class ApiCustomerController extends ApiController
 
 
     /////////////////////////////////////////////////////
+    private function isInvalidDateRange($type, $startDate, $end_date, $today)
+    {
+        if ($startDate && $type != 'escapeRequest') {
+            $startDateCarbon = Carbon::parse($startDate);
+            if ($startDateCarbon->lt($today)) {
+                return true;
+            }
+            if ($end_date) {
+                $endDateCarbon = Carbon::parse($end_date);
+                if ($startDateCarbon->gt($endDateCarbon)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     private function getTypePrefix($request_type_id)
     {
         $prefix = RequestsType::where('id', $request_type_id)->first()->prefix;
