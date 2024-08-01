@@ -12,8 +12,6 @@ use App\TimesheetGroup;
 use App\Utils\ModuleUtil;
 use Modules\Sales\Entities\SalesProject;
 use App\Category;
-use App\Company;
-
 use Carbon\Carbon;
 use DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -102,7 +100,6 @@ class TimeSheetController extends Controller
 
         $businesses = Business::pluck('name', 'id',);
         $projects = SalesProject::pluck('name', 'id');
-        $companies = Company::pluck('name', 'id');
         $currentDateTime = Carbon::now('Asia/Riyadh');
         $month = $currentDateTime->month;
         $year = $currentDateTime->year;
@@ -114,7 +111,6 @@ class TimeSheetController extends Controller
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
-                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',
@@ -359,7 +355,7 @@ class TimeSheetController extends Controller
                         'timesheet_group_id' => $timesheet_group->id,
                         'nationality_id' => $user->nationality_id,
                         'id_proof_number' => $user->id_proof_number,
-                        'monthly_cost' => $payroll['monthly_cost'],
+                        'monthly_cost' => $payroll['monthly_cost'] ?? 0,
                         'work_days' => $payroll['wd'],
                         'absence_days' => $payroll['absence_day'],
                         'absence_amount' => $payroll['absence_amount'],
@@ -393,7 +389,7 @@ class TimeSheetController extends Controller
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            error_log($e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [

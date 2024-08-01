@@ -879,12 +879,12 @@ class OfferPriceController extends Controller
                             $final_rows = '';
                             foreach ($query->sell_lines as $sell_line) {
                                 $clone =   $original_clone;
-                                $food = 0;
-                                $housing = 0;
-                                $transportaions = 0;
-                                $others = 0;
-                                $uniform = 0;
-                                $recruit = 0;
+                                $food = __('sales::lang.insured_by_the_customer');
+                                $housing = __('sales::lang.insured_by_the_customer');
+                                $transportaions = __('sales::lang.insured_by_the_customer');
+                                $others = __('sales::lang.insured_by_the_customer');
+                                $uniform = __('sales::lang.insured_by_the_customer');
+                                $recruit = __('sales::lang.insured_by_the_customer');
                                 foreach (json_decode($sell_line->additional_allwances) as $allwance) {
 
                                     if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {

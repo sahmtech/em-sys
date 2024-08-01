@@ -162,10 +162,9 @@
                         data: 'user_type',
                         render: function(data, type, row) {
 
-                            if (data === 'employee') {
+                            if (data === 'employee' || data === 'department_head' || data ===
+                                'manager') {
                                 return '@lang('essentials::lang.employee')';
-                            } else if (data === 'manager') {
-                                return '@lang('essentials::lang.manager')';
                             } else if (data === 'worker') {
                                 return '@lang('essentials::lang.worker')';
                             } else if (data === 'remote_employee') {

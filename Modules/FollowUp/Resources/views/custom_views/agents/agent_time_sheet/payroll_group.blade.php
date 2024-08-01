@@ -99,8 +99,8 @@
                                 <td name="id">{{ $payroll['id'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][id]', $payroll['id']) !!}
                                 </td>
-                                <td name="company">{{ $payroll['company'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company']) !!}
+                                <td name="company">{{ $payroll['company'] ?? null }}
+                                    {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company'] ?? null) !!}
                                 </td>
                                 <td name="name">{{ $payroll['name'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][name]', $payroll['name']) !!}
