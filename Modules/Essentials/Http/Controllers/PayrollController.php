@@ -1141,13 +1141,14 @@ class PayrollController extends Controller
             }
 
             $profession = $worker->appointment?->profession?->name ?? '';
-
+            $salesProject = SalesProject::pluck('name', 'id');
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
                 'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'identity_card_number' => $worker->id_proof_number ?? '',
+                'sponser' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
                 'project_name' => $project_name ?? '',
                 'region' => '',
                 'profession' => $profession ?? '',

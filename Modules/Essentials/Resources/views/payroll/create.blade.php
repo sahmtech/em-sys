@@ -83,6 +83,7 @@
                                         <th style="width:100px;">@lang('essentials::lang.residence_permit')</th>
                                         <th style="width:75px;">@lang('essentials::lang.project_name')</th>
                                         <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
+                                        <th style="width:75px;">@lang('worker.sponser')</th>
                                     @endif
                                     @if ($user_type != 'worker')
                                         <th style="width:100px;">@lang('essentials::lang.identity_card_number')</th>
@@ -90,6 +91,7 @@
                                     @if ($user_type != 'remote_employee' && $user_type != 'worker')
                                         <th style="width:75px;">@lang('essentials::lang.profession')</th>
                                     @endif
+
                                     <th style="width:75px;">@lang('essentials::lang.work_days')</th>
                                     <th style="width:75px;">@lang('essentials::lang.salary')</th>
                                     <th style="width:75px;">@lang('essentials::lang.housing_allowance')</th>
@@ -160,6 +162,13 @@
                                                 {!! Form::hidden('payrolls[' . $index . '][region]', $payroll['region'], [
                                                     'data-index' => $index,
                                                     'data-field' => 'region',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
+                                            <td name="sponser">{{ $payroll['sponser'] }}
+                                                {!! Form::hidden('payrolls[' . $index . '][sponser]', $payroll['sponser'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'sponser',
                                                     'class' => 'form-hidden',
                                                 ]) !!}
                                             </td>
