@@ -273,7 +273,7 @@ class TimeSheetController extends Controller
 
             $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)
                 ->whereHas('user', function ($query) use ($companies_ids) {
-                    $query->where('company_id', $companies_ids);
+                    $query->whereIn('company_id', $companies_ids);
                 })
                 ->get();
 
