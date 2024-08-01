@@ -1085,7 +1085,7 @@ class PayrollController extends Controller
             $housing_allowance = 0;
             $transportation_allowance = 0;
             $other_allowance = 0;
-            $timesheet = $timesheet_users->where('user_id', $worker->id)->latest('id')->first();
+            $timesheet = $timesheet_users->where('user_id', $worker->id)->sortByDesc('id')->first();
             if ($worker->user_type == "worker" && $timesheet) {
                 $housing_allowance = $timesheet->housing;
                 $transportation_allowance = $timesheet->transport;
