@@ -154,8 +154,17 @@ class SalesTargetedClientController extends Controller
             $input2['vacation_amount'] = $input['vacationAmount'];
             $input2['end_service_amount'] = $input['endServiceAmount'];
             $productData = json_decode($input['selectedData'], true);
-            $input2['additional_allwances'] = json_encode($productData);
-
+            // $input2['additional_allwances'] = json_encode($productData);
+            $allowances = [];
+            foreach ($productData as $index => $data) {
+                $allowance = [
+                    'type' => $data['salaryType'],
+                    'amount' => $data['amount'],
+                    'payment_type' => $input['type'][$index] // Matching the payment type
+                ];
+                $allowances[] = $allowance;
+            }
+            $input2['additional_allwances'] = json_encode($allowances);
             if (!empty($input['client_id'])) {
                 // Update existing client
                 error_log($input['client_id']);
