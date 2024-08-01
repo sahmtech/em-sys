@@ -1069,6 +1069,15 @@ class ApiCustomerController extends ApiController
 
 
     /////////////////////////////////////////////////////
+    private function hasPendingRequest($userId, $requestTypeId, $userIds)
+    {
+        $isExists = UserRequest::where('related_to', $userId)
+            ->where('request_type_id', $requestTypeId)
+            ->where('status', 'pending')
+            ->first();
+
+        return $isExists && count($userIds) == 1;
+    }
     private function isInvalidDateRange($type, $startDate, $end_date, $today)
     {
         if ($startDate && $type != 'escapeRequest') {
