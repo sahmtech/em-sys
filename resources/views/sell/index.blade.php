@@ -44,7 +44,7 @@
                         <th>@lang('sale.invoice_no')</th>
                         <th>@lang('sale.customer_name')</th>
                         <th>@lang('lang_v1.contact_no')</th>
-                        <th>@lang('sale.location')</th>
+                        {{-- <th>@lang('sale.location')</th> --}}
 
                         <th>@lang('sale.payment_status')</th>
                         <th>@lang('lang_v1.payment_method')</th>
@@ -171,7 +171,7 @@ $(document).ready( function(){
             { data: 'invoice_no', name: 'invoice_no'},
             { data: 'conatct_name', name: 'conatct_name'},
             { data: 'mobile', name: 'contacts.mobile'},
-            { data: 'business_location', name: 'bl.name'},
+            // { data: 'business_location', name: 'bl.name'},
             { data: 'payment_status', name: 'payment_status'},
             { data: 'payment_methods', orderable: false, "searchable": false},
             { data: 'transfer_account', orderable: false, "searchable": false},

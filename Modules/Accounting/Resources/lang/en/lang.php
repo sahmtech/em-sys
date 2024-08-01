@@ -682,6 +682,7 @@ return [
    ],
    'attach_document' => 'attach document',
    'attachment'=>'attachment',
+   'print_journal'=>'print journal entry',
 
 
 

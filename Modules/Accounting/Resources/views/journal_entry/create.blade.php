@@ -151,8 +151,9 @@
                                 <th class="col-md-1">#</th>
                                 <th class="col-md-3">@lang('accounting::lang.account')</th>
                                 <th class="col-md-2">@lang('accounting::lang.select_partner')</th>
-                                <th class="col-md-2">@lang('accounting::lang.debit')</th>
-                                <th class="col-md-2">@lang('accounting::lang.credit')</th>
+                                <th class="col-md-2">@lang('accounting::lang.cost_center')</th>
+                                <th class="col-md-1">@lang('accounting::lang.debit')</th>
+                                <th class="col-md-1">@lang('accounting::lang.credit')</th>
                                 <th class="col-md-3">@lang('accounting::lang.additional_notes')</th>
                             </tr>
                         </thead>
@@ -186,6 +187,10 @@
                                         id="selected_partner_type_[1]" class="selected_partner">
                                 </th>
 
+                              
+                                <td>
+                                    <select class="form-control cost_center" style="width: 100%;" name="cost_center[1]"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select>
+                                </td>
                                 <td>
                                     {!! Form::text('debit[' . 1 . ']', null, ['class' => 'form-control input_number debit']) !!}
                                 </td>
@@ -246,7 +251,7 @@
                     width: '100%',
                 });
             });
-            
+
 
             $('#select-employees').change(function() {
                 const id = $('.row-number').val();
@@ -381,7 +386,7 @@
                 counter + ']" id="selected_partner_id[' + counter +
                 ']" class="selected_partner"> <input type="hidden" readonly name="selected_partner_type_[' +
                 counter + ']" id="selected_partner_type_[' + counter +
-                ']" class="selected_partner"></th> <td> <input class="form-control input_number debit" name="debit[' +
+                ']" class="selected_partner"></th><td><select class="form-control cost_center" style="width: 100%;" name="cost_center[' + counter +']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select> </td> <td> <input class="form-control input_number debit" name="debit[' +
                 counter +
                 ']" type="text"> </td> <td> <input class="form-control input_number credit" name="credit[' +
                 counter +

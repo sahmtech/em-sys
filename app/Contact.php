@@ -220,7 +220,7 @@ class Contact extends Authenticatable
     public static function customersDropdown($business_id, $prepend_none = true, $append_id = true)
     {
         $all_contacts = Contact::where('contacts.business_id', $business_id)
-            ->whereIn('contacts.type', ['customer', 'both'])
+            ->whereIn('contacts.type', ['converted'])
             ->active();
 
         if ($append_id) {
@@ -236,7 +236,11 @@ class Contact extends Authenticatable
             $all_contacts->onlyOwnContact();
         }
 
-        $customers = $all_contacts->pluck('customer', 'id');
+        $all_contacts = $all_contacts->get()->filter(function($contact) {
+            return !is_null($contact->customer);
+        });
+        
+          $customers = $all_contacts->pluck('customer', 'id');
 
         //Prepend none
         if ($prepend_none) {

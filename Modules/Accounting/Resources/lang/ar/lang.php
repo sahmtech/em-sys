@@ -766,5 +766,6 @@ return [
     ],
 
     'attachment'=>'المرفقات',
+    'print_journal'=>'طباعة قيد مرجعي',
 
 ];
