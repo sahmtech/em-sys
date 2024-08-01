@@ -2,6 +2,8 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -281,13 +283,33 @@ class TimeSheetController extends Controller
     {
         try {
             $authUser = auth()->user();
-            $authCompanyId = $authUser->company_id;
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $companies_ids = Company::pluck('id')->toArray();
+            if (!$is_admin) {
+
+                $companies_ids = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                    if ($accessRole) {
+                        $companies_ids = AccessRoleCompany::where(
+                            'access_role_id',
+                            $accessRole->id
+                        )
+                            ->pluck('company_id')
+                            ->toArray();
+                    }
+                }
+            }
+
 
             $timesheetGroup = TimesheetGroup::findOrFail($id);
 
             $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)
-                ->whereHas('user', function ($query) use ($authCompanyId) {
-                    $query->where('company_id', $authCompanyId);
+                ->whereHas('user', function ($query) use ($companies_ids) {
+                    $query->whereIn('company_id', $companies_ids);
                 })
                 ->get();
 

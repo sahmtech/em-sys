@@ -150,14 +150,33 @@ class TimeSheetController extends Controller
     public function agentTimeSheetGroups()
     {
         $user = User::where('id', auth()->user()->id)->first();
-        $authCompanyId = $user->company_id;
-        $is_admin = $user->hasRole('Admin#1');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $companies_ids = Company::pluck('id')->toArray();
+        if (!$is_admin) {
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
+        }
+
         $payrolls = TimesheetGroup::where(function ($query) use ($user) {
             $query->where('timesheet_groups.created_by', $user->id)
                 ->orWhere('timesheet_groups.status', 'final');
         })
-            ->whereHas('timesheetUsers.user', function ($query) use ($authCompanyId) {
-                $query->where('company_id', $authCompanyId)->where('is_approved', 0);
+            ->whereHas('timesheetUsers.user', function ($query) use ($companies_ids) {
+                $query->where('company_id', $companies_ids)->where('is_approved', 0);
             })
             ->select([
                 'timesheet_groups.id',
@@ -231,13 +250,34 @@ class TimeSheetController extends Controller
     {
         try {
             $authUser = auth()->user();
-            $authCompanyId = $authUser->company_id;
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $companies_ids = Company::pluck('id')->toArray();
+            if (!$is_admin) {
+
+                $companies_ids = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                    if ($accessRole) {
+                        $companies_ids = AccessRoleCompany::where(
+                            'access_role_id',
+                            $accessRole->id
+                        )
+                            ->pluck('company_id')
+                            ->toArray();
+                    }
+                }
+            }
+
+
 
             $timesheetGroup = TimesheetGroup::findOrFail($id);
 
             $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)
-                ->whereHas('user', function ($query) use ($authCompanyId) {
-                    $query->where('company_id', $authCompanyId);
+                ->whereHas('user', function ($query) use ($companies_ids) {
+                    $query->where('company_id', $companies_ids);
                 })
                 ->get();
 
@@ -439,7 +479,7 @@ class TimeSheetController extends Controller
 
                     // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
 
-                    if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.deal_timesheet')) {
+                    if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {
                         $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __('purchase.add_payment') . '</a></li>';
                     }
 

@@ -151,13 +151,32 @@ class TimeSheetController extends Controller
     {
 
         $user = User::where('id', auth()->user()->id)->first();
-        $authCompanyId = $user->company_id;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $companies_ids = Company::pluck('id')->toArray();
+        if (!$is_admin) {
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
+        }
 
         $payrolls = TimesheetGroup::where(function ($query) use ($user) {
             $query->where('timesheet_groups.created_by', $user->id)
                 ->orWhere('timesheet_groups.status', 'final');
-        })->whereHas('timesheetUsers.user', function ($query) use ($authCompanyId) {
-            $query->where('company_id', $authCompanyId)->where('is_approved', 0);
+        })->whereHas('timesheetUsers.user', function ($query) use ($companies_ids) {
+            $query->where('company_id', $companies_ids)->where('is_approved', 0);
         })->select([
             'timesheet_groups.id',
             'timesheet_groups.name',
@@ -229,13 +248,32 @@ class TimeSheetController extends Controller
     {
         try {
             $authUser = auth()->user();
-            $authCompanyId = $authUser->company_id;
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $companies_ids = Company::pluck('id')->toArray();
+            if (!$is_admin) {
+
+                $companies_ids = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                    if ($accessRole) {
+                        $companies_ids = AccessRoleCompany::where(
+                            'access_role_id',
+                            $accessRole->id
+                        )
+                            ->pluck('company_id')
+                            ->toArray();
+                    }
+                }
+            }
 
             $timesheetGroup = TimesheetGroup::findOrFail($id);
 
             $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)
-                ->whereHas('user', function ($query) use ($authCompanyId) {
-                    $query->where('company_id', $authCompanyId);
+                ->whereHas('user', function ($query) use ($companies_ids) {
+                    $query->where('company_id', $companies_ids);
                 })
                 ->get();
 
