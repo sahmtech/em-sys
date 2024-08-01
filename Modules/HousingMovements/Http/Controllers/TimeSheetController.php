@@ -469,6 +469,9 @@ class TimeSheetController extends Controller
                 'u.mid_name',
                 'u.last_name',
                 'u.bank_details',
+
+                'u.assigned_to',
+                'u.id'
             ])->where('is_approved', 0)
             ->get();
 
@@ -481,12 +484,13 @@ class TimeSheetController extends Controller
             $item->account_number = $bankDetails['account_number'] ?? '';
             $item->tax_number = $bankDetails['tax_number'] ?? '';
         });
+        $projects = SalesProject::pluck('name', 'id');
 
-        $payrolls = $timesheetUsers->map(function ($user) {
+        $payrolls = $timesheetUsers->map(function ($user) use ($projects) {
             return [
                 'id' => $user->user_id,
                 'name' => $user->first_name . ' '  . $user->last_name,
-                'nationality' => $user->country->nationality ?? '',
+                'nationality' => User::find($user->id)->country?->nationality ?? '',
                 'residency' => $user->id_proof_number,
                 'monthly_cost' => $user->monthly_cost,
                 'wd' => $user->work_days,
@@ -500,7 +504,8 @@ class TimeSheetController extends Controller
                 'invoice_value' => $user->invoice_value,
                 'vat' => $user->vat,
                 'total' => $user->total,
-                'sponser' => $user->project_id,
+                'sponser' => $user->assigned_to ? $projects[$user->assigned_to] ?? '' : '',
+
                 'basic' => $user->basic,
                 'housing' => $user->housing,
                 'transport' => $user->transport,
