@@ -992,14 +992,14 @@ class OfferPriceController extends Controller
                                     '${F}' => $others,
                                     '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
                                     '${H}' => $sell_line->quantity ?? 0,
-                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? 0,
+                                    '${I}' => number_format($query->total_worker_monthly / $query->total_worker_number ?? 0, 2, '.', ''),
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
-                                    '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
-                                    '${M}' => ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '',
-                                    '${N}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0,
+                                    '${L}' => number_format($query->total_worker_monthly, 2, '.', ''),
+                                    '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
+                                    '${N}' => number_format($query->total_worker_monthly ?? 0 +  ($query->total_worker_monthly ?? 0) * 15 / 100 ?? 0, 2, '.', ''),
 
-
+                                    //$sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity
                                 ];
 
 
@@ -1156,9 +1156,9 @@ class OfferPriceController extends Controller
                                     '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? __('sales::lang.undefiend'),
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
-                                    '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
-                                    '${M}' => ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '',
-                                    '${N}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0,
+                                    '${L}' =>  number_format($query->total_worker_monthly, 2, '.', ''),
+                                    '${M}' =>  number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
+                                    '${N}' =>  number_format($query->total_worker_monthly ?? 0 +  ($query->total_worker_monthly) * 15 / 100 ?? 0, 2, '.', ''),
                                 ];
                                 foreach ($replacements2 as $placeholder => $value) {
                                     $clone = str_replace($placeholder, $value,   $clone);
