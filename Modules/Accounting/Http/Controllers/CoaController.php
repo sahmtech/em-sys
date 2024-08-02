@@ -98,7 +98,7 @@ class CoaController extends Controller
                                     WHERE AAT.accounting_account_id = accounting_accounts.id) AS balance"),
                     'accounting_accounts.*'
                 ]);
-             
+
 
             if (!empty(request()->input('account_type'))) {
                 $query->where('accounting_accounts.account_primary_type', request()->input('account_type'));
@@ -111,9 +111,9 @@ class CoaController extends Controller
 
             $account_exist = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)->exists();
 
-          
+
             if (request()->input('view_type') == 'table') {
-               
+
                 return view('accounting::chart_of_accounts.accounts_table')
                     ->with(compact('accounts', 'account_exist'));
             } else {
@@ -126,7 +126,7 @@ class CoaController extends Controller
                             ->orWhere('company_id', $company_id);
                     })
                     ->get();
-                    
+
                 return view('accounting::chart_of_accounts.accounts_tree')
                     ->with(compact('accounts', 'account_exist', 'account_types', 'account_GLC', 'account_sub_types'));
             }
@@ -722,31 +722,34 @@ class CoaController extends Controller
             ]);
         }
 
-        try {
-            $company_id = Session::get('selectedCompanyId');
+        // try {
+        $company_id = Session::get('selectedCompanyId');
 
 
-            if ($request->hasFile('accounts_csv')) {
-                $file = $request->file('accounts_csv');
-                $parsed_array = Excel::toArray([], $file);
-                $accounts_csv = array_splice($parsed_array[0], 1);
-                DB::beginTransaction();
-                foreach ($accounts_csv as  $value) {
+        if ($request->hasFile('accounts_csv')) {
+            $file = $request->file('accounts_csv');
+            $parsed_array = Excel::toArray([], $file);
+            $accounts_csv = array_splice($parsed_array[0], 1);
+            DB::beginTransaction();
+            foreach ($accounts_csv as  $value) {
 
-                    $business_id = request()->session()->get('user.business_id');
-                    $company_id = Session::get('selectedCompanyId');
+                $business_id = request()->session()->get('user.business_id');
+                $company_id = Session::get('selectedCompanyId');
 
-                    $user_id = request()->session()->get('user.id');
+                $user_id = request()->session()->get('user.id');
 
-                    if (!$value[2]  || !$value[3]) {
+                if (!$value[2]  || !$value[3]) {
+                    continue;
+                } else {
+                    $AccountingAccount = AccountingAccount::where('gl_code', $this->removeNumberAfterLastDot($value[3]))
+                        ->where('company_id', $company_id)->where('business_id', $business_id)->first();
+                    $AccountingAccount_ = AccountingAccount::where('gl_code', $value[3])->where('company_id', $company_id)->where('business_id', $business_id)->first();
+
+                    // $AccountingAccount = AccountingAccount::where('gl_code', substr_replace($value[3], "", -2))->first();
+                    if (!$AccountingAccount) {
                         continue;
                     } else {
-                        $AccountingAccount = AccountingAccount::where('gl_code', $this->removeNumberAfterLastDot($value[3]))->first();
-                        // $AccountingAccount = AccountingAccount::where('gl_code', substr_replace($value[3], "", -2))->first();
-                        if (!$AccountingAccount) {
-                            continue;
-                        } else {
-
+                        if (!$AccountingAccount_) {
                             AccountingAccount::create([
                                 'name' => $value[2],
                                 'business_id' => $business_id,
@@ -765,22 +768,23 @@ class CoaController extends Controller
                     }
                 }
             }
-            DB::commit();
-
-
-
-            return redirect()->back()
-                ->with('status', [
-                    'success' => 1,
-                    'msg' => __('lang_v1.added_success')
-                ]);
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('status', [
-                    'success' => 0,
-                    'msg' => __('messages.something_went_wrong'),
-                ]);
         }
+        DB::commit();
+
+
+
+        return redirect()->back()
+            ->with('status', [
+                'success' => 1,
+                'msg' => __('lang_v1.added_success')
+            ]);
+        // } catch (\Exception $e) {
+        //     return redirect()->back()
+        //         ->with('status', [
+        //             'success' => 0,
+        //             'msg' => __('messages.something_went_wrong'),
+        //         ]);
+        // }
     }
 
 

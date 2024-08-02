@@ -53,6 +53,7 @@ use App\Utils\ModuleUtil;
 use App\Utils\NotificationUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
+use App\Utils\Util;
 use App\Variation;
 use App\Warranty;
 use Illuminate\Http\Request;
@@ -616,6 +617,8 @@ class SellPosController extends Controller
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
 
                 $this->transactionUtil->activityLog($transaction, 'added');
+                $util = new Util();
+                $auto_migration = $util->saveAutoMigration($request, $transaction);
 
                 DB::commit();
                 SellCreatedOrModified::dispatch($transaction);

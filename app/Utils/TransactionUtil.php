@@ -792,7 +792,7 @@ class TransactionUtil extends Util
                         'paid_on_to' => $paid_on_to,
                         'transfer_account' => isset($payment['transfer_account']) ? $payment['transfer_account'] : null,
                         'paid_on_from' => $paid_on_from,
-                        'cost_center' => $input['cost_center_id'],
+                        'cost_center' => $input['cost_center_id']??null,
                         'created_by' => empty($user_id) ? auth()->user()->id : $user_id,
                         'payment_for' => $transaction->contact_id,
                         'payment_ref_no' => $payment_ref_no,
@@ -5759,7 +5759,7 @@ class TransactionUtil extends Util
         return $recurring_expense;
     }
 
-    public function createExpense($request, $business_id, $user_id, $format_data = true)
+    public function createExpense($request, $business_id, $user_id, $format_data = true,$company_id=null)
     {
         $transaction_data = $request->only([
             'ref_no', 'transaction_date',
@@ -5768,6 +5768,7 @@ class TransactionUtil extends Util
         ]);
 
         $transaction_data['business_id'] = $business_id;
+        $transaction_data['company_id'] = $company_id;
         $transaction_data['created_by'] = $user_id;
         $transaction_data['type'] = !empty($request->input('is_refund')) && $request->input('is_refund') == 1 ? 'expense_refund' : 'expense';
         $transaction_data['status'] = 'final';
@@ -6357,4 +6358,6 @@ class TransactionUtil extends Util
 
         return $mpdf;
     }
+
+    
 }
