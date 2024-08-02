@@ -509,6 +509,11 @@ class ApiCustomerController extends ApiController
                 'authorizationRequest' => __('request.authorizationRequest'),
                 'salaryInquiryRequest' => __('request.salaryInquiryRequest'),
                 'interviewsRequest' => __('request.interviewsRequest'),
+                'moqimPrint' => __('request.moqimPrint'),
+                'salaryIntroLetter' => __('request.salaryIntroLetter'),
+                'QiwaContract' => __('request.QiwaContract'),
+                'ExitWithoutReturnReport' => __('request.ExitWithoutReturnReport'),
+
             ];
             foreach ($requests as $row) {
                 $tmp = '';

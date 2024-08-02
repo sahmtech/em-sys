@@ -331,7 +331,7 @@
 
             var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount +
                 administrativeMonthlyAmount;
-            var monthlyCost = essentialsSalary + totalAllowances + additionalMonthlyCost;
+            var monthlyCost = totalAllowances + additionalMonthlyCost;
 
             $('#monthly_cost').val(monthlyCost.toFixed(2));
         }
