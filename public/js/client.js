@@ -225,7 +225,7 @@ function updateMonthlyCostAndTotal() {
 
 
     var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount + administrativeMonthlyAmount;
-    var monthlyCost = essentialsSalary + totalAllowances + additionalMonthlyCost;
+    var monthlyCost = totalAllowances + additionalMonthlyCost;
     $('#monthly_cost').val(monthlyCost.toFixed(2));
 
     var input_number = parseFloat($('#input_number').val()) || 0;
