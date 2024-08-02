@@ -541,10 +541,14 @@
                                 return '@lang('request.salaryInquiryRequest')';
                             } else if (data === 'interviewsRequest') {
                                 return '@lang('request.interviewsRequest')';
-                            } else if (data === 'salaryInquiryRequest') {
-                                return '@lang('request.salaryInquiryRequest')';
-                            } else if (data === 'interviewsRequest') {
-                                return '@lang('request.interviewsRequest')';
+                            } else if (data === 'moqimPrint') {
+                                return '@lang('request.moqimPrint')';
+                            } else if (data === 'QiwaContract') {
+                                return '@lang('request.QiwaContract')';
+                            } else if (data === 'salaryIntroLetter') {
+                                return '@lang('request.salaryIntroLetter')';
+                            } else if (data === 'ExitWithoutReturnReport') {
+                                return '@lang('request.ExitWithoutReturnReport')';
                             } else {
                                 return data;
                             }

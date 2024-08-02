@@ -286,6 +286,16 @@
                                     return '@lang('ceomanagment::lang.interviewsRequest')';
                                 case 'salaryInquiryRequest':
                                     return '@lang('ceomanagment::lang.salaryInquiryRequest')';
+                                case 'moqimPrint':
+                                    return '@lang('ceomanagment::lang.moqimPrint')';
+                                case 'salaryIntroLetter':
+                                    return '@lang('ceomanagment::lang.salaryIntroLetter')';
+                                case 'QiwaContract':
+                                    return '@lang('ceomanagment::lang.QiwaContract')';
+                                case 'ExitWithoutReturnReport':
+                                    return '@lang('ceomanagment::lang.ExitWithoutReturnReport')';
+
+
                                 default:
                                     return data;
                             }

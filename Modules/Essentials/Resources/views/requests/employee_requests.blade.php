@@ -1670,6 +1670,11 @@
             'authorizationRequest': '@lang('request.authorizationRequest')',
             'interviewsRequest': '@lang('request.interviewsRequest')',
             'salaryInquiryRequest': '@lang('request.salaryInquiryRequest')',
+            'moqimPrint': '@lang('request.moqimPrint')',
+            'salaryIntroLetter': '@lang('request.salaryIntroLetter')',
+            'QiwaContract': '@lang('request.QiwaContract')',
+            'ExitWithoutReturnReport': '@lang('request.ExitWithoutReturnReport')',
+
 
         };
         $('#requests_table').on('click', '.edit-request', function() {
