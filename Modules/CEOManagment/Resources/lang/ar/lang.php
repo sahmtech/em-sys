@@ -72,6 +72,7 @@ return [
     'this_type_is_already_exists' => 'هذا النوع  من الطلبات موجود مسبقا',
     'TransferringGuaranteeFromExternalClient' => 'طلب نقل كفالة من عميل خارجي',
     'Permit' => 'طلب تصريح',
+    'user_type' => 'نوع صاحب الطلب',
     'FamilyInsurace' => 'طلب تأمين طبي للمرافقين',
     'Ajir_link' => 'ربط أجير',
     'authorizationRequest' => 'طلب تفويض',
