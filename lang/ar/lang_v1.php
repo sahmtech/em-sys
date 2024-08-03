@@ -1547,7 +1547,8 @@ return [
     'is_not_issued' => 'لم تصدر',
     'accounting_approved_by' => 'اعتماد المالية من قبل',
     'is_approved_by_accounting' => 'الاعتماد من المالية',
-    'issue payrolls' => 'إصدار الراتب'
+    'issue payrolls' => 'إصدار الراتب',
+
 
 
 

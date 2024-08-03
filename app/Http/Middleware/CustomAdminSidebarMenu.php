@@ -1440,6 +1440,16 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.view_payroll_checkpoint')) {
+                $menu->url(
+                    route('hrm.payrolls_checkpoint'),
+                    __('essentials::lang.hrm_payrolls'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payrolls_checkpoint'
+                    ]
+                );
+            }
             //employee reports 
             if ($is_admin  || auth()->user()->can('essentials.employees_reports_view')) {
 
