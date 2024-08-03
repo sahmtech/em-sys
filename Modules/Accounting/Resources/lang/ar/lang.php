@@ -422,6 +422,7 @@ return [
     'main' => 'رئيسي',
     'create_cost_center' => 'إنشاء مركز تكلفة',
     'opening_balance' => 'الرصيد الافتتاحي',
+    'closing_balance' => 'الرصيد الختامي',
     'opening_balances' => 'الأرصدة الافتتاحية',
     'account_name' => 'اسم الحساب',
     'account_number' => 'رقم الحساب',
