@@ -19,7 +19,7 @@ use Modules\Sales\Entities\SalesProject;
 use App\Category;
 use App\Transaction;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Request as UserRequest;
 use Modules\CEOManagment\Entities\RequestsType;
 use Illuminate\Http\Request;

@@ -15,7 +15,7 @@ use App\Utils\ModuleUtil;
 use Modules\Sales\Entities\SalesProject;
 use App\Category;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use App\Company;

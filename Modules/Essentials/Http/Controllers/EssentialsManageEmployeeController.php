@@ -19,7 +19,7 @@ use App\Company;
 use App\Transaction;
 use App\Contact;
 use Modules\Sales\Entities\salesContractItem;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Models\Permission;
 use Spatie\Activitylog\Models\Activity;

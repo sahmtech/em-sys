@@ -110,7 +110,7 @@
             payroll_group_table = $('#payroll_group_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('hrm.payrolls_checkpoint', ['from' => 'hr']) }}",
+                ajax: "{{ route('hrm.payrolls_checkpoint', ['from' => 'accountant']) }}",
                 columns: [{
                         data: 'name',
                         name: 'name',

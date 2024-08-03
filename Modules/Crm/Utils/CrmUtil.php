@@ -7,7 +7,7 @@ use App\Transaction;
 use App\User;
 use App\Utils\Util;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Modules\Crm\Entities\CrmContact;
 use Modules\Crm\Entities\Schedule;

@@ -4,7 +4,7 @@ namespace Modules\Crm\Http\Controllers;
 
 use App\Media;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -46,12 +46,17 @@ class ProposalController extends Controller
 
         if ($request->ajax()) {
             $proposal = Proposal::join('contacts', 'crm_proposals.contact_id', '=', 'contacts.id')
-                            ->join('users', 'crm_proposals.sent_by', '=', 'users.id')
-                            ->where('crm_proposals.business_id', $business_id)
-                            ->select('contacts.name', 'crm_proposals.subject', 'crm_proposals.created_at',
-                                'crm_proposals.id', DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as sent_by_full_name"));
+                ->join('users', 'crm_proposals.sent_by', '=', 'users.id')
+                ->where('crm_proposals.business_id', $business_id)
+                ->select(
+                    'contacts.name',
+                    'crm_proposals.subject',
+                    'crm_proposals.created_at',
+                    'crm_proposals.id',
+                    DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as sent_by_full_name")
+                );
 
-            if (! $is_admin) {
+            if (!$is_admin) {
                 $proposal->where('crm_proposals.sent_by', auth()->user()->id);
             }
 
@@ -59,9 +64,9 @@ class ProposalController extends Controller
                 ->addColumn(
                     'action',
                     function ($row) {
-                        $html = '<a href="#" data-href="'.action([\Modules\Crm\Http\Controllers\ProposalController::class, 'show'], [$row->id]).'" data-container=".view_modal" class="btn-modal btn-info btn btn-sm">
+                        $html = '<a href="#" data-href="' . action([\Modules\Crm\Http\Controllers\ProposalController::class, 'show'], [$row->id]) . '" data-container=".view_modal" class="btn-modal btn-info btn btn-sm">
                             <i class="fa fa-eye" aria-hidden="true"></i> '
-                            .__('messages.view').
+                            . __('messages.view') .
                             '</a>';
 
                         return $html;
@@ -77,8 +82,8 @@ class ProposalController extends Controller
         }
 
         $proposal_template = ProposalTemplate::with(['media'])
-                            ->where('business_id', $business_id)
-                            ->first();
+            ->where('business_id', $business_id)
+            ->first();
 
         return view('crm::proposal.index')
             ->with(compact('proposal_template'));
@@ -121,17 +126,18 @@ class ProposalController extends Controller
 
             //if template media available make a copy of it for proposal
             $proposal_template = ProposalTemplate::with(['media'])
-                                    ->where('business_id', $business_id)
-                                    ->first();
+                ->where('business_id', $business_id)
+                ->first();
 
             if ($proposal_template->media->count() > 0) {
                 $file_names = [];
                 foreach ($proposal_template->media as $media) {
-                    $doc_name = time().'_'.$media->display_name;
+                    $doc_name = time() . '_' . $media->display_name;
                     $file_names[] = $doc_name;
                     file_put_contents(
-                            public_path('uploads/media/').$doc_name, file_get_contents($media->display_url)
-                        );
+                        public_path('uploads/media/') . $doc_name,
+                        file_get_contents($media->display_url)
+                    );
                 }
 
                 Media::attachMediaToModel($proposal, $business_id, $file_names);
@@ -139,25 +145,27 @@ class ProposalController extends Controller
 
             DB::commit();
 
-            if (! empty($proposal)) {
+            if (!empty($proposal)) {
                 $contact = CrmContact::where('business_id', $business_id)
-                            ->find($proposal->contact_id);
+                    ->find($proposal->contact_id);
 
                 $proposal_with_media = Proposal::with(['media'])
-                                        ->where('business_id', $business_id)
-                                        ->find($proposal->id);
+                    ->where('business_id', $business_id)
+                    ->find($proposal->id);
 
                 $contact->notify(new SendProposalNotification($proposal_with_media));
             }
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('lang_v1.success'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -180,12 +188,12 @@ class ProposalController extends Controller
 
         if (request()->ajax()) {
             $proposal = Proposal::with(['media'])
-                        ->join('contacts', 'crm_proposals.contact_id', '=', 'contacts.id')
-                        ->join('users', 'crm_proposals.sent_by', '=', 'users.id')
-                        ->where('crm_proposals.business_id', $business_id)
-                        ->where('crm_proposals.id', $id)
-                        ->select('contacts.name as contact', 'crm_proposals.subject as subject', 'crm_proposals.created_at as created_at', DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as sent_by_full_name"), 'crm_proposals.body as body', 'crm_proposals.id', 'crm_proposals.cc', 'crm_proposals.bcc')
-                        ->first();
+                ->join('contacts', 'crm_proposals.contact_id', '=', 'contacts.id')
+                ->join('users', 'crm_proposals.sent_by', '=', 'users.id')
+                ->where('crm_proposals.business_id', $business_id)
+                ->where('crm_proposals.id', $id)
+                ->select('contacts.name as contact', 'crm_proposals.subject as subject', 'crm_proposals.created_at as created_at', DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as sent_by_full_name"), 'crm_proposals.body as body', 'crm_proposals.id', 'crm_proposals.cc', 'crm_proposals.bcc')
+                ->first();
 
             return view('crm::proposal.show')
                 ->with(compact('proposal'));

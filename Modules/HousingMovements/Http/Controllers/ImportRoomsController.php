@@ -2,7 +2,7 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;

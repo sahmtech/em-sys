@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -15,6 +15,10 @@ return new class extends Migration
     {
         Schema::create('payroll_group_users', function (Blueprint $table) {
             $table->id();
+            $table->boolean('hr_management_cleared')->default(false);
+            $table->boolean('accountant_cleared')->default(false);
+            $table->boolean('financial_management_cleared')->default(false);
+            $table->boolean('ceo_cleared')->default(false);
             $table->unsignedInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('payroll_group_id');

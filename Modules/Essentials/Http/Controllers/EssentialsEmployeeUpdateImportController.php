@@ -6,7 +6,7 @@ use App\BusinessLocation;
 use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\User;
 use Illuminate\Support\Carbon;
 use App\Utils\ModuleUtil;

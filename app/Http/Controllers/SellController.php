@@ -23,7 +23,7 @@ use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use App\Warranty;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\BankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -93,20 +93,20 @@ class SellController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-           $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
+        $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
         $is_crm = $this->moduleUtil->isModuleInstalled('Crm');
         $is_tables_enabled = $this->transactionUtil->isModuleEnabled('tables');
         $is_service_staff_enabled = $this->transactionUtil->isModuleEnabled('service_staff');
         $is_types_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
 
         if (request()->ajax()) {
-               $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+            $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
             $with = [];
             $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
             $sale_type = !empty(request()->input('sale_type')) ? request()->input('sale_type') : 'sell';
 
-            $sells = $this->transactionUtil->getListSells($business_id, $sale_type,$company_id);
+            $sells = $this->transactionUtil->getListSells($business_id, $sale_type, $company_id);
 
             // $permitted_locations = auth()->user()->permitted_locations();
             // if ($permitted_locations != 'all') {
@@ -345,7 +345,7 @@ class SellController extends Controller
             //     $sells->addSelect('transactions.is_recurring', 'transactions.recur_parent_id');
             // }
             $sales_order_statuses = Transaction::sales_order_statuses();
-            
+
             $datatable = Datatables::of($sells)
                 ->addColumn(
                     'action',
@@ -591,9 +591,7 @@ class SellController extends Controller
                 ->addColumn('account_name', function ($row) {
                     $account = array_unique($row->payment_lines->pluck('account_id')->toArray());
                     $accounting_account = $account ? AccountingAccount::where('id', $account)->first() : false;
-                    return   $accounting_account ? (\Lang::has('accounting::lang.' . $accounting_account?->name)?__('accounting::lang.' . $accounting_account?->name):$accounting_account?->name  . '(' . $accounting_account?->gl_code . ')' ): '';
-                    
-            
+                    return   $accounting_account ? (\Lang::has('accounting::lang.' . $accounting_account?->name) ? __('accounting::lang.' . $accounting_account?->name) : $accounting_account?->name  . '(' . $accounting_account?->gl_code . ')') : '';
                 })
 
 
@@ -734,7 +732,7 @@ class SellController extends Controller
         $default_datetime = $this->businessUtil->format_date('now', true);
 
         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
-        $pos_settings['allow_overselling']=true;
+        $pos_settings['allow_overselling'] = true;
         $invoice_schemes = InvoiceScheme::forDropdown($business_id);
         $default_invoice_schemes = InvoiceScheme::getDefault($business_id);
         if (!empty($default_location) && !empty($default_location->sale_invoice_scheme_id)) {

@@ -9,7 +9,7 @@ use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use App\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Yajra\DataTables\Facades\DataTables;

@@ -5,7 +5,7 @@ namespace Modules\Crm\Http\Controllers;
 use App\Category;
 use App\Contact;
 use App\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -39,8 +39,8 @@ class CrmDashboardController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $contacts = Contact::where('business_id', $business_id)
-                    ->Active()
-                    ->get();
+            ->Active()
+            ->get();
 
         $customers = $contacts->whereIn('type', ['customer', 'both']);
 
@@ -50,13 +50,13 @@ class CrmDashboardController extends Controller
 
         $total_leads = $leads->count();
         $sources = Category::where('business_id', $business_id)
-                                ->where('category_type', 'source')
-                                ->get();
+            ->where('category_type', 'source')
+            ->get();
         $total_sources = $sources->count();
 
         $life_stages = Category::where('business_id', $business_id)
-                                ->where('category_type', 'life_stage')
-                                ->get();
+            ->where('category_type', 'life_stage')
+            ->get();
 
         $total_life_stage = $life_stages->count();
         $leads_by_life_stage = $leads->groupBy('crm_life_stage');
@@ -75,7 +75,7 @@ class CrmDashboardController extends Controller
 
         $my_follow_ups_arr = [];
         foreach ($my_follow_ups as $follow_up) {
-            if (! empty($follow_up->status)) {
+            if (!empty($follow_up->status)) {
                 $my_follow_ups_arr[$follow_up->status] = $follow_up->total_follow_ups;
             } else {
                 $my_follow_ups_arr['__other'] = $follow_up->total_follow_ups;
@@ -108,13 +108,13 @@ class CrmDashboardController extends Controller
     private function myFollowUps()
     {
         $my_follow_ups = User::user()
-                    ->where('users.id', auth()->user()->id)
-                    ->join('crm_schedule_users as su', 'su.user_id', '=', 'users.id')
-                    ->join('crm_schedules as follow_ups', 'follow_ups.id', '=', 'su.schedule_id')
-                    ->select(
-                        'follow_ups.status',
-                        DB::raw('COUNT(su.id) as total_follow_ups')
-                    )->groupBy('follow_ups.status')->get();
+            ->where('users.id', auth()->user()->id)
+            ->join('crm_schedule_users as su', 'su.user_id', '=', 'users.id')
+            ->join('crm_schedules as follow_ups', 'follow_ups.id', '=', 'su.schedule_id')
+            ->select(
+                'follow_ups.status',
+                DB::raw('COUNT(su.id) as total_follow_ups')
+            )->groupBy('follow_ups.status')->get();
 
         return $my_follow_ups;
     }
@@ -131,13 +131,13 @@ class CrmDashboardController extends Controller
         $first_day_of_month = \Carbon::now()->startOfMonth()->format('Y-m-d');
 
         $my_call_logs = CrmCallLog::where('business_id', $business_id)
-                ->where('created_by', auth()->user()->id)
-                ->whereDate('start_time', '>=', $first_day_of_month)
-                ->select(
-                    DB::raw("SUM(IF(DATE(start_time)='{$today}', 1, 0)) as calls_today"),
-                    DB::raw("SUM(IF(DATE(start_time)='{$yesterday}', 1, 0)) as calls_yesterday"),
-                    DB::raw('COUNT(id) as calls_this_month')
-                )->first();
+            ->where('created_by', auth()->user()->id)
+            ->whereDate('start_time', '>=', $first_day_of_month)
+            ->select(
+                DB::raw("SUM(IF(DATE(start_time)='{$today}', 1, 0)) as calls_today"),
+                DB::raw("SUM(IF(DATE(start_time)='{$yesterday}', 1, 0)) as calls_yesterday"),
+                DB::raw('COUNT(id) as calls_this_month')
+            )->first();
 
         return $my_call_logs;
     }
@@ -150,9 +150,9 @@ class CrmDashboardController extends Controller
         $todays_followups = Schedule::whereHas('users', function ($q) {
             $q->where('user_id', auth()->user()->id);
         })
-                    ->whereIn('status', ['open', 'scheduled'])
-                    ->whereDate('start_datetime', \Carbon::now()->format('Y-m-d'))
-                    ->count();
+            ->whereIn('status', ['open', 'scheduled'])
+            ->whereDate('start_datetime', \Carbon::now()->format('Y-m-d'))
+            ->count();
 
         return $todays_followups;
     }
@@ -165,10 +165,10 @@ class CrmDashboardController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $total_leads = CrmContact::where('contacts.business_id', $business_id)
-                        ->where('contacts.type', 'lead')
-                        ->whereHas('leadUsers', function ($q) {
-                            $q->where('user_id', auth()->user()->id);
-                        })->count();
+            ->where('contacts.type', 'lead')
+            ->whereHas('leadUsers', function ($q) {
+                $q->where('user_id', auth()->user()->id);
+            })->count();
 
         return $total_leads;
     }
@@ -179,7 +179,7 @@ class CrmDashboardController extends Controller
     private function myConversion()
     {
         $count = Contact::where('converted_by', auth()->user()->id)
-                        ->count();
+            ->count();
 
         return $count;
     }
@@ -199,7 +199,7 @@ class CrmDashboardController extends Controller
             $dob = \Carbon::parse($contact->dob);
             $dob_md = $dob->format('m-d');
 
-            $next_birthday = \Carbon::parse($today->format('Y').'-'.$dob_md);
+            $next_birthday = \Carbon::parse($today->format('Y') . '-' . $dob_md);
             if ($next_birthday->lt($today)) {
                 $next_birthday->addYear();
             }

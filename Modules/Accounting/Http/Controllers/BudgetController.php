@@ -10,7 +10,7 @@ use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingBudget;
 use App\Utils\ModuleUtil;
 use Modules\Accounting\Entities\AccountingAccountType;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Exports\BudgetExport;

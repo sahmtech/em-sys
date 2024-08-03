@@ -6,7 +6,7 @@ use App\Category;
 use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -168,10 +168,10 @@ class DashboardController extends Controller
 
         // Retrieve all users with a date of birth within the next 30 days
         $up_comming_births = User::whereRaw("DATE_FORMAT(dob, '%m-%d') BETWEEN DATE_FORMAT('$now', '%m-%d') AND DATE_FORMAT('$thirtyDaysFromNow', '%m-%d')")->orderBy('dob', 'asc')->get();
-        
+
         $today_births = User::whereMonth('dob', \Carbon::now()->format('m'))
-        ->whereDay('dob', \Carbon::now()->format('d'))
-        ->get();
+            ->whereDay('dob', \Carbon::now()->format('d'))
+            ->get();
 
         return view('essentials::dashboard.hrm_dashboard')
             ->with(compact('users', 'departments', 'users_by_dept', 'todays_holidays', 'todays_leaves', 'upcoming_leaves', 'is_admin', 'users_leaves', 'upcoming_holidays', 'todays_attendances', 'sales_targets', 'target_achieved_this_month', 'target_achieved_last_month', 'up_comming_births', 'today_births'));
@@ -186,7 +186,7 @@ class DashboardController extends Controller
         $user_id = auth()->user()->id;
 
         if (!$is_admin) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $this_month_start_date = \Carbon::today()->startOfMonth()->format('Y-m-d');

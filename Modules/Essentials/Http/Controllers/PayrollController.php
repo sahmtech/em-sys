@@ -19,7 +19,7 @@ use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -44,8 +44,10 @@ use App\TimesheetGroup;
 use App\AccessRole;
 use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
+use App\PayrollGroup;
+use App\PayrollGroupUser;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-use Modules\Essentials\Entities\PayrollGroup;
+
 
 class PayrollController extends Controller
 {
@@ -329,10 +331,6 @@ class PayrollController extends Controller
             ->with(compact('companies', 'contacts_fillter', 'user_types', 'departments'));
     }
 
-    public function payrolls_checkpoint()
-    {
-        return view('essentials::payrolls_index');
-    }
 
 
     public function viewWorkerProject(Request $request)
@@ -1179,41 +1177,43 @@ class PayrollController extends Controller
                 'payroll_group_status' => $request->payroll_group_status,
                 'total_payrolls' => $request->total_payrolls,
                 'transaction_date' => $request->transaction_date,
-
-
             ]);
-            if ($payrollGroup) {
-                PayrollGroupUser::create([
-                    'user_id' => $request->id,
-                    'name' => $request->name,
-                    'nationality' => $request->nationality,
-                    'identity_card_number' => $request->identity_card_number,
-                    'company' => $request->company,
-                    'project_name' => $request->project_name,
-                    'region' => $request->region,
-                    'work_days' => $request->work_days,
-                    'salary' => $request->salary,
-                    'housing_allowance' => $request->housing_allowance,
-                    'transportation_allowance' => $request->transportation_allowance,
-                    'other_allowance' => $request->other_allowance,
-                    'total' => $request->total,
-                    'violations' => $request->violations,
-                    'absence' => $request->absence,
-                    'absence_deduction' => $request->absence_deduction,
-                    'late' => $request->late,
-                    'late_deduction' => $request->late_deduction,
-                    'other_deductions' => $request->other_deductions,
-                    'loan' => $request->loan,
-                    'total_deduction' => $request->total_deduction,
-                    'over_time_hours' => $request->over_time_hours,
-                    'over_time_hours_addition' => $request->over_time_hours_addition,
-                    'additional_addition' => $request->additional_addition,
-                    'total_additions' => $request->total_additions,
-                    'final_salary' => $request->final_salary,
-                    'payment_method' => $request->payment_method,
-                    'notes' => $request->notes
+            $payrolls = $request->payrolls;
 
-                ]);
+            if ($payrollGroup && !empty($payrolls)) {
+                foreach ($payrolls as $payroll) {
+                    PayrollGroupUser::create([
+                        'payroll_group_id' => $payrollGroup->id,
+                        'user_id' => $payroll['id'],
+                        'name' => $payroll['name'],
+                        'nationality' => $payroll['nationality'],
+                        'identity_card_number' => $payroll['identity_card_number'],
+                        'company' => $payroll['company'],
+                        'project_name' => $payroll['project_name'],
+                        'region' => $payroll['region'],
+                        'work_days' => $payroll['work_days'],
+                        'salary' => $payroll['salary'],
+                        'housing_allowance' => $payroll['housing_allowance'],
+                        'transportation_allowance' => $payroll['transportation_allowance'],
+                        'other_allowance' => $payroll['other_allowance'],
+                        'total' => $payroll['total'],
+                        'violations' => $payroll['violations'],
+                        'absence' => $payroll['absence'],
+                        'absence_deduction' => $payroll['absence_deduction'],
+                        'late' => $payroll['late'],
+                        'late_deduction' => $payroll['late_deduction'],
+                        'other_deductions' => $payroll['other_deductions'],
+                        'loan' => $payroll['loan'],
+                        'total_deduction' => $payroll['total_deduction'],
+                        'over_time_hours' => $payroll['over_time_hours'],
+                        'over_time_hours_addition' => $payroll['over_time_hours_addition'],
+                        'additional_addition' => $payroll['additional_addition'],
+                        'total_additions' => $payroll['total_additions'],
+                        'final_salary' => $payroll['final_salary'],
+                        'payment_method' => $payroll['payment_method'],
+                        'notes' => $payroll['notes'],
+                    ]);
+                }
             }
 
             DB::commit();
@@ -1233,7 +1233,7 @@ class PayrollController extends Controller
         return redirect()->route('payrolls.index')->with('status', $output);
 
 
-        return $request->all();
+
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
         $company_id = $user->company_id ?? 1;

@@ -19,7 +19,7 @@ use App\Events\ContactCreatedOrModified;
 use App\Transaction;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsCity;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsContractType;

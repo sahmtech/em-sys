@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Essentials\Entities;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +10,6 @@ class PayrollGroupUser extends Model
 
     public function payrollGroup()
     {
-        return $this->belongsTo(\Modules\Essentials\Entities\PayrollGroup::class, 'payroll_group_id');
+        return $this->belongsTo(PayrollGroup::class, 'payroll_group_id');
     }
 }

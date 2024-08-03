@@ -8,7 +8,7 @@ use App\Variation;
 use App\VariationLocationDetails;
 use App\VariationTemplate;
 use App\VariationValueTemplate;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 
 class InstallUtil extends Util
@@ -32,22 +32,22 @@ class InstallUtil extends Util
 
             foreach ($businesses as $business) {
                 $stock_adjustments = DB::table('stock_adjustments')
-                                        ->where('business_id', $business->id)
-                                        ->get();
+                    ->where('business_id', $business->id)
+                    ->get();
 
-                if (! empty($stock_adjustments)) {
+                if (!empty($stock_adjustments)) {
                     foreach ($stock_adjustments as $sa) {
                         $sa_lines = DB::table('stock_adjustment_lines')
-                                        ->where('stock_adjustment_id', $sa->id)
-                                        ->get();
+                            ->where('stock_adjustment_id', $sa->id)
+                            ->get();
 
-                        if (! empty($sa_lines) && is_array($sa_lines)) {
+                        if (!empty($sa_lines) && is_array($sa_lines)) {
                             foreach ($sa_lines as $line) {
                                 $variation = Variation::where('id', $line->variation_id)
-                                                ->where('product_id', $line->product_id)
-                                                ->first();
+                                    ->where('product_id', $line->product_id)
+                                    ->first();
 
-                                if (! empty($variation)) {
+                                if (!empty($variation)) {
                                     $variation_location_d = VariationLocationDetails::where('variation_id', $variation->id)
                                         ->where('product_id', $line->product_id)
                                         ->where('product_variation_id', $variation->product_variation_id)
@@ -78,7 +78,7 @@ class InstallUtil extends Util
     {
         $system = DB::table('system')->where('key', $key)->first();
 
-        if (! empty($system)) {
+        if (!empty($system)) {
             return $system->value;
         } else {
             return null;
@@ -127,17 +127,17 @@ class InstallUtil extends Util
 
             //Get all the variable products
             $variable_products = Product::where('type', 'variable')
-                                    ->with('product_variations', 'product_variations.variations')
-                                    ->get();
+                ->with('product_variations', 'product_variations.variations')
+                ->get();
 
             //Check if variation template exists; If not create new
             foreach ($variable_products as $product) {
                 foreach ($product->product_variations as $product_variation) {
                     //Update Product variations
                     $variation_template = VariationTemplate::where('business_id', $product->business_id)
-                                    ->whereRaw('LOWER(name) = "'.strtolower($product_variation->name).'"')
-                                    ->with(['values'])
-                                    ->first();
+                        ->whereRaw('LOWER(name) = "' . strtolower($product_variation->name) . '"')
+                        ->with(['values'])
+                        ->first();
 
                     if (empty($variation_template)) {
                         $variation_template = VariationTemplate::create([

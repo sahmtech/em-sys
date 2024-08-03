@@ -10,7 +10,7 @@ use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Modules\Crm\Entities\CrmContact;
@@ -416,7 +416,7 @@ class ScheduleController extends Controller
     //     $can_access_all_schedule = auth()->user()->can('crm.access_all_schedule');
     //     $can_access_own_schedule = auth()->user()->can('crm.access_own_schedule');
 
- 
+
 
     //     $query = Schedule::with(['customer', 'users', 'invoices', 'invoices.payment_lines'])
     //                     ->where('business_id', $business_id);

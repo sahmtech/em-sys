@@ -69,5 +69,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::delete('/procedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'destroy'])->name('procedure.destroy');
         Route::get('/getProcedure/{procedure_id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'getProcedure'])->name('getProcedure');
+
+
+        Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('ceo.payrolls_checkpoint');
+        Route::get('/show_payrolls_checkpoint/{id}',   [App\Http\Controllers\PayrollController::class, 'show_payrolls_checkpoint'])->name('ceo.payrolls_checkpoint.show');
+        Route::get('/clear_payrolls_checkpoint/{id}/{from}',  [App\Http\Controllers\PayrollController::class, 'clear_payrolls_checkpoint'])->name('ceo.payrolls_checkpoint.clear');
     });
 });

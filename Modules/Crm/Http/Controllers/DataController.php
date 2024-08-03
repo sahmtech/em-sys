@@ -7,7 +7,7 @@ use App\TransactionSellLine;
 use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
 use Menu;
 use Modules\Crm\Entities\CrmContactPersonCommission;

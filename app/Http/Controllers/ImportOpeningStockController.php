@@ -8,7 +8,7 @@ use App\Product;
 use App\Transaction;
 use App\Utils\ProductUtil;
 use App\Variation;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
 
@@ -37,8 +37,8 @@ class ImportOpeningStockController extends Controller
      */
     public function index()
     {
-        if (! auth()->user()->can('product.opening_stock')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('product.opening_stock')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $zip_loaded = extension_loaded('zip') ? true : false;
@@ -49,7 +49,8 @@ class ImportOpeningStockController extends Controller
 
         //Check if zip extension it loaded or not.
         if ($zip_loaded === false) {
-            $notification = ['success' => 0,
+            $notification = [
+                'success' => 0,
                 'msg' => 'Please install/enable PHP Zip archive for import',
             ];
 
@@ -69,13 +70,13 @@ class ImportOpeningStockController extends Controller
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('product.opening_stock')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('product.opening_stock')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
             $notAllowed = $this->productUtil->notAllowedInDemo();
-            if (! empty($notAllowed)) {
+            if (!empty($notAllowed)) {
                 return $notAllowed;
             }
 
@@ -103,16 +104,18 @@ class ImportOpeningStockController extends Controller
                     $row_no = $key + 1;
 
                     //Check for product SKU, get product id, variation id.
-                    if (! empty($value[0])) {
+                    if (!empty($value[0])) {
                         $sku = $value[0];
                         $product_info = Variation::where('sub_sku', $sku)
-                                ->join('products AS P', 'variations.product_id', '=', 'P.id')
-                                ->leftjoin('tax_rates AS TR', 'P.tax', 'TR.id')
-                                ->where('P.business_id', $business_id)
-                                ->select(['P.id', 'variations.id as variation_id',
-                                    'P.enable_stock', 'TR.amount as tax_percent',
-                                    'TR.id as tax_id', ])
-                                ->first();
+                            ->join('products AS P', 'variations.product_id', '=', 'P.id')
+                            ->leftjoin('tax_rates AS TR', 'P.tax', 'TR.id')
+                            ->where('P.business_id', $business_id)
+                            ->select([
+                                'P.id', 'variations.id as variation_id',
+                                'P.enable_stock', 'TR.amount as tax_percent',
+                                'TR.id as tax_id',
+                            ])
+                            ->first();
                         if (empty($product_info)) {
                             $is_valid = false;
                             $error_msg = "Product with sku $sku not found in row no. $row_no";
@@ -129,11 +132,11 @@ class ImportOpeningStockController extends Controller
                     }
 
                     //Get location details.
-                    if (! empty(trim($value[1]))) {
+                    if (!empty(trim($value[1]))) {
                         $location_name = trim($value[1]);
                         $location = BusinessLocation::where('name', $location_name)
-                                            ->where('business_id', $business_id)
-                                            ->first();
+                            ->where('business_id', $business_id)
+                            ->first();
                         if (empty($location)) {
                             $is_valid = false;
                             $error_msg = "Location with name '$location_name' not found in row no. $row_no";
@@ -143,15 +146,16 @@ class ImportOpeningStockController extends Controller
                         $location = BusinessLocation::where('business_id', $business_id)->first();
                     }
 
-                    $opening_stock = ['quantity' => trim($value[2]),
+                    $opening_stock = [
+                        'quantity' => trim($value[2]),
                         'location_id' => $location->id,
                         'lot_number' => trim($value[4]),
                     ];
-                    if (! empty(trim($value[5]))) {
+                    if (!empty(trim($value[5]))) {
                         $opening_stock['exp_date'] = $this->productUtil->uf_date($value[5]);
                     }
 
-                    if (! empty(trim($value[3]))) {
+                    if (!empty(trim($value[3]))) {
                         $unit_cost_before_tax = trim($value[3]);
                     } else {
                         $is_valid = false;
@@ -159,7 +163,7 @@ class ImportOpeningStockController extends Controller
                         break;
                     }
 
-                    if (! is_numeric(trim($value[2]))) {
+                    if (!is_numeric(trim($value[2]))) {
                         $is_valid = false;
                         $error_msg = "Invalid quantity $value[2] in row no. $row_no";
                         break;
@@ -167,10 +171,10 @@ class ImportOpeningStockController extends Controller
 
                     //Check for tra, location_id, opening_stock_product_id, type=opening stock.
                     $os_transaction = Transaction::where('business_id', $business_id)
-                            ->where('location_id', $location->id)
-                            ->where('type', 'opening_stock')
-                            ->where('opening_stock_product_id', $product_info->id)
-                            ->first();
+                        ->where('location_id', $location->id)
+                        ->where('type', 'opening_stock')
+                        ->where('opening_stock_product_id', $product_info->id)
+                        ->first();
 
                     $this->addOpeningStock($opening_stock, $product_info, $business_id, $unit_cost_before_tax, $os_transaction);
 
@@ -185,21 +189,23 @@ class ImportOpeningStockController extends Controller
                 }
             }
 
-            if (! $is_valid) {
+            if (!$is_valid) {
                 throw new \Exception($error_msg);
             }
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('product.file_imported_successfully'),
             ];
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => 0,
-                'msg' => 'Message:'.$e->getMessage(),
+            $output = [
+                'success' => 0,
+                'msg' => 'Message:' . $e->getMessage(),
             ];
 
             return redirect('import-opening-stock')->with('notification', $output);
@@ -224,8 +230,8 @@ class ImportOpeningStockController extends Controller
         $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
 
         //Get product tax
-        $tax_percent = ! empty($product->tax_percent) ? $product->tax_percent : 0;
-        $tax_id = ! empty($product->tax_id) ? $product->tax_id : null;
+        $tax_percent = !empty($product->tax_percent) ? $product->tax_percent : 0;
+        $tax_id = !empty($product->tax_id) ? $product->tax_id : null;
 
         $item_tax = $this->productUtil->calc_percentage($unit_cost_before_tax, $tax_percent);
 
@@ -261,8 +267,8 @@ class ImportOpeningStockController extends Controller
             'pp_without_discount' => $unit_cost_before_tax,
             'purchase_price' => $unit_cost_before_tax,
             'purchase_price_inc_tax' => $unit_cost_before_tax + $item_tax,
-            'exp_date' => ! empty($opening_stock['exp_date']) ? $opening_stock['exp_date'] : null,
-            'lot_number' => ! empty($opening_stock['lot_number']) ? $opening_stock['lot_number'] : null,
+            'exp_date' => !empty($opening_stock['exp_date']) ? $opening_stock['exp_date'] : null,
+            'lot_number' => !empty($opening_stock['lot_number']) ? $opening_stock['lot_number'] : null,
         ]);
         //Update variation location details
         $this->productUtil->updateProductQuantity($opening_stock['location_id'], $product->id, $product->variation_id, $opening_stock['quantity']);

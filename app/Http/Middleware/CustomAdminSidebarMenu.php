@@ -458,6 +458,16 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'timesheet_wk')]
                 );
             }
+            if ($is_admin  || auth()->user()->can('ceomanagment.view_payroll_checkpoint')) {
+                $menu->url(
+                    route('ceo.payrolls_checkpoint', ['from' => 'ceo']),
+                    __('essentials::lang.hrm_payrolls'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' =>  request()->segment(2) == 'payrolls_checkpoint'
+                    ]
+                );
+            }
         });
     }
     public function OperationsManagmentGovernmentMenu()
@@ -1442,7 +1452,7 @@ class CustomAdminSidebarMenu
             }
             if ($is_admin  || auth()->user()->can('essentials.view_payroll_checkpoint')) {
                 $menu->url(
-                    route('hrm.payrolls_checkpoint'),
+                    route('hrm.payrolls_checkpoint', ['from' => 'hr']),
                     __('essentials::lang.hrm_payrolls'),
                     [
                         'icon' => 'fa fas fa-plus-circle',
@@ -1450,6 +1460,7 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
+
             //employee reports 
             if ($is_admin  || auth()->user()->can('essentials.employees_reports_view')) {
 
@@ -2225,6 +2236,26 @@ class CustomAdminSidebarMenu
                         'active' => request()->segment(2) == 'companies_access_permissions'
                     ],
 
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.view_payroll_checkpoint')) {
+                $menu->url(
+                    route('accounting.payrolls_checkpoint', ['from' => 'accountant']),
+                    __('essentials::lang.hrm_payrolls'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' =>  request()->segment(2) == 'payrolls_checkpoint'
+                    ]
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.view_payroll_checkpoint_financial')) {
+                $menu->url(
+                    route('accounting.payrolls_checkpoint', ['from' => 'financial']),
+                    __('essentials::lang.hrm_payrolls'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' =>  request()->segment(2) == 'payrolls_checkpoint'
+                    ]
                 );
             }
         });

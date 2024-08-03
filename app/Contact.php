@@ -2,7 +2,7 @@
 
 namespace App;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -236,11 +236,11 @@ class Contact extends Authenticatable
             $all_contacts->onlyOwnContact();
         }
 
-        $all_contacts = $all_contacts->get()->filter(function($contact) {
+        $all_contacts = $all_contacts->get()->filter(function ($contact) {
             return !is_null($contact->customer);
         });
-        
-          $customers = $all_contacts->pluck('customer', 'id');
+
+        $customers = $all_contacts->pluck('customer', 'id');
 
         //Prepend none
         if ($prepend_none) {

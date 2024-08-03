@@ -12,7 +12,7 @@ use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Yajra\DataTables\Facades\DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
 

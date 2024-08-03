@@ -18,7 +18,7 @@ use App\Contact;
 use App\Events\ContactCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsCity;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class AirlinesController extends Controller
 {
@@ -50,90 +50,90 @@ class AirlinesController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function getCitiesByCountry($country_id) {
+    public function getCitiesByCountry($country_id)
+    {
         $cities = EssentialsCity::where('country_id', $country_id)->get();
         $decodedCities = $cities->map(function ($city) {
             $city->name = json_decode($city->name, true);
             return $city;
         });
-    
+
         return response()->json($decodedCities);
-       
     }
-    
+
 
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $can_crud_airlines= auth()->user()->can('internationalrelations.crud_airlines');
-        if (! $can_crud_airlines) {
-           //temp  abort(403, 'Unauthorized action.');
+        $can_crud_airlines = auth()->user()->can('internationalrelations.crud_airlines');
+        if (!$can_crud_airlines) {
+            //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_edit_Airline_company = auth()->user()->can('internationalrelations.edit_Airline_company');
         $can_delete_Airline_company = auth()->user()->can('internationalrelations.delete_Airline_company');
-   
+
         $countries = EssentialsCountry::forDropdown();
 
         $contacts = DB::table('contacts')
-        ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
-        ->leftJoin('essentials_cities', 'contacts.city', '=', 'essentials_cities.id')
-        ->select([
-            'contacts.id',
-            'contacts.supplier_business_name',
-            'essentials_countries.name as country',
-            'essentials_cities.name as city',
-            'contacts.name',
-            'contacts.mobile',
-            'contacts.email',
-            'contacts.evaluation',
-            'contacts.landline'
-    
-        ])->where('business_id',$business_id)
-        ->where('type','travel_agency');
-    
-    
- 
-if (request()->ajax()) {
- 
-         
-        return Datatables::of($contacts)
-          
-            ->addColumn(
-                'country_nameAr',
-                function ($row) {
-                    $name = json_decode($row->country, true);
-                    return $name['ar'] ?? '';
-                }
-            )
-            ->addColumn(
-                'city_nameAr',
-                function ($row) {
-                    $name = json_decode($row->city, true);
-                    return $name['ar'] ?? '';
-                }
-            )
-           
-            ->addColumn('action', function ($row) use ($is_admin,$can_delete_Airline_company,$can_edit_Airline_company){
-                $html = '';
-                if ($is_admin || $can_edit_Airline_company) {
-                    $html = '<a href="" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
-                  }
-                  if ($is_admin || $can_delete_Airline_company) {
-                    $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href=""><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                    //$html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
-                     }   return $html;
-                })
-              
+            ->leftJoin('essentials_countries', 'contacts.country', '=', 'essentials_countries.id')
+            ->leftJoin('essentials_cities', 'contacts.city', '=', 'essentials_cities.id')
+            ->select([
+                'contacts.id',
+                'contacts.supplier_business_name',
+                'essentials_countries.name as country',
+                'essentials_cities.name as city',
+                'contacts.name',
+                'contacts.mobile',
+                'contacts.email',
+                'contacts.evaluation',
+                'contacts.landline'
 
-               
+            ])->where('business_id', $business_id)
+            ->where('type', 'travel_agency');
+
+
+
+        if (request()->ajax()) {
+
+
+            return Datatables::of($contacts)
+
+                ->addColumn(
+                    'country_nameAr',
+                    function ($row) {
+                        $name = json_decode($row->country, true);
+                        return $name['ar'] ?? '';
+                    }
+                )
+                ->addColumn(
+                    'city_nameAr',
+                    function ($row) {
+                        $name = json_decode($row->city, true);
+                        return $name['ar'] ?? '';
+                    }
+                )
+
+                ->addColumn('action', function ($row) use ($is_admin, $can_delete_Airline_company, $can_edit_Airline_company) {
+                    $html = '';
+                    if ($is_admin || $can_edit_Airline_company) {
+                        $html = '<a href="" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
+                    }
+                    if ($is_admin || $can_delete_Airline_company) {
+                        $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href=""><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        //$html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    }
+                    return $html;
+                })
+
+
+
                 ->rawColumns(['action'])
                 ->make(true);
         }
-     
+
         return view('internationalrelations::airlines.index')->with(compact('countries'));
-           
     }
 
     /**
@@ -152,37 +152,38 @@ if (request()->ajax()) {
      */
     public function store(Request $request)
     {
-        $can_crud_airlines= auth()->user()->can('internationalrelations.crud_airlines');
-        if (! $can_crud_airlines) {
-           //temp  abort(403, 'Unauthorized action.');
+        $can_crud_airlines = auth()->user()->can('internationalrelations.crud_airlines');
+        if (!$can_crud_airlines) {
+            //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $business_id = $request->session()->get('user.business_id');
 
-            if (! $this->moduleUtil->isSubscribed($business_id)) {
+            if (!$this->moduleUtil->isSubscribed($business_id)) {
                 return $this->moduleUtil->expiredResponse();
             }
 
             $input = $request->only([
-            'supplier_business_name',
-            'country',
-            'city',
-            'name',
-            'mobile',
-            'email',
-            'evaluation',
-            'landline']);
+                'supplier_business_name',
+                'country',
+                'city',
+                'name',
+                'mobile',
+                'email',
+                'evaluation',
+                'landline'
+            ]);
 
-         
-            $input['type']='travel_agency';
-            $input['supplier_business_name']=$request->input('Office_name');
+
+            $input['type'] = 'travel_agency';
+            $input['supplier_business_name'] = $request->input('Office_name');
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
-           // dd($input);
-        
+            // dd($input);
+
             DB::beginTransaction();
             $output = $this->contactUtil->createNewContact($input);
-            $responseData = $output['data']; 
+            $responseData = $output['data'];
 
             event(new ContactCreatedOrModified($input, 'added'));
 
@@ -191,26 +192,21 @@ if (request()->ajax()) {
             $this->contactUtil->activityLog($output['data'], 'added');
 
             DB::commit();
-
-       
-        } 
-        
-        catch (\Exception $e)
-         {
+        } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => $e->getMessage(),
             ];
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->errors();
+            return response()->json(['success' => false, 'errors' => $errors], 422);
         }
-      catch (\Illuminate\Validation\ValidationException $e) {
-        $errors = $e->errors();
-        return response()->json(['success' => false, 'errors' => $errors], 422);
-    }
 
-    return redirect()->route('international-Relations.Airlines');
-   // return $output;
+        return redirect()->route('international-Relations.Airlines');
+        // return $output;
     }
 
     /**

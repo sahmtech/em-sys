@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
