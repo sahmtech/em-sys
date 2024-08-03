@@ -4,9 +4,13 @@
 
 @section('content')
 
-    @include('accounting::layouts.nav')
+    {{-- @include('accounting::layouts.nav') --}}
 
-    <section class="content">
+    <section class="content-header">
+        <h1>@lang( 'accounting::lang.trial_balance' )</h1>
+    </section>
+
+    <section class="content container">
 
         <div class="col-md-3">
             <div class="form-group">
