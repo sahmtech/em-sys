@@ -3,6 +3,8 @@
 @section('title', __('accounting::lang.journal_entry'))
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     {{-- @include('accounting::layouts.nav') --}}
 
@@ -16,6 +18,7 @@
             'url' => action('\Modules\Accounting\Http\Controllers\JournalEntryController@store'),
             'method' => 'post',
             'id' => 'journal_add_form',
+            'files' => true,
         ]) !!}
 
         @component('components.widget', ['class' => 'box-primary'])
@@ -44,7 +47,28 @@
                     </div>
                 </div>
 
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {!! Form::label('upload_document', __('accounting::lang.attach_document') . ':') !!}
+                        <div class="custom-file">
+                            {!! Form::file('attachment', [
+                                'class' => 'custom-file-input',
+                                'id' => 'attachment',
+                                'accept' => '.doc,.docx,.xls,.xlsx,.pdf',
+                            ]) !!}
+                            <label class="custom-file-label" for="attachment">
+                                <i class="fas fa-upload"></i> {{ __('Choose file') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+
             </div>
+
+
+
 
             <div class="row">
                 <div class="col-md-12">
@@ -127,8 +151,9 @@
                                 <th class="col-md-1">#</th>
                                 <th class="col-md-3">@lang('accounting::lang.account')</th>
                                 <th class="col-md-2">@lang('accounting::lang.select_partner')</th>
-                                <th class="col-md-2">@lang('accounting::lang.debit')</th>
-                                <th class="col-md-2">@lang('accounting::lang.credit')</th>
+                                <th class="col-md-2">@lang('accounting::lang.cost_center')</th>
+                                <th class="col-md-1">@lang('accounting::lang.debit')</th>
+                                <th class="col-md-1">@lang('accounting::lang.credit')</th>
                                 <th class="col-md-3">@lang('accounting::lang.additional_notes')</th>
                             </tr>
                         </thead>
@@ -162,6 +187,10 @@
                                         id="selected_partner_type_[1]" class="selected_partner">
                                 </th>
 
+                              
+                                <td>
+                                    <select class="form-control cost_center" style="width: 100%;" name="cost_center[1]"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select>
+                                </td>
                                 <td>
                                     {!! Form::text('debit[' . 1 . ']', null, ['class' => 'form-control input_number debit']) !!}
                                 </td>
@@ -206,6 +235,24 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $('#myModal').on('shown.bs.modal', function(e) {
+                $('#select-employees').select2({
+                    dropdownParent: $(
+                        '#myModal'),
+                    width: '100%',
+                });
+            });
+
+            $('#myModal').on('shown.bs.modal', function(e) {
+                $('#select-customers_suppliers').select2({
+                    dropdownParent: $(
+                        '#myModal'),
+                    width: '100%',
+                });
+            });
+
+
             $('#select-employees').change(function() {
                 const id = $('.row-number').val();
 
@@ -339,7 +386,7 @@
                 counter + ']" id="selected_partner_id[' + counter +
                 ']" class="selected_partner"> <input type="hidden" readonly name="selected_partner_type_[' +
                 counter + ']" id="selected_partner_type_[' + counter +
-                ']" class="selected_partner"></th> <td> <input class="form-control input_number debit" name="debit[' +
+                ']" class="selected_partner"></th><td><select class="form-control cost_center" style="width: 100%;" name="cost_center[' + counter +']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select> </td> <td> <input class="form-control input_number debit" name="debit[' +
                 counter +
                 ']" type="text"> </td> <td> <input class="form-control input_number credit" name="credit[' +
                 counter +

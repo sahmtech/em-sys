@@ -30,6 +30,7 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
+                            <th>@lang('request.company')</th>
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.border_number')</th>
@@ -153,8 +154,9 @@
                     url: "{{ route('advanceSalaryRequest') }}"
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },

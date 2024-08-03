@@ -148,6 +148,7 @@
                         <table class="table table-bordered table-striped" id="requests_table">
                             <thead>
                                 <tr>
+                                    <th>@lang('request.company')</th>
                                     <th>@lang('followup::lang.request_number')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.eqama_number')</th>
@@ -188,8 +189,9 @@
                     url: "{{ route('housingmovements.dashboard') }}"
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },

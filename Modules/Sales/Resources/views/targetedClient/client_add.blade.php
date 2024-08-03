@@ -82,7 +82,7 @@
                                             'food_allowance' => __('sales::lang.food_allowance'),
                                             'transportation_allowance' => __('sales::lang.transportation_allowance'),
                                             'overtime_hours' => __('sales::lang.overtime_hours'),
-                                            'administrative_fees' => __('sales::lang.administrative_fees'),
+                                            //   'administrative_fees' => __('sales::lang.administrative_fees'),
                                             'other_allowances' => __('sales::lang.other_allowances'),
                                         ],
                                         null,
@@ -156,6 +156,12 @@
                                 <td>24</td>
                                 <td id="endServiceMonthlyAmount"></td>
                             </tr>
+                            <tr>
+                                <td>@lang('sales::lang.administrative_fees')</td>
+                                <td id="administrativeAmount"></td>
+                                <td>1</td>
+                                <td id="administrativeMonthlyAmount"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -223,12 +229,17 @@
             var gosiAmount = essentialsSalary * 0.02 * 24;
             var vacationAmount = (essentialsSalary / 30) * 21 * 2;
             var endServiceAmount = essentialsSalary / 2 * 2;
+            var administrativeAmount = 375;
             var gosiMonthlyAmount = gosiAmount / 24;
             var vacationMonthlyAmount = vacationAmount / 24;
             var endServiceMonthlyAmount = endServiceAmount / 24;
+            var administrativeMonthlyAmount = administrativeAmount / 1;
+
             formData.append('gosiAmount', gosiMonthlyAmount.toFixed(2));
             formData.append('vacationAmount', vacationMonthlyAmount.toFixed(2));
             formData.append('endServiceAmount', endServiceMonthlyAmount.toFixed(2));
+            formData.append('administrativeAmount', administrativeMonthlyAmount.toFixed(2));
+
             fetch('/sale/saveQuickClient', {
                     method: 'POST',
                     body: formData,
@@ -251,11 +262,13 @@
 
             $('select[name="salary_type[]"]').each(function(index) {
                 var salaryType = $(this).val();
+                var type = $('input[name="type[]"]').val();
                 var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
 
                 selectedData.push({
                     salaryType: salaryType,
-                    amount: amount
+                    amount: amount,
+                    type: type
                 });
             });
 
@@ -299,21 +312,26 @@
             var gosiAmount = essentialsSalary * 0.02 * 24;
             var vacationAmount = (essentialsSalary / 30) * 21 * 2;
             var endServiceAmount = essentialsSalary / 2 * 2;
-
+            var administrativeAmount = 375;
             var gosiMonthlyAmount = gosiAmount / 24;
             var vacationMonthlyAmount = vacationAmount / 24;
             var endServiceMonthlyAmount = endServiceAmount / 24;
-
+            var administrativeMonthlyAmount = administrativeAmount / 1;
             $('#gosiAmount').text(gosiAmount.toFixed(2));
             $('#vacationAmount').text(vacationAmount.toFixed(2));
             $('#endServiceAmount').text(endServiceAmount.toFixed(2));
+            $('#administrativeAmount').text(administrativeAmount.toFixed(2));
+
 
             $('#gosiMonthlyAmount').text(gosiMonthlyAmount.toFixed(2));
             $('#vacationMonthlyAmount').text(vacationMonthlyAmount.toFixed(2));
             $('#endServiceMonthlyAmount').text(endServiceMonthlyAmount.toFixed(2));
+            $('#administrativeMonthlyAmount').text(administrativeMonthlyAmount.toFixed(2));
 
-            var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount;
-            var monthlyCost = essentialsSalary + totalAllowances + additionalMonthlyCost;
+
+            var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount +
+                administrativeMonthlyAmount;
+            var monthlyCost = totalAllowances + additionalMonthlyCost;
 
             $('#monthly_cost').val(monthlyCost.toFixed(2));
         }

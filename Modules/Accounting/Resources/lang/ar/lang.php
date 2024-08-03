@@ -702,8 +702,8 @@ return [
     'employees' => 'الموظفيين',
     'customers_suppliers' => 'العملاء والمودرين',
     'choose_option' => 'إختر خيارا',
-    'history_edit_journal'=>'سجلات تعديل القيود',
-
+    'history_edit_journal' => 'سجلات تعديل القيود',
+    'attach_document' => 'ارفاق ملف',
     'edit_date' => 'تاريخ التعديل',
     'crud_timesheet' => 'إدارة التايم شيت',
     'create_timesheet' => 'إضافة تايم شيت',
@@ -765,5 +765,7 @@ return [
         'discount_amount' => 'مبلغ الخصم',
     ],
 
+    'attachment'=>'المرفقات',
+    'print_journal'=>'طباعة قيد مرجعي',
 
 ];

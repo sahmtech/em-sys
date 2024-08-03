@@ -885,30 +885,103 @@ class OfferPriceController extends Controller
                                 $others = 0;
                                 $uniform = 0;
                                 $recruit = 0;
-                                foreach (json_decode($sell_line->additional_allwances) as $allwance) {
 
-                                    if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
-                                        if ($allwance->salaryType == 'food_allowance') {
-                                            $food = $allwance->amount;
+                                $food_allowance_exist = false;
+                                $housing_allowance_exist = false;
+                                $transportation_allowance_exist = false;
+                                $other_allowances_exist = false;
+                                $uniform_allowance_exist = false;
+                                $recruit_allowance_exist = false;
+                                foreach (json_decode($sell_line['service']['additional_allwances']) as $allwance) {
+
+                                    if (is_object($allwance) && property_exists($allwance, 'type') && property_exists($allwance, 'amount')) {
+
+                                        if ($allwance->type == 'food_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $food = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $food = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $food = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $food_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'housing_allowance') {
-                                            $housing = $allwance->amount;
+                                        if ($allwance->type == 'housing_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $housing = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $housing = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $housing = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $housing_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'transportation_allowance') {
-                                            $transportaions = $allwance->amount;
+                                        if ($allwance->type == 'transportation_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $transportaions = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $transportaions = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $transportaions = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $transportation_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'other_allowances') {
-                                            $others = $allwance->amount;
+                                        if ($allwance->type == 'other_allowances') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $others = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $others = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $others = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $other_allowances_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'uniform_allowance') {
-                                            $uniform = $allwance->amount;
+                                        if ($allwance->type == 'uniform_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $uniform = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $uniform = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $uniform = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $uniform_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'recruit_allowance') {
-                                            $recruit = $allwance->amount;
+                                        if ($allwance->type == 'recruit_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $recruit = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $recruit = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $recruit = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $recruit_allowance_exist = true;
                                         }
                                     }
                                 }
-
+                                if ($food_allowance_exist == false) {
+                                    $food = __('sales::lang.undefiend');
+                                }
+                                if ($housing_allowance_exist == false) {
+                                    $housing = __('sales::lang.undefiend');
+                                }
+                                if ($transportation_allowance_exist == false) {
+                                    $transportaions = __('sales::lang.undefiend');
+                                }
+                                if ($other_allowances_exist == false) {
+                                    $others = __('sales::lang.undefiend');
+                                }
+                                if ($uniform_allowance_exist == false) {
+                                    $uniform = __('sales::lang.undefiend');
+                                }
+                                if ($recruit_allowance_exist == false) {
+                                    $recruit = __('sales::lang.undefiend');
+                                }
                                 $replacements2 = [
                                     '${R}' => $i,
                                     '${A}' => $sell_line['service']['profession']['name'] ?? '',
@@ -919,14 +992,14 @@ class OfferPriceController extends Controller
                                     '${F}' => $others,
                                     '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
                                     '${H}' => $sell_line->quantity ?? 0,
-                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? 0,
+                                    '${I}' => number_format($query->total_worker_monthly / $query->total_worker_number ?? 0, 2, '.', ''),
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
-                                    '${K}' => $query->contract_duration ?? 0,
-                                    '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
-                                    '${M}' => ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '',
-                                    '${N}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0,
+                                    '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
+                                    '${L}' => number_format($query->total_worker_monthly, 2, '.', ''),
+                                    '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
+                                    '${N}' =>  number_format(($query->total_worker_monthly ?? 0) +  (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', ''),
 
-
+                                    //$sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity
                                 ];
 
 
@@ -973,28 +1046,103 @@ class OfferPriceController extends Controller
                             $final_rows = '';
                             foreach ($query->sell_lines as $sell_line) {
                                 $clone =   $original_clone;
-                                foreach (json_decode($sell_line->additional_allwances) as $allwance) {
-                                    if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
-                                        if ($allwance->salaryType == 'food_allowance') {
-                                            $food = $allwance->amount;
+                                $food_allowance_exist = false;
+                                $housing_allowance_exist = false;
+                                $transportation_allowance_exist = false;
+                                $other_allowances_exist = false;
+                                $uniform_allowance_exist = false;
+                                $recruit_allowance_exist = false;
+                                foreach (json_decode($sell_line['service']['additional_allwances']) as $allwance) {
+                                    if (is_object($allwance) && property_exists($allwance, 'type') && property_exists($allwance, 'amount')) {
+                                        if ($allwance->type == 'food_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $food = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $food = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $food = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $food_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'housing_allowance') {
-                                            $housing = $allwance->amount;
+                                        if ($allwance->type == 'housing_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $housing = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $housing = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $housing = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $housing_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'transportation_allowance') {
-                                            $transportaions = $allwance->amount;
+                                        if ($allwance->type == 'transportation_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $transportaions = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $transportaions = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $transportaions = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $transportation_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'other_allowances') {
-                                            $others = $allwance->amount;
+                                        if ($allwance->type == 'other_allowances') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $others = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $others = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $others = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $other_allowances_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'uniform_allowance') {
-                                            $uniform = $allwance->amount;
+                                        if ($allwance->type == 'uniform_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $uniform = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $uniform = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $uniform = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $uniform_allowance_exist = true;
                                         }
-                                        if ($allwance->salaryType == 'recruit_allowance') {
-                                            $recruit = $allwance->amount;
+                                        if ($allwance->type == 'recruit_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $recruit = $allwance->amount;
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $recruit = __('sales::lang.insured_by_emdadat');
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $recruit = __('sales::lang.insured_by_the_customer');
+                                            }
+                                            $recruit_allowance_exist = true;
                                         }
                                     }
                                 }
+                                if ($food_allowance_exist == false) {
+                                    $food = __('sales::lang.undefiend');
+                                }
+                                if ($housing_allowance_exist == false) {
+                                    $housing = __('sales::lang.undefiend');
+                                }
+                                if ($transportation_allowance_exist == false) {
+                                    $transportaions = __('sales::lang.undefiend');
+                                }
+                                if ($other_allowances_exist == false) {
+                                    $others = __('sales::lang.undefiend');
+                                }
+                                if ($uniform_allowance_exist == false) {
+                                    $uniform = __('sales::lang.undefiend');
+                                }
+                                if ($recruit_allowance_exist == false) {
+                                    $recruit = __('sales::lang.undefiend');
+                                }
+
+
+
                                 $replacements2 = [
                                     '${R}' => $i,
                                     '${A}' => $sell_line['service']['profession']['name'] ?? '',
@@ -1004,13 +1152,13 @@ class OfferPriceController extends Controller
                                     '${E}' => $housing,
                                     '${F}' => $others,
                                     '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
-                                    '${H}' => $sell_line->quantity ?? 0,
-                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? 0,
+                                    '${H}' => $sell_line->quantity ?? __('sales::lang.undefiend'),
+                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? __('sales::lang.undefiend'),
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
-                                    '${K}' => $query->contract_duration ?? 0,
-                                    '${L}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity,
-                                    '${M}' => ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '',
-                                    '${N}' => $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0,
+                                    '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
+                                    '${L}' =>  number_format($query->total_worker_monthly, 2, '.', ''),
+                                    '${M}' =>  number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
+                                    '${N}' =>  number_format(($query->total_worker_monthly ?? 0) +  (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', ''),
                                 ];
                                 foreach ($replacements2 as $placeholder => $value) {
                                     $clone = str_replace($placeholder, $value,   $clone);

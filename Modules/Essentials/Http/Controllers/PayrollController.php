@@ -44,6 +44,7 @@ use App\TimesheetGroup;
 use App\AccessRole;
 use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 class PayrollController extends Controller
 {
@@ -122,8 +123,10 @@ class PayrollController extends Controller
         }
         $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
         $user_types = [
+            // 'manager' => __('essentials::lang.manager'),
             "employee" => __('essentials::lang.user_type.employee'),
             "worker" => __('essentials::lang.user_type.worker'),
+            // 'department_head' => __('essentials::lang.   '),
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
         $bank_names = EssentialsBankAccounts::all()->pluck('name', 'id');
@@ -155,7 +158,7 @@ class PayrollController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->whereIn('company_id', $companies_ids)
             ->with(['assignedTo'])
-            ->whereIn('user_type', ['worker', 'employee'])
+            ->whereIn('user_type', ['worker', 'employee', 'manager', 'department_head', 'remote_employee'])
             ->where('users.status', '!=', 'inactive')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -174,7 +177,7 @@ class PayrollController extends Controller
             if ($user_type == "worker") {
                 $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'worker');
             } elseif ($user_type == "employee" || $user_type == "remote_employee") {
-                $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
+                $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('user_type', ['employee', "manager", "department_head", 'remote_employee']);
             }
             if ($user_type == "remote_employee") {
                 $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
@@ -377,7 +380,7 @@ class PayrollController extends Controller
                 $housing_allowance = $allowance->amount;
             } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
                 $transportation_allowance = $allowance->amount;
-            } else if (stripos($allowance_dsc, 'other') !== false) {
+            } else if ((stripos($allowance_dsc, 'other') !== false) || (stripos($allowance_dsc, 'خرى') !== false)) {
                 $other_allowance += floatval($allowance->amount ?? "0");
             }
         }
@@ -400,32 +403,38 @@ class PayrollController extends Controller
 
         $userId = $request->input('user_id');
         $updatedSalaryData = $request->except('_token', 'user_id');
-
+        error_log(json_encode($updatedSalaryData));
 
         $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
         if ($user) {
-            foreach ($user->userAllowancesAndDeductions as $allowance) {
-                if ($allowance->allowance_deduction_id == 1) {
-                    error_log($updatedSalaryData['housing_allowance']);
-                    $allowance->amount = $updatedSalaryData['housing_allowance'];
-                    $allowance->save();
-                }
+            $allowanceMap = [
+                'housing_allowance' => 1,
+                'transportation_allowance' => 2,
+                'other_allowance' => 6
+            ];
 
-                if ($allowance->allowance_deduction_id == 2) {
-                    $allowance->amount = $updatedSalaryData['transportation_allowance'];
-                    $allowance->save();
-                }
-
-                if ($allowance->allowance_deduction_id == 6) {
-                    error_log($updatedSalaryData['other_allowance']);
-                    $allowance->amount = $updatedSalaryData['other_allowance'];
-                    $allowance->save();
+            foreach ($allowanceMap as $key => $id) {
+                if (isset($updatedSalaryData[$key]) && $updatedSalaryData[$key] != null) {
+                    $allowance = $user->userAllowancesAndDeductions->firstWhere('allowance_deduction_id', $id);
+                    if ($allowance) {
+                        $allowance->amount = $updatedSalaryData[$key];
+                        $allowance->save();
+                    } else {
+                        error_log($id . ' allowance not found, creating new record');
+                        EssentialsUserAllowancesAndDeduction::create([
+                            'user_id' => $userId,
+                            'allowance_deduction_id' => $id,
+                            'amount' => $updatedSalaryData[$key]
+                        ]);
+                    }
                 }
             }
             $user->essentials_salary = $updatedSalaryData['salary'];
             $user->total_salary = $updatedSalaryData['total'];
             $user->save();
             return response()->json(['message' => 'Salary data updated successfully', $user], 200);
+        } else {
+            return response()->json(['message' => 'user not found'], 200);
         }
     }
 
@@ -467,17 +476,14 @@ class PayrollController extends Controller
         $companies = Company::whereIn('id',  $companies_ids)->pluck('name', 'id')->toArray();
 
         $projects = SalesProject::all()->pluck('name', 'id')->toArray();
-        $employees = User::where('user_type', 'employee')->whereIn('id', $userIds)->select(
-            'users.*',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''),  ' ', COALESCE(users.last_name, '')) as name"),
-        )->pluck('name', 'id')->toArray();
+
         $user_types = [
             "employee" => __('essentials::lang.user_type.employee'),
             "worker" => __('essentials::lang.user_type.worker'),
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
-
-        return view('essentials::payroll.index')->with(compact('projects', 'companies', 'employees', 'user_types'));
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        return view('essentials::payroll.index')->with(compact('projects', 'companies', 'user_types', 'departments'));
     }
     public function requests()
     {
@@ -1023,6 +1029,7 @@ class PayrollController extends Controller
     {
         $companies_ids = request()->input('companies', []);
         $projects_ids = request()->input('projects', []);
+        $departments_ids = request()->input('departments', []);
         $user_type = request()->input('user_type');
         $month_year = request()->input('month_year');
 
@@ -1031,7 +1038,7 @@ class PayrollController extends Controller
         if ($user_type == "worker") {
             $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->whereIn('assigned_to', $projects_ids)->where('user_type', 'worker');
         } elseif ($user_type == "employee" || $user_type == "remote_employee") {
-            $employee_ids = $employee_ids->whereIn('company_id', $companies_ids)->where('user_type', 'employee');
+            $employee_ids = $employee_ids->whereIn('users.essentials_department_id', $departments_ids)->whereIn('company_id', $companies_ids)->whereIn('user_type', ['employee', 'manager', 'department_head']);
         }
         if ($user_type == "remote_employee") {
             $remote_id = EssentialsContractType::where('type', 'LIKE', '%بعد%')->first()?->id;
@@ -1049,6 +1056,7 @@ class PayrollController extends Controller
             'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'
         ])
             ->whereIn('users.id', $employee_ids)
+
             ->select(
                 'users.*',
                 'users.id as user_id',
@@ -1072,12 +1080,12 @@ class PayrollController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
-
+        $companies = Company::pluck('name', 'id');
         foreach ($employees as $worker) {
             $housing_allowance = 0;
             $transportation_allowance = 0;
             $other_allowance = 0;
-            $timesheet = $timesheet_users->where('user_id', $worker->id)->first();
+            $timesheet = $timesheet_users->where('user_id', $worker->id)->sortByDesc('id')->first();
             if ($worker->user_type == "worker" && $timesheet) {
                 $housing_allowance = $timesheet->housing;
                 $transportation_allowance = $timesheet->transport;
@@ -1133,13 +1141,16 @@ class PayrollController extends Controller
             }
 
             $profession = $worker->appointment?->profession?->name ?? '';
-
+            $salesProject = SalesProject::pluck('name', 'id');
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'identity_card_number' => $worker->id_proof_number ?? '',
-                'project_name' => $project_name ?? '',
+                'sponser' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
+                // 'project_name' => $project_name ?? '',
+                'project_name' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
                 'region' => '',
                 'profession' => $profession ?? '',
                 'work_days' => $work_days,
@@ -1177,7 +1188,6 @@ class PayrollController extends Controller
 
     public function store(Request $request)
     {
-
 
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;

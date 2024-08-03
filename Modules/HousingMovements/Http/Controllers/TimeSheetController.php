@@ -2,6 +2,9 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
+use App\Company;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -105,11 +108,13 @@ class TimeSheetController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
+        $companies = Company::pluck('name', 'id');
         foreach ($workers as $worker) {
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',
@@ -123,7 +128,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => '',
                 'vat' => '',
                 'total' => '',
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,
@@ -144,13 +149,31 @@ class TimeSheetController extends Controller
     public function agentTimeSheetGroups()
     {
         $user = User::where('id', auth()->user()->id)->first();
-        $authCompanyId = $user->company_id;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $companies_ids = Company::pluck('id')->toArray();
+        if (!$is_admin) {
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
+        }
 
         $payrolls = TimesheetGroup::where(function ($query) use ($user) {
             $query->where('timesheet_groups.created_by', $user->id)
                 ->orWhere('timesheet_groups.status', 'final');
-        })->whereHas('timesheetUsers.user', function ($query) use ($authCompanyId) {
-            $query->where('company_id', $authCompanyId)->where('is_approved', 0);
+        })->whereHas('timesheetUsers.user', function ($query) use ($companies_ids) {
+            $query->whereIn('company_id', $companies_ids)->where('is_approved', 0);
         })->select([
             'timesheet_groups.id',
             'timesheet_groups.name',
@@ -225,13 +248,32 @@ class TimeSheetController extends Controller
     {
         try {
             $authUser = auth()->user();
-            $authCompanyId = $authUser->company_id;
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+            $companies_ids = Company::pluck('id')->toArray();
+            if (!$is_admin) {
+
+                $companies_ids = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                    if ($accessRole) {
+                        $companies_ids = AccessRoleCompany::where(
+                            'access_role_id',
+                            $accessRole->id
+                        )
+                            ->pluck('company_id')
+                            ->toArray();
+                    }
+                }
+            }
 
             $timesheetGroup = TimesheetGroup::findOrFail($id);
 
             $timesheetUsers = TimesheetUser::where('timesheet_group_id', $id)
-                ->whereHas('user', function ($query) use ($authCompanyId) {
-                    $query->where('company_id', $authCompanyId);
+                ->whereHas('user', function ($query) use ($companies_ids) {
+                    $query->whereIn('company_id', $companies_ids);
                 })
                 ->get();
 
@@ -355,27 +397,27 @@ class TimeSheetController extends Controller
                         'timesheet_group_id' => $timesheet_group->id,
                         'nationality_id' => $user->nationality_id,
                         'id_proof_number' => $user->id_proof_number,
-                        'monthly_cost' => $payroll['monthly_cost'],
-                        'work_days' => $payroll['wd'],
-                        'absence_days' => $payroll['absence_day'],
-                        'absence_amount' => $payroll['absence_amount'],
-                        'over_time_hours' => $payroll['over_time_h'],
-                        'over_time_amount' => $payroll['over_time'],
-                        'other_deduction' => $payroll['other_deduction'],
-                        'other_addition' => $payroll['other_addition'],
-                        'cost_2' => $payroll['cost2'],
-                        'invoice_value' => $payroll['invoice_value'],
-                        'vat' => $payroll['vat'],
-                        'total' => $payroll['total'],
+                        'monthly_cost' => $payroll['monthly_cost'] ?? 0,
+                        'work_days' => $payroll['wd'] ?? 30,
+                        'absence_days' => $payroll['absence_day'] ?? 0,
+                        'absence_amount' => $payroll['absence_amount'] ?? 0,
+                        'over_time_hours' => $payroll['over_time_h'] ?? 0,
+                        'over_time_amount' => $payroll['over_time'] ?? 0,
+                        'other_deduction' => $payroll['other_deduction'] ?? 0,
+                        'other_addition' => $payroll['other_addition'] ?? 0,
+                        'cost_2' => $payroll['cost2'] ?? 0,
+                        'invoice_value' => $payroll['invoice_value'] ?? 0,
+                        'vat' => $payroll['vat'] ?? 0,
+                        'total' => $payroll['total'] ?? 0,
                         'project_id' => $payroll['assigned_to'] ?? null,
-                        'basic' => $payroll['basic'],
-                        'housing' => $payroll['housing'],
-                        'transport' => $payroll['transport'],
-                        'other_allowances' => $payroll['other_allowances'],
-                        'total_salary' => $payroll['total_salary'],
-                        'deductions' => $payroll['deductions'],
-                        'additions' => $payroll['additions'],
-                        'final_salary' => $payroll['final_salary'],
+                        'basic' => $payroll['basic'] ?? 0,
+                        'housing' => $payroll['housing'] ?? 0,
+                        'transport' => $payroll['transport'] ?? 0,
+                        'other_allowances' => $payroll['other_allowances'] ?? 0,
+                        'total_salary' => $payroll['total_salary'] ?? 0,
+                        'deductions' => $payroll['deductions'] ?? 0,
+                        'additions' => $payroll['additions'] ?? 0,
+                        'final_salary' => $payroll['final_salary'] ?? 0,
                         'created_by' => auth()->user()->id
                     ]);
                 }
@@ -454,18 +496,43 @@ class TimeSheetController extends Controller
 
     public function showTimeSheet($id)
     {
-        $authUser = auth()->user();
-        $authCompanyId = $authUser->company_id;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
+        }
+
+
+
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
-            ->where('u.company_id', $authCompanyId)
+            ->whereIn('u.company_id',  $companies_ids)
             ->select([
                 'timesheet_users.*',
                 'u.first_name',
                 'u.mid_name',
                 'u.last_name',
                 'u.bank_details',
+
+                'u.assigned_to',
+                'u.id'
             ])->where('is_approved', 0)
             ->get();
 
@@ -478,12 +545,13 @@ class TimeSheetController extends Controller
             $item->account_number = $bankDetails['account_number'] ?? '';
             $item->tax_number = $bankDetails['tax_number'] ?? '';
         });
-
-        $payrolls = $timesheetUsers->map(function ($user) {
+        $projects = SalesProject::pluck('name', 'id');
+        $companies = Company::pluck('name', 'id');
+        $payrolls = $timesheetUsers->map(function ($user) use ($projects, $companies) {
             return [
                 'id' => $user->user_id,
                 'name' => $user->first_name . ' '  . $user->last_name,
-                'nationality' => $user->country->nationality ?? '',
+                'nationality' => User::find($user->id)->country?->nationality ?? '',
                 'residency' => $user->id_proof_number,
                 'monthly_cost' => $user->monthly_cost,
                 'wd' => $user->work_days,
@@ -497,7 +565,9 @@ class TimeSheetController extends Controller
                 'invoice_value' => $user->invoice_value,
                 'vat' => $user->vat,
                 'total' => $user->total,
-                'sponser' => $user->project_id,
+                'sponser' => $user->company_id ? ($companies[$user->company_id] ?? '') : '',
+                'project' => $user->assigned_to ? $projects[$user->assigned_to] ?? '' : '',
+
                 'basic' => $user->basic,
                 'housing' => $user->housing,
                 'transport' => $user->transport,

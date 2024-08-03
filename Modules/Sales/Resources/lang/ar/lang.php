@@ -489,6 +489,7 @@ return [
     'additional_costs' => 'تكاليف إضافية',
     'insured_by_emdadat' => 'مؤمن من قبل امدادات',
     'insured_by_the_customer' => 'مؤمن من قبل العميل',
+    'undefiend' => 'غير محدد',
 
 ];
 

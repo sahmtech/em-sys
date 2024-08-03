@@ -4,7 +4,7 @@
 
 @section('content')
 
-    @include('accounting::layouts.nav')
+    {{-- @include('accounting::layouts.nav') --}}
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -16,6 +16,7 @@
             'url' => action('\Modules\Accounting\Http\Controllers\JournalEntryController@update', $journal->id),
             'method' => 'PUT',
             'id' => 'journal_add_form',
+            'files' => true,
         ]) !!}
 
         @component('components.widget', ['class' => 'box-primary'])
@@ -37,6 +38,22 @@
                     </div>
                 </div>
 
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {!! Form::label('upload_document', __('accounting::lang.attach_document') . ':') !!}
+                        <div class="custom-file">
+                            {!! Form::file('attachment', [
+                                'class' => 'custom-file-input',
+                                'id' => 'attachment',
+                                'accept' => '.doc,.docx,.xls,.xlsx,.pdf',
+                            ]) !!}
+                            <label class="custom-file-label" for="attachment">
+                                <i class="fas fa-upload"></i> {{ __('Choose file') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="row">
@@ -119,14 +136,16 @@
                                 <th class="col-md-1">#</th>
                                 <th class="col-md-3">@lang('accounting::lang.account')</th>
                                 <th class="col-md-2">@lang('accounting::lang.select_partner')</th>
-                                <th class="col-md-2">@lang('accounting::lang.debit')</th>
-                                <th class="col-md-2">@lang('accounting::lang.credit')</th>
+                                <th class="col-md-2">@lang('accounting::lang.cost_center')</th>
+
+                                <th class="col-md-1">@lang('accounting::lang.debit')</th>
+                                <th class="col-md-1">@lang('accounting::lang.credit')</th>
                                 <th class="col-md-3">@lang('accounting::lang.additional_notes')</th>
 
                             </tr>
                         </thead>
                         <tbody>
-                            @for ($i = 1; $i <= 10; $i++)
+                            @for ($i = 1; $i <= count($accounts_transactions); $i++)
                                 <tr>
 
                                     @php
@@ -139,12 +158,14 @@
                                         $selected_partner_type = '';
                                         $partner = '';
                                         $partner_type = '';
+                                        $cost_center_id = null;
                                     @endphp
 
                                     @if (isset($accounts_transactions[$i - 1]))
                                         @php
 
                                             $account_id = $accounts_transactions[$i - 1]['accounting_account_id'];
+                                            $cost_center_id = $accounts_transactions[$i - 1]['cost_center_id'];
                                             $debit =
                                                 $accounts_transactions[$i - 1]['type'] == 'debit'
                                                     ? $accounts_transactions[$i - 1]['amount']
@@ -214,6 +235,16 @@
                                             id="selected_partner_type_[{{ $i }}]" class="selected_partner"
                                             value="{{ $selected_partner_type }}">
                                     </th>
+                                    <td>
+                                        <select class="form-control cost_center" style="width: 100%;" name="cost_center[{{ $i }}]">
+                                            <option  value="">يرجى الاختيار</option>
+                                            @foreach ($allCenters as $allCenter)
+                                                <option @if ($cost_center_id == $allCenter->id)
+                                                    selected
+                                                @endif value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
 
                                     <td>
                                         {!! Form::text('debit[' . $i . ']', $debit, ['class' => 'form-control input_number debit']) !!}
@@ -261,6 +292,21 @@
     @include('accounting::accounting.common_js')
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#myModal').on('shown.bs.modal', function(e) {
+                $('#select-employees').select2({
+                    dropdownParent: $(
+                        '#myModal'),
+                    width: '100%',
+                });
+            });
+
+            $('#myModal').on('shown.bs.modal', function(e) {
+                $('#select-customers_suppliers').select2({
+                    dropdownParent: $(
+                        '#myModal'),
+                    width: '100%',
+                });
+            });
             $('#select-employees').change(function() {
                 const id = $('.row-number').val();
 

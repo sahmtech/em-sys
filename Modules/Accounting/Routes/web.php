@@ -64,6 +64,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('journal-entry/map/show', 'JournalEntryController@map');
     Route::get('journal-entry/history/{id}', 'JournalEntryController@history_index');
     Route::get('journal-entry/history-view/{id}', 'JournalEntryController@history_view');
+    Route::get('journal-entry/print/{id}', 'JournalEntryController@print');
     // Route::delete('journal-entry/{id}', 'JournalEntryController@destroy')->name('delete_journal');
     Route::post('journal-entry/map/save', 'JournalEntryController@saveMap');
 

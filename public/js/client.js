@@ -207,21 +207,25 @@ function updateMonthlyCostAndTotal() {
     var gosiAmount = essentialsSalary * 0.02 * 24;
     var vacationAmount = (essentialsSalary / 30) * 21 * 2;
     var endServiceAmount = essentialsSalary / 2 * 2;
-
+    var administrativeAmount = 375;
     var gosiMonthlyAmount = gosiAmount / 24;
     var vacationMonthlyAmount = vacationAmount / 24;
     var endServiceMonthlyAmount = endServiceAmount / 24;
-
+    var administrativeMonthlyAmount = administrativeAmount / 1;
     $('#gosiAmount').text(gosiAmount.toFixed(2));
     $('#vacationAmount').text(vacationAmount.toFixed(2));
     $('#endServiceAmount').text(endServiceAmount.toFixed(2));
+    $('#administrativeAmount').text(administrativeAmount.toFixed(2));
+
 
     $('#gosiMonthlyAmount').text(gosiMonthlyAmount.toFixed(2));
     $('#vacationMonthlyAmount').text(vacationMonthlyAmount.toFixed(2));
     $('#endServiceMonthlyAmount').text(endServiceMonthlyAmount.toFixed(2));
+    $('#administrativeMonthlyAmount').text(administrativeMonthlyAmount.toFixed(2));
 
-    var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount;
-    var monthlyCost = essentialsSalary + totalAllowances + additionalMonthlyCost;
+
+    var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount + administrativeMonthlyAmount;
+    var monthlyCost = totalAllowances + additionalMonthlyCost;
     $('#monthly_cost').val(monthlyCost.toFixed(2));
 
     var input_number = parseFloat($('#input_number').val()) || 0;

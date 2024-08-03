@@ -34,6 +34,10 @@ return [
   'authorizationRequest' => 'طلب تفويض',
   'salaryInquiryRequest' => 'طلب استعلام عن راتب',
   'interviewsRequest' => 'طلب مقابلات',
+  'moqimPrint' => 'طلب برنت مقيم',
+  'salaryIntroLetter' =>  'طلب خطاب تعريف بالراتب',
+  'QiwaContract' =>  'طلب عقد قوى',
+  'ExitWithoutReturnReport' =>  'طلب تبليغ خرج ولم يعد',
   'ticketReservationRequest' => 'طلب حجز تذكرة',
   'authorized_entity' => 'اسم الجهة المفوض لها',
   'commissioner_info' => 'معلومات المفوض',
@@ -271,14 +275,15 @@ return [
   'select_project' => 'اختر مشروع',
   'worker' => 'عامل',
   'employee' => 'موظف',
-  'view_activities' => 'عرض سجل النشاطات',
-  'view_request_details' => 'عرض تفاصيل الطلب',
+  'view_activities' => 'سجل النشاطات',
+  'view_request_details' => 'تفاصيل الطلب',
   'department' => 'الإدارة',
   'status_note' => 'الملاحظات',
   'activities' => 'سجل النشاطات',
   'started_department' => 'الإدارة التي بدأت الطلب',
-  '' => '',
-
+  'company' => 'الوكيل',
+  'admission_date' => 'تاريخ المباشرة',
+  'please_add_valid_file_and_name_before_saving' => 'الرجاء إضافة مرفق واسم للمرفق قبل الحفظ'
 
 
 
