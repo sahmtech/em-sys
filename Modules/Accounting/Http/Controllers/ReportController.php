@@ -99,11 +99,31 @@ class ReportController extends Controller
             ->whereDate('AAT.operation_date', '>=', $start_date)
             ->whereDate('AAT.operation_date', '<=', $end_date)
             ->select(
-                DB::raw("SUM(IF(AAT.type = 'credit', AAT.amount, 0)) as credit_balance"),
-                DB::raw("SUM(IF(AAT.type = 'debit', AAT.amount, 0)) as debit_balance"),
-                'accounting_accounts.name'
+                DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
+                DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
+                DB::raw("IFNULL(
+                    (SELECT AAT2.amount 
+                     FROM accounting_accounts_transactions as AAT2 
+                     WHERE AAT2.accounting_account_id = accounting_accounts.id 
+                     AND AAT2.sub_type = 'opening_balance'
+                     AND AAT2.type = 'credit'
+                     ORDER BY AAT2.operation_date ASC 
+                     LIMIT 1), 
+                    0) as credit_opening_balance"),
+                DB::raw("IFNULL(
+                    (SELECT AAT2.amount 
+                     FROM accounting_accounts_transactions as AAT2 
+                     WHERE AAT2.accounting_account_id = accounting_accounts.id 
+                     AND AAT2.sub_type = 'opening_balance'
+                     AND AAT2.type = 'debit'
+                     ORDER BY AAT2.operation_date ASC 
+                     LIMIT 1), 
+                    0) as debit_opening_balance"),
+                'accounting_accounts.name',
+                'accounting_accounts.gl_code'
             )
             ->groupBy('accounting_accounts.name')
+            ->orderBy('accounting_accounts.gl_code')
             ->get();
 
         return view('accounting::report.trial_balance')
