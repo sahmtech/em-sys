@@ -376,29 +376,29 @@ class SellController extends Controller
                             //     // }
                             // }
 
-                            $delete_link = '<li><a href="' . action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]) . '" class="delete-sale"><i class="fas fa-trash"></i> ' . __('messages.delete') . '</a></li>';
-                            if ($row->is_direct_sale == 0) {
-                                // if (auth()->user()->can('sell.delete')) {
-                                $html .= $delete_link;
-                                // }
-                            } elseif ($row->type == 'sales_order') {
-                                // if (auth()->user()->can('so.delete')) {
-                                $html .= $delete_link;
-                                // }
-                            } else {
-                                // if (auth()->user()->can('direct_sell.delete')) {
-                                $html .= $delete_link;
-                                // }
-                            }
+                            // $delete_link = '<li><a href="' . action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]) . '" class="delete-sale"><i class="fas fa-trash"></i> ' . __('messages.delete') . '</a></li>';
+                            // if ($row->is_direct_sale == 0) {
+                            //     // if (auth()->user()->can('sell.delete')) {
+                            //     $html .= $delete_link;
+                            //     // }
+                            // } elseif ($row->type == 'sales_order') {
+                            //     // if (auth()->user()->can('so.delete')) {
+                            //     $html .= $delete_link;
+                            //     // }
+                            // } else {
+                            //     // if (auth()->user()->can('direct_sell.delete')) {
+                            //     $html .= $delete_link;
+                            //     // }
+                            // }
                         }
 
-                        if (config('constants.enable_download_pdf')  && $sale_type != 'sales_order') {
-                            $html .= '<li><a href="' . route('sell.downloadPdf', [$row->id]) . '" target="_blank"><i class="fas fa-print" aria-hidden="true"></i> ' . __('lang_v1.download_pdf') . '</a></li>';
+                        // if (config('constants.enable_download_pdf')  && $sale_type != 'sales_order') {
+                        //     $html .= '<li><a href="' . route('sell.downloadPdf', [$row->id]) . '" target="_blank"><i class="fas fa-print" aria-hidden="true"></i> ' . __('lang_v1.download_pdf') . '</a></li>';
 
-                            if (!empty($row->shipping_status)) {
-                                $html .= '<li><a href="' . route('packing.downloadPdf', [$row->id]) . '" target="_blank"><i class="fas fa-print" aria-hidden="true"></i> ' . __('lang_v1.download_paking_pdf') . '</a></li>';
-                            }
-                        }
+                        //     if (!empty($row->shipping_status)) {
+                        //         $html .= '<li><a href="' . route('packing.downloadPdf', [$row->id]) . '" target="_blank"><i class="fas fa-print" aria-hidden="true"></i> ' . __('lang_v1.download_paking_pdf') . '</a></li>';
+                        //     }
+                        // }
 
                         // if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.access')) {
                         if (!empty($row->document)) {
@@ -411,15 +411,15 @@ class SellController extends Controller
                         // }
 
                         // if ($is_admin || auth()->user()->hasAnyPermission(['access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
-                        $html .= '<li><a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-truck" aria-hidden="true"></i>' . __('lang_v1.edit_shipping') . '</a></li>';
+                        // $html .= '<li><a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-truck" aria-hidden="true"></i>' . __('lang_v1.edit_shipping') . '</a></li>';
                         // }
 
                         if ($row->type == 'sell') {
                             // if (auth()->user()->can('print_invoice')) {
                             $html .= '<li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '"><i class="fas fa-print" aria-hidden="true"></i> ' . __('lang_v1.print_invoice') . '</a></li>
-                                    <li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '?package_slip=true"><i class="fas fa-file-alt" aria-hidden="true"></i> ' . __('lang_v1.packing_slip') . '</a></li>';
-
-                            $html .= '<li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '?delivery_note=true"><i class="fas fa-file-alt" aria-hidden="true"></i> ' . __('lang_v1.delivery_note') . '</a></li>';
+                                    ';
+                                    // <li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '?package_slip=true"><i class="fas fa-file-alt" aria-hidden="true"></i> ' . __('lang_v1.packing_slip') . '</a></li>
+                            // $html .= '<li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '?delivery_note=true"><i class="fas fa-file-alt" aria-hidden="true"></i> ' . __('lang_v1.delivery_note') . '</a></li>';
                             // }
                             $html .= '<li class="divider"></li>';
                             if (!$only_shipments) {

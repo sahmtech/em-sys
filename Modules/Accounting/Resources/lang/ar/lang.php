@@ -299,7 +299,7 @@ return [
     'parent_account' => 'الحساب الاصلي',
     'as_of' => 'As of',
     'gl_code_help' => 'All General Ledger accounts have a 6-digit number. 1xxxxxx = Assets, 2xxxxx = Liabilities, 3xxxxx = Net Assets, 4xxxxx = Revenue, 5xxxxx = Revenue, 8xxxxx = Allocations',
-    'gl_code' => 'رمز دفتر الأستاذ العام (GL).',
+    'gl_code' => 'رمز كشف حساب العام (GL).',
     'gl_code_mainaccount' => 'المستوى الثاني من الحسابات (اسم الحساب الاب باللغة الانكليزية)',
     'gl_code_mainaccount_nots' => "يجب ان تكون قيمة هذا الحقل هي اسم الحساب باللغة الانكليزية من المستوى الثاني الثي ينمتي اليه الحساب , ويتم اختيار هذه القيمة من العمود الاول .",
 
@@ -349,10 +349,10 @@ return [
     '2nd_quarter' => '2nd Quarter',
     '3rd_quarter' => '3rd Quarter',
     '4th_quarter' => '4th Quarter',
-    'ledger' => 'دفتر الحسابات',
+    'ledger' => 'كشف الحسابات',
     'reports' => 'التقارير',
     'view_report' => 'عرض التقرير',
-    'ledger_report' => 'تقرير دفتر الحسابات',
+    'ledger_report' => 'تقرير كشف الحسابات',
     'ledger_report_description' => 'The ledger report contains the classified and detailed information of all the individual accounts including the debit and credit aspects.',
     'ledger_add_account' => 'Add some account to view ledger report',
     'select_a_financial_year' => 'حدد السنة المالية لعرض الميزانية',
@@ -765,7 +765,7 @@ return [
         'discount_amount' => 'مبلغ الخصم',
     ],
 
-    'attachment'=>'المرفقات',
-    'print_journal'=>'طباعة قيد مرجعي',
+    'attachment' => 'المرفقات',
+    'print_journal' => 'طباعة قيد مرجعي',
 
 ];
