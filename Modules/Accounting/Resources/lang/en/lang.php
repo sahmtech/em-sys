@@ -366,6 +366,7 @@ return [
    'reset_data' => 'Reset data',
    'reset_help_txt' => 'This will delete all accounting data. And data cannot be reverted back.',
    'opening_balance' => 'Opening balance',
+   'closing_balance' => 'Closing balance',
    'tree_view' => 'Tree view',
    'tabular_view' => 'Tabular view',
    'expand_all' => 'Expand all',
