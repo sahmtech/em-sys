@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\PurchaseCreatedOrModified;
+use App\Utils\Util;
 
 class PurchaseController extends Controller
 {
@@ -415,6 +416,9 @@ class PurchaseController extends Controller
             $this->productUtil->adjustStockOverSelling($transaction);
 
             $this->transactionUtil->activityLog($transaction, 'added');
+
+            $util = new Util();
+            $auto_migration = $util->saveAutoMigration($request, $transaction);
 
             PurchaseCreatedOrModified::dispatch($transaction);
 
