@@ -82,10 +82,7 @@
                                             'food_allowance' => __('sales::lang.food_allowance'),
                                             'transportation_allowance' => __('sales::lang.transportation_allowance'),
                                             'overtime_hours' => __('sales::lang.overtime_hours'),
-                                            'GOSI' => __('sales::lang.GOSI'),
-                                            'vacation_salary' => __('sales::lang.vacation_salary'),
-                                            'end_of_service' => __('sales::lang.end_of_service'),
-                                            'administrative_fees' => __('sales::lang.administrative_fees'),
+                                            //   'administrative_fees' => __('sales::lang.administrative_fees'),
                                             'other_allowances' => __('sales::lang.other_allowances'),
                                         ],
                                         null,
@@ -99,7 +96,11 @@
                                 <td>
                                     {!! Form::select(
                                         'type[]',
-                                        ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')],
+                                        [
+                                            'cash' => __('sales::lang.cash'),
+                                            'insured_by_emdadat' => __('sales::lang.insured_by_emdadat'),
+                                            'insured_by_the_customer' => __('sales::lang.insured_by_the_customer'),
+                                        ],
                                         null,
                                         [
                                             'class' => 'form-control',
@@ -123,6 +124,48 @@
                     <button type="button" id="add-row"
                         class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
                 </div>
+
+                <!-- New Table -->
+                <div class="col-md-12">
+                    <h4> @lang('sales::lang.additional_costs') </h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>@lang('sales::lang.description')</th>
+                                <th>@lang('sales::lang.amount')</th>
+                                <th>@lang('sales::lang.duration_by_month')</th>
+                                <th>@lang('sales::lang.monthly_amount')</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@lang('sales::lang.GOSI')</td>
+                                <td id="gosiAmount"></td>
+                                <td>24</td>
+                                <td id="gosiMonthlyAmount"></td>
+                            </tr>
+                            <tr>
+                                <td>@lang('sales::lang.vacation_salary')</td>
+                                <td id="vacationAmount"></td>
+                                <td>24</td>
+                                <td id="vacationMonthlyAmount"></td>
+                            </tr>
+                            <tr>
+                                <td>@lang('sales::lang.end_of_service')</td>
+                                <td id="endServiceAmount"></td>
+                                <td>24</td>
+                                <td id="endServiceMonthlyAmount"></td>
+                            </tr>
+                            <tr>
+                                <td>@lang('sales::lang.administrative_fees')</td>
+                                <td id="administrativeAmount"></td>
+                                <td>1</td>
+                                <td id="administrativeMonthlyAmount"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
         <div class="table-responsive col-md-12">
@@ -139,14 +182,14 @@
                                 'class' => 'form-control input-sm input_number',
                                 'placeholder' => __('sales::lang.number_of_clients'),
                                 'required',
-                                'id' => 'number',
+                                'id' => 'input_number',
                             ]) !!}
                         </div>
                     </td>
                     <td>
                         <div class="col-sm-6">
                             {!! Form::text('monthly_cost', 0, [
-                                'class' => 'form-control input-sm input_number',
+                                'class' => 'form-control input-sm',
                                 'placeholder' => __('sales::lang.monthly_cost'),
                                 'required',
                                 'id' => 'monthly_cost',
@@ -169,18 +212,33 @@
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 
-{{-- <script src="{{ asset('js/client.js') }}"></script> --}}
 <script src="{{ asset('js/client.js') }}?v={{ filemtime(public_path('js/client.js')) }}"></script>
+
 
 <script>
     $(document).ready(function() {
         var selectedData = [];
         const form = document.getElementById('quick_add_client_form');
+
         $('#submit_quick_client').on('click', function(event) {
             event.preventDefault();
             updateSelectedData();
             const formData = new FormData(form);
             formData.append('selectedData', JSON.stringify(selectedData));
+            var essentialsSalary = parseFloat($('#essentials_salary').val()) || 0;
+            var gosiAmount = essentialsSalary * 0.02 * 24;
+            var vacationAmount = (essentialsSalary / 30) * 21 * 2;
+            var endServiceAmount = essentialsSalary / 2 * 2;
+            var administrativeAmount = 375;
+            var gosiMonthlyAmount = gosiAmount / 24;
+            var vacationMonthlyAmount = vacationAmount / 24;
+            var endServiceMonthlyAmount = endServiceAmount / 24;
+            var administrativeMonthlyAmount = administrativeAmount / 1;
+
+            formData.append('gosiAmount', gosiMonthlyAmount.toFixed(2));
+            formData.append('vacationAmount', vacationMonthlyAmount.toFixed(2));
+            formData.append('endServiceAmount', endServiceMonthlyAmount.toFixed(2));
+            formData.append('administrativeAmount', administrativeMonthlyAmount.toFixed(2));
 
             fetch('/sale/saveQuickClient', {
                     method: 'POST',
@@ -192,10 +250,7 @@
                     $('.quick_add_client_modal').modal('hide');
                     $('#quick_add_client_form')[0].reset();
                     $('#selectedData').val('');
-                    $('#action').val('add'); // Reset action to add
-                    console.log(" ******* success of ajax *********");
-                    console.log(data);
-                    console.log(" ****************");
+                    $('#action').val('add');
                 })
                 .catch(error => {
                     console.error(error);
@@ -207,11 +262,13 @@
 
             $('select[name="salary_type[]"]').each(function(index) {
                 var salaryType = $(this).val();
+                var type = $('input[name="type[]"]').val();
                 var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
 
                 selectedData.push({
                     salaryType: salaryType,
-                    amount: amount
+                    amount: amount,
+                    type: type
                 });
             });
 
@@ -233,7 +290,8 @@
         $(document).on('change', 'select[name="type[]"]', function() {
             var selectedOption = $(this).val();
             var amountInput = $(this).closest('tr').find('input[name="amount[]"]');
-            if (selectedOption === 'insured_by_the_other') {
+            if (selectedOption === 'insured_by_the_customer' || selectedOption ===
+                'insured_by_emdadat') {
                 amountInput.prop('disabled', true).val('0');
                 updateMonthlyCost();
                 updateTotal();
@@ -244,16 +302,46 @@
 
         function updateMonthlyCost() {
             var essentialsSalary = parseFloat($('#essentials_salary').val()) || 0;
-            var totalAmount = 0;
+            var totalAllowances = 0;
             $('input[name="amount[]"]').each(function() {
                 var amount = parseFloat($(this).val()) || 0;
-                totalAmount += amount;
+                totalAllowances += amount;
             });
-            var monthlyCost = essentialsSalary + totalAmount;
-            $('#monthly_cost').val(monthlyCost);
+
+            // Additional costs calculation
+            var gosiAmount = essentialsSalary * 0.02 * 24;
+            var vacationAmount = (essentialsSalary / 30) * 21 * 2;
+            var endServiceAmount = essentialsSalary / 2 * 2;
+            var administrativeAmount = 375;
+            var gosiMonthlyAmount = gosiAmount / 24;
+            var vacationMonthlyAmount = vacationAmount / 24;
+            var endServiceMonthlyAmount = endServiceAmount / 24;
+            var administrativeMonthlyAmount = administrativeAmount / 1;
+            $('#gosiAmount').text(gosiAmount.toFixed(2));
+            $('#vacationAmount').text(vacationAmount.toFixed(2));
+            $('#endServiceAmount').text(endServiceAmount.toFixed(2));
+            $('#administrativeAmount').text(administrativeAmount.toFixed(2));
+
+
+            $('#gosiMonthlyAmount').text(gosiMonthlyAmount.toFixed(2));
+            $('#vacationMonthlyAmount').text(vacationMonthlyAmount.toFixed(2));
+            $('#endServiceMonthlyAmount').text(endServiceMonthlyAmount.toFixed(2));
+            $('#administrativeMonthlyAmount').text(administrativeMonthlyAmount.toFixed(2));
+
+
+            var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount +
+                administrativeMonthlyAmount;
+            var monthlyCost = totalAllowances + additionalMonthlyCost;
+
+            $('#monthly_cost').val(monthlyCost.toFixed(2));
         }
 
         updateMonthlyCost();
+
+        $('#essentials_salary').on('change', function() {
+            updateMonthlyCost();
+            updateTotal();
+        });
 
         $('#essentials_salary').on('input', function() {
             updateMonthlyCost();
@@ -265,7 +353,7 @@
             updateTotal();
         });
 
-        const numberInput = document.getElementById('number');
+        const numberInput = document.getElementById('input_number');
         const monthlyCostInput = document.getElementById('monthly_cost');
         const totalField = document.getElementById('total');
 

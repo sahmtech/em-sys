@@ -92,91 +92,92 @@
 
             </div>
         </div>
-            <br>
+        <br>
 
-            {{-- 
+        {{-- 
             <div class="row widget-statistic">
         
 
             </div> --}}
 
-            <div class="row">
+        <div class="row">
 
 
 
-                <div class="col-md-6 custom_table">
-                    <canvas id="leaveStatusChart"></canvas>
-                    <canvas id="contractStatusChart"></canvas>
-                </div>
+            <div class="col-md-6 custom_table">
+                <canvas id="leaveStatusChart"></canvas>
+                <canvas id="contractStatusChart"></canvas>
+            </div>
 
 
 
-                <div class="col-md-5 custom_table">
-                    @component('components.widget', [
-                        'class' => 'box-primary',
-                        'title' => __('essentials::lang.number_employees_staff'),
-                    ])
-                        {!! $chart->container() !!}
-                    @endcomponent
-                </div>
+            <div class="col-md-5 custom_table">
+                @component('components.widget', [
+                    'class' => 'box-primary',
+                    'title' => __('essentials::lang.number_employees_staff'),
+                ])
+                    {!! $chart->container() !!}
+                @endcomponent
+            </div>
 
 
+
+        </div>
+        <div class="row  ">
+            <div class="col-md-11 custom_table">
+                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.contracts')])
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="employees_contracts_table">
+                            <thead>
+                                <tr>
+                                    <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.contract_number')</th>
+                                    <th>@lang('essentials::lang.contract_end_date')</th>
+                                    <th>@lang('essentials::lang.status')</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                @endcomponent
+            </div>
+
+
+        </div>
+        <div class="row ">
+            <div class="col-md-6 custom_table">
+                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.residence_permits')])
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="official_documents_table">
+                            <thead>
+                                <tr>
+                                    <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.doc_number')</th>
+                                    <th>@lang('essentials::lang.expired_date')</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                @endcomponent
 
             </div>
-            <div class="row  ">
-                <div class="col-md-11 custom_table">
-                    @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.contracts')])
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="employees_contracts_table">
-                                <thead>
-                                    <tr>
-                                        <th>@lang('essentials::lang.employee')</th>
-                                        <th>@lang('essentials::lang.contract_number')</th>
-                                        <th>@lang('essentials::lang.contract_end_date')</th>
-                                        <th>@lang('essentials::lang.status')</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    @endcomponent
-                </div>
-
-
+            <div class="col-md-5 custom_table">
+                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.leaves')])
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="leave_table">
+                            <thead>
+                                <tr>
+                                    <th>@lang('request.company')</th>
+                                    <th>@lang('followup::lang.request_number')</th>
+                                    <th>@lang('followup::lang.name')</th>
+                                    <th>@lang('followup::lang.start_date')</th>
+                                    <th>@lang('followup::lang.status')</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                @endcomponent
             </div>
-            <div class="row ">
-                <div class="col-md-6 custom_table">
-                    @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.residence_permits')])
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="official_documents_table">
-                                <thead>
-                                    <tr>
-                                        <th>@lang('essentials::lang.employee')</th>
-                                        <th>@lang('essentials::lang.doc_number')</th>
-                                        <th>@lang('essentials::lang.expired_date')</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    @endcomponent
-
-                </div>
-                <div class="col-md-5 custom_table">
-                    @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.leaves')])
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="leave_table">
-                                <thead>
-                                    <tr>
-                                        <th>@lang('followup::lang.request_number')</th>
-                                        <th>@lang('followup::lang.name')</th>
-                                        <th>@lang('followup::lang.start_date')</th>
-                                        <th>@lang('followup::lang.status')</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    @endcomponent
-                </div>
-            </div>
+        </div>
 
     </section>
 
@@ -196,9 +197,8 @@
 
 
 
-          <script type="text/javascript">
-      
-        $(document).ready(function () {
+    <script type="text/javascript">
+        $(document).ready(function() {
             // Define an array of counters
             var counters = [
                 {{ $num_employee_staff }},
@@ -207,19 +207,21 @@
                 {{ $num_managers }}
                 // Add more counter values if needed
             ];
-    
+
             // Iterate through each counter
-            $.each(counters, function (index, value) {
+            $.each(counters, function(index, value) {
                 var counterElement = $('#counter-' + index);
-    
-                $({ count: 0 }).animate({
+
+                $({
+                    count: 0
+                }).animate({
                     count: value
                 }, {
                     duration: 2000,
-                    step: function () {
+                    step: function() {
                         counterElement.text(Math.floor(this.count));
                     },
-                    complete: function () {
+                    complete: function() {
                         counterElement.text(this.count);
                     }
                 });
@@ -412,7 +414,9 @@
                 dom: 'lrtip',
                 lengthMenu: [5, 10, 25, 50],
                 pageLength: 5,
-                columns: [ {
+                columns: [{
+                        data: 'company_id'
+                    }, {
                         data: 'request_no'
                     },
 

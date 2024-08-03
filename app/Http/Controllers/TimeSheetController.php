@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Business;
 use App\BusinessLocation;
 use App\TimesheetUser;
 use App\User;
 use App\TimesheetGroup;
-
+use App\Company;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\RestaurantUtil;
@@ -520,9 +522,33 @@ class TimeSheetController extends Controller
 
     public function showTimeSheet($id)
     {
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
+        }
+
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
+            ->whereIn('u.company_id',  $companies_ids)
             ->select([
                 'timesheet_users.*',
                 'u.first_name',
@@ -1178,12 +1204,14 @@ class TimeSheetController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
+        $companies = Company::pluck('name', 'id');
         foreach ($workers as $worker) {
             $worker_transaction = $worker->transactions->whereIn('id', $transactions_id)->first();
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',
@@ -1197,7 +1225,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => $worker_transaction->final_total / 1.15,
                 'vat' => $worker_transaction->final_total / 0.15,
                 'total' => $worker_transaction->final_total,
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,
@@ -1782,12 +1810,14 @@ class TimeSheetController extends Controller
         $year = $currentDateTime->year;
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
+        $companies = Company::pluck('name', 'id');
         $payrolls = [];
         foreach ($workers as $worker) {
             $payrolls[] = [
                 'id' => $worker->user_id,
                 'name' => $worker->name ?? '',
                 'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
                 'residency' => $worker->eqama_number ?? '',
                 'monthly_cost' => number_format($worker->calculateTotalSalary(), 0, '.', ''),
                 'wd' => '30',
@@ -1801,7 +1831,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => '',
                 'vat' => '',
                 'total' => '',
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,

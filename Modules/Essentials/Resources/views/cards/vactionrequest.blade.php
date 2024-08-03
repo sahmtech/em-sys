@@ -10,17 +10,16 @@
         </h1>
     </section>
 
-  
+
     <section class="content">
 
-      
-        @component('components.widget', ['class' => 'box-primary'])
-       
 
+        @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
+                            <th>@lang('request.company')</th>
                             <th>@lang('followup::lang.request_number')</th>
                             <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.eqama_number')</th>
@@ -38,7 +37,7 @@
             </div>
         @endcomponent
 
-      
+
     </section>
     <!-- /.content -->
 
@@ -59,8 +58,9 @@
                     url: "{{ route('allIrRequests') }}"
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },
@@ -110,9 +110,9 @@
                                 return '@lang('followup::lang.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('followup::lang.cancleContractRequest')';
-                            }  else if (data === 'WarningRequest') {
+                            } else if (data === 'WarningRequest') {
                                 return '@lang('followup::lang.WarningRequest')';
-                            }else {
+                            } else {
                                 return data;
                             }
                         }
@@ -154,7 +154,7 @@
                 ],
             });
 
-          
+
 
 
 
