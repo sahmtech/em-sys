@@ -3036,6 +3036,7 @@ class TransactionUtil extends Util
             $final_amount = Transaction::find($transaction_id)->final_total;
         }
 
+        // dd($final_amount, $total_paid,$final_amount <= $total_paid);
         $status = 'due';
         if ($final_amount <= $total_paid) {
             $status = 'paid';
@@ -5759,13 +5760,14 @@ class TransactionUtil extends Util
         return $recurring_expense;
     }
 
-    public function createExpense($request, $business_id, $user_id, $format_data = true,$company_id=null)
+    public function createExpense($request, $business_id, $user_id, $format_data = true)
     {
         $transaction_data = $request->only([
             'ref_no', 'transaction_date',
             'location_id', 'final_total', 'expense_for', 'additional_notes',
             'expense_category_id', 'tax_id', 'contact_id',
         ]);
+        $company_id = Session::get('selectedCompanyId');
 
         $transaction_data['business_id'] = $business_id;
         $transaction_data['company_id'] = $company_id;

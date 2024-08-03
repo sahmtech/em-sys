@@ -454,7 +454,7 @@
                                 <td></td>
                                 <td><span class="display_currency pull-right"
                                         data-currency_symbol="true">{{ $sell->final_total }}</span></td>
-                            </tr>
+                            </tr> 
                             @if ($sell->type != 'sales_order')
                                 <tr>
                                     <th>{{ __('sale.total_paid') }}:</th>

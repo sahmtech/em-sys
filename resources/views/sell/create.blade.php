@@ -1231,8 +1231,10 @@
                                 <span id="total_payable">0</span>
                             </div>
                         </div>
+                        
                     @endcomponent
                 </div>
+                
 
             </div>
         </div>
