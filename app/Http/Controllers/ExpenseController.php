@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\ExpenseCreatedOrModified;
+use App\Utils\Util;
+use Illuminate\Support\Facades\Session;
 
 class ExpenseController extends Controller
 {
@@ -52,6 +54,7 @@ class ExpenseController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
             $expenses = Transaction::leftJoin('expense_categories AS ec', 'transactions.expense_category_id', '=', 'ec.id')
                 ->leftJoin('expense_categories AS esc', 'transactions.expense_sub_category_id', '=', 'esc.id')
@@ -72,6 +75,7 @@ class ExpenseController extends Controller
                     'TP.transaction_id'
                 )
                 ->where('transactions.business_id', $business_id)
+                ->where('transactions.company_id', $company_id)
                 ->whereIn('transactions.type', ['expense', 'expense_refund'])
                 ->select(
                     'transactions.id',
@@ -116,12 +120,12 @@ class ExpenseController extends Controller
             }
 
             //Add condition for location,used in sales representative expense report & list of expense
-            if (request()->has('location_id')) {
-                $location_id = request()->get('location_id');
-                if (!empty($location_id)) {
-                    $expenses->where('transactions.location_id', $location_id);
-                }
-            }
+            // if (request()->has('location_id')) {
+            //     $location_id = request()->get('location_id');
+            //     if (!empty($location_id)) {
+            //         $expenses->where('transactions.location_id', $location_id);
+            //     }
+            // }
 
             //Add condition for expense category, used in list of expense,
             if (request()->has('expense_category_id')) {
@@ -147,10 +151,10 @@ class ExpenseController extends Controller
                     ->whereDate('transaction_date', '<=', $end);
             }
 
-            $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $expenses->whereIn('transactions.location_id', $permitted_locations);
-            }
+            // $permitted_locations = auth()->user()->permitted_locations();
+            // if ($permitted_locations != 'all') {
+            //     $expenses->whereIn('transactions.location_id', $permitted_locations);
+            // }
 
             //Add condition for payment status for the list of expense
             if (request()->has('payment_status')) {
@@ -350,12 +354,14 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
+        // return $request;
         if (!auth()->user()->can('expense.add')) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
             $business_id = $request->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
             //Check if subscribed or not
             if (!$this->moduleUtil->isSubscribed($business_id)) {
@@ -371,7 +377,7 @@ class ExpenseController extends Controller
 
             DB::beginTransaction();
 
-            $expense = $this->transactionUtil->createExpense($request, $business_id, $user_id);
+            $expense = $this->transactionUtil->createExpense($request, $business_id, $user_id,$company_id);
 
             if (request()->ajax()) {
                 $payments = !empty($request->input('payment')) ? $request->input('payment') : [];
@@ -379,6 +385,9 @@ class ExpenseController extends Controller
             }
 
             $this->transactionUtil->activityLog($expense, 'added');
+          
+            $util = new Util();
+            $auto_migration = $util->saveAutoMigration($request, $expense);
 
             event(new ExpenseCreatedOrModified($expense));
 
