@@ -10,7 +10,7 @@ use App\Request as UserRequest;
 use Modules\CEOManagment\Entities\RequestsType;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
-
+use App\Company;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
@@ -40,7 +40,7 @@ class TravelCategorieController extends Controller
         $travel_ticket_categories = DB::table('essentials_travel_ticket_categories')->pluck('name', 'id');
 
         $airplane_Companies = DB::table('contacts')->where('type', 'travel_agency')->get();
-
+        $companies = Company::all()->pluck('name', 'id');
 
         $requestsProcess = null;
 
@@ -51,7 +51,7 @@ class TravelCategorieController extends Controller
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.status',
             'requests.note as note', 'requests.start_date', 'requests.end_date', 'requests.has_travel_categorie',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
 
             'users.status as userStatus', 'essentials_employee_travel_categories.categorie_id as categorie'
 
@@ -83,7 +83,11 @@ class TravelCategorieController extends Controller
                         return '';
                     }
                 })
-
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
+                    }
+                })
                 ->rawColumns(['categorie', 'request_type'])
                 ->make(true);
         }

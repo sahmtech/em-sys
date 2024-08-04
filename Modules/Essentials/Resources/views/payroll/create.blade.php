@@ -81,6 +81,8 @@
 
                                     @if ($user_type == 'worker')
                                         <th style="width:100px;">@lang('essentials::lang.residence_permit')</th>
+                                        <th style="width:75px;">@lang('essentials::lang.company')</th>
+
                                         <th style="width:75px;">@lang('essentials::lang.project_name')</th>
                                         <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
                                     @endif
@@ -90,6 +92,7 @@
                                     @if ($user_type != 'remote_employee' && $user_type != 'worker')
                                         <th style="width:75px;">@lang('essentials::lang.profession')</th>
                                     @endif
+
                                     <th style="width:75px;">@lang('essentials::lang.work_days')</th>
                                     <th style="width:75px;">@lang('essentials::lang.salary')</th>
                                     <th style="width:75px;">@lang('essentials::lang.housing_allowance')</th>
@@ -149,6 +152,13 @@
                                             ]) !!}
                                         </td>
                                         @if ($user_type == 'worker')
+                                            <td name="company">{{ $payroll['company'] }}
+                                                {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company'], [
+                                                    'data-index' => $index,
+                                                    'data-field' => 'company',
+                                                    'class' => 'form-hidden',
+                                                ]) !!}
+                                            </td>
                                             <td name="project_name">{{ $payroll['project_name'] }}
                                                 {!! Form::hidden('payrolls[' . $index . '][project_name]', $payroll['project_name'], [
                                                     'data-index' => $index,
@@ -156,6 +166,7 @@
                                                     'class' => 'form-hidden',
                                                 ]) !!}
                                             </td>
+
                                             <td name="region">{{ $payroll['region'] }}
                                                 {!! Form::hidden('payrolls[' . $index . '][region]', $payroll['region'], [
                                                     'data-index' => $index,
@@ -365,7 +376,7 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                            <tfoot>
+                            {{-- <tfoot>
                                 <tr>
                                     <td colspan="2">
                                         @lang('essentials::lang.the_total')
@@ -432,7 +443,7 @@
                                     <td>
                                     </td>
                                 </tr>
-                            </tfoot>
+                            </tfoot> --}}
                         </table>
                     </div>
                 </div>

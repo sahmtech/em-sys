@@ -124,7 +124,7 @@ $(document).on('click', '.edit-client', function() {
                 $('#nationalitySearch').val(response.client.nationality_id).trigger('change');
                 $('#gender').val(response.client.gender).trigger('change');
                 $('#essentials_salary').val(response.client.service_price);
-                $('#number').val(response.client.quantity);
+                $('#input_number').val(response.client.quantity);
 
                 // Set the action to edit
                 $('input[name="action"]').val('edit');
@@ -204,15 +204,36 @@ function updateMonthlyCostAndTotal() {
         totalAllowances += parseFloat($(this).val()) || 0;
     });
 
-    var monthlyCost = essentialsSalary + totalAllowances;
-    $('#monthly_cost').val(monthlyCost);
+    var gosiAmount = essentialsSalary * 0.02 * 24;
+    var vacationAmount = (essentialsSalary / 30) * 21 * 2;
+    var endServiceAmount = essentialsSalary / 2 * 2;
+    var administrativeAmount = 375;
+    var gosiMonthlyAmount = gosiAmount / 24;
+    var vacationMonthlyAmount = vacationAmount / 24;
+    var endServiceMonthlyAmount = endServiceAmount / 24;
+    var administrativeMonthlyAmount = administrativeAmount / 1;
+    $('#gosiAmount').text(gosiAmount.toFixed(2));
+    $('#vacationAmount').text(vacationAmount.toFixed(2));
+    $('#endServiceAmount').text(endServiceAmount.toFixed(2));
+    $('#administrativeAmount').text(administrativeAmount.toFixed(2));
 
-    var number = parseFloat($('#number').val()) || 0;
-    var total = monthlyCost * number;
-    $('#total').val(total);
+
+    $('#gosiMonthlyAmount').text(gosiMonthlyAmount.toFixed(2));
+    $('#vacationMonthlyAmount').text(vacationMonthlyAmount.toFixed(2));
+    $('#endServiceMonthlyAmount').text(endServiceMonthlyAmount.toFixed(2));
+    $('#administrativeMonthlyAmount').text(administrativeMonthlyAmount.toFixed(2));
+
+
+    var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount + administrativeMonthlyAmount;
+    var monthlyCost = totalAllowances + additionalMonthlyCost;
+    $('#monthly_cost').val(monthlyCost.toFixed(2));
+
+    var input_number = parseFloat($('#input_number').val()) || 0;
+    var total = monthlyCost * input_number;
+    $('#total').val(total.toFixed(2));
 }
 
-$(document).on('input', '#essentials_salary, input[name="amount[]"], #number', function() {
+$(document).on('input', '#essentials_salary, input[name="amount[]"], #input_number', function() {
     updateMonthlyCostAndTotal();
 });
 

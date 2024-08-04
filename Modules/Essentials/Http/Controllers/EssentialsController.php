@@ -5,7 +5,7 @@ namespace Modules\Essentials\Http\Controllers;
 use App\Charts\CommonChart;
 use App\Utils\ModuleUtil;
 use App\User;
-
+use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -363,7 +363,7 @@ class EssentialsController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -441,7 +441,7 @@ class EssentialsController extends Controller
         $allRequestTypes = RequestsType::pluck('type', 'id');
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
-
+        $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
@@ -449,7 +449,7 @@ class EssentialsController extends Controller
 
             'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -474,6 +474,10 @@ class EssentialsController extends Controller
             return DataTables::of($requestsProcess ?? [])
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at);
+                })->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
+                    }
                 })
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
@@ -524,7 +528,7 @@ class EssentialsController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -532,7 +536,7 @@ class EssentialsController extends Controller
 
         $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
-
+        $companies = Company::all()->pluck('name', 'id');
         $allRequestTypes = RequestsType::pluck('type', 'id');
         $types = RequestsType::where('type', 'leavesAndDepartures')
             ->pluck('id')->toArray();
@@ -549,7 +553,7 @@ class EssentialsController extends Controller
 
                 'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
 
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
 
             ])
                 ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -577,6 +581,11 @@ class EssentialsController extends Controller
                     })
                     ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                         return $allRequestTypes[$row->request_type_id];
+                    })
+                    ->editColumn('company_id', function ($row) use ($companies) {
+                        if ($row->company_id) {
+                            return $companies[$row->company_id];
+                        }
                     })
                     ->editColumn('status', function ($row) {
                         $status = trans('request.' . $row->status);

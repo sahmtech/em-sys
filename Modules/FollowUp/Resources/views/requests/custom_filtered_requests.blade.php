@@ -19,6 +19,7 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
+                            <th>@lang('request.company')</th>
                             <th>@lang('followup::lang.request_number')</th>
                             <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.request_type')</th>
@@ -58,8 +59,9 @@
                     },
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'company_id'
+                    },
                     {
                         data: 'request_no'
                     },

@@ -65,27 +65,30 @@
                     <thead>
                         <tr>
                             <th style="width: 50px;">#</th>
-                            <th style="width: 100px;">@lang('essentials::lang.name')</th>
+
+                            <th style="width: 100px;">@lang('worker.name')</th>
                             <th style="width: 100px;">@lang('worker.nationality')</th>
                             <th style="width: 100px;">@lang('worker.eqama_number')</th>
-                            <th style="width: 100px;">@lang('worker.monthly_cost')</th>
+                            <th style="width: 100px;">@lang('essentials::lang.company')</th>
+                            <th style="width: 100px;">@lang('worker.project')</th>
                             <th style="width: 100px;">@lang('worker.wd')</th>
+                            <th style="width: 100px;">@lang('worker.basic')</th>
+                            <th style="width: 100px;">@lang('worker.monthly_cost')</th>
+                            <th style="width: 100px;">@lang('worker.housing')</th>
+                            <th style="width: 100px;">@lang('worker.transport')</th>
+                            <th style="width: 100px;">@lang('worker.other_allowances')</th>
+                            <th style="width: 100px;">@lang('worker.total_salary')</th>
                             <th style="width: 100px;">@lang('worker.absence_day')</th>
                             <th style="width: 100px;">@lang('worker.absence_amount')</th>
+                            <th style="width: 100px;">@lang('worker.other_deduction')</th>
                             <th style="width: 100px;">@lang('worker.over_time_h')</th>
                             <th style="width: 100px;">@lang('worker.over_time')</th>
-                            <th style="width: 100px;">@lang('worker.other_deduction')</th>
                             <th style="width: 100px;">@lang('worker.other_addition')</th>
                             <th style="width: 100px;">@lang('worker.cost2')</th>
                             <th style="width: 100px;">@lang('worker.invoice_value')</th>
                             <th style="width: 100px;">@lang('worker.vat')</th>
                             <th style="width: 100px;">@lang('worker.total')</th>
-                            <th style="width: 100px;">@lang('worker.sponser')</th>
-                            <th style="width: 100px;">@lang('worker.basic')</th>
-                            <th style="width: 100px;">@lang('worker.housing')</th>
-                            <th style="width: 100px;">@lang('worker.transport')</th>
-                            <th style="width: 100px;">@lang('worker.other_allowances')</th>
-                            <th style="width: 100px;">@lang('worker.total_salary')</th>
+
                             <th style="width: 100px;">@lang('worker.deductions')</th>
                             <th style="width: 100px;">@lang('worker.additions')</th>
                             <th style="width: 100px;">@lang('worker.final_salary')</th>
@@ -94,9 +97,11 @@
                     <tbody>
                         @foreach ($payrolls as $index => $payroll)
                             <tr class="payroll_row">
+
                                 <td name="id">{{ $payroll['id'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][id]', $payroll['id']) !!}
                                 </td>
+
                                 <td name="name">{{ $payroll['name'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][name]', $payroll['name']) !!}
                                 </td>
@@ -106,12 +111,11 @@
                                 <td name="residency">{{ $payroll['residency'] }}
                                     {!! Form::hidden('payrolls[' . $index . '][residency]', $payroll['residency']) !!}
                                 </td>
-                                <td name="monthly_cost">{{ $payroll['monthly_cost'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][monthly_cost]', $payroll['monthly_cost'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'monthly_cost',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
+                                <td name="company">{{ $payroll['company'] }}
+                                    {!! Form::hidden('payrolls[' . $index . '][company]', $payroll['company']) !!}
+                                </td>
+                                <td name="project">{{ $payroll['project'] }}
+                                    {!! Form::hidden('payrolls[' . $index . '][project]', $payroll['project']) !!}</td>
                                 </td>
                                 <td name="wd" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
@@ -122,6 +126,62 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
+                                <td name="basic">
+                                    <span contenteditable="true" data-index="{{ $index }}"
+                                        data-field="basic">{{ $payroll['basic'] }}</span>
+                                    {!! Form::hidden('payrolls[' . $index . '][basic]', $payroll['basic'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'basic',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
+                                <td name="monthly_cost">{{ $payroll['monthly_cost'] }}
+                                    {!! Form::hidden('payrolls[' . $index . '][monthly_cost]', $payroll['monthly_cost'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'monthly_cost',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
+                                <td name="housing" class="editable">
+                                    <span contenteditable="true" data-index="{{ $index }}"
+                                        data-field="housing">{{ $payroll['housing'] }}</span>
+                                    {!! Form::hidden('payrolls[' . $index . '][housing]', $payroll['housing'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'housing',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
+
+                                <td name="transport" class="editable">
+                                    <span contenteditable="true" data-index="{{ $index }}"
+                                        data-field="transport">{{ $payroll['transport'] }}</span>
+                                    {!! Form::hidden('payrolls[' . $index . '][transport]', $payroll['transport'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'transport',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
+
+                                <td name="other_allowances" class="editable">
+                                    <span contenteditable="true" data-index="{{ $index }}"
+                                        data-field="other_allowances">{{ $payroll['other_allowances'] }}</span>
+                                    {!! Form::hidden('payrolls[' . $index . '][other_allowances]', $payroll['other_allowances'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'other_allowances',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
+                                <td name="total_salary" class="editable">
+                                    <span contenteditable="true" data-index="{{ $index }}"
+                                        data-field="total_salary">{{ $payroll['total_salary'] }}</span>
+                                    {!! Form::hidden('payrolls[' . $index . '][total_salary]', $payroll['total_salary'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'total_salary',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
+
+
                                 <td name="absence_day" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="absence_day">{{ $payroll['absence_day'] }}</span>
@@ -137,6 +197,15 @@
                                     {!! Form::hidden('payrolls[' . $index . '][absence_amount]', $payroll['absence_amount'], [
                                         'data-index' => $index,
                                         'data-field' => 'absence_amount',
+                                        'class' => 'form-hidden',
+                                    ]) !!}
+                                </td>
+                                <td name="other_deduction" class="editable">
+                                    <span contenteditable="true" data-index="{{ $index }}"
+                                        data-field="other_deduction">{{ $payroll['other_deduction'] }}</span>
+                                    {!! Form::hidden('payrolls[' . $index . '][other_deduction]', $payroll['other_deduction'], [
+                                        'data-index' => $index,
+                                        'data-field' => 'other_deduction',
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
@@ -159,15 +228,7 @@
                                     ]) !!}
                                 </td>
 
-                                <td name="other_deduction" class="editable">
-                                    <span contenteditable="true" data-index="{{ $index }}"
-                                        data-field="other_deduction">{{ $payroll['other_deduction'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][other_deduction]', $payroll['other_deduction'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'other_deduction',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
+
                                 <td name="other_addition" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="other_addition">{{ $payroll['other_addition'] }}</span>
@@ -178,7 +239,7 @@
                                     ]) !!}
                                 </td>
 
-                                <td name="cost2">
+                                <td name="cost2" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="cost2">{{ $payroll['cost2'] }}</span>
                                     {!! Form::hidden('payrolls[' . $index . '][cost2]', $payroll['cost2'], [
@@ -218,59 +279,13 @@
                                     ]) !!}
                                 </td>
 
-                                <td name="sponser">{{ $payroll['sponser'] }}
-                                    {!! Form::hidden('payrolls[' . $index . '][sponser]', $payroll['sponser']) !!}</td>
-                                </td>
-                                <td name="basic">
-                                    <span contenteditable="true" data-index="{{ $index }}"
-                                        data-field="basic">{{ $payroll['basic'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][basic]', $payroll['basic'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'basic',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
 
-                                <td name="housing" class="editable">
-                                    <span contenteditable="true" data-index="{{ $index }}"
-                                        data-field="housing">{{ $payroll['housing'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][housing]', $payroll['housing'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'housing',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                </td>
-                                <td name="transport" class="editable">
-                                    <span contenteditable="true" data-index="{{ $index }}"
-                                        data-field="transport">{{ $payroll['transport'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][transport]', $payroll['transport'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'transport',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                </td>
-                                <td name="other_allowances" class="editable">
-                                    <span contenteditable="true" data-index="{{ $index }}"
-                                        data-field="other_allowances">{{ $payroll['other_allowances'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][other_allowances]', $payroll['other_allowances'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'other_allowances',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                </td>
-                                <td name="total_salary" class="editable">
-                                    <span contenteditable="true" data-index="{{ $index }}"
-                                        data-field="total_salary">{{ $payroll['total_salary'] }}</span>
-                                    {!! Form::hidden('payrolls[' . $index . '][total_salary]', $payroll['total_salary'], [
-                                        'data-index' => $index,
-                                        'data-field' => 'total_salary',
-                                        'class' => 'form-hidden',
-                                    ]) !!}
-                                </td>
-                                </td>
+
+
+
+
+
+
                                 <td name="deductions" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="deductions">{{ $payroll['deductions'] }}</span>
@@ -280,7 +295,7 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                </td>
+
                                 <td name="additions" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="additions">{{ $payroll['additions'] }}</span>
@@ -290,7 +305,7 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                </td>
+
                                 <td name="final_salary" class="editable">
                                     <span contenteditable="true" data-index="{{ $index }}"
                                         data-field="final_salary">{{ $payroll['final_salary'] }}</span>
@@ -300,7 +315,7 @@
                                         'class' => 'form-hidden',
                                     ]) !!}
                                 </td>
-                                </td>
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -336,7 +351,6 @@
                 updateFinalSalary(index);
                 updateTotalPayrolls();
             });
-            // initializeCalculations();
         });
 
         function updateTotalPayrolls() {
@@ -373,7 +387,8 @@
         function updateAbsenceAmount(index) {
             var absence_day = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='absence_day']")
                 .val()) || 0;
-            var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='basic']").val()) || 0;
+            var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']").val()) ||
+                0;
             var other_allowances = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='other_allowances']").val()) || 0;
             var absence_amount = absence_day * (basic + other_allowances) / 30;
@@ -384,7 +399,8 @@
         function updateOverTime(index) {
             var total_salary = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='total_salary']")
                 .val()) || 0;
-            var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='basic']").val()) || 0;
+            var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']").val()) ||
+                0;
             var over_time_h = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time_h']")
                 .val()) || 0;
             var over_time = ((total_salary / 30 / 8) + (basic / 30 / 16)) * over_time_h;
@@ -393,7 +409,8 @@
         }
 
         function updateTotalSalary(index) {
-            var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='basic']").val()) || 0;
+            var basic = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']").val()) ||
+                0;
             var other_allowances = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='other_allowances']").val()) || 0;
             var housing = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='housing']").val()) || 0;
@@ -404,14 +421,6 @@
             $("input.form-hidden[data-index='" + index + "'][data-field='total_salary']").val(total_salary.toFixed(0));
         }
 
-        // function updateCost2(index) {
-        //     var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
-        //         .val()) || 0;
-        //     var wd = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='wd']").val()) || 0;
-        //     var cost2 = monthly_cost / 30 * wd;
-        //     $("span[data-index='" + index + "'][data-field='cost2']").text(cost2.toFixed(0));
-        //     $("input.form-hidden[data-index='" + index + "'][data-field='cost2']").val(cost2.toFixed(0));
-        // }
         function updateCost2(index) {
             var monthly_cost = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='monthly_cost']")
                 .val()) || 0;
@@ -442,7 +451,7 @@
                 "'][data-field='other_deduction']").val()) || 0;
             var over_time = parseFloat($("input.form-hidden[data-index='" + index + "'][data-field='over_time']").val()) ||
                 0;
-            var invoice_value = cost2 + other_addition - absence_amount - other_deduction + over_time;
+            var invoice_value = cost2;
             $("span[data-index='" + index + "'][data-field='invoice_value']").text(invoice_value.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='invoice_value']").val(invoice_value.toFixed(0));
         }

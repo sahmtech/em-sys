@@ -488,7 +488,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         $business_id = request()->session()->get('user.business_id');
         if (!$is_admin) {
             $userIds = [];
@@ -570,7 +570,7 @@ class EssentialsManageEmployeeController extends Controller
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
 
-
+        $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
 
@@ -578,7 +578,7 @@ class EssentialsManageEmployeeController extends Controller
 
             'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -605,6 +605,11 @@ class EssentialsManageEmployeeController extends Controller
                 })
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
+                })
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
+                    }
                 })
                 ->editColumn('status', function ($row) {
                     $status = trans('request.' . $row->status);

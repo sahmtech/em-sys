@@ -162,7 +162,8 @@
                         data: 'user_type',
                         render: function(data, type, row) {
 
-                            if (data === 'employee') {
+                            if (data === 'employee' || data === 'department_head' || data ===
+                                'manager') {
                                 return '@lang('essentials::lang.employee')';
                             } else if (data === 'worker') {
                                 return '@lang('essentials::lang.worker')';
@@ -383,7 +384,7 @@
                 data: updatedData,
                 success: function(response) {
                     $('#salaryInfoModal').modal('hide');
-                    location.reload();
+                    // location.reload();
 
                     console.log('Data updated successfully:', response);
                 },

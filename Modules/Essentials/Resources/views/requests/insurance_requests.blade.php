@@ -335,6 +335,7 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
+                            <th>@lang('request.company')</th>
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.eqama_number')</th>
@@ -1255,6 +1256,8 @@
                     }
                 },
                 columns: [{
+                        data: 'company_id'
+                    }, {
                         data: 'request_no'
                     },
                     {
@@ -1296,6 +1299,11 @@
                                 'authorizationRequest': '@lang('request.authorizationRequest')',
                                 'salaryInquiryRequest': '@lang('request.salaryInquiryRequest')',
                                 'interviewsRequest': '@lang('request.interviewsRequest')',
+                                'moqimPrint': '@lang('request.moqimPrint')',
+                                'salaryIntroLetter': '@lang('request.salaryIntroLetter')',
+                                'QiwaContract': '@lang('request.QiwaContract')',
+                                'ExitWithoutReturnReport': '@lang('request.ExitWithoutReturnReport')',
+
                             };
 
                             return requestTypeMap[data] || data;
@@ -1529,6 +1537,11 @@
                             workerList.append(
                                 `<p class="worker-info">{{ __('request.nationality') }}: ${response.user_info.nationality}</p>`
                             );
+                            if (response.user_info.company) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.company') }}: ${response.user_info.company}</p>`
+                                );
+                            }
                             if (response.user_info.assigned_to) {
                                 workerList.append(
                                     `<p class="worker-info">{{ __('request.project_name') }}: ${response.user_info.assigned_to}</p>`
@@ -1554,7 +1567,11 @@
                                     `<p class="worker-info">{{ __('request.passport_number') }}: ${response.user_info.passport_number}</p>`
                                 );
                             }
-
+                            if (response.user_info.admission_date) {
+                                workerList.append(
+                                    `<p class="worker-info">{{ __('request.admission_date') }}: ${response.user_info.admission_date}</p>`
+                                );
+                            }
                             response.attachments.forEach(function(attachment, j) {
                                 attachmentsList.append(`
                                   <li class="attachment-item">
@@ -2113,6 +2130,11 @@
             'authorizationRequest': '@lang('request.authorizationRequest')',
             'interviewsRequest': '@lang('request.interviewsRequest')',
             'salaryInquiryRequest': '@lang('request.salaryInquiryRequest')',
+            'moqimPrint': '@lang('request.moqimPrint')',
+            'salaryIntroLetter': '@lang('request.salaryIntroLetter')',
+            'QiwaContract': '@lang('request.QiwaContract')',
+            'ExitWithoutReturnReport': '@lang('request.ExitWithoutReturnReport')',
+
 
         };
         $('#requests_table').on('click', '.edit-request', function() {
