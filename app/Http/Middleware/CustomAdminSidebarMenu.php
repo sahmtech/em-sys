@@ -367,6 +367,17 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-envelope',]
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_payroll_checkpoint')) {
+                $menu->url(
+                    route('generalmanagement.payrolls_checkpoint', ['from' => 'generalmanagement']),
+                    __('essentials::lang.hrm_payrolls'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' =>  request()->segment(2) == 'payrolls_checkpoint'
+                    ]
+                );
+            }
         });
     }
     public function generalmanagmentofficeMenu()

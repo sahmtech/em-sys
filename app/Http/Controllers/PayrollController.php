@@ -457,11 +457,13 @@ class PayrollController extends Controller
         $can_clear = auth()->user()->can('essentials.confirm_payroll_checkpoint')
             || auth()->user()->can('accounting.confirm_payroll_checkpoint')
             || auth()->user()->can('accounting.confirm_payroll_checkpoint_financial')
-            || auth()->user()->can('ceomanagment.confirm_payroll_checkpoint');
+            || auth()->user()->can('ceomanagment.confirm_payroll_checkpoint')
+            || auth()->user()->can('generalmanagement.confirm_payroll_checkpoint');
         $can_view = auth()->user()->can('essentials.show_payroll_checkpoint')
             || auth()->user()->can('accounting.show_payroll_checkpoint')
             || auth()->user()->can('accounting.show_payroll_checkpoint_financial')
-            || auth()->user()->can('ceomanagment.show_payroll_checkpoint');
+            || auth()->user()->can('ceomanagment.show_payroll_checkpoint')
+            || auth()->user()->can('generalmanagement.show_payroll_checkpoint');
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
                 ->addColumn('name', function ($row) {
@@ -615,6 +617,9 @@ class PayrollController extends Controller
         }
         if ($from == 'ceo') {
             return view('ceomanagment::payrolls_index');
+        }
+        if ($from == 'generalmanagement') {
+            return view('generalmanagement::payrolls_index');
         }
         return 'error';
     }
