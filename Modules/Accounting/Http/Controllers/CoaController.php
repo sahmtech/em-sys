@@ -592,12 +592,6 @@ class CoaController extends Controller
             $start_date = request()->input('start_date');
             $end_date = request()->input('end_date');
 
-            // $before_bal_query = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
-            //                     ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
-            //         ->select([
-            //             DB::raw('SUM(IF(accounting_accounts_transactions.type="credit", accounting_accounts_transactions.amount, -1 * accounting_accounts_transactions.amount)) as prev_bal')])
-            //         ->where('accounting_accounts_transactions.operation_date', '<', $start_date);
-            // $bal_before_start_date = $before_bal_query->first()->prev_bal;
 
             $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
                 ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
@@ -614,8 +608,18 @@ class CoaController extends Controller
                     'T.invoice_no'
                 );
             if (!empty($start_date) && !empty($end_date)) {
-                $transactions->whereDate('accounting_accounts_transactions.operation_date', '>=', $start_date)
-                    ->whereDate('accounting_accounts_transactions.operation_date', '<=', $end_date);
+                $transactions->where(function($query) use ($start_date, $end_date) {
+                    $query->where(function($query) use ($start_date, $end_date) {
+                        $query->where('accounting_accounts_transactions.sub_type', '!=', 'opening_balance')
+                              ->whereDate('accounting_accounts_transactions.operation_date', '>=', $start_date)
+                              ->whereDate('accounting_accounts_transactions.operation_date', '<=', $end_date);
+                    })
+                    ->orWhere(function($query) use ($start_date, $end_date) {
+                        $query->where('accounting_accounts_transactions.sub_type', 'opening_balance')
+                              ->whereYear('accounting_accounts_transactions.operation_date', '>=', date('Y', strtotime($start_date)))
+                              ->whereYear('accounting_accounts_transactions.operation_date', '<=', date('Y', strtotime($end_date)));
+                    });
+                });
             }
 
             return DataTables::of($transactions)
