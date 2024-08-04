@@ -1250,7 +1250,6 @@ class PayrollController extends Controller
 
     public function store(Request $request)
     {
-
         try {
             DB::beginTransaction();
             $timesheet_groups = json_decode($request->timesheet_groups);

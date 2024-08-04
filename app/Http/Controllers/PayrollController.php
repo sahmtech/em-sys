@@ -31,8 +31,6 @@ class PayrollController extends Controller
     }
     public function show_payrolls_checkpoint($id, $from)
     {
-
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         $companies_ids = Company::pluck('id')->toArray();
@@ -582,7 +580,7 @@ class PayrollController extends Controller
                             ($from == 'hr' && !$row->hr_management_cleared)
                             || ($from == 'accountant' && $row->hr_management_cleared && !$row->accountant_cleared)
                             || ($from == 'financial' && $row->hr_management_cleared && $row->accountant_cleared && !$row->financial_management_cleared)
-                            || ($from == 'ceo' && $row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && !$row->ceo_cleared_by)
+                            || (($from == 'ceo' || $from == 'generalmanagement') && $row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && !$row->ceo_cleared_by)
                         )
                     ) {
                         $html .= '<li><a href="' . route('payrolls_checkpoint.clear', ['id' => $row->id, 'from' => $from]) . '"><i class="fa fa-check" aria-hidden="true"></i> ' . __('lang_v1.approve') . '</a></li>';
