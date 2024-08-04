@@ -68,14 +68,16 @@ class TransactionPaymentController extends Controller
 
             $transaction_before = $transaction->replicate();
 
-            if (! (auth()->user()->can('purchase.payments') || auth()->user()->can('sell.payments') || auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense'))) {
-               //temp  abort(403, 'Unauthorized action.');
+            if (!(auth()->user()->can('purchase.payments') || auth()->user()->can('sell.payments') || auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense'))) {
+                //temp  abort(403, 'Unauthorized action.');
             }
 
             if ($transaction->payment_status != 'paid') {
-                $inputs = $request->only(['amount', 'method', 'note', 'card_number', 'card_holder_name',
+                $inputs = $request->only([
+                    'amount', 'method', 'note', 'card_number', 'card_holder_name',
                     'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
-                    'cheque_number', 'bank_account_number', 'transfer_account']);
+                    'cheque_number', 'bank_account_number', 'transfer_account'
+                ]);
                 $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
                 $inputs['transaction_id'] = $transaction->id;
                 $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
@@ -90,7 +92,7 @@ class TransactionPaymentController extends Controller
                     $inputs['transaction_no'] = $request->input('transaction_no_3');
                 }
 
-                if (! empty($request->input('account_id')) && $inputs['method'] != 'advance') {
+                if (!empty($request->input('account_id')) && $inputs['method'] != 'advance') {
                     $inputs['account_id'] = $request->input('account_id');
                 }
 
@@ -112,15 +114,15 @@ class TransactionPaymentController extends Controller
 
                 //Pay from advance balance
                 $payment_amount = $inputs['amount'];
-                $contact_balance = ! empty($transaction->contact) ? $transaction->contact->balance : 0;
+                $contact_balance = !empty($transaction->contact) ? $transaction->contact->balance : 0;
                 if ($inputs['method'] == 'advance' && $inputs['amount'] > $contact_balance) {
                     throw new AdvanceBalanceNotAvailable(__('lang_v1.required_advance_balance_not_available'));
                 }
 
-                if (! empty($inputs['amount'])) {
+                if (!empty($inputs['amount'])) {
                     $tp = TransactionPayment::create($inputs);
 
-                    if (! empty($request->input('denominations'))) {
+                    if (!empty($request->input('denominations'))) {
                         $this->transactionUtil->addCashDenominations($tp, $request->input('denominations'));
                     }
 
@@ -137,7 +139,8 @@ class TransactionPaymentController extends Controller
                 DB::commit();
             }
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('purchase.payment_added_success'),
             ];
         } catch (\Exception $e) {
@@ -147,10 +150,11 @@ class TransactionPaymentController extends Controller
             if (get_class($e) == \App\Exceptions\AdvanceBalanceNotAvailable::class) {
                 $msg = $e->getMessage();
             } else {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             }
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => $msg,
             ];
         }
@@ -166,14 +170,14 @@ class TransactionPaymentController extends Controller
      */
     public function show($id)
     {
-        if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             $transaction = Transaction::where('id', $id)
-                                        ->with(['contact', 'business', 'transaction_for'])
-                                        ->first();
+                ->with(['contact', 'business', 'transaction_for'])
+                ->first();
             $payments_query = TransactionPayment::where('transaction_id', $id);
 
             $accounts_enabled = false;
@@ -183,12 +187,12 @@ class TransactionPaymentController extends Controller
             }
 
             $payments = $payments_query->get();
-           
-            $location_id = ! empty($transaction->location_id) ? $transaction->location_id : null;
+
+            $location_id = !empty($transaction->location_id) ? $transaction->location_id : null;
             $payment_types = $this->transactionUtil->payment_types($location_id, true);
 
             return view('transaction_payment.show_payments')
-                    ->with(compact('transaction', 'payments', 'payment_types', 'accounts_enabled'));
+                ->with(compact('transaction', 'payments', 'payment_types', 'accounts_enabled'));
         }
     }
 
@@ -200,8 +204,8 @@ class TransactionPaymentController extends Controller
      */
     public function edit($id)
     {
-        if (! auth()->user()->can('edit_purchase_payment') && ! auth()->user()->can('edit_sell_payment')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('edit_purchase_payment') && !auth()->user()->can('edit_sell_payment')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -210,18 +214,18 @@ class TransactionPaymentController extends Controller
             $payment_line = TransactionPayment::with(['denominations'])->where('method', '!=', 'advance')->findOrFail($id);
 
             $transaction = Transaction::where('id', $payment_line->transaction_id)
-                                        ->where('business_id', $business_id)
-                                        ->with(['contact', 'location'])
-                                        ->first();
+                ->where('business_id', $business_id)
+                ->with(['contact', 'location'])
+                ->first();
 
             $payment_types = $this->transactionUtil->payment_types($transaction->location);
 
             //Accounts
             $accounts = $this->moduleUtil->accountsDropdown($business_id, true, false, true);
             $bankAccount = BankAccount::forDropdown();
-            
+
             return view('transaction_payment.edit_payment_row')
-                        ->with(compact('transaction','bankAccount' ,'payment_types', 'payment_line', 'accounts'));
+                ->with(compact('transaction', 'bankAccount', 'payment_types', 'payment_line', 'accounts'));
         }
     }
 
@@ -234,16 +238,18 @@ class TransactionPaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (! auth()->user()->can('edit_purchase_payment') && ! auth()->user()->can('edit_sell_payment') && ! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('edit_purchase_payment') && !auth()->user()->can('edit_sell_payment') && !auth()->user()->can('all_expense.access') && !auth()->user()->can('view_own_expense')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
             $business_id = request()->session()->get('user.business_id');
 
-            $inputs = $request->only(['amount', 'method', 'note', 'card_number', 'card_holder_name',
+            $inputs = $request->only([
+                'amount', 'method', 'note', 'card_number', 'card_holder_name',
                 'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
-                'cheque_number', 'bank_account_number','transfer_account' ]);
+                'cheque_number', 'bank_account_number', 'transfer_account'
+            ]);
             $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
             $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
 
@@ -255,18 +261,18 @@ class TransactionPaymentController extends Controller
                 $inputs['transaction_no'] = $request->input('transaction_no_3');
             }
 
-            if (! empty($request->input('account_id'))) {
+            if (!empty($request->input('account_id'))) {
                 $inputs['account_id'] = $request->input('account_id');
             }
 
             $payment = TransactionPayment::where('method', '!=', 'advance')->findOrFail($id);
 
-            if (! empty($request->input('denominations'))) {
+            if (!empty($request->input('denominations'))) {
                 $this->transactionUtil->updateCashDenominations($payment, $request->input('denominations'));
             }
 
             //Update parent payment if exists
-            if (! empty($payment->parent_id)) {
+            if (!empty($payment->parent_id)) {
                 $parent_payment = TransactionPayment::find($payment->parent_id);
                 $parent_payment->amount = $parent_payment->amount - ($payment->amount - $inputs['amount']);
 
@@ -276,11 +282,11 @@ class TransactionPaymentController extends Controller
             $business_id = $request->session()->get('user.business_id');
 
             $transaction = Transaction::where('business_id', $business_id)
-                                ->find($payment->transaction_id);
+                ->find($payment->transaction_id);
 
             $transaction_before = $transaction->replicate();
             $document_name = $this->transactionUtil->uploadFile($request, 'document', 'documents');
-            if (! empty($document_name)) {
+            if (!empty($document_name)) {
                 $inputs['document'] = $document_name;
             }
 
@@ -299,14 +305,16 @@ class TransactionPaymentController extends Controller
             //event
             event(new TransactionPaymentUpdated($payment, $transaction->type));
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('purchase.payment_updated_success'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -322,8 +330,8 @@ class TransactionPaymentController extends Controller
      */
     public function destroy($id)
     {
-        if (! auth()->user()->can('delete_purchase_payment') && ! auth()->user()->can('delete_sell_payment') && ! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('delete_purchase_payment') && !auth()->user()->can('delete_sell_payment') && !auth()->user()->can('all_expense.access') && !auth()->user()->can('view_own_expense')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -332,12 +340,14 @@ class TransactionPaymentController extends Controller
 
                 DB::beginTransaction();
 
-                if (! empty($payment->transaction_id)) {
+                if (!empty($payment->transaction_id)) {
                     TransactionPayment::deletePayment($payment);
                 } else { //advance payment
-                    $adjusted_payments = TransactionPayment::where('parent_id',
-                                                $payment->id)
-                                                ->get();
+                    $adjusted_payments = TransactionPayment::where(
+                        'parent_id',
+                        $payment->id
+                    )
+                        ->get();
 
                     $total_adjusted_amount = $adjusted_payments->sum('amount');
 
@@ -360,15 +370,17 @@ class TransactionPaymentController extends Controller
 
                 DB::commit();
 
-                $output = ['success' => true,
+                $output = [
+                    'success' => true,
                     'msg' => __('purchase.payment_deleted_success'),
                 ];
             } catch (\Exception $e) {
                 DB::rollBack();
 
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-                $output = ['success' => false,
+                $output = [
+                    'success' => false,
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }
@@ -385,16 +397,16 @@ class TransactionPaymentController extends Controller
      */
     public function addPayment($transaction_id)
     {
-        if (! auth()->user()->can('purchase.payments') && ! auth()->user()->can('sell.payments') && ! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!auth()->user()->can('purchase.payments') && !auth()->user()->can('sell.payments') && !auth()->user()->can('all_expense.access') && !auth()->user()->can('view_own_expense')) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
 
             $transaction = Transaction::where('business_id', $business_id)
-                                        ->with(['contact', 'location'])
-                                        ->findOrFail($transaction_id);
+                ->with(['contact', 'location'])
+                ->findOrFail($transaction_id);
             if ($transaction->payment_status != 'paid') {
                 $show_advance = in_array($transaction->type, ['sell', 'purchase']) ? true : false;
                 $payment_types = $this->transactionUtil->payment_types($transaction->location, $show_advance);
@@ -415,15 +427,21 @@ class TransactionPaymentController extends Controller
                 //Accounts
                 $accounts = $this->moduleUtil->accountsDropdown($business_id, true, false, true);
 
-                $view = view('transaction_payment.payment_row')
-                ->with(compact('transaction', 'payment_types', 'payment_line', 'amount_formated', 'accounts'))->render();
+                $bankAccount = BankAccount::forDropdown();
 
-                $output = ['status' => 'due',
-                    'view' => $view, ];
+                $view = view('transaction_payment.payment_row')
+                    ->with(compact('transaction', 'payment_types', 'payment_line', 'amount_formated', 'accounts','bankAccount'))->render();
+
+                $output = [
+                    'status' => 'due',
+                    'view' => $view,
+                ];
             } else {
-                $output = ['status' => 'paid',
+                $output = [
+                    'status' => 'paid',
                     'view' => '',
-                    'msg' => __('purchase.amount_already_paid'),  ];
+                    'msg' => __('purchase.amount_already_paid'),
+                ];
             }
 
             return json_encode($output);
@@ -438,8 +456,8 @@ class TransactionPaymentController extends Controller
      */
     public function getPayContactDue($contact_id)
     {
-        if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -447,7 +465,7 @@ class TransactionPaymentController extends Controller
 
             $due_payment_type = request()->input('type');
             $query = Contact::where('contacts.id', $contact_id)
-                            ->leftjoin('transactions AS t', 'contacts.id', '=', 't.contact_id');
+                ->leftjoin('transactions AS t', 'contacts.id', '=', 't.contact_id');
             if ($due_payment_type == 'purchase') {
                 $query->select(
                     DB::raw("SUM(IF(t.type = 'purchase', final_total, 0)) as total_purchase"),
@@ -455,7 +473,7 @@ class TransactionPaymentController extends Controller
                     'contacts.name',
                     'contacts.supplier_business_name',
                     'contacts.id as contact_id'
-                    );
+                );
             } elseif ($due_payment_type == 'purchase_return') {
                 $query->select(
                     DB::raw("SUM(IF(t.type = 'purchase_return', final_total, 0)) as total_purchase_return"),
@@ -463,7 +481,7 @@ class TransactionPaymentController extends Controller
                     'contacts.name',
                     'contacts.supplier_business_name',
                     'contacts.id as contact_id'
-                    );
+                );
             } elseif ($due_payment_type == 'sell') {
                 $query->select(
                     DB::raw("SUM(IF(t.type = 'sell' AND t.status = 'final', final_total, 0)) as total_invoice"),
@@ -479,7 +497,7 @@ class TransactionPaymentController extends Controller
                     'contacts.name',
                     'contacts.supplier_business_name',
                     'contacts.id as contact_id'
-                    );
+                );
             }
 
             //Query for opening balance details
@@ -493,23 +511,23 @@ class TransactionPaymentController extends Controller
             if ($due_payment_type == 'purchase') {
                 $contact_details->total_purchase = empty($contact_details->total_purchase) ? 0 : $contact_details->total_purchase;
                 $payment_line->amount = $contact_details->total_purchase -
-                                    $contact_details->total_paid;
+                    $contact_details->total_paid;
             } elseif ($due_payment_type == 'purchase_return') {
                 $payment_line->amount = $contact_details->total_purchase_return -
-                                    $contact_details->total_return_paid;
+                    $contact_details->total_return_paid;
             } elseif ($due_payment_type == 'sell') {
                 $contact_details->total_invoice = empty($contact_details->total_invoice) ? 0 : $contact_details->total_invoice;
 
                 $payment_line->amount = $contact_details->total_invoice -
-                                    $contact_details->total_paid;
+                    $contact_details->total_paid;
             } elseif ($due_payment_type == 'sell_return') {
                 $payment_line->amount = $contact_details->total_sell_return -
-                                    $contact_details->total_return_paid;
+                    $contact_details->total_return_paid;
             }
 
             //If opening balance due exists add to payment amount
-            $contact_details->opening_balance = ! empty($contact_details->opening_balance) ? $contact_details->opening_balance : 0;
-            $contact_details->opening_balance_paid = ! empty($contact_details->opening_balance_paid) ? $contact_details->opening_balance_paid : 0;
+            $contact_details->opening_balance = !empty($contact_details->opening_balance) ? $contact_details->opening_balance : 0;
+            $contact_details->opening_balance_paid = !empty($contact_details->opening_balance_paid) ? $contact_details->opening_balance_paid : 0;
             $ob_due = $contact_details->opening_balance - $contact_details->opening_balance_paid;
             if ($ob_due > 0) {
                 $payment_line->amount += $ob_due;
@@ -525,10 +543,10 @@ class TransactionPaymentController extends Controller
             $payment_types = $this->transactionUtil->payment_types(null, false, $business_id);
 
             //Accounts
-            $accounts = $this->moduleUtil->accountsDropdown($business_id, true,false,false);
+            $accounts = $this->moduleUtil->accountsDropdown($business_id, true, false, false);
 
             return view('transaction_payment.pay_supplier_due_modal')
-                        ->with(compact('contact_details', 'payment_types', 'payment_line', 'due_payment_type', 'ob_due', 'amount_formated', 'accounts'));
+                ->with(compact('contact_details', 'payment_types', 'payment_line', 'due_payment_type', 'ob_due', 'amount_formated', 'accounts'));
         }
     }
 
@@ -540,24 +558,24 @@ class TransactionPaymentController extends Controller
      */
     public function postPayContactDue(Request $request)
     {
-        if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
             DB::beginTransaction();
 
             $business_id = request()->session()->get('business.id');
-            $tp = $this->transactionUtil->payContact($request,true,$company_id);
+            $tp = $this->transactionUtil->payContact($request, true, $company_id);
 
-            $pos_settings = ! empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
-            $enable_cash_denomination_for_payment_methods = ! empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];
+            $pos_settings = !empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
+            $enable_cash_denomination_for_payment_methods = !empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];
             //add cash denomination
-            if (in_array($tp->method, $enable_cash_denomination_for_payment_methods) && ! empty($request->input('denominations')) && ! empty($pos_settings['enable_cash_denomination_on']) && $pos_settings['enable_cash_denomination_on'] == 'all_screens') {
+            if (in_array($tp->method, $enable_cash_denomination_for_payment_methods) && !empty($request->input('denominations')) && !empty($pos_settings['enable_cash_denomination_on']) && $pos_settings['enable_cash_denomination_on'] == 'all_screens') {
                 $denominations = [];
 
                 foreach ($request->input('denominations') as $key => $value) {
-                    if (! empty($value)) {
+                    if (!empty($value)) {
                         $denominations[] = [
                             'business_id' => $business_id,
                             'amount' => $key,
@@ -566,21 +584,23 @@ class TransactionPaymentController extends Controller
                     }
                 }
 
-                if (! empty($denominations)) {
+                if (!empty($denominations)) {
                     $tp->denominations()->createMany($denominations);
                 }
             }
 
             DB::commit();
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('purchase.payment_added_success'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
-                'msg' => 'File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage(),
+            $output = [
+                'success' => false,
+                'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
             ];
         }
 
@@ -596,14 +616,14 @@ class TransactionPaymentController extends Controller
      */
     public function viewPayment($payment_id)
     {
-        if (! (auth()->user()->can('sell.payments') ||
-                auth()->user()->can('purchase.payments') ||
-                auth()->user()->can('edit_sell_payment') ||
-                auth()->user()->can('delete_sell_payment') ||
-                auth()->user()->can('edit_purchase_payment') ||
-                auth()->user()->can('delete_purchase_payment')
-            )) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('sell.payments') ||
+            auth()->user()->can('purchase.payments') ||
+            auth()->user()->can('edit_sell_payment') ||
+            auth()->user()->can('delete_sell_payment') ||
+            auth()->user()->can('edit_purchase_payment') ||
+            auth()->user()->can('delete_purchase_payment')
+        )) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -611,22 +631,22 @@ class TransactionPaymentController extends Controller
             $single_payment_line = TransactionPayment::findOrFail($payment_id);
 
             $transaction = null;
-            if (! empty($single_payment_line->transaction_id)) {
+            if (!empty($single_payment_line->transaction_id)) {
                 $transaction = Transaction::where('id', $single_payment_line->transaction_id)
-                                ->with(['contact', 'location', 'transaction_for'])
-                                ->first();
+                    ->with(['contact', 'location', 'transaction_for'])
+                    ->first();
             } else {
                 $child_payment = TransactionPayment::where('business_id', $business_id)
-                        ->where('parent_id', $payment_id)
-                        ->with(['transaction', 'transaction.contact', 'transaction.location', 'transaction.transaction_for'])
-                        ->first();
-                $transaction = ! empty($child_payment) ? $child_payment->transaction : null;
+                    ->where('parent_id', $payment_id)
+                    ->with(['transaction', 'transaction.contact', 'transaction.location', 'transaction.transaction_for'])
+                    ->first();
+                $transaction = !empty($child_payment) ? $child_payment->transaction : null;
             }
 
             $payment_types = $this->transactionUtil->payment_types(null, false, $business_id);
 
             return view('transaction_payment.single_payment_view')
-                    ->with(compact('single_payment_line', 'transaction', 'payment_types'));
+                ->with(compact('single_payment_line', 'transaction', 'payment_types'));
         }
     }
 
@@ -669,13 +689,13 @@ class TransactionPaymentController extends Controller
             $single_payment_line['amount_string'] = \Alkoumi\LaravelArabicNumbers\Numbers::TafqeetMoney($single_payment_line->amount);
 
 
-        //    return view('transaction_payment.single_payment_view')
+            //    return view('transaction_payment.single_payment_view')
             return view('transaction_payment.payment_vouchers_view')
                 ->with(compact('single_payment_line', 'transaction', 'payment_types'));
         }
     }
 
-     public function view_receipt_vouchers($payment_id)
+    public function view_receipt_vouchers($payment_id)
     {
         if (!(auth()->user()->can('sell.payments') ||
             auth()->user()->can('purchase.payments') ||
@@ -709,7 +729,7 @@ class TransactionPaymentController extends Controller
 
 
 
-              
+
             $single_payment_line['amount_string'] = \Alkoumi\LaravelArabicNumbers\Numbers::TafqeetMoney($single_payment_line->amount);
 
 
@@ -728,28 +748,28 @@ class TransactionPaymentController extends Controller
      */
     public function showChildPayments($payment_id)
     {
-        if (! (auth()->user()->can('sell.payments') ||
-                auth()->user()->can('purchase.payments') ||
-                auth()->user()->can('edit_sell_payment') ||
-                auth()->user()->can('delete_sell_payment') ||
-                auth()->user()->can('edit_purchase_payment') ||
-                auth()->user()->can('delete_purchase_payment')
-            )) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('sell.payments') ||
+            auth()->user()->can('purchase.payments') ||
+            auth()->user()->can('edit_sell_payment') ||
+            auth()->user()->can('delete_sell_payment') ||
+            auth()->user()->can('edit_purchase_payment') ||
+            auth()->user()->can('delete_purchase_payment')
+        )) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('business.id');
 
             $child_payments = TransactionPayment::where('business_id', $business_id)
-                                                    ->where('parent_id', $payment_id)
-                                                    ->with(['transaction', 'transaction.contact'])
-                                                    ->get();
+                ->where('parent_id', $payment_id)
+                ->with(['transaction', 'transaction.contact'])
+                ->get();
 
             $payment_types = $this->transactionUtil->payment_types(null, false, $business_id);
 
             return view('transaction_payment.show_child_payments')
-                    ->with(compact('child_payments', 'payment_types'));
+                ->with(compact('child_payments', 'payment_types'));
         }
     }
 
@@ -761,14 +781,14 @@ class TransactionPaymentController extends Controller
      */
     public function getOpeningBalancePayments($contact_id)
     {
-        if (! (auth()->user()->can('sell.payments') ||
-                auth()->user()->can('purchase.payments') ||
-                auth()->user()->can('edit_sell_payment') ||
-                auth()->user()->can('delete_sell_payment') ||
-                auth()->user()->can('edit_purchase_payment') ||
-                auth()->user()->can('delete_purchase_payment')
-            )) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('sell.payments') ||
+            auth()->user()->can('purchase.payments') ||
+            auth()->user()->can('edit_sell_payment') ||
+            auth()->user()->can('delete_sell_payment') ||
+            auth()->user()->can('edit_purchase_payment') ||
+            auth()->user()->can('delete_purchase_payment')
+        )) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('business.id');
@@ -799,25 +819,25 @@ class TransactionPaymentController extends Controller
             return Datatables::of($query)
                 ->editColumn('paid_on', '{{@format_datetime($paid_on)}}')
                 ->editColumn('method', function ($row) {
-                    $method = __('lang_v1.'.$row->method);
+                    $method = __('lang_v1.' . $row->method);
                     if ($row->method == 'cheque') {
-                        $method .= '<br>('.__('lang_v1.cheque_no').': '.$row->cheque_number.')';
+                        $method .= '<br>(' . __('lang_v1.cheque_no') . ': ' . $row->cheque_number . ')';
                     } elseif ($row->method == 'card') {
-                        $method .= '<br>('.__('lang_v1.card_transaction_no').': '.$row->card_transaction_number.')';
+                        $method .= '<br>(' . __('lang_v1.card_transaction_no') . ': ' . $row->card_transaction_number . ')';
                     } elseif ($row->method == 'bank_transfer') {
-                        $method .= '<br>('.__('lang_v1.bank_account_no').': '.$row->bank_account_number.')';
+                        $method .= '<br>(' . __('lang_v1.bank_account_no') . ': ' . $row->bank_account_number . ')';
                     } elseif ($row->method == 'custom_pay_1') {
-                        $method = __('lang_v1.custom_payment_1').'<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
+                        $method = __('lang_v1.custom_payment_1') . '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
                     } elseif ($row->method == 'custom_pay_2') {
-                        $method = __('lang_v1.custom_payment_2').'<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
+                        $method = __('lang_v1.custom_payment_2') . '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
                     } elseif ($row->method == 'custom_pay_3') {
-                        $method = __('lang_v1.custom_payment_3').'<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
+                        $method = __('lang_v1.custom_payment_3') . '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
                     }
 
                     return $method;
                 })
                 ->editColumn('amount', function ($row) {
-                    return '<span class="display_currency paid-amount" data-orig-value="'.$row->amount.'" data-currency_symbol = true>'.$row->amount.'</span>';
+                    return '<span class="display_currency paid-amount" data-orig-value="' . $row->amount . '" data-currency_symbol = true>' . $row->amount . '</span>';
                 })
                 ->addColumn('action', '<button type="button" class="btn btn-primary btn-xs view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$id]) }}"><i class="fas fa-eye"></i> @lang("messages.view")
                     </button> <button type="button" class="btn btn-info btn-xs edit_payment" 

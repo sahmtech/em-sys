@@ -65,6 +65,8 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div class="clearfix"></div>
+
                     <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('ref_no', __('purchase.ref_no') . ':') !!}
@@ -74,7 +76,7 @@
                             </p>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
+
                     <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('transaction_date', __('messages.date') . ':*') !!}
@@ -91,7 +93,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="clearfix"></div>
+
+                    <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('expense_for', __('expense.expense_for') . ':') !!} @show_tooltip(__('tooltip.expense_for'))
                             {!! Form::select('expense_for', $users, null, [
@@ -101,6 +105,7 @@
                             ]) !!}
                         </div>
                     </div>
+
                     <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('contact_id', __('lang_v1.expense_for_contact') . ':') !!}
@@ -110,7 +115,6 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div class="clearfix"></div>
                     <div class="col-sm-4">
                         <div class="form-group">
                             {!! Form::label('document', __('purchase.attach_document') . ':') !!}
@@ -277,7 +281,7 @@
                 } else {
                     $('#expense_for').empty();
                     $('#expense_for').append('<option value="">' + 'Please select' +
-                    '</option>'); // Adjust placeholder text
+                        '</option>'); // Adjust placeholder text
                 }
             });
         });
