@@ -22,6 +22,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/escalate_requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'escalateRequests'])->name('ceomanagment.escalate_requests');
         Route::post('/change-status', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'changeStatus'])->name('ceomanagment.changeStatus');
         Route::get('/viewCEORequest/{requestId}', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewCEORequest');
+        Route::post('/changeEscalationStatus', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('ceomanagment.changeEscalationStatus');
 
         Route::get('/requests_types', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index'])->name('requests_types');
         Route::post('storeRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'store'])->name('storeRequestType');

@@ -282,16 +282,19 @@ Route::get('/fix_emp2', function () {
     }
 });
 Route::get('/updateDepartmentIds', function () {
-    $users = User::whereIn('user_type', ['employee', 'manager', 'department_head']);
+    $users = User::whereIn('user_type', ['employee', 'manager', 'department_head'])->get();
 
     foreach ($users as $user) {
+
         $appointment = $user->activeAppointmet;
 
         if ($appointment) {
-            $departmentId = $appointment->department_id;
 
-            $user->essentials_department_id = $departmentId;
-            $user->save();
+            $departmentId = $appointment->department_id;
+            if ($departmentId) {
+                $user->essentials_department_id = $departmentId;
+                $user->save();
+            }
         }
     }
 

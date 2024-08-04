@@ -6,6 +6,8 @@ namespace Modules\GeneralManagement\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Routing\Controller;
 use App\User;
+use App\Company;
+
 use App\AccessRole;
 use App\AccessRoleRequest;
 
@@ -116,7 +118,7 @@ class RequestController extends Controller
         $escalatedRequests = null;
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->groupBy('request_id');
         $allRequestTypes = RequestsType::pluck('type', 'id');
-
+        $companies = Company::all()->pluck('name', 'id');
         $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->select([
 
             'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
@@ -125,7 +127,7 @@ class RequestController extends Controller
 
             'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.company_id',
 
 
             'procedure_escalations.escalates_to'
@@ -164,6 +166,11 @@ class RequestController extends Controller
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     if ($row->request_type_id) {
                         return $allRequestTypes[$row->request_type_id];
+                    }
+                })
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
                     }
                 })
                 ->editColumn('status', function ($row) {
