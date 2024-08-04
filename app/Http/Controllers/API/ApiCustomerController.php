@@ -788,7 +788,7 @@ class ApiCustomerController extends ApiController
 
             $createdByUser = auth()->user();
             $createdBy_type = $createdByUser->user_type;
-            $userIds = explode($request->user_id, ',');
+            $userIds = explode(',', $request->user_id);
             foreach ($userIds as $userId) {
                 if ($userId === null) continue;
                 $business_id = User::where('id', $userId)->first()->business_id;
