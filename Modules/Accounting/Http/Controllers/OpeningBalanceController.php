@@ -143,6 +143,7 @@ class OpeningBalanceController extends Controller
                 'accounting_account_id' => $validated['accounting_account_id'],
                 'amount' => $validated['value'],
                 'type' => $validated['type'] == 'credit' ? 'credit' : 'debit',
+                'operation_date' => now(),
                 'sub_type' => 'opening_balance'
             ]);
             $validated['accounts_account_transaction_id'] = $transaction->id;
