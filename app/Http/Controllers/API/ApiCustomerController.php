@@ -788,11 +788,11 @@ class ApiCustomerController extends ApiController
 
             $createdByUser = auth()->user();
             $createdBy_type = $createdByUser->user_type;
-
-            foreach ($request->user_id as $userId) {
+            $userIds = explode($request->user_id, ',');
+            foreach ($userIds as $userId) {
                 if ($userId === null) continue;
                 $business_id = User::where('id', $userId)->first()->business_id;
-                if ($this->hasPendingRequest($userId, $request->type, $request->user_id)) {
+                if ($this->hasPendingRequest($userId, $request->type, $userIds)) {
                     return new CommonResource(['msg' => 'request.this_user_has_this_request_recently']);
                 }
 
