@@ -58,8 +58,8 @@
                             @php
                                 $total_debit = 0;
                                 $total_credit = 0;
-                                $total_credit_opining_balance = 0;
-                                $total_dedit_opining_balance = 0;
+                                $total_credit_opening_balance = 0;
+                                $total_dedit_opening_balance = 0;
                                 $total_closing_debit_balance = 0;
                                 $total_closing_crebit_balance = 0;
                             @endphp
@@ -67,25 +67,25 @@
                             <tbody>
                                 @foreach ($accounts as $account)
                                     @php
-                                        $total_credit_opining_balance += $account->credit_opining_balance;
-                                        $total_dedit_opining_balance += $account->dedit_opining_balance;
+                                        $total_credit_opening_balance += $account->dedit_opening_balance;
+                                        $total_dedit_opening_balance += $account->dedit_opening_balance;
                                         $total_debit += $account->debit_balance;
                                         $total_credit += $account->credit_balance;
 
                                         $net_Financial_Transactions =
                                             $account->debit_balance - $account->credit_balance;
-
+                                
                                         if ($net_Financial_Transactions > 0) {
                                             $closing_debit_balance =
-                                                $net_Financial_Transactions + $account->dedit_opining_balance;
+                                                $net_Financial_Transactions + $account->dedit_opening_balance;
                                             $closing_credit_balance = 0;
                                         } elseif ($net_Financial_Transactions < 0) {
                                             $closing_credit_balance =
-                                                abs($net_Financial_Transactions) + $account->credit_opining_balance;
+                                                abs($net_Financial_Transactions) + $account->credit_opening_balance;
                                             $closing_debit_balance = 0;
                                         } else {
-                                            $closing_credit_balance = $account->credit_opining_balance;
-                                            $closing_debit_balance = $account->dedit_opining_balance;
+                                            $closing_credit_balance = $account->credit_opening_balance;
+                                            $closing_debit_balance = $account->dedit_opening_balance;
                                         }
 
                                         $total_closing_debit_balance += $closing_debit_balance;
@@ -95,13 +95,13 @@
                                     <tr>
                                         <td>{{ $account->name }}</td>
                                         <td>
-                                            @if ($account->dedit_opining_balance != 0)
-                                                @format_currency($account->dedit_opining_balance)
+                                            @if ($account->dedit_opening_balance != 0)
+                                                @format_currency($account->dedit_opening_balance)
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($account->dedit_opining_balance != 0)
-                                                @format_currency($account->credit_opining_balance)
+                                            @if ($account->credit_opening_balance != 0)
+                                                @format_currency($account->credit_opening_balance)
                                             @endif
                                         </td>
                                         <td>
@@ -127,8 +127,8 @@
                             <tfoot>
                                 <tr>
                                     <th>Total</th>
-                                    <th class="total_debit">@format_currency($total_credit_opining_balance)</th>
-                                    <th class="total_credit">@format_currency($total_dedit_opining_balance)</th>
+                                    <th class="total_debit">@format_currency($total_credit_opening_balance)</th>
+                                    <th class="total_credit">@format_currency($total_dedit_opening_balance)</th>
                                     <th class="total_debit">@format_currency($total_debit)</th>
                                     <th class="total_credit">@format_currency($total_credit)</th>
                                     <th class="total_debit">@format_currency($total_closing_debit_balance)</th>
