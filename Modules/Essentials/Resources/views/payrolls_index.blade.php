@@ -32,6 +32,7 @@
                                         style="width: 100%;">
                                         <thead>
                                             <tr>
+                                                <th>#</th>
                                                 <th>@lang('essentials::lang.name')</th>
                                                 <th>@lang('essentials::lang.hr_management_cleared')</th>
                                                 <th class="table-td-width-300px">@lang('essentials::lang.hr_management_cleared_by')</th>
@@ -112,6 +113,10 @@
                 serverSide: true,
                 ajax: "{{ route('hrm.payrolls_checkpoint', ['from' => 'hr']) }}",
                 columns: [{
+                        data: 'id',
+                        name: 'id',
+                    },
+                    {
                         data: 'name',
                         name: 'name',
                     },

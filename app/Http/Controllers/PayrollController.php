@@ -24,8 +24,22 @@ class PayrollController extends Controller
     {
         $this->moduleUtil = $moduleUtil;
     }
-    public function show_payrolls_checkpoint($id)
+    public function show_payrolls_checkpoint($id, $from)
     {
+
+        if ($from == 'hr') {
+            return view('essentials::payrolls_index');
+        }
+        if ($from == 'accountant') {
+            return view('accounting::custom_views.payrolls_index');
+        }
+        if ($from == 'financial') {
+            return view('accounting::custom_views.payrolls_index_financial');
+        }
+        if ($from == 'ceo') {
+            return view('ceomanagment::payrolls_index');
+        }
+        return 'error';
     }
 
     public function store_to_transaction($id)
@@ -453,8 +467,10 @@ class PayrollController extends Controller
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
                     if ($is_admin || $can_view) {
-                        $html .= '<li><a href="' . route('hrm.payrolls_checkpoint.show', ['id' => $row->id]) . '"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+                        $html .= '<li><a href="' . route('payrolls_checkpoint.show', ['id' => $row->id, 'from' => $from]) . '"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
                     }
+
+
                     if (($is_admin || $can_clear) &&
                         (
                             ($from == 'hr' && !$row->hr_management_cleared)
@@ -463,7 +479,7 @@ class PayrollController extends Controller
                             || ($from == 'ceo' && $row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && !$row->ceo_cleared_by)
                         )
                     ) {
-                        $html .= '<li><a href="' . route('hrm.payrolls_checkpoint.clear', ['id' => $row->id, 'from' => $from]) . '"><i class="fa fa-check" aria-hidden="true"></i> ' . __('lang_v1.approve') . '</a></li>';
+                        $html .= '<li><a href="' . route('payrolls_checkpoint.clear', ['id' => $row->id, 'from' => $from]) . '"><i class="fa fa-check" aria-hidden="true"></i> ' . __('lang_v1.approve') . '</a></li>';
                     }
 
                     $html .= '</ul></div>';

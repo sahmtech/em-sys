@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('payroll_groups', function (Blueprint $table) {
             $table->id();
+
             $table->string('payroll_group_name')->nullable();
             $table->string('payroll_group_status')->nullable();
             $table->string('total_payrolls')->nullable();
@@ -31,6 +32,9 @@ return new class extends Migration
 
             $table->boolean('ceo_cleared')->default(false);
             $table->text('ceo_cleared_by')->nullable();
+
+
+
 
 
             $table->timestamps();

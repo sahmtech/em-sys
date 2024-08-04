@@ -21,6 +21,8 @@ return new class extends Migration
             $table->boolean('ceo_cleared')->default(false);
             $table->unsignedInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->unsignedBigInteger('timesheet_user_id')->nullable();
+            // $table->foreign('timesheet_user_id')->references('id')->on('timesheet_users')->onDelete('cascade');
             $table->unsignedBigInteger('payroll_group_id');
             $table->foreign('payroll_group_id')->references('id')->on('payroll_groups')->onDelete('cascade');
             $table->string('name')->nullable();

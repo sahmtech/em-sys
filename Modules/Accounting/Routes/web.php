@@ -26,8 +26,6 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
 
     Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
-    Route::get('/show_payrolls_checkpoint/{id}',   [App\Http\Controllers\PayrollController::class, 'show_payrolls_checkpoint'])->name('accounting.payrolls_checkpoint.show');
-    Route::get('/clear_payrolls_checkpoint/{id}/{from}',  [App\Http\Controllers\PayrollController::class, 'clear_payrolls_checkpoint'])->name('accounting.payrolls_checkpoint.clear');
 });
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {

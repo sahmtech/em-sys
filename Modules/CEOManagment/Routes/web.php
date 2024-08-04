@@ -72,7 +72,5 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('ceo.payrolls_checkpoint');
-        Route::get('/show_payrolls_checkpoint/{id}',   [App\Http\Controllers\PayrollController::class, 'show_payrolls_checkpoint'])->name('ceo.payrolls_checkpoint.show');
-        Route::get('/clear_payrolls_checkpoint/{id}/{from}',  [App\Http\Controllers\PayrollController::class, 'clear_payrolls_checkpoint'])->name('ceo.payrolls_checkpoint.clear');
     });
 });

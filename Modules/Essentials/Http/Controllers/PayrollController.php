@@ -1039,7 +1039,7 @@ class PayrollController extends Controller
 
         $payroll_date = Carbon::createFromFormat('m/Y', $month_year);
         $timesheet_group_date = $payroll_date->format('F Y');
-        $timesheet_groups = TimesheetGroup::where('timesheet_date', $timesheet_group_date)->pluck('id')->toArray();
+        $timesheet_groups = TimesheetGroup::where('timesheet_date', $timesheet_group_date)->where('is_payrolls_issued', 0)->pluck('id')->toArray();
 
         $employee_ids = User::with('contract');
 
@@ -1116,61 +1116,102 @@ class PayrollController extends Controller
                 $additions = $timesheet->additions;
                 $final_salary = $timesheet->final_salary;
                 $project_name = $timesheet->project_id;
-
-
-
-
-                $profession = $worker->appointment?->profession?->name ?? '';
-                $salesProject = SalesProject::pluck('name', 'id');
-                $payrolls[] = [
-                    'id' => $worker->user_id,
-                    'name' => $worker->name ?? '',
-                    'nationality' => User::find($worker->id)->country?->nationality ?? '',
-                    'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
-                    'identity_card_number' => $worker->id_proof_number ?? '',
-                    'sponser' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
-                    // 'project_name' => $project_name ?? '',
-                    'project_name' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
-                    'region' => '',
-                    'profession' => $profession ?? '',
-                    'work_days' => $work_days,
-                    'salary' => $monthly_cost,
-                    'housing_allowance' => $housing_allowance,
-                    'transportation_allowance' => $transportation_allowance,
-                    'other_allowance' => $other_allowance,
-                    'total' => $salary,
-                    'violations' => 0,
-                    'absence' => $absence_days,
-                    'late' => 0,
-                    'late_deduction' => 0,
-                    'absence_deduction' => $absence_amount,
-                    'other_deductions' => $other_deduction,
-                    'loan' => 0,
-                    'total_deduction' => $other_deduction,
-                    'over_time_hours' => $over_time_hours,
-                    'over_time_hours_addition' => $over_time_amount,
-                    'additional_addition' => 0,
-                    'other_additions' => $additions,
-                    'total_additions' => $additions,
-                    'final_salary' => $final_salary,
-                    'payment_method' => '',
-                    'notes' => '',
-                ];
+            } else if ($worker->user_type != "worker") {
+                $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
+                foreach ($allowances as $allowance) {
+                    $allowance_dsc = $allowance?->essentials_allowance_and_deduction?->description;
+                    if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+                        $housing_allowance = number_format($allowance->amount, 0, '.', '');
+                    } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+                        $transportation_allowance = number_format($allowance->amount, 0, '.', '');
+                    } else {
+                        $other_allowance += floatval($allowance->amount ?? "0");
+                    }
+                }
+                $salary = number_format($worker->essentials_salary + $other_allowance, 0, '.', '');
+                $monthly_cost = number_format($worker->essentials_salary, 0, '.', '');
+                $work_days = 30; // Assuming 30 days in a month for now
+                $absence_days = 0;
+                $absence_amount = 0;
+                $over_time_hours = 0;
+                $over_time_amount = 0;
+                $other_deduction = 0;
+                $other_addition = 0;
+                $invoice_value = null;
+                $vat = null;
+                $total = null;
+                $basic = null;
+                $total_salary = null;
+                $deductions = 0;
+                $additions = 0;
+                $final_salary = null;
+                $project_name = $worker->assignedTo?->name ?? '';
             }
+
+            $profession = $worker->appointment?->profession?->name ?? '';
+            $salesProject = SalesProject::pluck('name', 'id');
+            $payrolls[] = [
+                'id' => $worker->user_id,
+                'name' => $worker->name ?? '',
+                'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
+                'identity_card_number' => $worker->id_proof_number ?? '',
+                'sponser' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
+                // 'project_name' => $project_name ?? '',
+                'project_name' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
+                'region' => '',
+                'profession' => $profession ?? '',
+                'work_days' => $work_days,
+                'salary' => $monthly_cost,
+                'housing_allowance' => $housing_allowance,
+                'transportation_allowance' => $transportation_allowance,
+                'other_allowance' => $other_allowance,
+                'total' => $salary,
+                'violations' => 0,
+                'absence' => $absence_days,
+                'late' => 0,
+                'late_deduction' => 0,
+                'absence_deduction' => $absence_amount,
+                'other_deductions' => $other_deduction,
+                'loan' => 0,
+                'total_deduction' => $other_deduction,
+                'over_time_hours' => $over_time_hours,
+                'over_time_hours_addition' => $over_time_amount,
+                'additional_addition' => 0,
+                'other_additions' => $additions,
+                'total_additions' => $additions,
+                'final_salary' => $final_salary,
+                'payment_method' => '',
+                'notes' => '',
+                // 'timesheet_user_id' => $timesheet?->id ?? '',
+                // 'timesheet_group_id' => $timesheet?->timesheet_group_id ?? '',
+            ];
         }
 
         $date = (Carbon::createFromFormat('m/Y', $month_year ?? Carbon::now()->format('m/Y')))->format('F Y');
         $transaction_date = $month_year;
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
-
-        return view('essentials::payroll.create')->with(compact('user_type', 'employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action'));
+        if (empty($payrolls)) {
+            $output = [
+                'success' => true,
+                'msg' => __('messages.already_added'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
+        return view('essentials::payroll.create')->with(compact('user_type', 'employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action', 'timesheet_groups'));
     }
 
     public function store(Request $request)
     {
+
         try {
             DB::beginTransaction();
+            $timesheet_groups = json_decode($request->timesheet_groups);
+
+            // foreach ($timesheet_groups as  $timesheet_group) {
+
+            // }
 
             $payrollGroup = PayrollGroup::create([
                 'payroll_group_name' => $request->payroll_group_name,
@@ -1178,6 +1219,7 @@ class PayrollController extends Controller
                 'total_payrolls' => $request->total_payrolls,
                 'transaction_date' => $request->transaction_date,
             ]);
+            TimesheetGroup::whereIn('id',  $timesheet_groups)->update(['is_payrolls_issued' => 1]);
             $payrolls = $request->payrolls;
 
             if ($payrollGroup && !empty($payrolls)) {
@@ -1185,33 +1227,34 @@ class PayrollController extends Controller
                     PayrollGroupUser::create([
                         'payroll_group_id' => $payrollGroup->id,
                         'user_id' => $payroll['id'],
-                        'name' => $payroll['name'],
-                        'nationality' => $payroll['nationality'],
-                        'identity_card_number' => $payroll['identity_card_number'],
-                        'company' => $payroll['company'],
-                        'project_name' => $payroll['project_name'],
-                        'region' => $payroll['region'],
-                        'work_days' => $payroll['work_days'],
-                        'salary' => $payroll['salary'],
-                        'housing_allowance' => $payroll['housing_allowance'],
-                        'transportation_allowance' => $payroll['transportation_allowance'],
-                        'other_allowance' => $payroll['other_allowance'],
-                        'total' => $payroll['total'],
-                        'violations' => $payroll['violations'],
-                        'absence' => $payroll['absence'],
-                        'absence_deduction' => $payroll['absence_deduction'],
-                        'late' => $payroll['late'],
-                        'late_deduction' => $payroll['late_deduction'],
-                        'other_deductions' => $payroll['other_deductions'],
-                        'loan' => $payroll['loan'],
-                        'total_deduction' => $payroll['total_deduction'],
-                        'over_time_hours' => $payroll['over_time_hours'],
-                        'over_time_hours_addition' => $payroll['over_time_hours_addition'],
-                        'additional_addition' => $payroll['additional_addition'],
-                        'total_additions' => $payroll['total_additions'],
-                        'final_salary' => $payroll['final_salary'],
-                        'payment_method' => $payroll['payment_method'],
-                        'notes' => $payroll['notes'],
+                        'name' => $payroll['name'] ?? '',
+                        'nationality' => $payroll['nationality'] ?? '',
+                        'identity_card_number' => $payroll['identity_card_number'] ?? '',
+                        'company' => $payroll['company'] ?? '',
+                        'project_name' => $payroll['project_name'] ?? '',
+                        'region' => $payroll['region'] ?? '',
+                        'work_days' => $payroll['work_days'] ?? '',
+                        'salary' => $payroll['salary'] ?? '',
+                        'housing_allowance' => $payroll['housing_allowance'] ?? '',
+                        'transportation_allowance' => $payroll['transportation_allowance'] ?? '',
+                        'other_allowance' => $payroll['other_allowance'] ?? '',
+                        'total' => $payroll['total'] ?? '',
+                        'violations' => $payroll['violations'] ?? '',
+                        'absence' => $payroll['absence'] ?? '',
+                        'absence_deduction' => $payroll['absence_deduction'] ?? '',
+                        'late' => $payroll['late'] ?? '',
+                        'late_deduction' => $payroll['late_deduction'] ?? '',
+                        'other_deductions' => $payroll['other_deductions'] ?? '',
+                        'loan' => $payroll['loan'] ?? '',
+                        'total_deduction' => $payroll['total_deduction'] ?? '',
+                        'over_time_hours' => $payroll['over_time_hours'] ?? '',
+                        'over_time_hours_addition' => $payroll['over_time_hours_addition'] ?? '',
+                        'additional_addition' => $payroll['additional_addition'] ?? '',
+                        'total_additions' => $payroll['total_additions'] ?? '',
+                        'final_salary' => $payroll['final_salary'] ?? '',
+                        'payment_method' => $payroll['payment_method'] ?? '',
+                        'notes' => $payroll['notes'] ?? '',
+                        // 'timesheet_user_id' => $payroll['timesheet_user_id'] ?? '',
                     ]);
                 }
             }
