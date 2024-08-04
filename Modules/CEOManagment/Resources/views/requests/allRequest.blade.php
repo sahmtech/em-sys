@@ -282,7 +282,7 @@
         @endif
     @endif
     <section class="content">
-        {{-- @include('ceomanagment::layouts.nav_requests') --}}
+        @include('ceomanagment::layouts.nav_requests')
         @component('components.filters', ['title' => __('request.filters')])
             <div class="col-md-3">
                 <div class="form-group">
