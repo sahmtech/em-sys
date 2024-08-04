@@ -5,7 +5,7 @@ namespace Modules\Connector\Http\Controllers\Api;
 use App\ExpenseCategory;
 use App\Transaction;
 use App\Utils\TransactionUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -135,45 +135,45 @@ class ExpenseController extends ApiController
 
         $filters = request()->only(['location_id', 'payment_status', 'start_date', 'end_date', 'expense_for', 'per_page']);
         $query = Transaction::where('business_id', $business_id)
-                            ->where('type', 'expense')
-                            ->with(['transaction_for']);
+            ->where('type', 'expense')
+            ->with(['transaction_for']);
 
         $permitted_locations = $user->permitted_locations($business_id);
         if ($permitted_locations != 'all') {
             $query->whereIn('transactions.location_id', $permitted_locations);
         }
 
-        if (! empty($filters['location_id'])) {
-            if (! empty($filters['location_id'])) {
+        if (!empty($filters['location_id'])) {
+            if (!empty($filters['location_id'])) {
                 $query->where('transactions.location_id', $filters['location_id']);
             }
         }
 
-        if (! empty($filters['payment_status'])) {
-            if (! empty($filters['payment_status'])) {
+        if (!empty($filters['payment_status'])) {
+            if (!empty($filters['payment_status'])) {
                 $query->where('transactions.payment_status', $filters['payment_status']);
             }
         }
 
-        if (! empty($filters['start_date'])) {
-            if (! empty($filters['start_date'])) {
+        if (!empty($filters['start_date'])) {
+            if (!empty($filters['start_date'])) {
                 $query->whereDate('transactions.transaction_date', '>=', $filters['start_date']);
             }
         }
 
-        if (! empty($filters['end_date'])) {
-            if (! empty($filters['end_date'])) {
+        if (!empty($filters['end_date'])) {
+            if (!empty($filters['end_date'])) {
                 $query->whereDate('transactions.transaction_date', '<=', $filters['end_date']);
             }
         }
 
-        if (! empty($filters['expense_for'])) {
-            if (! empty($filters['expense_for'])) {
+        if (!empty($filters['expense_for'])) {
+            if (!empty($filters['expense_for'])) {
                 $query->where('transactions.expense_for', $filters['expense_for']);
             }
         }
 
-        $perPage = ! empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
+        $perPage = !empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
         if ($perPage == -1) {
             $expenses = $query->get();
         } else {
@@ -268,10 +268,10 @@ class ExpenseController extends ApiController
 
         $expense_ids = explode(',', $expense_ids);
         $expenses = Transaction::where('business_id', $business_id)
-                            ->whereIn('type', ['expense', 'expense_refund'])
-                            ->whereIn('id', $expense_ids)
-                            ->with(['transaction_for'])
-                            ->get();
+            ->whereIn('type', ['expense', 'expense_refund'])
+            ->whereIn('id', $expense_ids)
+            ->with(['transaction_for'])
+            ->get();
 
         $permitted_locations = $user->permitted_locations($business_id);
         if ($permitted_locations != 'all') {
@@ -365,7 +365,7 @@ class ExpenseController extends ApiController
         } catch (\Exception $e) {
             DB::rollback();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
         }
@@ -438,7 +438,7 @@ class ExpenseController extends ApiController
         } catch (\Exception $e) {
             DB::rollback();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
         }
@@ -497,45 +497,45 @@ class ExpenseController extends ApiController
 
         $filters = request()->only(['location_id', 'payment_status', 'start_date', 'end_date', 'expense_for', 'per_page']);
         $query = Transaction::where('business_id', $business_id)
-                            ->where('type', 'expense_refund')
-                            ->with(['transaction_for']);
+            ->where('type', 'expense_refund')
+            ->with(['transaction_for']);
 
         $permitted_locations = $user->permitted_locations($business_id);
         if ($permitted_locations != 'all') {
             $query->whereIn('transactions.location_id', $permitted_locations);
         }
 
-        if (! empty($filters['location_id'])) {
-            if (! empty($filters['location_id'])) {
+        if (!empty($filters['location_id'])) {
+            if (!empty($filters['location_id'])) {
                 $query->where('transactions.location_id', $filters['location_id']);
             }
         }
 
-        if (! empty($filters['payment_status'])) {
-            if (! empty($filters['payment_status'])) {
+        if (!empty($filters['payment_status'])) {
+            if (!empty($filters['payment_status'])) {
                 $query->where('transactions.payment_status', $filters['payment_status']);
             }
         }
 
-        if (! empty($filters['start_date'])) {
-            if (! empty($filters['start_date'])) {
+        if (!empty($filters['start_date'])) {
+            if (!empty($filters['start_date'])) {
                 $query->whereDate('transactions.transaction_date', '>=', $filters['start_date']);
             }
         }
 
-        if (! empty($filters['end_date'])) {
-            if (! empty($filters['end_date'])) {
+        if (!empty($filters['end_date'])) {
+            if (!empty($filters['end_date'])) {
                 $query->whereDate('transactions.transaction_date', '<=', $filters['end_date']);
             }
         }
 
-        if (! empty($filters['expense_for'])) {
-            if (! empty($filters['expense_for'])) {
+        if (!empty($filters['expense_for'])) {
+            if (!empty($filters['expense_for'])) {
                 $query->where('transactions.expense_for', $filters['expense_for']);
             }
         }
 
-        $perPage = ! empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
+        $perPage = !empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
         if ($perPage == -1) {
             $expenses = $query->get();
         } else {
@@ -605,8 +605,8 @@ class ExpenseController extends ApiController
         $business_id = $user->business_id;
 
         $query = ExpenseCategory::where('business_id', $business_id)
-                        ->onlyParent()
-                        ->with('sub_categories');
+            ->onlyParent()
+            ->with('sub_categories');
 
         $categories = $query->get();
 

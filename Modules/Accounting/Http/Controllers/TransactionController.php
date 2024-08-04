@@ -11,7 +11,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Transaction;
 use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingAccountsTransaction;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\TransactionPayment;
 use App\BusinessLocation;
 use App\Contact;
@@ -71,7 +71,7 @@ class TransactionController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
         $business_locations = BusinessLocation::forDropdownWithCompany($business_id, $company_id);
@@ -86,7 +86,7 @@ class TransactionController extends Controller
     {
         $sale_type = 'sell';
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
         $sells = $this->transactionUtil->getListSells($business_id, $sale_type, $company_id);
@@ -243,7 +243,7 @@ class TransactionController extends Controller
     {
         $transaction_type = request()->input('transaction_type');
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
         $query = TransactionPayment::join(
@@ -358,7 +358,7 @@ class TransactionController extends Controller
     protected function _allPurchases()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $purchases = $this->transactionUtil->getListPurchases($business_id, $company_id);
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -426,7 +426,7 @@ class TransactionController extends Controller
     public function map(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -505,7 +505,7 @@ class TransactionController extends Controller
     public function saveMap(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 

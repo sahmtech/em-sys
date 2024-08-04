@@ -14,7 +14,7 @@ use App\User;
 use App\Utils\CashRegisterUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
@@ -24,6 +24,14 @@ use Illuminate\Support\Facades\Session;
 
 class ExpenseController extends Controller
 {
+
+
+    protected $transactionUtil;
+    protected $moduleUtil;
+    protected $dummyPaymentLine;
+    protected $cashRegisterUtil;
+
+
     /**
      * Constructor
      *
@@ -377,7 +385,7 @@ class ExpenseController extends Controller
 
             DB::beginTransaction();
 
-            $expense = $this->transactionUtil->createExpense($request, $business_id, $user_id,$company_id);
+            $expense = $this->transactionUtil->createExpense($request, $business_id, $user_id);
 
             if (request()->ajax()) {
                 $payments = !empty($request->input('payment')) ? $request->input('payment') : [];
@@ -385,7 +393,7 @@ class ExpenseController extends Controller
             }
 
             $this->transactionUtil->activityLog($expense, 'added');
-          
+
             $util = new Util();
             $auto_migration = $util->saveAutoMigration($request, $expense);
 

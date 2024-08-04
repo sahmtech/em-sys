@@ -11,7 +11,7 @@ use App\User;
 use App\Request as UserRequest;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 
 use Modules\Essentials\Entities\EssentialsWorkCard;

@@ -616,6 +616,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/unaccepted-recuirements-requests', [\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'unacceptedRequestIndex'])->name('unaccepted-recuirements-requests');
 
         Route::post('/requirement-request-changeStatus', [\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'changeStatus'])->name('requirement-request-changeStatus');
+
+        Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('hrm.payrolls_checkpoint');
+        Route::get('/show_payrolls_checkpoint/{id}/{from}',   [App\Http\Controllers\PayrollController::class, 'show_payrolls_checkpoint'])->name('payrolls_checkpoint.show');
+        Route::get('/clear_payrolls_checkpoint/{id}/{from}',  [App\Http\Controllers\PayrollController::class, 'clear_payrolls_checkpoint'])->name('payrolls_checkpoint.clear');
     });
 
 

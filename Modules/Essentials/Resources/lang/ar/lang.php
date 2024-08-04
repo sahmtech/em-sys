@@ -1952,7 +1952,27 @@ return [
 
   'duration_in_days' => 'المدة بالإيام',
   'duration' => 'المدة',
+  'hrm_payrolls' => 'الرواتب',
+  'view_payroll_checkpoint' => 'عرض صفحة الرواتب',
+  'confirm_payroll_checkpoint' => 'اعتماد الرواتب',
+  'show_payroll_checkpoint' => 'عرض تفاصيل الرواتب',
 
+  'view_payroll_checkpoint_financial' => 'عرض صفحة الرواتب (المدير المالي)',
+  'confirm_payroll_checkpoint_financial' => 'اعتماد الرواتب (المدير المالي)',
+  'show_payroll_checkpoint_financial' => 'عرض تفاصيل الرواتب (المدير المالي)',
+
+  'hr_management_cleared' => 'مدير الموارد',
+  'hr_management_cleared_at' => 'تاريخ الاعتماد',
+  'hr_management_cleared_by' => 'تم من قبل',
+  'accountant_cleared' => 'المحاسب المدقق',
+  'accountant_cleared_at' => 'تاريخ الاعتماد',
+  'accountant_cleared_by' => 'تم من قبل',
+  'financial_management_cleared' => 'المدير المالي',
+  'financial_management_cleared_at' => 'تاريخ الاعتماد',
+  'financial_management_cleared_by' => 'تم من قبل',
+  'ceo_cleared' => 'الرئيس التنفيذي',
+  'ceo_cleared_at' => 'تاريخ الاعتماد',
+  'ceo_cleared_by' => 'تم من قبل',
 
 
 ];

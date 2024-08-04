@@ -19,7 +19,7 @@ use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -29,7 +29,7 @@ use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsUserSalesTarget;
-use Modules\Essentials\Entities\PayrollGroup;
+use Modules\Essentials\Entities\EssentialsPayrollGroup;
 use Modules\Essentials\Notifications\PayrollNotification;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\Sales\Entities\SalesProject;
@@ -44,7 +44,10 @@ use App\TimesheetGroup;
 use App\AccessRole;
 use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
+use App\PayrollGroup;
+use App\PayrollGroupUser;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
+
 
 class PayrollController extends Controller
 {
@@ -327,6 +330,7 @@ class PayrollController extends Controller
         return view('essentials::payroll.list_of_employess')
             ->with(compact('companies', 'contacts_fillter', 'user_types', 'departments'));
     }
+
 
 
     public function viewWorkerProject(Request $request)
@@ -634,7 +638,7 @@ class PayrollController extends Controller
         //         }
         //     }
         // }
-        // $payroll_groups = PayrollGroup::whereIn('essentials_payroll_groups.company_id', $companies_ids)->where('u.id', auth()->user()->id)
+        // $payroll_groups = EssentialsPayrollGroup::whereIn('essentials_payroll_groups.company_id', $companies_ids)->where('u.id', auth()->user()->id)
         //     ->leftjoin('users as u', 'u.id', '=', 'essentials_payroll_groups.created_by')
         //     ->leftJoin('business_locations as BL', 'essentials_payroll_groups.location_id', '=', 'BL.id')
         //     ->select(
@@ -769,7 +773,7 @@ class PayrollController extends Controller
             ];
 
 
-            $payroll_group = PayrollGroup::create($payroll_group_data);
+            $payroll_group = EssentialsPayrollGroup::create($payroll_group_data);
 
 
             $transaction_ids = [];
@@ -1033,6 +1037,10 @@ class PayrollController extends Controller
         $user_type = request()->input('user_type');
         $month_year = request()->input('month_year');
 
+        $payroll_date = Carbon::createFromFormat('m/Y', $month_year);
+        $timesheet_group_date = $payroll_date->format('F Y');
+        $timesheet_groups = TimesheetGroup::where('timesheet_date', $timesheet_group_date)->where('is_payrolls_issued', 0)->pluck('id')->toArray();
+
         $employee_ids = User::with('contract');
 
         if ($user_type == "worker") {
@@ -1068,7 +1076,7 @@ class PayrollController extends Controller
             )->get();
 
         if ($user_type == "worker") {
-            $timesheet_users = TimesheetUser::whereIn('user_id', $employee_ids)->get();
+            $timesheet_users = TimesheetUser::whereIn('user_id', $employee_ids)->whereIn('timesheet_group_id', $timesheet_groups)->get();
         } else {
             $timesheet_users = collect([]);
         }
@@ -1108,7 +1116,7 @@ class PayrollController extends Controller
                 $additions = $timesheet->additions;
                 $final_salary = $timesheet->final_salary;
                 $project_name = $timesheet->project_id;
-            } else {
+            } else if ($worker->user_type != "worker") {
                 $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
                 foreach ($allowances as $allowance) {
                     $allowance_dsc = $allowance?->essentials_allowance_and_deduction?->description;
@@ -1175,6 +1183,8 @@ class PayrollController extends Controller
                 'final_salary' => $final_salary,
                 'payment_method' => '',
                 'notes' => '',
+                // 'timesheet_user_id' => $timesheet?->id ?? '',
+                // 'timesheet_group_id' => $timesheet?->timesheet_group_id ?? '',
             ];
         }
 
@@ -1182,12 +1192,90 @@ class PayrollController extends Controller
         $transaction_date = $month_year;
         $group_name = __('essentials::lang.payroll_for_month', ['date' => $date]);
         $action = 'create';
-
-        return view('essentials::payroll.create')->with(compact('user_type', 'employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action'));
+        if (empty($payrolls)) {
+            $output = [
+                'success' => true,
+                'msg' => __('messages.already_added'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
+        return view('essentials::payroll.create')->with(compact('user_type', 'employee_ids', 'group_name', 'date', 'transaction_date', 'month_year', 'payrolls', 'action', 'timesheet_groups'));
     }
 
     public function store(Request $request)
     {
+
+        try {
+            DB::beginTransaction();
+            $timesheet_groups = json_decode($request->timesheet_groups);
+
+            // foreach ($timesheet_groups as  $timesheet_group) {
+
+            // }
+
+            $payrollGroup = PayrollGroup::create([
+                'payroll_group_name' => $request->payroll_group_name,
+                'payroll_group_status' => $request->payroll_group_status,
+                'total_payrolls' => $request->total_payrolls,
+                'transaction_date' => $request->transaction_date,
+            ]);
+            TimesheetGroup::whereIn('id',  $timesheet_groups)->update(['is_payrolls_issued' => 1]);
+            $payrolls = $request->payrolls;
+
+            if ($payrollGroup && !empty($payrolls)) {
+                foreach ($payrolls as $payroll) {
+                    PayrollGroupUser::create([
+                        'payroll_group_id' => $payrollGroup->id,
+                        'user_id' => $payroll['id'],
+                        'name' => $payroll['name'] ?? '',
+                        'nationality' => $payroll['nationality'] ?? '',
+                        'identity_card_number' => $payroll['identity_card_number'] ?? '',
+                        'company' => $payroll['company'] ?? '',
+                        'project_name' => $payroll['project_name'] ?? '',
+                        'region' => $payroll['region'] ?? '',
+                        'work_days' => $payroll['work_days'] ?? '',
+                        'salary' => $payroll['salary'] ?? '',
+                        'housing_allowance' => $payroll['housing_allowance'] ?? '',
+                        'transportation_allowance' => $payroll['transportation_allowance'] ?? '',
+                        'other_allowance' => $payroll['other_allowance'] ?? '',
+                        'total' => $payroll['total'] ?? '',
+                        'violations' => $payroll['violations'] ?? '',
+                        'absence' => $payroll['absence'] ?? '',
+                        'absence_deduction' => $payroll['absence_deduction'] ?? '',
+                        'late' => $payroll['late'] ?? '',
+                        'late_deduction' => $payroll['late_deduction'] ?? '',
+                        'other_deductions' => $payroll['other_deductions'] ?? '',
+                        'loan' => $payroll['loan'] ?? '',
+                        'total_deduction' => $payroll['total_deduction'] ?? '',
+                        'over_time_hours' => $payroll['over_time_hours'] ?? '',
+                        'over_time_hours_addition' => $payroll['over_time_hours_addition'] ?? '',
+                        'additional_addition' => $payroll['additional_addition'] ?? '',
+                        'total_additions' => $payroll['total_additions'] ?? '',
+                        'final_salary' => $payroll['final_salary'] ?? '',
+                        'payment_method' => $payroll['payment_method'] ?? '',
+                        'notes' => $payroll['notes'] ?? '',
+                        // 'timesheet_user_id' => $payroll['timesheet_user_id'] ?? '',
+                    ]);
+                }
+            }
+
+            DB::commit();
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->route('payrolls.index')->with('status', $output);
+
+
 
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
@@ -1200,7 +1288,7 @@ class PayrollController extends Controller
             $payroll_group['status'] = $request->input('payroll_group_status');
             $payroll_group['gross_total'] = $request->input('total_payrolls');
             $payroll_group['created_by'] = auth()->user()->id;
-            $payroll_group = PayrollGroup::create($payroll_group);
+            $payroll_group = EssentialsPayrollGroup::create($payroll_group);
             $transaction_date = Carbon::createFromFormat('m/Y', $request->transaction_date)->format('Y-m-d H:i:s');
 
             //ref_no,
@@ -1360,7 +1448,7 @@ class PayrollController extends Controller
 
 
         if ($type == 'group') {
-            $payroll_group = PayrollGroup::find($id);
+            $payroll_group = EssentialsPayrollGroup::find($id);
             $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
             $transaction_date = $payroll_group_transactions->first()->transaction_date;
             $date = Carbon::parse($transaction_date)->format('F Y');
@@ -1628,7 +1716,7 @@ class PayrollController extends Controller
 
     public function edit($id)
     {
-        $payroll_group = PayrollGroup::find($id);
+        $payroll_group = EssentialsPayrollGroup::find($id);
         $payroll_group_transactions = $payroll_group->payrollGroupTransactions;
         $transaction_date = $payroll_group_transactions->first()->transaction_date;
         $date = Carbon::parse($transaction_date)->format('F Y');
@@ -1819,7 +1907,7 @@ class PayrollController extends Controller
 
         if (request()->ajax()) {
             try {
-                $payroll_group = PayrollGroup::where('business_id', $business_id)
+                $payroll_group = EssentialsPayrollGroup::where('business_id', $business_id)
                     ->with(['payrollGroupTransactions'])
                     ->findOrFail($id);
 
@@ -1892,7 +1980,7 @@ class PayrollController extends Controller
             $user_businesses_ids = array_unique($userBusinesses);
         }
         if ($request->ajax()) {
-            $payroll_groups = PayrollGroup::whereIn('essentials_payroll_groups.business_id', $user_businesses_ids)
+            $payroll_groups = EssentialsPayrollGroup::whereIn('essentials_payroll_groups.business_id', $user_businesses_ids)
                 ->leftjoin('users as u', 'u.id', '=', 'essentials_payroll_groups.created_by')
                 ->leftJoin('business_locations as BL', 'essentials_payroll_groups.location_id', '=', 'BL.id')
                 ->select(
@@ -2018,7 +2106,7 @@ class PayrollController extends Controller
             }
             $user_businesses_ids = array_unique($userBusinesses);
         }
-        $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
+        $payroll_group = EssentialsPayrollGroup::whereIn('business_id', $user_businesses_ids)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
             ->findOrFail($id);
 
@@ -2071,7 +2159,7 @@ class PayrollController extends Controller
             }
             $user_businesses_ids = array_unique($userBusinesses);
         }
-        $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
+        $payroll_group = EssentialsPayrollGroup::whereIn('business_id', $user_businesses_ids)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation'])
             ->findOrFail($id);
 
@@ -2173,7 +2261,7 @@ class PayrollController extends Controller
             }
 
             DB::beginTransaction();
-            $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
+            $payroll_group = EssentialsPayrollGroup::whereIn('business_id', $user_businesses_ids)
                 ->findOrFail($payroll_group_id);
 
             $payroll_group->update($pg_input);
@@ -2243,7 +2331,7 @@ class PayrollController extends Controller
             }
             $user_businesses_ids = array_unique($userBusinesses);
         }
-        $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
+        $payroll_group = EssentialsPayrollGroup::whereIn('business_id', $user_businesses_ids)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
             ->findOrFail($id);
 
@@ -2379,7 +2467,7 @@ class PayrollController extends Controller
 
     protected function _updatePayrollGroupPaymentStatus($payroll_group_id, $business_id)
     {
-        $payroll_group = PayrollGroup::with(['payrollGroupTransactions'])
+        $payroll_group = EssentialsPayrollGroup::with(['payrollGroupTransactions'])
             ->findOrFail($payroll_group_id);
 
         $total_transaction = count($payroll_group->payrollGroupTransactions);
@@ -2786,7 +2874,7 @@ class PayrollController extends Controller
 
     //         DB::beginTransaction();
 
-    //         $payroll_group = PayrollGroup::create($payroll_group);
+    //         $payroll_group = EssentialsPayrollGroup::create($payroll_group);
     //         $transaction_ids = [];
     //         foreach ($payrolls as $key => $payroll) {
     //             $payroll['transaction_date'] = $transaction_date;
@@ -3034,7 +3122,7 @@ class PayrollController extends Controller
     //         }
     //         $user_businesses_ids = array_unique($userBusinesses);
     //     }
-    //     $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
+    //     $payroll_group = EssentialsPayrollGroup::whereIn('business_id', $user_businesses_ids)
     //         ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
     //         ->findOrFail($id);
 

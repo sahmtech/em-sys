@@ -4,7 +4,7 @@ namespace Modules\Crm\Http\Controllers;
 
 use App\Media;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -53,14 +53,15 @@ class ProposalTemplateController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('crm.add_proposal_template'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('crm.add_proposal_template'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
-        if (! empty($this->__getProposalTemplate($business_id))) {
+        if (!empty($this->__getProposalTemplate($business_id))) {
             return redirect()
                 ->action([\Modules\Crm\Http\Controllers\ProposalTemplateController::class, 'index'])
-                ->with('status', ['success' => 0,
+                ->with('status', [
+                    'success' => 0,
                     'msg' => __('crm::lang.template_is_already_created'),
                 ]);
         }
@@ -77,14 +78,15 @@ class ProposalTemplateController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('crm.add_proposal_template'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('crm.add_proposal_template'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
-        if (! empty($this->__getProposalTemplate($business_id))) {
+        if (!empty($this->__getProposalTemplate($business_id))) {
             return redirect()
                 ->action([\Modules\Crm\Http\Controllers\ProposalTemplateController::class, 'index'])
-                ->with('status', ['success' => 0,
+                ->with('status', [
+                    'success' => 0,
                     'msg' => __('crm::lang.template_is_already_created'),
                 ]);
         }
@@ -103,18 +105,20 @@ class ProposalTemplateController extends Controller
 
             DB::beginTransaction();
             $proposal_template = ProposalTemplate::create($input);
-            if (! empty($attachments)) {
+            if (!empty($attachments)) {
                 Media::uploadMedia($business_id, $proposal_template, request(), 'attachments');
             }
             DB::commit();
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('lang_v1.success'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -172,8 +176,8 @@ class ProposalTemplateController extends Controller
     private function __getProposalTemplate($business_id)
     {
         $proposal_template = ProposalTemplate::with(['media'])
-                                ->where('business_id', $business_id)
-                                ->first();
+            ->where('business_id', $business_id)
+            ->first();
 
         return $proposal_template;
     }
@@ -181,14 +185,15 @@ class ProposalTemplateController extends Controller
     public function getEdit()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('crm.add_proposal_template'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('crm.add_proposal_template'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (empty($this->__getProposalTemplate($business_id))) {
             return redirect()
                 ->action([\Modules\Crm\Http\Controllers\ProposalTemplateController::class, 'create'])
-                ->with('status', ['success' => 0,
+                ->with('status', [
+                    'success' => 0,
                     'msg' => __('crm::lang.please_add_template'),
                 ]);
         }
@@ -202,14 +207,15 @@ class ProposalTemplateController extends Controller
     public function postEdit(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('crm.add_proposal_template'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!(auth()->user()->can('crm.add_proposal_template'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (empty($this->__getProposalTemplate($business_id))) {
             return redirect()
                 ->action([\Modules\Crm\Http\Controllers\ProposalTemplateController::class, 'create'])
-                ->with('status', ['success' => 0,
+                ->with('status', [
+                    'success' => 0,
                     'msg' => __('crm::lang.please_add_template'),
                 ]);
         }
@@ -226,7 +232,7 @@ class ProposalTemplateController extends Controller
 
             DB::beginTransaction();
             $proposal_template = ProposalTemplate::where('business_id', $business_id)
-                                        ->first();
+                ->first();
 
             $proposal_template->subject = $input['subject'];
             $proposal_template->body = $input['body'];
@@ -234,18 +240,20 @@ class ProposalTemplateController extends Controller
             $proposal_template->bcc = $input['bcc'];
             $proposal_template->save();
 
-            if (! empty($attachments)) {
+            if (!empty($attachments)) {
                 Media::uploadMedia($business_id, $proposal_template, request(), 'attachments');
             }
             DB::commit();
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('lang_v1.updated'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -263,7 +271,8 @@ class ProposalTemplateController extends Controller
         if (empty($this->__getProposalTemplate($business_id))) {
             return redirect()
                 ->action([\Modules\Crm\Http\Controllers\ProposalTemplateController::class, 'create'])
-                ->with('status', ['success' => 0,
+                ->with('status', [
+                    'success' => 0,
                     'msg' => __('crm::lang.please_add_template'),
                 ]);
         }
@@ -282,7 +291,8 @@ class ProposalTemplateController extends Controller
         if (empty($this->__getProposalTemplate($business_id))) {
             return redirect()
                 ->action([\Modules\Crm\Http\Controllers\ProposalTemplateController::class, 'create'])
-                ->with('status', ['success' => 0,
+                ->with('status', [
+                    'success' => 0,
                     'msg' => __('crm::lang.please_add_template'),
                 ]);
         }
@@ -304,11 +314,13 @@ class ProposalTemplateController extends Controller
             try {
                 Media::deleteMedia($business_id, $id);
 
-                $output = ['success' => true,
+                $output = [
+                    'success' => true,
                     'msg' => __('lang_v1.success'),
                 ];
             } catch (\Exception $e) {
-                $output = ['success' => false,
+                $output = [
+                    'success' => false,
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }

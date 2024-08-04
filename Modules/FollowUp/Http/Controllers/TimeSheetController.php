@@ -16,7 +16,7 @@ use Modules\Sales\Entities\SalesProject;
 use App\Category;
 use App\Company;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 
@@ -129,7 +129,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => '',
                 'vat' => '',
                 'total' => '',
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,

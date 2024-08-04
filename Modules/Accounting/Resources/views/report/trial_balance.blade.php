@@ -4,6 +4,7 @@
 
 @section('content')
 
+
     {{-- @include('accounting::layouts.nav') --}}
 
     <section class="content-header">
@@ -21,6 +22,7 @@
                     'readonly',
                     'id' => 'date_range_filter',
                 ]) !!}
+
             </div>
         </div>
 

@@ -2,7 +2,7 @@
 
 namespace App;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
 
@@ -59,7 +59,7 @@ class BusinessLocation extends Model
         }
 
         $result = $query->get();
-     
+
         $locations = $result->pluck('name', 'id');
 
         $price_groups = SellingPriceGroup::forDropdown($business_id);

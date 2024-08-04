@@ -22,6 +22,8 @@ return [
     "commission_agent" => "المندوب",
     'add_to_location' => 'إضافة إلى فرع',
     'remove_from_location' => 'إزالة من فرع',
+    'change_return_payment_method' => 'تغيير طريقة دفع الإرجاع',
+
     'deactivate_selected' => 'إلغاء تتنشيط المحدد',
     'cmmsn_percent' => 'نسبة عمولة المبيعات (%)',
     "sales_added" => "المبيعات المضافة",
@@ -944,7 +946,7 @@ return [
     "balance_due" => "الرصيد المستحق",
     "send_ledger" => "إرسال الحساب",
     "notifications" => "إشعارات",
-    "ledger_attacment_help" => "سيتم إرفاق دفتر الأستاذ بتنسيق PDF مع هذا البريد الإلكتروني",
+    "ledger_attacment_help" => "سيتم إرفاق كشف حساب بتنسيق PDF مع هذا البريد الإلكتروني",
     "upload_module" => "وحدة التحميل",
     "upload" => "رفع",
     "pls_upload_valid_zip_file" => "الرجاء تحميل ملف مضغوط صالح.",
@@ -1547,7 +1549,8 @@ return [
     'is_not_issued' => 'لم تصدر',
     'accounting_approved_by' => 'اعتماد المالية من قبل',
     'is_approved_by_accounting' => 'الاعتماد من المالية',
-    'issue payrolls' => 'إصدار الراتب'
+    'issue payrolls' => 'إصدار الراتب',
+
 
 
 

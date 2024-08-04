@@ -21,7 +21,7 @@ use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use Modules\Essentials\Entities\EssentialsCountry;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Events\ContactCreatedOrModified;
 use Illuminate\Support\Facades\Hash;
 

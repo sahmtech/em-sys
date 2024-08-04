@@ -19,7 +19,7 @@ use App\Business;
 use DateTime;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsCountry;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\InternationalRelations\Entities\IrDelegation;

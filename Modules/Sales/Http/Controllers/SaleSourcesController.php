@@ -7,12 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
 use Yajra\DataTables\Facades\DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use  Modules\Sales\Entities\SalesSource;
+
 class SaleSourcesController extends Controller
 {
     protected $moduleUtil;
-   
+
 
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -31,41 +32,39 @@ class SaleSourcesController extends Controller
         $can_delete_sale_sources = auth()->user()->can('sales.delete_sale_sources');
         $can_edit_sale_sources = auth()->user()->can('sales.edit_sale_sources');
 
-        $countries = SalesSource::select(['id','source as source'])
-        ->orderby('id','desc');
+        $countries = SalesSource::select(['id', 'source as source'])
+            ->orderby('id', 'desc');
         //dd( $countries->get() );
-          
+
         if (request()->ajax()) {
-                    
+
 
             return Datatables::of($countries)
-        
-            ->addColumn(
-                'action',
-                function ($row) use ($is_admin,$can_delete_sale_sources, $can_edit_sale_sources) {
-                    $html = '';
-                    if ($is_admin || $can_edit_sale_sources ) {
-                        $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
+
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin, $can_delete_sale_sources, $can_edit_sale_sources) {
+                        $html = '';
+                        if ($is_admin || $can_edit_sale_sources) {
+                            $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
                          data-id="' . $row->id . '" data-orig-value="' . $row->source . '">
-                         <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                    }
-                    if ($is_admin || $can_delete_sale_sources ) {
-                        $html .= '<button class="btn btn-xs btn-danger delete_item_button"
+                         <i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
+                        }
+                        if ($is_admin || $can_delete_sale_sources) {
+                            $html .= '<button class="btn btn-xs btn-danger delete_item_button"
                             data-href="' . route('sale_source_destroy', ['id' => $row->id]) . '">
-                            <i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                            <i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
+
+                        return $html;
                     }
-    
-        
-                    return $html;
-                }
-            )
-           
-          
-            ->rawColumns(['action'])
-            ->make(true);
-        
-        
-            }
+                )
+
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
         return view('sales::salesSources.index_sales_sources');
     }
 
@@ -89,30 +88,32 @@ class SaleSourcesController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
- 
+
         try {
             $input = $request->only(['source']);
-            
 
-          
+
+
             $input['source'] = $input['source'];
-            
-           
+
+
             SalesSource::create($input);
- 
-            $output = ['success' => true,
+
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
 
-     
-       return redirect()->route('sales_sources');
+
+        return redirect()->route('sales_sources');
     }
 
     /**
@@ -150,7 +151,7 @@ class SaleSourcesController extends Controller
 
 
         try {
-            $input = $request->only(['source2','source_id']);
+            $input = $request->only(['source2', 'source_id']);
 
             $salesSource = salesSource::find($input['source_id']);
 
@@ -167,7 +168,7 @@ class SaleSourcesController extends Controller
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -176,7 +177,6 @@ class SaleSourcesController extends Controller
         }
 
         return redirect()->route('sales_sources')->with($output);
-     
     }
 
     /**
@@ -193,21 +193,21 @@ class SaleSourcesController extends Controller
 
         try {
             SalesSource::where('id', $id)
-                        ->delete();
+                ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-       
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-       
-       return $output;
 
+        return $output;
     }
 }

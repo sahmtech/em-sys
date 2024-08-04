@@ -264,6 +264,8 @@
                         <tfoot>
                             <tr>
                                 <th></th>
+                                <th></th>
+                                <th></th>
                                 <th class="text-center">@lang('accounting::lang.total')</th>
                                 <th><input type="hidden" class="total_debit_hidden"><span class="total_debit"></span></th>
                                 <th><input type="hidden" class="total_credit_hidden"><span class="total_credit"></span></th>

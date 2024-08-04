@@ -10,7 +10,7 @@ use App\BusinessLocation;
 use App\Contact;
 use App\Transaction;
 use App\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\CustomerGroup;
 use App\Utils\BusinessUtil;
 use App\Utils\ContactUtil;

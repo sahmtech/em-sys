@@ -3,7 +3,7 @@
 namespace Modules\Crm\Entities;
 
 use App\Contact;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class CrmContact extends Contact
@@ -49,14 +49,14 @@ class CrmContact extends Contact
     public static function leadsDropdown($business_id, $prepend_none = true, $append_id = true)
     {
         $all_contacts = CrmContact::where('business_id', $business_id)
-                        ->where('type', 'lead')
-                        ->active();
+            ->where('type', 'lead')
+            ->active();
 
         if ($append_id) {
             $all_contacts->select(
                 DB::raw("IF(contact_id IS NULL OR contact_id='', CONCAT( COALESCE(supplier_business_name, ''), ' - ', name), CONCAT(COALESCE(supplier_business_name, ''), ' - ', name, ' (', contact_id, ')')) AS leads"),
                 'id'
-                );
+            );
         } else {
             $all_contacts->select('id', DB::raw('name as leads'));
         }
@@ -64,7 +64,7 @@ class CrmContact extends Contact
         $can_access_all_leads = auth()->user()->can('crm.access_all_leads');
         $can_access_own_leads = auth()->user()->can('crm.access_own_leads');
 
-        if (! $can_access_all_leads && $can_access_own_leads) {
+        if (!$can_access_all_leads && $can_access_own_leads) {
             $all_contacts->OnlyOwnLeads();
         }
 
@@ -84,10 +84,10 @@ class CrmContact extends Contact
         $customers = Contact::customersDropdown($business_id, false)->toArray();
 
         foreach ($customers as $key => $value) {
-            $customers[$key] = $value.' ('.__('contact.customer').')';
+            $customers[$key] = $value . ' (' . __('contact.customer') . ')';
         }
         foreach ($leads as $key => $value) {
-            $customers[$key] = $value.' ('.__('crm::lang.lead').')';
+            $customers[$key] = $value . ' (' . __('crm::lang.lead') . ')';
         }
 
         return $customers;
@@ -96,13 +96,13 @@ class CrmContact extends Contact
     public static function contactsDropdownForLogin($business_id, $append_contact_id = true)
     {
         $all_contacts = Contact::where('business_id', $business_id)
-                        ->active();
+            ->active();
 
         if ($append_contact_id) {
             $all_contacts->select(
                 DB::raw("IF(contact_id IS NULL OR contact_id='', CONCAT( COALESCE(supplier_business_name, ''), ' - ', name), CONCAT(COALESCE(supplier_business_name, ''), ' - ', name, ' (', contact_id, ')')) AS contacts"),
                 'id'
-                );
+            );
         } else {
             $all_contacts->select('id', DB::raw('name as contacts'));
         }
@@ -116,10 +116,10 @@ class CrmContact extends Contact
     {
         //Check Contact id
         $count = 0;
-        if (! empty($input['contact_id'])) {
+        if (!empty($input['contact_id'])) {
             $count = CrmContact::where('business_id', $input['business_id'])
-                      ->where('contact_id', $input['contact_id'])
-                      ->count();
+                ->where('contact_id', $input['contact_id'])
+                ->count();
         }
 
         if ($count == 0) {
@@ -137,7 +137,7 @@ class CrmContact extends Contact
             $contact->leadUsers()->sync($assigned_to);
 
             //update user contact access also
-            if (! empty($assigned_to)) {
+            if (!empty($assigned_to)) {
                 $lead_contact = Contact::find($contact->id);
                 $lead_contact->userHavingAccess()->sync($assigned_to);
             }
@@ -153,17 +153,17 @@ class CrmContact extends Contact
         $business_id = auth()->user()->business_id;
         //Check Contact id
         $count = 0;
-        if (! empty($input['contact_id'])) {
+        if (!empty($input['contact_id'])) {
             $count = CrmContact::where('business_id', $business_id)
-                        ->where('contact_id', $input['contact_id'])
-                        ->where('id', '!=', $id)
-                        ->count();
+                ->where('contact_id', $input['contact_id'])
+                ->where('id', '!=', $id)
+                ->count();
         }
 
         if ($count == 0) {
             $query = CrmContact::where('business_id', $business_id);
 
-            if (! auth()->user()->can('crm.access_all_leads') && auth()->user()->can('crm.access_own_leads')) {
+            if (!auth()->user()->can('crm.access_all_leads') && auth()->user()->can('crm.access_own_leads')) {
                 $query->where(function ($qry) {
                     $qry->whereHas('leadUsers', function ($q) {
                         $q->where('user_id', auth()->user()->id);
@@ -177,7 +177,7 @@ class CrmContact extends Contact
             $contact->leadUsers()->sync($assigned_to);
 
             //update user contact access also
-            if (! empty($assigned_to)) {
+            if (!empty($assigned_to)) {
                 $lead_contact = Contact::find($id);
                 $lead_contact->userHavingAccess()->sync($assigned_to);
             }
@@ -191,16 +191,16 @@ class CrmContact extends Contact
     public static function getContactsCountBySourceOfGivenTyps($business_id, $types = [])
     {
         $query = Contact::where('business_id', $business_id)
-                    ->Active();
+            ->Active();
 
-        if (! empty($types)) {
+        if (!empty($types)) {
             $query->whereIn('type', $types);
         }
 
         $contacts_count_by_source = $query->select(\DB::raw('count(crm_source) as count, crm_source'))
-                                    ->groupBy('crm_source')
-                                    ->get()
-                                    ->keyBy('crm_source');
+            ->groupBy('crm_source')
+            ->get()
+            ->keyBy('crm_source');
 
         return $contacts_count_by_source;
     }
@@ -220,22 +220,22 @@ class CrmContact extends Contact
     public function getFullNameWithBusinessAttribute()
     {
         $name_array = [];
-        if (! empty($this->prefix)) {
+        if (!empty($this->prefix)) {
             $name_array[] = $this->prefix;
         }
-        if (! empty($this->first_name)) {
+        if (!empty($this->first_name)) {
             $name_array[] = $this->first_name;
         }
-        if (! empty($this->middle_name)) {
+        if (!empty($this->middle_name)) {
             $name_array[] = $this->middle_name;
         }
-        if (! empty($this->last_name)) {
+        if (!empty($this->last_name)) {
             $name_array[] = $this->last_name;
         }
 
         $full_name = implode(' ', $name_array);
-        $business_name = ! empty($this->supplier_business_name) ? $this->supplier_business_name.', ' : '';
+        $business_name = !empty($this->supplier_business_name) ? $this->supplier_business_name . ', ' : '';
 
-        return $business_name.$full_name;
+        return $business_name . $full_name;
     }
 }

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use Modules\Essentials\Entities\EssentialsWorkCard;
 use Illuminate\Support\Facades\Auth;
+use Modules\Essentials\Entities\Shift;
 
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -842,7 +843,7 @@ class ProjectWorkersController extends Controller
 
         $contacts = SalesProject::pluck('name', 'id')->toArray();
         $contacts = [null => __('essentials::lang.undefined')] + $contacts;
-
+        $shifts = Shift::pluck('name', 'id');
         $blood_types = [
             'A+' => 'A positive (A+).',
             'A-' => 'A negative (A-).',
@@ -899,6 +900,7 @@ class ProjectWorkersController extends Controller
                 'username_ext',
                 'blood_types',
                 'job_titles',
+                'shifts',
                 'contacts',
                 'company',
                 'banks',

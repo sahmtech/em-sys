@@ -13,7 +13,7 @@ use App\ContactLocation;
 use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentailsReasonWish;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;

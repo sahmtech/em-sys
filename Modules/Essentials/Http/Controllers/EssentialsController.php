@@ -15,7 +15,7 @@ use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use App\Request as UserRequest;
 use App\RequestProcess;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Modules\CEOManagment\Entities\RequestsType;
 use Yajra\DataTables\Facades\DataTables;

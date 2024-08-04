@@ -16,7 +16,7 @@ use App\User;
 use App\VariationLocationDetails;
 use Carbon\Carbon;
 use Config;
-use DB;
+use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -2007,13 +2007,13 @@ class Util
             if (count($accTransMappingSetting) > 0) {
                 $ref_no = $request->get('ref_no');
 
-                $ref_count = $this->setAndGetReferenceCount('journal_entry',$business_id,$company_id);
+                $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
                     $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
                         $accounting_settings['journal_entry_prefix'] : '';
 
                     //Generate reference number
-                    $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id,$company_id, $prefix);
+                    $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
                 }
                 $acc_trans_mapping = new AccountingAccTransMapping();
                 $acc_trans_mapping->business_id = $business_id;
@@ -2043,5 +2043,4 @@ class Util
             }
         }
     }
-
 }

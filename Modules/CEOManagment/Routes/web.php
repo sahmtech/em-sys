@@ -22,6 +22,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/escalate_requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'escalateRequests'])->name('ceomanagment.escalate_requests');
         Route::post('/change-status', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'changeStatus'])->name('ceomanagment.changeStatus');
         Route::get('/viewCEORequest/{requestId}', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewCEORequest');
+        Route::post('/changeEscalationStatus', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('ceomanagment.changeEscalationStatus');
 
         Route::get('/requests_types', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index'])->name('requests_types');
         Route::post('storeRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'store'])->name('storeRequestType');
@@ -69,5 +70,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::delete('/procedure/{id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'destroy'])->name('procedure.destroy');
         Route::get('/getProcedure/{procedure_id}', [\Modules\CEOManagment\Http\Controllers\WkProcedureController::class, 'getProcedure'])->name('getProcedure');
+
+
+        Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('ceo.payrolls_checkpoint');
     });
 });

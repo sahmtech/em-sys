@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Utils\Util;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -22,7 +22,7 @@ class Account extends Model
         'account_details' => 'array',
     ];
 
-    public static function forDropdown($business_id,$company_id=null, $prepend_none, $closed = false, $show_balance = false)
+    public static function forDropdown($business_id, $company_id = null, $prepend_none, $closed = false, $show_balance = false)
     {
         $query = Account::where('business_id', $business_id)->where('company_id', $company_id);
 
@@ -30,14 +30,14 @@ class Account extends Model
         $account_ids = [];
         if ($permitted_locations != 'all') {
             $locations = BusinessLocation::where('business_id', $business_id)->where('company_id', $company_id)
-                            ->whereIn('id', $permitted_locations)
-                            ->get();
+                ->whereIn('id', $permitted_locations)
+                ->get();
 
             foreach ($locations as $location) {
-                if (! empty($location->default_payment_accounts)) {
+                if (!empty($location->default_payment_accounts)) {
                     $default_payment_accounts = json_decode($location->default_payment_accounts, true);
                     foreach ($default_payment_accounts as $key => $account) {
-                        if (! empty($account['is_enabled']) && ! empty($account['account'])) {
+                        if (!empty($account['is_enabled']) && !empty($account['account'])) {
                             $account_ids[] = $account['account'];
                         }
                     }
@@ -57,13 +57,14 @@ class Account extends Model
             //     $join->on('AT.account_id', '=', 'accounts.id');
             //     $join->whereNull('AT.deleted_at');
             // })
-            $query->select('accounts.name',
-                    'accounts.id',
-                    DB::raw("(SELECT SUM( IF(account_transactions.type='credit', amount, -1*amount) ) as balance from account_transactions where account_transactions.account_id = accounts.id AND deleted_at is NULL) as balance")
-                );
+            $query->select(
+                'accounts.name',
+                'accounts.id',
+                DB::raw("(SELECT SUM( IF(account_transactions.type='credit', amount, -1*amount) ) as balance from account_transactions where account_transactions.account_id = accounts.id AND deleted_at is NULL) as balance")
+            );
         }
 
-        if (! $closed) {
+        if (!$closed) {
             $query->where('is_closed', 0);
         }
 
@@ -79,7 +80,7 @@ class Account extends Model
             $name = $account->name;
 
             if ($can_access_account && $show_balance) {
-                $name .= ' ('.__('lang_v1.balance').': '.$commonUtil->num_f($account->balance).')';
+                $name .= ' (' . __('lang_v1.balance') . ': ' . $commonUtil->num_f($account->balance) . ')';
             }
 
             $dropdown[$account->id] = $name;

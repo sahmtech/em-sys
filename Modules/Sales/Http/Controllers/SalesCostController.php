@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
 use Yajra\DataTables\Facades\DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use  Modules\Sales\Entities\salesCost;
 
 class SalesCostController extends Controller

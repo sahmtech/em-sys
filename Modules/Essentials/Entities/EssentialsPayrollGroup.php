@@ -4,7 +4,7 @@ namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PayrollGroup extends Model
+class EssentialsPayrollGroup extends Model
 {
     /**
      * The attributes that aren't mass assignable.

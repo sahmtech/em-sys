@@ -18,7 +18,7 @@ use App\Utils\Util;
 use App\VariationLocationDetails;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;

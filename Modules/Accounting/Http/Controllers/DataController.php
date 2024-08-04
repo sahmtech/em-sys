@@ -181,7 +181,7 @@ class DataController extends Controller
                         'default' => false
                     ],
 
-                    
+
                     [
                         'value' => 'accounting.automatedMigration',
                         'label' => __('accounting::lang.automatedMigration'),
@@ -316,6 +316,36 @@ class DataController extends Controller
                     [
                         'value' => 'accounting.deal_timesheet',
                         'label' => __('accounting::lang.deal_timesheet'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.view_payroll_checkpoint',
+                        'label' => __('essentials::lang.view_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.confirm_payroll_checkpoint',
+                        'label' => __('essentials::lang.confirm_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.show_payroll_checkpoint',
+                        'label' => __('essentials::lang.show_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.view_payroll_checkpoint_financial',
+                        'label' => __('essentials::lang.view_payroll_checkpoint_financial'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.confirm_payroll_checkpoint_financial',
+                        'label' => __('essentials::lang.confirm_payroll_checkpoint_financial'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'accounting.show_payroll_checkpoint_financial',
+                        'label' => __('essentials::lang.show_payroll_checkpoint_financial'),
                         'default' => false,
                     ],
 

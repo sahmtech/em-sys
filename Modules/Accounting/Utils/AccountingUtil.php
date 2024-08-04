@@ -3,7 +3,7 @@
 namespace Modules\Accounting\Utils;
 
 use App\Utils\Util;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Business;
 use App\Company;
 use App\Transaction;
@@ -35,7 +35,7 @@ class AccountingUtil extends Util
         // OR ($accounting_accounts_alias.account_primary_type='income' AND $accounting_account_transaction_alias.type='credit')
         // OR ($accounting_accounts_alias.account_primary_type='equity' AND $accounting_account_transaction_alias.type='credit')
         // OR ($accounting_accounts_alias.account_primary_type='liability' AND $accounting_account_transaction_alias.type='credit'), 
-      
+
         return "SUM( IF(
             ($accounting_accounts_alias.account_primary_type='asset' AND $accounting_account_transaction_alias.type='debit')
             OR ($accounting_accounts_alias.account_primary_type='commitments' AND $accounting_account_transaction_alias.type='debit')
@@ -146,21 +146,21 @@ class AccountingUtil extends Util
 
 
             $last_code = $last_parent_account ? substr($last_parent_account->gl_code, -strlen($last_parent_account->gl_code)) : "00";
-           
-            $lastDotPosition = strrpos($last_code, '.'); 
-          
+
+            $lastDotPosition = strrpos($last_code, '.');
+
 
             $numberAfterLastDot = substr($last_code, $lastDotPosition + 1);
-         
+
             $removedNumberString = substr($last_code, 0, $lastDotPosition);
-            $next_code = $removedNumberString .'.'.$numberAfterLastDot+1;
+            $next_code = $removedNumberString . '.' . $numberAfterLastDot + 1;
             return $next_code;
         }
 
         $parent_account = AccountingAccount::find($parent_account_id);
         $last_code = substr($parent_account->gl_code, -strlen($parent_account->gl_code));
 
-     
+
         $next_code = $last_code . '.1';
 
 
@@ -170,22 +170,22 @@ class AccountingUtil extends Util
 
     public static function  Default_Accounts($business_id, $user_id, $company_id = null)
     {
-        $current_assets_id = AccountingAccountType::where('name','current_assets')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $non_current_assets_id = AccountingAccountType::where('name','non_current_assets')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $other_assets_id = AccountingAccountType::where('name','other_assets')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $Currentliabilities_id = AccountingAccountType::where('name','Current liabilities')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $non_current_liabilities_id = AccountingAccountType::where('name','Non-current liabilities')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $capital_id = AccountingAccountType::where('name','capital')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $retained_earnings_id = AccountingAccountType::where('name','retained earnings')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $reserves_id = AccountingAccountType::where('name','Reserves')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $retained_profits_and_losses_id = AccountingAccountType::where('name','Retained profits and losses')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $partners_are_underway_id = AccountingAccountType::where('name','Partners are underway')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $cost_of_goods_sold_id = AccountingAccountType::where('name','Cost of goods sold')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $expenses_id = AccountingAccountType::where('name','expenses')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $expenses_outside_the_activity_id = AccountingAccountType::where('name','Expenses outside the activity')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $income_id = AccountingAccountType::where('name','income')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        $income_outside_the_activity_id = AccountingAccountType::where('name','Income outside the activity')->where('business_id',$business_id)->where('company_id',$company_id)->first()->id;
-        
+        $current_assets_id = AccountingAccountType::where('name', 'current_assets')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $non_current_assets_id = AccountingAccountType::where('name', 'non_current_assets')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $other_assets_id = AccountingAccountType::where('name', 'other_assets')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $Currentliabilities_id = AccountingAccountType::where('name', 'Current liabilities')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $non_current_liabilities_id = AccountingAccountType::where('name', 'Non-current liabilities')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $capital_id = AccountingAccountType::where('name', 'capital')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $retained_earnings_id = AccountingAccountType::where('name', 'retained earnings')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $reserves_id = AccountingAccountType::where('name', 'Reserves')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $retained_profits_and_losses_id = AccountingAccountType::where('name', 'Retained profits and losses')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $partners_are_underway_id = AccountingAccountType::where('name', 'Partners are underway')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $cost_of_goods_sold_id = AccountingAccountType::where('name', 'Cost of goods sold')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $expenses_id = AccountingAccountType::where('name', 'expenses')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $expenses_outside_the_activity_id = AccountingAccountType::where('name', 'Expenses outside the activity')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $income_id = AccountingAccountType::where('name', 'income')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+        $income_outside_the_activity_id = AccountingAccountType::where('name', 'Income outside the activity')->where('business_id', $business_id)->where('company_id', $company_id)->first()->id;
+
         return   array(
             0 =>
             array(
@@ -327,7 +327,7 @@ class AccountingUtil extends Util
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ),
-            
+
             10 =>
             array(
                 'name' => 'Other assets',
@@ -370,7 +370,7 @@ class AccountingUtil extends Util
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ),
-              13 =>
+            13 =>
             array(
                 'name' => 'Other obligations that fall due during the operating cycle',
                 'business_id' => $business_id,
@@ -418,7 +418,7 @@ class AccountingUtil extends Util
                 'business_id' => $business_id,
                 'company_id' => $company_id,
                 'account_primary_type' => 'commitments',
-                'account_sub_type_id' =>$non_current_liabilities_id,
+                'account_sub_type_id' => $non_current_liabilities_id,
                 'detail_type_id' => null,
                 'gl_code' => '2.2.2',
                 'status' => 'active',
@@ -496,7 +496,7 @@ class AccountingUtil extends Util
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ),
-             21 =>
+            21 =>
             array(
                 'name' => 'Cost of goods sold',
                 'business_id' => $business_id,
@@ -608,20 +608,20 @@ class AccountingUtil extends Util
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ),
-        
+
         );
     }
 
- 
-    public static function default_accounting_account_types($business_id,$company_id)
+
+    public static function default_accounting_account_types($business_id, $company_id)
     {
-       return  $account_sub_types = [
+        return  $account_sub_types = [
             // asset
             [
                 // 'id'=>1,
                 'name' => 'current_assets',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '1.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -632,7 +632,7 @@ class AccountingUtil extends Util
                 // 'id'=>2,
                 'name' => 'non_current_assets',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '1.2',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -643,7 +643,7 @@ class AccountingUtil extends Util
                 // 'id'=>3,
                 'name' => 'other_assets',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '1.3',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -655,7 +655,7 @@ class AccountingUtil extends Util
                 // 'id'=>4,
                 'name' => 'Current liabilities',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '2.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -666,7 +666,7 @@ class AccountingUtil extends Util
                 // 'id'=>5,
                 'name' => 'Non-current liabilities',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '2.2',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -678,7 +678,7 @@ class AccountingUtil extends Util
                 // 'id'=>6,
                 'name' => 'capital',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '3.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -689,7 +689,7 @@ class AccountingUtil extends Util
                 // 'id'=>7,
                 'name' => 'retained earnings',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '3.2',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -700,7 +700,7 @@ class AccountingUtil extends Util
                 // 'id'=>8,
                 'name' => 'Reserves',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '3.3',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -711,7 +711,7 @@ class AccountingUtil extends Util
                 // 'id'=>9,
                 'name' => 'Retained profits and losses',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '3.4',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -722,7 +722,7 @@ class AccountingUtil extends Util
                 // 'id'=>10,
                 'name' => 'Partners are underway',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '3.5',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -734,7 +734,7 @@ class AccountingUtil extends Util
                 // 'id'=>11,
                 'name' => 'Cost of goods sold',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '4.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -746,7 +746,7 @@ class AccountingUtil extends Util
                 // 'id'=>12,
                 'name' => 'expenses',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '5.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -757,7 +757,7 @@ class AccountingUtil extends Util
                 // 'id'=>13,
                 'name' => 'Expenses outside the activity',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '5.2',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -769,7 +769,7 @@ class AccountingUtil extends Util
                 // 'id'=>14,
                 'name' => 'income',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '6.1',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
@@ -780,48 +780,50 @@ class AccountingUtil extends Util
                 // 'id'=>15,
                 'name' => 'Income outside the activity',
                 'business_id' => $business_id,
-                'company_id'=>$company_id,
+                'company_id' => $company_id,
                 'gl_code' => '6.2',
                 'show_balance' => 1,
                 'account_type' => 'sub_type',
                 'account_primary_type' => 'income',
                 'parent_id' => null
             ],
-            
+
         ];
     }
 
 
-    public static function account_type(){
-        return[
-            'normal'=>__('accounting::lang.normal'),
-            'customer_receivables_main_account'=>__('accounting::lang.customer_receivables_main_account'),
-            'suppliers_receivables_main_account'=>__('accounting::lang.suppliers_receivables_main_account'),
-            'main_account_employee_receivables'=>__('accounting::lang.main_account_employee_receivables'),
-            'main_account_requests_approvals'=>__('accounting::lang.main_account_requests_approvals'),
-            'main_account_other_receivables'=>__('accounting::lang.main_account_other_receivables'),
-        ];
-    }
-
-    public static function account_category(){
+    public static function account_type()
+    {
         return [
-            'balance_sheet'=>__('accounting::lang.balance_sheet'),
-            'income_list'=>__('accounting::lang.income_list'),
-            'Boxes'=>__('accounting::lang.Boxes'),
-            'Banks'=>__('accounting::lang.Banks'),
-            'Cheques'=>__('accounting::lang.Cheques'),
-            'general'=>__('accounting::lang.general'),
-            'expenses'=>__('accounting::lang.expenses'),
-            'Revenues'=>__('accounting::lang.Revenues'),
-            'Fixed assets'=>__('accounting::lang.Fixed assets'),
-            'Receivables'=>__('accounting::lang.Receivables'),
-            'Liabilities'=>__('accounting::lang.Liabilities'),
-            'taxes'=>__('accounting::lang.taxes'),
-            'Past due checks'=>__('accounting::lang.Past due checks'),
-            'Warehouses'=>__('accounting::lang.Warehouses'),
-            'Revenues received in advance'=>__('accounting::lang.Revenues received in advance'),
-            'Prepaid expenses'=>__('accounting::lang.Prepaid expenses'),
-            
+            'normal' => __('accounting::lang.normal'),
+            'customer_receivables_main_account' => __('accounting::lang.customer_receivables_main_account'),
+            'suppliers_receivables_main_account' => __('accounting::lang.suppliers_receivables_main_account'),
+            'main_account_employee_receivables' => __('accounting::lang.main_account_employee_receivables'),
+            'main_account_requests_approvals' => __('accounting::lang.main_account_requests_approvals'),
+            'main_account_other_receivables' => __('accounting::lang.main_account_other_receivables'),
+        ];
+    }
+
+    public static function account_category()
+    {
+        return [
+            'balance_sheet' => __('accounting::lang.balance_sheet'),
+            'income_list' => __('accounting::lang.income_list'),
+            'Boxes' => __('accounting::lang.Boxes'),
+            'Banks' => __('accounting::lang.Banks'),
+            'Cheques' => __('accounting::lang.Cheques'),
+            'general' => __('accounting::lang.general'),
+            'expenses' => __('accounting::lang.expenses'),
+            'Revenues' => __('accounting::lang.Revenues'),
+            'Fixed assets' => __('accounting::lang.Fixed assets'),
+            'Receivables' => __('accounting::lang.Receivables'),
+            'Liabilities' => __('accounting::lang.Liabilities'),
+            'taxes' => __('accounting::lang.taxes'),
+            'Past due checks' => __('accounting::lang.Past due checks'),
+            'Warehouses' => __('accounting::lang.Warehouses'),
+            'Revenues received in advance' => __('accounting::lang.Revenues received in advance'),
+            'Prepaid expenses' => __('accounting::lang.Prepaid expenses'),
+
         ];
     }
 
@@ -839,7 +841,7 @@ class AccountingUtil extends Util
             'sell_transfer',
             'purchase_transfer',
             'payroll',
-            
+
         ];
         $types = [
             'sell',
@@ -851,7 +853,7 @@ class AccountingUtil extends Util
             'sell_transfer',
             'purchase_transfer',
             'payroll',
-           
+
         ];
         $payment_status = [
             'paid',
@@ -884,5 +886,4 @@ class AccountingUtil extends Util
             }
         }
     }
-    
 }
