@@ -8,7 +8,7 @@
     {{-- @include('accounting::layouts.nav') --}}
 
     <section class="content-header">
-        <h1>@lang( 'accounting::lang.trial_balance' )</h1>
+        <h1>@lang('accounting::lang.trial_balance')</h1>
     </section>
 
     <section class="content container">
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-8 col-md-offset-2 col-lg-12 col-md-offset-0">
 
             <div class="box box-warning">
                 <div class="box-header with-border text-center">
@@ -36,7 +36,7 @@
 
                 <div class="box-body">
                     <div class="table-responsive">
-                        <table class="table table-stripped">
+                        <table class="table table-stripped" id="accounts-table">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -187,6 +187,7 @@
                 urlParams.set('end_date', end);
                 window.location.search = urlParams;
             }
+            $('#accounts-table').DataTable();
         });
     </script>
 
