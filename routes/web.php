@@ -289,9 +289,10 @@ Route::get('/updateDepartmentIds', function () {
 
         if ($appointment) {
             $departmentId = $appointment->department_id;
-
-            $user->essentials_department_id = $departmentId;
-            $user->save();
+            if ($departmentId) {
+                $user->essentials_department_id = $departmentId;
+                $user->save();
+            }
         }
     }
 
