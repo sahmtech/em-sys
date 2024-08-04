@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
+use App\Company;
 use Yajra\DataTables\Facades\DataTables;
 use App\PayrollGroup;
 use App\PayrollGroupUser;
+use App\TimesheetUser;
 use App\Transaction;
 use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsPayrollGroup;
+use Modules\Sales\Entities\SalesProject;
 
 class PayrollController extends Controller
 {
@@ -26,20 +31,117 @@ class PayrollController extends Controller
     }
     public function show_payrolls_checkpoint($id, $from)
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $companies_ids = Company::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
 
-        if ($from == 'hr') {
-            return view('essentials::payrolls_index');
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where(
+                        'access_role_id',
+                        $accessRole->id
+                    )
+                        ->pluck('company_id')
+                        ->toArray();
+                }
+            }
         }
-        if ($from == 'accountant') {
-            return view('accounting::custom_views.payrolls_index');
-        }
-        if ($from == 'financial') {
-            return view('accounting::custom_views.payrolls_index_financial');
-        }
-        if ($from == 'ceo') {
-            return view('ceomanagment::payrolls_index');
-        }
-        return 'error';
+
+        $payrollGroup = PayrollGroup::findOrFail($id);
+        $payrollGroupUsers = PayrollGroupUser::where('payroll_group_id', $id)->join('users as u', 'u.id', '=', 'payroll_group_users.user_id')
+            ->whereIn('u.company_id',  $companies_ids)
+            ->select([
+                'payroll_group_users.*',
+                'u.first_name',
+                'u.mid_name',
+                'u.last_name',
+                'u.bank_details',
+                'u.assigned_to',
+                'u.id',
+                'u.user_type',
+                'u.id_proof_number',
+                'u.company_id',
+                'u.user_type',
+
+            ])
+            ->get();
+
+
+        $user_type = $payrollGroupUsers->first()->user_type;
+        $payrollGroupUsers->each(function ($item) {
+            $bankDetails = json_decode($item->bank_details, true);
+            $item->bank_name = $bankDetails['bank_name'] ?? '';
+            $item->branch = $bankDetails['branch'] ?? '';
+            $item->iban_number = $bankDetails['iban_number'] ?? '';
+            $item->account_holder_name = $bankDetails['account_holder_name'] ?? '';
+            $item->account_number = $bankDetails['account_number'] ?? '';
+            $item->tax_number = $bankDetails['tax_number'] ?? '';
+        });
+        $projects = SalesProject::pluck('name', 'id');
+        $companies = Company::pluck('name', 'id');
+        // return $payrollGroupUsers;
+
+        $payrolls = $payrollGroupUsers->map(function ($user) use ($projects, $companies) {
+            $salary = floatval($user->salary);
+            $housing_allowance = floatval($user->housing_allowance);
+            $transportation_allowance = floatval($user->transportation_allowance);
+            $other_allowance = floatval($user->other_allowance);
+            $violations = floatval($user->violations);
+            $absence_deduction = floatval($user->absence_deduction);
+            $late_deduction = floatval($user->late_deduction);
+            $other_deductions = floatval($user->other_deductions);
+            $loan = floatval($user->loan);
+            $over_time_hours_addition = floatval($user->over_time_hours_addition);
+            $additional_addition = floatval($user->additional_addition);
+            $other_additions = floatval($user->other_additions);
+
+            $total_salary = $salary + $housing_allowance + $transportation_allowance + $other_allowance;
+            $total_deductions = $violations + $absence_deduction + $late_deduction + $other_deductions + $loan;
+            $total_additions = $over_time_hours_addition + $additional_addition + $other_additions;
+            $final_salary = $total_salary - $total_deductions + $total_additions;
+
+            return [
+                'id' => $user->user_id,
+                'name' => $user->first_name . ' ' . $user->last_name,
+                'nationality' => $user->country ? $user->country->nationality : '',
+                'identity_card_number' => $user->id_proof_number,
+                'company' => $user->company_id ? ($companies[$user->company_id] ?? '') : '',
+                'project_name' => $user->assigned_to ? $projects[$user->assigned_to] ?? '' : '',
+                'region' => $user->region ?? '',
+                'work_days' => $user->work_days,
+                'salary' => $salary,
+                'housing_allowance' => $housing_allowance,
+                'transportation_allowance' => $transportation_allowance,
+                'other_allowance' => $other_allowance,
+                'total' => $total_salary,
+                'violations' => $violations,
+                'absence' => $user->absence,
+                'absence_deduction' => $absence_deduction,
+                'late' => $user->late,
+                'late_deduction' => $late_deduction,
+                'other_deductions' => $other_deductions,
+                'loan' => $loan,
+                'total_deduction' => $total_deductions,
+                'over_time_hours' => $user->over_time_hours,
+                'over_time_hours_addition' => $over_time_hours_addition,
+                'additional_addition' => $additional_addition,
+                'other_additions' => $other_additions,
+                'total_additions' => $total_additions,
+                'final_salary' => $final_salary,
+                'payment_method' => $user->payment_method,
+                'notes' => $user->notes,
+                'timesheet_user_id' => $user->timesheet_user_id,
+            ];
+        });
+
+
+        return view('essentials::payrolls_show', compact('payrolls', 'user_type',));
     }
 
     public function store_to_transaction($id)
@@ -353,11 +455,13 @@ class PayrollController extends Controller
         $can_clear = auth()->user()->can('essentials.confirm_payroll_checkpoint')
             || auth()->user()->can('accounting.confirm_payroll_checkpoint')
             || auth()->user()->can('accounting.confirm_payroll_checkpoint_financial')
-            || auth()->user()->can('ceomanagment.confirm_payroll_checkpoint');
+            || auth()->user()->can('ceomanagment.confirm_payroll_checkpoint')
+            || auth()->user()->can('generalmanagement.confirm_payroll_checkpoint');
         $can_view = auth()->user()->can('essentials.show_payroll_checkpoint')
             || auth()->user()->can('accounting.show_payroll_checkpoint')
             || auth()->user()->can('accounting.show_payroll_checkpoint_financial')
-            || auth()->user()->can('ceomanagment.show_payroll_checkpoint');
+            || auth()->user()->can('ceomanagment.show_payroll_checkpoint')
+            || auth()->user()->can('generalmanagement.show_payroll_checkpoint');
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
                 ->addColumn('name', function ($row) {
@@ -476,7 +580,7 @@ class PayrollController extends Controller
                             ($from == 'hr' && !$row->hr_management_cleared)
                             || ($from == 'accountant' && $row->hr_management_cleared && !$row->accountant_cleared)
                             || ($from == 'financial' && $row->hr_management_cleared && $row->accountant_cleared && !$row->financial_management_cleared)
-                            || ($from == 'ceo' && $row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && !$row->ceo_cleared_by)
+                            || (($from == 'ceo' || $from == 'generalmanagement') && $row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && !$row->ceo_cleared_by)
                         )
                     ) {
                         $html .= '<li><a href="' . route('payrolls_checkpoint.clear', ['id' => $row->id, 'from' => $from]) . '"><i class="fa fa-check" aria-hidden="true"></i> ' . __('lang_v1.approve') . '</a></li>';
@@ -511,6 +615,9 @@ class PayrollController extends Controller
         }
         if ($from == 'ceo') {
             return view('ceomanagment::payrolls_index');
+        }
+        if ($from == 'generalmanagement') {
+            return view('generalmanagement::payrolls_index');
         }
         return 'error';
     }

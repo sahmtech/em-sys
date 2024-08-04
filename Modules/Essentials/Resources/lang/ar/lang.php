@@ -1973,6 +1973,9 @@ return [
   'ceo_cleared' => 'الرئيس التنفيذي',
   'ceo_cleared_at' => 'تاريخ الاعتماد',
   'ceo_cleared_by' => 'تم من قبل',
+  'absence_deduction' => 'خصم الغياب',
+  'late_deduction' => 'خصم التأخير',
+  'over_time_hours_addition' => 'مبلغ الساعات الإضافية',
 
 
 ];

@@ -1039,7 +1039,7 @@ class PayrollController extends Controller
 
         $payroll_date = Carbon::createFromFormat('m/Y', $month_year);
         $timesheet_group_date = $payroll_date->format('F Y');
-        $timesheet_groups = TimesheetGroup::where('timesheet_date', $timesheet_group_date)->where('is_payrolls_issued', 0)->pluck('id')->toArray();
+        $timesheet_groups = TimesheetGroup::where('timesheet_date', $timesheet_group_date)->where('is_approved', 1)->where('is_payrolls_issued', 0)->pluck('id')->toArray();
 
         $employee_ids = User::with('contract');
 
@@ -1089,6 +1089,7 @@ class PayrollController extends Controller
         $end_of_month = $currentDateTime->copy()->endOfMonth();
         $payrolls = [];
         $companies = Company::pluck('name', 'id');
+
         foreach ($employees as $worker) {
             $housing_allowance = 0;
             $transportation_allowance = 0;
@@ -1116,6 +1117,48 @@ class PayrollController extends Controller
                 $additions = $timesheet->additions;
                 $final_salary = $timesheet->final_salary;
                 $project_name = $timesheet->project_id;
+
+
+
+
+                $profession = $worker->appointment?->profession?->name ?? '';
+                $salesProject = SalesProject::pluck('name', 'id');
+                $payrolls[] = [
+                    'id' => $worker->user_id,
+                    'name' => $worker->name ?? '',
+                    'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                    'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
+                    'identity_card_number' => $worker->id_proof_number ?? '',
+                    'sponser' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
+                    // 'project_name' => $project_name ?? '',
+                    'project_name' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
+                    'region' => '',
+                    'profession' => $profession ?? '',
+                    'work_days' => $work_days ?? 30,
+                    'salary' => $monthly_cost ?? 0,
+                    'housing_allowance' => $housing_allowance ?? 0,
+                    'transportation_allowance' => $transportation_allowance ?? 0,
+                    'other_allowance' => $other_allowance ?? 0,
+                    'total' => $salary ?? 0,
+                    'violations' => 0,
+                    'absence' => $absence_days ?? 0,
+                    'late' => 0,
+                    'late_deduction' => 0,
+                    'absence_deduction' => $absence_amount ?? 0,
+                    'other_deductions' => $other_deduction ?? 0,
+                    'loan' => 0,
+                    'total_deduction' => $other_deduction ?? 0,
+                    'over_time_hours' => $over_time_hours ?? 0,
+                    'over_time_hours_addition' => $over_time_amount ?? 0,
+                    'additional_addition' => 0,
+                    'other_additions' => $additions ?? 0,
+                    'total_additions' => $additions ?? 0,
+                    'final_salary' => $final_salary ?? 0,
+                    'payment_method' => '',
+                    'notes' => '',
+                    'timesheet_user_id' => $timesheet?->id ?? '',
+                    // 'timesheet_group_id' => $timesheet?->timesheet_group_id ?? '',
+                ];
             } else if ($worker->user_type != "worker") {
                 $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
                 foreach ($allowances as $allowance) {
@@ -1146,46 +1189,49 @@ class PayrollController extends Controller
                 $additions = 0;
                 $final_salary = null;
                 $project_name = $worker->assignedTo?->name ?? '';
-            }
 
-            $profession = $worker->appointment?->profession?->name ?? '';
-            $salesProject = SalesProject::pluck('name', 'id');
-            $payrolls[] = [
-                'id' => $worker->user_id,
-                'name' => $worker->name ?? '',
-                'nationality' => User::find($worker->id)->country?->nationality ?? '',
-                'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
-                'identity_card_number' => $worker->id_proof_number ?? '',
-                'sponser' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
-                // 'project_name' => $project_name ?? '',
-                'project_name' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
-                'region' => '',
-                'profession' => $profession ?? '',
-                'work_days' => $work_days,
-                'salary' => $monthly_cost,
-                'housing_allowance' => $housing_allowance,
-                'transportation_allowance' => $transportation_allowance,
-                'other_allowance' => $other_allowance,
-                'total' => $salary,
-                'violations' => 0,
-                'absence' => $absence_days,
-                'late' => 0,
-                'late_deduction' => 0,
-                'absence_deduction' => $absence_amount,
-                'other_deductions' => $other_deduction,
-                'loan' => 0,
-                'total_deduction' => $other_deduction,
-                'over_time_hours' => $over_time_hours,
-                'over_time_hours_addition' => $over_time_amount,
-                'additional_addition' => 0,
-                'other_additions' => $additions,
-                'total_additions' => $additions,
-                'final_salary' => $final_salary,
-                'payment_method' => '',
-                'notes' => '',
-                // 'timesheet_user_id' => $timesheet?->id ?? '',
-                // 'timesheet_group_id' => $timesheet?->timesheet_group_id ?? '',
-            ];
+
+
+
+                $profession = $worker->appointment?->profession?->name ?? '';
+                $salesProject = SalesProject::pluck('name', 'id');
+                $payrolls[] = [
+                    'id' => $worker->user_id,
+                    'name' => $worker->name ?? '',
+                    'nationality' => User::find($worker->id)->country?->nationality ?? '',
+                    'company' => $worker->company_id ? $companies[$worker->company_id] ?? '' : '',
+                    'identity_card_number' => $worker->id_proof_number ?? '',
+                    'sponser' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
+                    // 'project_name' => $project_name ?? '',
+                    'project_name' => $worker->assigned_to ? $salesProject[$worker->assigned_to] ?? '' : '',
+                    'region' => '',
+                    'profession' => $profession ?? '',
+                    'work_days' => $work_days ?? 30,
+                    'salary' => $monthly_cost ?? 0,
+                    'housing_allowance' => $housing_allowance ?? 0,
+                    'transportation_allowance' => $transportation_allowance ?? 0,
+                    'other_allowance' => $other_allowance ?? 0,
+                    'total' => $salary ?? 0,
+                    'violations' => 0,
+                    'absence' => $absence_days ?? 0,
+                    'late' => 0,
+                    'late_deduction' => 0,
+                    'absence_deduction' => $absence_amount ?? 0,
+                    'other_deductions' => $other_deduction ?? 0,
+                    'loan' => 0,
+                    'total_deduction' => $other_deduction ?? 0,
+                    'over_time_hours' => $over_time_hours ?? 0,
+                    'over_time_hours_addition' => $over_time_amount ?? 0,
+                    'additional_addition' => 0,
+                    'other_additions' => $additions ?? 0,
+                    'total_additions' => $additions ?? 0,
+                    'final_salary' => $final_salary ?? 0,
+                    'payment_method' => '',
+                    'notes' => '',
+                    'timesheet_user_id' => $timesheet?->id ?? '',
+                    // 'timesheet_group_id' => $timesheet?->timesheet_group_id ?? '',
+                ];
+            }
         }
 
         $date = (Carbon::createFromFormat('m/Y', $month_year ?? Carbon::now()->format('m/Y')))->format('F Y');
@@ -1204,7 +1250,6 @@ class PayrollController extends Controller
 
     public function store(Request $request)
     {
-
         try {
             DB::beginTransaction();
             $timesheet_groups = json_decode($request->timesheet_groups);
@@ -1254,7 +1299,7 @@ class PayrollController extends Controller
                         'final_salary' => $payroll['final_salary'] ?? '',
                         'payment_method' => $payroll['payment_method'] ?? '',
                         'notes' => $payroll['notes'] ?? '',
-                        // 'timesheet_user_id' => $payroll['timesheet_user_id'] ?? '',
+                        'timesheet_user_id' => $payroll['timesheet_user_id'] ?? null,
                     ]);
                 }
             }

@@ -8,7 +8,7 @@
     {{-- @include('accounting::layouts.nav') --}}
 
     <section class="content-header">
-        <h1>@lang( 'accounting::lang.trial_balance' )</h1>
+        <h1>@lang('accounting::lang.trial_balance')</h1>
     </section>
 
     <section class="content container">
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-8 col-md-offset-2 col-lg-12 col-md-offset-0">
 
             <div class="box box-warning">
                 <div class="box-header with-border text-center">
@@ -36,7 +36,7 @@
 
                 <div class="box-body">
                     <div class="table-responsive">
-                        <table class="table table-stripped">
+                        <table class="table table-stripped" id="accounts-table">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -58,17 +58,17 @@
                             @php
                                 $total_debit = 0;
                                 $total_credit = 0;
-                                $total_credit_opining_balance = 0;
-                                $total_dedit_opining_balance = 0;
+                                $total_credit_opening_balance = 0;
+                                $total_debit_opening_balance = 0;
                                 $total_closing_debit_balance = 0;
-                                $total_closing_crebit_balance = 0;
+                                $total_closing_credit_balance = 0;
                             @endphp
 
                             <tbody>
                                 @foreach ($accounts as $account)
                                     @php
-                                        $total_credit_opining_balance += $account->credit_opining_balance;
-                                        $total_dedit_opining_balance += $account->dedit_opining_balance;
+                                        $total_credit_opening_balance += $account->credit_opening_balance;
+                                        $total_debit_opening_balance += $account->debit_opening_balance;
                                         $total_debit += $account->debit_balance;
                                         $total_credit += $account->credit_balance;
 
@@ -77,31 +77,31 @@
 
                                         if ($net_Financial_Transactions > 0) {
                                             $closing_debit_balance =
-                                                $net_Financial_Transactions + $account->dedit_opining_balance;
+                                                $net_Financial_Transactions + $account->debit_opening_balance;
                                             $closing_credit_balance = 0;
                                         } elseif ($net_Financial_Transactions < 0) {
                                             $closing_credit_balance =
-                                                abs($net_Financial_Transactions) + $account->credit_opining_balance;
+                                                abs($net_Financial_Transactions) + $account->credit_opening_balance;
                                             $closing_debit_balance = 0;
                                         } else {
-                                            $closing_credit_balance = $account->credit_opining_balance;
-                                            $closing_debit_balance = $account->dedit_opining_balance;
+                                            $closing_credit_balance = $account->credit_opening_balance;
+                                            $closing_debit_balance = $account->debit_opening_balance;
                                         }
 
                                         $total_closing_debit_balance += $closing_debit_balance;
-                                        $total_closing_crebit_balance += $closing_credit_balance;
+                                        $total_closing_credit_balance += $closing_credit_balance;
 
                                     @endphp
                                     <tr>
                                         <td>{{ $account->name }}</td>
                                         <td>
-                                            @if ($account->dedit_opining_balance != 0)
-                                                @format_currency($account->dedit_opining_balance)
+                                            @if ($account->debit_opening_balance != 0)
+                                                @format_currency($account->debit_opening_balance)
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($account->dedit_opining_balance != 0)
-                                                @format_currency($account->credit_opining_balance)
+                                            @if ($account->credit_opening_balance != 0)
+                                                @format_currency($account->credit_opening_balance)
                                             @endif
                                         </td>
                                         <td>
@@ -127,12 +127,12 @@
                             <tfoot>
                                 <tr>
                                     <th>Total</th>
-                                    <th class="total_debit">@format_currency($total_credit_opining_balance)</th>
-                                    <th class="total_credit">@format_currency($total_dedit_opining_balance)</th>
+                                    <th class="total_credit">@format_currency($total_debit_opening_balance)</th>
+                                    <th class="total_debit">@format_currency($total_credit_opening_balance)</th>
                                     <th class="total_debit">@format_currency($total_debit)</th>
                                     <th class="total_credit">@format_currency($total_credit)</th>
                                     <th class="total_debit">@format_currency($total_closing_debit_balance)</th>
-                                    <th class="total_credit">@format_currency($total_closing_crebit_balance)</th>
+                                    <th class="total_credit">@format_currency($total_closing_credit_balance)</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -187,6 +187,7 @@
                 urlParams.set('end_date', end);
                 window.location.search = urlParams;
             }
+            $('#accounts-table').DataTable();
         });
     </script>
 

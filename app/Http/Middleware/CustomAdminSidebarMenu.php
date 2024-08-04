@@ -367,11 +367,24 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-envelope',]
                 );
             }
+
             $menu->url(
                 route('generalmanagement.Communication', ['from' => 'generalmanagement']),
                 __('home.communication_between_deps'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
             );
+
+
+            if ($is_admin  || auth()->user()->can('generalmanagement.view_payroll_checkpoint')) {
+                $menu->url(
+                    route('generalmanagement.payrolls_checkpoint', ['from' => 'generalmanagement']),
+                    __('essentials::lang.hrm_payrolls'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' =>  request()->segment(2) == 'payrolls_checkpoint'
+                    ]
+                );
+            }
         });
     }
     public function generalmanagmentofficeMenu()

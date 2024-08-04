@@ -374,12 +374,13 @@
                                                 'class' => 'form-hidden',
                                             ]) !!}
                                         </td>
-
-                                        {{-- {!! Form::hidden('payrolls[' . $index . '][timesheet_user_id]', $payroll['timesheet_user_id'] ?? null, [
+                                        {!! Form::hidden('payrolls[' . $index . '][timesheet_user_id]', $payroll['timesheet_user_id'] ?? null, [
                                             'data-index' => $index,
                                             'data-field' => 'timesheet_user_id',
                                             'class' => 'form-hidden',
                                         ]) !!}
+
+                                        {{-- 
                                         {!! Form::hidden('payrolls[' . $index . '][timesheet_group_id]', $payroll['timesheet_group_id'] ?? null, [
                                             'data-index' => $index,
                                             'data-field' => 'timesheet_group_id',

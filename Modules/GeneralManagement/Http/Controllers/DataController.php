@@ -151,6 +151,23 @@ class DataController extends Controller
                         'label' => __('generalmanagement::lang.view_procedures_for_workers'),
                         'default' => false,
                     ],
+
+                    [
+                        'value' => 'generalmanagement.view_payroll_checkpoint',
+                        'label' => __('essentials::lang.view_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'generalmanagement.confirm_payroll_checkpoint',
+                        'label' => __('essentials::lang.confirm_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'generalmanagement.show_payroll_checkpoint',
+                        'label' => __('essentials::lang.show_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+
                 ],
             ],
         ];
