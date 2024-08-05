@@ -482,7 +482,7 @@ class AutomatedMigrationController extends Controller
     public function destroy_acc_trans_mapping_setting($id)
     {
         // $mappingSetting = AccountingMappingSettingTest::find($id);
-        $acc_trans = AccountingAccTransMappingSettingTest::find($id);
+        $acc_trans = AccountingAccTransMappingSettingAutoMigration::find($id);
         $mappingSetting_id = $acc_trans->mapping_setting_id;
         $acc_trans->delete();
         $output = [

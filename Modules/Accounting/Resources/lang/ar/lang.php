@@ -520,6 +520,7 @@ return [
         'tax_amount' => 'مبلغ الضريبة',
         'shipping_charges' => 'مبلغ الشحن',
         'discount_amount' => 'مبلغ الخصم',
+        'other' => ' - ',
     ],
     'accounts_name' => [
         "Accounts Payable (A/P)" => "حسابات قابلة للدفع (A/P)",
@@ -766,6 +767,8 @@ return [
         'tax_amount' => 'مبلغ الضريبة',
         'shipping_charges' => 'مبلغ الشحن',
         'discount_amount' => 'مبلغ الخصم',
+        'other' => ' - ',
+
     ],
 
     'attachment' => 'المرفقات',
