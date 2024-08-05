@@ -38,7 +38,7 @@
                             <span class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </span>
-                            {!! Form::text('journal_date', @format_datetime('now'), [
+                            {!! Form::text('journal_date', \Carbon::now()->format('m/d/Y' . ' ' . 'h:i A'), [
                                 'class' => 'form-control datetimepicker',
                                 'readonly',
                                 'required',
