@@ -165,7 +165,7 @@
 
                                     <tfoot>
                                         <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="4"><strong>@lang('sale.total'):</strong></td>
+                                            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
                                             <td class="footer_total_debit"></td>
                                             <td class="footer_total_credit"></td>
                                             <td></td>
