@@ -1290,7 +1290,7 @@ class AgentController extends Controller
 
             'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.id as userId',
 
 
 
@@ -1356,6 +1356,21 @@ class AgentController extends Controller
                         return '';
                     }
                 })
+                ->editColumn('id_proof_number', function ($row) {
+                    if ($row->id_proof_number) {
+                        $expiration_date = optional(
+                            DB::table('essentials_official_documents')
+                                ->where('employee_id', $row->userId)
+                                ->where('type', 'residence_permit')
+                                ->where('is_active', 1)
+                                ->first()
+                        )->expiration_date;
+
+                        return $row->id_proof_number . '<br>' . $expiration_date;
+                    } else {
+                        return '';
+                    }
+                })
                 ->addColumn('created_user', function ($row) use ($created_users) {
 
                     return $created_users[$row->created_by];
@@ -1380,7 +1395,7 @@ class AgentController extends Controller
                     return $buttonsHtml;
                 })
 
-                ->rawColumns(['status', 'request_type_id', 'can_return', 'created_user', 'assigned_to'])
+                ->rawColumns(['status', 'request_type_id', 'can_return', 'id_proof_number', 'created_user', 'assigned_to'])
 
 
 
