@@ -15,6 +15,7 @@
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
     Route::prefix('generalmanagement')->group(function () {
+        Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('generalmanagement.payrolls_checkpoint');
         Route::get('/', 'GeneralManagementController@index');
         Route::get('/dashboard', [Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])->name('GeneralManagement.dashboard');
         Route::prefix('notifications')->group(function () {

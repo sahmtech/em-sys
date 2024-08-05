@@ -282,12 +282,14 @@ Route::get('/fix_emp2', function () {
     }
 });
 Route::get('/updateDepartmentIds', function () {
-    $users = User::whereIn('user_type', ['employee', 'manager', 'department_head']);
+    $users = User::whereIn('user_type', ['employee', 'manager', 'department_head'])->get();
 
     foreach ($users as $user) {
+
         $appointment = $user->activeAppointmet;
 
         if ($appointment) {
+
             $departmentId = $appointment->department_id;
             if ($departmentId) {
                 $user->essentials_department_id = $departmentId;
@@ -942,6 +944,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::get('/fetch-users-by-type', [\App\Utils\RequestUtil::class, 'fetchUsersByType'])->name('fetch.users.by.type');
 
+
     Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');
     Route::post('/update-task-status', [\App\Utils\RequestUtil::class, 'updateStatus'])->name('tasks.updateStatus');
     Route::get('/work_cards/view_requests_operations', [\App\Utils\RequestUtil::class, 'viewRequestsOperations'])->name('view_requests_operations');
@@ -950,7 +953,35 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/update-request/{id}', [\App\Utils\RequestUtil::class, 'updateRequest'])->name('updateRequest');
     Route::delete('/delete-request/{id}', [\App\Utils\RequestUtil::class, 'deleteRequest'])->name('deleteRequest');
 
+
+    Route::get('Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('Communication');
+    Route::post('send_communication_message', [App\Http\Controllers\CommunicationController::class, 'send_communication_message'])->name('send_communication_message');
+    Route::post('communication/reply/{id}', [App\Http\Controllers\CommunicationController::class, 'reply'])->name('communication.reply');
+
+    Route::get('hrm/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('hrm.Communication');
+    Route::get('work_cards/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('work_cards.Communication');
+    Route::get('generalmanagement/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('generalmanagement.Communication');
+    Route::get('generalmanagmentoffice/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('generalmanagmentoffice.Communication');
+    Route::get('ceomanagment/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('ceomanagment.Communication');
+    Route::get('operationsmanagmentgovernment/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('operationsmanagmentgovernment.Communication');
+    Route::get('employee_affairs/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('employee_affairs.Communication');
+    Route::get('payrolls/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('payrolls.Communication');
+    Route::get('medicalInsurance/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('medicalInsurance.Communication');
+    Route::get('movment/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('movment.Communication');
+    Route::get('housingmovements/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('housingmovements.Communication');
+    Route::get('followup/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('followup.Communication');
+    Route::get('sale/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('sale.Communication');
+    Route::get('legalaffairs/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('legalaffairs.Communication');
+
+
+
+
+
+
     //Business Location Settings...
+
+
+
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
         Route::get('settings', [LocationSettingsController::class, 'index'])->name('settings');
         Route::post('settings', [LocationSettingsController::class, 'updateSettings'])->name('settings_update');

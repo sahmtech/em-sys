@@ -1514,6 +1514,7 @@ return [
     'is_approved' => 'تم الاعتماد',
     'is_not_approved' => 'لم يتم الاعتماد',
 
+    'yet_to_be_paind' => 'مستحق الدفع',
 
 
 
@@ -1550,6 +1551,7 @@ return [
     'accounting_approved_by' => 'اعتماد المالية من قبل',
     'is_approved_by_accounting' => 'الاعتماد من المالية',
     'issue payrolls' => 'إصدار الراتب',
+    'sending_success' => 'تم الارسال بنجاح'
 
 
 

@@ -109,7 +109,7 @@
             <div class="box-footer text-right">
                 <button onclick="window.print()" class="btn btn-primary"><i class="fa fa-print"></i>
                     @lang('messages.print')</button>
-                <a href="{{ route('followup.agentTimeSheetIndex') }}" class="btn btn-default">@lang('essentials::lang.back')</a>
+                <a href="{{ url()->previous() }}" class="btn btn-default">@lang('essentials::lang.back')</a>
             </div>
         </div>
     </section>

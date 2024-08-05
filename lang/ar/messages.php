@@ -50,5 +50,5 @@ return [
     'confirm_delete' => 'تأكيد الحذف',
     'are_you_sure' => 'هل أنت متأكد؟',
     'added_successfully' => 'تم الحفظ بنجاح',
-    'already_added' => 'تمت الإضافة مسبقاً، لا جديد لإضافته',
+    'already_added' => 'لا جديد لإضافته',
 ];
