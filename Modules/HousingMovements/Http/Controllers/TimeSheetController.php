@@ -236,7 +236,16 @@ class TimeSheetController extends Controller
             })
             ->editColumn('approved_by', function ($row) use ($users) {
                 if ($row->approved_by) {
-                    return $users[$row->approved_by];
+                    $approved_by = json_decode($row->approved_by);
+                    $html = '<ul role="menu">';
+                    foreach ($approved_by as $user_info) {
+                        $user = User::where('id', $user_info->user)->first();
+                        $name = ($user->first_name ?? '') . ' ' . ($user->mid_name ?? '') . ' ' . ($user->last_name ?? '') . '<br>';
+                        $name .= \Carbon\Carbon::parse($user_info->date)->format('Y-m-d H:i:s');
+                        $html .= '<li> ' . $name . '</li>';
+                    }
+                    $html .= '</ul>';
+                    return    $html;
                 } else {
                     return '';
                 }
@@ -284,17 +293,33 @@ class TimeSheetController extends Controller
                 ]);
             }
 
-            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
-                ->where('is_approved', 0)
-                ->exists();
+            // $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
+            //     ->where('is_approved', 0)
+            //     ->exists();
 
-            if (!$hasPendingApprovals) {
-                $timesheetGroup->update([
-                    'is_approved' => 1,
-                    'approved_by' => $authUser->id,
-                ]);
+            // if (!$hasPendingApprovals) {
+            //     $timesheetGroup->update([
+            //         'is_approved' => 1,
+            //         'approved_by' => $authUser->id,
+            //     ]);
+            // }
+            $date = Carbon::now()->timezone('Asia/Riyadh');
+
+            $approved_by = [];
+            if ($timesheetGroup?->approved_by) {
+                $approved_by = json_decode($timesheetGroup->approved_by);
             }
+            $approved_by[] = [
+                'user' =>  $authUser->id,
+                'date' => $date
+            ];
 
+            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)->where('is_approved', 0)->count() == 0;
+            error_log(json_encode($approved_by));
+            TimesheetGroup::where('id', $id)->update([
+                'is_approved' =>  $hasPendingApprovals,
+                'approved_by' => json_encode($approved_by),
+            ]);
             return redirect()->route('hrm.agentTimeSheetIndex')->with('status', [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -533,7 +558,7 @@ class TimeSheetController extends Controller
 
                 'u.assigned_to',
                 'u.id'
-            ])->where('is_approved', 0)
+            ])
             ->get();
 
         $timesheetUsers->each(function ($item) {

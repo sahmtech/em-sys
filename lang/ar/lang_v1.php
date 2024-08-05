@@ -1514,6 +1514,7 @@ return [
     'is_approved' => 'تم الاعتماد',
     'is_not_approved' => 'لم يتم الاعتماد',
 
+    'yet_to_be_paind' => 'مستحق الدفع',
 
 
 

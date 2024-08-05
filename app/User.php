@@ -600,4 +600,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserDevice::class, 'user_id');
     }
+    public function payrollGroupUser()
+    {
+        return $this->hasMany(PayrollGroupUser::class, 'user_id');
+    }
 }

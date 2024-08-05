@@ -152,10 +152,11 @@ class TimeSheetController extends Controller
     {
         $user = User::where('id', auth()->user()->id)->first();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         $companies_ids = Company::pluck('id')->toArray();
         if (!$is_admin) {
-
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
             $companies_ids = [];
             $roles = auth()->user()->roles;
             foreach ($roles as $role) {
@@ -176,9 +177,7 @@ class TimeSheetController extends Controller
             $query->where('timesheet_groups.created_by', $user->id)
                 ->orWhere('timesheet_groups.status', 'final');
         })
-            ->whereHas('timesheetUsers.user', function ($query) use ($companies_ids) {
-                $query->whereIn('company_id', $companies_ids)->where('is_approved', 0);
-            })
+            ->whereHas('timesheetUsers.user')
             ->select([
                 'timesheet_groups.id',
                 'timesheet_groups.name',
@@ -199,8 +198,11 @@ class TimeSheetController extends Controller
             ->get();
         $users = $all_users->pluck('full_name', 'id');
         $projects = SalesProject::pluck('name', 'id');
+
         return DataTables::of($payrolls)
-            ->addColumn('action', function ($row) use ($user, $is_admin) {
+            ->addColumn('action', function ($row) use ($user, $is_admin, $userIds) {
+                $groupId = $row->id;
+                $can_deal = TimesheetUser::where('timesheet_group_id', $groupId)->whereIn('user_id', $userIds)->where('is_approved', 0)->count() > 0;
                 $html = '<div class="btn-group">
                             <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                 data-toggle="dropdown" aria-expanded="false">' .
@@ -214,7 +216,7 @@ class TimeSheetController extends Controller
                 if ($row->status == 'draft' && ($is_admin || $user->can('essentials.edit_timesheet'))) {
                     $html .= '<li><a href="' . route('hrm.agentTimeSheet.editTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</a></li>';
                 }
-                if (($is_admin && $row->status == 'final' && $row->is_approved == 0) || ($row->created_by != $user->id && $user->can('essentials.deal_timesheet') && $row->status == 'final' && $row->is_approved == 0)) {
+                if ($can_deal && (($is_admin && $row->status == 'final' && $row->is_approved == 0) || ($row->created_by != $user->id && $user->can('essentials.deal_timesheet') && $row->status == 'final' && $row->is_approved == 0))) {
                     $html .= '<li><a href="' . route('hrm.agentTimeSheet.dealTimeSheet', ['id' => $row->id]) . '"><i class="fa fa-check" aria-hidden="true"></i> ' . __('lang_v1.approve') . '</a></li>';
                 }
                 $html .= '</ul></div>';
@@ -229,7 +231,16 @@ class TimeSheetController extends Controller
             })
             ->editColumn('approved_by', function ($row) use ($users) {
                 if ($row->approved_by) {
-                    return $users[$row->approved_by];
+                    $approved_by = json_decode($row->approved_by);
+                    $html = '<ul role="menu">';
+                    foreach ($approved_by as $user_info) {
+                        $user = User::where('id', $user_info->user)->first();
+                        $name = ($user->first_name ?? '') . ' ' . ($user->mid_name ?? '') . ' ' . ($user->last_name ?? '') . '<br>';
+                        $name .= \Carbon\Carbon::parse($user_info->date)->format('Y-m-d H:i:s');
+                        $html .= '<li> ' . $name . '</li>';
+                    }
+                    $html .= '</ul>';
+                    return    $html;
                 } else {
                     return '';
                 }
@@ -289,16 +300,35 @@ class TimeSheetController extends Controller
                 ]);
             }
 
-            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
-                ->where('is_approved', 0)
-                ->exists();
+            // $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
+            //     ->where('is_approved', 0)
+            //     ->exists();
 
-            if (!$hasPendingApprovals) {
-                $timesheetGroup->update([
-                    'is_approved' => 1,
-                    'approved_by' => $authUser->id,
-                ]);
+            // if (!$hasPendingApprovals) {
+            //     $timesheetGroup->update([
+            //         'is_approved' => 1,
+            //         'approved_by' => $authUser->id,
+            //     ]);
+            // }
+            $date = Carbon::now()->timezone('Asia/Riyadh');
+
+            $approved_by = [];
+            if ($timesheetGroup?->approved_by) {
+                $approved_by = json_decode($timesheetGroup->approved_by);
             }
+            $approved_by[] = [
+                'user' =>  $authUser->id,
+                'date' => $date
+            ];
+
+            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)->where('is_approved', 0)->count() == 0;
+
+            TimesheetGroup::where('id', $id)->update([
+                'is_approved' =>  $hasPendingApprovals,
+                'approved_by' => json_encode($approved_by),
+            ]);
+
+
 
             return redirect()->route('hrm.agentTimeSheetIndex')->with('status', [
                 'success' => true,
@@ -519,8 +549,9 @@ class TimeSheetController extends Controller
                 }
             }
         }
-
         $timesheetGroup = TimesheetGroup::findOrFail($id);
+
+
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
             ->join('users as u', 'u.id', '=', 'timesheet_users.user_id')
             ->whereIn('u.company_id',  $companies_ids)
@@ -533,7 +564,6 @@ class TimeSheetController extends Controller
                 'u.assigned_to',
                 'u.id'
             ])
-            ->where('is_approved', 0)
             ->get();
 
         $timesheetUsers->each(function ($item) {
@@ -845,7 +875,16 @@ class TimeSheetController extends Controller
             })
             ->editColumn('approved_by', function ($row) use ($users) {
                 if ($row->approved_by) {
-                    return $users[$row->approved_by];
+                    $approved_by = json_decode($row->approved_by);
+                    $html = '<ul role="menu">';
+                    foreach ($approved_by as $user_info) {
+                        $user = User::where('id', $user_info->user)->first();
+                        $name = ($user->first_name ?? '') . ' ' . ($user->mid_name ?? '') . ' ' . ($user->last_name ?? '') . '<br>';
+                        $name .= \Carbon\Carbon::parse($user_info->date)->format('Y-m-d H:i:s');
+                        $html .= '<li> ' . $name . '</li>';
+                    }
+                    $html .= '</ul>';
+                    return    $html;
                 } else {
                     return '';
                 }

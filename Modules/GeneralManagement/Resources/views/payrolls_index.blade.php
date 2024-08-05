@@ -40,7 +40,7 @@
                                                 <th class="table-td-width-300px">@lang('essentials::lang.accountant_cleared_by')</th>
                                                 <th>@lang('essentials::lang.financial_management_cleared')</th>
                                                 <th class="table-td-width-300px">@lang('essentials::lang.financial_management_cleared_by')</th>
-                                                <th>@lang('essentials::lang.ceo_cleared')</th>
+                                                <th>@lang('essentials::lang.generalmanagement_cleared')</th>
                                                 <th class="table-td-width-300px">@lang('essentials::lang.ceo_cleared_by')</th>
                                                 <th>@lang('essentials::lang.action')</th>
                                             </tr>

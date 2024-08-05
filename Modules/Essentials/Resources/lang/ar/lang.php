@@ -1971,6 +1971,7 @@ return [
   'financial_management_cleared_at' => 'تاريخ الاعتماد',
   'financial_management_cleared_by' => 'تم من قبل',
   'ceo_cleared' => 'الرئيس التنفيذي',
+  'generalmanagement_cleared' => 'المدير العام',
   'ceo_cleared_at' => 'تاريخ الاعتماد',
   'ceo_cleared_by' => 'تم من قبل',
   'absence_deduction' => 'خصم الغياب',
