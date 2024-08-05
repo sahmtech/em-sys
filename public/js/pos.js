@@ -1713,9 +1713,13 @@ function pos_total_row() {
     var order_tax_total = 0;
     // total_quantity = total_quantity - quantity_;
     $('table#pos_table tbody tr').each(function () {
-        order_tax_total += (((__read_number($(this).find('input.pos_quantity'))*__read_number($(this).find('input.pos_unit_price'))))*15)/100;
-        console.log('( ',order_tax_total);
-      
+        order_tax_total +=
+            (__read_number($(this).find('input.pos_quantity')) *
+                __read_number($(this).find('input.pos_unit_price')) *
+                15) /
+            100;
+        console.log('( ', order_tax_total);
+
         total_quantity = total_quantity + __read_number($(this).find('input.pos_quantity'));
     });
 
@@ -1730,7 +1734,6 @@ function pos_total_row() {
     $('span#order_tax').text(__currency_trans_from_en(order_tax_total, false));
     $('input#order_tax').val(__currency_trans_from_en(order_tax_total, false));
 
-    
     // var order_tax = pos_order_tax(price_total, discount);
 
     //$('span.unit_price_total').html(unit_price_total);
@@ -1771,7 +1774,7 @@ function calculate_billing_details(price_total) {
         }
     }
 
-    // var order_tax = pos_order_tax(price_total, discount);
+    var order_tax = pos_order_tax(price_total, discount);
 
     //Add shipping charges.
     var shipping_charges = __read_number($('input#shipping_charges'));
@@ -1802,16 +1805,16 @@ function calculate_billing_details(price_total) {
 
         $('#packing_charge_text').text(__currency_trans_from_en(packing_charge, false));
     }
-
-    var total_payable =
-        price_total + order_tax - discount + shipping_charges + packing_charge + additional_expense;
-
+   
+    var total_payable = price_total + order_tax - discount + additional_expense;
+    // price_total + order_tax - discount + shipping_charges + packing_charge + additional_expense;
     var rounding_multiple = $('#amount_rounding_method').val()
         ? parseFloat($('#amount_rounding_method').val())
         : 0;
+
     var round_off_data = __round(total_payable, rounding_multiple);
     var total_payable_rounded = round_off_data.number;
-
+   
     var round_off_amount = round_off_data.diff;
     if (round_off_amount != 0) {
         $('span#round_off_text').text(__currency_trans_from_en(round_off_amount, false));
@@ -1850,9 +1853,6 @@ function pos_discount(total_amount) {
 
     return discount;
 }
-
-
-
 
 function pos_order_tax(price_total, discount) {
     var tax_rate_id = $('#tax_rate_id').val();

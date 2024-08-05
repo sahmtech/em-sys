@@ -427,8 +427,12 @@ class TransactionPaymentController extends Controller
                 //Accounts
                 $accounts = $this->moduleUtil->accountsDropdown($business_id, true, false, true);
 
+                $bankAccount = BankAccount::forDropdown();
+
                 $view = view('transaction_payment.payment_row')
-                    ->with(compact('transaction', 'payment_types', 'payment_line', 'amount_formated', 'accounts'))->render();
+
+                    ->with(compact('transaction', 'payment_types', 'payment_line', 'amount_formated', 'accounts','bankAccount'))->render();
+
 
                 $output = [
                     'status' => 'due',

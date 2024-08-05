@@ -41,8 +41,8 @@ class AccountingUtil extends Util
             OR ($accounting_accounts_alias.account_primary_type='commitments' AND $accounting_account_transaction_alias.type='debit')
             OR ($accounting_accounts_alias.account_primary_type='cost_goods_sold' AND $accounting_account_transaction_alias.type='credit')
             OR ($accounting_accounts_alias.account_primary_type='expenses' AND $accounting_account_transaction_alias.type='credit')
-            OR ($accounting_accounts_alias.account_primary_type='income' AND $accounting_account_transaction_alias.type='credit')
-            OR ($accounting_accounts_alias.account_primary_type='property_rights' AND $accounting_account_transaction_alias.type='credit'), 
+            OR ($accounting_accounts_alias.account_primary_type='income' AND $accounting_account_transaction_alias.type='debit')
+            OR ($accounting_accounts_alias.account_primary_type='property_rights' AND $accounting_account_transaction_alias.type='debit'), 
             amount, -1*amount)) as balance";
     }
 
