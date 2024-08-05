@@ -283,7 +283,8 @@ return [
   'started_department' => 'الإدارة التي بدأت الطلب',
   'company' => 'الوكيل',
   'admission_date' => 'تاريخ المباشرة',
-  'please_add_valid_file_and_name_before_saving' => 'الرجاء إضافة مرفق واسم للمرفق قبل الحفظ'
+  'please_add_valid_file_and_name_before_saving' => 'الرجاء إضافة مرفق واسم للمرفق قبل الحفظ',
+  "User not found or you don't have access to them or their project" => 'هذا المستخدم غير موجود أو ربما ليس لديك صلاحية الوصول إليه'
 
 
 
