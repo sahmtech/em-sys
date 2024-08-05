@@ -283,7 +283,8 @@ return [
   'started_department' => 'الإدارة التي بدأت الطلب',
   'company' => 'الوكيل',
   'admission_date' => 'تاريخ المباشرة',
-  'please_add_valid_file_and_name_before_saving' => 'الرجاء إضافة مرفق واسم للمرفق قبل الحفظ'
+  'please_add_valid_file_and_name_before_saving' => 'الرجاء إضافة مرفق واسم للمرفق قبل الحفظ',
+
 
 
 
