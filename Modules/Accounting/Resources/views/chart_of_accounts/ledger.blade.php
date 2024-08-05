@@ -280,8 +280,8 @@
                         footer_total_credit += $(data[r].credit).data('orig-value') ? parseFloat($(data[
                             r].credit).data('orig-value')) : 0;
                     }
-                    $('.footer_total_debit').html(__currency_trans_from_en(Math.round(footer_total_debit)));
-                    $('.footer_total_credit').html(__currency_trans_from_en(Math.round(footer_total_credit)));
+                    $('.footer_total_debit').html(__currency_trans_from_en(footer_total_debit));
+                    $('.footer_total_credit').html(__currency_trans_from_en(footer_total_credit));
                 }
             });
             $('#transaction_date_range').on('cancel.daterangepicker', function(ev, picker) {

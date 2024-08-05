@@ -72,25 +72,17 @@
                                         $total_debit += $account->debit_balance;
                                         $total_credit += $account->credit_balance;
 
-                                        $net_Financial_Transactions =
-                                            $account->debit_balance - $account->credit_balance;
+                                        $closing_debit_balance =
+                                            $account->debit_opening_balance + $account->debit_balance;
+                                        $closing_credit_balance =
+                                            $account->credit_opening_balance + $account->credit_balance;
+                                        $closing_balance = $closing_credit_balance - $closing_debit_balance;
 
-                                        if ($net_Financial_Transactions > 0) {
-                                            $closing_debit_balance =
-                                                $net_Financial_Transactions + $account->debit_opening_balance;
-                                            $closing_credit_balance = 0;
-                                        } elseif ($net_Financial_Transactions < 0) {
-                                            $closing_credit_balance =
-                                                abs($net_Financial_Transactions) + $account->credit_opening_balance;
-                                            $closing_debit_balance = 0;
+                                        if ($closing_balance >= 0) {
+                                            $total_closing_credit_balance += $closing_balance;
                                         } else {
-                                            $closing_credit_balance = $account->credit_opening_balance;
-                                            $closing_debit_balance = $account->debit_opening_balance;
+                                            $total_closing_debit_balance += abs($closing_balance);
                                         }
-
-                                        $total_closing_debit_balance += $closing_debit_balance;
-                                        $total_closing_credit_balance += $closing_credit_balance;
-
                                     @endphp
                                     <tr>
                                         <td>{{ $account->name }}</td>
@@ -115,10 +107,18 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @format_currency($closing_debit_balance)
+                                            @if ($closing_balance < 0)
+                                                @format_currency(abs($closing_balance))
+                                            @else
+                                                @format_currency(0)
+                                            @endif
                                         </td>
                                         <td>
-                                            @format_currency($closing_credit_balance)
+                                            @if ($closing_balance >= 0)
+                                                @format_currency(abs($closing_balance))
+                                            @else
+                                                @format_currency(0)
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
