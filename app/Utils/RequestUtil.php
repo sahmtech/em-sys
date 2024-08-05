@@ -2370,6 +2370,13 @@ class RequestUtil extends Util
 
     public function fetchUsersByType(Request $request)
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
         $type = $request->get('type');
         $requestType = RequestsType::find($type);
 
@@ -2415,7 +2422,7 @@ class RequestUtil extends Util
                             ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
                     });
             })
-            ->whereIn('users.user_type', $userTypes)
+            ->whereIn('users.user_type', $userTypes)->whereIn('users.id', $userIds)
             ->pluck('full_name', 'users.id');
 
 
