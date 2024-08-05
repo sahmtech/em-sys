@@ -18,7 +18,7 @@ return [
   'residenceRenewal' => 'طلب تجديد إقامة',
   'passportRenewal' => 'طلب تجديد جواز سفر',
   'residenceCard' => 'بطاقة إقامة',
-  'workerTransfer' => 'طلبات نقل العمال',
+  'workerTransfer' => 'طلب نقل كفالة إلى خارج الشركة',
   'workInjuriesRequest' => ' طلبات إصابة العمل',
   'residenceEditRequest' => ' طلبات تعديل بيانات الإقامة',
   'baladyCardRequest' => ' طلبات كرت بلدية',
