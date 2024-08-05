@@ -368,6 +368,13 @@ class CustomAdminSidebarMenu
                 );
             }
 
+            $menu->url(
+                route('generalmanagement.Communication', ['from' => 'generalmanagement']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
+
+
             if ($is_admin  || auth()->user()->can('generalmanagement.view_payroll_checkpoint')) {
                 $menu->url(
                     route('generalmanagement.payrolls_checkpoint', ['from' => 'generalmanagement']),
@@ -434,6 +441,11 @@ class CustomAdminSidebarMenu
                 },
                 ['icon' => 'fa fas fa-envelope',]
             );
+            $menu->url(
+                route('generalmanagmentoffice.Communication', ['from' => 'generalmanagmentoffice']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
     public function ceoMenu()
@@ -479,6 +491,11 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
+            $menu->url(
+                route('ceomanagment.Communication', ['from' => 'ceomanagment']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
     public function OperationsManagmentGovernmentMenu()
@@ -505,6 +522,11 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests')]
                 );
             }
+            $menu->url(
+                route('operationsmanagmentgovernment.Communication', ['from' => 'operationsmanagmentgovernment']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
     public function InformationTechnologyManagmentMenu()
@@ -522,6 +544,11 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'informationtechnologymanagment' && request()->segment(2) == 'dashboard',
 
                 ],
+            );
+            $menu->url(
+                route('Communication', ['from' => 'informationtechnologymanagment']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
             );
         });
     }
@@ -769,6 +796,12 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fa-bullseye',],
             );
             // }
+
+            $menu->url(
+                route('movment.Communication', ['from' => 'movment']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fa-bullseye', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
 
@@ -815,6 +848,11 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' &&  request()->segment(2) == 'legalrequests']
                 );
             }
+            $menu->url(
+                route('legalaffairs.Communication', ['from' => 'legalaffairs']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
 
@@ -966,6 +1004,11 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'import_employees_insurance'],
                 );
             }
+            $menu->url(
+                route('medicalInsurance.Communication', ['from' => 'medicalInsurance']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
 
@@ -1044,10 +1087,14 @@ class CustomAdminSidebarMenu
 
                     route('work_cards_department_employees'),
                     __('essentials::lang.department_employees'),
-                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'work_cards_department_employees'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'work_cards_department_employees'],
                 );
             }
-
+            $menu->url(
+                route('work_cards.Communication', ['from' => 'work_cards']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
 
             // if ($is_admin || auth()->user()->can('essentials.movement_management')) {
             //     $menu->dropdown(
@@ -1282,6 +1329,11 @@ class CustomAdminSidebarMenu
                     __('essentials::lang.attachements'),
                     ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'attachements'],
                 );
+                $menu->url(
+                    route('employee_affairs.Communication', ['from' => 'employee_affairs']),
+                    __('home.communication_between_deps'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(2) == 'communication_between_deps'],
+                );
             }
         });
     }
@@ -1401,6 +1453,11 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
+            $menu->url(
+                route('payrolls.Communication', ['from' => 'payrolls']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fas fa-coins', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
 
@@ -1573,6 +1630,12 @@ class CustomAdminSidebarMenu
                 );
             }
 
+            $menu->url(
+                route('hrm.Communication', ['from' => 'hrm']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'communication_between_deps'],
+            );
+
             // if ($is_admin ) {
             //     $menu->url(
             //         action([\App\Http\Controllers\TaxonomyController::class, 'index']),
@@ -1637,7 +1700,6 @@ class CustomAdminSidebarMenu
 
         });
     }
-
 
     public function followUpMenu()
     {
@@ -1826,7 +1888,7 @@ class CustomAdminSidebarMenu
                     route('projects_access_permissions'),
                     __('followup::lang.projects_access_permissions'),
                     [
-                        'icon' => 'fa fas fa-key',
+                        'icon' => 'fa fas fa-meteor',
                         'active' => request()->segment(2) == 'projects_access_permissions'
                     ],
 
@@ -1838,9 +1900,14 @@ class CustomAdminSidebarMenu
 
                     route('followup_department_employees'),
                     __('followup::lang.department_employees'),
-                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'followup' && request()->segment(2) == 'followup_department_employees'],
+                    ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'followup' && request()->segment(2) == 'followup_department_employees'],
                 );
             }
+            $menu->url(
+                route('followup.Communication', ['from' => 'followup']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
 
@@ -2021,9 +2088,14 @@ class CustomAdminSidebarMenu
 
                     route('sales_department_employees'),
                     __('sales::lang.department_employees'),
-                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_department_employees'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_department_employees'],
                 );
             }
+            $menu->url(
+                route('sale.Communication', ['from' => 'sale']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
 
@@ -2210,6 +2282,11 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'housingmovements_department_employees'],
                 );
             }
+            $menu->url(
+                route('housingmovements.Communication', ['from' => 'housingmovements']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
         });
     }
     public function allAccountingMenu()
@@ -2813,7 +2890,11 @@ class CustomAdminSidebarMenu
             }
 
 
-
+            $menu->url(
+                route('Communication', ['from' => 'internationalrelations']),
+                __('home.communication_between_deps'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
+            );
 
 
 
