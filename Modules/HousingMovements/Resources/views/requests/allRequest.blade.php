@@ -2065,11 +2065,14 @@
 
             $('#addRequestModal').on('shown.bs.modal', function(e) {
                 $('#worker').select2({
-                    dropdownParent: $(
-                        '#addRequestModal'),
+                    dropdownParent: $('#addRequestModal'),
                     width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "User not found or you don't have access to them or their project.";
+                        }
+                    }
                 });
-
             });
 
 

@@ -15,7 +15,7 @@ use App\Utils\ModuleUtil;
 use Modules\Sales\Entities\SalesProject;
 use App\Category;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Company;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Session;
@@ -321,17 +321,33 @@ class TimeSheetController extends Controller
                 ]);
             }
 
-            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
-                ->where('is_approved', 0)
-                ->exists();
+            // $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
+            //     ->where('is_approved', 0)
+            //     ->exists();
 
-            if (!$hasPendingApprovals) {
-                $timesheetGroup->update([
-                    'is_approved' => 1,
-                    'approved_by' => $authUser->id,
-                ]);
+            // if (!$hasPendingApprovals) {
+            //     $timesheetGroup->update([
+            //         'is_approved' => 1,
+            //         'approved_by' => $authUser->id,
+            //     ]);
+            // }
+            $date = Carbon::now()->timezone('Asia/Riyadh');
+
+            $approved_by = [];
+            if ($timesheetGroup?->approved_by) {
+                $approved_by = json_decode($timesheetGroup->approved_by);
             }
+            $approved_by[] = [
+                'user' =>  $authUser->id,
+                'date' => $date
+            ];
 
+            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)->where('is_approved', 0)->count() == 0;
+
+            TimesheetGroup::where('id', $id)->update([
+                'is_approved' =>  $hasPendingApprovals,
+                'approved_by' => json_encode($approved_by),
+            ]);
             return redirect()->route('hrm.agentTimeSheetIndex')->with('status', [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -497,7 +513,7 @@ class TimeSheetController extends Controller
 
                 'u.assigned_to',
                 'u.id'
-            ])->where('is_approved', 0)
+            ])
             ->get();
 
         $timesheetUsers->each(function ($item) {

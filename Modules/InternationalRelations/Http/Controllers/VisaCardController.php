@@ -19,7 +19,7 @@ use Modules\Sales\Entities\SalesUnSupportedOperationOrder;
 use Modules\InternationalRelations\Entities\IrVisaCard;
 
 use Modules\InternationalRelations\Entities\IrDelegation;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 

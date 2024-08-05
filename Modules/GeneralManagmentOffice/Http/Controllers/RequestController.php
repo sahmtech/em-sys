@@ -122,7 +122,7 @@ class RequestController extends Controller
 
             'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.id as userId',
 
 
             'procedure_escalations.escalates_to'
@@ -163,6 +163,21 @@ class RequestController extends Controller
                         return $allRequestTypes[$row->request_type_id];
                     }
                 })
+                ->editColumn('id_proof_number', function ($row) {
+                    if ($row->id_proof_number) {
+                        $expiration_date = optional(
+                            DB::table('essentials_official_documents')
+                                ->where('employee_id', $row->userId)
+                                ->where('type', 'residence_permit')
+                                ->where('is_active', 1)
+                                ->first()
+                        )->expiration_date;
+
+                        return $row->id_proof_number . '<br>' . $expiration_date;
+                    } else {
+                        return '';
+                    }
+                })
                 ->editColumn('status', function ($row) {
                     $status = '';
 
@@ -179,7 +194,7 @@ class RequestController extends Controller
                     return $status;
                 })
 
-                ->rawColumns(['status'])
+                ->rawColumns(['status', 'id_proof_number'])
 
 
                 ->make(true);

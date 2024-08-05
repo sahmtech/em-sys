@@ -11,7 +11,7 @@ use App\BusinessLocation;
 use App\Company;
 use App\User;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class EssentialsReportController extends Controller
 {
@@ -57,12 +57,11 @@ class EssentialsReportController extends Controller
 
         if (!empty(request()->input('select_location_id')) && request()->input('select_location_id') !== 'all') {
 
-           
+
             $userIds = User::whereNot('user_type', 'admin')->where('company_id', request()->input('select_location_id'))->pluck('id')->toArray();
-           
         }
-        
-       
+
+
 
         // $business_id = request()->session()->get('user.business_id');
         // $business_locations = BusinessLocation::forDropdown($business_id, false, true);

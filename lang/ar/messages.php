@@ -9,8 +9,8 @@ return [
     "actions" => "خيارات",
     "view" => "عرض",
     "delete" => "حذف",
-    'select'=>'تحديد',
-    'history_edit'=>'سجلات التعديل',
+    'select' => 'تحديد',
+    'history_edit' => 'سجلات التعديل',
     'view_project' => 'عرض المشروع',
     "close" => "إغلاق",
     "something_went_wrong" => "لقد حدث شيء خاطئ. شكرا على المحاولة لاحقا",
@@ -49,5 +49,6 @@ return [
     'update_requests_access_role' => 'صلاحية إنشاء الطلبات',
     'confirm_delete' => 'تأكيد الحذف',
     'are_you_sure' => 'هل أنت متأكد؟',
-    'added_successfully' => 'تم الحفظ بنجاح'
+    'added_successfully' => 'تم الحفظ بنجاح',
+    'already_added' => 'لا جديد لإضافته',
 ];

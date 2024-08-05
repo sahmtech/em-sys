@@ -874,6 +874,21 @@ class DataController extends Controller
                         'label' => __('essentials::lang.deal_timesheet'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.view_payroll_checkpoint',
+                        'label' => __('essentials::lang.view_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.confirm_payroll_checkpoint',
+                        'label' => __('essentials::lang.confirm_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_payroll_checkpoint',
+                        'label' => __('essentials::lang.show_payroll_checkpoint'),
+                        'default' => false,
+                    ],
 
                 ]
 

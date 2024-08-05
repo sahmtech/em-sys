@@ -10,7 +10,7 @@ use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\Shift;
 use Yajra\DataTables\Facades\DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ShiftController extends Controller
 {

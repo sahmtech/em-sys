@@ -9,7 +9,7 @@ use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\BusinessLocation;
 use App\User;
 use Illuminate\Support\Facades\Session;
@@ -96,8 +96,18 @@ class ReportController extends Controller
             'accounting_accounts.id'
         )
             ->where('business_id', $business_id)->where('company_id', $company_id)
-            ->whereDate('AAT.operation_date', '>=', $start_date)
-            ->whereDate('AAT.operation_date', '<=', $end_date)
+            ->where(function($query) use ($start_date, $end_date) {
+                $query->where(function($query) use ($start_date, $end_date) {
+                    $query->where('AAT.sub_type', '!=', 'opening_balance')
+                          ->whereDate('AAT.operation_date', '>=', $start_date)
+                          ->whereDate('AAT.operation_date', '<=', $end_date);
+                })
+                ->orWhere(function($query) use ($start_date, $end_date) {
+                    $query->where('AAT.sub_type', 'opening_balance')
+                          ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
+                          ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
+                });
+            })
             ->select(
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
                 DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),

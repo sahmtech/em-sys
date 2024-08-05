@@ -176,7 +176,7 @@ class RequestUtil extends Util
 
             'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.company_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.company_id', 'users.id as userId',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -254,6 +254,21 @@ class RequestUtil extends Util
                 ->editColumn('assigned_to', function ($row) use ($saleProjects) {
                     if ($row->assigned_to) {
                         return $saleProjects[$row->assigned_to];
+                    } else {
+                        return '';
+                    }
+                })
+                ->editColumn('id_proof_number', function ($row) {
+                    if ($row->id_proof_number) {
+                        $expiration_date = optional(
+                            DB::table('essentials_official_documents')
+                                ->where('employee_id', $row->userId)
+                                ->where('type', 'residence_permit')
+                                ->where('is_active', 1)
+                                ->first()
+                        )->expiration_date;
+
+                        return $row->id_proof_number . '<br>' . $expiration_date;
                     } else {
                         return '';
                     }
@@ -413,7 +428,7 @@ class RequestUtil extends Util
                     return $buttonsHtml;
                 })
 
-                ->rawColumns(['status', 'request_type_id', 'can_return', 'created_user', 'assigned_to'])
+                ->rawColumns(['status', 'request_type_id', 'can_return', 'created_user', 'id_proof_number', 'assigned_to'])
 
 
                 ->make(true);
@@ -995,6 +1010,7 @@ class RequestUtil extends Util
             return $this->changeRequestStatusBeforProcedure($request);
         }
     }
+
     private function changeRequestStatusAfterProcedure($request)
     {
         try {
@@ -2354,6 +2370,13 @@ class RequestUtil extends Util
 
     public function fetchUsersByType(Request $request)
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
         $type = $request->get('type');
         $requestType = RequestsType::find($type);
 
@@ -2399,7 +2422,7 @@ class RequestUtil extends Util
                             ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
                     });
             })
-            ->whereIn('users.user_type', $userTypes)
+            ->whereIn('users.user_type', $userTypes)->whereIn('users.id', $userIds)
             ->pluck('full_name', 'users.id');
 
 

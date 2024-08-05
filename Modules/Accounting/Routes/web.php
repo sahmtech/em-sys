@@ -24,6 +24,8 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('/companies_access_permissions', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'index'])->name('companies_access_permissions');
     Route::get('/getUserCompaniesPermissions/{userId}', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'getUserCompaniesPermissions'])->name('getUserCompaniesPermissions');
     Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
+
+    Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
 });
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
@@ -58,7 +60,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('create-default-accounts', 'CoaController@createDefaultAccounts')->name('accounting.create-default-accounts');
 
 
-    
+
 
     Route::resource('journal-entry', 'JournalEntryController');
     Route::get('journal-entry/map/show', 'JournalEntryController@map');

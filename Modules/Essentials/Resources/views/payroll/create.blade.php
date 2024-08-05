@@ -23,6 +23,7 @@
                 'id' => 'add_payroll_step1',
             ]) !!}
             {!! Form::hidden('payroll_group_name', strip_tags($group_name)) !!}
+            {!! Form::hidden('timesheet_groups', json_encode($timesheet_groups)) !!}
             <div class="table-responsive2">
                 <div style="margin-bottom: 10px;">
                     <div class="col-md-12">
@@ -373,6 +374,18 @@
                                                 'class' => 'form-hidden',
                                             ]) !!}
                                         </td>
+                                        {!! Form::hidden('payrolls[' . $index . '][timesheet_user_id]', $payroll['timesheet_user_id'] ?? null, [
+                                            'data-index' => $index,
+                                            'data-field' => 'timesheet_user_id',
+                                            'class' => 'form-hidden',
+                                        ]) !!}
+
+                                        {{-- 
+                                        {!! Form::hidden('payrolls[' . $index . '][timesheet_group_id]', $payroll['timesheet_group_id'] ?? null, [
+                                            'data-index' => $index,
+                                            'data-field' => 'timesheet_group_id',
+                                            'class' => 'form-hidden',
+                                        ]) !!} --}}
                                     </tr>
                                 @endforeach
                             </tbody>

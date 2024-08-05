@@ -13,7 +13,7 @@ use Modules\Accounting\Entities\AccountingAccountType;
 use App\Charts\CommonChart;
 use App\Company;
 use App\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\ModuleUtil;
 use Psr\Container\ContainerExceptionInterface;
@@ -76,7 +76,7 @@ class AccountingController extends Controller
      */
     public function dashboard()
     {
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $business_id = request()->session()->get('user.business_id');
 
@@ -223,7 +223,7 @@ class AccountingController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-             $company_id = Session::get('selectedCompanyId');
+            $company_id = Session::get('selectedCompanyId');
             $q = request()->input('q', '');
             $accounts = AccountingAccount::forDropdown($business_id, $company_id, true, $q);
 

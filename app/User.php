@@ -2,7 +2,7 @@
 
 namespace App;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -599,5 +599,9 @@ class User extends Authenticatable
     public function userDevice()
     {
         return $this->hasOne(UserDevice::class, 'user_id');
+    }
+    public function payrollGroupUser()
+    {
+        return $this->hasMany(PayrollGroupUser::class, 'user_id');
     }
 }

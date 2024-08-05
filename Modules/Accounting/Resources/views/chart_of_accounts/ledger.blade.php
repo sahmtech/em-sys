@@ -150,6 +150,8 @@
                                         <tr>
                                             <th>@lang('messages.date')</th>
                                             <th>@lang('lang_v1.description')</th>
+                                            <th>@lang('lang_v1.cost_senter')</th>
+                                            <th>@lang('accounting::lang.partner_name')</th>
                                             <th>@lang('brand.note')</th>
                                             <th>@lang('lang_v1.added_by')</th>
                                             <th>@lang('account.debit')</th>
@@ -163,7 +165,7 @@
 
                                     <tfoot>
                                         <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="4"><strong>@lang('sale.total'):</strong></td>
+                                            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
                                             <td class="footer_total_debit"></td>
                                             <td class="footer_total_credit"></td>
                                             <td></td>
@@ -233,6 +235,14 @@
                         name: 'ATM.ref_no'
                     },
                     {
+                        data: 'cost_center_name',
+                        name: 'cost_center_name'
+                    },
+                    {
+                        data: 'partner_name',
+                        name: 'partner_name'
+                    },
+                    {
                         data: 'note',
                         name: 'ATM.note'
                     },
@@ -270,9 +280,8 @@
                         footer_total_credit += $(data[r].credit).data('orig-value') ? parseFloat($(data[
                             r].credit).data('orig-value')) : 0;
                     }
-
-                    $('.footer_total_debit').html(__currency_trans_from_en(footer_total_debit));
-                    $('.footer_total_credit').html(__currency_trans_from_en(footer_total_credit));
+                    $('.footer_total_debit').html(__currency_trans_from_en(Math.round(footer_total_debit)));
+                    $('.footer_total_credit').html(__currency_trans_from_en(Math.round(footer_total_credit)));
                 }
             });
             $('#transaction_date_range').on('cancel.daterangepicker', function(ev, picker) {

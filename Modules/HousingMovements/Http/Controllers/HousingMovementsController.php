@@ -8,7 +8,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 

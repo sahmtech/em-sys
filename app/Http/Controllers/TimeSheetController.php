@@ -19,7 +19,7 @@ use Modules\Sales\Entities\SalesProject;
 use App\Category;
 use App\Transaction;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Request as UserRequest;
 use Modules\CEOManagment\Entities\RequestsType;
 use Illuminate\Http\Request;
@@ -34,7 +34,7 @@ use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use Modules\Essentials\Entities\EssentialsUserSalesTarget;
-use Modules\Essentials\Entities\PayrollGroup;
+use Modules\Essentials\Entities\EssentialsPayrollGroup;
 use Modules\Essentials\Entities\PayrollGroupTransaction;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
@@ -464,7 +464,16 @@ class TimeSheetController extends Controller
                 return __('lang_v1.' . $row->status);
             })->editColumn('approved_by', function ($row) use ($users) {
                 if ($row->approved_by) {
-                    return $users[$row->approved_by];
+                    $approved_by = json_decode($row->approved_by);
+                    $html = '<ul role="menu">';
+                    foreach ($approved_by as $user_info) {
+                        $user = User::where('id', $user_info->user)->first();
+                        $name = ($user->first_name ?? '') . ' ' . ($user->mid_name ?? '') . ' ' . ($user->last_name ?? '') . '<br>';
+                        $name .= \Carbon\Carbon::parse($user_info->date)->format('Y-m-d H:i:s');
+                        $html .= '<li> ' . $name . '</li>';
+                    }
+                    $html .= '</ul>';
+                    return    $html;
                 } else {
                     return '';
                 }
@@ -817,7 +826,7 @@ class TimeSheetController extends Controller
             //     $user_businesses_ids = array_unique($userBusinesses);
             // }
             if ($request->ajax()) {
-                $payroll_groups = PayrollGroup::whereIn('essentials_payroll_groups.business_id', $user_businesses_ids)->where('u.id', auth()->user()->id)
+                $payroll_groups = EssentialsPayrollGroup::whereIn('essentials_payroll_groups.business_id', $user_businesses_ids)->where('u.id', auth()->user()->id)
                     ->leftjoin('users as u', 'u.id', '=', 'essentials_payroll_groups.created_by')
                     ->leftJoin('business_locations as BL', 'essentials_payroll_groups.location_id', '=', 'BL.id')
                     ->select(
@@ -1073,7 +1082,7 @@ class TimeSheetController extends Controller
         //     }
         //     $user_businesses_ids = array_unique($userBusinesses);
         // }
-        $payroll_group = PayrollGroup::with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
+        $payroll_group = EssentialsPayrollGroup::with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
             ->findOrFail($id);
 
         $payrolls = [];
@@ -1116,7 +1125,7 @@ class TimeSheetController extends Controller
 
 
         $business_id = 1;
-        $payroll_group = PayrollGroup::with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation'])
+        $payroll_group = EssentialsPayrollGroup::with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation'])
             ->findOrFail($id);
 
         // $employee_ids = request()->input('employee_ids');
@@ -2879,9 +2888,9 @@ class TimeSheetController extends Controller
             if ($trans) {
                 $payrollGroupId = PayrollGroupTransaction::where('transaction_id', $trans->id)->orderBy('payroll_group_id', 'desc')->first()->payroll_group_id;
             }
-            $payroll_group = $trans ? PayrollGroup::where('id', $payrollGroupId)->update($payroll_group) : PayrollGroup::create($payroll_group);
+            $payroll_group = $trans ? EssentialsPayrollGroup::where('id', $payrollGroupId)->update($payroll_group) : EssentialsPayrollGroup::create($payroll_group);
             if ($trans) {
-                $payroll_group =  PayrollGroup::where('id', $payrollGroupId)->first();
+                $payroll_group =  EssentialsPayrollGroup::where('id', $payrollGroupId)->first();
             }
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
             $output = [

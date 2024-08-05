@@ -592,32 +592,49 @@ class CoaController extends Controller
             $start_date = request()->input('start_date');
             $end_date = request()->input('end_date');
 
-            // $before_bal_query = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
-            //                     ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
-            //         ->select([
-            //             DB::raw('SUM(IF(accounting_accounts_transactions.type="credit", accounting_accounts_transactions.amount, -1 * accounting_accounts_transactions.amount)) as prev_bal')])
-            //         ->where('accounting_accounts_transactions.operation_date', '<', $start_date);
-            // $bal_before_start_date = $before_bal_query->first()->prev_bal;
 
             $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
                 ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
                 ->leftjoin('transactions as T', 'accounting_accounts_transactions.transaction_id', '=', 'T.id')
                 ->leftjoin('users AS u', 'accounting_accounts_transactions.created_by', 'u.id')
+                ->leftjoin('users AS employee_partner', function ($join) {
+                    $join->on('accounting_accounts_transactions.partner_id', '=', 'employee_partner.id')
+                        ->where('accounting_accounts_transactions.partner_type', '=', 'employees');
+                })
+                ->leftjoin('contacts AS customer_partner', function ($join) {
+                    $join->on('accounting_accounts_transactions.partner_id', '=', 'customer_partner.id')
+                        ->where('accounting_accounts_transactions.partner_type', '=', 'customers_suppliers');
+                })
+                ->leftjoin('accounting_cost_centers AS cc', 'accounting_accounts_transactions.cost_center_id', 'cc.id')
                 ->select(
                     'accounting_accounts_transactions.operation_date',
                     'accounting_accounts_transactions.sub_type',
                     'accounting_accounts_transactions.type',
                     'ATM.ref_no',
+                    'cc.ar_name as cost_center_name',
                     'ATM.note',
                     'accounting_accounts_transactions.amount',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
-                    'T.invoice_no'
+                    'T.invoice_no',
+                    DB::raw("CASE 
+                    WHEN accounting_accounts_transactions.partner_type = 'employees' THEN CONCAT(COALESCE(employee_partner.first_name, ''), ' ', COALESCE(employee_partner.last_name, ''))
+                    WHEN accounting_accounts_transactions.partner_type = 'customers_suppliers' THEN customer_partner.supplier_business_name
+                    END as partner_name")
                 );
             if (!empty($start_date) && !empty($end_date)) {
-                $transactions->whereDate('accounting_accounts_transactions.operation_date', '>=', $start_date)
-                    ->whereDate('accounting_accounts_transactions.operation_date', '<=', $end_date);
+                $transactions->where(function ($query) use ($start_date, $end_date) {
+                    $query->where(function ($query) use ($start_date, $end_date) {
+                        $query->where('accounting_accounts_transactions.sub_type', '!=', 'opening_balance')
+                            ->whereDate('accounting_accounts_transactions.operation_date', '>=', $start_date)
+                            ->whereDate('accounting_accounts_transactions.operation_date', '<=', $end_date);
+                    })
+                        ->orWhere(function ($query) use ($start_date, $end_date) {
+                            $query->where('accounting_accounts_transactions.sub_type', 'opening_balance')
+                                ->whereYear('accounting_accounts_transactions.operation_date', '>=', date('Y', strtotime($start_date)))
+                                ->whereYear('accounting_accounts_transactions.operation_date', '<=', date('Y', strtotime($end_date)));
+                        });
+                });
             }
-
             return DataTables::of($transactions)
                 ->editColumn('operation_date', function ($row) {
                     return $this->accountingUtil->format_date($row->operation_date, true);

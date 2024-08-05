@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Utils\Util;
 use DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class SalesCommissionAgentController extends Controller

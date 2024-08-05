@@ -16,7 +16,7 @@ use Modules\Sales\Entities\SalesProject;
 use App\Category;
 use App\Company;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 
@@ -129,7 +129,7 @@ class TimeSheetController extends Controller
                 'invoice_value' => '',
                 'vat' => '',
                 'total' => '',
-                'sponser' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
+                'project' => $worker->assigned_to ? $projects[$worker->assigned_to] ?? '' : '',
                 'basic' => $worker->monthly_cost ? number_format($worker->monthly_cost, 0, '.', '') : '',
                 'housing' => 0,
                 'transport' => 0,
@@ -227,7 +227,16 @@ class TimeSheetController extends Controller
             })
             ->editColumn('approved_by', function ($row) use ($users) {
                 if ($row->approved_by) {
-                    return $users[$row->approved_by];
+                    $approved_by = json_decode($row->approved_by);
+                    $html = '<ul role="menu">';
+                    foreach ($approved_by as $user_info) {
+                        $user = User::where('id', $user_info->user)->first();
+                        $name = ($user->first_name ?? '') . ' ' . ($user->mid_name ?? '') . ' ' . ($user->last_name ?? '') . '<br>';
+                        $name .= \Carbon\Carbon::parse($user_info->date)->format('Y-m-d H:i:s');
+                        $html .= '<li> ' . $name . '</li>';
+                    }
+                    $html .= '</ul>';
+                    return    $html;
                 } else {
                     return '';
                 }
@@ -284,17 +293,33 @@ class TimeSheetController extends Controller
                 ]);
             }
 
-            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
-                ->where('is_approved', 0)
-                ->exists();
+            // $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)
+            //     ->where('is_approved', 0)
+            //     ->exists();
 
-            if (!$hasPendingApprovals) {
-                $timesheetGroup->update([
-                    'is_approved' => 1,
-                    'approved_by' => $authUser->id,
-                ]);
+            // if (!$hasPendingApprovals) {
+            //     $timesheetGroup->update([
+            //         'is_approved' => 1,
+            //         'approved_by' => $authUser->id,
+            //     ]);
+            // }
+            $date = Carbon::now()->timezone('Asia/Riyadh');
+
+            $approved_by = [];
+            if ($timesheetGroup?->approved_by) {
+                $approved_by = json_decode($timesheetGroup->approved_by);
             }
+            $approved_by[] = [
+                'user' =>  $authUser->id,
+                'date' => $date
+            ];
 
+            $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)->where('is_approved', 0)->count() == 0;
+
+            TimesheetGroup::where('id', $id)->update([
+                'is_approved' =>  $hasPendingApprovals,
+                'approved_by' => json_encode($approved_by),
+            ]);
             return redirect()->route('hrm.agentTimeSheetIndex')->with('status', [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -534,7 +559,6 @@ class TimeSheetController extends Controller
                 'u.company_id',
 
             ])
-            ->where('is_approved', 0)
             ->get();
 
         $timesheetUsers->each(function ($item) {

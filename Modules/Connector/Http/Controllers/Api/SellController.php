@@ -18,7 +18,7 @@ use App\Utils\NotificationUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use App\Variation;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -71,8 +71,10 @@ class SellController extends ApiController
         $this->cashRegisterUtil = $cashRegisterUtil;
         $this->notificationUtil = $notificationUtil;
 
-        $this->dummyPaymentLine = ['method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
-            'is_return' => 0, 'transaction_no' => '', ];
+        $this->dummyPaymentLine = [
+            'method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
+            'is_return' => 0, 'transaction_no' => '',
+        ];
         parent::__construct();
     }
 
@@ -280,17 +282,17 @@ class SellController extends ApiController
         $business_id = $user->business_id;
         $is_admin = $this->businessUtil->is_admin($user, $business_id);
 
-        if (! $is_admin && ! auth()->user()->hasAnyPermission(['sell.view', 'direct_sell.access', 'direct_sell.view', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!$is_admin && !auth()->user()->hasAnyPermission(['sell.view', 'direct_sell.access', 'direct_sell.view', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $filters = request()->only(['location_id', 'contact_id', 'payment_status', 'start_date', 'end_date', 'user_id', 'service_staff_id', 'only_subscriptions', 'per_page', 'shipping_status', 'order_by_date', 'source', 'status']);
 
         $with = ['sell_lines', 'payment_lines', 'contact'];
         $query = Transaction::where('business_id', $business_id)
-                            ->where('type', 'sell');
+            ->where('type', 'sell');
 
-        if (! empty(request()->input('send_purchase_details')) && request()->input('send_purchase_details') == 1) {
+        if (!empty(request()->input('send_purchase_details')) && request()->input('send_purchase_details') == 1) {
             $with[] = 'sell_lines.sell_line_purchase_lines';
             $with[] = 'sell_lines.sell_line_purchase_lines.purchase_line';
         }
@@ -302,7 +304,7 @@ class SellController extends ApiController
             $query->whereIn('transactions.location_id', $permitted_locations);
         }
 
-        if (! $user->can('direct_sell.view')) {
+        if (!$user->can('direct_sell.view')) {
             $query->where(function ($q) use ($user) {
                 if ($user->hasAnyPermission(['view_own_sell_only', 'access_own_shipping'])) {
                     $q->where('transactions.created_by', $user->id);
@@ -315,7 +317,7 @@ class SellController extends ApiController
             });
         }
 
-        if (! empty($filters['status'])) {
+        if (!empty($filters['status'])) {
             if ($filters['status'] == 'final' || $filters['status'] == 'draft') {
                 $query->where('transactions.status', $filters['status']);
             } elseif ($filters['status'] == 'quotation') {
@@ -325,20 +327,20 @@ class SellController extends ApiController
             }
         }
 
-        if (! empty($filters['location_id'])) {
+        if (!empty($filters['location_id'])) {
             $query->where('transactions.location_id', $filters['location_id']);
         }
 
-        if (! empty($filters['contact_id'])) {
+        if (!empty($filters['contact_id'])) {
             $query->where('transactions.contact_id', $filters['contact_id']);
         }
 
         $payment_status = [];
-        if (! empty($filters['payment_status'])) {
+        if (!empty($filters['payment_status'])) {
             $payment_status = explode(',', $filters['payment_status']);
         }
 
-        if (! $is_admin) {
+        if (!$is_admin) {
             $payment_status_arr = [];
             if (auth()->user()->can('view_paid_sells_only')) {
                 $payment_status_arr[] = 'paid';
@@ -360,9 +362,9 @@ class SellController extends ApiController
                 if (auth()->user()->can('view_overdue_sells_only')) {
                     $query->where(function ($q) use ($payment_status_arr) {
                         $q->whereIn('transactions.payment_status', $payment_status_arr)
-                        ->orWhere(function ($qr) {
-                            $qr->OverDue();
-                        });
+                            ->orWhere(function ($qr) {
+                                $qr->OverDue();
+                            });
                     });
                 } else {
                     $query->whereIn('transactions.payment_status', $payment_status_arr);
@@ -370,7 +372,7 @@ class SellController extends ApiController
             }
         }
 
-        if (! empty($payment_status)) {
+        if (!empty($payment_status)) {
             $query->where(function ($q) use ($payment_status) {
                 $is_overdue = false;
                 if (in_array('overdue', $payment_status)) {
@@ -379,7 +381,7 @@ class SellController extends ApiController
                     unset($payment_status[$key]);
                 }
 
-                if (! empty($payment_status)) {
+                if (!empty($payment_status)) {
                     $q->whereIn('transactions.payment_status', $payment_status);
                 }
 
@@ -394,39 +396,39 @@ class SellController extends ApiController
             });
         }
 
-        if (! empty($filters['start_date'])) {
+        if (!empty($filters['start_date'])) {
             $query->whereDate('transactions.transaction_date', '>=', $filters['start_date']);
         }
 
-        if (! empty($filters['end_date'])) {
+        if (!empty($filters['end_date'])) {
             $query->whereDate('transactions.transaction_date', '<=', $filters['end_date']);
         }
 
-        if (! empty($filters['order_by_date'])) {
+        if (!empty($filters['order_by_date'])) {
             $order_by_date = in_array($filters['order_by_date'], ['asc', 'desc']) ? $filters['order_by_date'] : 'desc';
             $query->orderBy('transactions.transaction_date', $order_by_date);
         }
 
-        if (! empty($filters['user_id'])) {
+        if (!empty($filters['user_id'])) {
             $query->where('transactions.created_by', $filters['user_id']);
         }
 
-        if (! empty($filters['service_staff_id'])) {
+        if (!empty($filters['service_staff_id'])) {
             $query->where('transactions.res_waiter_id', $filters['service_staff_id']);
         }
 
-        if (! empty($filters['shipping_status'])) {
+        if (!empty($filters['shipping_status'])) {
             $query->where('transactions.shipping_status', $filters['shipping_status']);
         }
 
-        if (! empty($filters['only_subscriptions']) && $filters['only_subscriptions'] == 1) {
+        if (!empty($filters['only_subscriptions']) && $filters['only_subscriptions'] == 1) {
             $query->where(function ($q) {
                 $q->whereNotNull('transactions.recur_parent_id')
                     ->orWhere('transactions.is_recurring', 1);
             });
         }
 
-        if (! empty($filters['source'])) {
+        if (!empty($filters['source'])) {
             //only exception for woocommerce
             if ($filters['source'] == 'woocommerce') {
                 $query->whereNotNull('transactions.woocommerce_order_id');
@@ -435,7 +437,7 @@ class SellController extends ApiController
             }
         }
 
-        $perPage = ! empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
+        $perPage = !empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
         if ($perPage == -1) {
             $sells = $query->get();
         } else {
@@ -627,17 +629,17 @@ class SellController extends ApiController
         $sell_ids = explode(',', $sell_ids);
 
         $query = Transaction::where('business_id', $business_id)
-                        ->whereIn('id', $sell_ids);
+            ->whereIn('id', $sell_ids);
 
         $with = ['sell_lines', 'payment_lines'];
 
-        if (! empty(request()->input('send_purchase_details')) && request()->input('send_purchase_details') == 1) {
+        if (!empty(request()->input('send_purchase_details')) && request()->input('send_purchase_details') == 1) {
             $with[] = 'sell_lines.sell_line_purchase_lines';
             $with[] = 'sell_lines.sell_line_purchase_lines.purchase_line';
         }
 
         $sells = $query->with($with)
-                    ->get();
+            ->get();
 
         return SellResource::collection($sells);
     }
@@ -899,7 +901,7 @@ class SellController extends ApiController
             $commsn_agnt_setting = $business->sales_cmsn_agnt;
             $output = [];
 
-            if (empty($sells) || ! is_array($sells)) {
+            if (empty($sells) || !is_array($sells)) {
                 throw new \Exception('Invalid form data');
             }
 
@@ -911,15 +913,16 @@ class SellController extends ApiController
 
                     //TODO: temporarily used false to bypass the check, bcz of session issue in can_access_this_location function
                     //Check if location allowed
-                    if (false && ! $user->can_access_this_location($input['location_id'])) {
-                        throw new \Exception('User not allowed to access location with id '.$input['location_id']);
+                    if (false && !$user->can_access_this_location($input['location_id'])) {
+                        throw new \Exception('User not allowed to access location with id ' . $input['location_id']);
                     }
 
                     if (empty($input['products'])) {
                         throw new \Exception('No products added');
                     }
 
-                    $discount = ['discount_type' => $input['discount_type'],
+                    $discount = [
+                        'discount_type' => $input['discount_type'],
                         'discount_amount' => $input['discount_amount'],
                     ];
                     $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount, false);
@@ -937,7 +940,7 @@ class SellController extends ApiController
                     $change_return['is_return'] = 1;
                     $input['payment'][] = $change_return;
 
-                    if (! empty($input['payment']) && $transaction->is_suspend == 0) {
+                    if (!empty($input['payment']) && $transaction->is_suspend == 0) {
                         $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment'], $business_id, $user->id, false);
                     }
 
@@ -946,7 +949,7 @@ class SellController extends ApiController
                         //update product stock
                         foreach ($input['products'] as $product) {
                             $decrease_qty = $product['quantity'];
-                            if (! empty($product['base_unit_multiplier'])) {
+                            if (!empty($product['base_unit_multiplier'])) {
                                 $decrease_qty = $decrease_qty * $product['base_unit_multiplier'];
                             }
 
@@ -973,7 +976,7 @@ class SellController extends ApiController
                         $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
 
                         if ($business->enable_rp == 1) {
-                            $redeemed = ! empty($input['rp_redeemed']) ? $input['rp_redeemed'] : 0;
+                            $redeemed = !empty($input['rp_redeemed']) ? $input['rp_redeemed'] : 0;
                             $this->transactionUtil->updateCustomerRewardPoints($transaction->contact_id, $transaction->rp_earned, 0, $redeemed);
                         }
 
@@ -983,7 +986,8 @@ class SellController extends ApiController
                         $business_details = $this->businessUtil->getDetails($business_id);
                         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
-                        $business_info = ['id' => $business_id,
+                        $business_info = [
+                            'id' => $business_id,
                             'accounting_method' => $business->accounting_method,
                             'location_id' => $input['location_id'],
                             'pos_settings' => $pos_settings,
@@ -1006,13 +1010,13 @@ class SellController extends ApiController
                 } catch (ModelNotFoundException $e) {
                     DB::rollback();
 
-                    \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                    \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
                     $output[] = $this->modelNotFoundExceptionResult($e);
                 } catch (\Exception $e) {
                     DB::rollback();
 
-                    \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                    \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
                     $output[] = $this->otherExceptions($e);
                 }
@@ -1020,7 +1024,7 @@ class SellController extends ApiController
         } catch (\Exception $e) {
             DB::rollback();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output[] = $this->otherExceptions($e);
         }
@@ -1256,11 +1260,11 @@ class SellController extends ApiController
             $sell_data['business_id'] = $user->business_id;
 
             $transaction_before = Transaction::where('business_id', $user->business_id)->with(['payment_lines'])
-                                    ->findOrFail($id);
+                ->findOrFail($id);
 
             //Check if location allowed
-            if (! $user->can_access_this_location($transaction_before->location_id)) {
-                throw new \Exception('User not allowed to access location with id '.$input['location_id']);
+            if (!$user->can_access_this_location($transaction_before->location_id)) {
+                throw new \Exception('User not allowed to access location with id ' . $input['location_id']);
             }
 
             $status_before = $transaction_before->status;
@@ -1269,7 +1273,8 @@ class SellController extends ApiController
 
             $sell_data['location_id'] = $transaction_before->location_id;
             $input = $this->__formatSellData($sell_data, $transaction_before);
-            $discount = ['discount_type' => $input['discount_type'],
+            $discount = [
+                'discount_type' => $input['discount_type'],
                 'discount_amount' => $input['discount_amount'],
             ];
             $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
@@ -1281,11 +1286,11 @@ class SellController extends ApiController
 
             //Update Sell lines
             $deleted_lines = $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id'], true, $status_before, [], false);
-            if (! empty($input['payment']) && $transaction->is_suspend == 0) {
+            if (!empty($input['payment']) && $transaction->is_suspend == 0) {
                 $change_return = $this->dummyPaymentLine;
                 $change_return['amount'] = $input['change_return'];
                 $change_return['is_return'] = 1;
-                if (! empty($input['change_return_id'])) {
+                if (!empty($input['change_return_id'])) {
                     $change_return['id'] = $input['change_return_id'];
                 }
                 $input['payment'][] = $change_return;
@@ -1309,7 +1314,8 @@ class SellController extends ApiController
             $business_details = $this->businessUtil->getDetails($business_id);
             $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
-            $business = ['id' => $business_id,
+            $business = [
+                'id' => $business_id,
                 'accounting_method' => $business->accounting_method,
                 'location_id' => $input['location_id'],
                 'pos_settings' => $pos_settings,
@@ -1317,7 +1323,7 @@ class SellController extends ApiController
             $this->transactionUtil->adjustMappingPurchaseSell($status_before, $transaction, $business, $deleted_lines);
 
             $updated_transaction = Transaction::where('business_id', $user->business_id)->with(['payment_lines'])
-                                    ->findOrFail($id);
+                ->findOrFail($id);
 
             $updated_transaction->invoice_url = $this->transactionUtil->getInvoiceUrl($updated_transaction->id, $business_id);
             $updated_transaction->payment_link = $this->transactionUtil->getInvoicePaymentLink($updated_transaction->id, $business_id);
@@ -1334,7 +1340,7 @@ class SellController extends ApiController
         } catch (\Exception $e) {
             DB::rollback();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = $this->otherExceptions($e);
         }
@@ -1348,8 +1354,8 @@ class SellController extends ApiController
 
         if (isset($data[$key])) {
             $value = $data[$key];
-        } elseif (! empty($obj)) {
-            $key = ! empty($db_key) ? $db_key : $key;
+        } elseif (!empty($obj)) {
+            $key = !empty($db_key) ? $db_key : $key;
             $value = $obj->$key;
         }
 
@@ -1366,12 +1372,12 @@ class SellController extends ApiController
     {
         $business_id = $data['business_id'];
         $location = BusinessLocation::where('business_id', $business_id)
-                                    ->findOrFail($data['location_id']);
+            ->findOrFail($data['location_id']);
 
         $customer_id = $this->__getValue('contact_id', $data, $transaction, null);
         $contact = Contact::where('business_id', $data['business_id'])
-                            ->whereIn('type', ['customer', 'both'])
-                            ->findOrFail($customer_id);
+            ->whereIn('type', ['customer', 'both'])
+            ->findOrFail($customer_id);
 
         $cg = $this->contactUtil->getCustomerGroup($business_id, $contact->id);
         $customer_group_id = (empty($cg) || empty($cg->id)) ? null : $cg->id;
@@ -1380,24 +1386,41 @@ class SellController extends ApiController
             'location_id' => $location->id,
             'contact_id' => $contact->id,
             'customer_group_id' => $customer_group_id,
-            'transaction_date' => $this->__getValue('transaction_date', $data,
-                                $transaction, \Carbon::now()->toDateTimeString()),
+            'transaction_date' => $this->__getValue(
+                'transaction_date',
+                $data,
+                $transaction,
+                \Carbon::now()->toDateTimeString()
+            ),
             'invoice_no' => $this->__getValue('invoice_no', $data, $transaction, null, 'invoice_no'),
             'source' => $this->__getValue('source', $data, $transaction, null, 'source'),
             'status' => $this->__getValue('status', $data, $transaction, 'final'),
             'sub_status' => $this->__getValue('sub_status', $data, $transaction, null),
             'sale_note' => $this->__getValue('sale_note', $data, $transaction),
             'staff_note' => $this->__getValue('staff_note', $data, $transaction),
-            'commission_agent' => $this->__getValue('commission_agent',
-                                    $data, $transaction),
-            'shipping_details' => $this->__getValue('shipping_details',
-                                    $data, $transaction),
-            'shipping_address' => $this->__getValue('shipping_address',
-                                $data, $transaction),
+            'commission_agent' => $this->__getValue(
+                'commission_agent',
+                $data,
+                $transaction
+            ),
+            'shipping_details' => $this->__getValue(
+                'shipping_details',
+                $data,
+                $transaction
+            ),
+            'shipping_address' => $this->__getValue(
+                'shipping_address',
+                $data,
+                $transaction
+            ),
             'shipping_status' => $this->__getValue('shipping_status', $data, $transaction),
             'delivered_to' => $this->__getValue('delivered_to', $data, $transaction),
-            'shipping_charges' => $this->__getValue('shipping_charges', $data,
-                $transaction, 0),
+            'shipping_charges' => $this->__getValue(
+                'shipping_charges',
+                $data,
+                $transaction,
+                0
+            ),
             'exchange_rate' => $this->__getValue('exchange_rate', $data, $transaction, 1),
             'selling_price_group_id' => $this->__getValue('selling_price_group_id', $data, $transaction),
             'pay_term_number' => $this->__getValue('pay_term_number', $data, $transaction),
@@ -1431,7 +1454,7 @@ class SellController extends ApiController
         ];
 
         //Generate reference number
-        if (! empty($formated_data['is_recurring'])) {
+        if (!empty($formated_data['is_recurring'])) {
             //Update reference count
             $ref_count = $this->transactionUtil->setAndGetReferenceCount('subscription', $business_id);
             $formated_data['subscription_no'] = $this->transactionUtil->generateReferenceNumber('subscription', $ref_count, $business_id);
@@ -1440,18 +1463,18 @@ class SellController extends ApiController
         $sell_lines = [];
         $subtotal = 0;
 
-        if (! empty($data['products'])) {
+        if (!empty($data['products'])) {
             foreach ($data['products'] as $product_data) {
                 $sell_line = null;
-                if (! empty($product_data['sell_line_id'])) {
+                if (!empty($product_data['sell_line_id'])) {
                     $sell_line = TransactionSellLine::findOrFail($product_data['sell_line_id']);
                 }
 
                 $product_id = $this->__getValue('product_id', $product_data, $sell_line);
                 $variation_id = $this->__getValue('variation_id', $product_data, $sell_line);
                 $product = Product::where('business_id', $business_id)
-                                ->with(['variations'])
-                                ->findOrFail($product_id);
+                    ->with(['variations'])
+                    ->findOrFail($product_id);
 
                 $variation = $product->variations->where('id', $variation_id)->first();
 
@@ -1472,9 +1495,9 @@ class SellController extends ApiController
                 $item_tax = 0;
                 $unit_price_inc_tax = $discounted_price;
                 $tax_id = $this->__getValue('tax_rate_id', $product_data, $sell_line, null, 'tax_id');
-                if (! empty($tax_id)) {
+                if (!empty($tax_id)) {
                     $tax = TaxRate::where('business_id', $business_id)
-                                ->findOrFail($tax_id);
+                        ->findOrFail($tax_id);
 
                     $item_tax = $this->transactionUtil->calc_percentage($discounted_price, $tax->amount);
                     $unit_price_inc_tax += $item_tax;
@@ -1491,20 +1514,27 @@ class SellController extends ApiController
                     'item_tax' => $item_tax,
                     'sell_line_note' => $this->__getValue('note', $product_data, $sell_line, null, 'sell_line_note'),
                     'enable_stock' => $product->enable_stock,
-                    'quantity' => $this->__getValue('quantity', $product_data,
-                                        $sell_line, 0),
+                    'quantity' => $this->__getValue(
+                        'quantity',
+                        $product_data,
+                        $sell_line,
+                        0
+                    ),
                     'product_unit_id' => $product->unit_id,
-                    'sub_unit_id' => $this->__getValue('sub_unit_id', $product_data,
-                                        $sell_line),
+                    'sub_unit_id' => $this->__getValue(
+                        'sub_unit_id',
+                        $product_data,
+                        $sell_line
+                    ),
                     'unit_price_inc_tax' => $unit_price_inc_tax,
                 ];
-                if (! empty($sell_line)) {
+                if (!empty($sell_line)) {
                     $formated_sell_line['transaction_sell_lines_id'] = $sell_line->id;
                 }
 
-                if (($formated_sell_line['product_unit_id'] != $formated_sell_line['sub_unit_id']) && ! empty($formated_sell_line['sub_unit_id'])) {
+                if (($formated_sell_line['product_unit_id'] != $formated_sell_line['sub_unit_id']) && !empty($formated_sell_line['sub_unit_id'])) {
                     $sub_unit = Unit::where('business_id', $business_id)
-                                    ->findOrFail($formated_sell_line['sub_unit_id']);
+                        ->findOrFail($formated_sell_line['sub_unit_id']);
                     $formated_sell_line['base_unit_multiplier'] = $sub_unit->base_unit_multiplier;
                 } else {
                     $formated_sell_line['base_unit_multiplier'] = 1;
@@ -1543,9 +1573,9 @@ class SellController extends ApiController
         $order_tax = 0;
         $final_total = $discounted_total;
         $order_tax_id = $this->__getValue('tax_rate_id', $data, $transaction);
-        if (! empty($order_tax_id)) {
+        if (!empty($order_tax_id)) {
             $tax = TaxRate::where('business_id', $business_id)
-                        ->findOrFail($order_tax_id);
+                ->findOrFail($order_tax_id);
 
             $order_tax = $this->transactionUtil->calc_percentage($discounted_total, $tax->amount);
             $final_total += $order_tax;
@@ -1558,17 +1588,17 @@ class SellController extends ApiController
 
         $final_total += $formated_data['shipping_charges'];
 
-        if (! empty($formated_data['packing_charge']) && ! empty($formated_data['types_of_service_id'])) {
+        if (!empty($formated_data['packing_charge']) && !empty($formated_data['types_of_service_id'])) {
             $final_total += $formated_data['packing_charge'];
         }
 
         $formated_data['final_total'] = $final_total;
 
         $payments = [];
-        if (! empty($data['payments'])) {
+        if (!empty($data['payments'])) {
             foreach ($data['payments'] as $payment_data) {
                 $transaction_payment = null;
-                if (! empty($payment_data['payment_id'])) {
+                if (!empty($payment_data['payment_id'])) {
                     $transaction_payment = TransactionPayment::findOrFail($payment_data['payment_id']);
                 }
                 $payment = [
@@ -1589,7 +1619,7 @@ class SellController extends ApiController
                     'transaction_no_3' => $this->__getValue('transaction_no_3', $payment_data, $transaction_payment),
                     'note' => $this->__getValue('note', $payment_data, $transaction_payment),
                 ];
-                if (! empty($transaction_payment)) {
+                if (!empty($transaction_payment)) {
                     $payment['payment_id'] = $transaction_payment->id;
                 }
 
@@ -1620,7 +1650,7 @@ class SellController extends ApiController
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output['success'] = false;
             $output['msg'] = trans('messages.something_went_wrong');
@@ -1655,11 +1685,12 @@ class SellController extends ApiController
                 return $this->otherExceptions('Invalid shipping status');
             }
 
-            return $this->respond(['success' => 1,
+            return $this->respond([
+                'success' => 1,
                 'msg' => trans('lang_v1.updated_success'),
             ]);
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
         }
@@ -1786,7 +1817,7 @@ class SellController extends ApiController
         try {
             $input = $request->except('_token');
 
-            if (! empty($input['products'])) {
+            if (!empty($input['products'])) {
                 $user = Auth::user();
 
                 $business_id = $user->business_id;
@@ -1803,7 +1834,7 @@ class SellController extends ApiController
         } catch (\Exception $e) {
             DB::rollback();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = $this->otherExceptions($e);
         }
@@ -2102,21 +2133,21 @@ class SellController extends ApiController
 
         $sell_id = request()->input('sell_id');
         $query = Transaction::where('business_id', $business_id)
-                            ->where('type', 'sell_return')
-                            ->where('status', 'final')
-                            ->with(['payment_lines', 'return_parent_sell', 'return_parent_sell.sell_lines'])
-                            ->select('transactions.*');
+            ->where('type', 'sell_return')
+            ->where('status', 'final')
+            ->with(['payment_lines', 'return_parent_sell', 'return_parent_sell.sell_lines'])
+            ->select('transactions.*');
 
         $permitted_locations = $user->permitted_locations();
         if ($permitted_locations != 'all') {
             $query->whereIn('transactions.location_id', $permitted_locations);
         }
 
-        if (! empty($sell_id)) {
+        if (!empty($sell_id)) {
             $query->where('return_parent_id', $sell_id);
         }
 
-        $perPage = ! empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
+        $perPage = !empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
         if ($perPage == -1) {
             $sell_returns = $query->get();
         } else {

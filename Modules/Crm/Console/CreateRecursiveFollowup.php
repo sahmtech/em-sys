@@ -4,7 +4,7 @@ namespace Modules\Crm\Console;
 
 use App\Contact;
 use App\Transaction;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use Modules\Crm\Entities\Schedule;
 use Modules\Crm\Utils\CrmUtil;
@@ -43,8 +43,8 @@ class CreateRecursiveFollowup extends Command
     public function handle()
     {
         $recursive_followups = Schedule::where('is_recursive', 1)
-                                    ->with(['users', 'createdBy'])
-                                    ->get();
+            ->with(['users', 'createdBy'])
+            ->get();
 
         try {
             DB::beginTransaction();
@@ -58,7 +58,7 @@ class CreateRecursiveFollowup extends Command
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
 
@@ -70,13 +70,13 @@ class CreateRecursiveFollowup extends Command
         $days_diff = $recursive_followup->recursion_days;
 
         $customers = Contact::where('contacts.business_id', $recursive_followup->business_id)
-                        ->OnlyCustomers()
-                        ->leftJoin('transactions as t', 't.contact_id', '=', 'contacts.id')
-                        ->havingRaw("DATEDIFF('{$current_date}', MAX(DATE(transaction_date))) = {$days_diff}")
-                        ->orHavingRaw("(transaction_date IS NULL AND DATEDIFF('{$current_date}', DATE(contacts.created_at)) =  {$days_diff})")
-                        ->select('contacts.*', 't.transaction_date')
-                        ->groupBy('contacts.id')
-                        ->get();
+            ->OnlyCustomers()
+            ->leftJoin('transactions as t', 't.contact_id', '=', 'contacts.id')
+            ->havingRaw("DATEDIFF('{$current_date}', MAX(DATE(transaction_date))) = {$days_diff}")
+            ->orHavingRaw("(transaction_date IS NULL AND DATEDIFF('{$current_date}', DATE(contacts.created_at)) =  {$days_diff})")
+            ->select('contacts.*', 't.transaction_date')
+            ->groupBy('contacts.id')
+            ->get();
 
         $input = [
             'follow_up_by' => 'orders',
@@ -101,7 +101,7 @@ class CreateRecursiveFollowup extends Command
         }
         $input['follow_ups'] = $follow_ups;
 
-        if (! empty($follow_ups)) {
+        if (!empty($follow_ups)) {
             $crmUtil = new CrmUtil();
 
             $crmUtil->addAdvanceFollowUp($input, $recursive_followup->createdBy);
@@ -118,9 +118,9 @@ class CreateRecursiveFollowup extends Command
         $days_diff = $recursive_followup->recursion_days;
 
         $query = Transaction::where('business_id', $recursive_followup->business_id)
-                            ->where('type', 'sell')
-                            ->where('status', 'final')
-                            ->whereRaw("DATEDIFF('$current_date', DATE(transaction_date)) = $days_diff");
+            ->where('type', 'sell')
+            ->where('status', 'final')
+            ->whereRaw("DATEDIFF('$current_date', DATE(transaction_date)) = $days_diff");
 
         if ($recursive_followup->follow_up_by_value == 'all') {
             $query->whereIn('payment_status', ['due', 'partial']);
@@ -159,7 +159,7 @@ class CreateRecursiveFollowup extends Command
 
         $input['follow_ups'] = $follow_ups;
 
-        if (! empty($follow_ups)) {
+        if (!empty($follow_ups)) {
             $crmUtil = new CrmUtil();
 
             $crmUtil->addAdvanceFollowUp($input, $recursive_followup->createdBy);

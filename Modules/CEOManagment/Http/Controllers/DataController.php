@@ -53,6 +53,21 @@ class DataController extends Controller
                         'label' => __('ceomanagment::lang.view_timesheet_wk'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'ceomanagment.view_payroll_checkpoint',
+                        'label' => __('essentials::lang.view_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.confirm_payroll_checkpoint',
+                        'label' => __('essentials::lang.confirm_payroll_checkpoint'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'ceomanagment.show_payroll_checkpoint',
+                        'label' => __('essentials::lang.show_payroll_checkpoint'),
+                        'default' => false,
+                    ],
 
                 ]
             ]

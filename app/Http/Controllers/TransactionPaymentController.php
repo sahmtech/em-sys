@@ -12,7 +12,7 @@ use App\TransactionPayment;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use Datatables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class TransactionPaymentController extends Controller
@@ -430,7 +430,9 @@ class TransactionPaymentController extends Controller
                 $bankAccount = BankAccount::forDropdown();
 
                 $view = view('transaction_payment.payment_row')
+
                     ->with(compact('transaction', 'payment_types', 'payment_line', 'amount_formated', 'accounts','bankAccount'))->render();
+
 
                 $output = [
                     'status' => 'due',

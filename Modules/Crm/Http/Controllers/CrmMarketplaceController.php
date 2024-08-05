@@ -5,7 +5,7 @@ namespace Modules\Crm\Http\Controllers;
 use App\Category;
 use App\User;
 use App\Utils\Util;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -38,8 +38,8 @@ class CrmMarketplaceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->commonUtil->is_admin(auth()->user());
 
-        if (! $is_admin || ! $this->enable_b2b_marketplace) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!$is_admin || !$this->enable_b2b_marketplace) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $marketplace = CrmMarketplace::first();
@@ -59,8 +59,8 @@ class CrmMarketplaceController extends Controller
     {
         $is_admin = $this->commonUtil->is_admin(auth()->user());
 
-        if (! $is_admin || ! $this->enable_b2b_marketplace) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!$is_admin || !$this->enable_b2b_marketplace) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -91,15 +91,15 @@ class CrmMarketplaceController extends Controller
     {
         $is_admin = $this->commonUtil->is_admin(auth()->user());
 
-        if (! $is_admin || ! $this->enable_b2b_marketplace) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!$is_admin || !$this->enable_b2b_marketplace) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
             $business_id = request()->session()->get('user.business_id');
             $marketplace = CrmMarketplace::first();
 
-            $url = 'https://my.exportersindia.com/api-inquiry-detail.php?k='.$marketplace->site_key.'&email='.$marketplace->site_id;
+            $url = 'https://my.exportersindia.com/api-inquiry-detail.php?k=' . $marketplace->site_key . '&email=' . $marketplace->site_id;
 
             $response = file_get_contents($url);
 
@@ -113,7 +113,7 @@ class CrmMarketplaceController extends Controller
 
                 //check if email exists
                 $lead = CrmContact::where('email', $user_data['email'])
-                                ->first();
+                    ->first();
 
                 //if lead don't exist create one
                 if (empty($lead)) {
@@ -141,13 +141,13 @@ class CrmMarketplaceController extends Controller
                 //check if same follow up exists, if not create new
                 $inq_id = $user_data['inq_id'] ?? '';
 
-                if (! empty($user_data['inq_id'])) {
+                if (!empty($user_data['inq_id'])) {
                     $schedule = Schedule::where('business_id', $business_id)
-                                        ->where('contact_id', $lead->id)
-                                        ->where('title', 'like', "%{$inq_id}%")
-                                        ->first();
+                        ->where('contact_id', $lead->id)
+                        ->where('title', 'like', "%{$inq_id}%")
+                        ->first();
 
-                    if (! empty($schedule)) {
+                    if (!empty($schedule)) {
                         continue;
                     }
                 }
@@ -156,12 +156,12 @@ class CrmMarketplaceController extends Controller
                 $product = $user_data['product'] ?? '';
                 $detail_req = $user_data['detail_req'] ?? '';
 
-                $title = 'ExportersIndia - '.$subject.' - '.$lead->name." (Inquiry id: {$inq_id})";
+                $title = 'ExportersIndia - ' . $subject . ' - ' . $lead->name . " (Inquiry id: {$inq_id})";
 
-                $description = 'Subject: '.$subject;
+                $description = 'Subject: ' . $subject;
                 $description .= '<br>';
 
-                $description .= 'Product: '.$product;
+                $description .= 'Product: ' . $product;
                 $description .= '<br>';
                 $description .= $detail_req;
 
@@ -189,11 +189,11 @@ class CrmMarketplaceController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => 'File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage(),
+                'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
             ];
         }
 
