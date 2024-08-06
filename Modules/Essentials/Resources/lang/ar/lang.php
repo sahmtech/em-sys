@@ -311,6 +311,7 @@ return [
   "total_deductions" => "إجمالي الخصومات",
   "net_pay" => "صافي الأجر",
   "payslip_for_the_month" => "قسيمة دفع عن :month :year سنة",
+  "payrollslip_for_the_month" => " سند راتب لشهر  :month :year",
   "in_words" => "بكلمات",
   "days_present" => "أيام موجودة",
   "days_absent" => "الأيام التي خلت",
