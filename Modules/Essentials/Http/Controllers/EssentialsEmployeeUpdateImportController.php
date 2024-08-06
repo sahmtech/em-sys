@@ -231,7 +231,7 @@ class EssentialsEmployeeUpdateImportController extends Controller
     {
         try {
             $user = User::where('id_proof_number', $emp_array['id_proof_number'])->first();
-
+            error_log($user->id);
             if ($user) {
                 error_log($user->id);
                 error_log($user->profile_image);
@@ -243,40 +243,39 @@ class EssentialsEmployeeUpdateImportController extends Controller
                     if ($user->isDirty('profile_image')) {
                         $user->save();
                     }
+                }
+                if (!empty($emp_array['contract'])) {
 
-                    if (!empty($emp_array['contract'])) {
-
-                        $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->where('is_active', 1)->orderBy('created_at', 'desc')->first();
-                        if ($contract) {
-                            $contract->file_path = $emp_array['contract'];
-                            $contract->save();
-                        } else {
-                            EssentialsEmployeesContract::create([
-                                'employee_id' => $user->id,
-                                'file_path' => $emp_array['contract'],
-                            ]);
-                        }
+                    $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->where('is_active', 1)->orderBy('created_at', 'desc')->first();
+                    if ($contract) {
+                        $contract->file_path = $emp_array['contract'];
+                        $contract->save();
+                    } else {
+                        EssentialsEmployeesContract::create([
+                            'employee_id' => $user->id,
+                            'file_path' => $emp_array['contract'],
+                        ]);
                     }
+                }
 
-                    $this->updateOrAddDocument($user->id, $emp_array['activeResidencePermit'], 'residence_permit');
-                    $this->updateOrAddDocument($user->id, $emp_array['activeNationalId'], 'national_id');
-                    $this->updateOrAddDocument($user->id, $emp_array['activePassport'], 'Passport');
-                    $this->updateOrAddDocument($user->id, $emp_array['activeInternationalCertificate'], 'international_certificate');
-                    $this->updateOrAddDocument($user->id, $emp_array['activeDriversLicense'], 'drivers_license');
-                    $this->updateOrAddDocument($user->id, $emp_array['activeIban'], 'Iban');
-                    $this->updateOrAddDocument($user->id, $emp_array['activeCarRegistration'], 'car_registration');
+                $this->updateOrAddDocument($user->id, $emp_array['activeResidencePermit'], 'residence_permit');
+                $this->updateOrAddDocument($user->id, $emp_array['activeNationalId'], 'national_id');
+                $this->updateOrAddDocument($user->id, $emp_array['activePassport'], 'Passport');
+                $this->updateOrAddDocument($user->id, $emp_array['activeInternationalCertificate'], 'international_certificate');
+                $this->updateOrAddDocument($user->id, $emp_array['activeDriversLicense'], 'drivers_license');
+                $this->updateOrAddDocument($user->id, $emp_array['activeIban'], 'Iban');
+                $this->updateOrAddDocument($user->id, $emp_array['activeCarRegistration'], 'car_registration');
 
-                    if (!empty($emp_array['activeQualification'])) {
-                        $qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->orderBy('created_at', 'desc')->first();
-                        if ($qualification) {
-                            $qualification->file_path = $emp_array['activeQualification'];
-                            $qualification->save();
-                        } else {
-                            EssentialsEmployeesQualification::create([
-                                'employee_id' => $user->id,
-                                'file_path' => $emp_array['activeQualification'],
-                            ]);
-                        }
+                if (!empty($emp_array['activeQualification'])) {
+                    $qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->orderBy('created_at', 'desc')->first();
+                    if ($qualification) {
+                        $qualification->file_path = $emp_array['activeQualification'];
+                        $qualification->save();
+                    } else {
+                        EssentialsEmployeesQualification::create([
+                            'employee_id' => $user->id,
+                            'file_path' => $emp_array['activeQualification'],
+                        ]);
                     }
                 }
             }
