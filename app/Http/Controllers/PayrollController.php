@@ -177,6 +177,7 @@ class PayrollController extends Controller
 
             foreach ($payrollGroupUsers as  $payrollGroupUser) {
                 $essentials_amount_per_unit_duration += $payrollGroupUser->salary;
+
                 $final_total += $payrollGroupUser->final_salary;
             }
             $total_before_tax = $final_total;
