@@ -643,6 +643,10 @@ class RequestUtil extends Util
                     $Request->interview_time = $request->interview_time;
                     $Request->interview_place = $request->interview_place;
 
+                    $Request->residenceRenewalDuration = $request->residenceRenewalDuration;
+
+
+
 
 
 
@@ -1274,6 +1278,7 @@ class RequestUtil extends Util
             'contract_sub_reason_id' => $request->contract_sub_reason_id ?  $sub_main_reasons[$request->contract_sub_reason_id] : null,
             'visa_number' => $request->visa_number,
             'atmCardType' => trans("request.{$request->atmCardType}"),
+            'residenceRenewalDuration' => trans("request.{$request->residenceRenewalDuration}"),
             'insurance_classes_id' => $request->insurance_classes_id,
             'status' => trans("request.{$request->status}"),
             'type' => trans("request.{$type}"),
@@ -1442,6 +1447,7 @@ class RequestUtil extends Util
             'contract_sub_reason_id' => $request->contract_sub_reason_id ?  $sub_main_reasons[$request->contract_sub_reason_id] : null,
             'visa_number' => $request->visa_number,
             'atmCardType' => trans("request.{$request->atmCardType}"),
+            'residenceRenewalDuration' => trans("request.{$request->residenceRenewalDuration}"),
             'insurance_classes_id' => $request->insurance_classes_id,
             'status' => trans("request.{$request->status}"),
             'type' => trans("request.{$type}"),
@@ -2326,6 +2332,9 @@ class RequestUtil extends Util
         $userRequest->interview_date = $request->interview_date;
         $userRequest->interview_time = $request->interview_time;
         $userRequest->interview_place = $request->interview_place;
+
+        $userRequest->residenceRenewalDuration = $request->residenceRenewalDuration;
+
 
 
         $userRequest->save();
