@@ -1741,6 +1741,7 @@ function pos_total_row() {
     $('span.total_quantity').each(function () {
         $(this).html(__number_f(total_quantity));
     });
+    
     $('span#order_tax').text(__currency_trans_from_en(price_total_for_tax-order_tax_total_, false));
     $('input#order_tax').val(__currency_trans_from_en(price_total_for_tax-order_tax_total_, false));
 
@@ -1940,6 +1941,7 @@ function pos_order_tax(price_total, discount) {
     }
 
     $('span#order_tax').text(__currency_trans_from_en(order_tax, false));
+    $('input#order_tax').val(__currency_trans_from_en(order_tax, false));
 
     return order_tax;
 }
