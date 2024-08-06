@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
+use App\BusinessLocation;
 use App\Company;
 use Yajra\DataTables\Facades\DataTables;
 use App\PayrollGroup;
@@ -201,7 +202,8 @@ class PayrollController extends Controller
                 $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
             }
             $payroll['payroll_group_id'] = $id;
-
+            $payroll['company_id'] =   $company_id;
+            $payroll['location_id'] =   $company_id == 2 ? BusinessLocation::where('company_id', 2)?->first()?->id : BusinessLocation::where('company_id', 1)?->first()?->id;
             $transaction = Transaction::create($payroll);
             $transaction_ids[] = $transaction->id;
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);

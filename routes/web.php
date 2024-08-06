@@ -22,6 +22,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CombinedPurchaseReturnController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\API\ApiCustomerController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardConfiguratorController;
@@ -692,7 +693,6 @@ Route::middleware(['setData'])->group(function () {
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu', 'CheckUserLogin'])->group(function () {
     Route::get('/my_notifications', [HomeController::class, 'getMyNotifications'])->name('getMyNotification');
-
 
     Route::middleware(['compay_session'])->group(function () {
         Route::post('/sells/pos/get-types-of-service-details', 'SellPosController@getTypesOfServiceDetails');
