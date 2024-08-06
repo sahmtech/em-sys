@@ -115,7 +115,7 @@
                                         </td>
                                         <td>
                                             @if ($closing_balance >= 0)
-                                                @format_currency(abs($closing_balance))
+                                                @format_currency($closing_balance)
                                             @else
                                                 @format_currency(0)
                                             @endif

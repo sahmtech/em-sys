@@ -100,6 +100,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
 
     Route::get('reports', 'ReportController@index');
     Route::get('reports/trial-balance', 'ReportController@trialBalance')->name('accounting.trialBalance');
+    Route::get('reports/income-statement', 'ReportController@incomeStatement')->name('accounting.incomeStatement');
     Route::get('reports/balance-sheet', 'ReportController@balanceSheet')->name('accounting.balanceSheet');
     Route::get(
         'reports/account-receivable-ageing-report',
