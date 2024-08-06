@@ -2727,7 +2727,23 @@ class DataController extends Controller
                     ]
                 );
             }
+            if (request()->input('shift')) {
+                $shiftIds = array_filter(request()->input('shift'), function ($value) {
+                    return !is_null($value);
+                });
+                EssentialsUserShift::where('user_id', $user->id)
+                    ->update(['is_active' => 0]);
 
+
+                foreach ($shiftIds as $shiftId) {
+
+                    EssentialsUserShift::create([
+                        'user_id' => $user->id,
+                        'essentials_shift_id' => $shiftId,
+                        'is_active' => 1,
+                    ]);
+                }
+            }
             // Handle Allowances and Deductions
             if (request()->input('selectedData')) {
                 EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)->delete();

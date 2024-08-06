@@ -9,6 +9,7 @@ use App\Http\Controllers\BankAccountsController;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsUserShift;
 
 
 // use App\Http\Controllers\Auth;
@@ -299,6 +300,25 @@ Route::get('/updateDepartmentIds', function () {
     }
 
     return response()->json(['message' => 'Users department IDs updated successfully']);
+});
+Route::get('/updateShifts', function () {
+    $users = User::whereIn('user_type', ['employee', 'manager', 'department_head'])->get();
+
+    foreach ($users as $user) {
+
+
+        EssentialsUserShift::where('user_id', $user->id)
+            ->update(['is_active' => 0]);
+
+
+        EssentialsUserShift::create([
+            'user_id' => $user->id,
+            'essentials_shift_id' => 1,
+            'is_active' => 1,
+        ]);
+    }
+
+    return response()->json(['message' => 'Users shifts updated successfully']);
 });
 // Route::get('/swap_k', function () {
 //     DB::beginTransaction();
