@@ -34,6 +34,8 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>@lang('essentials::lang.name')</th>
+                                                <th>@lang('essentials::lang.company')</th>
+                                                <th>@lang('essentials::lang.project')</th>
                                                 <th>@lang('essentials::lang.hr_management_cleared')</th>
                                                 <th class="table-td-width-300px">@lang('essentials::lang.hr_management_cleared_by')</th>
                                                 <th>@lang('essentials::lang.accountant_cleared')</th>
@@ -119,6 +121,14 @@
                     {
                         data: 'name',
                         name: 'name',
+                    },
+                    {
+                        data: 'company',
+                        name: 'company',
+                    },
+                    {
+                        data: 'projects',
+                        name: 'projects',
                     },
 
                     {

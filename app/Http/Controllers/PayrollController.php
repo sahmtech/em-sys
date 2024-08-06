@@ -529,10 +529,25 @@ class PayrollController extends Controller
             || auth()->user()->can('ceomanagment.show_payroll_checkpoint')
             || auth()->user()->can('generalmanagement.show_payroll_checkpoint')
             || $from == "none";
+
+        $companies = Company::pluck('name', 'id');
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
                 ->addColumn('name', function ($row) {
                     return $row->payroll_group_name;
+                })
+                ->addColumn('company', function ($row) use ($companies) {
+                    return $companies[$row->company_id];
+                })
+                ->addColumn('projects', function ($row) {
+                    $html = ' <ul role="menu">';
+                    $projects = PayrollGroupUser::where('payroll_group_id', $row->id)->pluck('project_name')->unique()->toArray();
+                    foreach ($projects  as   $project) {
+                        $html .= '<li>' . $project . '</li>';
+                    }
+
+                    $html .= ' </ul>';
+                    return  $html;
                 })
                 ->editColumn('hr_management_cleared', function ($row) {
                     if ($row->hr_management_cleared) {
@@ -671,6 +686,8 @@ class PayrollController extends Controller
 
                 ->rawColumns([
                     'name',
+                    'company',
+                    'projects',
                     'hr_management_cleared',
                     'hr_management_cleared_by',
                     'accountant_cleared',
