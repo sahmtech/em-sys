@@ -510,6 +510,25 @@
                                     ],
                                 ) !!}
                             </div>
+                            <div class="form-group col-md-6" id="residenceRenewalDuration" style="display: none;">
+                                {!! Form::label('residenceRenewalDuration', __('request.required_duration') . ':*') !!}
+                                {!! Form::select(
+                                    'residenceRenewalDuration',
+                                    [
+                                        '3 months' => __('request.3 months'),
+                                        '6 months' => __('request.6 months'),
+                                        '9 months' => __('request.9 months'),
+                                        '12 months' => __('request.12 months'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('request.select_duration'),
+                                        'id' => 'residenceRenewalDuration',
+                                    ],
+                                ) !!}
+                            </div>
                             <div class="form-group col-md-6" id="baladyType" style="display: none;">
                                 {!! Form::label('baladyType', __('request.request_type') . ':*') !!}
                                 {!! Form::select(
@@ -932,6 +951,26 @@
                                     ],
                                 ) !!}
                             </div>
+                            <div class="form-group col-md-6" id="edit_residenceRenewalDuration" style="display: none;">
+                                {!! Form::label('residenceRenewalDuration', __('request.required_duration') . ':*') !!}
+                                {!! Form::select(
+                                    'residenceRenewalDuration',
+                                    [
+                                        '3 months' => __('request.3 months'),
+                                        '6 months' => __('request.6 months'),
+                                        '9 months' => __('request.9 months'),
+                                        '12 months' => __('request.12 months'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('request.select_duration'),
+                                        'id' => 'editResidenceRenewalDurationField',
+                                    ],
+                                ) !!}
+                            </div>
+
                             <div class="form-group col-md-6" id="edit_baladyType" style="display: none;">
                                 {!! Form::label('baladyType', __('request.request_type') . ':*') !!}
                                 {!! Form::select(
@@ -2016,6 +2055,14 @@
                             $('#atmType').hide();
 
                         }
+                        if (selectedType === 'residenceRenewal') {
+                            $('#residenceRenewalDuration').show();
+
+
+                        } else {
+                            $('#residenceRenewalDuration').hide();
+
+                        }
                         if (selectedType === 'exitRequest') {
                             fetchUsersWithSaudiNationality();
 
@@ -2180,6 +2227,7 @@
             $('#editWorkInjuriesDateField').val(request.workInjuriesDate) ?? null;
             $('#editResEditTypeField').val(request.resCardEditType) ?? null;
             $('#editAtmTypeField').val(request.atmCardType) ?? null;
+            $('#editResidenceRenewalDurationField').val(request.editResidenceRenewalDurationField) ?? null;
             $('#editBaladyTypeField').val(request.baladyCardType) ?? null;
             $('#editInsClassField').val(request.insurance_classes_id) ?? null;
             $('#editMainReasonSelect').val(request.contract_main_reason_id) ?? null;
@@ -2202,6 +2250,8 @@
             $('#edit_interview_placeField').val(request.interview_place) ?? null;
             $('#edit_interview_dateField').val(request.interview_date) ?? null;
             $('#edit_interview_timeField').val(request.interview_time) ?? null;
+
+            $('#editResidenceRenewalDurationField').val(request.residenceRenewalDuration) ?? null;
 
             $('#editProfessionSelect').val(request.specialization_id) ?? null;
             $('#edit_job_titleSelect').val(request.job_title_id) ?? null;
@@ -2233,7 +2283,7 @@
 
         function handleEditTypeChange(requestType, request) {
 
-            $('#edit_start_date, #edit_end_date, #edit_leaveType, #edit_workInjuriesDate, #edit_escape_time, #edit_escape_date, #edit_exit_date, #edit_return_date, #edit_installmentsNumber, #edit_monthlyInstallment, #edit_amount, #edit_commissioner_info, #edit_authorized_entity, #edit_trip_type, #edit_take_off_location, #edit_destination, #edit_weight_of_furniture, #edit_date_of_take_off, #edit_time_of_take_off, #edit_return_date_of_trip, #edit_resEditType, #edit_baladyType, #edit_ins_class, #edit_main_reason, #edit_visa_number, #edit_atmType')
+            $('#edit_start_date, #edit_end_date, #edit_leaveType, #edit_workInjuriesDate, #edit_escape_time, #edit_escape_date, #edit_exit_date, #edit_return_date, #edit_installmentsNumber, #edit_monthlyInstallment, #edit_amount, #edit_commissioner_info, #edit_authorized_entity, #edit_trip_type, #edit_take_off_location, #edit_destination, #edit_weight_of_furniture, #edit_date_of_take_off, #edit_time_of_take_off, #edit_return_date_of_trip, #edit_resEditType, #edit_baladyType, #edit_ins_class, #edit_main_reason, #edit_visa_number, #edit_atmType,#edit_residenceRenewalDuration')
                 .hide();
 
             switch (requestType) {
@@ -2292,6 +2342,9 @@
                 case 'atmCard':
                     $('#edit_atmType').show();
                     break;
+                case 'residenceRenewal':
+                    $('#edit_residenceRenewalDuration').show();
+                    break;
             }
         }
     </script>
@@ -2304,6 +2357,9 @@
                 }
                 if ($('#edit_atmType').is(':hidden')) {
                     $('#editAtmTypeField').val(null);
+                }
+                if ($('#edit_residenceRenewalDuration').is(':hidden')) {
+                    $('#editResidenceRenewalDurationField').val(null);
                 }
                 if ($('#edit_baladyType').is(':hidden')) {
                     $('#editBaladyTypeField').val(null);

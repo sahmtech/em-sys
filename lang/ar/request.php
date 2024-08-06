@@ -284,14 +284,12 @@ return [
   'company' => 'الوكيل',
   'admission_date' => 'تاريخ المباشرة',
   'please_add_valid_file_and_name_before_saving' => 'الرجاء إضافة مرفق واسم للمرفق قبل الحفظ',
-
-
-
-
-
-
-
-
+  'select_duration' => 'اختر مدة',
+  'required_duration' => 'المدة المطلوبة',
+  '3 months' => 'ثلاثة أشهر',
+  '6 months' => 'ستة أشهر',
+  '9 months' => 'تسعة أشهر',
+  '12 months' => 'اثنا عشر شهراً',
 
 
 ];

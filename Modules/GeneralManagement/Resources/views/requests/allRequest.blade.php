@@ -1181,6 +1181,14 @@
                             $('#atmType').hide();
 
                         }
+                        if (selectedType === 'residenceRenewal') {
+                            $('#residenceRenewalDuration').show();
+
+
+                        } else {
+                            $('#residenceRenewalDuration').hide();
+
+                        }
                         if (selectedType === 'exitRequest') {
                             fetchUsersWithSaudiNationality();
 

@@ -11,6 +11,7 @@ use App\Transaction;
 use App\TransactionPayment;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
+use App\Utils\Util;
 use Datatables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -61,6 +62,7 @@ class TransactionPaymentController extends Controller
      */
     public function store(Request $request)
     {
+       
         try {
             $business_id = $request->session()->get('user.business_id');
             $transaction_id = $request->input('transaction_id');
@@ -136,6 +138,9 @@ class TransactionPaymentController extends Controller
 
                 $this->transactionUtil->activityLog($transaction, 'payment_edited', $transaction_before);
 
+                $util = new Util();
+                 
+                $auto_migration = $util->createTransactionJournal_entry($transaction->id);
                 DB::commit();
             }
 
