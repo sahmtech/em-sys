@@ -198,12 +198,17 @@ class ApiCustomerController extends ApiController
                 )->count();
 
 
+
+            $bills = Transaction::where('contact_id', $contact_id)->whereNotNull('company_id')->count();
+
+
+
             $res = [
                 'workeres' =>   $workers,
                 'contracts' =>   $contracts,
                 'projects' => $SalesProjects,
                 'requests' =>   $requestsProcess,
-                'bills' => 0,
+                'bills' => $bills,
                 'first_name' =>   $user->first_name,
                 'mid_name' => $user->mid_name,
                 'last_name' => $user->last_name,
