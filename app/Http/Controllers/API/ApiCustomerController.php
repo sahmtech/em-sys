@@ -88,7 +88,7 @@ class ApiCustomerController extends ApiController
             foreach ($transactions as $transaction) {
                 if ($transaction->company_id) {
                     $tmp = User::where('id', $transaction->created_by)?->first();
-                    $bills = [
+                    $bills[] = [
                         'id' => $transaction->id,
                         'invoice_no' => $transaction->invoice_no,
                         'transaction_date' => $transaction->transaction_date,
