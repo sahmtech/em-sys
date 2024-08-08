@@ -31,7 +31,7 @@ use Modules\Sales\Entities\salesOfferPricesCost;
 use PhpOffice\PhpWord\PhpWord;
 use DOMDocument;
 
-class OfferPriceController extends Controller
+class بOfferPriceController extends Controller
 {
     protected $contactUtil;
     protected $businessUtil;
@@ -986,7 +986,7 @@ class OfferPriceController extends Controller
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
                                     '${L}' => number_format($query->total_worker_monthly, 2, '.', ''),
                                     '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
-                                    '${N}' => number_format(($query->total_worker_monthly ?? 0) + (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', ''),
+                                    '${N}' => number_format(($query->total_worker_monthly / $query->total_worker_number) * ($sell_line->quantity ?? 1), 2, '.', ''),
                                 ];
                                 foreach ($replacements2 as $placeholder => $value) {
                                     $clone = str_replace($placeholder, $value, $clone);
