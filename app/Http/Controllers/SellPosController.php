@@ -2364,7 +2364,7 @@ class SellPosController extends Controller
                 $company_id = User::where('id', Auth()->user()->id)->first()->company_id ?? 1;
                 $transaction->location_id = $company_id == 2 ?   2 :  1;
             }
-            $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
+            $invoice_layout_id = $transaction->is_direct_sale ? $transaction?->location?->sale_invoice_layout_id : null;
 
             $receipt = $this->receiptContent($transaction->business_id, $transaction->location_id, $transaction->id, 'browser', false, false, $invoice_layout_id);
             $pos_settings = empty($transaction->business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($transaction->business->pos_settings, true);

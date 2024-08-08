@@ -509,6 +509,25 @@
                                     ],
                                 ) !!}
                             </div>
+                            <div class="form-group col-md-6" id="residenceRenewalDuration" style="display: none;">
+                                {!! Form::label('residenceRenewalDuration', __('request.required_duration') . ':*') !!}
+                                {!! Form::select(
+                                    'residenceRenewalDuration',
+                                    [
+                                        '3 months' => __('request.3 months'),
+                                        '6 months' => __('request.6 months'),
+                                        '9 months' => __('request.9 months'),
+                                        '12 months' => __('request.12 months'),
+                                    ],
+                                    null,
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('request.select_duration'),
+                                        'id' => 'residenceRenewalDuration',
+                                    ],
+                                ) !!}
+                            </div>
                             <div class="form-group col-md-6" id="baladyType" style="display: none;">
                                 {!! Form::label('baladyType', __('request.request_type') . ':*') !!}
                                 {!! Form::select(
@@ -1512,6 +1531,14 @@
                             $('#atmType').hide();
 
                         }
+                        if (selectedType === 'residenceRenewal') {
+                            $('#residenceRenewalDuration').show();
+
+
+                        } else {
+                            $('#residenceRenewalDuration').hide();
+
+                        }
                         if (selectedType === 'exitRequest') {
                             fetchUsersWithSaudiNationality();
 
@@ -1559,11 +1586,14 @@
 
             $('#addRequestModal').on('shown.bs.modal', function(e) {
                 $('#worker').select2({
-                    dropdownParent: $(
-                        '#addRequestModal'),
+                    dropdownParent: $('#addRequestModal'),
                     width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "User not found or you don't have access to them or their project.";
+                        }
+                    }
                 });
-
             });
 
 

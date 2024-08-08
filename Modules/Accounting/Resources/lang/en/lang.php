@@ -451,6 +451,8 @@ return [
       'total_before_tax' => 'Total before tax',
       'shipping_charges' => 'Shipping charges',
       'discount_amount' => 'Discount amount',
+      'other' => ' - ',
+
    ],
 
    'accounts_name' => [
@@ -693,11 +695,12 @@ return [
       'total_before_tax' => 'Total before tax',
       'shipping_charges' => 'Shipping charges',
       'discount_amount' => 'Discount amount',
-      
+      'other' => ' - ',
+
    ],
    'attach_document' => 'attach document',
-   'attachment'=>'attachment',
-   'print_journal'=>'print journal entry',
+   'attachment' => 'attachment',
+   'print_journal' => 'print journal entry',
 
 
 

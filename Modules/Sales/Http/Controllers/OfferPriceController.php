@@ -145,10 +145,11 @@ class OfferPriceController extends Controller
                     function ($row)  use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
-                            <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
-                            </a>';
+                            $html = '<a href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" target="_blank" class="btn btn-xs btn-primary">
+                                        <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
+                                     </a>';
                         }
+
                         return $html;
                     }
                 )
@@ -813,25 +814,21 @@ class OfferPriceController extends Controller
 
     public function print($id)
     {
-
         try {
             $business_id = request()->session()->get('user.business_id');
 
             $query = Transaction::where('business_id', $business_id)
                 ->where('id', $id)
                 ->with(['sales_person', 'contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
-
-                ->get()[0];
+                ->first();
 
             $phpWord = new PhpWord();
-
 
             if ($query->contract_form == 'operating_fees') {
                 $template = Template::with('sections')->where('id', 1)->first();
                 $sections = $template->sections->sortBy('order');
 
                 $replacements = [
-                    // '${R}' => $query->sell_lines->count(),
                     '${DATE}' => Carbon::parse($query->transaction_date)->format('Y-m-d'),
                     '${DATE_EN}' => Carbon::parse($query->transaction_date)->format('d-m-Y'),
                     '${CONTACTS}' => $query->contact->supplier_business_name ?? '',
@@ -841,185 +838,23 @@ class OfferPriceController extends Controller
                     '${BANK_GURANTEE}' => '' ?? '',
                     '${BANK_GURANTEE_EN}' => '' ?? '',
                     '${CREATED_BY}' => 'إدارة المبيعات',
-                    //$query->sales_person->first_name ?? '',
                     '${CREATED_BY_EN}' => 'Sells Department',
                 ];
 
                 foreach ($replacements as $placeholder => $value) {
                     $template->primary_header = str_replace($placeholder, $value,  $template->primary_header);
                     $template->primary_footer = str_replace($placeholder, $value,  $template->primary_footer);
-                    foreach ($sections as  $section) {
-                        $section->header_left = str_replace($placeholder, $value,   $section->header_left);
+                    foreach ($sections as $section) {
+                        $section->header_left = str_replace($placeholder, $value, $section->header_left);
                         $section->header_right = str_replace($placeholder, $value, $section->header_right);
                         if ($section->content) {
-                            $section->content = str_replace($placeholder, $value,  $section->content);
+                            $section->content = str_replace($placeholder, $value, $section->content);
                         } else {
                             $section->content_left = str_replace($placeholder, $value, $section->content_left);
                             $section->content_right =  str_replace($placeholder, $value, $section->content_right);
                         }
                     }
                 }
-
-
-                foreach ($sections as  $section) {
-                    if ($section->content) {
-                        $htmlString = $section->content;
-
-                        $firstStartPos = strpos($htmlString, '<tr');
-                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5; // Include length of '</tr>'
-                        $startPos = strpos($htmlString, '<tr', $firstEndPos);
-                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
-                        $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
-                        $columnCount =  substr_count($firstRowHtml, '<td');
-
-
-                        if ($columnCount > 8) {
-                            $original_clone =  $firstRowHtml;
-                            $i = 1;
-                            $final_rows = '';
-                            foreach ($query->sell_lines as $sell_line) {
-                                $clone =   $original_clone;
-                                $food = 0;
-                                $housing = 0;
-                                $transportaions = 0;
-                                $others = 0;
-                                $uniform = 0;
-                                $recruit = 0;
-
-                                $food_allowance_exist = false;
-                                $housing_allowance_exist = false;
-                                $transportation_allowance_exist = false;
-                                $other_allowances_exist = false;
-                                $uniform_allowance_exist = false;
-                                $recruit_allowance_exist = false;
-                                foreach (json_decode($sell_line['service']['additional_allwances']) as $allwance) {
-
-                                    if (is_object($allwance) && property_exists($allwance, 'type') && property_exists($allwance, 'amount')) {
-
-                                        if ($allwance->type == 'food_allowance') {
-
-                                            if ($allwance->payment_type == 'cash') {
-                                                $food = $allwance->amount;
-                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $food = __('sales::lang.insured_by_emdadat');
-                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $food = __('sales::lang.insured_by_the_customer');
-                                            }
-                                            $food_allowance_exist = true;
-                                        }
-                                        if ($allwance->type == 'housing_allowance') {
-
-                                            if ($allwance->payment_type == 'cash') {
-                                                $housing = $allwance->amount;
-                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $housing = __('sales::lang.insured_by_emdadat');
-                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $housing = __('sales::lang.insured_by_the_customer');
-                                            }
-                                            $housing_allowance_exist = true;
-                                        }
-                                        if ($allwance->type == 'transportation_allowance') {
-
-                                            if ($allwance->payment_type == 'cash') {
-                                                $transportaions = $allwance->amount;
-                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $transportaions = __('sales::lang.insured_by_emdadat');
-                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $transportaions = __('sales::lang.insured_by_the_customer');
-                                            }
-                                            $transportation_allowance_exist = true;
-                                        }
-                                        if ($allwance->type == 'other_allowances') {
-
-                                            if ($allwance->payment_type == 'cash') {
-                                                $others = $allwance->amount;
-                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $others = __('sales::lang.insured_by_emdadat');
-                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $others = __('sales::lang.insured_by_the_customer');
-                                            }
-                                            $other_allowances_exist = true;
-                                        }
-                                        if ($allwance->type == 'uniform_allowance') {
-
-                                            if ($allwance->payment_type == 'cash') {
-                                                $uniform = $allwance->amount;
-                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $uniform = __('sales::lang.insured_by_emdadat');
-                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $uniform = __('sales::lang.insured_by_the_customer');
-                                            }
-                                            $uniform_allowance_exist = true;
-                                        }
-                                        if ($allwance->type == 'recruit_allowance') {
-
-                                            if ($allwance->payment_type == 'cash') {
-                                                $recruit = $allwance->amount;
-                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $recruit = __('sales::lang.insured_by_emdadat');
-                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $recruit = __('sales::lang.insured_by_the_customer');
-                                            }
-                                            $recruit_allowance_exist = true;
-                                        }
-                                    }
-                                }
-                                if ($food_allowance_exist == false) {
-                                    $food = __('sales::lang.undefiend');
-                                }
-                                if ($housing_allowance_exist == false) {
-                                    $housing = __('sales::lang.undefiend');
-                                }
-                                if ($transportation_allowance_exist == false) {
-                                    $transportaions = __('sales::lang.undefiend');
-                                }
-                                if ($other_allowances_exist == false) {
-                                    $others = __('sales::lang.undefiend');
-                                }
-                                if ($uniform_allowance_exist == false) {
-                                    $uniform = __('sales::lang.undefiend');
-                                }
-                                if ($recruit_allowance_exist == false) {
-                                    $recruit = __('sales::lang.undefiend');
-                                }
-                                $replacements2 = [
-                                    '${R}' => $i,
-                                    '${A}' => $sell_line['service']['profession']['name'] ?? '',
-                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''),
-                                    '${C}' => $food,
-                                    '${D}' => $transportaions,
-                                    '${E}' => $housing,
-                                    '${F}' => $others,
-                                    '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
-                                    '${H}' => $sell_line->quantity ?? 0,
-                                    '${I}' => number_format($query->total_worker_monthly / $query->total_worker_number ?? 0, 2, '.', ''),
-                                    '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
-                                    '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
-                                    '${L}' => number_format($query->total_worker_monthly, 2, '.', ''),
-                                    '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
-                                    '${N}' =>  number_format(($query->total_worker_monthly ?? 0) +  (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', ''),
-
-                                    //$sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity
-                                ];
-
-
-
-                                foreach ($replacements2 as $placeholder => $value) {
-                                    $clone = str_replace($placeholder, $value,   $clone);
-                                    // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
-                                    // $endPos += strlen($clone);
-                                }
-                                $final_rows .= $clone;
-                                $i++;
-                            }
-                            $htmlString = substr_replace($htmlString,      $final_rows, $endPos, 0);
-                            $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
-                            $section->content = $htmlString;
-                        }
-                    }
-                }
-
-
 
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
             } else if ($query->contract_form == 'monthly_cost') {
@@ -1031,21 +866,22 @@ class OfferPriceController extends Controller
                 $others = 0;
                 $uniform = 0;
                 $recruit = 0;
-                foreach ($sections as  $section) {
+
+                foreach ($sections as $section) {
                     if ($section->content) {
                         $htmlString = $section->content;
                         $firstStartPos = strpos($htmlString, '<tr');
-                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5; // Include length of '</tr>'
+                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5;
                         $startPos = strpos($htmlString, '<tr', $firstEndPos);
-                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
+                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5;
                         $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
-                        $columnCount =  substr_count($firstRowHtml, '<td');
+                        $columnCount = substr_count($firstRowHtml, '<td');
                         if ($columnCount > 8) {
-                            $original_clone =  $firstRowHtml;
+                            $original_clone = $firstRowHtml;
                             $i = 1;
                             $final_rows = '';
                             foreach ($query->sell_lines as $sell_line) {
-                                $clone =   $original_clone;
+                                $clone = $original_clone;
                                 $food_allowance_exist = false;
                                 $housing_allowance_exist = false;
                                 $transportation_allowance_exist = false;
@@ -1055,7 +891,6 @@ class OfferPriceController extends Controller
                                 foreach (json_decode($sell_line['service']['additional_allwances']) as $allwance) {
                                     if (is_object($allwance) && property_exists($allwance, 'type') && property_exists($allwance, 'amount')) {
                                         if ($allwance->type == 'food_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $food = $allwance->amount;
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1066,7 +901,6 @@ class OfferPriceController extends Controller
                                             $food_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'housing_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $housing = $allwance->amount;
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1077,7 +911,6 @@ class OfferPriceController extends Controller
                                             $housing_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'transportation_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $transportaions = $allwance->amount;
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1088,7 +921,6 @@ class OfferPriceController extends Controller
                                             $transportation_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'other_allowances') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $others = $allwance->amount;
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1099,7 +931,6 @@ class OfferPriceController extends Controller
                                             $other_allowances_exist = true;
                                         }
                                         if ($allwance->type == 'uniform_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $uniform = $allwance->amount;
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1110,7 +941,6 @@ class OfferPriceController extends Controller
                                             $uniform_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'recruit_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $recruit = $allwance->amount;
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1141,12 +971,10 @@ class OfferPriceController extends Controller
                                     $recruit = __('sales::lang.undefiend');
                                 }
 
-
-
                                 $replacements2 = [
                                     '${R}' => $i,
                                     '${A}' => $sell_line['service']['profession']['name'] ?? '',
-                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''),
+                                    '${B}' => number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''),
                                     '${C}' => $food,
                                     '${D}' => $transportaions,
                                     '${E}' => $housing,
@@ -1156,19 +984,17 @@ class OfferPriceController extends Controller
                                     '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? __('sales::lang.undefiend'),
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
-                                    '${L}' =>  number_format($query->total_worker_monthly, 2, '.', ''),
-                                    '${M}' =>  number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
-                                    '${N}' =>  number_format(($query->total_worker_monthly ?? 0) +  (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', ''),
+                                    '${L}' => number_format($query->total_worker_monthly, 2, '.', ''),
+                                    '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
+                                    '${N}' => number_format(($query->total_worker_monthly ?? 0) + (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', ''),
                                 ];
                                 foreach ($replacements2 as $placeholder => $value) {
-                                    $clone = str_replace($placeholder, $value,   $clone);
-                                    // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
-                                    // $endPos += strlen($clone);
+                                    $clone = str_replace($placeholder, $value, $clone);
                                 }
                                 $final_rows .= $clone;
                                 $i++;
                             }
-                            $htmlString = substr_replace($htmlString,      $final_rows, $endPos, 0);
+                            $htmlString = substr_replace($htmlString, $final_rows, $endPos, 0);
                             $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
                             $section->content = $htmlString;
                         }
@@ -1176,7 +1002,6 @@ class OfferPriceController extends Controller
                 }
 
                 $replacements = [
-                    // '${R}' => $query->sell_lines->count(),
                     '${DATE}' => Carbon::parse($query->transaction_date)->format('Y-m-d'),
                     '${DATE_EN}' => Carbon::parse($query->transaction_date)->format('d-m-Y'),
                     '${CONTACTS}' => $query->contact->supplier_business_name ?? '',
@@ -1189,24 +1014,25 @@ class OfferPriceController extends Controller
                     '${PRE_PAY_EN}' => $query->down_payment ?? '',
                     '${BANK_GURANTEE}' => '' ?? '',
                     '${BANK_GURANTEE_EN}' => '' ?? '',
-                    '${CREATED_BY}' =>  'إدارة المبيعات',
+                    '${CREATED_BY}' => 'إدارة المبيعات',
                     '${CREATED_BY_EN}' => 'Sells Department',
                 ];
 
                 foreach ($replacements as $placeholder => $value) {
-                    $template->primary_header = str_replace($placeholder, $value,  $template->primary_header);
-                    $template->primary_footer = str_replace($placeholder, $value,  $template->primary_footer);
-                    foreach ($sections as  $section) {
-                        $section->header_left = str_replace($placeholder, $value,   $section->header_left);
+                    $template->primary_header = str_replace($placeholder, $value, $template->primary_header);
+                    $template->primary_footer = str_replace($placeholder, $value, $template->primary_footer);
+                    foreach ($sections as $section) {
+                        $section->header_left = str_replace($placeholder, $value, $section->header_left);
                         $section->header_right = str_replace($placeholder, $value, $section->header_right);
                         if ($section->content) {
-                            $section->content = str_replace($placeholder, $value,  $section->content);
+                            $section->content = str_replace($placeholder, $value, $section->content);
                         } else {
                             $section->content_left = str_replace($placeholder, $value, $section->content_left);
-                            $section->content_right =  str_replace($placeholder, $value, $section->content_right);
+                            $section->content_right = str_replace($placeholder, $value, $section->content_right);
                         }
                     }
                 }
+
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
             }
         } catch (\Exception $e) {
@@ -1214,6 +1040,7 @@ class OfferPriceController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
+
 
 
 

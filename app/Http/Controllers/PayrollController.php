@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
+use App\BusinessLocation;
 use App\Company;
 use Yajra\DataTables\Facades\DataTables;
 use App\PayrollGroup;
@@ -12,6 +13,7 @@ use App\TimesheetUser;
 use App\Transaction;
 use App\User;
 use App\Utils\ModuleUtil;
+use App\Utils\Util;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
@@ -21,14 +23,16 @@ use Modules\Sales\Entities\SalesProject;
 class PayrollController extends Controller
 {
     protected $moduleUtil;
+    protected $commonUtil;
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil)
+    public function __construct(ModuleUtil $moduleUtil, Util $commonUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->commonUtil = $commonUtil;
     }
     public function show_payrolls_checkpoint($id, $from)
     {
@@ -174,6 +178,7 @@ class PayrollController extends Controller
 
             foreach ($payrollGroupUsers as  $payrollGroupUser) {
                 $essentials_amount_per_unit_duration += $payrollGroupUser->salary;
+
                 $final_total += $payrollGroupUser->final_salary;
             }
             $total_before_tax = $final_total;
@@ -197,7 +202,8 @@ class PayrollController extends Controller
                 $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
             }
             $payroll['payroll_group_id'] = $id;
-
+            $payroll['company_id'] =   $company_id;
+            $payroll['location_id'] =   $company_id == 2 ? BusinessLocation::where('company_id', 2)?->first()?->id : BusinessLocation::where('company_id', 1)?->first()?->id;
             $transaction = Transaction::create($payroll);
             $transaction_ids[] = $transaction->id;
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
@@ -526,10 +532,25 @@ class PayrollController extends Controller
             || auth()->user()->can('ceomanagment.show_payroll_checkpoint')
             || auth()->user()->can('generalmanagement.show_payroll_checkpoint')
             || $from == "none";
+
+        $companies = Company::pluck('name', 'id');
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
                 ->addColumn('name', function ($row) {
                     return $row->payroll_group_name;
+                })
+                ->addColumn('company', function ($row) use ($companies) {
+                    return $companies[$row->company_id];
+                })
+                ->addColumn('projects', function ($row) {
+                    $html = ' <ul role="menu">';
+                    $projects = PayrollGroupUser::where('payroll_group_id', $row->id)->pluck('project_name')->unique()->toArray();
+                    foreach ($projects  as   $project) {
+                        $html .= '<li>' . $project . '</li>';
+                    }
+
+                    $html .= ' </ul>';
+                    return  $html;
                 })
                 ->editColumn('hr_management_cleared', function ($row) {
                     if ($row->hr_management_cleared) {
@@ -653,9 +674,23 @@ class PayrollController extends Controller
                     $html .= '</ul></div>';
                     return $html;
                 })
+                ->addColumn('status', function ($row) {
+
+
+
+                    $html = '';
+                    if ($row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && $row->ceo_cleared_by) {
+                        $html .= '<div><a class="btn btn-xs btn-info btn-warning"   >' . __('lang_v1.yet_to_be_paind') . '</a></div>';
+                    }
+
+
+                    return $html;
+                })
 
                 ->rawColumns([
                     'name',
+                    'company',
+                    'projects',
                     'hr_management_cleared',
                     'hr_management_cleared_by',
                     'accountant_cleared',
@@ -664,6 +699,7 @@ class PayrollController extends Controller
                     'financial_management_cleared_by',
                     'ceo_cleared',
                     'ceo_cleared_by',
+                    'status',
                     'action'
                 ])
                 ->make(true);
@@ -721,10 +757,10 @@ class PayrollController extends Controller
 
                     $html = '';
                     if (true) {
-                        $html .= '<div><a class="btn btn-xs btn-info btn-warning"  >' . __('lang_v1.yet_to_be_paind') . '</a></div>';
+                        $html .= '<div><a class="btn btn-xs btn-info btn-warning"   >' . __('lang_v1.yet_to_be_paind') . '</a></div>';
                     }
 
-                    error_log($html);
+
                     return $html;
                 })
 
@@ -732,13 +768,32 @@ class PayrollController extends Controller
 
 
                 ->addColumn('action', function ($row) {
+                    $html = '<div class="btn-group">
+                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                        data-toggle="dropdown" aria-expanded="false">' .
+                        __('messages.actions') .
+                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+                    $html .= '<li><a href="#" data-href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+
+
+                    $html .= '</ul></div>';
+
+                    return $html;
+
+
+
 
                     $html = '';
                     if (true) {
-                        $html .= '<div><a class="btn btn-xs btn-info btn-modal" href="' . route('payrolls_checkpoint.show', ['id' => $row->id, 'from' => 'none']) . '" ><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></div>';
+                        $html .= '<div><a class="btn btn-xs btn-info btn-modal" href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" ><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></div>';
                     }
 
-                    error_log($html);
+
                     return $html;
                 })
 
@@ -755,5 +810,134 @@ class PayrollController extends Controller
                 ])
                 ->make(true);
         }
+    }
+
+    public function show_payroll_details($id)
+    {
+
+
+        $payrollGroupUser = PayrollGroupUser::with('payrollGroup', 'user')->where('id', $id)->first();
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $transaction_date =  Carbon::parse($payrollGroupUser->payrollGroup->payroll_date);
+        $department = $payrollGroupUser?->user?->essentials_department_id ? ($departments[$payrollGroupUser->user?->essentials_department_id] ?? '') : '';
+        $month_name = $transaction_date->format('F');
+        $year = $transaction_date->format('Y');
+        $bank_details = json_decode($payrollGroupUser->user->bank_details, true);
+        $start_of_month = Carbon::parse($transaction_date);
+        $end_of_month = Carbon::parse($transaction_date)->endOfMonth();
+        $total_leaves = $payrollGroupUser->absence;
+        $days_in_a_month = 30;
+        $total_work_duration = 30;
+        $total_days_present = 30 - $payrollGroupUser->absence;
+        $payroll = $payrollGroupUser;
+        $final_total_in_words = $this->commonUtil->numToIndianFormat(floatval($payroll->final_total));
+        $allowances = [];
+        $deductions = [];
+        $payment_types = [];
+        $designation = null;
+        $location = null;
+
+        return view('essentials::payroll.show_payroll_details')
+            ->with(compact(
+                'payroll',
+                'month_name',
+                'allowances',
+                'deductions',
+                'year',
+                'payment_types',
+                'bank_details',
+                'designation',
+                'department',
+                'final_total_in_words',
+                'total_leaves',
+                'days_in_a_month',
+                'total_work_duration',
+                'location',
+                'total_days_present'
+            ));
+
+
+        // $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_total);
+
+        //         $query = Transaction::where('business_id', $business_id)
+        //         ->with(['transaction_for', 'payment_lines']);
+
+        //     $payroll = $query->findOrFail($id);
+
+        //     $transaction_date = \Carbon::parse($payroll->transaction_date);
+
+        //     $department = Category::where('category_type', 'hrm_department')
+        //         ->find($payroll->transaction_for->essentials_department_id);
+
+        //     $designation = Category::where('category_type', 'hrm_designation')
+        //         ->find($payroll->transaction_for->essentials_designation_id);
+
+        //     $location = BusinessLocation::where('business_id', $business_id)
+        //         ->find($payroll->transaction_for->location_id);
+
+        //     $month_name = $transaction_date->format('F');
+        //     $year = $transaction_date->format('Y');
+        //     $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
+        //     $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
+        //     $bank_details = json_decode($payroll->transaction_for->bank_details, true);
+        //     $payment_types = $this->moduleUtil->payment_types();
+        //     $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_total);
+
+        //     $start_of_month = \Carbon::parse($payroll->transaction_date);
+        //     $end_of_month = \Carbon::parse($payroll->transaction_date)->endOfMonth();
+
+        //     $leaves = EssentialsLeave::where('business_id', $business_id)
+        //         ->where('user_id', $payroll->transaction_for->id)
+        //         ->whereDate('start_date', '>=', $start_of_month)
+        //         ->whereDate('end_date', '<=', $end_of_month)
+        //         ->get();
+
+        //     $total_leaves = 0;
+        //     $days_in_a_month = \Carbon::parse($start_of_month)->daysInMonth;
+        //     foreach ($leaves as $key => $leave) {
+        //         $start_date = \Carbon::parse($leave->start_date);
+        //         $end_date = \Carbon::parse($leave->end_date);
+
+        //         $diff = $start_date->diffInDays($end_date);
+        //         $diff += 1;
+        //         $total_leaves += $diff;
+        //     }
+
+        //     $total_days_present = $this->essentialsUtil->getTotalDaysWorkedForGivenDateOfAnEmployee(
+        //         $business_id,
+        //         $payroll->transaction_for->id,
+        //         $start_of_month->format('Y-m-d'),
+        //         $end_of_month->format('Y-m-d')
+        //     );
+
+        //     $total_work_duration = $this->essentialsUtil->getTotalWorkDuration(
+        //         'hour',
+        //         $payroll->transaction_for->id,
+        //         $business_id,
+        //         $start_of_month->format('Y-m-d'),
+        //         $end_of_month->format('Y-m-d')
+        //     );
+
+        //     return view('essentials::payroll.show_payroll_details')
+        //         ->with(compact(
+        //             'payroll',
+        //             'month_name',
+        //             'allowances',
+        //             'deductions',
+        //             'year',
+        //             'payment_types',
+        //             'bank_details',
+        //             'designation',
+        //             'department',
+        //             'final_total_in_words',
+        //             'total_leaves',
+        //             'days_in_a_month',
+        //             'total_work_duration',
+        //             'location',
+        //             'total_days_present'
+        //         ));
     }
 }

@@ -713,7 +713,7 @@
                                         ) !!}
                                     </td>
                                     <td>
-                                        {!! Form::hidden("products_[0][item_tax]",0, ['class' => 'item_tax']) !!}
+                                        {!! Form::hidden('products_[0][item_tax]', 0, ['class' => 'item_tax']) !!}
 
                                         {!! Form::select(
                                             'products_[0][tax_id]',
@@ -878,11 +878,25 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif"
-                        style="margin-right: 49.333333%;">
+                        style="margin-right: 49.333333%;margin-top: 16px;">
+                        <b>@lang('sale.total_without_tax'): </b>
+                        <span class="price_total">0</span>
+                    </div>
+
+
+                    <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif"
+                        style="margin-right: 49.333333%;margin-top: 10px;">
                         <input type="hidden" name="order_tax" id="order_tax">
                         <b>@lang('sale.order_tax'):</b>(+)
                         <span class="" id="order_tax">0</span>
+                    </div>
+
+                    <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif"
+                        style="margin-right: 49.333333%;margin-top: 10px;">
+                        <b>@lang('sale.total_with_tax'): </b>
+                        <span id="total_payable">0</span>
                     </div>
 
                     {{-- <div class="col-md-12">
@@ -1231,12 +1245,12 @@
                                 <span id="total_payable">0</span>
                             </div>
                         </div>
-                        
                     @endcomponent
                 </div>
-                
+
 
             </div>
+
         </div>
         @if (!empty($common_settings['is_enabled_export']) && $sale_type != 'sales_order')
             @component('components.widget', ['class' => 'box-solid', 'title' => __('lang_v1.export')])
@@ -1618,7 +1632,8 @@
                     +
                     '<td><input class="item_tax" name="products_' + '[' + counter +
                     '][item_tax]' +
-                    '" type="hidden" value="0"><select class="form-control tax_id" id="tax_id_" name="products_' + '[' +
+                    '" type="hidden" value="0"><select class="form-control tax_id" id="tax_id_" name="products_' +
+                    '[' +
                     counter + '][tax_id]' +
                     '"><option value="">غير محدد</option><option value="1" data-rate="15">ضريبة القيمة المضافة</option></select></td>' +
                     '<td><input type="text" id="unit_price_inc_tax_" name="products_' + '[' + counter +

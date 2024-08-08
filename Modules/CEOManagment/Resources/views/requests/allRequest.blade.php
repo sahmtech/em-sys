@@ -1195,6 +1195,14 @@
                             $('#atmType').hide();
 
                         }
+                        if (selectedType === 'residenceRenewal') {
+                            $('#residenceRenewalDuration').show();
+
+
+                        } else {
+                            $('#residenceRenewalDuration').hide();
+
+                        }
                         if (selectedType === 'exitRequest') {
                             fetchUsersWithSaudiNationality();
 
@@ -1242,11 +1250,14 @@
 
             $('#addRequestModal').on('shown.bs.modal', function(e) {
                 $('#worker').select2({
-                    dropdownParent: $(
-                        '#addRequestModal'),
+                    dropdownParent: $('#addRequestModal'),
                     width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "User not found or you don't have access to them or their project.";
+                        }
+                    }
                 });
-
             });
 
 
@@ -1356,6 +1367,7 @@
             $('#editWorkInjuriesDateField').val(request.workInjuriesDate) ?? null;
             $('#editResEditTypeField').val(request.resCardEditType) ?? null;
             $('#editAtmTypeField').val(request.atmCardType) ?? null;
+            $('#editResidenceRenewalDurationField').val(request.editResidenceRenewalDurationField) ?? null;
             $('#editBaladyTypeField').val(request.baladyCardType) ?? null;
             $('#editInsClassField').val(request.insurance_classes_id) ?? null;
             $('#editMainReasonSelect').val(request.contract_main_reason_id) ?? null;
@@ -1378,6 +1390,8 @@
             $('#edit_interview_placeField').val(request.interview_place) ?? null;
             $('#edit_interview_dateField').val(request.interview_date) ?? null;
             $('#edit_interview_timeField').val(request.interview_time) ?? null;
+
+            $('#editResidenceRenewalDurationField').val(request.residenceRenewalDuration) ?? null;
 
             $('#editProfessionSelect').val(request.specialization_id) ?? null;
             $('#edit_job_titleSelect').val(request.job_title_id) ?? null;
@@ -1409,7 +1423,7 @@
 
         function handleEditTypeChange(requestType, request) {
 
-            $('#edit_start_date, #edit_end_date, #edit_leaveType, #edit_workInjuriesDate, #edit_escape_time, #edit_escape_date, #edit_exit_date, #edit_return_date, #edit_installmentsNumber, #edit_monthlyInstallment, #edit_amount, #edit_commissioner_info, #edit_authorized_entity, #edit_trip_type, #edit_take_off_location, #edit_destination, #edit_weight_of_furniture, #edit_date_of_take_off, #edit_time_of_take_off, #edit_return_date_of_trip, #edit_resEditType, #edit_baladyType, #edit_ins_class, #edit_main_reason, #edit_visa_number, #edit_atmType')
+            $('#edit_start_date, #edit_end_date, #edit_leaveType, #edit_workInjuriesDate, #edit_escape_time, #edit_escape_date, #edit_exit_date, #edit_return_date, #edit_installmentsNumber, #edit_monthlyInstallment, #edit_amount, #edit_commissioner_info, #edit_authorized_entity, #edit_trip_type, #edit_take_off_location, #edit_destination, #edit_weight_of_furniture, #edit_date_of_take_off, #edit_time_of_take_off, #edit_return_date_of_trip, #edit_resEditType, #edit_baladyType, #edit_ins_class, #edit_main_reason, #edit_visa_number, #edit_atmType,#edit_residenceRenewalDuration')
                 .hide();
 
             switch (requestType) {
@@ -1468,6 +1482,9 @@
                 case 'atmCard':
                     $('#edit_atmType').show();
                     break;
+                case 'residenceRenewal':
+                    $('#edit_residenceRenewalDuration').show();
+                    break;
             }
         }
     </script>
@@ -1480,6 +1497,9 @@
                 }
                 if ($('#edit_atmType').is(':hidden')) {
                     $('#editAtmTypeField').val(null);
+                }
+                if ($('#edit_residenceRenewalDuration').is(':hidden')) {
+                    $('#editResidenceRenewalDurationField').val(null);
                 }
                 if ($('#edit_baladyType').is(':hidden')) {
                     $('#editBaladyTypeField').val(null);

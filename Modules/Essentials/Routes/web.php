@@ -403,6 +403,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/payrolls_list_index',   [App\Http\Controllers\PayrollController::class, 'payrolls_list_index'])->name('payrolls_list_index');
+        Route::get('/show_payroll_details/{id}',   [App\Http\Controllers\PayrollController::class, 'show_payroll_details'])->name('show_payroll_details');
     });
 
     Route::prefix('hrm')->group(function () {

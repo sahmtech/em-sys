@@ -643,6 +643,10 @@ class RequestUtil extends Util
                     $Request->interview_time = $request->interview_time;
                     $Request->interview_place = $request->interview_place;
 
+                    $Request->residenceRenewalDuration = $request->residenceRenewalDuration;
+
+
+
 
 
 
@@ -1013,16 +1017,21 @@ class RequestUtil extends Util
 
     private function changeRequestStatusAfterProcedure($request)
     {
+
         try {
             $requestProcess = RequestProcess::where('request_id', $request->request_id)
                 ->where('status', 'pending')
                 ->where('sub_status', null)
                 ->first();
 
+
+
             $procedure = WkProcedure::where('id', $requestProcess->procedure_id)->first();
+
             $procedure_business_id = $procedure->business_id;
             $can_reject = $procedure->can_reject;
             $peivious_note = $requestProcess->note;
+
             if ($can_reject == 0 && $request->status == 'rejected') {
                 $output = [
                     'success' => false,
@@ -1033,7 +1042,7 @@ class RequestUtil extends Util
 
             $requestProcess->status = $request->status;
             $requestProcess->reason = $request->reason ?? null;
-            $requestProcess->note = $peivious_note . ',' . $request->note ?? null;
+
             $requestProcess->updated_by = auth()->user()->id;
             $requestProcess->save();
 
@@ -1087,7 +1096,7 @@ class RequestUtil extends Util
                         $newRequestProcess->started_department_id = $requestProcess->started_department_id;
                         $newRequestProcess->procedure_id = $nextProcedure->id;
                         $newRequestProcess->status = 'pending';
-                        $requestProcess->note = $peivious_note . ',' . $request->note ?? null;
+                        $newRequestProcess->note = $peivious_note . ',' . $request->note ?? null;
                         $newRequestProcess->save();
 
                         if ($nextProcedure->action_type == 'task') {
@@ -1109,6 +1118,11 @@ class RequestUtil extends Util
 
             if ($request->status == 'rejected') {
                 $requestProcess->request->status = 'rejected';
+                $requestProcess->status = 'rejected';
+                $requestProcess->note =  $peivious_note . ',' . $request->note ?? null;
+                $requestProcess->save();
+
+
                 $requestProcess->request->save();
             }
 
@@ -1142,12 +1156,15 @@ class RequestUtil extends Util
             $currentDepartment = $process->superior_department_id;
             $process->status = $request->status;
             $process->reason = $request->reason ?? null;
-            $process->note = $peivious_note . ',' . $request->note ?? null;
+            //   $process->note = $peivious_note . ',' . $request->note ?? null;
             $process->updated_by = auth()->user()->id;
             $process->save();
 
             if ($request->status  == 'rejected') {
                 $process->request->status = 'rejected';
+                $process->status = 'rejected';
+                $process->note =  $peivious_note . ',' . $request->note ?? null;
+                $process->save();
                 $process->request->save();
             }
 
@@ -1274,6 +1291,7 @@ class RequestUtil extends Util
             'contract_sub_reason_id' => $request->contract_sub_reason_id ?  $sub_main_reasons[$request->contract_sub_reason_id] : null,
             'visa_number' => $request->visa_number,
             'atmCardType' => trans("request.{$request->atmCardType}"),
+            'residenceRenewalDuration' => trans("request.{$request->residenceRenewalDuration}"),
             'insurance_classes_id' => $request->insurance_classes_id,
             'status' => trans("request.{$request->status}"),
             'type' => trans("request.{$type}"),
@@ -1442,6 +1460,7 @@ class RequestUtil extends Util
             'contract_sub_reason_id' => $request->contract_sub_reason_id ?  $sub_main_reasons[$request->contract_sub_reason_id] : null,
             'visa_number' => $request->visa_number,
             'atmCardType' => trans("request.{$request->atmCardType}"),
+            'residenceRenewalDuration' => trans("request.{$request->residenceRenewalDuration}"),
             'insurance_classes_id' => $request->insurance_classes_id,
             'status' => trans("request.{$request->status}"),
             'type' => trans("request.{$type}"),
@@ -1653,7 +1672,7 @@ class RequestUtil extends Util
                             'procedure_id' => $newProcedure->id,
                             'status' => 'pending',
                             'is_returned' => 1,
-                            'updated_by' => auth()->user()->id,
+                            // 'updated_by' => auth()->user()->id,
                             'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ":" . $request->reason,
 
                         ]);
@@ -1672,7 +1691,7 @@ class RequestUtil extends Util
                                 'superior_department_id' => $firstStep->superior_department_id,
                                 'status' => 'pending',
                                 'is_returned' => 1,
-                                'updated_by' => auth()->user()->id,
+                                //   'updated_by' => auth()->user()->id,
                                 'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ":" . $request->reason,
 
                             ]);
@@ -1686,7 +1705,7 @@ class RequestUtil extends Util
                                 'superior_department_id' => $firstStep->started_department_id,
                                 'status' => 'pending',
                                 'is_returned' => 1,
-                                'updated_by' => auth()->user()->id,
+                                //  'updated_by' => auth()->user()->id,
                                 'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ":" . $request->reason,
 
                             ]);
@@ -2327,6 +2346,9 @@ class RequestUtil extends Util
         $userRequest->interview_time = $request->interview_time;
         $userRequest->interview_place = $request->interview_place;
 
+        $userRequest->residenceRenewalDuration = $request->residenceRenewalDuration;
+
+
 
         $userRequest->save();
 
@@ -2370,6 +2392,13 @@ class RequestUtil extends Util
 
     public function fetchUsersByType(Request $request)
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
         $type = $request->get('type');
         $requestType = RequestsType::find($type);
 
@@ -2415,7 +2444,7 @@ class RequestUtil extends Util
                             ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
                     });
             })
-            ->whereIn('users.user_type', $userTypes)
+            ->whereIn('users.user_type', $userTypes)->whereIn('users.id', $userIds)
             ->pluck('full_name', 'users.id');
 
 
