@@ -31,7 +31,7 @@ use Modules\Sales\Entities\salesOfferPricesCost;
 use PhpOffice\PhpWord\PhpWord;
 use DOMDocument;
 
-class بOfferPriceController extends Controller
+class OfferPriceController extends Controller
 {
     protected $contactUtil;
     protected $businessUtil;
