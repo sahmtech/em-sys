@@ -207,8 +207,12 @@ class PayrollController extends Controller
             $transaction = Transaction::create($payroll);
             $transaction_ids[] = $transaction->id;
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
+            $util = new Util();
+                  $transaction;
+                      $auto_migration = $util->createTransactionJournal_entry($transaction->id);
+            
 
-
+            
 
             // //ref_no,
             // $transaction_ids = [];
