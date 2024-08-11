@@ -85,9 +85,16 @@ class ApiCustomerController extends ApiController
 
             $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
                 ->select([
-                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
-                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                    'sales_contracts.number_of_contract',
+                    'sales_contracts.id',
+                    'sales_contracts.offer_price_id',
+                    'sales_contracts.start_date',
+                    'sales_contracts.end_date',
+                    'sales_contracts.status',
+                    'sales_contracts.file',
+                    'transactions.contract_form as contract_form',
+                    'transactions.contact_id',
+                    'transactions.id as tra'
                 ])->where('contact_id', $contact_id)->count();
 
             $SalesProjects = SalesProject::where('contact_id', $contact_id)->count();
@@ -110,13 +117,28 @@ class ApiCustomerController extends ApiController
             $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
             $requestsProcess = UserRequest::select([
 
-                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
+                'requests.request_no',
+                'requests.id',
+                'requests.request_type_id',
+                'requests.is_new',
+                'requests.created_at',
+                'requests.created_by',
+                'requests.reason',
 
-                'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+                'process.id as process_id',
+                'process.status',
+                'process.note as note',
+                'process.procedure_id as procedure_id',
+                'process.superior_department_id as superior_department_id',
 
-                'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+                'wk_procedures.action_type as action_type',
+                'wk_procedures.department_id as department_id',
+                'wk_procedures.can_return',
+                'wk_procedures.start as start',
 
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'users.id_proof_number',
+                'users.assigned_to',
 
 
 
@@ -252,9 +274,16 @@ class ApiCustomerController extends ApiController
 
             $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
                 ->select([
-                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
-                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                    'sales_contracts.number_of_contract',
+                    'sales_contracts.id',
+                    'sales_contracts.offer_price_id',
+                    'sales_contracts.start_date',
+                    'sales_contracts.end_date',
+                    'sales_contracts.status',
+                    'sales_contracts.file',
+                    'transactions.contract_form as contract_form',
+                    'transactions.contact_id',
+                    'transactions.id as tra'
                 ])->where('contact_id', $contact_id)->get();
 
 
@@ -434,13 +463,28 @@ class ApiCustomerController extends ApiController
 
             $requestsProcess = UserRequest::select([
 
-                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
+                'requests.request_no',
+                'requests.id',
+                'requests.request_type_id',
+                'requests.is_new',
+                'requests.created_at',
+                'requests.created_by',
+                'requests.reason',
 
-                'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+                'process.id as process_id',
+                'process.status',
+                'process.note as note',
+                'process.procedure_id as procedure_id',
+                'process.superior_department_id as superior_department_id',
 
-                'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+                'wk_procedures.action_type as action_type',
+                'wk_procedures.department_id as department_id',
+                'wk_procedures.can_return',
+                'wk_procedures.start as start',
 
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'users.id_proof_number',
+                'users.assigned_to',
 
 
 
@@ -488,6 +532,7 @@ class ApiCustomerController extends ApiController
                 'leavesAndDepartures' => __('request.leavesAndDepartures'),
                 'atmCard' => __('request.atmCard'),
                 'residenceRenewal' => __('request.residenceRenewal'),
+                'residenceIssue' => __('request.residenceIssue'),
                 'workerTransfer' => __('request.workerTransfer'),
                 'residenceCard' => __('request.residenceCard'),
                 'workInjuriesRequest' => __('request.workInjuriesRequest'),

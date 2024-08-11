@@ -73,7 +73,7 @@ class RequestUtil extends Util
 
 
     ////// get requests /////////////////// 
-    public function getRequests($departmentIds,  $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null)
+    public function getRequests($departmentIds,  $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null, $condition = null)
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -132,6 +132,7 @@ class RequestUtil extends Util
             $userIds = array_intersect($userIds, $ids);
         }
 
+
         // $users = User::whereIn('id', $userIds)
         //     // ->whereIn('user_type', $ownerTypes)
         //     ->where(function ($query) {
@@ -170,13 +171,30 @@ class RequestUtil extends Util
 
         $requestsProcess = UserRequest::select([
 
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.is_new',
+            'requests.created_at',
+            'requests.created_by',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+            'wk_procedures.action_type as action_type',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
+            'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.company_id', 'users.id as userId',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.assigned_to',
+            'users.company_id',
+            'users.id as userId',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -212,7 +230,21 @@ class RequestUtil extends Util
             error_log(request()->input('status'));
             $requestsProcess->where('process.status', request()->input('status'));
         }
-
+        error_log($condition);
+        if ($condition && $condition == 'pending') {
+            $requestsProcess->where('process.status', 'pending');
+        }
+        if ($condition && $condition == 'done') {
+            $requestsProcess->whereIn('process.status', ['approved', 'rejected']);
+        }
+        if (request()->input('company') && request()->input('company') !== 'all') {
+            error_log(request()->input('company'));
+            $requestsProcess->where('users.company_id', request()->input('company'));
+        }
+        if (request()->input('project') && request()->input('project') !== 'all') {
+            error_log(request()->input('project'));
+            $requestsProcess->where('users.assigned_to', request()->input('project'));
+        }
 
         if (request()->input('type') && request()->input('type') !== 'all') {
             error_log(request()->input('type'));
@@ -441,6 +473,7 @@ class RequestUtil extends Util
             'main_reasons',
             'classes',
             'saleProjects',
+            'companies',
             'leaveTypes',
             'job_titles',
             'specializations',
@@ -1042,7 +1075,8 @@ class RequestUtil extends Util
 
             $requestProcess->status = $request->status;
             $requestProcess->reason = $request->reason ?? null;
-
+            $requestProcess->status_changed_at = carbon::now();
+            $requestProcess->note = $request->note ?? null;
             $requestProcess->updated_by = auth()->user()->id;
             $requestProcess->save();
 
@@ -1156,7 +1190,8 @@ class RequestUtil extends Util
             $currentDepartment = $process->superior_department_id;
             $process->status = $request->status;
             $process->reason = $request->reason ?? null;
-            //   $process->note = $peivious_note . ',' . $request->note ?? null;
+            $process->status_changed_at = carbon::now();
+            $process->note = $request->note ?? null;
             $process->updated_by = auth()->user()->id;
             $process->save();
 
@@ -1252,7 +1287,10 @@ class RequestUtil extends Util
     {
 
         $request = UserRequest::with([
-            'related_to_user', 'created_by_user', 'process.procedure.department', 'attachments'
+            'related_to_user',
+            'created_by_user',
+            'process.procedure.department',
+            'attachments'
         ])->where('id', $id)->first();
 
         if (!$request) {
@@ -1410,6 +1448,7 @@ class RequestUtil extends Util
                 'procedure_id' => $process->procedure_id,
                 'is_returned' => $process->is_returned,
                 'updated_by' => $this->getFullName($process->updated_by),
+                'status_changed_at' => $process->status_changed_at,
                 'reason' => $process->reason,
                 'status_note' => $process->note,
                 'department' => [
@@ -1417,7 +1456,7 @@ class RequestUtil extends Util
                     'name' => optional($process->procedure?->department)->name,
                 ],
             ];
-
+            error_log(json_encode($processInfo));
             $followupProcesses[] = $processInfo;
         }
         //error_log(json_encode($followupProcesses));
@@ -1595,6 +1634,7 @@ class RequestUtil extends Util
                     'superior_department_id' => $process->superior_department_id ?? null,
                     'is_returned' => $process->is_returned,
                     'updated_by' => $this->getFullName($process->updated_by),
+                    'status_changed_at' => carbon::parse($process->status_changed_at)->format('y-m-d h:m:i'),
                     'reason' => $process->reason,
                     'status_note' => $process->note,
                     'department' => [
@@ -1610,6 +1650,7 @@ class RequestUtil extends Util
                     'superior_department_id' => $process->superior_department_id ?? null,
                     'is_returned' => $process->is_returned,
                     'updated_by' => $this->getFullName($process->updated_by),
+                    'status_changed_at' => carbon::parse($process->status_changed_at)->format('y:m:d h:m:i'),
                     'reason' => $process->reason,
                     'status_note' => $process->note,
                     'department' => [
@@ -2007,11 +2048,18 @@ class RequestUtil extends Util
             //   $request_procedure_tasks = RequestProcedureTask::whereIn('request_id', $requests)->whereIn('procedure_task_id', $procedure_tasks)->where('isDone', 0)->pluck('request_id')->toArray();
 
             $requestsProcess =  RequestProcedureTask::whereIn('request_id', $requests)->whereIn('procedure_task_id', $procedure_tasks)->where('isDone', 0)->join('requests', 'requests.id', 'request_procedure_tasks.request_id')->select([
-                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.status', 'requests.note as note',
+                'requests.request_no',
+                'requests.id',
+                'requests.request_type_id',
+                'requests.created_at',
+                'requests.status',
+                'requests.note as note',
 
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'users.id_proof_number',
 
-                'users.status as userStatus', 'request_procedure_tasks.id as request_procedure_task',
+                'users.status as userStatus',
+                'request_procedure_tasks.id as request_procedure_task',
 
             ])->leftJoin('users', 'users.id', '=', 'requests.related_to')
 
@@ -2392,6 +2440,7 @@ class RequestUtil extends Util
 
     public function fetchUsersByType(Request $request)
     {
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -2401,7 +2450,7 @@ class RequestUtil extends Util
 
         $type = $request->get('type');
         $requestType = RequestsType::find($type);
-
+        error_log($requestType);
         if (!$requestType) {
             return response()->json(['error' => 'Invalid type'], 400);
         }
@@ -2428,24 +2477,44 @@ class RequestUtil extends Util
             default => [],
         };
 
-
-        $users = DB::table('users')
-            ->join('companies', 'users.company_id', '=', 'companies.id')
-            ->select('users.id', DB::raw("CONCAT(
+        if ($requestType->type == 'residenceIssue') {
+            $users = DB::table('users')->whereNotNull('border_no')
+                ->join('companies', 'users.company_id', '=', 'companies.id')
+                ->select('users.id', DB::raw("CONCAT(
+                    COALESCE(users.first_name, ''), ' ', 
+                    COALESCE(users.last_name, ''), ' - ', 
+                    COALESCE(users.border_no, ''), ' - ', 
+                    COALESCE(companies.name, '')
+                ) as full_name"))
+                ->where(function ($query) use ($userTypes) {
+                    $query->where('users.status', 'active')
+                        ->orWhere(function ($subQuery) use ($userTypes) {
+                            $subQuery->where('users.status', 'inactive')
+                                ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                        });
+                })
+                ->whereIn('users.user_type', $userTypes)->whereIn('users.id', $userIds)
+                ->pluck('full_name', 'users.id');
+        } else {
+            $users = DB::table('users')
+                ->join('companies', 'users.company_id', '=', 'companies.id')
+                ->select('users.id', DB::raw("CONCAT(
             COALESCE(users.first_name, ''), ' ', 
             COALESCE(users.last_name, ''), ' - ', 
             COALESCE(users.id_proof_number, ''), ' - ', 
             COALESCE(companies.name, '')
         ) as full_name"))
-            ->where(function ($query) use ($userTypes) {
-                $query->where('users.status', 'active')
-                    ->orWhere(function ($subQuery) use ($userTypes) {
-                        $subQuery->where('users.status', 'inactive')
-                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
-                    });
-            })
-            ->whereIn('users.user_type', $userTypes)->whereIn('users.id', $userIds)
-            ->pluck('full_name', 'users.id');
+                ->where(function ($query) use ($userTypes) {
+                    $query->where('users.status', 'active')
+                        ->orWhere(function ($subQuery) use ($userTypes) {
+                            $subQuery->where('users.status', 'inactive')
+                                ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                        });
+                })
+                ->whereIn('users.user_type', $userTypes)->whereIn('users.id', $userIds)
+                ->pluck('full_name', 'users.id');
+        }
+
 
 
         // $users = $query->whereIn('user_type', $userTypes)
