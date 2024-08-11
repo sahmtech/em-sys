@@ -50,10 +50,18 @@ class RequestTypeController extends Controller
             'AjirAsked',
             'AlternativeWorker',
             // 'TransferringGuaranteeFromExternalClient',
-            'Permit', 'FamilyInsurace', 'Ajir_link',
-            'ticketReservationRequest', 'authorizationRequest',
-            'interviewsRequest', 'salaryInquiryRequest',
-            'moqimPrint', 'salaryIntroLetter', 'QiwaContract', 'ExitWithoutReturnReport'
+            'Permit',
+            'FamilyInsurace',
+            'Ajir_link',
+            'ticketReservationRequest',
+            'authorizationRequest',
+            'interviewsRequest',
+            'salaryInquiryRequest',
+            'moqimPrint',
+            'salaryIntroLetter',
+            'QiwaContract',
+            'ExitWithoutReturnReport',
+            'residenceIssue'
         ];
 
         $typesWithBoth = RequestsType::whereExists(function ($query) {
@@ -289,6 +297,7 @@ class RequestTypeController extends Controller
             'salaryIntroLetter' => 'salIntroLetter_',
             'QiwaContract' => 'QiwaCont_',
             'ExitWithoutReturnReport' => 'exitReport_',
+            'residenceIssue' => 'ResIsu_'
         ];
 
         return $typePrefixMap[$type];

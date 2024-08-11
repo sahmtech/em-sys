@@ -2,8 +2,6 @@
 @section('title', __('request.allRequests'))
 
 @section('content')
-
-
     <section class="content-header">
         <h1>
             <span>@lang('request.allRequests')</span>
@@ -284,6 +282,7 @@
         @endif
     @endif
     <section class="content">
+        @include('ceomanagment::layouts.nav_requests')
         @component('components.filters', ['title' => __('request.filters')])
             <div class="col-md-3">
                 <div class="form-group">
@@ -340,19 +339,8 @@
                 </div>
             </div>
         @endcomponent
+        @include('ceomanagment::layouts.nav_requests_status')
         @component('components.widget', ['class' => 'box-primary'])
-            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.workcards_add_requests'))
-                @slot('tool')
-                    <div class="box-tools">
-
-                        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                            data-target="#addRequestModal">
-                            <i class="fa fa-plus"></i> @lang('request.create_order')
-                        </button>
-                    </div>
-                @endslot
-            @endif
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -364,470 +352,19 @@
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
                             <th>@lang('request.created_by')</th>
-
                             <th>@lang('request.status')</th>
                             <th>@lang('request.note')</th>
                             <th>@lang('request.action')</th>
-
                             <th></th>
+
+
                         </tr>
                     </thead>
                 </table>
             </div>
         @endcomponent
 
-        {{-- add request --}}
-        <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {!! Form::open(['route' => 'Wk_storeRequest', 'enctype' => 'multipart/form-data']) !!}
 
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('request.create_order')</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="row">
-
-
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('type', __('request.type') . ':*') !!}
-                                {!! Form::select(
-                                    'type',
-                                    collect($requestTypes)->mapWithKeys(function ($requestType) {
-                                            return [
-                                                $requestType['id'] =>
-                                                    trans('request.' . $requestType['type']) . ' - ' . trans('request.' . $requestType['for']),
-                                            ];
-                                        })->toArray(),
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'required',
-                                        'style' => 'height: 40px',
-                                        'placeholder' => __('request.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('user_id', __('request.name') . ':*') !!}
-                                {!! Form::select('user_id[]', $users, null, [
-                                    'class' => 'form-control select2',
-                                    'multiple',
-                                    'required',
-                                    'id' => 'worker',
-                                    'style' => 'height: 60px; width: 250px;',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="leaveType" style="display: none;">
-                                {!! Form::label('leaveType', __('request.leaveType') . ':*') !!}
-                                {!! Form::select('leaveType', $leaveTypes, null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.select_leaveType'),
-                                    'id' => 'leaveType',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="start_date" style="display: none;">
-                                {!! Form::label('start_date', __('request.start_date') . ':*') !!}
-                                {!! Form::date('start_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.start_date'),
-                                    'id' => 'startDateField',
-                                ]) !!}
-                            </div>
-
-
-                            <div class="form-group col-md-6" id="end_date" style="display: none;">
-                                {!! Form::label('end_date', __('request.end_date') . ':*') !!}
-                                {!! Form::date('end_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.end_date'),
-                                    'id' => 'endDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="escape_time" style="display: none;">
-                                {!! Form::label('escape_time', __('request.escape_time') . ':*') !!}
-                                {!! Form::time('escape_time', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.escape_time'),
-                                    'id' => 'escapeTimeField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="exit_date" style="display: none;">
-                                {!! Form::label('exit_date', __('request.exit_date') . ':*') !!}
-                                {!! Form::date('exit_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.exit_date'),
-                                    'id' => 'exit_dateField',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="return_date" style="display: none;">
-                                {!! Form::label('return_date', __('request.return_date') . ':*') !!}
-                                {!! Form::date('return_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.return_date'),
-                                    'id' => 'return_dateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('request.escape_date') . ':*') !!}
-                                {!! Form::date('escape_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.escape_date'),
-                                    'id' => 'escapeDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="workInjuriesDate" style="display: none;">
-                                {!! Form::label('workInjuriesDate', __('request.workInjuriesDate') . ':*') !!}
-                                {!! Form::date('workInjuriesDate', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.workInjuriesDate'),
-                                    'id' => 'workInjuriesDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="resEditType" style="display: none;">
-                                {!! Form::label('resEditType', __('request.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'resEditType',
-                                    [
-                                        'name' => __('request.name'),
-                                        'religion' => __('request.religion'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_type'),
-                                        'id' => 'resEditType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="atmType" style="display: none;">
-                                {!! Form::label('atmType', __('request.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'atmType',
-                                    [
-                                        'release' => __('request.release'),
-                                        're_issuing' => __('request.re_issuing'),
-                                        'update' => __('request.update_info'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_type'),
-                                        'id' => 'atmType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="residenceRenewalDuration" style="display: none;">
-                                {!! Form::label('residenceRenewalDuration', __('request.required_duration') . ':*') !!}
-                                {!! Form::select(
-                                    'residenceRenewalDuration',
-                                    [
-                                        '3 months' => __('request.3 months'),
-                                        '6 months' => __('request.6 months'),
-                                        '9 months' => __('request.9 months'),
-                                        '12 months' => __('request.12 months'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_duration'),
-                                        'id' => 'residenceRenewalDuration',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="baladyType" style="display: none;">
-                                {!! Form::label('baladyType', __('request.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'baladyType',
-                                    [
-                                        'renew' => __('request.renew'),
-                                        'issuance' => __('request.issuance'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_type'),
-                                        'id' => 'baladyType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="ins_class" style="display: none;">
-                                {!! Form::label('ins_class', __('request.insurance_class') . ':*') !!}
-                                {!! Form::select('ins_class', $classes, null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.select_class'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="main_reason" style="display: none;">
-                                {!! Form::label('main_reason', __('request.main_reason') . ':*') !!}
-                                {!! Form::select('main_reason', $main_reasons, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_reason'),
-                                    'id' => 'mainReasonSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
-                                {!! Form::label('sub_reason', __('request.sub_reason') . ':*') !!}
-                                {!! Form::select('sub_reason', [], null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_sub_reason'),
-                                    'id' => 'subReasonSelect',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="amount" style="display: none;">
-                                {!! Form::label('amount', __('request.advSalaryAmount') . ':*') !!}
-                                {!! Form::number('amount', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.advSalaryAmount'),
-                                    'id' => 'advSalaryAmountField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="visa_number" style="display: none;">
-                                {!! Form::label('visa_number', __('request.visa_number') . ':*') !!}
-                                {!! Form::number('visa_number', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.visa_number'),
-                                    'id' => 'visa_numberField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="installmentsNumber" style="display: none;">
-                                {!! Form::label('installmentsNumber', __('request.installmentsNumber') . ':*') !!}
-                                {!! Form::number('installmentsNumber', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.installmentsNumber'),
-                                    'id' => 'installmentsNumberField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="monthlyInstallment" style="display: none;">
-                                {!! Form::label('monthlyInstallment', __('request.monthlyInstallment') . ':*') !!}
-                                {!! Form::number('monthlyInstallment', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.monthlyInstallment'),
-                                    'id' => 'monthlyInstallmentField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="authorized_entity" style="display: none;">
-                                {!! Form::label('authorized_entity', __('request.authorized_entity') . ':*') !!}
-                                {!! Form::text('authorized_entity', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.authorized_entity'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="commissioner_info" style="display: none;">
-                                {!! Form::label('commissioner_info', __('request.commissioner_info') . ':') !!}
-                                {!! Form::text('commissioner_info', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.commissioner_info'),
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="trip_type" style="display: none;">
-                                {!! Form::label('trip_type', __('request.trip_type') . ':*') !!}
-                                {!! Form::select(
-                                    'trip_type',
-                                    [
-                                        'round' => __('request.round_trip'),
-                                        'one_way' => __('request.one_way_trip'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_type'),
-                                        'id' => 'trip_typeField',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="Take_off_location" style="display: none;">
-                                {!! Form::label('Take_off_location', __('request.Take_off_location') . ':') !!}
-                                {!! Form::text('Take_off_location', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.Take_off_location'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="destination" style="display: none;">
-                                {!! Form::label('destination', __('request.destination') . ':*') !!}
-                                {!! Form::text('destination', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.destination'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="weight_of_furniture" style="display: none;">
-                                {!! Form::label('weight_of_furniture', __('request.weight_of_furniture') . ':') !!}
-                                {!! Form::text('weight_of_furniture', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.weight_of_furniture'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="time_of_take_off" style="display: none;">
-                                {!! Form::label('time_of_take_off', __('request.time_of_take_off') . ':*') !!}
-                                {!! Form::time('time_of_take_off', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.time_of_take_off'),
-                                    'id' => 'time_of_take_offField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="date_of_take_off" style="display: none;">
-                                {!! Form::label('date_of_take_off', __('request.date_of_take_off') . ':*') !!}
-                                {!! Form::date('date_of_take_off', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.date_of_take_off'),
-                                    'id' => 'date_of_take_offField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="return_date_of_trip" style="display: none;">
-                                {!! Form::label('return_date_of_trip', __('request.return_date') . ':*') !!}
-                                {!! Form::date('return_date_of_trip', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.return_date_of_trip'),
-                                    'id' => 'return_dateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="project_name" style="display: none;">
-                                {!! Form::label('project_name', __('request.project_name') . ':*') !!}
-                                {!! Form::select('project_name', $saleProjects, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_project'),
-                                    'id' => 'projectSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="interview_date" style="display: none;">
-                                {!! Form::label('interview_date', __('request.interview_date') . ':*') !!}
-                                {!! Form::date('interview_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.interview_date'),
-                                    'id' => 'interview_dateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="interview_time" style="display: none;">
-                                {!! Form::label('interview_time', __('request.interview_time') . ':*') !!}
-                                {!! Form::time('interview_time', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.interview_time'),
-                                    'id' => 'interview_timeField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="interview_place" style="display: none;">
-                                {!! Form::label('interview_place', __('request.interview_place') . ':*') !!}
-                                {!! Form::select(
-                                    'interview_place',
-                                    [
-                                        'online' => __('request.online'),
-                                        'housing' => __('request.housing_place'),
-                                        'company' => __('request.company_place'),
-                                        'customer' => __('request.customer_place'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_type'),
-                                        'id' => 'interview_placeField',
-                                    ],
-                                ) !!}
-                            </div>
-
-
-
-                            <div class="form-group col-md-6" id="profession" style="display: none;">
-                                {!! Form::label('profession', __('request.profession') . ':*') !!}
-                                {!! Form::select('profession', $specializations, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_profession'),
-                                    'id' => 'professionSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="job_title" style="display: none;">
-                                {!! Form::label('job_title', __('request.job_title') . ':*') !!}
-                                {!! Form::select('job_title', $job_titles, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_job_title'),
-                                    'id' => 'job_titleSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="nationlity" style="display: none;">
-                                {!! Form::label('nationlity', __('request.nationlity') . ':*') !!}
-                                {!! Form::select('nationlity', $nationalities, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_nationlity'),
-                                    'id' => 'nationlitySelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="number_of_salary_inquiry" style="display: none;">
-                                {!! Form::label('number_of_salary_inquiry', __('request.number_of_salary_inquiry') . ':') !!}
-                                {!! Form::text('number_of_salary_inquiry', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.number_of_salary_inquiry'),
-                                    'id' => 'number_of_salary_inquiryField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('note', __('request.note') . ':') !!}
-                                {!! Form::textarea('note', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.note'),
-                                    'rows' => 3,
-                                ]) !!}
-                            </div>
-
-                            {{-- <div class="form-group col-md-6" id="reason" style="display: block;">
-                            {!! Form::label('reason', __('request.reason') . ':') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('request.reason'), 'rows' => 3]) !!}
-                        </div> --}}
-                            <div class="form-group col-md-6">
-                                {!! Form::label('attachment', __('request.attachment') . ':') !!}
-                                {!! Form::file('attachment', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.attachment'),
-                                ]) !!}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
 
 
         {{-- return request --}}
@@ -856,387 +393,9 @@
                 </div>
             </div>
         </div>
-        {{-- edit request --}}
-        <div class="modal fade" id="editRequestModal" tabindex="-1" role="dialog"
-            aria-labelledby="editRequestModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {!! Form::open(['method' => 'POST', 'enctype' => 'multipart/form-data', 'id' => 'editRequestForm']) !!}
-
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('request.edit_order')</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="row">
-                            <!-- Show but not editable fields -->
-                            <div class="form-group col-md-6">
-                                {!! Form::label('type', __('request.type')) !!}
-                                {!! Form::text('type', null, [
-                                    'class' => 'form-control',
-                                    'readonly',
-                                    'id' => 'editRequestType',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('user_id', __('request.name')) !!}
-                                {!! Form::text('user_id', null, [
-                                    'class' => 'form-control',
-                                    'readonly',
-                                    'id' => 'editRequestUser',
-                                ]) !!}
-                            </div>
-
-                            <!-- Editable fields -->
-                            <div class="form-group col-md-6" id="edit_start_date" style="display: none;">
-                                {!! Form::label('start_date', __('request.start_date') . ':*') !!}
-                                {!! Form::date('start_date', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editStartDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_end_date" style="display: none;">
-                                {!! Form::label('end_date', __('request.end_date') . ':*') !!}
-                                {!! Form::date('end_date', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editEndDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_leaveType" style="display: none;">
-                                {!! Form::label('leaveType', __('request.leaveType') . ':*') !!}
-                                {!! Form::select('leaveType', $leaveTypes, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editLeaveTypeField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_escape_time" style="display: none;">
-                                {!! Form::label('escape_time', __('request.escape_time') . ':*') !!}
-                                {!! Form::time('escape_time', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editEscapeTimeField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('request.escape_date') . ':*') !!}
-                                {!! Form::date('escape_date', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editEscapeDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_exit_date" style="display: none;">
-                                {!! Form::label('exit_date', __('request.exit_date') . ':*') !!}
-                                {!! Form::date('exit_date', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editExitDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_return_date" style="display: none;">
-                                {!! Form::label('return_date', __('request.return_date') . ':*') !!}
-                                {!! Form::date('return_date', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editReturnDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_workInjuriesDate" style="display: none;">
-                                {!! Form::label('workInjuriesDate', __('request.workInjuriesDate') . ':*') !!}
-                                {!! Form::date('workInjuriesDate', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editWorkInjuriesDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_resEditType" style="display: none;">
-                                {!! Form::label('resEditType', __('request.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'resEditType',
-                                    [
-                                        'name' => __('request.name'),
-                                        'religion' => __('request.religion'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'id' => 'editResEditTypeField',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_atmType" style="display: none;">
-                                {!! Form::label('atmType', __('request.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'atmType',
-                                    [
-                                        'release' => __('request.release'),
-                                        're_issuing' => __('request.re_issuing'),
-                                        'update' => __('request.update_info'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'id' => 'editAtmTypeField',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_residenceRenewalDuration" style="display: none;">
-                                {!! Form::label('residenceRenewalDuration', __('request.required_duration') . ':*') !!}
-                                {!! Form::select(
-                                    'residenceRenewalDuration',
-                                    [
-                                        '3 months' => __('request.3 months'),
-                                        '6 months' => __('request.6 months'),
-                                        '9 months' => __('request.9 months'),
-                                        '12 months' => __('request.12 months'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_duration'),
-                                        'id' => 'editResidenceRenewalDurationField',
-                                    ],
-                                ) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="edit_baladyType" style="display: none;">
-                                {!! Form::label('baladyType', __('request.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'baladyType',
-                                    [
-                                        'renew' => __('request.renew'),
-                                        'issuance' => __('request.issuance'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'id' => 'editBaladyTypeField',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_ins_class" style="display: none;">
-                                {!! Form::label('ins_class', __('request.insurance_class') . ':*') !!}
-                                {!! Form::select('ins_class', $classes, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editInsClassField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_main_reason" style="display: none;">
-                                {!! Form::label('main_reason', __('request.main_reason') . ':*') !!}
-                                {!! Form::select('main_reason', $main_reasons, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editMainReasonSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_sub_reason_container" style="display: none;">
-                                {!! Form::label('sub_reason', __('request.sub_reason') . ':*') !!}
-                                {!! Form::select('sub_reason', [], null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editSubReasonSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_amount" style="display: none;">
-                                {!! Form::label('amount', __('request.advSalaryAmount') . ':*') !!}
-                                {!! Form::number('amount', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editAdvSalaryAmountField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_visa_number" style="display: none;">
-                                {!! Form::label('visa_number', __('request.visa_number') . ':*') !!}
-                                {!! Form::number('visa_number', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editVisaNumberField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_installmentsNumber" style="display: none;">
-                                {!! Form::label('installmentsNumber', __('request.installmentsNumber') . ':*') !!}
-                                {!! Form::number('installmentsNumber', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editInstallmentsNumberField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_monthlyInstallment" style="display: none;">
-                                {!! Form::label('monthlyInstallment', __('request.monthlyInstallment') . ':*') !!}
-                                {!! Form::number('monthlyInstallment', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editMonthlyInstallmentField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_authorized_entity" style="display: none;">
-                                {!! Form::label('authorized_entity', __('request.authorized_entity') . ':*') !!}
-                                {!! Form::text('authorized_entity', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editAuthorizedEntity',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_commissioner_info" style="display: none;">
-                                {!! Form::label('commissioner_info', __('request.commissioner_info') . ':') !!}
-                                {!! Form::text('commissioner_info', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editCommissionerInfo',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_trip_type">
-                                {!! Form::label('trip_type', __('request.trip_type') . ':*') !!}
-                                {!! Form::select(
-                                    'trip_type',
-                                    [
-                                        'round' => __('request.round_trip'),
-                                        'one_way' => __('request.one_way_trip'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'id' => 'editTripTypeField',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_take_off_location" style="display: none;">
-                                {!! Form::label('Take_off_location', __('request.Take_off_location') . ':') !!}
-                                {!! Form::text('Take_off_location', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editTakeOffLocation',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_destination" style="display: none;">
-                                {!! Form::label('destination', __('request.destination') . ':*') !!}
-                                {!! Form::text('destination', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editDestination',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_weight_of_furniture" style="display: none;">
-                                {!! Form::label('weight_of_furniture', __('request.weight_of_furniture') . ':') !!}
-                                {!! Form::text('weight_of_furniture', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editWeightOfFurniture',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_time_of_take_off" style="display: none;">
-                                {!! Form::label('time_of_take_off', __('request.time_of_take_off') . ':*') !!}
-                                {!! Form::time('time_of_take_off', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editTimeOfTakeOffField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_date_of_take_off" style="display: none;">
-                                {!! Form::label('date_of_take_off', __('request.date_of_take_off') . ':*') !!}
-                                {!! Form::date('date_of_take_off', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editDateOfTakeOffField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_return_date_of_trip" style="display: none;">
-                                {!! Form::label('return_date_of_trip', __('request.return_date') . ':*') !!}
-                                {!! Form::date('return_date_of_trip', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editReturnDateOfTripField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_project_name" style="display: none;">
-                                {!! Form::label('project_name', __('request.project_name') . ':*') !!}
-                                {!! Form::select('project_name', $saleProjects, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_project'),
-                                    'id' => 'editProjectSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_interview_date" style="display: none;">
-                                {!! Form::label('interview_date', __('request.interview_date') . ':*') !!}
-                                {!! Form::date('interview_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.interview_date'),
-                                    'id' => 'edit_interview_dateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_interview_time" style="display: none;">
-                                {!! Form::label('interview_time', __('request.interview_time') . ':*') !!}
-                                {!! Form::time('interview_time', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('request.interview_time'),
-                                    'id' => 'edit_interview_timeField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_interview_place" style="display: none;">
-                                {!! Form::label('interview_place', __('request.interview_place') . ':*') !!}
-                                {!! Form::select(
-                                    'interview_place',
-                                    [
-                                        'online' => __('request.online'),
-                                        'housing' => __('request.housing_place'),
-                                        'company' => __('request.company_place'),
-                                        'customer' => __('request.customer_place'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('request.select_type'),
-                                        'id' => 'edit_interview_placeField',
-                                    ],
-                                ) !!}
-                            </div>
 
 
-
-                            <div class="form-group col-md-6" id="edit_profession" style="display: none;">
-                                {!! Form::label('profession', __('request.profession') . ':*') !!}
-                                {!! Form::select('profession', $specializations, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_profession'),
-                                    'id' => 'editProfessionSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_job_title" style="display: none;">
-                                {!! Form::label('job_title', __('request.job_title') . ':*') !!}
-                                {!! Form::select('job_title', $job_titles, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_job_title'),
-                                    'id' => 'edit_job_titleSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_nationlity" style="display: none;">
-                                {!! Form::label('nationlity', __('request.nationlity') . ':*') !!}
-                                {!! Form::select('nationlity', $nationalities, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('request.select_nationlity'),
-                                    'id' => 'editNationlitySelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="edit_number_of_salary_inquiry" style="display: none;">
-                                {!! Form::label('number_of_salary_inquiry', __('request.number_of_salary_inquiry') . ':') !!}
-                                {!! Form::text('number_of_salary_inquiry', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('request.number_of_salary_inquiry'),
-                                    'id' => 'edit_number_of_salary_inquiryField',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('note', __('request.note') . ':') !!}
-                                {!! Form::textarea('note', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'editNote',
-                                    'rows' => 3,
-                                ]) !!}
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
+        {{-- view request  --}}
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -1278,8 +437,8 @@
 
 
         {{-- view request activities --}}
-        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog"
-            aria-labelledby="activitiesModalLabel" aria-hidden="true">
+        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog" aria-labelledby="activitiesModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -1306,15 +465,12 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-            function reload() {
-                requests_table.ajax.reload();
-            }
 
             var requests_table = $('#requests_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('work_cards_all_requests') }}",
+                    url: "{{ route('ceo_done_requests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
@@ -1511,7 +667,6 @@
                         if (result.success == true) {
                             $('div#change_status_modal').modal('hide');
                             toastr.success(result.msg);
-                            // requests_table.ajax.reload();
                             window.location.reload();
 
                         } else {
@@ -1545,7 +700,6 @@
                         if (result.success == true) {
                             $('#returnModal').modal('hide');
                             toastr.success(result.msg);
-                            // requests_table.ajax.reload();
                             window.location.reload();
 
                         } else {
@@ -1828,25 +982,6 @@
             var mainReasonSelect = $('#mainReasonSelect');
             var subReasonContainer = $('#sub_reason_container');
             var subReasonSelect = $('#subReasonSelect');
-            $('#requestType').change(function() {
-                var requestType = $(this).val();
-
-                $.ajax({
-                    url: '{{ route('fetch.users.by.type') }}',
-                    type: 'GET',
-                    data: {
-                        type: requestType
-                    },
-                    success: function(response) {
-                        $('#worker').empty();
-                        $.each(response.users, function(key, value) {
-                            $('#worker').append('<option value="' + key + '">' + value +
-                                '</option>');
-                        });
-                        $('#worker').trigger('change');
-                    }
-                });
-            });
 
             function fetchUsersWithSaudiNationality() {
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');

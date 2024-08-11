@@ -242,6 +242,8 @@
                                     return '@lang('ceomanagment::lang.atmCard')';
                                 case 'residenceRenewal':
                                     return '@lang('ceomanagment::lang.residenceRenewal')';
+                                case 'residenceIssue':
+                                    return '@lang('ceomanagment::lang.residenceIssue')';
                                 case 'workerTransfer':
                                     return '@lang('ceomanagment::lang.workerTransfer')';
                                 case 'residenceCard':

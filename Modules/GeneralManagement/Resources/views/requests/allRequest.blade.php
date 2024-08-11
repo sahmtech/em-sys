@@ -318,7 +318,31 @@
                     ) !!}
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="company_filter">@lang('request.company'):</label>
+                    {!! Form::select('company_filter', $companies, null, [
+                        'class' => 'form-control select2',
+                        'style' => 'height:40px',
+                        'placeholder' => __('lang_v1.all'),
+                        'id' => 'company_filter',
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="project_filter">@lang('request.project'):</label>
+                    {!! Form::select('project_filter', $saleProjects, null, [
+                        'class' => 'form-control select2',
+                        'style' => 'height:40px',
+                        'placeholder' => __('lang_v1.all'),
+                        'id' => 'project_filter',
+                    ]) !!}
+                </div>
+            </div>
         @endcomponent
+        @include('generalmanagement::layouts.nav_requests_status')
+
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
@@ -342,9 +366,6 @@
                 </table>
             </div>
         @endcomponent
-
-
-
 
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
@@ -454,6 +475,8 @@
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
+                        d.company = $('#company_filter').val();
+                        d.project = $('#project_filter').val();
                     }
                 },
                 columns: [{
@@ -479,6 +502,7 @@
                                 'leavesAndDepartures': '@lang('request.leavesAndDepartures')',
                                 'atmCard': '@lang('request.atmCard')',
                                 'residenceRenewal': '@lang('request.residenceRenewal')',
+                                'residenceIssue': '@lang('request.residenceIssue')',
                                 'workerTransfer': '@lang('request.workerTransfer')',
                                 'residenceCard': '@lang('request.residenceCard')',
                                 'workInjuriesRequest': '@lang('request.workInjuriesRequest')',
@@ -530,7 +554,7 @@
 
                 ]
             });
-            $('#status_filter, #type_filter').change(function() {
+            $('#status_filter, #type_filter, #company_filter, #project_filter').change(function() {
                 requests_table.ajax.reload();
             });
 
@@ -1181,7 +1205,8 @@
                             $('#atmType').hide();
 
                         }
-                        if (selectedType === 'residenceRenewal') {
+                        if (selectedType === 'residenceRenewal' || selectedType === 'residenceIssue') {
+                        ) {
                             $('#residenceRenewalDuration').show();
 
 
