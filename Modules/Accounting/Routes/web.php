@@ -26,6 +26,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
 
     Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
+    Route::post('/create_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_payment'])->name('accounting.payrolls.create_payment');
 });
 
 Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {

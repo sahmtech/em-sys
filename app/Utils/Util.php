@@ -171,7 +171,13 @@ class Util
             // }
         }
 
-        $payment_types = ['cash' => __('lang_v1.cash'), 'card' => __('lang_v1.card'), 'cheque' => __('lang_v1.cheque'), 'bank_transfer' => __('lang_v1.bank_transfer'), 'other' => __('lang_v1.other')];
+        $payment_types = [
+            'cash' => __('lang_v1.cash'),
+            'card' => __('lang_v1.card'),
+            'cheque' => __('lang_v1.cheque'),
+            'bank_transfer' => __('lang_v1.bank_transfer'),
+            'other' => __('lang_v1.other')
+        ];
 
         $payment_types['custom_pay_1'] = !empty($custom_labels['payments']['custom_pay_1']) ? $custom_labels['payments']['custom_pay_1'] : __('lang_v1.custom_payment', ['number' => 1]);
         $payment_types['custom_pay_2'] = !empty($custom_labels['payments']['custom_pay_2']) ? $custom_labels['payments']['custom_pay_2'] : __('lang_v1.custom_payment', ['number' => 2]);
@@ -1520,15 +1526,34 @@ class Util
         $i = 0;
         $str = [];
         $words = [
-            0 => '', 1 => 'one', 2 => 'two',
-            3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six',
-            7 => 'seven', 8 => 'eight', 9 => 'nine',
-            10 => 'ten', 11 => 'eleven', 12 => 'twelve',
-            13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
-            16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen',
-            19 => 'nineteen', 20 => 'twenty', 30 => 'thirty',
-            40 => 'forty', 50 => 'fifty', 60 => 'sixty',
-            70 => 'seventy', 80 => 'eighty', 90 => 'ninety',
+            0 => '',
+            1 => 'one',
+            2 => 'two',
+            3 => 'three',
+            4 => 'four',
+            5 => 'five',
+            6 => 'six',
+            7 => 'seven',
+            8 => 'eight',
+            9 => 'nine',
+            10 => 'ten',
+            11 => 'eleven',
+            12 => 'twelve',
+            13 => 'thirteen',
+            14 => 'fourteen',
+            15 => 'fifteen',
+            16 => 'sixteen',
+            17 => 'seventeen',
+            18 => 'eighteen',
+            19 => 'nineteen',
+            20 => 'twenty',
+            30 => 'thirty',
+            40 => 'forty',
+            50 => 'fifty',
+            60 => 'sixty',
+            70 => 'seventy',
+            80 => 'eighty',
+            90 => 'ninety',
         ];
         $digits = ['', 'hundred', 'thousand', 'lakh', 'crore'];
         while ($i < $digits_length) {
@@ -1716,17 +1741,52 @@ class Util
 
 
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email', 'mid_name',
-            'profile_picture', 'profession', 'specialization',
-            'user_type', 'crm_contact_id', 'allow_login',
-            'username', 'password', 'DocumentTypes',
-            'cmmsn_percent', 'max_sales_discount_percent', 'dob',
-            'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
-            'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
-            'custom_field_2', 'custom_field_3', 'eqama_end_date', 'company_id',
-            'custom_field_4', 'guardian_name', 'assigned_to',
-            'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no', 'expiration_date',
-            'current_address', 'bank_details', 'selected_contacts', 'emp_number', 'total_salary'
+            'surname',
+            'first_name',
+            'last_name',
+            'email',
+            'mid_name',
+            'profile_picture',
+            'profession',
+            'specialization',
+            'user_type',
+            'crm_contact_id',
+            'allow_login',
+            'username',
+            'password',
+            'DocumentTypes',
+            'cmmsn_percent',
+            'max_sales_discount_percent',
+            'dob',
+            'gender',
+            'marital_status',
+            'blood_group',
+            'contact_number',
+            'alt_number',
+            'family_number',
+            'fb_link',
+            'twitter_link',
+            'social_media_1',
+            'social_media_2',
+            'custom_field_1',
+            'nationality',
+            'custom_field_2',
+            'custom_field_3',
+            'eqama_end_date',
+            'company_id',
+            'custom_field_4',
+            'guardian_name',
+            'assigned_to',
+            'id_proof_name',
+            'id_proof_number',
+            'permanent_address',
+            'border_no',
+            'expiration_date',
+            'current_address',
+            'bank_details',
+            'selected_contacts',
+            'emp_number',
+            'total_salary'
 
 
         ]);
@@ -2054,15 +2114,15 @@ class Util
         if (!$transaction) {
             return false;
         }
-       
+
         $user_id = request()->session()->get('user.id');
         $company_id = Session::get('selectedCompanyId');
         $business_id = request()->session()->get('user.business_id');
 
         if (count($transaction->payment_lines) > 0) {
             $payment_lines = $transaction->payment_lines()->latest('paid_on')->first();
-        //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
-           $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
+            //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
+            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
                 ->where('payment_status', $transaction->payment_status)
                 ->where('method', $payment_lines->method)
                 ->where('company_id', $company_id)
@@ -2070,39 +2130,38 @@ class Util
 
             if ($accountMappingSetting) {
                 // find account transaction mapping setting by accounting mapping setting
-                      $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
+                $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
 
-                     
+
                 if (count($accTransMappingSetting) > 0) {
 
 
-                  
 
-                   
+
+
 
                     //Generate reference number
                     $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
-                if (empty($ref_no)) {
-                    $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
-                        $accounting_settings['journal_entry_prefix'] : '';
+                    if (empty($ref_no)) {
+                        $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
+                            $accounting_settings['journal_entry_prefix'] : '';
 
-                    //Generate reference number
-                    $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
-                }
+                        //Generate reference number
+                        $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
+                    }
 
-                 
+
                     try {
                         DB::beginTransaction();
                         $acc_trans_mapping = new AccountingAccTransMapping();
                         $acc_trans_mapping->business_id = $business_id;
-                         $acc_trans_mapping->company_id = $company_id;
+                        $acc_trans_mapping->company_id = $company_id;
                         $acc_trans_mapping->ref_no = $ref_no;
                         $acc_trans_mapping->note = '';
                         $acc_trans_mapping->type = 'journal_entry';
                         $acc_trans_mapping->created_by = $user_id;
                         $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s');
-                        $acc_trans_mapping->save();
-                          ;
+                        $acc_trans_mapping->save();;
                         foreach ($accTransMappingSetting as $accTrans) {
                             $transaction_row = [];
                             $transaction_row['accounting_account_id'] = $accTrans->accounting_account_id;
@@ -2115,11 +2174,10 @@ class Util
                             $transaction_row['sub_type'] = 'journal_entry';
                             $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
 
-                       
+
                             $accounts_transactions = new AccountingAccountsTransaction();
                             $accounts_transactions->fill($transaction_row);
                             $accounts_transactions->save();
-                           
                         }
                         DB::commit();
                         return true;
