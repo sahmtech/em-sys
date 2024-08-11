@@ -2,8 +2,6 @@
 @section('title', __('request.allRequests'))
 
 @section('content')
-
-
     <section class="content-header">
         <h1>
             <span>@lang('request.allRequests')</span>
@@ -284,7 +282,9 @@
         @endif
     @endif
     <section class="content">
-        @include('generalmanagement::layouts.nav_requests')
+        @include('ceomanagment::layouts.nav_requests')
+
+
         @component('components.filters', ['title' => __('request.filters')])
             <div class="col-md-3">
                 <div class="form-group">
@@ -341,8 +341,8 @@
                 </div>
             </div>
         @endcomponent
-        @include('generalmanagement::layouts.nav_requests_status')
 
+        @include('ceomanagment::layouts.nav_requests_status')
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
@@ -352,13 +352,13 @@
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
                             <th>@lang('request.eqama_number')</th>
-
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
                             <th>@lang('request.created_by')</th>
                             <th>@lang('request.status')</th>
                             <th>@lang('request.note')</th>
                             <th>@lang('request.action')</th>
+                            <th></th>
 
 
                         </tr>
@@ -366,6 +366,9 @@
                 </table>
             </div>
         @endcomponent
+
+
+
 
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
@@ -395,8 +398,7 @@
         </div>
 
 
-        {{-- view request details --}}
-
+        {{-- view request  --}}
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -471,7 +473,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('president_requests') }}",
+                    url: "{{ route('ceo_pending_requests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
@@ -549,12 +551,29 @@
                     {
                         data: 'can_return',
 
-                    }
+                    },
+                    {
+                        data: 'is_new',
 
+                        render: function(data, type, row) {
+
+                            var buttonsHtml = '';
+                            var userId = "{{ auth()->user()->id }}";
+
+                            if (data != '0' && row.created_by == userId) {
+
+                                buttonsHtml +=
+                                    `<button class="btn btn-primary edit-request" data-id="${row.id}" data-type="${row.request_type_id}">@lang('request.edit')</button>`;
+                                buttonsHtml +=
+                                    `<button class="btn btn-danger delete-request" data-id="${row.id}">@lang('request.delete')</button>`;
+                            }
+                            return buttonsHtml;
+                        }
+                    }
 
                 ]
             });
-            $('#status_filter, #type_filter, #company_filter, #project_filter').change(function() {
+            $('#status_filter, #type_filter ,#company_filter,#project_filter').change(function() {
                 requests_table.ajax.reload();
             });
 
@@ -597,8 +616,9 @@
                           <div class="card-body">
                               <p><strong>@lang('request.department'):</strong> ${process.department.name || '@lang('request.not_exist')'}</p>
                               <p><strong>@lang('request.status'):</strong> ${process.status || '@lang('request.not_exist')'}</p>
-                              <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
-                            <p><strong>@lang('request.updated_at'):</strong> ${process.status_changed_at || '@lang('request.not_exist')'}</p>
+                             <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
+                                 <p><strong>@lang('request.updated_at'):</strong> ${process.status_changed_at || '@lang('request.not_exist')'}</p>
+                          
                               <p><strong>@lang('request.status_note'):</strong> ${process.status_note || '@lang('request.not_exist')'}</p>
                           </div>
                           ${index < data.followup_processes.length - 1 ? '<div class="arrow-down"></div>' : ''}
@@ -650,7 +670,7 @@
                         if (result.success == true) {
                             $('div#change_status_modal').modal('hide');
                             toastr.success(result.msg);
-                            requests_table.ajax.reload();
+                            window.location.reload();
 
                         } else {
                             toastr.error(result.msg);
@@ -683,7 +703,7 @@
                         if (result.success == true) {
                             $('#returnModal').modal('hide');
                             toastr.success(result.msg);
-                            requests_table.ajax.reload();
+                            window.location.reload();
 
                         } else {
                             toastr.error(result.msg);
@@ -1206,6 +1226,7 @@
 
                         }
                         if (selectedType === 'residenceRenewal' || selectedType === 'residenceIssue') {
+                      
                             $('#residenceRenewalDuration').show();
 
 
@@ -1300,6 +1321,254 @@
             });
         });
     </script>
+    <script>
+        const requestTypeTranslations = {
+            'exitRequest': '@lang('request.exitRequest')',
+            'returnRequest': '@lang('request.returnRequest')',
+            'escapeRequest': '@lang('request.escapeRequest')',
+            'advanceSalary': '@lang('request.advanceSalary')',
+            'leavesAndDepartures': '@lang('request.leavesAndDepartures')',
+            'atmCard': '@lang('request.atmCard')',
+            'residenceRenewal': '@lang('request.residenceRenewal')',
+            'residenceIssue': '@lang('request.residenceIssue')',
+            'workerTransfer': '@lang('request.workerTransfer')',
+            'residenceCard': '@lang('request.residenceCard')',
+            'workInjuriesRequest': '@lang('request.workInjuriesRequest')',
+            'residenceEditRequest': '@lang('request.residenceEditRequest')',
+            'baladyCardRequest': '@lang('request.baladyCardRequest')',
+            'mofaRequest': '@lang('request.mofaRequest')',
+            'insuranceUpgradeRequest': '@lang('request.insuranceUpgradeRequest')',
+            'chamberRequest': '@lang('request.chamberRequest')',
+            'WarningRequest': '@lang('request.WarningRequest')',
+            'cancleContractRequest': '@lang('request.cancleContractRequest')',
+            'passportRenewal': '@lang('request.passportRenewal')',
+            'AjirAsked': '@lang('request.AjirAsked')',
+            'AlternativeWorker': '@lang('request.AlternativeWorker')',
+            'TransferringGuaranteeFromExternalClient': '@lang('request.TransferringGuaranteeFromExternalClient')',
+            'Permit': '@lang('request.Permit')',
+            'FamilyInsurace': '@lang('request.FamilyInsurace')',
+            'Ajir_link': '@lang('request.Ajir_link')',
+            'ticketReservationRequest': '@lang('request.ticketReservationRequest')',
+            'authorizationRequest': '@lang('request.authorizationRequest')',
+            'interviewsRequest': '@lang('request.interviewsRequest')',
+            'salaryInquiryRequest': '@lang('request.salaryInquiryRequest')',
+            'moqimPrint': '@lang('request.moqimPrint')',
+            'salaryIntroLetter': '@lang('request.salaryIntroLetter')',
+            'QiwaContract': '@lang('request.QiwaContract')',
+            'ExitWithoutReturnReport': '@lang('request.ExitWithoutReturnReport')',
 
 
+        };
+        $('#requests_table').on('click', '.edit-request', function() {
+            var requestId = $(this).data('id');
+            var requestType = $(this).data('type');
+
+
+            $('#editRequestForm').attr('action', `/update-request/${requestId}`);
+
+            $.ajax({
+                url: `/get-request/${requestId}`,
+                type: 'GET',
+                success: function(response) {
+                    console.log(response);
+                    console.log(response.requestType.type);
+
+                    populateEditModal(response.request, response.requestType, response.related_to_user);
+                    handleEditTypeChange(response.requestType.type, response.request);
+                    $('#editRequestModal').modal('show');
+                },
+                error: function(xhr) {
+                    console.log('Error:', xhr.responseText);
+                }
+            });
+        });
+
+        function populateEditModal(request, requestType, related_to_user) {
+
+            $('#editRequestType').val(requestTypeTranslations[requestType.type]);
+            $('#editRequestUser').val(related_to_user.first_name + ' ' + related_to_user
+                .last_name);
+            $('#editStartDateField').val(request.start_date) ?? null;
+            $('#editLeaveTypeField').val(request.essentials_leave_type_id) ?? null;
+            $('#editEndDateField').val(request.end_date) ?? null;
+            $('#editExitDateField').val(request.start_date) ?? null;
+            $('#editReturnDateField').val(request.end_date) ?? null;
+            $('#editEscapeTimeField').val(request.escape_time) ?? null;
+            $('#editEscapeDateField').val(request.start_date) ?? null;
+
+            $('#editWorkInjuriesDateField').val(request.workInjuriesDate) ?? null;
+            $('#editResEditTypeField').val(request.resCardEditType) ?? null;
+            $('#editAtmTypeField').val(request.atmCardType) ?? null;
+            $('#editResidenceRenewalDurationField').val(request.editResidenceRenewalDurationField) ?? null;
+            $('#editBaladyTypeField').val(request.baladyCardType) ?? null;
+            $('#editInsClassField').val(request.insurance_classes_id) ?? null;
+            $('#editMainReasonSelect').val(request.contract_main_reason_id) ?? null;
+            $('#editSubReasonSelect').val(request.contract_sub_reason_id) ?? null;
+            $('#editAdvSalaryAmountField').val(request.advSalaryAmount) ?? null;
+            $('#editVisaNumberField').val(request.visa_number) ?? null;
+            $('#editInstallmentsNumberField').val(request.installmentsNumber) ?? null;
+            $('#editMonthlyInstallmentField').val(request.monthlyInstallment) ?? null;
+            $('#editAuthorizedEntity').val(request.authorized_entity) ?? null;
+            $('#editCommissionerInfo').val(request.commissioner_info) ?? null;
+            $('#editTripTypeField').val(request.trip_type) ?? null;
+            $('#editTakeOffLocation').val(request.Take_off_location) ?? null;
+            $('#editDestination').val(request.destination) ?? null;
+            $('#editWeightOfFurniture').val(request.weight_of_furniture) ?? null;
+            $('#editTimeOfTakeOffField').val(request.time_of_take_off) ?? null;
+            $('#editDateOfTakeOffField').val(request.date_of_take_off) ?? null;
+            $('#editReturnDateOfTripField').val(request.return_date) ?? null;
+
+            $('#editProjectSelect').val(request.sale_project_id) ?? null;
+            $('#edit_interview_placeField').val(request.interview_place) ?? null;
+            $('#edit_interview_dateField').val(request.interview_date) ?? null;
+            $('#edit_interview_timeField').val(request.interview_time) ?? null;
+
+            $('#editResidenceRenewalDurationField').val(request.residenceRenewalDuration) ?? null;
+
+            $('#editProfessionSelect').val(request.specialization_id) ?? null;
+            $('#edit_job_titleSelect').val(request.job_title_id) ?? null;
+            $('#editNationlitySelect').val(request.nationality_id) ?? null;
+            $('#edit_number_of_salary_inquiryField').val(request.number_of_salary_inquiry) ?? null;
+
+
+            $('#editNote').val(request.note) ?? null;
+
+            if (request.trip_type === 'round') {
+                $('#edit_return_date_of_trip').show();
+                $('#editReturnDateOfTripField').val(request.return_date);
+            } else {
+                $('#edit_return_date_of_trip').hide();
+                $('#editReturnDateOfTripField').val('');
+            }
+
+
+            $('#editTripTypeField').off('change').on('change', function() {
+                if ($(this).val() === 'round') {
+                    $('#edit_return_date_of_trip').show();
+                } else {
+                    $('#edit_return_date_of_trip').hide();
+                    $('#editReturnDateOfTripField').val('');
+                }
+            });
+        }
+
+
+        function handleEditTypeChange(requestType, request) {
+
+            $('#edit_start_date, #edit_end_date, #edit_leaveType, #edit_workInjuriesDate, #edit_escape_time, #edit_escape_date, #edit_exit_date, #edit_return_date, #edit_installmentsNumber, #edit_monthlyInstallment, #edit_amount, #edit_commissioner_info, #edit_authorized_entity, #edit_trip_type, #edit_take_off_location, #edit_destination, #edit_weight_of_furniture, #edit_date_of_take_off, #edit_time_of_take_off, #edit_return_date_of_trip, #edit_resEditType, #edit_baladyType, #edit_ins_class, #edit_main_reason, #edit_visa_number, #edit_atmType,#edit_residenceRenewalDuration')
+                .hide();
+
+            switch (requestType) {
+                case 'leavesAndDepartures':
+                    $('#edit_start_date, #edit_end_date, #edit_leaveType').show();
+                    break;
+                case 'returnRequest':
+                    $('#edit_exit_date, #edit_return_date').show();
+                    break;
+                case 'interviewsRequest':
+                    $('#edit_project_name, #edit_interview_date, #edit_interview_time, #edit_interview_place').show();
+                    break;
+                case 'salaryInquiryRequest':
+                    $('#edit_profession, #edit_job_title, #edit_nationlity, #edit_number_of_salary_inquiry').show();
+                    break;
+                case 'workInjuriesRequest':
+                    $('#edit_workInjuriesDate').show();
+                    break;
+                case 'escapeRequest':
+                    $('#edit_escape_time, #edit_escape_date').show();
+                    break;
+                case 'advanceSalary':
+                    $('#edit_installmentsNumber, #edit_monthlyInstallment, #edit_amount').show();
+                    break;
+                case 'authorizationRequest':
+                    $('#edit_commissioner_info, #edit_authorized_entity').show();
+                    break;
+                case 'ticketReservationRequest':
+                    $('#edit_trip_type, #edit_take_off_location, #edit_destination, #edit_weight_of_furniture, #edit_date_of_take_off, #edit_time_of_take_off')
+                        .show();
+                    $('#editTripTypeField').off('change').on('change', function() {
+                        if ($(this).val() === 'round') {
+                            $('#edit_return_date_of_trip').show();
+                            $('#editReturnDateOfTripField').val(request.return_date);
+                        } else {
+                            $('#edit_return_date_of_trip').hide();
+                            $('#editReturnDateOfTripField').val('');
+                        }
+                    }).trigger('change');
+                    break;
+                case 'residenceEditRequest':
+                    $('#edit_resEditType').show();
+                    break;
+                case 'baladyCardRequest':
+                    $('#edit_baladyType').show();
+                    break;
+                case 'insuranceUpgradeRequest':
+                    $('#edit_ins_class').show();
+                    break;
+                case 'cancleContractRequest':
+                    $('#edit_main_reason').show();
+                    break;
+                case 'mofaRequest':
+                    $('#edit_visa_number').show();
+                    break;
+                case 'atmCard':
+                    $('#edit_atmType').show();
+                    break;
+                case 'residenceRenewal':
+                    $('#edit_residenceRenewalDuration').show();
+                    break;
+                case 'residenceIssue':
+                    $('#edit_residenceRenewalDuration').show();
+                    break;
+            }
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#editRequestForm').on('submit', function(event) {
+                // Check if fields are hidden and set their value to null
+                if ($('#edit_resEditType').is(':hidden')) {
+                    $('#editResEditTypeField').val(null);
+                }
+                if ($('#edit_atmType').is(':hidden')) {
+                    $('#editAtmTypeField').val(null);
+                }
+                if ($('#edit_residenceRenewalDuration').is(':hidden')) {
+                    $('#editResidenceRenewalDurationField').val(null);
+                }
+                if ($('#edit_baladyType').is(':hidden')) {
+                    $('#editBaladyTypeField').val(null);
+                }
+                if ($('#edit_ins_class').is(':hidden')) {
+                    $('#editInsClassField').val(null);
+                }
+                if ($('#edit_leaveType').is(':hidden')) {
+                    $('#editLeaveTypeField').val(null);
+                }
+            });
+            $('#requests_table').on('click', '.delete-request', function() {
+                var requestId = $(this).data('id');
+
+
+                $.ajax({
+                    url: `/delete-request/${requestId}`,
+                    type: 'DELETE',
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+
+                            $('#requests_table').DataTable().ajax.reload();
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error('An error occurred while deleting the request.');
+                    }
+                });
+
+            });
+        });
+    </script>
 @endsection

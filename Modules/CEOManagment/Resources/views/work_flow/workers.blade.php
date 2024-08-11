@@ -499,6 +499,8 @@
                                 return '@lang('request.atmCard')';
                             } else if (data === 'residenceRenewal') {
                                 return '@lang('request.residenceRenewal')';
+                            } else if (data === 'residenceIssue') {
+                                return '@lang('request.residenceIssue')';
                             } else if (data === 'workerTransfer') {
                                 return '@lang('request.workerTransfer')';
                             } else if (data === 'residenceCard') {

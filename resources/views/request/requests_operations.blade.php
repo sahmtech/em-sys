@@ -794,7 +794,8 @@
                             <div class="card-body">
                                 <p><strong>@lang('request.department'):</strong> ${process.department.name || '@lang('request.not_exist')'}</p>
                                 <p><strong>@lang('request.status'):</strong> ${process.status || '@lang('request.not_exist')'}</p>
-                                <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
+                               <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
+                                 <p><strong>@lang('request.updated_at'):</strong> ${process.status_changed_at || '@lang('request.not_exist')'}</p>
                             
                                 <p><strong>@lang('request.status_note'):</strong> ${process.status_note || '@lang('request.not_exist')'}</p>
                             </div>
@@ -819,7 +820,7 @@
                             console.log(response);
                             if (response.success == true) {
                                 toastr.success(response.msg);
-                                requests_table.ajax.reload();
+                                window.location.reload();
                             } else {
                                 toastr.error(response.msg);
                             }

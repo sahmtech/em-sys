@@ -1036,7 +1036,8 @@
                             $('#atmType').hide();
 
                         }
-                        if (selectedType === 'residenceRenewal') {
+                        if (selectedType === 'residenceRenewal' || selectedType === 'residenceIssue') {
+
                             $('#residenceRenewalDuration').show();
 
 
