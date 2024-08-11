@@ -97,7 +97,66 @@ class RequestController extends Controller
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment);
     }
+    public function president_pending_requests()
+    {
+        error_log('president_pending_requests');
+        $business_id = request()->session()->get('user.business_id');
 
+        $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
+        $can_return_request = auth()->user()->can('generalmanagement.return_request');
+        $can_show_request = auth()->user()->can('generalmanagement.view_request');
+        $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مجلس%')
+                    ->orWhere('name', 'like', '%عليا%')
+                    ->orWhere('name', 'like', '%عام%');
+            })
+            ->pluck('id')->toArray();
+
+        $ownerTypes = ['employee', 'manager', 'worker'];
+        $roles = DB::table('roles')
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مجلس%')
+                    ->orWhere('name', 'like', '%عليا%')
+                    ->orWhere('name', 'like', '%عام%');
+            })->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending');
+    }
+    public function president_done_requests()
+    {
+        error_log('president_done_requests');
+        $business_id = request()->session()->get('user.business_id');
+
+        $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
+        $can_return_request = auth()->user()->can('generalmanagement.return_request');
+        $can_show_request = auth()->user()->can('generalmanagement.view_request');
+        $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مجلس%')
+                    ->orWhere('name', 'like', '%عليا%')
+                    ->orWhere('name', 'like', '%عام%');
+            })
+            ->pluck('id')->toArray();
+
+        $ownerTypes = ['employee', 'manager', 'worker'];
+        $roles = DB::table('roles')
+            ->where(function ($query) {
+                $query->Where('name', 'like', '%مجلس%')
+                    ->orWhere('name', 'like', '%عليا%')
+                    ->orWhere('name', 'like', '%عام%');
+            })->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.doneRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'done');
+    }
     public function escalateRequests()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -121,13 +180,28 @@ class RequestController extends Controller
         $companies = Company::all()->pluck('name', 'id');
         $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->select([
 
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.created_at',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+            'wk_procedures.action_type as action_type',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
+            'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.company_id', 'users.id as userId',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.assigned_to',
+            'users.company_id',
+            'users.id as userId',
 
 
             'procedure_escalations.escalates_to'

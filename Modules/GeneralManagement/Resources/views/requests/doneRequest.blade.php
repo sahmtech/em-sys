@@ -471,7 +471,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('president_requests') }}",
+                    url: "{{ route('president_done_requests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
@@ -598,7 +598,7 @@
                               <p><strong>@lang('request.department'):</strong> ${process.department.name || '@lang('request.not_exist')'}</p>
                               <p><strong>@lang('request.status'):</strong> ${process.status || '@lang('request.not_exist')'}</p>
                               <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
-                            <p><strong>@lang('request.updated_at'):</strong> ${process.status_changed_at || '@lang('request.not_exist')'}</p>
+                          
                               <p><strong>@lang('request.status_note'):</strong> ${process.status_note || '@lang('request.not_exist')'}</p>
                           </div>
                           ${index < data.followup_processes.length - 1 ? '<div class="arrow-down"></div>' : ''}

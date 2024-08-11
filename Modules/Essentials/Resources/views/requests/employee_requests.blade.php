@@ -1098,44 +1098,45 @@
                     {
                         data: 'request_type_id',
                         render: function(data, type, row) {
-                            if (data === 'exitRequest') {
-                                return '@lang('request.exitRequest')';
 
-                            } else if (data === 'returnRequest') {
-                                return '@lang('request.returnRequest')';
-                            } else if (data === 'escapeRequest') {
-                                return '@lang('request.escapeRequest')';
-                            } else if (data === 'advanceSalary') {
-                                return '@lang('request.advanceSalary')';
-                            } else if (data === 'leavesAndDepartures') {
-                                return '@lang('request.leavesAndDepartures')';
-                            } else if (data === 'atmCard') {
-                                return '@lang('request.atmCard')';
-                            } else if (data === 'residenceRenewal') {
-                                return '@lang('request.residenceRenewal')';
-                            } else if (data === 'workerTransfer') {
-                                return '@lang('request.workerTransfer')';
-                            } else if (data === 'residenceCard') {
-                                return '@lang('request.residenceCard')';
-                            } else if (data === 'workInjuriesRequest') {
-                                return '@lang('request.workInjuriesRequest')';
-                            } else if (data === 'residenceEditRequest') {
-                                return '@lang('request.residenceEditRequest')';
-                            } else if (data === 'baladyCardRequest') {
-                                return '@lang('request.baladyCardRequest')';
-                            } else if (data === 'mofaRequest') {
-                                return '@lang('request.mofaRequest')';
-                            } else if (data === 'insuranceUpgradeRequest') {
-                                return '@lang('request.insuranceUpgradeRequest')';
-                            } else if (data === 'chamberRequest') {
-                                return '@lang('request.chamberRequest')';
-                            } else if (data === 'WarningRequest') {
-                                return '@lang('request.WarningRequest')';
-                            } else if (data === 'cancleContractRequest') {
-                                return '@lang('request.cancleContractRequest')';
-                            } else {
-                                return data;
-                            }
+                            const requestTypeMap = {
+                                'exitRequest': '@lang('request.exitRequest')',
+                                'returnRequest': '@lang('request.returnRequest')',
+                                'escapeRequest': '@lang('request.escapeRequest')',
+                                'advanceSalary': '@lang('request.advanceSalary')',
+                                'leavesAndDepartures': '@lang('request.leavesAndDepartures')',
+                                'atmCard': '@lang('request.atmCard')',
+                                'residenceRenewal': '@lang('request.residenceRenewal')',
+                                'residenceIssue': '@lang('request.residenceIssue')',
+                                'workerTransfer': '@lang('request.workerTransfer')',
+                                'residenceCard': '@lang('request.residenceCard')',
+                                'workInjuriesRequest': '@lang('request.workInjuriesRequest')',
+                                'residenceEditRequest': '@lang('request.residenceEditRequest')',
+                                'baladyCardRequest': '@lang('request.baladyCardRequest')',
+                                'mofaRequest': '@lang('request.mofaRequest')',
+                                'insuranceUpgradeRequest': '@lang('request.insuranceUpgradeRequest')',
+                                'chamberRequest': '@lang('request.chamberRequest')',
+                                'WarningRequest': '@lang('request.WarningRequest')',
+                                'cancleContractRequest': '@lang('request.cancleContractRequest')',
+                                'passportRenewal': '@lang('request.passportRenewal')',
+                                'AjirAsked': '@lang('request.AjirAsked')',
+                                'AlternativeWorker': '@lang('request.AlternativeWorker')',
+                                'TransferringGuaranteeFromExternalClient': '@lang('request.TransferringGuaranteeFromExternalClient')',
+                                'Permit': '@lang('request.Permit')',
+                                'FamilyInsurace': '@lang('request.FamilyInsurace')',
+                                'Ajir_link': '@lang('request.Ajir_link')',
+                                'ticketReservationRequest': '@lang('request.ticketReservationRequest')',
+                                'authorizationRequest': '@lang('request.authorizationRequest')',
+                                'salaryInquiryRequest': '@lang('request.salaryInquiryRequest')',
+                                'interviewsRequest': '@lang('request.interviewsRequest')',
+                                'moqimPrint': '@lang('request.moqimPrint')',
+                                'salaryIntroLetter': '@lang('request.salaryIntroLetter')',
+                                'QiwaContract': '@lang('request.QiwaContract')',
+                                'ExitWithoutReturnReport': '@lang('request.ExitWithoutReturnReport')',
+
+                            };
+
+                            return requestTypeMap[data] || data;
                         }
                     },
                     {
@@ -1603,7 +1604,8 @@
                             $('#atmType').hide();
 
                         }
-                        if (selectedType === 'residenceRenewal') {
+                        if (selectedType === 'residenceRenewal' || selectedType === 'residenceIssue') {
+                        ) {
                             $('#residenceRenewalDuration').show();
 
 
@@ -1699,6 +1701,7 @@
             'leavesAndDepartures': '@lang('request.leavesAndDepartures')',
             'atmCard': '@lang('request.atmCard')',
             'residenceRenewal': '@lang('request.residenceRenewal')',
+            'residenceIssue': '@lang('request.residenceIssue')',
             'workerTransfer': '@lang('request.workerTransfer')',
             'residenceCard': '@lang('request.residenceCard')',
             'workInjuriesRequest': '@lang('request.workInjuriesRequest')',
@@ -1883,6 +1886,9 @@
                     $('#edit_atmType').show();
                     break;
                 case 'residenceRenewal':
+                    $('#edit_residenceRenewalDuration').show();
+                    break;
+                case 'residenceIssue':
                     $('#edit_residenceRenewalDuration').show();
                     break;
             }

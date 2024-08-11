@@ -319,6 +319,28 @@
                     ) !!}
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="company_filter">@lang('request.company'):</label>
+                    {!! Form::select('company_filter', $companies, null, [
+                        'class' => 'form-control select2',
+                        'style' => 'height:40px',
+                        'placeholder' => __('lang_v1.all'),
+                        'id' => 'company_filter',
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="project_filter">@lang('request.project'):</label>
+                    {!! Form::select('project_filter', $saleProjects, null, [
+                        'class' => 'form-control select2',
+                        'style' => 'height:40px',
+                        'placeholder' => __('lang_v1.all'),
+                        'id' => 'project_filter',
+                    ]) !!}
+                </div>
+            </div>
         @endcomponent
 
         @component('components.widget', ['class' => 'box-primary'])
@@ -1305,6 +1327,8 @@
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
+                        d.company = $('#company_filter').val();
+                        d.project = $('#project_filter').val();
                     }
                 },
                 columns: [{
@@ -1331,6 +1355,8 @@
                                 'leavesAndDepartures': '@lang('request.leavesAndDepartures')',
                                 'atmCard': '@lang('request.atmCard')',
                                 'residenceRenewal': '@lang('request.residenceRenewal')',
+                                'residenceIssue': '@lang('request.residenceIssue')',
+
                                 'workerTransfer': '@lang('request.workerTransfer')',
                                 'residenceCard': '@lang('request.residenceCard')',
                                 'workInjuriesRequest': '@lang('request.workInjuriesRequest')',
@@ -1402,7 +1428,7 @@
             });
 
 
-            $('#status_filter, #type_filter').change(function() {
+            $('#status_filter, #type_filter ,#company_filter,#project_filter').change(function() {
                 requests_table.ajax.reload();
             });
 
@@ -1449,8 +1475,9 @@
                             <div class="card-body">
                                 <p><strong>@lang('request.department'):</strong> ${process.department.name || '@lang('request.not_exist')'}</p>
                                 <p><strong>@lang('request.status'):</strong> ${process.status || '@lang('request.not_exist')'}</p>
-                                <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
-                            
+                               <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
+                               
+                                 <p><strong>@lang('request.updated_at'):</strong> ${process.status_changed_at || '@lang('request.not_exist')'}</p>
                                 <p><strong>@lang('request.status_note'):</strong> ${process.status_note || '@lang('request.not_exist')'}</p>
                             </div>
                             ${index < data.followup_processes.length - 1 ? '<div class="arrow-down"></div>' : ''}
@@ -1507,7 +1534,7 @@
 
                             $('div#change_status_modal').modal('hide');
                             toastr.success(result.msg);
-                            requests_table.ajax.reload();
+                            window.location.reload();
 
                         } else {
                             toastr.error(result.msg);
@@ -1542,7 +1569,7 @@
                         if (result.success == true) {
                             $('#returnModal').modal('hide');
                             toastr.success(result.msg);
-                            requests_table.ajax.reload();
+                            window.location.reload();
 
                         } else {
                             toastr.error(result.msg);
@@ -2083,7 +2110,7 @@
                             $('#atmType').hide();
 
                         }
-                        if (selectedType === 'residenceRenewal') {
+                        if (selectedType === 'residenceRenewal' || selectedType === 'residenceIssue') {
                             $('#residenceRenewalDuration').show();
 
 
@@ -2189,6 +2216,7 @@
             'leavesAndDepartures': '@lang('request.leavesAndDepartures')',
             'atmCard': '@lang('request.atmCard')',
             'residenceRenewal': '@lang('request.residenceRenewal')',
+            'residenceIssue': '@lang('request.residenceIssue')',
             'workerTransfer': '@lang('request.workerTransfer')',
             'residenceCard': '@lang('request.residenceCard')',
             'workInjuriesRequest': '@lang('request.workInjuriesRequest')',
@@ -2373,6 +2401,10 @@
                     $('#edit_atmType').show();
                     break;
                 case 'residenceRenewal':
+                    $('#edit_residenceRenewalDuration').show();
+                    break;
+              
+                case 'residenceIssue':
                     $('#edit_residenceRenewalDuration').show();
                     break;
             }

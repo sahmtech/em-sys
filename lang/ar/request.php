@@ -16,6 +16,7 @@ return [
   'leavesAndDepartures' => 'الإجازات والمغادرات',
   'atmCard' => 'بطاقة صراف آلي',
   'residenceRenewal' => 'طلب تجديد إقامة',
+  'residenceIssue' => 'طلب إصدار إقامة',
   'passportRenewal' => 'طلب تجديد جواز سفر',
   'residenceCard' => 'بطاقة إقامة',
   'workerTransfer' => 'طلب نقل كفالة إلى خارج الشركة',
