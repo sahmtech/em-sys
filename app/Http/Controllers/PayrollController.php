@@ -708,7 +708,14 @@ class PayrollController extends Controller
                     if (($from == 'accountant')) {
                         $transaction  = Transaction::where('payroll_group_id', $row->id)?->first();
                         $status =  $transaction?->payment_status;
-
+                        if ($status && $status == 'partial') {
+                            $html = '<div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                                __('lang_v1.partial') .
+                                '</button>
+                            </div>';
+                            return $html;
+                        }
                         if ($status && $status != 'paid') {
                             $html = '<div class="btn-group">
                             <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
@@ -799,8 +806,14 @@ class PayrollController extends Controller
 
 
                     $html = '';
-                    if (true) {
-                        $html .= '<div><a class="btn btn-xs btn-info btn-warning"   >' . __('lang_v1.yet_to_be_paind') . '</a></div>';
+                    if ($row->status == 'paid') {
+                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.paid') .
+                            '</button></div>';
+                    } else {
+                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.yet_to_be_paind') .
+                            '</button></div>';
                     }
 
 
@@ -871,10 +884,23 @@ class PayrollController extends Controller
                 $inputs['created_by'] = auth()->user()->id;
                 $inputs['note'] = $request->note;
                 $payment_line =  TransactionPayment::create($inputs);
-
-
-                $transaction->update(['payment_status' => 'paid']);
+                PayrollGroupUser::where('id', $id)->update(['status' => "paid"]);
             }
+
+            $payroll_group_users = PayrollGroupUser::where('payroll_group_id',   $payroll_grouo->id)->get();
+            $paid = true;
+            $partial = false;
+            foreach ($payroll_group_users as $payroll_user) {
+                if ($payroll_user->status != "paid") {
+                    $paid = false;
+                }
+                if ($payroll_user->status == "paid") {
+                    $partial = true;
+                }
+            }
+            Transaction::where('id',   $payroll_grouo->id)->update([
+                'payment_status' => $paid ? 'paid' : ($partial ? 'partial' : 'due'),
+            ]);
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
