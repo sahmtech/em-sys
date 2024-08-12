@@ -1206,7 +1206,7 @@
 
                         }
                         if (selectedType === 'residenceRenewal' || selectedType === 'residenceIssue') {
-                        ) {
+                      
                             $('#residenceRenewalDuration').show();
 
 
