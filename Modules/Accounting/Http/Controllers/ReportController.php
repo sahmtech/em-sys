@@ -265,16 +265,16 @@ class ReportController extends Controller
             ->where('users.id', $user_id)
             ->join('payroll_group_users as pgu', 'pgu.user_id', '=', 'users.id')
             ->join('transactions as t', 't.payroll_group_id', '=', 'pgu.payroll_group_id')
-            ->join('accounting_accounts_transactions as aat', 't.id', '=', 'aat.transaction_id')
+            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'AAT.transaction_id')
             ->leftjoin(
                 'accounting_accounts as accounting_accounts',
-                'aat.accounting_account_id',
+                'AAT.accounting_account_id',
                 '=',
                 'accounting_accounts.id'
             )
             ->select([DB::raw($this->accountingUtil->balanceFormula())]);
 
-        $current_bal = $current_bal->first()->balance;
+        $current_bal = $current_bal?->first()->balance;
 
         return view('accounting::chart_of_accounts.employees-statement')
             ->with(compact('user', 'employee_dropdown', 'current_bal'));
@@ -387,16 +387,16 @@ class ReportController extends Controller
             ->where('contacts.company_id', $company_id)
             ->where('contacts.id', $contact_id)
             ->join('transactions as t', 'contacts.id', '=', 't.contact_id')
-            ->join('accounting_accounts_transactions as aat', 't.id', '=', 'aat.transaction_id')
+            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'aat.transaction_id')
             ->leftjoin(
                 'accounting_accounts as accounting_accounts',
-                'aat.accounting_account_id',
+                'AAT.accounting_account_id',
                 '=',
                 'accounting_accounts.id'
             )
             ->select([DB::raw($this->accountingUtil->balanceFormula())]);
 
-        $current_bal = $current_bal->first()->balance;
+        $current_bal = $current_bal?->first()->balance;
 
         return view('accounting::chart_of_accounts.customers-suppliers-statement')
             ->with(compact('contact', 'contact_dropdown', 'current_bal'));
