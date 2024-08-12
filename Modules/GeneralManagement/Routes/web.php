@@ -26,6 +26,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             Route::post('/settings.update', [Modules\GeneralManagement\Http\Controllers\NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
         });
         Route::get('/president_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index'])->name('president_requests');
+        Route::get('/president_pending_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_pending_requests'])->name('president_pending_requests');
+        Route::get('/president_done_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_done_requests'])->name('president_done_requests');
+
+
         Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');
         Route::post('/changeEscalationStatus', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('generalmanagement.changeEscalationStatus');
         Route::get('/viewGmRequest/{requestId}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewGmRequest');

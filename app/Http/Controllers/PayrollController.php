@@ -11,26 +11,33 @@ use App\PayrollGroup;
 use App\PayrollGroupUser;
 use App\TimesheetUser;
 use App\Transaction;
+use App\TransactionPayment;
 use App\User;
 use App\Utils\ModuleUtil;
+use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsPayrollGroup;
 use Modules\Sales\Entities\SalesProject;
+use Illuminate\Http\Request;
+
+
 
 class PayrollController extends Controller
 {
     protected $moduleUtil;
     protected $commonUtil;
+    protected $transactionUtil;
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil, Util $commonUtil)
+    public function __construct(TransactionUtil $transactionUtil, ModuleUtil $moduleUtil, Util $commonUtil)
     {
+        $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
     }
@@ -684,13 +691,26 @@ class PayrollController extends Controller
                     $html .= '</ul></div>';
                     return $html;
                 })
-                ->addColumn('status', function ($row) {
+                ->addColumn('status', function ($row) use ($from) {
 
 
 
                     $html = '';
                     if ($row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && $row->ceo_cleared_by) {
-                        $html .= '<div><a class="btn btn-xs btn-info btn-warning"   >' . __('lang_v1.yet_to_be_paind') . '</a></div>';
+                        $html .= '<div><a class="btn btn-xs  btn-success"   >' . __('lang_v1.paid') . '</a></div>';
+                    }
+                    if (($from == 'accountant')) {
+                        $transaction  = Transaction::where('payroll_group_id', $row->id)?->first();
+                        $status =  $transaction?->payment_status;
+
+                        if ($status && $status != 'paid') {
+                            $html = '<div class="btn-group">
+                            <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                                __('lang_v1.yet_to_be_paind') .
+                                '</button>
+                            </div>';
+                            return $html;
+                        }
                     }
 
 
@@ -718,7 +738,14 @@ class PayrollController extends Controller
             return view('essentials::payrolls_index');
         }
         if ($from == 'accountant') {
-            return view('accounting::custom_views.payrolls_index');
+            $payment_types = [
+                'cash' => __('lang_v1.cash'),
+                'card' => __('lang_v1.card'),
+                'cheque' => __('lang_v1.cheque'),
+                'bank_transfer' => __('lang_v1.bank_transfer'),
+                'other' => __('lang_v1.other')
+            ];
+            return view('accounting::custom_views.payrolls_index')->with(compact('payment_types'));
         }
         if ($from == 'financial') {
             return view('accounting::custom_views.payrolls_index_financial');
@@ -820,6 +847,40 @@ class PayrollController extends Controller
                 ])
                 ->make(true);
         }
+    }
+
+    public function create_payment(Request $request, $id)
+    {
+        try {
+            $transaction = Transaction::where('payroll_group_id', $id)?->first();
+            if ($transaction->payment_status && $transaction->payment_status != "paid") {
+
+                $inputs['amount'] = $transaction->final_total;
+                $inputs['amount'] = $transaction->final_total;
+                $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
+                $inputs['transaction_id'] = $transaction->id;
+                $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
+                $inputs['created_by'] = auth()->user()->id;
+                $inputs['note'] = $request->note;
+                $payment_line =  TransactionPayment::create($inputs);
+
+
+                $transaction->update(['payment_status' => 'paid']);
+            }
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
     }
 
     public function show_payroll_details($id)

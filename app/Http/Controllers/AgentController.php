@@ -178,9 +178,21 @@ class AgentController extends Controller
 
             $chart = new CommonChart;
             $colors = [
-                '#ec268f', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
-                '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-                '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+                '#ec268f',
+                '#37A2EC',
+                '#FACD56',
+                '#5CA85C',
+                '#605CA8',
+                '#2f7ed8',
+                '#0d233a',
+                '#8bbc21',
+                '#910000',
+                '#1aadce',
+                '#492970',
+                '#f28f43',
+                '#77a1e5',
+                '#c42525',
+                '#a6c96a'
             ];
             $labels = [
                 __('followup::lang.customer_home_active_workers_count'),
@@ -321,9 +333,16 @@ class AgentController extends Controller
 
                 $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
                     ->select([
-                        'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                        'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
-                        'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                        'sales_contracts.number_of_contract',
+                        'sales_contracts.id',
+                        'sales_contracts.offer_price_id',
+                        'sales_contracts.start_date',
+                        'sales_contracts.end_date',
+                        'sales_contracts.status',
+                        'sales_contracts.file',
+                        'transactions.contract_form as contract_form',
+                        'transactions.contact_id',
+                        'transactions.id as tra'
                     ])->where('contact_id', $contact_id);
 
                 if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
@@ -509,8 +528,12 @@ class AgentController extends Controller
 
                     ->rawColumns([
                         'contact_name',
-                        'nationality', 'worker',
-                        'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'
+                        'nationality',
+                        'worker',
+                        'residence_permit_expiration',
+                        'residence_permit',
+                        'admissions_date',
+                        'contract_end_date'
                     ])
                     ->make(true);
             }
@@ -1284,13 +1307,31 @@ class AgentController extends Controller
 
         $requestsProcess = UserRequest::select([
 
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.is_new', 'requests.created_at', 'requests.created_by', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.is_new',
+            'requests.created_at',
+            'requests.created_by',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+            'wk_procedures.action_type as action_type',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
+            'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.id as userId',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.assigned_to',
+            'users.id as userId',
+            'users.company_id',
+
 
 
 
@@ -1322,6 +1363,15 @@ class AgentController extends Controller
             $types = RequestsType::where('type', request()->input('type'))->pluck('id')->toArray();
             $requestsProcess->whereIn('requests.request_type_id', $types);
         }
+        if (request()->input('company') && request()->input('company') !== 'all') {
+            error_log(request()->input('company'));
+            $requestsProcess->where('users.company_id', request()->input('company'));
+        }
+        if (request()->input('project') && request()->input('project') !== 'all') {
+            error_log(request()->input('project'));
+            $requestsProcess->where('users.assigned_to', request()->input('project'));
+        }
+
         $requests = $requestsProcess->get();
 
         foreach ($requests as $request) {
@@ -1474,7 +1524,9 @@ class AgentController extends Controller
             $purchase_details['purchase_due'] = $purchase_details['purchase_due'] - $total_ledger_discount['total_purchase_discount'];
 
             $transaction_types = [
-                'purchase_return', 'sell_return', 'expense',
+                'purchase_return',
+                'sell_return',
+                'expense',
             ];
 
             $transaction_totals = $this->transactionUtil->getTransactionTotals(

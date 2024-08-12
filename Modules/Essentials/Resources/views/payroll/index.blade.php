@@ -56,7 +56,6 @@
                                                 <th class="table-td-width-300px">@lang('essentials::lang.financial_management_cleared_by')</th>
                                                 <th>@lang('essentials::lang.ceo_cleared')</th>
                                                 <th class="table-td-width-300px">@lang('essentials::lang.ceo_cleared_by')</th>
-                                                <th>@lang('essentials::lang.status')</th>
                                                 <th>@lang('essentials::lang.action')</th>
                                             </tr>
                                         </thead>
@@ -78,7 +77,6 @@
                                                 <th>@lang('essentials::lang.project')</th>
                                                 <th>@lang('essentials::lang.date')</th>
                                                 <th>@lang('essentials::lang.the_total')</th>
-                                                <th>@lang('essentials::lang.status')</th>
                                                 <th>@lang('messages.actions')</th>
                                             </tr>
                                         </thead>
@@ -333,10 +331,7 @@
                         data: 'the_total',
                         name: 'the_total',
                     },
-                    {
-                        data: 'status',
-                        name: 'status',
-                    },
+
 
                     {
                         data: 'action',
@@ -400,10 +395,7 @@
                         data: 'ceo_cleared_by',
                         name: 'ceo_cleared_by',
                     },
-                    {
-                        data: 'status',
-                        name: 'status',
-                    },
+
                     {
                         data: 'action',
                         name: 'action',

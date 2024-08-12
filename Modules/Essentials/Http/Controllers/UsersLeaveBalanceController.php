@@ -57,8 +57,8 @@ class UsersLeaveBalanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $userTypes = ['employee', 'worker', 'manager', 'department_head'];
+        $userIds = User::whereIn('user_type', $userTypes)->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -109,7 +109,8 @@ class UsersLeaveBalanceController extends Controller
     {
         DB::beginTransaction();
         try {
-            $userTypes = ['employee', 'worker', 'manager'];
+
+            $userTypes = ['employee', 'worker', 'manager', 'department_head'];
             $leaveTypes = EssentialsLeaveType::where('leave_type', 'not like', '%سنوية%')->get();
             $users = User::whereIn('user_type', $userTypes)->with('appointment')->get();
             $today = now();
