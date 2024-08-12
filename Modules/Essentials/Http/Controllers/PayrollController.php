@@ -1020,58 +1020,70 @@ class PayrollController extends Controller
             // foreach ($timesheet_groups as  $timesheet_group) {
 
             // }
-            $company_id = User::where('id', auth()->user()->id)->first()->company_id;
+
             $date = (Carbon::createFromFormat('m/Y', request()->input('transaction_date')))->format('F Y');
 
-            $payrollGroup = PayrollGroup::create([
-                'payroll_group_name' => $request->payroll_group_name,
-                'payroll_group_status' => $request->payroll_group_status,
-                'total_payrolls' => $request->total_payrolls,
-                'transaction_date' => $request->transaction_date,
-                'company_id' => $company_id,
-                'payroll_date' => $date
-            ]);
-
-            $payrolls = $request->payrolls;
-            $existingPayrollGroupUsers = [];
-            if (!empty($existing_payroll_group)) {
-                $existingPayrollGroupUsers = PayrollGroupUser::whereIn('id', $existing_payroll_group)?->pluck('user_id')?->toArray() ?? [];
+            $user_ids =   collect($request->payrolls)->pluck('id')->unique()->toArray();
+            $users = User::whereIn('id',  $user_ids);
+            $comanies =  $users->pluck('company_id')->unique()->toArray();
+            $company_ids = [];
+            foreach ($comanies as $comany) {
+                $company_ids[] = $comany;
             }
-            if ($payrollGroup && !empty($payrolls)) {
-                foreach ($payrolls as $payroll) {
-                    if (!in_array($payroll['id'], $existingPayrollGroupUsers)) {
-                        PayrollGroupUser::create([
-                            'payroll_group_id' => $payrollGroup->id,
-                            'user_id' => $payroll['id'],
-                            'name' => $payroll['name'] ?? '',
-                            'nationality' => $payroll['nationality'] ?? '',
-                            'identity_card_number' => $payroll['identity_card_number'] ?? '',
-                            'company' => $payroll['company'] ?? '',
-                            'project_name' => $payroll['project_name'] ?? '',
-                            'region' => $payroll['region'] ?? '',
-                            'work_days' => $payroll['work_days'] ?? 0,
-                            'salary' => $payroll['salary'] ?? 0,
-                            'housing_allowance' => $payroll['housing_allowance'] ?? 0,
-                            'transportation_allowance' => $payroll['transportation_allowance'] ?? 0,
-                            'other_allowance' => $payroll['other_allowance'] ?? 0,
-                            'total' => $payroll['total'] ?? 0,
-                            'violations' => $payroll['violations'] ?? 0,
-                            'absence' => $payroll['absence'] ?? 0,
-                            'absence_deduction' => $payroll['absence_deduction'] ?? 0,
-                            'late' => $payroll['late'] ?? 0,
-                            'late_deduction' => $payroll['late_deduction'] ?? 0,
-                            'other_deductions' => $payroll['other_deductions'] ?? 0,
-                            'loan' => $payroll['loan'] ?? 0,
-                            'total_deduction' => $payroll['total_deduction'] ?? 0,
-                            'over_time_hours' => $payroll['over_time_hours'] ?? 0,
-                            'over_time_hours_addition' => $payroll['over_time_hours_addition'] ?? 0,
-                            'additional_addition' => $payroll['additional_addition'] ?? 0,
-                            'total_additions' => $payroll['total_additions'] ?? 0,
-                            'final_salary' => $payroll['final_salary'] ?? 0,
-                            'payment_method' => $payroll['payment_method'] ?? '',
-                            'notes' => $payroll['notes'] ?? '',
-                            'timesheet_user_id' => $payroll['timesheet_user_id'] ?? null,
-                        ]);
+
+
+
+            foreach ($company_ids as $company_id) {
+                $payrollGroup = PayrollGroup::create([
+                    'payroll_group_name' => $request->payroll_group_name,
+                    'payroll_group_status' => $request->payroll_group_status,
+                    'total_payrolls' => $request->total_payrolls,
+                    'transaction_date' => $request->transaction_date,
+                    'company_id' => $company_id,
+                    'payroll_date' => $date
+                ]);
+                $groupUsers_ids =  $users->where('company_id', $company_id)->pluck('id')->toArray();
+                $payrolls =  collect($request->payrolls)->whereIn('id',  $groupUsers_ids);
+                $existingPayrollGroupUsers = [];
+                if (!empty($existing_payroll_group)) {
+                    $existingPayrollGroupUsers = PayrollGroupUser::whereIn('id', $existing_payroll_group)?->pluck('user_id')?->toArray() ?? [];
+                }
+                if ($payrollGroup && !empty($payrolls)) {
+                    foreach ($payrolls as $payroll) {
+                        if (!in_array($payroll['id'], $existingPayrollGroupUsers)) {
+                            PayrollGroupUser::create([
+                                'payroll_group_id' => $payrollGroup->id,
+                                'user_id' => $payroll['id'],
+                                'name' => $payroll['name'] ?? '',
+                                'nationality' => $payroll['nationality'] ?? '',
+                                'identity_card_number' => $payroll['identity_card_number'] ?? '',
+                                'company' => $payroll['company'] ?? '',
+                                'project_name' => $payroll['project_name'] ?? '',
+                                'region' => $payroll['region'] ?? '',
+                                'work_days' => $payroll['work_days'] ?? 0,
+                                'salary' => $payroll['salary'] ?? 0,
+                                'housing_allowance' => $payroll['housing_allowance'] ?? 0,
+                                'transportation_allowance' => $payroll['transportation_allowance'] ?? 0,
+                                'other_allowance' => $payroll['other_allowance'] ?? 0,
+                                'total' => $payroll['total'] ?? 0,
+                                'violations' => $payroll['violations'] ?? 0,
+                                'absence' => $payroll['absence'] ?? 0,
+                                'absence_deduction' => $payroll['absence_deduction'] ?? 0,
+                                'late' => $payroll['late'] ?? 0,
+                                'late_deduction' => $payroll['late_deduction'] ?? 0,
+                                'other_deductions' => $payroll['other_deductions'] ?? 0,
+                                'loan' => $payroll['loan'] ?? 0,
+                                'total_deduction' => $payroll['total_deduction'] ?? 0,
+                                'over_time_hours' => $payroll['over_time_hours'] ?? 0,
+                                'over_time_hours_addition' => $payroll['over_time_hours_addition'] ?? 0,
+                                'additional_addition' => $payroll['additional_addition'] ?? 0,
+                                'total_additions' => $payroll['total_additions'] ?? 0,
+                                'final_salary' => $payroll['final_salary'] ?? 0,
+                                'payment_method' => $payroll['payment_method'] ?? '',
+                                'notes' => $payroll['notes'] ?? '',
+                                'timesheet_user_id' => $payroll['timesheet_user_id'] ?? null,
+                            ]);
+                        }
                     }
                 }
             }
