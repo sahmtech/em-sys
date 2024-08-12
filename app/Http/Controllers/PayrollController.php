@@ -898,7 +898,7 @@ class PayrollController extends Controller
                     $partial = true;
                 }
             }
-            Transaction::where('id',   $payroll_grouo->id)->update([
+            Transaction::where('payroll_group_id',   $payroll_grouo->id)->update([
                 'payment_status' => $paid ? 'paid' : ($partial ? 'partial' : 'due'),
             ]);
             $output = [
