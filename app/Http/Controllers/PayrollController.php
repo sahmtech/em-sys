@@ -775,8 +775,11 @@ class PayrollController extends Controller
     public function payrolls_list_index()
     {
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
 
+        $company_id = Session::get('selectedCompanyId');
+        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1)->whereHas('user', function ($query) use ($company_id) {
+            $query->where('company_id', $company_id);
+        });
         if (request()->ajax()) {
             return DataTables::of($payrollGroupUsers)
                 ->addColumn('name', function ($row) {
