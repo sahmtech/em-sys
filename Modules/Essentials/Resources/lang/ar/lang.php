@@ -1954,6 +1954,7 @@ return [
   'duration_in_days' => 'المدة بالإيام',
   'duration' => 'المدة',
   'hrm_payrolls' => 'الرواتب',
+  'payrolls_timesheet' => 'الرواتب والتايم شيت',
   'view_payroll_checkpoint' => 'عرض صفحة الرواتب',
   'confirm_payroll_checkpoint' => 'اعتماد الرواتب',
   'show_payroll_checkpoint' => 'عرض تفاصيل الرواتب',

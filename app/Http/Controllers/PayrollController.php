@@ -22,7 +22,7 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsPayrollGroup;
 use Modules\Sales\Entities\SalesProject;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Session;
 
 
 class PayrollController extends Controller
@@ -177,14 +177,14 @@ class PayrollController extends Controller
 
 
             $payrollGroupUsers = PayrollGroupUser::where('payroll_group_id', $id)
-            ->join('users as u', 'u.id', '=', 'payroll_group_users.user_id')
-            ->select([
-                'payroll_group_users.*', 
-                'u.user_type',
-            ])->get(); 
+                ->join('users as u', 'u.id', '=', 'payroll_group_users.user_id')
+                ->select([
+                    'payroll_group_users.*',
+                    'u.user_type',
+                ])->get();
 
-        $user_type = $payrollGroupUsers->first()?->user_type;
-       
+            $user_type = $payrollGroupUsers->first()?->user_type;
+
 
             $total_before_tax = 0;
             $essentials_amount_per_unit_duration = 0;
@@ -222,10 +222,10 @@ class PayrollController extends Controller
             $transaction_ids[] = $transaction->id;
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
             $util = new Util();
-                      $auto_migration = $util->createTransactionJournal_entry($transaction->id, $user_type);
-            
+            $auto_migration = $util->createTransactionJournal_entry($transaction->id, $user_type);
 
-            
+
+
 
             // //ref_no,
             // $transaction_ids = [];
@@ -551,6 +551,12 @@ class PayrollController extends Controller
             || $from == "none";
 
         $companies = Company::pluck('name', 'id');
+
+
+        if ($from == 'accountant' || $from == 'financial') {
+            $company_id = Session::get('selectedCompanyId');
+            $payrollGroups = $payrollGroups->where('company_id', $company_id);
+        }
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
                 ->addColumn('name', function ($row) {

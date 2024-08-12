@@ -486,7 +486,7 @@ class PayrollController extends Controller
             "worker" => __('essentials::lang.user_type.worker'),
             "remote_employee" => __('essentials::lang.user_type.remote_employee'),
         ];
-        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::where('is_main', 1)->pluck('name', 'id');
         return view('essentials::payroll.index')->with(compact('projects', 'companies', 'user_types', 'departments'));
     }
     public function requests()
