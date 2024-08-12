@@ -2066,8 +2066,8 @@ class Util
 
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
-                    $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
-                        $accounting_settings['journal_entry_prefix'] : '';
+                    $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
@@ -2088,6 +2088,7 @@ class Util
                     $test_type = $accTrans->amount;
                     $transaction_row['amount'] = $transaction->$test_type;
                     $transaction_row['type'] = $accTrans->type;
+                    $transaction_row['cost_center_id'] = $accTrans->cost_center_id;
                     $transaction_row['created_by'] = $user_id;
                     $transaction_row['operation_date'] = $this->uf_date($request->input('transaction_date'), true);
                     $transaction_row['sub_type'] = 'journal_entry';
@@ -2102,7 +2103,7 @@ class Util
     }
 
 
-    public function createTransactionJournal_entry($id)
+    public function createTransactionJournal_entry($id, $user_type = '')
     {
         $transaction = Transaction::with(['sell_lines', 'payment_lines'])->find($id);
         if (!$transaction) {
@@ -2115,23 +2116,42 @@ class Util
 
         if (count($transaction->payment_lines) > 0) {
             $payment_lines = $transaction->payment_lines()->latest('paid_on')->first();
-            //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
-            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
+
+            $method =  $payment_lines->method;
+        } else {
+            $method = 'other';
+        }
+
+        if ($transaction->type == 'payroll') {
+            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
+                ->where('type', $transaction->type)
                 ->where('payment_status', $transaction->payment_status)
-                ->where('method', $payment_lines->method)
+                ->where('method', $method)
                 ->where('company_id', $company_id)
                 ->where('active', true)->first();
+        } else {
+            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
+                ->where('payment_status', $transaction->payment_status)
+                ->where('method', $method)
+                ->where('company_id', $company_id)
+                ->where('active', true)->first();
+        }
+        //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
 
-            if ($accountMappingSetting) {
-                // find account transaction mapping setting by accounting mapping setting
-                $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
+        if ($accountMappingSetting) {
+            // find account transaction mapping setting by accounting mapping setting
+            $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
+
 
 
                 if (count($accTransMappingSetting) > 0) {
 
 
-
-
+                //Generate reference number
+                $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
+                if (empty($ref_no)) {
+                    $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
 
 
                     //Generate reference number
@@ -2140,8 +2160,37 @@ class Util
                         $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
                             $accounting_settings['journal_entry_prefix'] : '';
 
-                        //Generate reference number
-                        $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
+
+                try {
+                    DB::beginTransaction();
+                    $acc_trans_mapping = new AccountingAccTransMapping();
+                    $acc_trans_mapping->business_id = $business_id;
+                    $acc_trans_mapping->company_id = $company_id;
+                    $acc_trans_mapping->ref_no = $ref_no;
+                    $acc_trans_mapping->note = '';
+                    $acc_trans_mapping->type = 'journal_entry';
+                    $acc_trans_mapping->created_by = $user_id;
+                    $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s');
+                    $acc_trans_mapping->save();;
+                    foreach ($accTransMappingSetting as $accTrans) {
+                        $transaction_row = [];
+                        $transaction_row['accounting_account_id'] = $accTrans->accounting_account_id;
+                        $test_type = $accTrans->amount;
+                        $transaction_row['amount'] = $transaction->$test_type;
+                        $transaction_row['type'] = $accTrans->type;
+                        $transaction_row['cost_center_id'] = $accTrans->cost_center_id;
+
+                        $transaction_row['transaction_id'] = $transaction->id;
+                        $transaction_row['created_by'] = $user_id;
+                        $transaction_row['operation_date'] = now()->format('Y-m-d H:i:s');
+                        $transaction_row['sub_type'] = 'journal_entry';
+                        $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
+
+
+                        $accounts_transactions = new AccountingAccountsTransaction();
+                        $accounts_transactions->fill($transaction_row);
+                        $accounts_transactions->save();
+
                     }
 
 
