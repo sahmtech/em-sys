@@ -1080,6 +1080,7 @@ class PayrollController extends Controller
                                 'total_additions' => $payroll['total_additions'] ?? 0,
                                 'final_salary' => $payroll['final_salary'] ?? 0,
                                 'payment_method' => $payroll['payment_method'] ?? '',
+                                'status' => 'due',
                                 'notes' => $payroll['notes'] ?? '',
                                 'timesheet_user_id' => $payroll['timesheet_user_id'] ?? null,
                             ]);

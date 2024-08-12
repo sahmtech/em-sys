@@ -855,6 +855,42 @@ class PayrollController extends Controller
         }
     }
 
+    public function create_single_payment(Request $request, $id)
+    {
+        try {
+
+            $payroll_group_user = PayrollGroupUser::where('id', $id)->first();
+            $payroll_grouo = PayrollGroup::where('id', $payroll_group_user->payroll_group_id)->first();
+            $transaction = Transaction::where('payroll_group_id',   $payroll_grouo->id)?->first();
+            if ($transaction->payment_status && $transaction->payment_status != "paid") {
+
+                $inputs['method'] = $request->payment_method;
+                $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
+                $inputs['transaction_id'] = $transaction->id;
+                $inputs['amount'] = $this->transactionUtil->num_uf($payroll_group_user->final_salary);
+                $inputs['created_by'] = auth()->user()->id;
+                $inputs['note'] = $request->note;
+                $payment_line =  TransactionPayment::create($inputs);
+
+
+                $transaction->update(['payment_status' => 'paid']);
+            }
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
+
     public function create_payment(Request $request, $id)
     {
         try {
