@@ -862,7 +862,7 @@ class PayrollController extends Controller
             if ($transaction->payment_status && $transaction->payment_status != "paid") {
 
                 $inputs['amount'] = $transaction->final_total;
-                $inputs['amount'] = $transaction->final_total;
+                $inputs['method'] = $request->payment_method;
                 $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
                 $inputs['transaction_id'] = $transaction->id;
                 $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
