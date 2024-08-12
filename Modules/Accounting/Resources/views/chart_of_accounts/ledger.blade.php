@@ -236,11 +236,13 @@
                     },
                     {
                         data: 'cost_center_name',
-                        name: 'cost_center_name'
+                        name: 'cost_center_name',
+                        searchable: false
                     },
                     {
                         data: 'partner_name',
-                        name: 'partner_name'
+                        name: 'partner_name',
+                        searchable: false
                     },
                     {
                         data: 'note',
