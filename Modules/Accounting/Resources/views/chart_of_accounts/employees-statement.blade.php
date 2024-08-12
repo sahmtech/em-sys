@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.customers_and_suppliers_statement_of_account_report'))
+@section('title', __('accounting::lang.employees_statement_of_account_report'))
 
 @section('content')
 
@@ -8,7 +8,7 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('accounting::lang.customers_and_suppliers_statement_of_account_report') - {{ $user->first_name }}
+        <h1>@lang('accounting::lang.employees_statement_of_account_report') - {{ $user->first_name }}
         </h1>
     </section>
 
