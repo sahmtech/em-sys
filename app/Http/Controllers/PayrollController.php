@@ -892,7 +892,7 @@ class PayrollController extends Controller
                 $payment_line =  TransactionPayment::create($inputs);
                 PayrollGroupUser::where('id', $id)->update(['status' => "paid"]);
             }
-return $payroll_grouo->id;
+
             $payroll_group_users = PayrollGroupUser::where('payroll_group_id',   $payroll_grouo->id)->get();
             $paid = true;
             $partial = false;
@@ -905,7 +905,7 @@ return $payroll_grouo->id;
                     
                 }
             }
-               Transaction::where('id',   $payroll_grouo->id)->update([
+            Transaction::where('payroll_group_id',   $payroll_grouo->id)->update([
                 'payment_status' => $paid ? 'paid' : ($partial ? 'partial' : 'due'),
             ]);
 
