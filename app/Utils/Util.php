@@ -2056,6 +2056,8 @@ class Util
             ->where('method',  $method)
             ->where('company_id', $transaction->company_id)
             ->where('active', true)->first();
+
+            $company_id =$transaction->company_id;
         // return   [$transaction->type, $transaction->payment_status, $transaction->location_id];
         if ($accountMappingSetting) {
             // find account transaction mapping setting by accounting mapping setting
@@ -2123,7 +2125,7 @@ class Util
         } else {
             $method = 'other';
         }
-
+        $company_id =$transaction->company_id;
         if ($transaction->type == 'payroll') {
             $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
                 ->where('type', $transaction->type)
@@ -2224,19 +2226,19 @@ class Util
         } else {
             $method = 'other';
         }
-
+        $company_id =$transaction->company_id;
         if ($transaction->type == 'payroll') {
                 $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
                 ->where('type', $transaction->type)
                 ->where('payment_status', $transaction->payment_status)
                 ->where('method', $method)
-                ->where('company_id', $company_id)
+                ->where('company_id', $transaction->company_id)
                 ->where('active', true)->first();
         } else {
             $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
                 ->where('payment_status', $transaction->payment_status)
                 ->where('method', $method)
-                ->where('company_id', $company_id)
+                ->where('company_id',$transaction->company_id)
                 ->where('active', true)->first();
         }
         //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
