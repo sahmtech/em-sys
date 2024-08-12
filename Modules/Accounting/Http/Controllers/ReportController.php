@@ -387,7 +387,7 @@ class ReportController extends Controller
             ->where('contacts.company_id', $company_id)
             ->where('contacts.id', $contact_id)
             ->join('transactions as t', 'contacts.id', '=', 't.contact_id')
-            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'aat.transaction_id')
+            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'AAT.transaction_id')
             ->leftjoin(
                 'accounting_accounts as accounting_accounts',
                 'AAT.accounting_account_id',
