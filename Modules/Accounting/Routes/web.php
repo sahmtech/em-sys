@@ -101,6 +101,8 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('reports', 'ReportController@index');
     Route::get('reports/trial-balance', 'ReportController@trialBalance')->name('accounting.trialBalance');
     Route::get('reports/income-statement', 'ReportController@incomeStatement')->name('accounting.incomeStatement');
+    Route::get('reports/employees-statement/{id}', 'ReportController@employeesStatement')->name('accounting.employeesStatement');
+    Route::get('reports/customers-suppliers-statement/{id}', 'ReportController@customersSuppliersStatement')->name('accounting.customersSuppliersStatement');
     Route::get('reports/balance-sheet', 'ReportController@balanceSheet')->name('accounting.balanceSheet');
     Route::get(
         'reports/account-receivable-ageing-report',

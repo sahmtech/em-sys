@@ -165,6 +165,28 @@ class Contact extends Authenticatable
 
         return $contacts;
     }
+    /**
+     * Return list of contact dropdown for a business
+     *
+     * @param $business_id int
+     * @param $company_id int
+     * @return array users
+     */
+    public static function customersSuppliersDropdown($business_id, $company_id)
+    {
+        $query = Contact::where('business_id', $business_id)->where('company_id', $company_id)
+            ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])
+            ->active();
+
+        $query->select(
+            'contacts.id',
+            DB::raw("IF (supplier_business_name IS not null, CONCAT(name, ' (', supplier_business_name, ')'), name) as supplier")
+        );
+
+        $contacts = $query->pluck('supplier', 'contacts.id');
+
+        return $contacts;
+    }
 
     /**
      * Return list of suppliers dropdown for a business

@@ -44,6 +44,34 @@
         <div class="col-md-6">
             <div class="box box-warning">
                 <div class="box-header with-border">
+                    <h3 class="box-title">@lang( 'accounting::lang.employees_statement_of_account_report')</h3>
+                </div>
+
+                <div class="box-body">
+                    <a @if($employees_statement_url) href="{{$employees_statement_url}}" @else onclick="alert(' @lang( 'accounting::lang.employees_statement_of_account_report') ')" @endif{{--  href="{{route('accounting.employeesStatement')}}" --}} class="btn btn-primary btn-sm pt-2">@lang( 'accounting::lang.view_report')</a>
+                    {{-- @lang( 'accounting::lang.ledger_report_description') --}}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">@lang( 'accounting::lang.customers_and_suppliers_statement_of_account_report')</h3>
+                </div>
+
+                <div class="box-body">
+                    {{-- @lang( 'accounting::lang.ledger_report_description') --}}
+                    <a @if($customers_suppliers_statement_url) href="{{$customers_suppliers_statement_url}}" @else onclick="alert(' @lang( 'accounting::lang.customers_and_suppliers_statement_of_account_report') ')" @endif {{-- href="{{route('accounting.customersSuppliersStatement')}}" --}} class="btn btn-primary btn-sm pt-2">@lang( 'accounting::lang.view_report')</a>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-warning">
+                <div class="box-header with-border">
                     <h3 class="box-title">@lang( 'accounting::lang.balance_sheet')</h3>
                 </div>
 
