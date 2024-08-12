@@ -870,9 +870,14 @@ class PayrollController extends Controller
 
     public function create_single_payment(Request $request, $id)
     {
-        try {
+        
+        // try {
 
-            $payroll_group_user = PayrollGroupUser::where('id', $id)->first();
+            $payroll_group_user = PayrollGroupUser::where('id', $id)
+               ->first();
+         
+
+            
             $payroll_grouo = PayrollGroup::where('id', $payroll_group_user->payroll_group_id)->first();
             $transaction = Transaction::where('payroll_group_id',   $payroll_grouo->id)?->first();
             if ($transaction->payment_status && $transaction->payment_status != "paid") {
@@ -883,10 +888,11 @@ class PayrollController extends Controller
                 $inputs['amount'] = $this->transactionUtil->num_uf($payroll_group_user->final_salary);
                 $inputs['created_by'] = auth()->user()->id;
                 $inputs['note'] = $request->note;
+               
                 $payment_line =  TransactionPayment::create($inputs);
                 PayrollGroupUser::where('id', $id)->update(['status' => "paid"]);
             }
-
+return $payroll_grouo->id;
             $payroll_group_users = PayrollGroupUser::where('payroll_group_id',   $payroll_grouo->id)->get();
             $paid = true;
             $partial = false;
@@ -896,24 +902,34 @@ class PayrollController extends Controller
                 }
                 if ($payroll_user->status == "paid") {
                     $partial = true;
+                    
                 }
             }
-            Transaction::where('id',   $payroll_grouo->id)->update([
+               Transaction::where('id',   $payroll_grouo->id)->update([
                 'payment_status' => $paid ? 'paid' : ($partial ? 'partial' : 'due'),
             ]);
+
+            // $transaction = Transaction::where('payroll_group_id',$payroll_grouo->id)?->first();
+            $user = User::find($payroll_group_user->user_id);
+            $user_type = $user?->user_type;
+            $user_id = $user?->id;
+
+            $util = new Util();
+         return   $auto_migration = $util->createTransactionJournal_entry_single_payment($transaction->id, $user_type, $user_id);
+
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        //     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        //     $output = [
+        //         'success' => false,
+        //         'msg' => __('messages.something_went_wrong'),
+        //     ];
+        // }
         return redirect()->back()->with('status', $output);
     }
 
