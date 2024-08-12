@@ -73,7 +73,9 @@ class CoaController extends Controller
                                         JOIN accounting_accounts AS AA ON AAT.accounting_account_id = AA.id
                                         WHERE AAT.accounting_account_id = accounting_accounts.id) AS balance"), 'accounting_accounts.*']);
                     },
-                    'child_accounts.detail_type', 'detail_type', 'account_sub_type',
+                    'child_accounts.detail_type',
+                    'detail_type',
+                    'account_sub_type',
                     'child_accounts.account_sub_type',
                     'child_accounts.child_accounts' => function ($query) use ($balance_formula) {
                         $query->select([DB::raw("(SELECT $balance_formula from accounting_accounts_transactions AS AAT
@@ -301,8 +303,14 @@ class CoaController extends Controller
             DB::beginTransaction();
 
             $input = $request->only([
-                'name', 'account_primary_type', 'account_sub_type_id', 'detail_type_id',
-                'parent_account_id', 'description', 'gl_code', 'account_category'
+                'name',
+                'account_primary_type',
+                'account_sub_type_id',
+                'detail_type_id',
+                'parent_account_id',
+                'description',
+                'gl_code',
+                'account_category'
             ]);
 
             $account_type = AccountingAccountType::find($input['account_sub_type_id']);
@@ -373,7 +381,10 @@ class CoaController extends Controller
             DB::beginTransaction();
 
             $input = $request->only([
-                'name', 'account_category', 'parent_account_id', 'account_type'
+                'name',
+                'account_category',
+                'parent_account_id',
+                'account_type'
             ]);
 
 
@@ -434,9 +445,7 @@ class CoaController extends Controller
      * @param int $id
      * @return Response
      */
-    public function show($id)
-    {
-    }
+    public function show($id) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -516,7 +525,8 @@ class CoaController extends Controller
             DB::beginTransaction();
 
             $input = $request->only([
-                'name', 'account_category'
+                'name',
+                'account_category'
             ]);
 
             // $input['parent_account_id'] = !empty($input['parent_account_id'])
@@ -686,6 +696,15 @@ class CoaController extends Controller
 
 
                     return $action;
+                })
+                ->filterColumn('cost_center_name', function ($query, $keyword) {
+                    $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('partner_name', function ($query, $keyword) {
+                    $query->whereRaw("LOWER(CASE 
+                    WHEN accounting_accounts_transactions.partner_type = 'employees' THEN CONCAT(COALESCE(employee_partner.first_name, ''), ' ', COALESCE(employee_partner.last_name, ''))
+                    WHEN accounting_accounts_transactions.partner_type = 'customers_suppliers' THEN customer_partner.supplier_business_name
+                    END) LIKE ?", ["%{$keyword}%"]);
                 })
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);

@@ -218,7 +218,8 @@
                 "ordering": false,
                 columns: [{
                         data: 'operation_date',
-                        name: 'operation_date'
+                        name: 'operation_date',
+                        
                     },
                     {
                         data: 'ref_no',
@@ -226,7 +227,7 @@
                     },
                     {
                         data: 'cost_center_name',
-                        name: 'cost_center_name'
+                        name: 'cost_center_name',
                     },
                     {
                         data: 'note',

@@ -254,6 +254,14 @@ class ReportController extends Controller
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
+                ->filterColumn('operation_date', function ($query, $keyword) {
+                    // Assuming the keyword is in the format of "YYYY-MM-DD" or partial match
+                    $query->whereRaw("DATE_FORMAT(aat.operation_date, '%m/%d/%Y') LIKE ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('cost_center_name', function ($query, $keyword) {
+                    // Use the correct alias for filtering
+                    $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
+                })
                 ->rawColumns(['ref_no', 'credit', 'debit', 'balance'])
                 ->make(true);
         }
@@ -376,6 +384,14 @@ class ReportController extends Controller
                 })
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('operation_date', function ($query, $keyword) {
+                    // Assuming the keyword is in the format of "YYYY-MM-DD" or partial match
+                    $query->whereRaw("DATE_FORMAT(aat.operation_date, '%m/%d/%Y') LIKE ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('cost_center_name', function ($query, $keyword) {
+                    // Use the correct alias for filtering
+                    $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
                 })
                 ->rawColumns(['ref_no', 'credit', 'debit', 'balance'])
                 ->make(true);
