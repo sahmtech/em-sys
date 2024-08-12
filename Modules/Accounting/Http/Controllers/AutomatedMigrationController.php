@@ -352,7 +352,7 @@ class AutomatedMigrationController extends Controller
                 $AccountType = AccountingAccountType::find($account->account_sub_type_id);
                 $trans['account_name'] =  $account->name;
                 $trans['account_primary_type'] =  $account->account_primary_type;
-                $trans['account_sub_type'] =  $AccountType->name;
+                $trans['account_sub_type'] =  $AccountType?->name;
                 if ($trans->journal_entry_number == 1)
                     array_push($journal_entry_1, $trans);
                 else

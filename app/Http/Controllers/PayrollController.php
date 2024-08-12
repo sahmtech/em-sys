@@ -163,7 +163,7 @@ class PayrollController extends Controller
 
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
-        $company_id = $user->company_id ?? 1;
+        $company_id = $request->company_id ;
         try {
             DB::beginTransaction();
             $payroll_group['business_id'] = $business_id;
