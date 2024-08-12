@@ -389,8 +389,9 @@
 
                                         <div class="larger-text">
                                             <b>@lang('sales::lang.total_amount_with_fees'):</b>
-                                            <span id="total_amount_with_fees">0.00</span>
+                                            <span id="total_amount_with_fees" contenteditable="true">0.00</span>
                                         </div>
+
                                         <div class="larger-text">
                                             <b>@lang('sales::lang.number_of_workers'):</b>
                                             <span id="quantityArrDisplay2">0</span>
@@ -855,7 +856,9 @@
 
         const typeTranslations = {
             'cash': @json(__('sales::lang.cash')),
-            'insured_by_the_other': @json(__('sales::lang.insured_by_the_other'))
+            'insured_by_emdadat': @json(__('sales::lang.insured_by_emdadat')),
+            'insured_by_the_customer': @json(__('sales::lang.insured_by_the_customer'))
+
         };
     </script>
     <script type="text/javascript">
@@ -1118,6 +1121,9 @@
             $('#fees_section').on('input', '#fees_input', function() {
                 updateTotalFees();
             });
+            $('#total_amount_with_fees').on('blur', function() {
+                updateTotalMonthlyForAllWorkers();
+            });
 
             function updateTotalFees() {
 
@@ -1161,7 +1167,7 @@
             }
 
             updateTotalContractCost();
-
+            updateTotalMonthlyForAllWorkers();
 
 
         });

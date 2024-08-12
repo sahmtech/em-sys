@@ -485,12 +485,15 @@ return [
     'answered_salary' => 'الراتب المجاب',
     'edit_qualified_contact' => 'تعديل بيانات عميل مؤهل',
     'edit_converted_contact' => 'تعديل بيانات عميل محول',
-    'actions' => 'العمليات', 'monthly_amount' => 'القيمة الشهرية',
+    'actions' => 'العمليات',
+    'monthly_amount' => 'القيمة الشهرية',
     'additional_costs' => 'تكاليف إضافية',
     'insured_by_emdadat' => 'مؤمن من قبل امدادات',
     'insured_by_the_customer' => 'مؤمن من قبل العميل',
     'undefiend' => 'غير محدد',
-
+    'offer_approve' => 'التعميد',
+    'new offer price' => 'عرض سعر جديد',
+    'reason' => 'السبب'
 ];
 
 // ''=>'',

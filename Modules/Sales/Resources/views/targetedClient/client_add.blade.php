@@ -23,7 +23,6 @@
                         ]) !!}
                     </div>
                 </div>
-                {{-- 'specializations','professions','nationalities' --}}
                 <div class="col-sm-6">
                     <div class="form-group">
                         {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
@@ -70,6 +69,8 @@
                                 <th>{{ __('sales::lang.allowance_name') }}</th>
                                 <th>{{ __('essentials::lang.type') }}</th>
                                 <th>{{ __('essentials::lang.amount') }}</th>
+
+
                             </tr>
                         </thead>
                         <tbody id="salary-table-body">
@@ -82,7 +83,6 @@
                                             'food_allowance' => __('sales::lang.food_allowance'),
                                             'transportation_allowance' => __('sales::lang.transportation_allowance'),
                                             'overtime_hours' => __('sales::lang.overtime_hours'),
-                                            //   'administrative_fees' => __('sales::lang.administrative_fees'),
                                             'other_allowances' => __('sales::lang.other_allowances'),
                                         ],
                                         null,
@@ -97,7 +97,6 @@
                                     {!! Form::select(
                                         'type[]',
                                         [
-                                            'cash' => __('sales::lang.cash'),
                                             'insured_by_emdadat' => __('sales::lang.insured_by_emdadat'),
                                             'insured_by_the_customer' => __('sales::lang.insured_by_the_customer'),
                                         ],
@@ -115,6 +114,7 @@
                                         'class' => 'form-control width-60 pull-left',
                                         'placeholder' => __('essentials::lang.amount'),
                                         'id' => 'amountInput',
+                                        'style' => 'height:40px;',
                                     ]) !!}
                                 </td>
                             </tr>
@@ -125,7 +125,6 @@
                         class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
                 </div>
 
-                <!-- New Table -->
                 <div class="col-md-12">
                     <h4> @lang('sales::lang.additional_costs') </h4>
                     <table class="table">
@@ -214,7 +213,6 @@
 
 <script src="{{ asset('js/client.js') }}?v={{ filemtime(public_path('js/client.js')) }}"></script>
 
-
 <script>
     $(document).ready(function() {
         var selectedData = [];
@@ -275,68 +273,138 @@
             var inputElement = document.getElementById('selectedData');
             inputElement.value = JSON.stringify(selectedData);
         }
-
+        // function addRow() {
+        //     var newRow = $('#salary-table-body tr:first').clone();
+        //     newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
+        //     newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
+        //     $('#salary-table-body').append(newRow);
+        // }
         function addRow() {
             var newRow = $('#salary-table-body tr:first').clone();
-            newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
-            newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
+            newRow.find('input[name="amount[]"]').val(''); // Clear the amount input
+            newRow.find('.include-salary-checkbox').remove(); // Remove any existing checkbox
+
+            if ($('#contract_form').val() === 'operating_fees') {
+                newRow.find('td:last').after(
+                    '<td><input type="checkbox" name="include_salary[]" class="include-salary-checkbox" style="margin:auto; display:block;"></td>'
+                );
+            } else {
+                newRow.find('td:last').after('<td></td>'); // Add an empty cell if not operating_fees
+            }
+
             $('#salary-table-body').append(newRow);
         }
 
         $('#add-row').click(function() {
             addRow();
         });
+    });
+    // $(document).on('change', 'select[name="type[]"]', function() {
+    //         var selectedOption = $(this).val();
+    //         var amountInput = $(this).closest('tr').find('input[name="amount[]"]');
+    //         if (selectedOption === 'insured_by_the_customer' || selectedOption ===
+    //             'insured_by_emdadat') {
+    //             amountInput.prop('disabled', true).val('0');
+    //             updateMonthlyCost();
+    //             updateTotal();
+    //         } else {
+    //             amountInput.prop('disabled', false);
+    //         }
+    //     });
 
-        $(document).on('change', 'select[name="type[]"]', function() {
-            var selectedOption = $(this).val();
-            var amountInput = $(this).closest('tr').find('input[name="amount[]"]');
-            if (selectedOption === 'insured_by_the_customer' || selectedOption ===
-                'insured_by_emdadat') {
-                amountInput.prop('disabled', true).val('0');
-                updateMonthlyCost();
-                updateTotal();
+    $(document).ready(function() {
+        function handleContractTypeChange() {
+            if ($('#contract_form').val() === 'operating_fees') {
+                $('tr:contains("{{ __('sales::lang.GOSI') }}")').remove();
+                $('tr:contains("{{ __('sales::lang.vacation_salary') }}")').remove();
+                $('tr:contains("{{ __('sales::lang.end_of_service') }}")').remove();
+                $('#salary-table-body tr').each(function() {
+                    if (!$(this).find('.include-salary-checkbox').length) {
+                        $(this).find('td:last').after(
+                            '<td><input type="checkbox" name="include_salary[]" class="include-salary-checkbox" style="margin:auto; display:block;"></td>'
+                        );
+                    }
+                });
             } else {
-                amountInput.prop('disabled', false);
+                $('#salary-table-body tr').each(function() {
+                    $(this).find('.include-salary-checkbox').closest('td').remove();
+                });
             }
+            updateMonthlyCost();
+        }
+
+        handleContractTypeChange();
+
+
+
+        $('#contract_form').on('change', function() {
+            handleContractTypeChange();
+        });
+
+        $(document).on('change', '.include-salary-checkbox', function() {
+            updateMonthlyCostAndTotal();
         });
 
         function updateMonthlyCost() {
             var essentialsSalary = parseFloat($('#essentials_salary').val()) || 0;
             var totalAllowances = 0;
-            $('input[name="amount[]"]').each(function() {
-                var amount = parseFloat($(this).val()) || 0;
-                totalAllowances += amount;
-            });
 
-            // Additional costs calculation
-            var gosiAmount = essentialsSalary * 0.02 * 24;
-            var vacationAmount = (essentialsSalary / 30) * 21 * 2;
-            var endServiceAmount = essentialsSalary / 2 * 2;
-            var administrativeAmount = 375;
-            var gosiMonthlyAmount = gosiAmount / 24;
-            var vacationMonthlyAmount = vacationAmount / 24;
-            var endServiceMonthlyAmount = endServiceAmount / 24;
-            var administrativeMonthlyAmount = administrativeAmount / 1;
-            $('#gosiAmount').text(gosiAmount.toFixed(2));
-            $('#vacationAmount').text(vacationAmount.toFixed(2));
-            $('#endServiceAmount').text(endServiceAmount.toFixed(2));
+            if ($('#contract_form').val() == 'operating_fees') {
+                $('#salary-table-body tr').each(function() {
+                    var includeSalary = $(this).find('.include-salary-checkbox').is(':checked');
+                    if (includeSalary) {
+                        var amount = parseFloat($(this).find('input[name="amount[]"]').val()) || 0;
+                        totalAllowances += amount;
+                    }
+                });
+            } else {
+                $('input[name="amount[]"]').each(function() {
+                    var amount = parseFloat($(this).val()) || 0;
+                    totalAllowances += amount;
+                });
+            }
+
+            var gosiMonthlyAmount = 0;
+            var vacationMonthlyAmount = 0;
+            var endServiceMonthlyAmount = 0;
+            var administrativeMonthlyAmount = 375;
+
+            if ($('#contract_form').val() !== 'operating_fees') {
+                var gosiAmount = essentialsSalary * 0.02 * 24;
+                var vacationAmount = (essentialsSalary / 30) * 21 * 2;
+                var endServiceAmount = essentialsSalary / 2 * 2;
+                gosiMonthlyAmount = gosiAmount / 24;
+                vacationMonthlyAmount = vacationAmount / 24;
+                endServiceMonthlyAmount = endServiceAmount / 24;
+                administrativeMonthlyAmount = 375;
+            }
+
+            if ($('#contract_form').val() !== 'operating_fees') {
+                $('#gosiAmount').text(gosiAmount.toFixed(2));
+                $('#vacationAmount').text(vacationAmount.toFixed(2));
+                $('#endServiceAmount').text(endServiceAmount.toFixed(2));
+            }
             $('#administrativeAmount').text(administrativeAmount.toFixed(2));
 
-
-            $('#gosiMonthlyAmount').text(gosiMonthlyAmount.toFixed(2));
-            $('#vacationMonthlyAmount').text(vacationMonthlyAmount.toFixed(2));
-            $('#endServiceMonthlyAmount').text(endServiceMonthlyAmount.toFixed(2));
+            if ($('#contract_form').val() !== 'operating_fees') {
+                $('#gosiMonthlyAmount').text(gosiMonthlyAmount.toFixed(2));
+                $('#vacationMonthlyAmount').text(vacationMonthlyAmount.toFixed(2));
+                $('#endServiceMonthlyAmount').text(endServiceMonthlyAmount.toFixed(2));
+            }
             $('#administrativeMonthlyAmount').text(administrativeMonthlyAmount.toFixed(2));
-
 
             var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount +
                 administrativeMonthlyAmount;
-            var monthlyCost = totalAllowances + additionalMonthlyCost;
+            var monthlyCost;
+
+            if ($('#contract_form').val() == 'operating_fees') {
+                monthlyCost = totalAllowances + administrativeMonthlyAmount;
+            } else {
+                monthlyCost = essentialsSalary + totalAllowances + additionalMonthlyCost;
+            }
 
             $('#monthly_cost').val(monthlyCost.toFixed(2));
         }
-
-        updateMonthlyCost();
 
         $('#essentials_salary').on('change', function() {
             updateMonthlyCost();
