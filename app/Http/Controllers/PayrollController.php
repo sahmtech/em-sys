@@ -871,7 +871,7 @@ class PayrollController extends Controller
     public function create_single_payment(Request $request, $id)
     {
         
-        // try {
+        try {
 
             $payroll_group_user = PayrollGroupUser::where('id', $id)
                ->first();
@@ -915,21 +915,21 @@ class PayrollController extends Controller
             $user_id = $user?->id;
 
             $util = new Util();
-         return   $auto_migration = $util->createTransactionJournal_entry_single_payment($transaction->id, $user_type, $user_id);
+            $auto_migration = $util->createTransactionJournal_entry_single_payment($transaction->id, $user_type, $user_id);
 
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-        //     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-        //     $output = [
-        //         'success' => false,
-        //         'msg' => __('messages.something_went_wrong'),
-        //     ];
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
         return redirect()->back()->with('status', $output);
     }
 

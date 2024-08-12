@@ -2204,7 +2204,7 @@ class Util
     }
 
 
-    public function createTransactionJournal_entry_single_payment($id, $user_type = '', $user_id)
+    public function createTransactionJournal_entry_single_payment($id, $user_type = '', $employees_id)
     {
         $transaction = Transaction::with(['sell_lines', 'payment_lines'])->find($id);
         if (!$transaction) {
@@ -2224,9 +2224,9 @@ class Util
         } else {
             $method = 'other';
         }
-return $transaction->payment_status;
+
         if ($transaction->type == 'payroll') {
-            return    $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
+                $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
                 ->where('type', $transaction->type)
                 ->where('payment_status', $transaction->payment_status)
                 ->where('method', $method)
@@ -2285,7 +2285,7 @@ return $transaction->payment_status;
                         $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
                         if ($user_type == 'employee') {
                             $transaction_row['partner_type'] = 'employees';
-                            $transaction_row['partner_id'] = $user_id;
+                            $transaction_row['partner_id'] = $employees_id;
                         }
 
 
