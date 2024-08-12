@@ -176,8 +176,15 @@ class PayrollController extends Controller
             $transaction_date = Carbon::createFromFormat('m/Y', $request->transaction_date)->format('Y-m-d H:i:s');
 
 
-            $payrollGroupUsers = PayrollGroupUser::where('payroll_group_id', $id)->get();
+            $payrollGroupUsers = PayrollGroupUser::where('payroll_group_id', $id)
+            ->join('users as u', 'u.id', '=', 'payroll_group_users.user_id')
+            ->select([
+                'payroll_group_users.*', 
+                'u.user_type',
+            ])->get(); 
 
+        $user_type = $payrollGroupUsers->first()?->user_type;
+       
 
             $total_before_tax = 0;
             $essentials_amount_per_unit_duration = 0;
@@ -215,8 +222,7 @@ class PayrollController extends Controller
             $transaction_ids[] = $transaction->id;
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
             $util = new Util();
-                  $transaction;
-                      $auto_migration = $util->createTransactionJournal_entry($transaction->id);
+                      $auto_migration = $util->createTransactionJournal_entry($transaction->id, $user_type);
             
 
             

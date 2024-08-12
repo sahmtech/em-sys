@@ -840,7 +840,9 @@ class AccountingUtil extends Util
             'expens_bill',
             'sell_transfer',
             'purchase_transfer',
-            'payroll',
+            'payroll_employee',
+            'payroll_worker',
+            'payroll_remote_employee',
 
         ];
         $types = [
@@ -853,6 +855,10 @@ class AccountingUtil extends Util
             'sell_transfer',
             'purchase_transfer',
             'payroll',
+            'payroll',
+            'payroll',
+
+            
 
         ];
         $payment_status = [

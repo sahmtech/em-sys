@@ -256,7 +256,10 @@
                 '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" required style="width: 100%;" name="account_id' +
                 tbode_number + '[' +
                 counter +
-                ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><label class="radio-inline"><input value="debit" type="radio" name="type' +
+                ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><select class="form-control cost_center" style="width: 100%;" name="cost_center' +
+                    tbode_number + '[' +
+                    counter +
+                    ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select> </td><td><label class="radio-inline"><input value="debit" type="radio" name="type' +
                 tbode_number + '[' +
                 counter +
                 ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
