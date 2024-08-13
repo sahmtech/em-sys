@@ -1437,6 +1437,8 @@ return [
   'show_workcards_request' => 'عرض الطلب',
   'workcards_add_requests' => 'إضافة طلب',
   'view_return_visa' => 'عرض تأشيرة خروج وعودة',
+  'add_return_visa_muqeem' => 'إضافة تأشيرة خروج وعودة (مقيم)',
+  'add_final_visa_muqeem' => 'إضافة تأشيرة خروج نهائي (مقيم)',
   'view_final_visa' => 'عرض تأشيرة خروج نهائي',
   'view_absent_report' => 'عرض تبليغ هروب',
   'show_employee_profile' => 'عرض بروفايل الموظف',
