@@ -241,4 +241,27 @@ class AccountingController extends Controller
             return $accounts_array;
         }
     }
+
+    public function primaryAccountsDropdown()
+    {
+        if (request()->ajax()) {
+            $account_types = AccountingAccountType::accounting_primary_type();
+            $accounts_array = [];
+
+            $accounts_array[] = [
+                'id' => ' ',
+                'text' => ' ',
+                'html' => '<strong>All</strong>',
+            ];
+
+            foreach ($account_types as $key => $account_type) {
+                $accounts_array[] = [
+                    'id' => $account_type['GLC'],
+                    'text' => $account_type['label'] . ' - <small class="text-muted">' . $account_type['GLC'],
+                    'html' => $account_type['label'] . ' - <small class="text-muted">' . $account_type['GLC']
+                ];
+            }
+            return $accounts_array;
+        }
+    }
 }
