@@ -13,11 +13,12 @@
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
                 <div class="box-tools">
-
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                        data-target="#finalVisaModal">
-                        <i class="fa fa-plus"></i> @lang('messages.add')
-                    </button>
+                    @if (auth()->user()->can('essentials.add_final_visa_muqeem'))
+                        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                            data-target="#finalVisaModal">
+                            <i class="fa fa-plus"></i> @lang('messages.add')
+                        </button>
+                    @endif
                 </div>
             @endslot
 

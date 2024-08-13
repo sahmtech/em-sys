@@ -8,6 +8,7 @@ use App\Business;
 use App\BusinessLocation;
 use App\BusinessLocationPolygonMarker;
 use App\Category;
+use App\Company;
 use App\Contact;
 use App\RequestProcess;
 use App\Transaction;
@@ -75,6 +76,48 @@ class ApiCustomerController extends ApiController
      * @return Response
      */
 
+
+    public function bills()
+    {
+        try {
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $transactions = Transaction::where('contact_id', $contact_id)->get();
+            $companies = Company::pluck('name', 'id');
+            $bills = [];
+            foreach ($transactions as $transaction) {
+                if ($transaction->company_id) {
+                    $tmp = User::where('id', $transaction->created_by)?->first();
+                    $bills[] = [
+                        'id' => $transaction->id,
+                        'invoice_no' => $transaction->invoice_no,
+                        'transaction_date' => $transaction->transaction_date,
+                        'company' => $companies[$transaction->company_id],
+                        'type' => $transaction->type,
+                        'status' => $transaction->status,
+                        'payment_status' => $transaction->payment_status,
+                        "tax_amount" => $transaction->tax_amount,
+                        "discount_amount" => $transaction->discount_amount,
+                        'final_total' => $transaction->final_total,
+                        'created_by' => ($tmp?->first_name ?? '') . ' ' . ($tmp?->mid_name ?? '') . ' ' . ($tmp?->last_name ?? ''),
+                        'created_at' => Carbon::parse($transaction->created_at)->format(('Y-m-d')),
+                    ];
+                }
+            }
+            $res = [
+                'bills' =>  $bills,
+            ];
+
+
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
     public function home()
     {
         try {
@@ -177,12 +220,17 @@ class ApiCustomerController extends ApiController
                 )->count();
 
 
+
+            $bills = Transaction::where('contact_id', $contact_id)->whereNotNull('company_id')->count();
+
+
+
             $res = [
                 'workeres' =>   $workers,
                 'contracts' =>   $contracts,
                 'projects' => $SalesProjects,
                 'requests' =>   $requestsProcess,
-                'bills' => 0,
+                'bills' => $bills,
                 'first_name' =>   $user->first_name,
                 'mid_name' => $user->mid_name,
                 'last_name' => $user->last_name,

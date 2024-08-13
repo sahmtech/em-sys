@@ -96,6 +96,8 @@
                                                     <th class="col-md-1">#
                                                     </th>
                                                     <th class="col-md-3">@lang('accounting::lang.account')</th>
+                                <th class="col-md-2">@lang('accounting::lang.cost_center')</th>
+
                                                     <th class="col-md-3">@lang('accounting::lang.debit') / @lang('accounting::lang.credit')</th>
                                                     <th class="col-md-3">@lang('accounting::lang.amount')</th>
                                                 </tr>
@@ -120,7 +122,10 @@
                                                             </option>
                                                         </select>
                                                     </td>
-
+                                                    <td>
+                                                        <select class="form-control cost_center" style="width: 100%;" name="cost_center1[1]"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select>
+                                                    </td>
+                                                   
                                                     <td>
 
                                                         <label class="radio-inline">
@@ -173,6 +178,8 @@
                                                     <th class="col-md-1">#
                                                     </th>
                                                     <th class="col-md-3">@lang('accounting::lang.account')</th>
+                                <th class="col-md-2">@lang('accounting::lang.cost_center')</th>
+
                                                     <th class="col-md-3">@lang('accounting::lang.debit') / @lang('accounting::lang.credit')</th>
                                                     <th class="col-md-3">@lang('accounting::lang.amount')</th>
                                                 </tr>
@@ -196,7 +203,10 @@
                                                             </option>
                                                         </select>
                                                     </td>
-
+                                                    <td>
+                                                        <select class="form-control cost_center" style="width: 100%;" name="cost_center2[1]"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select>
+                                                    </td>
+                                                   
                                                     <td>
 
 

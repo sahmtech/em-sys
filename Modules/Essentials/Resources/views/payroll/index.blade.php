@@ -25,15 +25,45 @@
 
                     <ul class="nav nav-tabs">
                         <li class="active">
-                            <a href="#payrolls_groups_tab" data-toggle="tab" aria-expanded="true">
+                            <a href="#payrolls_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-coins" aria-hidden="true"></i>
                                 @lang('agent.payroll_groups')
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#payrolls_groups_tab" data-toggle="tab" aria-expanded="false">
+                                <i class="fas fa-coins" aria-hidden="true"></i>
+                                @lang('essentials::lang.hrm_payrolls')
                             </a>
                         </li>
                     </ul>
                     <div class="tab-content">
                         <br><br>
-                        <div class="tab-pane active" id="payrolls_groups_tab">
+                        <div class="tab-pane active" id="payrolls_tab">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" id="payroll_table" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>@lang('essentials::lang.name')</th>
+                                                <th>@lang('essentials::lang.company')</th>
+                                                <th>@lang('essentials::lang.project')</th>
+                                                <th>@lang('essentials::lang.hr_management_cleared')</th>
+                                                <th class="table-td-width-300px">@lang('essentials::lang.hr_management_cleared_by')</th>
+                                                <th>@lang('essentials::lang.accountant_cleared')</th>
+                                                <th class="table-td-width-300px">@lang('essentials::lang.accountant_cleared_by')</th>
+                                                <th>@lang('essentials::lang.financial_management_cleared')</th>
+                                                <th class="table-td-width-300px">@lang('essentials::lang.financial_management_cleared_by')</th>
+                                                <th>@lang('essentials::lang.ceo_cleared')</th>
+                                                <th class="table-td-width-300px">@lang('essentials::lang.ceo_cleared_by')</th>
+                                                <th>@lang('essentials::lang.action')</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="payrolls_groups_tab">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="payroll_group_table"
@@ -41,15 +71,13 @@
                                         <thead>
                                             <tr>
                                                 <th>@lang('essentials::lang.name')</th>
+                                                <th>@lang('essentials::lang.eqama')</th>
+                                                <th>@lang('essentials::lang.department')</th>
+                                                <th>@lang('essentials::lang.company')</th>
                                                 <th>@lang('essentials::lang.project')</th>
-                                                <th>@lang('sale.payment_status')</th>
-                                                <th>@lang('essentials::lang.total')</th>
-                                                <th>@lang('lang_v1.added_by')</th>
-                                                <th>@lang('lang_v1.created_at')</th>
-                                                <th>@lang('lang_v1.accounting_approved_by')</th>
-                                                <th>@lang('lang_v1.is_invoice_issued')</th>
-                                                <th>@lang('lang_v1.is_payrolls_issued')</th>
-                                                <th>@lang('messages.action')</th>
+                                                <th>@lang('essentials::lang.date')</th>
+                                                <th>@lang('essentials::lang.the_total')</th>
+                                                <th>@lang('messages.actions')</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -266,51 +294,45 @@
                 minViewMode: "months"
             });
 
-            // Initialize payroll group table
+
+
             payroll_group_table = $('#payroll_group_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('payrolls.payrollsGroup.index') }}",
+                ajax: "{{ route('payrolls_list_index') }}",
                 columns: [{
                         data: 'name',
-                        name: 'name'
+                        name: 'name',
+                    },
+
+                    {
+                        data: 'eqama',
+                        name: 'eqama',
                     },
                     {
-                        data: 'project_id',
-                        name: 'project_id'
+                        data: 'department',
+                        name: 'department',
                     },
                     {
-                        data: 'payment_status',
-                        name: 'payment_status'
+                        data: 'company',
+                        name: 'company',
+                    },
+
+                    {
+                        data: 'project',
+                        name: 'project',
                     },
                     {
-                        data: 'total',
-                        name: 'total'
+                        data: 'date',
+                        name: 'date',
                     },
+
                     {
-                        data: 'created_by',
-                        name: 'created_by'
+                        data: 'the_total',
+                        name: 'the_total',
                     },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                    {
-                        data: 'accounting_approved_by',
-                        name: 'accounting_approved_by'
-                    },
-                    {
-                        data: 'is_invoice_issued',
-                        render: function(data) {
-                            return data === 1 ? '@lang('lang_v1.issued')' : '@lang('lang_v1.is_not_issued')';
-                        }
-                    },
-                    {
-                        data: 'is_payrolls_issued',
-                        render: function(data) {
-                            return data === 1 ? '@lang('lang_v1.issued')' : '@lang('lang_v1.is_not_issued')';
-                        }
-                    },
+
+
                     {
                         data: 'action',
                         name: 'action',
@@ -319,6 +341,72 @@
                     }
                 ],
             });
+
+            payroll_table = $('#payroll_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('hrm.payrolls_checkpoint', ['from' => 'none']) }}",
+
+                columns: [{
+                        data: 'name',
+                        name: 'name',
+                    },
+                    {
+                        data: 'company',
+                        name: 'company',
+                    },
+                    {
+                        data: 'projects',
+                        name: 'projects',
+                    },
+
+                    {
+                        data: 'hr_management_cleared',
+                        name: 'hr_management_cleared',
+                    },
+                    {
+                        data: 'hr_management_cleared_by',
+                        name: 'hr_management_cleared_by',
+                    },
+                    {
+                        data: 'accountant_cleared',
+                        name: 'accountant_cleared',
+                    },
+
+                    {
+                        data: 'accountant_cleared_by',
+                        name: 'accountant_cleared_by',
+                    },
+                    {
+                        data: 'financial_management_cleared',
+                        name: 'financial_management_cleared',
+                    },
+
+                    {
+                        data: 'financial_management_cleared_by',
+                        name: 'financial_management_cleared_by',
+                    },
+                    {
+                        data: 'ceo_cleared',
+                        name: 'ceo_cleared',
+                    },
+
+                    {
+                        data: 'ceo_cleared_by',
+                        name: 'ceo_cleared_by',
+                    },
+
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+
+
+                ],
+            });
+
         });
     </script>
     <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>

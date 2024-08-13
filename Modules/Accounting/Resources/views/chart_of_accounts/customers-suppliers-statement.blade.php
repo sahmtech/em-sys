@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.ledger'))
+@section('title', __('accounting::lang.customers_and_suppliers_statement_of_account_report'))
 
 @section('content')
 
@@ -8,10 +8,10 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('accounting::lang.ledger') - @if (Lang::has('accounting::lang.' . $account->name))
-                @lang('accounting::lang.' . $account->name)
+        <h1>@lang('accounting::lang.customers_and_suppliers_statement_of_account_report') - @if (Lang::has('accounting::lang.' . $contact->supplier_business_name))
+                @lang('accounting::lang.' . $contact->supplier_business_name)
             @else
-                {{ $account->name }}
+                {{ $contact->supplier_business_name }}
             @endif
         </h1>
     </section>
@@ -26,41 +26,35 @@
                                 <th>@lang('user.name'):</th>
                                 <td>
                                     @if (app()->getLocale() == 'ar')
-                                        @if (!empty($account->gl_code))
-                                            ({{ $account->gl_code }})
-                                            -
-                                        @endif
-                                        @if (Lang::has('accounting::lang.' . $account->name))
-                                            @lang('accounting::lang.' . $account->name)
+                                        @if (Lang::has('accounting::lang.' . $contact->supplier_business_name))
+                                            @lang('accounting::lang.' . $contact->supplier_business_name)
                                         @else
-                                            {{ $account->name }}
+                                            {{ $contact->supplier_business_name }}
                                         @endif
                                     @else
-                                        @if (Lang::has('accounting::lang.' . $account->name))
-                                            @lang('accounting::lang.' . $account->name)
+                                        @if (Lang::has('accounting::lang.' . $contact->supplier_business_name))
+                                            @lang('accounting::lang.' . $contact->supplier_business_name)
                                         @else
-                                            {{ $account->name }}
-                                            @endif @if (!empty($account->gl_code))
-                                                - ({{ $account->gl_code }})
-                                            @endif
+                                            {{ $contact->supplier_business_name }}
                                         @endif
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <th>@lang('accounting::lang.account_primary_type'):</th>
-                                <td>
-                                    @if (!empty($account->account_primary_type))
-                                        {{ __('accounting::lang.' . $account->account_primary_type) }}
                                     @endif
                                 </td>
                             </tr>
 
-                            <tr>
+                            {{--  <tr>
+                                <th>@lang('accounting::lang.account_primary_type'):</th>
+                                <td>
+                                    @if (!empty($contact->account_primary_type))
+                                        {{ __('accounting::lang.' . $contact->account_primary_type) }}
+                                    @endif
+                                </td>
+                            </tr>
+ --}}
+                            {{--                             <tr>
                                 <th>@lang('accounting::lang.account_sub_type'):</th>
                                 <td>
-                                    @if (!empty($account->account_sub_type))
-                                        {{ __('accounting::lang.' . $account->account_sub_type->name) }}
+                                    @if (!empty($contact->account_sub_type))
+                                        {{ __('accounting::lang.' . $contact->account_sub_type->name) }}
                                     @endif
                                 </td>
                             </tr>
@@ -68,27 +62,27 @@
                             <tr>
                                 <th>@lang('accounting::lang.detail_type'):</th>
                                 <td>
-                                    @if (!empty($account->detail_type))
-                                        {{ __('accounting::lang.' . $account->detail_type->name) }}
+                                    @if (!empty($contact->detail_type))
+                                        {{ __('accounting::lang.' . $contact->detail_type->name) }}
                                     @endif
                                 </td>
                             </tr>
                             <tr>
                                 <th>@lang('accounting::lang.account_category'):</th>
                                 <td>
-                                    @if (!empty($account->account_category))
-                                        {{ __('accounting::lang.' . $account->account_category) }}
+                                    @if (!empty($contact->account_category))
+                                        {{ __('accounting::lang.' . $contact->account_category) }}
                                     @endif
                                 </td>
                             </tr>
                             <tr>
                                 <th>@lang('accounting::lang.account_type'):</th>
                                 <td>
-                                    @if (!empty($account->account_type))
-                                        {{ __('accounting::lang.' . $account->account_type) }}
+                                    @if (!empty($contact->account_type))
+                                        {{ __('accounting::lang.' . $contact->account_type) }}
                                     @endif
                                 </td>
-                            </tr>
+                            </tr> --}}
                             <tr>
                                 <th>@lang('lang_v1.balance'):</th>
                                 <td>@format_currency($current_bal)</td>
@@ -121,19 +115,17 @@
 
                         <div class="col-sm-6">
                             <div class="form-group">
-                                {!! Form::label('all_accounts', __('accounting::lang.account') . ':') !!}
-                                {!! Form::select('account_filter', [$account->id => $account->name], $account->id, [
-                                    'class' => 'form-control accounts-dropdown',
+                                {!! Form::label('all_accounts', __('accounting::lang.suppliers_and_customers') . ':') !!}
+                                {!! Form::select('contact_filter', $contact_dropdown, $contact->id, [
+                                    'class' => 'form-control contact_filter',
                                     'style' => 'width:100%',
-                                    'id' => 'account_filter',
-                                    'data-default' => $account->id,
+                                    'id' => 'contact_filter',
+                                    'data-default' => $contact->id,
                                 ]) !!}
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
@@ -151,13 +143,10 @@
                                             <th>@lang('messages.date')</th>
                                             <th>@lang('lang_v1.description')</th>
                                             <th>@lang('lang_v1.cost_senter')</th>
-                                            <th>@lang('accounting::lang.partner_name')</th>
                                             <th>@lang('brand.note')</th>
                                             <th>@lang('lang_v1.added_by')</th>
                                             <th>@lang('account.debit')</th>
                                             <th>@lang('account.credit')</th>
-                                            <!-- <th>@lang('lang_v1.balance')</th> -->
-                                            <th>@lang('messages.action')</th>
                                         </tr>
                                     </thead>
 
@@ -165,10 +154,9 @@
 
                                     <tfoot>
                                         <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
+                                            <td colspan="5"><strong>@lang('sale.total'):</strong></td>
                                             <td class="footer_total_debit"></td>
                                             <td class="footer_total_credit"></td>
-                                            <td></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -183,12 +171,13 @@
 @stop
 
 @section('javascript')
-    @include('accounting::accounting.common_js')
+    {{-- @include('accounting::accounting.common_js') --}}
     <script>
         $(document).ready(function() {
-            $('#account_filter').change(function() {
-                account_id = $(this).val();
-                url = base_path + '/accounting/ledger/' + account_id;
+
+            $('#contact_filter').change(function() {
+                contact_id = $(this).val();
+                url = base_path + '/accounting/reports/customers-suppliers-statement/' + contact_id;
                 window.location = url;
             })
 
@@ -204,12 +193,13 @@
                 }
             );
 
+
             // Account Book
             ledger = $('#ledger').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ action('\Modules\Accounting\Http\Controllers\CoaController@ledger', [$account->id]) }}',
+                    url: '{{ action('\Modules\Accounting\Http\Controllers\ReportController@customersSuppliersStatement', [$contact->id]) }}',
                     data: function(d) {
                         var start = '';
                         var end = '';
@@ -228,7 +218,8 @@
                 "ordering": false,
                 columns: [{
                         data: 'operation_date',
-                        name: 'operation_date'
+                        name: 'operation_date',
+                        
                     },
                     {
                         data: 'ref_no',
@@ -237,10 +228,6 @@
                     {
                         data: 'cost_center_name',
                         name: 'cost_center_name',
-                    },
-                    {
-                        data: 'partner_name',
-                        name: 'partner_name',
                     },
                     {
                         data: 'note',
@@ -260,12 +247,6 @@
                         name: 'amount',
                         searchable: false
                     },
-                    //{data: 'balance', name: 'balance', searchable: false},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        searchable: false
-                    }
                 ],
                 "fnDrawCallback": function(oSettings) {
                     __currency_convert_recursively($('#ledger'));

@@ -155,6 +155,7 @@ class OfferPriceController extends Controller
 
                     return $item;
                 })
+
                 // ->addColumn(
                 //     'action',
                 //     function ($row)  use ($is_admin, $can_print_offer_price) {
@@ -168,6 +169,7 @@ class OfferPriceController extends Controller
                 //         return $html;
                 //     }
                 // )
+
                 ->removeColumn('id')
 
                 ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
@@ -864,25 +866,21 @@ class OfferPriceController extends Controller
 
     public function print($id)
     {
-
         try {
             $business_id = request()->session()->get('user.business_id');
 
             $query = Transaction::where('business_id', $business_id)
                 ->where('id', $id)
                 ->with(['sales_person', 'contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
-
-                ->get()[0];
+                ->first();
 
             $phpWord = new PhpWord();
-
 
             if ($query->contract_form == 'operating_fees') {
                 $template = Template::with('sections')->where('id', 1)->first();
                 $sections = $template->sections->sortBy('order');
 
                 $replacements = [
-                    // '${R}' => $query->sell_lines->count(),
                     '${DATE}' => Carbon::parse($query->transaction_date)->format('Y-m-d'),
                     '${DATE_EN}' => Carbon::parse($query->transaction_date)->format('d-m-Y'),
                     '${CONTACTS}' => $query->contact->supplier_business_name ?? '',
@@ -892,24 +890,24 @@ class OfferPriceController extends Controller
                     '${BANK_GURANTEE}' => '' ?? '',
                     '${BANK_GURANTEE_EN}' => '' ?? '',
                     '${CREATED_BY}' => 'إدارة المبيعات',
-                    //$query->sales_person->first_name ?? '',
                     '${CREATED_BY_EN}' => 'Sells Department',
                 ];
 
                 foreach ($replacements as $placeholder => $value) {
                     $template->primary_header = str_replace($placeholder, $value,  $template->primary_header);
                     $template->primary_footer = str_replace($placeholder, $value,  $template->primary_footer);
-                    foreach ($sections as  $section) {
-                        $section->header_left = str_replace($placeholder, $value,   $section->header_left);
+                    foreach ($sections as $section) {
+                        $section->header_left = str_replace($placeholder, $value, $section->header_left);
                         $section->header_right = str_replace($placeholder, $value, $section->header_right);
                         if ($section->content) {
-                            $section->content = str_replace($placeholder, $value,  $section->content);
+                            $section->content = str_replace($placeholder, $value, $section->content);
                         } else {
                             $section->content_left = str_replace($placeholder, $value, $section->content_left);
                             $section->content_right =  str_replace($placeholder, $value, $section->content_right);
                         }
                     }
                 }
+
 
 
                 foreach ($sections as  $section) {
@@ -1072,6 +1070,7 @@ class OfferPriceController extends Controller
 
 
 
+
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
             } else if ($query->contract_form == 'monthly_cost') {
                 $template = Template::with('sections')->where('id', 2)->first();
@@ -1082,21 +1081,22 @@ class OfferPriceController extends Controller
                 $others = 0;
                 $uniform = 0;
                 $recruit = 0;
-                foreach ($sections as  $section) {
+
+                foreach ($sections as $section) {
                     if ($section->content) {
                         $htmlString = $section->content;
                         $firstStartPos = strpos($htmlString, '<tr');
-                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5; // Include length of '</tr>'
+                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5;
                         $startPos = strpos($htmlString, '<tr', $firstEndPos);
-                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
+                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5;
                         $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
-                        $columnCount =  substr_count($firstRowHtml, '<td');
+                        $columnCount = substr_count($firstRowHtml, '<td');
                         if ($columnCount > 8) {
-                            $original_clone =  $firstRowHtml;
+                            $original_clone = $firstRowHtml;
                             $i = 1;
                             $final_rows = '';
                             foreach ($query->sell_lines as $sell_line) {
-                                $clone =   $original_clone;
+                                $clone = $original_clone;
                                 $food_allowance_exist = false;
                                 $housing_allowance_exist = false;
                                 $transportation_allowance_exist = false;
@@ -1106,7 +1106,6 @@ class OfferPriceController extends Controller
                                 foreach (json_decode($sell_line['service']['additional_allwances']) as $allwance) {
                                     if (is_object($allwance) && property_exists($allwance, 'type') && property_exists($allwance, 'amount')) {
                                         if ($allwance->type == 'food_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $food = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1117,7 +1116,6 @@ class OfferPriceController extends Controller
                                             $food_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'housing_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $housing = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1128,7 +1126,6 @@ class OfferPriceController extends Controller
                                             $housing_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'transportation_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $transportaions = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1139,7 +1136,6 @@ class OfferPriceController extends Controller
                                             $transportation_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'other_allowances') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $others = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1150,7 +1146,6 @@ class OfferPriceController extends Controller
                                             $other_allowances_exist = true;
                                         }
                                         if ($allwance->type == 'uniform_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $uniform = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1161,7 +1156,6 @@ class OfferPriceController extends Controller
                                             $uniform_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'recruit_allowance') {
-
                                             if ($allwance->payment_type == 'cash') {
                                                 $recruit = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
@@ -1192,12 +1186,12 @@ class OfferPriceController extends Controller
                                     $recruit = __('sales::lang.undefiend');
                                 }
 
-
-
                                 $replacements2 = [
                                     '${R}' => $i,
                                     '${A}' => $sell_line['service']['profession']['name'] ?? '',
+
                                     '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', '') . ' SR',
+
                                     '${C}' => $food,
                                     '${D}' => $transportaions,
                                     '${E}' => $housing,
@@ -1207,19 +1201,19 @@ class OfferPriceController extends Controller
                                     '${I}' => $query->total_worker_monthly / $query->total_worker_number . ' SR' ?? __('sales::lang.undefiend'),
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
+
                                     '${L}' =>  number_format($query->total_worker_monthly, 2, '.', '') . ' SR',
                                     '${M}' =>  number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', '') . ' SR',
-                                    '${N}' =>  number_format(($query->total_worker_monthly ?? 0) +  (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', '') . ' SR',
+                                    '${N}' => number_format(($query->final_total ?? 0), 2, '.', '') . ' SR',
+
                                 ];
                                 foreach ($replacements2 as $placeholder => $value) {
-                                    $clone = str_replace($placeholder, $value,   $clone);
-                                    // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
-                                    // $endPos += strlen($clone);
+                                    $clone = str_replace($placeholder, $value, $clone);
                                 }
                                 $final_rows .= $clone;
                                 $i++;
                             }
-                            $htmlString = substr_replace($htmlString,      $final_rows, $endPos, 0);
+                            $htmlString = substr_replace($htmlString, $final_rows, $endPos, 0);
                             $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
                             $section->content = $htmlString;
                         }
@@ -1227,7 +1221,6 @@ class OfferPriceController extends Controller
                 }
 
                 $replacements = [
-                    // '${R}' => $query->sell_lines->count(),
                     '${DATE}' => Carbon::parse($query->transaction_date)->format('Y-m-d'),
                     '${DATE_EN}' => Carbon::parse($query->transaction_date)->format('d-m-Y'),
                     '${CONTACTS}' => $query->contact->supplier_business_name ?? '',
@@ -1240,24 +1233,25 @@ class OfferPriceController extends Controller
                     '${PRE_PAY_EN}' => $query->down_payment ?? '',
                     '${BANK_GURANTEE}' => '' ?? '',
                     '${BANK_GURANTEE_EN}' => '' ?? '',
-                    '${CREATED_BY}' =>  'إدارة المبيعات',
+                    '${CREATED_BY}' => 'إدارة المبيعات',
                     '${CREATED_BY_EN}' => 'Sells Department',
                 ];
 
                 foreach ($replacements as $placeholder => $value) {
-                    $template->primary_header = str_replace($placeholder, $value,  $template->primary_header);
-                    $template->primary_footer = str_replace($placeholder, $value,  $template->primary_footer);
-                    foreach ($sections as  $section) {
-                        $section->header_left = str_replace($placeholder, $value,   $section->header_left);
+                    $template->primary_header = str_replace($placeholder, $value, $template->primary_header);
+                    $template->primary_footer = str_replace($placeholder, $value, $template->primary_footer);
+                    foreach ($sections as $section) {
+                        $section->header_left = str_replace($placeholder, $value, $section->header_left);
                         $section->header_right = str_replace($placeholder, $value, $section->header_right);
                         if ($section->content) {
-                            $section->content = str_replace($placeholder, $value,  $section->content);
+                            $section->content = str_replace($placeholder, $value, $section->content);
                         } else {
                             $section->content_left = str_replace($placeholder, $value, $section->content_left);
-                            $section->content_right =  str_replace($placeholder, $value, $section->content_right);
+                            $section->content_right = str_replace($placeholder, $value, $section->content_right);
                         }
                     }
                 }
+
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
             }
         } catch (\Exception $e) {
@@ -1265,6 +1259,7 @@ class OfferPriceController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
+
 
 
 

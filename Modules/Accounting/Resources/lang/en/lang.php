@@ -13,9 +13,25 @@ return [
    'non_current_liabilities' => 'Non-current liabilities',
    'owners_equity' => "Owner's Equity",
    'income' => 'Income',
+   'partner_name' => 'Partner name',
+   'total_revenues' => 'Total revenues',
+   'other_revenues' => 'Other revenues',
+   'other_expenses' => 'Other expenses',
+   'operating_expense' => 'Operating expense',
+   'total_operating_expense' => 'Total operating expense',
+   'total_other_revenues' => 'Total other revenues',
+   'total_other_expenses' => 'Total other expenses',
+   'total_cost_goods_sold' => 'Total cost goods sold',
+   'gross_profit' => 'Gross profit',
+   'income_from_operation' => 'Income from operation',
+   'income_before_tax' => 'Income before tax',
+   'net_income' => 'Net income',
    'other_income' => 'Other income',
    'cost_of_sale' => 'Cost of sales',
    'expenses' => 'Expenses',
+   'employees_statement_of_account_report' => 'Employees statement of account report',
+   'customers_and_suppliers_statement_of_account_report' => 'Customers and suppliers statement of account report',
+   'suppliers_and_customers' => 'Suppliers and customers',
    'other_expense' => 'Other Expense',
    "account_category" => "Account category",
    "allowance_for_bad_debts" => "Allowance for bad debts",
@@ -375,6 +391,7 @@ return [
    'export_to_csv' => 'Export to CSV',
    'export_to_excel' => 'Export to Excel',
    'transactions' => 'Transactions',
+   'transaction_number' => 'Transaction number',
    'sales_payments' => 'Sales Payments',
    'map_transaction' => 'Map Transaction',
    'edit_mapping' => 'Edit Mapping',
@@ -437,6 +454,8 @@ return [
       'total_before_tax' => 'Total before tax',
       'shipping_charges' => 'Shipping charges',
       'discount_amount' => 'Discount amount',
+      'other' => ' - ',
+
    ],
 
    'accounts_name' => [
@@ -636,6 +655,9 @@ return [
    'sell_transfer' => 'Sell transfer migration',
    'purchase_transfer' => 'Purches transfer migration',
    'payroll' => 'Payroll migration',
+   'payroll_employee' => 'employees payroll migration',
+    'payroll_worker' => 'workers payroll migration',
+    'payroll_remote_employee' => 'remote_employees payroll migration',
    'operatio_type' => 'Operatio type',
    'migration_name' => 'Migration name',
    'payment_stauts' => 'Payment stauts',
@@ -679,11 +701,12 @@ return [
       'total_before_tax' => 'Total before tax',
       'shipping_charges' => 'Shipping charges',
       'discount_amount' => 'Discount amount',
-      
+      'other' => ' - ',
+
    ],
    'attach_document' => 'attach document',
-   'attachment'=>'attachment',
-   'print_journal'=>'print journal entry',
+   'attachment' => 'attachment',
+   'print_journal' => 'print journal entry',
 
 
 
