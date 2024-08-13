@@ -13,16 +13,70 @@
 
     <section class="content container">
 
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('date_range_filter', __('report.date_range') . ':') !!}
-                {!! Form::text('date_range_filter', null, [
-                    'placeholder' => __('lang_v1.select_a_date_range'),
-                    'class' => 'form-control',
-                    'readonly',
-                    'id' => 'date_range_filter',
-                ]) !!}
+        <div class="row">
+            <div class="box-body">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('date_range_filter', __('report.date_range') . ':') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            {!! Form::text('date_range_filter', null, [
+                                'placeholder' => __('lang_v1.select_a_date_range'),
+                                'class' => 'form-control',
+                                'readonly',
+                                'id' => 'date_range_filter',
+                            ]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        {!! Form::label('all_accounts', __('accounting::lang.account') . ':') !!}
+                        {!! Form::select(
+                            'account_filter',
+                            isset($type_label) ? [$type_label['GLC'] => $type_label['label']] : [],
+                            isset($type_label) ? $type_label['GLC'] : null,
+                            [
+                                'class' => 'form-control accounts-dropdown',
+                                'style' => 'width:100%',
+                                'id' => 'account_filter',
+                            ],
+                        ) !!}
+                    </div>
+                </div>
 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="checkbox">
+                        {!! Form::checkbox('with_zero_balances', 1, $with_zero_balances, [
+                            'class' => 'input-icheck',
+                            'id' => 'with_zero_balances',
+                        ]) !!} {{ __('accounting::lang.with_zero_balances') }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="radio">
+                        {!! Form::radio('aggregated', 1, $aggregated, [
+                            'class' => 'input-icheck',
+                            'id' => 'aggregated',
+                        ]) !!} {{ __('accounting::lang.aggregated') }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="radio">
+                        {!! Form::radio('detailed', 1, $aggregated ? false : true, [
+                            'class' => 'input-icheck',
+                            'id' => 'detailed',
+                        ]) !!} {{ __('accounting::lang.detailed') }}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -87,24 +141,16 @@
                                     <tr>
                                         <td>{{ $account->name }}</td>
                                         <td>
-                                            @if ($account->debit_opening_balance != 0)
-                                                @format_currency($account->debit_opening_balance)
-                                            @endif
+                                            @format_currency($account->debit_opening_balance)
                                         </td>
                                         <td>
-                                            @if ($account->credit_opening_balance != 0)
-                                                @format_currency($account->credit_opening_balance)
-                                            @endif
+                                            @format_currency($account->credit_opening_balance)
                                         </td>
                                         <td>
-                                            @if ($account->debit_balance != 0)
-                                                @format_currency($account->debit_balance)
-                                            @endif
+                                            @format_currency($account->debit_balance)
                                         </td>
                                         <td>
-                                            @if ($account->credit_balance != 0)
-                                                @format_currency($account->credit_balance)
-                                            @endif
+                                            @format_currency($account->credit_balance)
                                         </td>
                                         <td>
                                             @if ($closing_balance < 0)
@@ -152,6 +198,73 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $('#account_filter').change(function() {
+                account = $(this).val();
+                url = base_path + '/accounting/reports/trial-balance/' + account;
+                window.location = url;
+            })
+
+            $('#with_zero_balances').on('ifChecked ifUnchecked', function(event) {
+
+                var with_zero_balances = (event.type === 'ifChecked') ? 1 : 0;
+
+                var currentUrl = window.location.href;
+
+                var url = new URL(currentUrl);
+
+                url.searchParams.set('with_zero_balances', with_zero_balances);
+
+                window.location.href = url.href;
+            });
+
+            $('input[name="detailed"]').on('ifChecked', function(event) {
+                var selectedOption = $(this).val();
+
+                var currentUrl = window.location.href;
+
+                var url = new URL(currentUrl);
+
+                url.searchParams.delete('aggregated');
+
+                window.location.href = url.href;
+            });
+
+            $('input[name="aggregated"]').on('ifChecked', function(event) {
+                var selectedOption = $(this).val();
+
+                var currentUrl = window.location.href;
+
+                var url = new URL(currentUrl);
+
+                url.searchParams.set('aggregated', selectedOption);
+
+                window.location.href = url.href;
+            });
+
+
+            $("select.accounts-dropdown").select2({
+                placeholder: "Select an option",
+                ajax: {
+                    url: '{{ route('primary-accounts-dropdown') }}',
+                    dataType: 'json',
+                    processResults: function(data) {
+                        return {
+                            results: data
+                        };
+                    },
+                },
+                escapeMarkup: function(markup) {
+                    return markup;
+                },
+                templateResult: function(data) {
+                    return data.html;
+                },
+                templateSelection: function(data) {
+                    return data.text;
+                }
+            });
+
 
             dateRangeSettings.startDate = moment('{{ $start_date }}');
             dateRangeSettings.endDate = moment('{{ $end_date }}');
