@@ -56,7 +56,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     /**
@@ -316,6 +317,29 @@ class User extends Authenticatable
         if ($prepend_all) {
             $users = $users->prepend(__('lang_v1.all'), '');
         }
+
+        return $users;
+    }
+
+    /**
+     * Return list of contact dropdown for a business
+     *
+     * @param $business_id int
+     * @param $company_id int
+     * @return array users
+     */
+    public static function employeesDropdown($business_id, $company_id)
+    {
+        $query = User::where('business_id', $business_id)->where('company_id', $company_id)
+            ->whereIn('user_type', ['employee', 'manager', 'Department_head'])->where('status', 'active');
+
+        $query->select(
+            'users.id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as name"),
+
+        );
+
+        $users = $query->pluck('name', 'users.id');
 
         return $users;
     }
@@ -599,5 +623,9 @@ class User extends Authenticatable
     public function userDevice()
     {
         return $this->hasOne(UserDevice::class, 'user_id');
+    }
+    public function payrollGroupUser()
+    {
+        return $this->hasMany(PayrollGroupUser::class, 'user_id');
     }
 }

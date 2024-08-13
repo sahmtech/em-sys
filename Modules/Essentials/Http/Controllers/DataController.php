@@ -1944,6 +1944,17 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    [
+                        'value' => 'essentials.add_return_visa_muqeem',
+                        'label' => __('essentials::lang.add_return_visa_muqeem'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_final_visa_muqeem',
+                        'label' => __('essentials::lang.add_final_visa_muqeem'),
+                        'default' => false,
+                    ],
+
                 ],
 
             ],

@@ -41,8 +41,8 @@ class AccountingUtil extends Util
             OR ($accounting_accounts_alias.account_primary_type='commitments' AND $accounting_account_transaction_alias.type='debit')
             OR ($accounting_accounts_alias.account_primary_type='cost_goods_sold' AND $accounting_account_transaction_alias.type='credit')
             OR ($accounting_accounts_alias.account_primary_type='expenses' AND $accounting_account_transaction_alias.type='credit')
-            OR ($accounting_accounts_alias.account_primary_type='income' AND $accounting_account_transaction_alias.type='credit')
-            OR ($accounting_accounts_alias.account_primary_type='property_rights' AND $accounting_account_transaction_alias.type='credit'), 
+            OR ($accounting_accounts_alias.account_primary_type='income' AND $accounting_account_transaction_alias.type='debit')
+            OR ($accounting_accounts_alias.account_primary_type='property_rights' AND $accounting_account_transaction_alias.type='debit'), 
             amount, -1*amount)) as balance";
     }
 
@@ -840,7 +840,9 @@ class AccountingUtil extends Util
             'expens_bill',
             'sell_transfer',
             'purchase_transfer',
-            'payroll',
+            'payroll_employee',
+            'payroll_worker',
+            'payroll_remote_employee',
 
         ];
         $types = [
@@ -853,6 +855,10 @@ class AccountingUtil extends Util
             'sell_transfer',
             'purchase_transfer',
             'payroll',
+            'payroll',
+            'payroll',
+
+            
 
         ];
         $payment_status = [
@@ -870,18 +876,32 @@ class AccountingUtil extends Util
 
         foreach ($types as $key => $value) {
             foreach ($payment_status as $paymentStatus) {
-                foreach ($methods as $method) {
+                if ($paymentStatus == 'due') {
                     AccountingMappingSettingAutoMigration::create([
                         'name' => $names[$key],
                         'type' => $value,
                         'company_id' => Session::get('selectedCompanyId'),
                         'status' => 'final',
                         'payment_status' => $paymentStatus,
-                        'method' => $method,
+                        'method' => 'other',
                         'created_by' => $user_id,
                         'business_id' => $business_id,
                         'active' => false,
                     ]);
+                } else {
+                    foreach ($methods as $method) {
+                        AccountingMappingSettingAutoMigration::create([
+                            'name' => $names[$key],
+                            'type' => $value,
+                            'company_id' => Session::get('selectedCompanyId'),
+                            'status' => 'final',
+                            'payment_status' => $paymentStatus,
+                            'method' => $method,
+                            'created_by' => $user_id,
+                            'business_id' => $business_id,
+                            'active' => false,
+                        ]);
+                    }
                 }
             }
         }

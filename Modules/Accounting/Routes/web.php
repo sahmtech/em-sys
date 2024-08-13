@@ -24,13 +24,15 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('/companies_access_permissions', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'index'])->name('companies_access_permissions');
     Route::get('/getUserCompaniesPermissions/{userId}', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'getUserCompaniesPermissions'])->name('getUserCompaniesPermissions');
     Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
-
-    Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
 });
 
-Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
+
+Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
 
 
+    Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
+    Route::post('/create_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_payment'])->name('accounting.payrolls.create_payment');
+    Route::post('/create_single_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_single_payment'])->name('accounting.payrolls.create_single_payment');
     Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
     Route::get('accounting-business-settings', 'SettingsController@getBusinessSettings_accounting')->name('accounting-business-settings');
@@ -100,6 +102,9 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
 
     Route::get('reports', 'ReportController@index');
     Route::get('reports/trial-balance', 'ReportController@trialBalance')->name('accounting.trialBalance');
+    Route::get('reports/income-statement', 'ReportController@incomeStatement')->name('accounting.incomeStatement');
+    Route::get('reports/employees-statement/{id}', 'ReportController@employeesStatement')->name('accounting.employeesStatement');
+    Route::get('reports/customers-suppliers-statement/{id}', 'ReportController@customersSuppliersStatement')->name('accounting.customersSuppliersStatement');
     Route::get('reports/balance-sheet', 'ReportController@balanceSheet')->name('accounting.balanceSheet');
     Route::get(
         'reports/account-receivable-ageing-report',

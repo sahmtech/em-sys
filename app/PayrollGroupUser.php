@@ -12,4 +12,8 @@ class PayrollGroupUser extends Model
     {
         return $this->belongsTo(PayrollGroup::class, 'payroll_group_id');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

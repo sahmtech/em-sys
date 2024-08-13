@@ -22,6 +22,7 @@ use Modules\Accounting\Entities\AccountingAccTransMappingSettingAutoMigration;
 use Modules\Accounting\Entities\AccountingAccTransMappingSettingTest;
 use Modules\Accounting\Entities\AccountingMappingSettingAutoMigration;
 use Modules\Accounting\Entities\AccountingMappingSettingTest;
+use Modules\Accounting\Entities\CostCenter;
 use Yajra\DataTables\Facades\DataTables;
 
 class AutomatedMigrationController extends Controller
@@ -42,7 +43,7 @@ class AutomatedMigrationController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
- 
+
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -65,7 +66,7 @@ class AutomatedMigrationController extends Controller
 
                 $mappingSetting = $mappingSetting->where('name', request()->input('mappingSetting_fillter'));
             }
-         
+
 
             if (!empty(request()->input('type_fillter')) && request()->input('type_fillter') !== 'all') {
 
@@ -140,7 +141,7 @@ class AutomatedMigrationController extends Controller
                 ->editColumn('method', function ($row) {
                     return  __('accounting::lang.autoMigration.' . $row->method) ?? '';
                 })
-               
+
 
                 ->addColumn(
                     'active',
@@ -167,8 +168,9 @@ class AutomatedMigrationController extends Controller
         }
         $mappingSettings = AccountingMappingSettingAutoMigration::where('company_id', $company_id)->get();
         $mappingSetting_fillter = AccountingMappingSettingAutoMigration::where('company_id', $company_id)->groupby('name')->get();
+        $allCenters = CostCenter::query()->get();
 
-        return view('accounting::AutomatedMigration.index', compact('mappingSettings', 'mappingSetting_fillter'));
+        return view('accounting::AutomatedMigration.index', compact('allCenters', 'mappingSettings', 'mappingSetting_fillter'));
     }
 
 
@@ -178,7 +180,9 @@ class AutomatedMigrationController extends Controller
      */
     public function create()
     {
-        return view('accounting::AutomatedMigration.create');
+        $allCenters = CostCenter::query()->get();
+
+        return view('accounting::AutomatedMigration.create', compact('allCenters'));
     }
 
 
@@ -188,15 +192,15 @@ class AutomatedMigrationController extends Controller
             DB::beginTransaction();
             $this->accountingUtil->deflute_auto_migration($request);
 
-           
+
             DB::commit();
 
             $output = [
                 'success' => 1,
                 'msg' => __('lang_v1.added_success')
             ];
-    
-    
+
+
             return redirect()->route('automated-migration.index')->with('status', $output);
         } catch (Exception $e) {
             DB::rollBack();
@@ -207,7 +211,6 @@ class AutomatedMigrationController extends Controller
 
 
             return redirect()->route('automated-migration.index')->with('status', $output);
-
         }
     }
     /**
@@ -349,7 +352,7 @@ class AutomatedMigrationController extends Controller
                 $AccountType = AccountingAccountType::find($account->account_sub_type_id);
                 $trans['account_name'] =  $account->name;
                 $trans['account_primary_type'] =  $account->account_primary_type;
-                $trans['account_sub_type'] =  $AccountType->name;
+                $trans['account_sub_type'] =  $AccountType?->name;
                 if ($trans->journal_entry_number == 1)
                     array_push($journal_entry_1, $trans);
                 else
@@ -358,10 +361,11 @@ class AutomatedMigrationController extends Controller
         }
 
 
+        $allCenters = CostCenter::query()->get();
 
 
 
-        return view('accounting::AutomatedMigration.edit', compact('mappingSetting', 'journal_entry_1', 'journal_entry_2'));
+        return view('accounting::AutomatedMigration.edit', compact('allCenters', 'mappingSetting', 'journal_entry_1', 'journal_entry_2'));
     }
     /**
      * Update the specified resource in storage.
@@ -371,6 +375,7 @@ class AutomatedMigrationController extends Controller
      */
     public function update(Request $request, $id)
     {
+    //    return $request;
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
         $user_id = request()->session()->get('user.id');
@@ -380,6 +385,10 @@ class AutomatedMigrationController extends Controller
 
         $type_1 = $request->get('type1');
         $type_2 = $request->get('type2');
+
+        $cost_center1 = $request->get('cost_center1');
+        $cost_center2 = $request->get('cost_center2');
+
         $amount_type_1 = $request->get('amount_type1');
         $amount_type_2 = $request->get('amount_type2');
         $journal_date = $request->get('journal_date');
@@ -405,6 +414,8 @@ class AutomatedMigrationController extends Controller
                 $transaction_row = [];
                 $transaction_row['accounting_account_id'] = $account_id;
                 $transaction_row['type'] =  $type_1[$index];
+                $transaction_row['cost_center_id'] =  $cost_center1[$index];
+                
                 $transaction_row['created_by'] = $user_id;
                 $transaction_row['company_id'] = $company_id;
                 $transaction_row['ref_no'] = $ref_no;
@@ -428,6 +439,8 @@ class AutomatedMigrationController extends Controller
                 $transaction_row_ = [];
                 $transaction_row_['accounting_account_id'] = $account_id_;
                 $transaction_row_['type'] =  $type_2[$index];
+                $transaction_row_['cost_center_id'] =  $cost_center2[$index];
+
                 $transaction_row_['created_by'] = $user_id;
                 $transaction_row_['company_id'] = $company_id;
                 $transaction_row_['ref_no'] = $_ref_no;
@@ -482,7 +495,7 @@ class AutomatedMigrationController extends Controller
     public function destroy_acc_trans_mapping_setting($id)
     {
         // $mappingSetting = AccountingMappingSettingTest::find($id);
-        $acc_trans = AccountingAccTransMappingSettingTest::find($id);
+        $acc_trans = AccountingAccTransMappingSettingAutoMigration::find($id);
         $mappingSetting_id = $acc_trans->mapping_setting_id;
         $acc_trans->delete();
         $output = [

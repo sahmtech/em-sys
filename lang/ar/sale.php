@@ -2,7 +2,6 @@
  return [ 
 "sale" => "المبيعات",
 "sells" => "المبيعات",
-
 "list_sale" => "قائمة المبيعات",
 "add_sale" => "إنشاء فاتورة مبيعات",
 "pos_sale" => "شاشة الكاشير",
@@ -13,8 +12,8 @@
 "order_tax" => "ضريبة الطلبية",
 "discount" => "الخصم",
 "total_payable" => "مجموع المستحق",
-"total_with_tax" => "المجموع مع ضريبة",
-"total_without_tax" => "المجموع بدون ضريبة",
+"total_with_tax" => "الاجمالي مع ضريبة",
+"total_without_tax" => "الاجمالي بدون ضريبة",
 "cancel" => "إلغاء",
 "draft" => "مسودة",
 "finalize" => "إنهاء الدفع",

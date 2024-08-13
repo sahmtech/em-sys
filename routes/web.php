@@ -23,6 +23,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CombinedPurchaseReturnController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\API\ApiCustomerController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardConfiguratorController;
@@ -720,6 +721,39 @@ Route::middleware(['setData'])->group(function () {
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu', 'CheckUserLogin'])->group(function () {
     Route::get('/my_notifications', [HomeController::class, 'getMyNotifications'])->name('getMyNotification');
 
+    Route::middleware(['compay_session'])->group(function () {
+        Route::post('/sells/pos/get-types-of-service-details', 'SellPosController@getTypesOfServiceDetails');
+        Route::get('/sells/subscriptions', 'SellPosController@listSubscriptions');
+        Route::get('/sells/duplicate/{id}', 'SellController@duplicateSell');
+        Route::get('/sells/drafts', 'SellController@getDrafts');
+        Route::get('/sells/convert-to-draft/{id}', 'SellPosController@convertToInvoice');
+        Route::get('/sells/convert-to-proforma/{id}', 'SellPosController@convertToProforma');
+        Route::get('/sells/quotations', 'SellController@getQuotations');
+        Route::get('/sells/draft-dt', 'SellController@getDraftDatables');
+        Route::resource('sells', 'SellController')->except(['show']);
+        Route::get('/sells/copy-quotation/{id}', [SellPosController::class, 'copyQuotation']);
+        Route::post('/sells/pos/get-types-of-service-details', [SellPosController::class, 'getTypesOfServiceDetails']);
+        Route::get('/sells/subscriptions', [SellPosController::class, 'listSubscriptions']);
+        Route::get('/sells/duplicate/{id}', [SellController::class, 'duplicateSell']);
+        Route::get('/sells/drafts', [SellController::class, 'getDrafts']);
+        Route::get('/sells/convert-to-draft/{id}', [SellPosController::class, 'convertToInvoice']);
+        Route::get('/sells/convert-to-proforma/{id}', [SellPosController::class, 'convertToProforma']);
+        Route::get('/sells/quotations', [SellController::class, 'getQuotations']);
+        Route::get('/sells/draft-dt', [SellController::class, 'getDraftDatables']);
+        Route::resource('sells', SellController::class)->except(['show']);
+
+        Route::get('/sells/pos/get_product_row/{variation_id}/{location_id}', [SellPosController::class, 'getProductRow']);
+        Route::post('/sells/pos/get_payment_row', [SellPosController::class, 'getPaymentRow']);
+        Route::post('/sells/pos/get-reward-details', [SellPosController::class, 'getRewardDetails']);
+        Route::get('/sells/pos/get-recent-transactions', [SellPosController::class, 'getRecentTransactions']);
+        Route::get('/sells/pos/get-product-suggestion', [SellPosController::class, 'getProductSuggestion']);
+        Route::get('/sells/pos/get-featured-products/{location_id}', [SellPosController::class, 'getFeaturedProducts']);
+    });
+
+
+
+
+
     Route::get('pos/payment/{id}', [SellPosController::class, 'edit'])->name('edit-pos-payment');
     Route::get('service-staff-availability', [SellPosController::class, 'showServiceStaffAvailibility']);
     Route::get('pause-resume-service-staff-timer/{user_id}', [SellPosController::class, 'pauseResumeServiceStaffTimer']);
@@ -820,16 +854,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::resource('products', ProductController::class);
     Route::get('/toggle-subscription/{id}', 'SellPosController@toggleRecurringInvoices');
-    Route::post('/sells/pos/get-types-of-service-details', 'SellPosController@getTypesOfServiceDetails');
-    Route::get('/sells/subscriptions', 'SellPosController@listSubscriptions');
-    Route::get('/sells/duplicate/{id}', 'SellController@duplicateSell');
-    Route::get('/sells/drafts', 'SellController@getDrafts');
-    Route::get('/sells/convert-to-draft/{id}', 'SellPosController@convertToInvoice');
-    Route::get('/sells/convert-to-proforma/{id}', 'SellPosController@convertToProforma');
-    Route::get('/sells/quotations', 'SellController@getQuotations');
-    Route::get('/sells/draft-dt', 'SellController@getDraftDatables');
-    Route::resource('sells', 'SellController')->except(['show']);
-    Route::get('/sells/copy-quotation/{id}', [SellPosController::class, 'copyQuotation']);
+
 
     Route::post('/import-purchase-products', [PurchaseController::class, 'importPurchaseProducts']);
     Route::post('/purchases/update-status', [PurchaseController::class, 'updateStatus']);
@@ -840,27 +865,18 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('purchases', PurchaseController::class)->except(['show']);
 
     Route::get('/toggle-subscription/{id}', [SellPosController::class, 'toggleRecurringInvoices']);
-    Route::post('/sells/pos/get-types-of-service-details', [SellPosController::class, 'getTypesOfServiceDetails']);
-    Route::get('/sells/subscriptions', [SellPosController::class, 'listSubscriptions']);
-    Route::get('/sells/duplicate/{id}', [SellController::class, 'duplicateSell']);
-    Route::get('/sells/drafts', [SellController::class, 'getDrafts']);
-    Route::get('/sells/convert-to-draft/{id}', [SellPosController::class, 'convertToInvoice']);
-    Route::get('/sells/convert-to-proforma/{id}', [SellPosController::class, 'convertToProforma']);
-    Route::get('/sells/quotations', [SellController::class, 'getQuotations']);
-    Route::get('/sells/draft-dt', [SellController::class, 'getDraftDatables']);
-    Route::resource('sells', SellController::class)->except(['show']);
+
+
+
+
+
 
     Route::get('/import-sales', [ImportSalesController::class, 'index']);
     Route::post('/import-sales/preview', [ImportSalesController::class, 'preview']);
     Route::post('/import-sales', [ImportSalesController::class, 'import']);
     Route::get('/revert-sale-import/{batch}', [ImportSalesController::class, 'revertSaleImport']);
 
-    Route::get('/sells/pos/get_product_row/{variation_id}/{location_id}', [SellPosController::class, 'getProductRow']);
-    Route::post('/sells/pos/get_payment_row', [SellPosController::class, 'getPaymentRow']);
-    Route::post('/sells/pos/get-reward-details', [SellPosController::class, 'getRewardDetails']);
-    Route::get('/sells/pos/get-recent-transactions', [SellPosController::class, 'getRecentTransactions']);
-    Route::get('/sells/pos/get-product-suggestion', [SellPosController::class, 'getProductSuggestion']);
-    Route::get('/sells/pos/get-featured-products/{location_id}', [SellPosController::class, 'getFeaturedProducts']);
+
     Route::get('/reset-mapping', [SellController::class, 'resetMapping']);
 
     Route::resource('pos', SellPosController::class);

@@ -1520,15 +1520,34 @@ class Util
         $i = 0;
         $str = [];
         $words = [
-            0 => '', 1 => 'one', 2 => 'two',
-            3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six',
-            7 => 'seven', 8 => 'eight', 9 => 'nine',
-            10 => 'ten', 11 => 'eleven', 12 => 'twelve',
-            13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
-            16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen',
-            19 => 'nineteen', 20 => 'twenty', 30 => 'thirty',
-            40 => 'forty', 50 => 'fifty', 60 => 'sixty',
-            70 => 'seventy', 80 => 'eighty', 90 => 'ninety',
+            0 => '',
+            1 => 'one',
+            2 => 'two',
+            3 => 'three',
+            4 => 'four',
+            5 => 'five',
+            6 => 'six',
+            7 => 'seven',
+            8 => 'eight',
+            9 => 'nine',
+            10 => 'ten',
+            11 => 'eleven',
+            12 => 'twelve',
+            13 => 'thirteen',
+            14 => 'fourteen',
+            15 => 'fifteen',
+            16 => 'sixteen',
+            17 => 'seventeen',
+            18 => 'eighteen',
+            19 => 'nineteen',
+            20 => 'twenty',
+            30 => 'thirty',
+            40 => 'forty',
+            50 => 'fifty',
+            60 => 'sixty',
+            70 => 'seventy',
+            80 => 'eighty',
+            90 => 'ninety',
         ];
         $digits = ['', 'hundred', 'thousand', 'lakh', 'crore'];
         while ($i < $digits_length) {
@@ -1716,17 +1735,52 @@ class Util
 
 
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email', 'mid_name',
-            'profile_picture', 'profession', 'specialization',
-            'user_type', 'crm_contact_id', 'allow_login',
-            'username', 'password', 'DocumentTypes',
-            'cmmsn_percent', 'max_sales_discount_percent', 'dob',
-            'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
-            'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
-            'custom_field_2', 'custom_field_3', 'eqama_end_date', 'company_id',
-            'custom_field_4', 'guardian_name', 'assigned_to',
-            'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no', 'expiration_date',
-            'current_address', 'bank_details', 'selected_contacts', 'emp_number', 'total_salary'
+            'surname',
+            'first_name',
+            'last_name',
+            'email',
+            'mid_name',
+            'profile_picture',
+            'profession',
+            'specialization',
+            'user_type',
+            'crm_contact_id',
+            'allow_login',
+            'username',
+            'password',
+            'DocumentTypes',
+            'cmmsn_percent',
+            'max_sales_discount_percent',
+            'dob',
+            'gender',
+            'marital_status',
+            'blood_group',
+            'contact_number',
+            'alt_number',
+            'family_number',
+            'fb_link',
+            'twitter_link',
+            'social_media_1',
+            'social_media_2',
+            'custom_field_1',
+            'nationality',
+            'custom_field_2',
+            'custom_field_3',
+            'eqama_end_date',
+            'company_id',
+            'custom_field_4',
+            'guardian_name',
+            'assigned_to',
+            'id_proof_name',
+            'id_proof_number',
+            'permanent_address',
+            'border_no',
+            'expiration_date',
+            'current_address',
+            'bank_details',
+            'selected_contacts',
+            'emp_number',
+            'total_salary'
 
 
         ]);
@@ -1994,11 +2048,16 @@ class Util
         } else {
             $method = '';
         }
+        if ($transaction->payment_status == 'due') {
+            $method = 'other';
+        }
         $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
             ->where('payment_status', $transaction->payment_status)
             ->where('method',  $method)
-            // ->where('location_id', $transaction->location_id)
+            ->where('company_id', $transaction->company_id)
             ->where('active', true)->first();
+
+            $company_id =$transaction->company_id;
         // return   [$transaction->type, $transaction->payment_status, $transaction->location_id];
         if ($accountMappingSetting) {
             // find account transaction mapping setting by accounting mapping setting
@@ -2009,8 +2068,8 @@ class Util
 
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
-                    $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
-                        $accounting_settings['journal_entry_prefix'] : '';
+                    $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
@@ -2031,6 +2090,7 @@ class Util
                     $test_type = $accTrans->amount;
                     $transaction_row['amount'] = $transaction->$test_type;
                     $transaction_row['type'] = $accTrans->type;
+                    $transaction_row['cost_center_id'] = $accTrans->cost_center_id;
                     $transaction_row['created_by'] = $user_id;
                     $transaction_row['operation_date'] = $this->uf_date($request->input('transaction_date'), true);
                     $transaction_row['sub_type'] = 'journal_entry';
@@ -2042,5 +2102,212 @@ class Util
                 }
             }
         }
+    }
+
+
+    public function createTransactionJournal_entry($id, $user_type = '')
+    {
+        $transaction = Transaction::with(['sell_lines', 'payment_lines'])->find($id);
+        if (!$transaction) {
+            return false;
+        }
+
+        $user_id = request()->session()->get('user.id');
+        $company_id = Session::get('selectedCompanyId');
+        $business_id = request()->session()->get('user.business_id');
+
+        $method = '';
+        if (count($transaction->payment_lines) > 0) {
+
+
+            $payment_lines = $transaction->payment_lines()->latest('paid_on')->first();
+            $method =  $payment_lines->method;
+        } else {
+            $method = 'other';
+        }
+        $company_id =$transaction->company_id;
+        if ($transaction->type == 'payroll') {
+            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
+                ->where('type', $transaction->type)
+                ->where('payment_status', $transaction->payment_status)
+                ->where('method', $method)
+                ->where('company_id', $company_id)
+                ->where('active', true)->first();
+        } else {
+            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
+                ->where('payment_status', $transaction->payment_status)
+                ->where('method', $method)
+                ->where('company_id', $company_id)
+                ->where('active', true)->first();
+        }
+        //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
+
+        if ($accountMappingSetting) {
+            // find account transaction mapping setting by accounting mapping setting
+            $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
+
+
+            if (count($accTransMappingSetting) > 0) {
+
+                //Generate reference number
+                $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
+                if (empty($ref_no)) {
+                    $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
+
+                    //Generate reference number
+                    $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
+                }
+
+
+                try {
+                    DB::beginTransaction();
+                    $acc_trans_mapping = new AccountingAccTransMapping();
+                    $acc_trans_mapping->business_id = $business_id;
+                    $acc_trans_mapping->company_id = $company_id;
+                    $acc_trans_mapping->ref_no = $ref_no;
+                    $acc_trans_mapping->note = '';
+                    $acc_trans_mapping->type = 'journal_entry';
+                    $acc_trans_mapping->created_by = $user_id;
+                    $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s');
+                    $acc_trans_mapping->save();;
+                    foreach ($accTransMappingSetting as $accTrans) {
+                        $transaction_row = [];
+                        $transaction_row['accounting_account_id'] = $accTrans->accounting_account_id;
+                        $test_type = $accTrans->amount;
+                        $transaction_row['amount'] = $transaction->$test_type;
+                        $transaction_row['type'] = $accTrans->type;
+                        $transaction_row['cost_center_id'] = $accTrans->cost_center_id;
+
+                        $transaction_row['transaction_id'] = $transaction->id;
+                        $transaction_row['created_by'] = $user_id;
+                        $transaction_row['operation_date'] = now()->format('Y-m-d H:i:s');
+                        $transaction_row['sub_type'] = 'journal_entry';
+                        $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
+
+
+                        $accounts_transactions = new AccountingAccountsTransaction();
+                        $accounts_transactions->fill($transaction_row);
+                        $accounts_transactions->save();
+                    }
+                    DB::commit();
+                    return true;
+                } catch (\Exception $e) {
+
+                    DB::rollBack();
+                    return false;
+                }
+            }
+            return false;
+        }
+
+
+        return false;
+    }
+
+
+    public function createTransactionJournal_entry_single_payment($id, $user_type = '', $employees_id)
+    {
+        $transaction = Transaction::with(['sell_lines', 'payment_lines'])->find($id);
+        if (!$transaction) {
+            return false;
+        }
+
+        $user_id = request()->session()->get('user.id');
+        $company_id = Session::get('selectedCompanyId');
+        $business_id = request()->session()->get('user.business_id');
+
+        $method = '';
+        if (count($transaction->payment_lines) > 0) {
+
+
+            $payment_lines = $transaction->payment_lines()->latest('paid_on')->first();
+            $method =  $payment_lines->method;
+        } else {
+            $method = 'other';
+        }
+        $company_id =$transaction->company_id;
+        if ($transaction->type == 'payroll') {
+                $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
+                ->where('type', $transaction->type)
+                ->where('payment_status', $transaction->payment_status)
+                ->where('method', $method)
+                ->where('company_id', $transaction->company_id)
+                ->where('active', true)->first();
+        } else {
+            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
+                ->where('payment_status', $transaction->payment_status)
+                ->where('method', $method)
+                ->where('company_id',$transaction->company_id)
+                ->where('active', true)->first();
+        }
+        //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
+
+        if ($accountMappingSetting) {
+            // find account transaction mapping setting by accounting mapping setting
+            $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
+
+
+            if (count($accTransMappingSetting) > 0) {
+
+                //Generate reference number
+                $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
+                if (empty($ref_no)) {
+                    $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
+
+                    //Generate reference number
+                    $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
+                }
+
+
+                try {
+                    DB::beginTransaction();
+                    $acc_trans_mapping = new AccountingAccTransMapping();
+                    $acc_trans_mapping->business_id = $business_id;
+                    $acc_trans_mapping->company_id = $company_id;
+                    $acc_trans_mapping->ref_no = $ref_no;
+                    $acc_trans_mapping->note = '';
+                    $acc_trans_mapping->type = 'journal_entry';
+                    $acc_trans_mapping->created_by = $user_id;
+                    $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s');
+                    $acc_trans_mapping->save();;
+                    foreach ($accTransMappingSetting as $accTrans) {
+                        $transaction_row = [];
+                        $transaction_row['accounting_account_id'] = $accTrans->accounting_account_id;
+                        $test_type = $accTrans->amount;
+                        $transaction_row['amount'] = $transaction->$test_type;
+                        $transaction_row['type'] = $accTrans->type;
+                        $transaction_row['cost_center_id'] = $accTrans->cost_center_id;
+
+                        $transaction_row['transaction_id'] = $transaction->id;
+                        $transaction_row['created_by'] = $user_id;
+                        $transaction_row['operation_date'] = now()->format('Y-m-d H:i:s');
+                        $transaction_row['sub_type'] = 'journal_entry';
+                        $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
+                        if ($user_type == 'employee') {
+                            $transaction_row['partner_type'] = 'employees';
+                            $transaction_row['partner_id'] = $employees_id;
+                        }
+
+
+
+                        $accounts_transactions = new AccountingAccountsTransaction();
+                        $accounts_transactions->fill($transaction_row);
+                        $accounts_transactions->save();
+                    }
+                    DB::commit();
+                    return true;
+                } catch (\Exception $e) {
+
+                    DB::rollBack();
+                    return false;
+                }
+            }
+            return false;
+        }
+
+
+        return false;
     }
 }
