@@ -40,10 +40,7 @@ class ContractsController extends Controller
 
 
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
-        // $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
-        //     ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
-        //     ->leftJoin('contacts', 'contacts.id', '=', 'transactions.contact_id')
-        //     ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no', 'contacts.supplier_business_name', 'transactions.id');
+
         $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
             ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
             ->leftJoin('contacts', 'contacts.id', '=', 'transactions.contact_id')
@@ -55,15 +52,26 @@ class ContractsController extends Controller
             ->toArray();
 
         $items = salesContractItem::pluck('name_of_item', 'id');
+        $contracts = salesContract::leftjoin('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')->leftjoin('contacts', 'contacts.id', '=', 'sales_contracts.contact_id')->select([
+            'sales_contracts.number_of_contract',
+            'sales_contracts.id',
+            'sales_contracts.offer_price_id',
+            'sales_contracts.contact_id as customer',
+            'sales_contracts.start_date',
+            'sales_contracts.end_date',
+            'sales_contracts.status',
+            'sales_contracts.file',
+            'sales_contracts.contract_duration',
+            'sales_contracts.contract_per_period',
+            'transactions.contract_form as contract_form',
+            'transactions.contact_id',
+            'transactions.id as tra'
+        ]);
+        //  return $contracts->get();
         if (request()->ajax()) {
 
 
-            $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')->select([
-                'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
-                'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
-                'sales_contracts.contract_per_period',
-                'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
-            ]);
+
 
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $contracts->where('sales_contracts.status', request()->input('status'));
@@ -76,8 +84,11 @@ class ContractsController extends Controller
 
 
                 ->editColumn('sales_project_id', function ($row) use ($contacts) {
-                    $item = $contacts[$row->contact_id] ?? '';
-
+                    if ($row->offer_price_id) {
+                        $item = $contacts[$row->contact_id] ?? '';
+                    } elseif ($row->customer) {
+                        $item = $contacts[$row->customer] ?? '';
+                    }
                     return $item;
                 })
 
@@ -141,7 +152,7 @@ class ContractsController extends Controller
             ->get();
 
 
-        return view('sales::contracts.index')->with(compact('offer_prices', 'items', 'users', 'contracts'));
+        return view('sales::contracts.index')->with(compact('offer_prices', 'items', 'users', 'contacts', 'contracts'));
     }
 
 
@@ -205,6 +216,7 @@ class ContractsController extends Controller
     public function store(Request $request)
     {
 
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
@@ -213,13 +225,23 @@ class ContractsController extends Controller
         try {
 
             $input = $request->only([
-                'offer_price', 'contract-select',
-                'start_date', 'contract_duration', 'contract_duration_unit',
-                'end_date', 'status',  'is_renewable', 'notes', 'file'
+                'contract_type',
+                'offer_price',
+                'customer',
+                'contract-select',
+                'start_date',
+                'contract_duration',
+                'contract_duration_unit',
+                'end_date',
+                'status',
+                'is_renewable',
+                'notes',
+                'file'
             ]);
 
 
             $input2['offer_price_id'] = $input['offer_price'];
+            $input2['contact_id'] = $input['customer'];
             $input2['start_date'] = $input['start_date'];
             $input2['end_date'] = $input['end_date'];
 
@@ -261,8 +283,11 @@ class ContractsController extends Controller
 
                 $input2['file'] = $filePath;
             }
-
-            $contact_id = Transaction::whereId($input['offer_price'])->first()->contact_id;
+            if ($input['offer_price']) {
+                $contact_id = Transaction::whereId($input['offer_price'])->first()->contact_id;
+            } else {
+                $contact_id = $input['customer'];
+            }
             $sale_project['contact_id'] = $contact_id;
             $sale_project['name'] = $request->project_name;
             $assignedTo = $request->input('assigned_to');

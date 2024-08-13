@@ -493,7 +493,10 @@ return [
     'undefiend' => 'غير محدد',
     'offer_approve' => 'التعميد',
     'new offer price' => 'عرض سعر جديد',
-    'reason' => 'السبب'
+    'reason' => 'السبب',
+    'contract_type' => 'نوع العقد',
+    'select_contract_type' => 'نوع العقد',
+
 ];
 
 // ''=>'',
