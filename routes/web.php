@@ -662,7 +662,14 @@ Route::get('/updateWkProcedures', function () {
     return response()->json(['message' => ' updated successfully.']);
 });
 
+Route::get('/updateWkProcedures_can_reject', function () {
 
+    DB::table('wk_procedures')
+
+        ->update(['can_reject' => 1]);
+
+    return response()->json(['message' => ' updated successfully.']);
+});
 
 // Route::get('/userFromContact', function () {
 //     $contacts = Contact::where('type', 'lead')->get();
