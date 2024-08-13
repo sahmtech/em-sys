@@ -1012,7 +1012,6 @@ class PayrollController extends Controller
 
     public function store(Request $request)
     {
-
         try {
             DB::beginTransaction();
             // $timesheet_groups = json_decode($request->timesheet_groups);
@@ -1031,8 +1030,6 @@ class PayrollController extends Controller
                 $company_ids[] = $comany;
             }
 
-
-
             foreach ($company_ids as $company_id) {
                 $payrollGroup = PayrollGroup::create([
                     'payroll_group_name' => $request->payroll_group_name,
@@ -1042,15 +1039,21 @@ class PayrollController extends Controller
                     'company_id' => $company_id,
                     'payroll_date' => $date
                 ]);
+                $users = User::whereIn('id',  $user_ids);
                 $groupUsers_ids =  $users->where('company_id', $company_id)->pluck('id')->toArray();
                 $payrolls =  collect($request->payrolls)->whereIn('id',  $groupUsers_ids);
+
                 $existingPayrollGroupUsers = [];
+                $existing_payroll_group = PayrollGroup::where('company_id', $company_id)->where('payroll_date', $date)?->pluck('id')?->toArray() ?? [];
                 if (!empty($existing_payroll_group)) {
                     $existingPayrollGroupUsers = PayrollGroupUser::whereIn('id', $existing_payroll_group)?->pluck('user_id')?->toArray() ?? [];
                 }
+
+                $total_payrolls = 0;
                 if ($payrollGroup && !empty($payrolls)) {
                     foreach ($payrolls as $payroll) {
                         if (!in_array($payroll['id'], $existingPayrollGroupUsers)) {
+                            $total_payrolls += ($payroll['final_salary'] ?? 0);
                             PayrollGroupUser::create([
                                 'payroll_group_id' => $payrollGroup->id,
                                 'user_id' => $payroll['id'],
@@ -1086,95 +1089,11 @@ class PayrollController extends Controller
                             ]);
                         }
                     }
+                    PayrollGroup::where('id', $payrollGroup->id)->update(['total_payrolls' =>  $total_payrolls]);
                 }
             }
 
             DB::commit();
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.added_success'),
-            ];
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
-        }
-        return redirect()->route('payrolls.index')->with('status', $output);
-
-
-
-        $user = User::find(auth()->user()->id);
-        $business_id = $user->business_id ?? 1;
-        $company_id = $user->company_id ?? 1;
-        try {
-            DB::beginTransaction();
-            $payroll_group['business_id'] = $business_id;
-            $payroll_group['company_id'] = $company_id;
-            $payroll_group['name'] = $request->input('payroll_group_name');
-            $payroll_group['status'] = $request->input('payroll_group_status');
-            $payroll_group['gross_total'] = $request->input('total_payrolls');
-            $payroll_group['created_by'] = auth()->user()->id;
-            $payroll_group = EssentialsPayrollGroup::create($payroll_group);
-            $transaction_date = Carbon::createFromFormat('m/Y', $request->transaction_date)->format('Y-m-d H:i:s');
-
-            //ref_no,
-            $transaction_ids = [];
-            $employees_details = $request->payrolls;
-            foreach ($employees_details as $employee_details) {
-                error_log($employee_details['final_salary'] ?? 1263761253761);
-                $payroll['expense_for'] = $employee_details['id'];
-                $payroll['transaction_date'] = $transaction_date;
-                $payroll['business_id'] = $business_id;
-                $payroll['created_by'] = auth()->user()->id;
-                $payroll['type'] = 'payroll';
-                $payroll['payment_status'] = 'due';
-                $payroll['status'] = $request->input('payroll_group_status');
-                $payroll['total_before_tax'] = $employee_details['final_salary'] ?? 0;
-                $payroll['essentials_amount_per_unit_duration'] = $employee_details['salary'];
-
-                $allowances_and_deductions = $this->getAllowanceAndDeductionJson($employee_details);
-                $payroll['essentials_allowances'] = $allowances_and_deductions['essentials_allowances'];
-                $payroll['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
-                $payroll['final_total'] = $employee_details['final_salary'] ?? 0;
-                //Update reference count
-                $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
-
-                //Generate reference number
-                if (empty($payroll['ref_no'])) {
-                    $settings = request()->session()->get('business.essentials_settings');
-                    $settings = !empty($settings) ? json_decode($settings, true) : [];
-                    $prefix = !empty($settings['payroll_ref_no_prefix']) ? $settings['payroll_ref_no_prefix'] : '';
-                    $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
-                }
-                unset(
-                    $payroll['allowance_names'],
-                    $payroll['allowance_types'],
-                    $payroll['allowance_percent'],
-                    $payroll['allowance_amounts'],
-                    $payroll['deduction_names'],
-                    $payroll['deduction_types'],
-                    $payroll['deduction_percent'],
-                    $payroll['deduction_amounts'],
-                    $payroll['total']
-                );
-
-                $transaction = Transaction::create($payroll);
-                $transaction_ids[] = $transaction->id;
-
-                // if ($notify_employee && $payroll_group->status == 'final') {
-                //     $transaction->action = 'created';
-                //     $transaction->transaction_for->notify(new PayrollNotification($transaction));
-                // }
-            }
-
-            $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
-
-            DB::commit();
-
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),

@@ -6,9 +6,11 @@ use App\Category;
 
 use App\AccessRole;
 use App\AccessRoleProject;
-
+use App\Company;
 use App\Contact;
 use App\ContactLocation;
+use App\PayrollGroupUser;
+use App\TimesheetUser;
 use App\User;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -364,7 +366,42 @@ class EssentailsworkersController extends Controller
         }
 
 
-
+        $payrolls = PayrollGroupUser::with('payrollGroup')->where('user_id', $id)->get();
+        $timesheets = TimesheetUser::where('user_id', $id)->with('timesheetGroup', 'user')
+            ->get();
+        $projects = SalesProject::pluck('name', 'id');
+        $companies = Company::pluck('name', 'id');
+        $timesheets = $timesheets->map(function ($user) use ($projects, $companies) {
+            return [
+                'id' => $user->user_id,
+                'name' => $user->user->first_name . ' '  . $user->user->last_name,
+                'nationality' => User::find($user->user->id)->country?->nationality ?? '',
+                'residency' => $user->id_proof_number,
+                'monthly_cost' => $user->monthly_cost,
+                'wd' => $user->work_days,
+                'absence_day' => $user->absence_days,
+                'absence_amount' => $user->absence_amount,
+                'over_time_h' => $user->over_time_hours,
+                'over_time' => $user->over_time_amount,
+                'other_deduction' => $user->other_deduction,
+                'other_addition' => $user->other_addition,
+                'cost2' => $user->cost_2,
+                'invoice_value' => $user->invoice_value,
+                'vat' => $user->vat,
+                'total' => $user->total,
+                'sponser' => $user->user->company_id ? ($companies[$user->user->company_id] ?? '') : '',
+                'project' => $user->user->assigned_to ? $projects[$user->user->assigned_to] ?? '' : '',
+                'basic' => $user->basic,
+                'housing' => $user->housing,
+                'transport' => $user->transport,
+                'other_allowances' => $user->other_allowances,
+                'total_salary' => $user->total_salary,
+                'deductions' => $user->deductions,
+                'additions' => $user->additions,
+                'final_salary' => $user->final_salary,
+                'timesheet_date' => $user->timesheetGroup->timesheet_date,
+            ];
+        });
 
         return view('essentials::workers.show')->with(compact(
             'user',
@@ -379,6 +416,8 @@ class EssentailsworkersController extends Controller
             'nationality',
             'documents',
             'document_delivery',
+            'payrolls',
+            'timesheets',
         ));
     }
 
