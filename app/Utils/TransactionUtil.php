@@ -57,11 +57,11 @@ class TransactionUtil extends Util
             $pay_term_number = $contact->pay_term_number;
             $pay_term_type = $contact->pay_term_type;
         }
-        $company_id = Session::get('selectedCompanyId')??null;
-       
+        $company_id = Session::get('selectedCompanyId') ?? null;
+
         $transaction = Transaction::create([
             'business_id' => $business_id,
-            'company_id'=>$company_id,
+            'company_id' => $company_id,
             'location_id' => $input['location_id'],
             'type' => $sale_type,
             'status' => $input['status'],
@@ -71,14 +71,14 @@ class TransactionUtil extends Util
             'invoice_no' => $invoice_no,
             'ref_no' => '',
             'source' => !empty($input['source']) ? $input['source'] : null,
-            'total_before_tax' => $invoice_total['total_before_tax'],
+            'total_before_tax' => $invoice_total['total_before_tax'] - $input['order_tax'],
             'transaction_date' => $input['transaction_date'],
             'tax_id' => !empty($input['tax_rate_id']) ? $input['tax_rate_id'] : null,
             'discount_type' => !empty($input['discount_type']) ? $input['discount_type'] : null,
             'discount_amount' => $uf_data ? $this->num_uf($input['discount_amount']) : $input['discount_amount'],
-            
+
             // 'tax_amount' => $invoice_total['tax'],
-            'tax_amount' =>$input['order_tax'],
+            'tax_amount' => $input['order_tax'],
             'final_total' => $final_total,
             'additional_notes' => !empty($input['sale_note']) ? $input['sale_note'] : null,
             'staff_note' => !empty($input['staff_note']) ? $input['staff_note'] : null,
@@ -792,7 +792,7 @@ class TransactionUtil extends Util
                         'paid_on_to' => $paid_on_to,
                         'transfer_account' => isset($payment['transfer_account']) ? $payment['transfer_account'] : null,
                         'paid_on_from' => $paid_on_from,
-                        'cost_center' => $input['cost_center_id']??null,
+                        'cost_center' => $input['cost_center_id'] ?? null,
                         'created_by' => empty($user_id) ? auth()->user()->id : $user_id,
                         'payment_for' => $transaction->contact_id,
                         'payment_ref_no' => $payment_ref_no,
@@ -840,7 +840,7 @@ class TransactionUtil extends Util
             $payment_lines = $transaction->payment_lines;
             foreach ($account_transactions as $account_transaction) {
                 $payment = $payment_lines->where('payment_ref_no', $account_transaction['payment_ref_no'])->first();
-               
+
                 if (!empty($payment)) {
                     event(new TransactionPaymentAdded($payment, $account_transaction));
                 }
@@ -3267,8 +3267,10 @@ class TransactionUtil extends Util
                 ->where('transactions.business_id', $business['id'])
                 ->where('transactions.location_id', $business['location_id'])
                 ->whereIn('transactions.type', [
-                    'purchase', 'purchase_transfer',
-                    'opening_stock', 'production_purchase',
+                    'purchase',
+                    'purchase_transfer',
+                    'opening_stock',
+                    'production_purchase',
                 ])
                 ->where('transactions.status', 'received')
                 ->whereRaw("( $qty_sum_query ) < PL.quantity")
@@ -3724,7 +3726,8 @@ class TransactionUtil extends Util
                     'SAL.variation_id AS adjust_variation_id',
                     'SAL.id AS adjust_line_id',
                     'transaction_sell_lines_purchase_lines.quantity',
-                    'transaction_sell_lines_purchase_lines.purchase_line_id', 'transaction_sell_lines_purchase_lines.id as tslpl_id',
+                    'transaction_sell_lines_purchase_lines.purchase_line_id',
+                    'transaction_sell_lines_purchase_lines.id as tslpl_id',
                 ])
                 ->get();
 
@@ -4045,7 +4048,7 @@ class TransactionUtil extends Util
             $sub_taxes = $tax->sub_taxes;
 
             $sum = $tax->sub_taxes->sum('amount');
-           
+
             $details = [];
             foreach ($sub_taxes as $sub_tax) {
                 $details[] = [
@@ -5204,11 +5207,21 @@ class TransactionUtil extends Util
         $with = ['location'];
         if ($line_details) {
             $with = [
-                'location', 'sell_lines', 'sell_lines.sub_unit', 'sell_lines.product',
-                'sell_lines.variations', 'sell_lines.product.unit', 'sell_lines.variations.product_variation',
-                'sell_lines.line_tax', 'purchase_lines', 'purchase_lines.product', 'purchase_lines.variations',
-                'purchase_lines.variations.product_variation', 'purchase_lines.line_tax',
-                'purchase_lines.product.unit', 'purchase_lines.product.unit.sub_units',
+                'location',
+                'sell_lines',
+                'sell_lines.sub_unit',
+                'sell_lines.product',
+                'sell_lines.variations',
+                'sell_lines.product.unit',
+                'sell_lines.variations.product_variation',
+                'sell_lines.line_tax',
+                'purchase_lines',
+                'purchase_lines.product',
+                'purchase_lines.variations',
+                'purchase_lines.variations.product_variation',
+                'purchase_lines.line_tax',
+                'purchase_lines.product.unit',
+                'purchase_lines.product.unit.sub_units',
             ];
         }
         //Get transaction totals between dates
@@ -5566,7 +5579,13 @@ class TransactionUtil extends Util
         );
 
         $transaction_types = [
-            'purchase_return', 'sell_return', 'expense', 'stock_adjustment', 'sell_transfer', 'purchase', 'sell',
+            'purchase_return',
+            'sell_return',
+            'expense',
+            'stock_adjustment',
+            'sell_transfer',
+            'purchase',
+            'sell',
         ];
 
         $transaction_totals = $this->getTransactionTotals(
@@ -5763,9 +5782,15 @@ class TransactionUtil extends Util
     public function createExpense($request, $business_id, $user_id, $format_data = true)
     {
         $transaction_data = $request->only([
-            'ref_no', 'transaction_date',
-            'location_id', 'final_total', 'expense_for', 'additional_notes',
-            'expense_category_id', 'tax_id', 'contact_id',
+            'ref_no',
+            'transaction_date',
+            'location_id',
+            'final_total',
+            'expense_for',
+            'additional_notes',
+            'expense_category_id',
+            'tax_id',
+            'contact_id',
         ]);
         $company_id = Session::get('selectedCompanyId');
 
@@ -5928,9 +5953,18 @@ class TransactionUtil extends Util
         $contact_id = $request->input('contact_id');
         $business_id = auth()->user()->business_id;
         $inputs = $request->only([
-            'amount', 'method', 'note', 'card_number', 'card_holder_name',
-            'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
-            'cheque_number', 'bank_account_number',
+            'amount',
+            'method',
+            'note',
+            'card_number',
+            'card_holder_name',
+            'card_transaction_number',
+            'card_type',
+            'card_month',
+            'card_year',
+            'card_security',
+            'cheque_number',
+            'bank_account_number',
         ]);
 
         //payment type option is available on pay contact modal
@@ -6360,6 +6394,4 @@ class TransactionUtil extends Util
 
         return $mpdf;
     }
-
-    
 }

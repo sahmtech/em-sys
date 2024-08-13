@@ -562,7 +562,8 @@ class TimeSheetController extends Controller
                 'u.last_name',
                 'u.bank_details',
                 'u.assigned_to',
-                'u.id'
+                'u.id',
+                'u.company_id'
             ])
             ->get();
 

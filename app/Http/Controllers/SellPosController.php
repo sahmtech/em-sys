@@ -109,8 +109,20 @@ class SellPosController extends Controller
         $this->notificationUtil = $notificationUtil;
 
         $this->dummyPaymentLine = [
-            'method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
-            'is_return' => 0, 'transaction_no' => '',
+            'method' => 'cash',
+            'amount' => 0,
+            'note' => '',
+            'card_transaction_number' => '',
+            'card_number' => '',
+            'card_type' => '',
+            'card_holder_name' => '',
+            'card_month' => '',
+            'card_year' => '',
+            'card_security' => '',
+            'cheque_number' => '',
+            'bank_account_number' => '',
+            'is_return' => 0,
+            'transaction_no' => '',
         ];
 
         $this->shipping_status_colors = [
@@ -340,355 +352,355 @@ class SellPosController extends Controller
             return redirect()->action([\App\Http\Controllers\CashRegisterController::class, 'create']);
         }
 
-        try {
+        // try {
 
 
-            $input['status'] = 'final';
+        $input['status'] = 'final';
 
-            $input['is_quotation'] = 0;
-            //status is send as quotation from Add sales screen.
-            if ($input['status'] == 'quotation') {
-                $input['status'] = 'draft';
-                $input['is_quotation'] = 1;
-                $input['sub_status'] = 'quotation';
-            } elseif ($input['status'] == 'proforma') {
-                $input['status'] = 'draft';
-                $input['sub_status'] = 'proforma';
+        $input['is_quotation'] = 0;
+        //status is send as quotation from Add sales screen.
+        if ($input['status'] == 'quotation') {
+            $input['status'] = 'draft';
+            $input['is_quotation'] = 1;
+            $input['sub_status'] = 'quotation';
+        } elseif ($input['status'] == 'proforma') {
+            $input['status'] = 'draft';
+            $input['sub_status'] = 'proforma';
+        }
+
+        //Add change return
+        $change_return = $this->dummyPaymentLine;
+        if (!empty($input['payment']['change_return'])) {
+            $change_return = $input['payment']['change_return'];
+            unset($input['payment']['change_return']);
+        }
+        // dd($input);
+        //Check Customer credit limit
+        $is_credit_limit_exeeded = $this->transactionUtil->isCustomerCreditLimitExeeded($input);
+
+        if ($is_credit_limit_exeeded !== false) {
+            $credit_limit_amount = $this->transactionUtil->num_f($is_credit_limit_exeeded, true);
+            $output = [
+                'success' => 0,
+                'msg' => __('lang_v1.cutomer_credit_limit_exeeded', ['credit_limit' => $credit_limit_amount]),
+            ];
+            if (!$is_direct_sale) {
+                return $output;
+            } else {
+                return redirect()
+                    ->action([\App\Http\Controllers\SellController::class, 'index'])
+                    ->with('status', $output);
+            }
+        }
+
+        if (!empty($input['products'])) {
+            $business_id = $request->session()->get('user.business_id');
+
+            //Check if subscribed or not, then check for users quota
+            if (!$this->moduleUtil->isSubscribed($business_id)) {
+                return $this->moduleUtil->expiredResponse();
+            } elseif (!$this->moduleUtil->isQuotaAvailable('invoices', $business_id)) {
+                return $this->moduleUtil->quotaExpiredResponse('invoices', $business_id, action([\App\Http\Controllers\SellPosController::class, 'index']));
             }
 
-            //Add change return
-            $change_return = $this->dummyPaymentLine;
-            if (!empty($input['payment']['change_return'])) {
-                $change_return = $input['payment']['change_return'];
-                unset($input['payment']['change_return']);
-            }
-            // dd($input);
-            //Check Customer credit limit
-            $is_credit_limit_exeeded = $this->transactionUtil->isCustomerCreditLimitExeeded($input);
+            $user_id = $request->session()->get('user.id');
 
-            if ($is_credit_limit_exeeded !== false) {
-                $credit_limit_amount = $this->transactionUtil->num_f($is_credit_limit_exeeded, true);
-                $output = [
-                    'success' => 0,
-                    'msg' => __('lang_v1.cutomer_credit_limit_exeeded', ['credit_limit' => $credit_limit_amount]),
-                ];
+            $discount = [
+                'discount_type' => $input['discount_type'],
+                'discount_amount' => $input['discount_amount'],
+            ];
+            $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
+
+            DB::beginTransaction();
+
+            if (empty($request->input('transaction_date'))) {
+                $input['transaction_date'] = \Carbon::now();
+            } else {
+                $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
+            }
+            if ($is_direct_sale) {
+                $input['is_direct_sale'] = 1;
+            }
+
+            //Set commission agent
+            $input['commission_agent'] = !empty($request->input('commission_agent')) ? $request->input('commission_agent') : null;
+            $commsn_agnt_setting = $request->session()->get('business.sales_cmsn_agnt');
+            if ($commsn_agnt_setting == 'logged_in_user') {
+                $input['commission_agent'] = $user_id;
+            }
+
+            if (isset($input['exchange_rate']) && $this->transactionUtil->num_uf($input['exchange_rate']) == 0) {
+                $input['exchange_rate'] = 1;
+            }
+
+            //Customer group details
+            $contact_id = $request->get('contact_id', null);
+            $cg = $this->contactUtil->getCustomerGroup($business_id, $contact_id);
+            $input['customer_group_id'] = (empty($cg) || empty($cg->id)) ? null : $cg->id;
+
+            //set selling price group id
+            $price_group_id = $request->has('price_group') ? $request->input('price_group') : null;
+
+            //If default price group for the location exists
+            $price_group_id = $price_group_id == 0 && $request->has('default_price_group') ? $request->input('default_price_group') : $price_group_id;
+
+            $input['is_suspend'] = isset($input['is_suspend']) && 1 == $input['is_suspend'] ? 1 : 0;
+            if ($input['is_suspend']) {
+                $input['sale_note'] = !empty($input['additional_notes']) ? $input['additional_notes'] : null;
+            }
+
+            //Generate reference number
+            if (!empty($input['is_recurring'])) {
+                //Update reference count
+                $ref_count = $this->transactionUtil->setAndGetReferenceCount('subscription');
+                $input['subscription_no'] = $this->transactionUtil->generateReferenceNumber('subscription', $ref_count);
+            }
+
+            if (!empty($request->input('invoice_scheme_id'))) {
+                $input['invoice_scheme_id'] = $request->input('invoice_scheme_id');
+            }
+
+            //Types of service
+            if ($this->moduleUtil->isModuleEnabled('types_of_service')) {
+                $input['types_of_service_id'] = $request->input('types_of_service_id');
+                $price_group_id = !empty($request->input('types_of_service_price_group')) ? $request->input('types_of_service_price_group') : $price_group_id;
+                $input['packing_charge'] = !empty($request->input('packing_charge')) ?
+                    $this->transactionUtil->num_uf($request->input('packing_charge')) : 0;
+                $input['packing_charge_type'] = $request->input('packing_charge_type');
+                $input['service_custom_field_1'] = !empty($request->input('service_custom_field_1')) ?
+                    $request->input('service_custom_field_1') : null;
+                $input['service_custom_field_2'] = !empty($request->input('service_custom_field_2')) ?
+                    $request->input('service_custom_field_2') : null;
+                $input['service_custom_field_3'] = !empty($request->input('service_custom_field_3')) ?
+                    $request->input('service_custom_field_3') : null;
+                $input['service_custom_field_4'] = !empty($request->input('service_custom_field_4')) ?
+                    $request->input('service_custom_field_4') : null;
+                $input['service_custom_field_5'] = !empty($request->input('service_custom_field_5')) ?
+                    $request->input('service_custom_field_5') : null;
+                $input['service_custom_field_6'] = !empty($request->input('service_custom_field_6')) ?
+                    $request->input('service_custom_field_6') : null;
+            }
+
+            if ($request->input('additional_expense_value_1') != '') {
+                $input['additional_expense_key_1'] = $request->input('additional_expense_key_1');
+                $input['additional_expense_value_1'] = $request->input('additional_expense_value_1');
+            }
+
+            if ($request->input('additional_expense_value_2') != '') {
+                $input['additional_expense_key_2'] = $request->input('additional_expense_key_2');
+                $input['additional_expense_value_2'] = $request->input('additional_expense_value_2');
+            }
+
+            if ($request->input('additional_expense_value_3') != '') {
+                $input['additional_expense_key_3'] = $request->input('additional_expense_key_3');
+                $input['additional_expense_value_3'] = $request->input('additional_expense_value_3');
+            }
+
+            if ($request->input('additional_expense_value_4') != '') {
+                $input['additional_expense_key_4'] = $request->input('additional_expense_key_4');
+                $input['additional_expense_value_4'] = $request->input('additional_expense_value_4');
+            }
+
+            $input['selling_price_group_id'] = $price_group_id;
+
+            if ($this->transactionUtil->isModuleEnabled('tables')) {
+                $input['res_table_id'] = request()->get('res_table_id');
+            }
+            if ($this->transactionUtil->isModuleEnabled('service_staff')) {
+                $input['res_waiter_id'] = request()->get('res_waiter_id');
+            }
+
+            //upload document
+            $input['document'] = $this->transactionUtil->uploadFile($request, 'sell_document', 'documents');
+
+            $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
+
+            //Upload Shipping documents
+            Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
+
+            $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
+
+            $change_return['amount'] = $input['change_return'] ?? 0;
+            $change_return['is_return'] = 1;
+
+            $input['payment'][] = $change_return;
+
+            $is_credit_sale = isset($input['is_credit_sale']) && $input['is_credit_sale'] == 1 ? true : false;
+
+            if (!$transaction->is_suspend && !empty($input['payment']) && !$is_credit_sale) {
+                $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment'], null, null, true, $input);
+            }
+
+            //Check for final and do some processing.
+            if ($input['status'] == 'final') {
                 if (!$is_direct_sale) {
-                    return $output;
-                } else {
-                    return redirect()
-                        ->action([\App\Http\Controllers\SellController::class, 'index'])
-                        ->with('status', $output);
-                }
-            }
+                    //set service staff timer
 
-            if (!empty($input['products'])) {
-                $business_id = $request->session()->get('user.business_id');
+                    foreach ($input['products'] as $product_line) {
+                        if (!empty($product_line['res_service_staff_id'])) {
+                            $product = Product::find($product_line['product_id']);
 
-                //Check if subscribed or not, then check for users quota
-                if (!$this->moduleUtil->isSubscribed($business_id)) {
-                    return $this->moduleUtil->expiredResponse();
-                } elseif (!$this->moduleUtil->isQuotaAvailable('invoices', $business_id)) {
-                    return $this->moduleUtil->quotaExpiredResponse('invoices', $business_id, action([\App\Http\Controllers\SellPosController::class, 'index']));
-                }
+                            if (!empty($product->preparation_time_in_minutes)) {
+                                $service_staff = User::find($product_line['res_service_staff_id']);
 
-                $user_id = $request->session()->get('user.id');
+                                $base_time = \Carbon::parse($transaction->transaction_date);
 
-                $discount = [
-                    'discount_type' => $input['discount_type'],
-                    'discount_amount' => $input['discount_amount'],
-                ];
-                $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
-
-                DB::beginTransaction();
-
-                if (empty($request->input('transaction_date'))) {
-                    $input['transaction_date'] = \Carbon::now();
-                } else {
-                    $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
-                }
-                if ($is_direct_sale) {
-                    $input['is_direct_sale'] = 1;
-                }
-
-                //Set commission agent
-                $input['commission_agent'] = !empty($request->input('commission_agent')) ? $request->input('commission_agent') : null;
-                $commsn_agnt_setting = $request->session()->get('business.sales_cmsn_agnt');
-                if ($commsn_agnt_setting == 'logged_in_user') {
-                    $input['commission_agent'] = $user_id;
-                }
-
-                if (isset($input['exchange_rate']) && $this->transactionUtil->num_uf($input['exchange_rate']) == 0) {
-                    $input['exchange_rate'] = 1;
-                }
-
-                //Customer group details
-                $contact_id = $request->get('contact_id', null);
-                $cg = $this->contactUtil->getCustomerGroup($business_id, $contact_id);
-                $input['customer_group_id'] = (empty($cg) || empty($cg->id)) ? null : $cg->id;
-
-                //set selling price group id
-                $price_group_id = $request->has('price_group') ? $request->input('price_group') : null;
-
-                //If default price group for the location exists
-                $price_group_id = $price_group_id == 0 && $request->has('default_price_group') ? $request->input('default_price_group') : $price_group_id;
-
-                $input['is_suspend'] = isset($input['is_suspend']) && 1 == $input['is_suspend'] ? 1 : 0;
-                if ($input['is_suspend']) {
-                    $input['sale_note'] = !empty($input['additional_notes']) ? $input['additional_notes'] : null;
-                }
-
-                //Generate reference number
-                if (!empty($input['is_recurring'])) {
-                    //Update reference count
-                    $ref_count = $this->transactionUtil->setAndGetReferenceCount('subscription');
-                    $input['subscription_no'] = $this->transactionUtil->generateReferenceNumber('subscription', $ref_count);
-                }
-
-                if (!empty($request->input('invoice_scheme_id'))) {
-                    $input['invoice_scheme_id'] = $request->input('invoice_scheme_id');
-                }
-
-                //Types of service
-                if ($this->moduleUtil->isModuleEnabled('types_of_service')) {
-                    $input['types_of_service_id'] = $request->input('types_of_service_id');
-                    $price_group_id = !empty($request->input('types_of_service_price_group')) ? $request->input('types_of_service_price_group') : $price_group_id;
-                    $input['packing_charge'] = !empty($request->input('packing_charge')) ?
-                        $this->transactionUtil->num_uf($request->input('packing_charge')) : 0;
-                    $input['packing_charge_type'] = $request->input('packing_charge_type');
-                    $input['service_custom_field_1'] = !empty($request->input('service_custom_field_1')) ?
-                        $request->input('service_custom_field_1') : null;
-                    $input['service_custom_field_2'] = !empty($request->input('service_custom_field_2')) ?
-                        $request->input('service_custom_field_2') : null;
-                    $input['service_custom_field_3'] = !empty($request->input('service_custom_field_3')) ?
-                        $request->input('service_custom_field_3') : null;
-                    $input['service_custom_field_4'] = !empty($request->input('service_custom_field_4')) ?
-                        $request->input('service_custom_field_4') : null;
-                    $input['service_custom_field_5'] = !empty($request->input('service_custom_field_5')) ?
-                        $request->input('service_custom_field_5') : null;
-                    $input['service_custom_field_6'] = !empty($request->input('service_custom_field_6')) ?
-                        $request->input('service_custom_field_6') : null;
-                }
-
-                if ($request->input('additional_expense_value_1') != '') {
-                    $input['additional_expense_key_1'] = $request->input('additional_expense_key_1');
-                    $input['additional_expense_value_1'] = $request->input('additional_expense_value_1');
-                }
-
-                if ($request->input('additional_expense_value_2') != '') {
-                    $input['additional_expense_key_2'] = $request->input('additional_expense_key_2');
-                    $input['additional_expense_value_2'] = $request->input('additional_expense_value_2');
-                }
-
-                if ($request->input('additional_expense_value_3') != '') {
-                    $input['additional_expense_key_3'] = $request->input('additional_expense_key_3');
-                    $input['additional_expense_value_3'] = $request->input('additional_expense_value_3');
-                }
-
-                if ($request->input('additional_expense_value_4') != '') {
-                    $input['additional_expense_key_4'] = $request->input('additional_expense_key_4');
-                    $input['additional_expense_value_4'] = $request->input('additional_expense_value_4');
-                }
-
-                $input['selling_price_group_id'] = $price_group_id;
-
-                if ($this->transactionUtil->isModuleEnabled('tables')) {
-                    $input['res_table_id'] = request()->get('res_table_id');
-                }
-                if ($this->transactionUtil->isModuleEnabled('service_staff')) {
-                    $input['res_waiter_id'] = request()->get('res_waiter_id');
-                }
-
-                //upload document
-                $input['document'] = $this->transactionUtil->uploadFile($request, 'sell_document', 'documents');
-
-                $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
-
-                //Upload Shipping documents
-                Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
-
-                $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
-
-                $change_return['amount'] = $input['change_return'] ?? 0;
-                $change_return['is_return'] = 1;
-
-                $input['payment'][] = $change_return;
-
-                $is_credit_sale = isset($input['is_credit_sale']) && $input['is_credit_sale'] == 1 ? true : false;
-
-                if (!$transaction->is_suspend && !empty($input['payment']) && !$is_credit_sale) {
-                    $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment'], null, null, true, $input);
-                }
-
-                //Check for final and do some processing.
-                if ($input['status'] == 'final') {
-                    if (!$is_direct_sale) {
-                        //set service staff timer
-
-                        foreach ($input['products'] as $product_line) {
-                            if (!empty($product_line['res_service_staff_id'])) {
-                                $product = Product::find($product_line['product_id']);
-
-                                if (!empty($product->preparation_time_in_minutes)) {
-                                    $service_staff = User::find($product_line['res_service_staff_id']);
-
-                                    $base_time = \Carbon::parse($transaction->transaction_date);
-
-                                    //if already assigned set base time as available_at
-                                    if (!empty($service_staff->available_at) && \Carbon::parse($service_staff->available_at)->gt(\Carbon::now())) {
-                                        $base_time = \Carbon::parse($service_staff->available_at);
-                                    }
-
-                                    $total_minutes = $product->preparation_time_in_minutes * $this->transactionUtil->num_uf($product_line['quantity']);
-
-                                    $service_staff->available_at = $base_time->addMinutes($total_minutes);
-                                    $service_staff->save();
+                                //if already assigned set base time as available_at
+                                if (!empty($service_staff->available_at) && \Carbon::parse($service_staff->available_at)->gt(\Carbon::now())) {
+                                    $base_time = \Carbon::parse($service_staff->available_at);
                                 }
+
+                                $total_minutes = $product->preparation_time_in_minutes * $this->transactionUtil->num_uf($product_line['quantity']);
+
+                                $service_staff->available_at = $base_time->addMinutes($total_minutes);
+                                $service_staff->save();
                             }
                         }
                     }
-                    //update product stock
+                }
+                //update product stock
 
-                    foreach ($input['products'] as $product) {
-                        $decrease_qty = $this->productUtil
-                            ->num_uf($product['quantity']);
-                        if (!empty($product['base_unit_multiplier'])) {
-                            $decrease_qty = $decrease_qty * $product['base_unit_multiplier'];
-                        }
+                foreach ($input['products'] as $product) {
+                    $decrease_qty = $this->productUtil
+                        ->num_uf($product['quantity']);
+                    if (!empty($product['base_unit_multiplier'])) {
+                        $decrease_qty = $decrease_qty * $product['base_unit_multiplier'];
+                    }
 
-                        if ($product['enable_stock']) {
-                            $this->productUtil->decreaseProductQuantity(
-                                $product['product_id'],
-                                $product['variation_id'],
-                                $input['location_id'],
-                                $decrease_qty
+                    if ($product['enable_stock']) {
+                        $this->productUtil->decreaseProductQuantity(
+                            $product['product_id'],
+                            $product['variation_id'],
+                            $input['location_id'],
+                            $decrease_qty
+                        );
+                    }
+
+                    if ($product['product_type'] == 'combo') {
+                        //Decrease quantity of combo as well.
+                        $this->productUtil
+                            ->decreaseProductQuantityCombo(
+                                $product['combo'],
+                                $input['location_id']
                             );
-                        }
-
-                        if ($product['product_type'] == 'combo') {
-                            //Decrease quantity of combo as well.
-                            $this->productUtil
-                                ->decreaseProductQuantityCombo(
-                                    $product['combo'],
-                                    $input['location_id']
-                                );
-                        }
                     }
-
-
-                    //Add payments to Cash Register
-                    if (!$is_direct_sale && !$transaction->is_suspend && !empty($input['payment']) && !$is_credit_sale) {
-                        $this->cashRegisterUtil->addSellPayments($transaction, $input['payment']);
-                    }
-
-                    //Update payment status
-                    $payment_status = $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
-
-                    $transaction->payment_status = $payment_status;
-
-                    if ($request->session()->get('business.enable_rp') == 1) {
-                        $redeemed = !empty($input['rp_redeemed']) ? $input['rp_redeemed'] : 0;
-                        $this->transactionUtil->updateCustomerRewardPoints($contact_id, $transaction->rp_earned, 0, $redeemed);
-                    }
-
-                    //Allocate the quantity from purchase and add mapping of
-                    //purchase & sell lines in
-                    //transaction_sell_lines_purchase_lines table
-                    $business_details = $this->businessUtil->getDetails($business_id);
-                    $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
-
-                    $business = [
-                        'id' => $business_id,
-                        'accounting_method' => $request->session()->get('business.accounting_method'),
-                        'location_id' => $input['location_id'],
-                        'pos_settings' => $pos_settings,
-                    ];
-                    $this->transactionUtil->mapPurchaseSell($business, $transaction->sell_lines, 'purchase');
-
-                    //Auto send notification
-                    $whatsapp_link = $this->notificationUtil->autoSendNotification($business_id, 'new_sale', $transaction, $transaction->contact);
                 }
 
-                if (!empty($transaction->sales_order_ids)) {
-                    $this->transactionUtil->updateSalesOrderStatus($transaction->sales_order_ids);
+
+                //Add payments to Cash Register
+                if (!$is_direct_sale && !$transaction->is_suspend && !empty($input['payment']) && !$is_credit_sale) {
+                    $this->cashRegisterUtil->addSellPayments($transaction, $input['payment']);
                 }
 
-                $this->moduleUtil->getModuleData('after_sale_saved', ['transaction' => $transaction, 'input' => $input]);
+                //Update payment status
+                $payment_status = $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
 
-                Media::uploadMedia($business_id, $transaction, $request, 'documents');
+                $transaction->payment_status = $payment_status;
 
-                $this->transactionUtil->activityLog($transaction, 'added');
-                $util = new Util();
-                $auto_migration = $util->saveAutoMigration($request, $transaction);
-
-                DB::commit();
-                SellCreatedOrModified::dispatch($transaction);
-
-                if ($request->input('is_save_and_print') == 1) {
-                    $url = $this->transactionUtil->getInvoiceUrl($transaction->id, $business_id);
-
-                    return redirect()->to($url . '?print_on_load=true');
+                if ($request->session()->get('business.enable_rp') == 1) {
+                    $redeemed = !empty($input['rp_redeemed']) ? $input['rp_redeemed'] : 0;
+                    $this->transactionUtil->updateCustomerRewardPoints($contact_id, $transaction->rp_earned, 0, $redeemed);
                 }
 
-                $msg = trans('sale.pos_sale_added');
-                $receipt = '';
-                $invoice_layout_id = $request->input('invoice_layout_id');
-                $print_invoice = false;
-                // if (! $is_direct_sale) {
-                //     if ($input['status'] == 'draft') {
-                //         $msg = trans('sale.draft_added');
+                //Allocate the quantity from purchase and add mapping of
+                //purchase & sell lines in
+                //transaction_sell_lines_purchase_lines table
+                $business_details = $this->businessUtil->getDetails($business_id);
+                $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
-                //         if ($input['is_quotation'] == 1) {
-                //             $msg = trans('lang_v1.quotation_added');
-                //             $print_invoice = true;
-                //         }
-                //     } elseif ($input['status'] == 'final') {
-                //         $print_invoice = true;
-                //     }
-                // }
-                $input['status'] = 'final';
-                $print_invoice = true;
-
-                if ($transaction->is_suspend == 1 && empty($pos_settings['print_on_suspend'])) {
-                    $print_invoice = false;
-                }
-
-                if (!auth()->user()->can('print_invoice')) {
-                    $print_invoice = false;
-                }
-
-                if ($print_invoice) {
-                    $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
-                }
-
-                $output = ['success' => 1, 'msg' => $msg, 'receipt' => $receipt];
-
-                if (!empty($whatsapp_link)) {
-                    $output['whatsapp_link'] = $whatsapp_link;
-                }
-            } else {
-                $output = [
-                    'success' => 0,
-                    'msg' => trans('messages.something_went_wrong'),
+                $business = [
+                    'id' => $business_id,
+                    'accounting_method' => $request->session()->get('business.accounting_method'),
+                    'location_id' => $input['location_id'],
+                    'pos_settings' => $pos_settings,
                 ];
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $msg = trans('messages.something_went_wrong');
+                $this->transactionUtil->mapPurchaseSell($business, $transaction->sell_lines, 'purchase');
 
-            if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
-                $msg = $e->getMessage();
-            }
-            if (get_class($e) == \App\Exceptions\AdvanceBalanceNotAvailable::class) {
-                $msg = $e->getMessage();
+                //Auto send notification
+                $whatsapp_link = $this->notificationUtil->autoSendNotification($business_id, 'new_sale', $transaction, $transaction->contact);
             }
 
+            if (!empty($transaction->sales_order_ids)) {
+                $this->transactionUtil->updateSalesOrderStatus($transaction->sales_order_ids);
+            }
+
+            $this->moduleUtil->getModuleData('after_sale_saved', ['transaction' => $transaction, 'input' => $input]);
+
+            Media::uploadMedia($business_id, $transaction, $request, 'documents');
+
+            $this->transactionUtil->activityLog($transaction, 'added');
+            $util = new Util();
+            $auto_migration = $util->saveAutoMigration($request, $transaction);
+
+            DB::commit();
+            SellCreatedOrModified::dispatch($transaction);
+
+            if ($request->input('is_save_and_print') == 1) {
+                $url = $this->transactionUtil->getInvoiceUrl($transaction->id, $business_id);
+
+                return redirect()->to($url . '?print_on_load=true');
+            }
+
+            $msg = trans('sale.pos_sale_added');
+            $receipt = '';
+            $invoice_layout_id = $request->input('invoice_layout_id');
+            $print_invoice = false;
+            // if (! $is_direct_sale) {
+            //     if ($input['status'] == 'draft') {
+            //         $msg = trans('sale.draft_added');
+
+            //         if ($input['is_quotation'] == 1) {
+            //             $msg = trans('lang_v1.quotation_added');
+            //             $print_invoice = true;
+            //         }
+            //     } elseif ($input['status'] == 'final') {
+            //         $print_invoice = true;
+            //     }
+            // }
+            $input['status'] = 'final';
+            $print_invoice = true;
+
+            if ($transaction->is_suspend == 1 && empty($pos_settings['print_on_suspend'])) {
+                $print_invoice = false;
+            }
+
+            if (!auth()->user()->can('print_invoice')) {
+                $print_invoice = false;
+            }
+
+            if ($print_invoice) {
+                $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
+            }
+
+            $output = ['success' => 1, 'msg' => $msg, 'receipt' => $receipt];
+
+            if (!empty($whatsapp_link)) {
+                $output['whatsapp_link'] = $whatsapp_link;
+            }
+        } else {
             $output = [
                 'success' => 0,
-                'msg' => $msg,
+                'msg' => trans('messages.something_went_wrong'),
             ];
         }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        //     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        //     $msg = trans('messages.something_went_wrong');
+
+        //     if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
+        //         $msg = $e->getMessage();
+        //     }
+        //     if (get_class($e) == \App\Exceptions\AdvanceBalanceNotAvailable::class) {
+        //         $msg = $e->getMessage();
+        //     }
+
+        //     $output = [
+        //         'success' => 0,
+        //         'msg' => $msg,
+        //     ];
+        // }
 
         if (!$is_direct_sale) {
             return $output;
@@ -738,8 +750,39 @@ class SellPosController extends Controller
         try {
             $business_id = $request->session()->get('user.business_id');
             $form_fields = [
-                'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'tax_type', 'sku',
-                'alert_quantity', 'type', 'sub_unit_ids', 'sub_category_id', 'weight', 'product_description', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20'
+                'brand_id',
+                'unit_id',
+                'category_id',
+                'tax',
+                'barcode_type',
+                'tax_type',
+                'sku',
+                'alert_quantity',
+                'type',
+                'sub_unit_ids',
+                'sub_category_id',
+                'weight',
+                'product_description',
+                'product_custom_field1',
+                'product_custom_field2',
+                'product_custom_field3',
+                'product_custom_field4',
+                'product_custom_field5',
+                'product_custom_field6',
+                'product_custom_field7',
+                'product_custom_field8',
+                'product_custom_field9',
+                'product_custom_field10',
+                'product_custom_field11',
+                'product_custom_field12',
+                'product_custom_field13',
+                'product_custom_field14',
+                'product_custom_field15',
+                'product_custom_field16',
+                'product_custom_field17',
+                'product_custom_field18',
+                'product_custom_field19',
+                'product_custom_field20'
             ];
 
             $module_form_fields = $this->moduleUtil->getModuleData('product_form_fields');
@@ -906,7 +949,7 @@ class SellPosController extends Controller
         $business_details = $this->businessUtil->getDetails($business_id);
         $location_details = BusinessLocation::find($location_id);
 
-        if ($from_pos_screen && $location_details->print_receipt_on_invoice != 1) {
+        if ($from_pos_screen && $location_details?->print_receipt_on_invoice != 1) {
             return $output;
         }
         //Check if printing of invoice is enabled or not.
@@ -919,7 +962,14 @@ class SellPosController extends Controller
         //Check if printer setting is provided.
         $receipt_printer_type = is_null($printer_type) ? $location_details->receipt_printer_type : $printer_type;
 
-        $receipt_details = $this->transactionUtil->getReceiptDetails($transaction_id, $location_id, $invoice_layout, $business_details, $location_details, $receipt_printer_type);
+        $receipt_details = $this->transactionUtil->getReceiptDetails(
+            $transaction_id,
+            $location_id,
+            $invoice_layout,
+            $business_details,
+            $location_details,
+            $receipt_printer_type
+        );
 
         $currency_details = [
             'symbol' => $business_details->currency_symbol,
@@ -934,11 +984,34 @@ class SellPosController extends Controller
             ->pluck('name', 'id');
         $query = Transaction::where('business_id', $business_id)
             ->where('id', $transaction_id)
-            ->with(['contact', 'delivery_person_user', 'sell_lines' => function ($q) {
-                $q->whereNull('parent_sell_line_id');
-            }, 'sell_lines.product', 'sell_lines.product.unit', 'sell_lines.product.second_unit', 'sell_lines.variations', 'sell_lines.variations.product_variation', 'payment_lines', 'sell_lines.modifiers', 'sell_lines.lot_details', 'tax', 'sell_lines.sub_unit', 'table', 'service_staff', 'sell_lines.service_staff', 'types_of_service', 'sell_lines.warranties', 'media']);
+            ->with([
+                'contact',
+                'delivery_person_user',
+                'sell_lines' => function ($q) {
+                    $q->whereNull('parent_sell_line_id');
+                },
+                'sell_lines.product',
+                'sell_lines.product.unit',
+                'sell_lines.product.second_unit',
+                'sell_lines.variations',
+                'sell_lines.variations.product_variation',
+                'payment_lines',
+                'sell_lines.modifiers',
+                'sell_lines.lot_details',
+                'tax',
+                'sell_lines.sub_unit',
+                'table',
+                'service_staff',
+                'sell_lines.service_staff',
+                'types_of_service',
+                'sell_lines.warranties',
+                'media'
+            ]);
 
-        if (!auth()->user()->can('sell.view') && !auth()->user()->can('direct_sell.access') && auth()->user()->can('view_own_sell_only')) {
+        if (
+            !auth()->user()->can('sell.view') && !auth()->user()->can('direct_sell.access') &&
+            auth()->user()->can('view_own_sell_only')
+        ) {
             $query->where('transactions.created_by', request()->session()->get('user.id'));
         }
 
@@ -969,14 +1042,18 @@ class SellPosController extends Controller
         $order_taxes = [];
         if (!empty($sell->tax)) {
             if ($sell->tax->is_tax_group) {
-                $order_taxes = $this->transactionUtil->sumGroupTaxDetails($this->transactionUtil->groupTaxDetails($sell->tax, $sell->tax_amount));
+                $order_taxes = $this->transactionUtil->sumGroupTaxDetails($this->transactionUtil->groupTaxDetails(
+                    $sell->tax,
+                    $sell->tax_amount
+                ));
             } else {
                 $order_taxes[$sell->tax->name] = $sell->tax_amount;
             }
         }
         // dd($sell->tax, $sell->tax_amount);
         $business_details = $this->businessUtil->getDetails($business_id);
-        $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+        $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+            json_decode($business_details->pos_settings, true);
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
         $shipping_status_colors = $this->shipping_status_colors;
         $common_settings = session()->get('business.common_settings');
@@ -1012,7 +1089,8 @@ class SellPosController extends Controller
             $output['printer_config'] = $this->businessUtil->printerConfig($business_id, $location_details->printer_id);
             $output['data'] = $receipt_details;
         } else {
-            $layout = !empty($receipt_details->design) ? 'sale_pos.receipts.' . $receipt_details->design : 'sale_pos.receipts.classic';
+            $layout = !empty($receipt_details->design) ? 'sale_pos.receipts.' . $receipt_details->design :
+                'sale_pos.receipts.classic';
 
             $output['html_content'] = view($layout, compact(
                 'receipt_details',
@@ -1039,7 +1117,7 @@ class SellPosController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -1050,7 +1128,7 @@ class SellPosController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -1157,8 +1235,9 @@ class SellPosController extends Controller
                 'units.id as unit_id',
                 'transaction_sell_lines.sub_unit_id',
 
-                //qty_available not added when negative to avoid max quanity getting decreased in edit and showing error in max quantity validation
-                DB::raw('IF(vld.qty_available > 0, vld.qty_available + transaction_sell_lines.quantity, transaction_sell_lines.quantity) AS qty_available')
+                //qty_available not added when negative to avoid max quanity getting decreased in edit and showing error in max quantit validation
+                DB::raw('IF(vld.qty_available > 0, vld.qty_available + transaction_sell_lines.quantity, transaction_sell_lines.quantity)AS qty_available')
+
             )
             ->get();
         if (!empty($sell_details)) {
@@ -1178,7 +1257,10 @@ class SellPosController extends Controller
 
                     //Add available lot numbers for dropdown to sell lines
                     $lot_numbers = [];
-                    if (request()->session()->get('business.enable_lot_number') == 1 || request()->session()->get('business.enable_product_expiry') == 1) {
+                    if (
+                        request()->session()->get('business.enable_lot_number') == 1 ||
+                        request()->session()->get('business.enable_product_expiry') == 1
+                    ) {
                         $lot_number_obj = $this->transactionUtil->getLotNumbersFromVariation($value->variation_id, $business_id, $location_id);
                         foreach ($lot_number_obj as $lot_number) {
                             //If lot number is selected added ordered quantity to lot quantity available
@@ -1246,7 +1328,12 @@ class SellPosController extends Controller
                             $sell_details[$key]->qty_available = $sell_details[$key]->qty_available + $sell_details[$key]->quantity_ordered;
                         }
 
-                        $sell_details[$key]->formatted_qty_available = $this->productUtil->num_f($sell_details[$key]->qty_available, false, null, true);
+                        $sell_details[$key]->formatted_qty_available = $this->productUtil->num_f(
+                            $sell_details[$key]->qty_available,
+                            false,
+                            null,
+                            true
+                        );
                     }
                 }
             }
@@ -1261,7 +1348,8 @@ class SellPosController extends Controller
         }
 
         $shortcuts = json_decode($business_details->keyboard_shortcuts, true);
-        $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+        $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+            json_decode($business_details->pos_settings, true);
 
         $commsn_agnt_setting = $business_details->sales_cmsn_agnt;
         $commission_agent = [];
@@ -1272,7 +1360,8 @@ class SellPosController extends Controller
         }
 
         //If brands, category are enabled then send else false.
-        $categories = (request()->session()->get('business.enable_category') == 1) ? Category::catAndSubCategories($business_id) : false;
+        $categories = (request()->session()->get('business.enable_category') == 1) ? Category::catAndSubCategories($business_id)
+            : false;
         $brands = (request()->session()->get('business.enable_brand') == 1) ? Brands::forDropdown($business_id)
             ->prepend(__('lang_v1.all_brands'), 'all') : false;
 
@@ -1378,8 +1467,8 @@ class SellPosController extends Controller
      * Update the specified resource in storage.
      * TODO: Add edit log.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -1388,7 +1477,7 @@ class SellPosController extends Controller
             !auth()->user()->can('sell.update') && !auth()->user()->can('direct_sell.access') &&
             !auth()->user()->can('so.update') && !auth()->user()->can('edit_pos_payment')
         ) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1431,7 +1520,8 @@ class SellPosController extends Controller
                 }
 
                 //Check Customer credit limit
-                $is_credit_limit_exeeded = $transaction_before->type == 'sell' ? $this->transactionUtil->isCustomerCreditLimitExeeded($input, $id) : false;
+                $is_credit_limit_exeeded = $transaction_before->type == 'sell' ?
+                    $this->transactionUtil->isCustomerCreditLimitExeeded($input, $id) : false;
 
                 if ($is_credit_limit_exeeded !== false) {
                     $credit_limit_amount = $this->transactionUtil->num_f($is_credit_limit_exeeded, true);
@@ -1496,7 +1586,8 @@ class SellPosController extends Controller
                 //Types of service
                 if ($this->moduleUtil->isModuleEnabled('types_of_service')) {
                     $input['types_of_service_id'] = $request->input('types_of_service_id');
-                    $price_group_id = !empty($request->input('types_of_service_price_group')) ? $request->input('types_of_service_price_group') : $price_group_id;
+                    $price_group_id = !empty($request->input('types_of_service_price_group')) ?
+                        $request->input('types_of_service_price_group') : $price_group_id;
                     $input['packing_charge'] = !empty($request->input('packing_charge')) ?
                         $this->transactionUtil->num_uf($request->input('packing_charge')) : 0;
                     $input['packing_charge_type'] = $request->input('packing_charge_type');
@@ -1559,7 +1650,15 @@ class SellPosController extends Controller
                     $can_print_invoice = auth()->user()->can('print_invoice');
                     $invoice_layout_id = $request->input('invoice_layout_id');
 
-                    $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction_before->id, null, false, true, $invoice_layout_id);
+                    $receipt = $this->receiptContent(
+                        $business_id,
+                        $input['location_id'],
+                        $transaction_before->id,
+                        null,
+                        false,
+                        true,
+                        $invoice_layout_id
+                    );
                     $msg = trans('purchase.payment_updated_success');
 
                     $output = ['success' => 1, 'msg' => $msg, 'receipt' => $receipt];
@@ -1617,7 +1716,13 @@ class SellPosController extends Controller
                 }
 
                 //Update Sell lines
-                $deleted_lines = $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id'], true, $status_before);
+                $deleted_lines = $this->transactionUtil->createOrUpdateSellLines(
+                    $transaction,
+                    $input['products'],
+                    $input['location_id'],
+                    true,
+                    $status_before
+                );
 
                 //Update update lines
                 $is_credit_sale = isset($input['is_credit_sale']) && $input['is_credit_sale'] == 1 ? true : false;
@@ -1649,7 +1754,13 @@ class SellPosController extends Controller
                 }
 
                 if ($request->session()->get('business.enable_rp') == 1) {
-                    $this->transactionUtil->updateCustomerRewardPoints($contact_id, $transaction->rp_earned, $rp_earned_before, $transaction->rp_redeemed, $rp_redeemed_before);
+                    $this->transactionUtil->updateCustomerRewardPoints(
+                        $contact_id,
+                        $transaction->rp_earned,
+                        $rp_earned_before,
+                        $transaction->rp_redeemed,
+                        $rp_redeemed_before
+                    );
                 }
 
                 Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
@@ -1667,7 +1778,8 @@ class SellPosController extends Controller
                     //purchase & sell lines in
                     //transaction_sell_lines_purchase_lines table
                     $business_details = $this->businessUtil->getDetails($business_id);
-                    $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+                    $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+                        json_decode($business_details->pos_settings, true);
 
                     $business = [
                         'id' => $business_id,
@@ -1678,12 +1790,20 @@ class SellPosController extends Controller
                     $this->transactionUtil->adjustMappingPurchaseSell($status_before, $transaction, $business, $deleted_lines);
 
                     //Auto send notification
-                    $whatsapp_link = $this->notificationUtil->autoSendNotification($business_id, 'new_sale', $transaction, $transaction->contact);
+                    $whatsapp_link = $this->notificationUtil->autoSendNotification(
+                        $business_id,
+                        'new_sale',
+                        $transaction,
+                        $transaction->contact
+                    );
                 }
 
                 $log_properties = [];
                 if (isset($input['repair_completed_on'])) {
-                    $completed_on = !empty($input['repair_completed_on']) ? $this->transactionUtil->uf_date($input['repair_completed_on'], true) : null;
+                    $completed_on = !empty($input['repair_completed_on']) ? $this->transactionUtil->uf_date(
+                        $input['repair_completed_on'],
+                        true
+                    ) : null;
                     if ($transaction->repair_completed_on != $completed_on) {
                         $log_properties['completed_on_from'] = $transaction->repair_completed_on;
                         $log_properties['completed_on_to'] = $completed_on;
@@ -1716,14 +1836,30 @@ class SellPosController extends Controller
                 } elseif ($input['status'] == 'draft' && $input['is_quotation'] == 1) {
                     $msg = trans('lang_v1.quotation_updated');
                     if (!$is_direct_sale && $can_print_invoice) {
-                        $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
+                        $receipt = $this->receiptContent(
+                            $business_id,
+                            $input['location_id'],
+                            $transaction->id,
+                            null,
+                            false,
+                            true,
+                            $invoice_layout_id
+                        );
                     } else {
                         $receipt = '';
                     }
                 } elseif ($input['status'] == 'final') {
                     $msg = trans('sale.pos_sale_updated');
                     if (!$is_direct_sale && $can_print_invoice) {
-                        $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
+                        $receipt = $this->receiptContent(
+                            $business_id,
+                            $input['location_id'],
+                            $transaction->id,
+                            null,
+                            false,
+                            true,
+                            $invoice_layout_id
+                        );
                     } else {
                         $receipt = '';
                     }
@@ -1820,13 +1956,16 @@ class SellPosController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('sell.delete') && !auth()->user()->can('direct_sell.delete') && !auth()->user()->can('so.delete')) {
-            //temp  abort(403, 'Unauthorized action.');
+        if (
+            !auth()->user()->can('sell.delete') && !auth()->user()->can('direct_sell.delete') &&
+            !auth()->user()->can('so.delete')
+        ) {
+            //temp abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -1869,7 +2008,14 @@ class SellPosController extends Controller
                 $quantity = $sell_line->quantity - $sell_line->so_quantity_invoiced;
                 $sell_line->qty_available = $quantity;
                 $sell_line->formatted_qty_available = $this->transactionUtil->num_f($quantity);
-                $sell_line_row = $this->getSellLineRow($sell_line->variation_id, $sales_order->location_id, $quantity, $row_count, true, $sell_line);
+                $sell_line_row = $this->getSellLineRow(
+                    $sell_line->variation_id,
+                    $sales_order->location_id,
+                    $quantity,
+                    $row_count,
+                    true,
+                    $sell_line
+                );
                 $html .= $sell_line_row['html_content'];
                 $row_count++;
             }
@@ -1889,10 +2035,11 @@ class SellPosController extends Controller
         //Check for weighing scale barcode
         $weighing_barcode = request()->get('weighing_scale_barcode');
 
-        $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+        $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+            json_decode($business_details->pos_settings, true);
 
         // $check_qty = !empty($pos_settings['allow_overselling']) ? false : true;
-        $check_qty =  false;
+        $check_qty = false;
 
         $is_sales_order = request()->has('is_sales_order') && request()->input('is_sales_order') == 'true' ? true : false;
         $is_draft = request()->has('is_draft') && request()->input('is_draft') == 'true' ? true : false;
@@ -1930,7 +2077,10 @@ class SellPosController extends Controller
 
         //Get lot number dropdown if enabled
         $lot_numbers = [];
-        if (request()->session()->get('business.enable_lot_number') == 1 || request()->session()->get('business.enable_product_expiry') == 1) {
+        if (
+            request()->session()->get('business.enable_lot_number') == 1 ||
+            request()->session()->get('business.enable_product_expiry') == 1
+        ) {
             $lot_number_obj = $this->transactionUtil->getLotNumbersFromVariation($variation_id, $business_id, $location_id, true);
             foreach ($lot_number_obj as $lot_number) {
                 $lot_number->qty_formated = $this->productUtil->num_f($lot_number->qty_available);
@@ -1974,7 +2124,14 @@ class SellPosController extends Controller
         } else {
             $is_cg = !empty($cg->id) ? true : false;
 
-            $discount = $this->productUtil->getProductDiscount($product, $business_id, $location_id, $is_cg, $price_group, $variation_id);
+            $discount = $this->productUtil->getProductDiscount(
+                $product,
+                $business_id,
+                $location_id,
+                $is_cg,
+                $price_group,
+                $variation_id
+            );
 
             if ($is_direct_sell) {
                 $edit_discount = auth()->user()->can('edit_product_discount_from_sale_screen');
@@ -1985,7 +2142,25 @@ class SellPosController extends Controller
             }
 
             $output['html_content'] = view('sale_pos.product_row')
-                ->with(compact('product', 'row_count', 'tax_dropdown', 'enabled_modules', 'pos_settings', 'sub_units', 'discount', 'waiters', 'edit_discount', 'edit_price', 'purchase_line_id', 'warranties', 'quantity', 'is_direct_sell', 'so_line', 'is_sales_order', 'last_sell_line'))
+                ->with(compact(
+                    'product',
+                    'row_count',
+                    'tax_dropdown',
+                    'enabled_modules',
+                    'pos_settings',
+                    'sub_units',
+                    'discount',
+                    'waiters',
+                    'edit_discount',
+                    'edit_price',
+                    'purchase_line_id',
+                    'warranties',
+                    'quantity',
+                    'is_direct_sell',
+                    'so_line',
+                    'is_sales_order',
+                    'last_sell_line'
+                ))
                 ->render();
         }
 
@@ -2013,8 +2188,8 @@ class SellPosController extends Controller
     /**
      * Returns the HTML row for a product in POS
      *
-     * @param  int  $variation_id
-     * @param  int  $location_id
+     * @param int $variation_id
+     * @param int $location_id
      * @return \Illuminate\Http\Response
      */
     public function getProductRow($variation_id, $location_id)
@@ -2033,31 +2208,31 @@ class SellPosController extends Controller
             }
 
             // if ($variation_id == 'null' && !empty($weighing_barcode)) {
-            //     $product_details = $this->__parseWeighingBarcode($weighing_barcode);
-            //     if ($product_details['success']) {
-            //         $variation_id = $product_details['variation_id'];
-            //         $quantity = $product_details['qty'];
-            //     } else {
-            //         $output['success'] = false;
-            //         $output['msg'] = $product_details['msg'];
+            // $product_details = $this->__parseWeighingBarcode($weighing_barcode);
+            // if ($product_details['success']) {
+            // $variation_id = $product_details['variation_id'];
+            // $quantity = $product_details['qty'];
+            // } else {
+            // $output['success'] = false;
+            // $output['msg'] = $product_details['msg'];
 
-            //         return $output;
-            //     }
+            // return $output;
+            // }
             // }
 
             $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell);
 
             // if ($this->transactionUtil->isModuleEnabled('modifiers') && !$is_direct_sell) {
-            //     $variation = Variation::find($variation_id);
-            //     $business_id = request()->session()->get('user.business_id');
-            //     $this_product = Product::where('business_id', $business_id)
-            //         ->with(['modifier_sets'])
-            //         ->find($variation->product_id);
-            //     if (count($this_product->modifier_sets) > 0) {
-            //         $product_ms = $this_product->modifier_sets;
-            //         $output['html_modifier'] = view('restaurant.product_modifier_set.modifier_for_product')
-            //             ->with(compact('product_ms', 'row_count'))->render();
-            //     }
+            // $variation = Variation::find($variation_id);
+            // $business_id = request()->session()->get('user.business_id');
+            // $this_product = Product::where('business_id', $business_id)
+            // ->with(['modifier_sets'])
+            // ->find($variation->product_id);
+            // if (count($this_product->modifier_sets) > 0) {
+            // $product_ms = $this_product->modifier_sets;
+            // $output['html_modifier'] = view('restaurant.product_modifier_set.modifier_for_product')
+            // ->with(compact('product_ms', 'row_count'))->render();
+            // }
             // }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -2072,7 +2247,7 @@ class SellPosController extends Controller
     /**
      * Returns the HTML row for a payment in POS
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function getPaymentRow(Request $request)
@@ -2099,7 +2274,7 @@ class SellPosController extends Controller
     /**
      * Returns recent transactions
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function getRecentTransactions(Request $request)
@@ -2118,8 +2293,8 @@ class SellPosController extends Controller
         if ($transaction_status == 'final') {
             //Commented as credit sales not showing
             // if (!empty($register->id)) {
-            //     $query->leftjoin('cash_register_transactions as crt', 'transactions.id', '=', 'crt.transaction_id')
-            //     ->where('crt.cash_register_id', $register->id);
+            // $query->leftjoin('cash_register_transactions as crt', 'transactions.id', '=', 'crt.transaction_id')
+            // ->where('crt.cash_register_id', $register->id);
             // }
         }
 
@@ -2154,7 +2329,7 @@ class SellPosController extends Controller
     /**
      * Prints invoice for sell
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function printInvoice(Request $request, $transaction_id)
@@ -2186,25 +2361,35 @@ class SellPosController extends Controller
             $is_delivery_note = !empty($request->input('delivery_note')) ? true : false;
 
             $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
-            $receipt = $this->receiptContent($business_id, $transaction->location_id, $transaction_id, $printer_type, $is_package_slip, false, $invoice_layout_id, $is_delivery_note);
+            $receipt = $this->receiptContent(
+                $business_id,
+                $transaction->location_id,
+                $transaction_id,
+                $printer_type,
+                $is_package_slip,
+                false,
+                $invoice_layout_id,
+                $is_delivery_note
+            );
 
 
 
             if (!empty($receipt)) {
                 $output = [
-                    'success' => 1, 'receipt' => $receipt,
+                    'success' => 1,
+                    'receipt' => $receipt,
 
                 ];
             }
 
 
             // } catch (\Exception $e) {
-            //     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            // \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            //     $output = [
-            //         'success' => 0,
-            //         'msg' => trans('messages.something_went_wrong'),
-            //     ];
+            // $output = [
+            // 'success' => 0,
+            // 'msg' => trans('messages.something_went_wrong'),
+            // ];
             // }
 
             return $output;
@@ -2214,7 +2399,7 @@ class SellPosController extends Controller
     /**
      * Gives suggetion for product based on category
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function getProductSuggestion(Request $request)
@@ -2228,7 +2413,8 @@ class SellPosController extends Controller
             $check_qty = false;
             $business_id = $request->session()->get('user.business_id');
             $business = $request->session()->get('business');
-            $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business->pos_settings, true);
+            $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+                json_decode($business->pos_settings, true);
 
             $products = Variation::join('products as p', 'variations.product_id', '=', 'p.id')
                 ->join('product_locations as pl', 'pl.product_id', '=', 'p.id')
@@ -2329,13 +2515,13 @@ class SellPosController extends Controller
     /**
      * Shows invoice url.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function showInvoiceUrl($id)
     {
         // if (!auth()->user()->can('sell.update')) {
-        //    //temp  abort(403, 'Unauthorized action.');
+        // //temp abort(403, 'Unauthorized action.');
         // }
 
         if (request()->ajax()) {
@@ -2352,7 +2538,7 @@ class SellPosController extends Controller
     /**
      * Shows invoice to guest user.
      *
-     * @param  string  $token
+     * @param string $token
      * @return \Illuminate\Http\Response
      */
     public function showInvoice($token)
@@ -2362,12 +2548,21 @@ class SellPosController extends Controller
         if (!empty($transaction)) {
             if (Auth()->user()->id) {
                 $company_id = User::where('id', Auth()->user()->id)->first()->company_id ?? 1;
-                $transaction->location_id = $company_id == 2 ?   2 :  1;
+                $transaction->location_id = $company_id == 2 ? 2 : 1;
             }
             $invoice_layout_id = $transaction->is_direct_sale ? $transaction?->location?->sale_invoice_layout_id : null;
 
-            $receipt = $this->receiptContent($transaction->business_id, $transaction->location_id, $transaction->id, 'browser', false, false, $invoice_layout_id);
-            $pos_settings = empty($transaction->business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($transaction->business->pos_settings, true);
+            $receipt = $this->receiptContent(
+                $transaction->business_id,
+                $transaction->location_id,
+                $transaction->id,
+                'browser',
+                false,
+                false,
+                $invoice_layout_id
+            );
+            $pos_settings = empty($transaction->business->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+                json_decode($transaction->business->pos_settings, true);
             $payment_link = '';
             if (!empty($pos_settings['enable_payment_link']) && $transaction->payment_status != 'paid') {
                 $payment_link = $this->transactionUtil->getInvoicePaymentLink($transaction->id, $transaction->business_id);
@@ -2386,7 +2581,7 @@ class SellPosController extends Controller
     /**
      * Allows payment for the invoice by guest user.
      *
-     * @param  string  $token
+     * @param string $token
      * @return \Illuminate\Http\Response
      */
     public function invoicePayment($token)
@@ -2395,7 +2590,8 @@ class SellPosController extends Controller
         $transaction = Transaction::where('invoice_token', $token)->with(['business', 'contact', 'location'])->first();
         $business = $transaction->business;
         $business_details = $this->businessUtil->getDetails($business->id);
-        $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business->pos_settings, true);
+        $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+            json_decode($business->pos_settings, true);
 
         if (!empty($transaction) && $transaction->status == 'final' && !empty($pos_settings['enable_payment_link'])) {
             $title = $transaction->business->name . ' | ' . $transaction->invoice_no;
@@ -2408,7 +2604,17 @@ class SellPosController extends Controller
             $total_paid = $this->transactionUtil->num_f($paid_amount, true, $business_details);
 
             return view('sale_pos.partials.guest_payment_form')
-                ->with(compact('transaction', 'title', 'pos_settings', 'total_payable', 'total_payable_formatted', 'date_formatted', 'total_amount', 'total_paid', 'business_details'));
+                ->with(compact(
+                    'transaction',
+                    'title',
+                    'pos_settings',
+                    'total_payable',
+                    'total_payable_formatted',
+                    'date_formatted',
+                    'total_amount',
+                    'total_paid',
+                    'business_details'
+                ));
         } else {
             exit(__('messages.something_went_wrong'));
         }
@@ -2416,11 +2622,12 @@ class SellPosController extends Controller
 
     public function pay_razorpay($transaction, $total_payable, $request)
     {
-        $pos_settings = empty($transaction->business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($transaction->business->pos_settings, true);
+        $pos_settings = empty($transaction->business->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+            json_decode($transaction->business->pos_settings, true);
 
         $razorpay_payment_id = $request->razorpay_payment_id;
         $razorpay_api = new Api($pos_settings['razor_pay_key_id'], $pos_settings['razor_pay_key_secret']);
-        $payment = $razorpay_api->payment->fetch($razorpay_payment_id)->capture(['amount' => $total_payable * 100]); // Captures a payment
+        $payment = $razorpay_api->payment->fetch($razorpay_payment_id)->capture(['amount' => $total_payable * 100]); // Capturesa payment
 
         if (empty($payment->error_code)) {
             return $payment->id;
@@ -2434,7 +2641,8 @@ class SellPosController extends Controller
 
     public function pay_stripe($transaction, $total_payable, $request)
     {
-        $pos_settings = empty($transaction->business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($transaction->business->pos_settings, true);
+        $pos_settings = empty($transaction->business->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+            json_decode($transaction->business->pos_settings, true);
 
         Stripe::setApiKey($pos_settings['stripe_secret_key']);
 
@@ -2471,7 +2679,11 @@ class SellPosController extends Controller
             if (!empty($payment_id)) {
                 DB::beginTransaction();
                 $ref_count = $this->transactionUtil->setAndGetReferenceCount('sell_payment', $transaction->business_id);
-                $payment_ref_no = $this->transactionUtil->generateReferenceNumber('sell_payment', $ref_count, $transaction->business_id);
+                $payment_ref_no = $this->transactionUtil->generateReferenceNumber(
+                    'sell_payment',
+                    $ref_count,
+                    $transaction->business_id
+                );
 
                 $data = [
                     'paid_on' => \Carbon::now()->toDateTimeString(),
@@ -2524,7 +2736,7 @@ class SellPosController extends Controller
     public function listSubscriptions()
     {
         if (!auth()->user()->can('sell.view') && !auth()->user()->can('direct_sell.access')) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -2583,16 +2795,24 @@ class SellPosController extends Controller
                             $link_text = !empty($row->recur_stopped_on) ? __('lang_v1.start_subscription') : __('lang_v1.stop_subscription');
                             $link_class = !empty($row->recur_stopped_on) ? 'btn-success' : 'btn-danger';
 
-                            $html .= '<a href="' . action([\App\Http\Controllers\SellPosController::class, 'toggleRecurringInvoices'], [$row->id]) . '" class="toggle_recurring_invoice btn btn-xs ' . $link_class . '"><i class="fa fa-power-off"></i> ' . $link_text . '</a>';
+                            $html .= '<a
+        href="' . action([\App\Http\Controllers\SellPosController::class, 'toggleRecurringInvoices'], [$row->id]) . '"
+        class="toggle_recurring_invoice btn btn-xs ' . $link_class . '"><i class="fa fa-power-off"></i> ' . $link_text .
+                                '</a>';
 
                             if ($row->is_direct_sale == 0) {
-                                $html .= '<a target="_blank" class="btn btn-xs btn-primary" href="' . action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                                $html .= '<a target="_blank" class="btn btn-xs btn-primary"
+        href="' . action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]) . '"><i
+            class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                             } else {
-                                $html .= '<a target="_blank" class="btn btn-xs btn-primary" href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                                $html .= '<a target="_blank" class="btn btn-xs btn-primary"
+        href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i
+            class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                             }
 
                             if (auth()->user()->can('direct_sell.delete') || auth()->user()->can('sell.delete')) {
-                                $html .= '&nbsp;<a href="' . action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]) . '" class="delete-sale btn btn-xs btn-danger"><i class="fas fa-trash"></i> ' . __('messages.delete') . '</a>';
+                                $html .= '&nbsp;<a href="' . action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]) . '"
+        class="delete-sale btn btn-xs btn-danger"><i class="fas fa-trash"></i> ' . __('messages.delete') . '</a>';
                             }
                         }
 
@@ -2602,7 +2822,8 @@ class SellPosController extends Controller
                 ->removeColumn('id')
                 ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
                 ->editColumn('recur_interval', function ($row) {
-                    $type = $row->recur_interval == 1 ? Str::singular(__('lang_v1.' . $row->recur_interval_type)) : __('lang_v1.' . $row->recur_interval_type);
+                    $type = $row->recur_interval == 1 ? Str::singular(__('lang_v1.' . $row->recur_interval_type)) : __('lang_v1.' .
+                        $row->recur_interval_type);
                     $recur_interval = $row->recur_interval . $type;
 
                     if ($row->recur_interval_type == 'months' && !empty($row->subscription_repeat_on)) {
@@ -2624,7 +2845,10 @@ class SellPosController extends Controller
                     $html = '';
                     $count = 0;
                     if (!empty($invoices)) {
-                        $imploded_invoices = '<span class="label bg-info">' . implode('</span>, <span class="label bg-info">', $invoices) . '</span>';
+                        $imploded_invoices = '<span class="label bg-info">' . implode(
+                            '</span>, <span class="label bg-info">',
+                            $invoices
+                        ) . '</span>';
                         $count = count($invoices);
                         $html .= '<small>' . $imploded_invoices . '</small>';
                     }
@@ -2644,7 +2868,8 @@ class SellPosController extends Controller
                 })
                 ->addColumn('upcoming_invoice', function ($row) {
                     if (empty($row->recur_stopped_on)) {
-                        $last_generated = !empty(count($row->subscription_invoices)) ? \Carbon::parse($row->subscription_invoices->max('transaction_date')) : \Carbon::parse($row->transaction_date);
+                        $last_generated = !empty(count($row->subscription_invoices)) ?
+                            \Carbon::parse($row->subscription_invoices->max('transaction_date')) : \Carbon::parse($row->transaction_date);
                         $last_generated_string = $last_generated->format('Y-m-d');
                         $last_generated = \Carbon::parse($last_generated_string);
 
@@ -2676,13 +2901,13 @@ class SellPosController extends Controller
     /**
      * Starts or stops a recurring invoice.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function toggleRecurringInvoices($id)
     {
         if (!auth()->user()->can('sell.create')) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -2754,9 +2979,14 @@ class SellPosController extends Controller
             $final_total = 0;
             foreach ($variations_details as $variation_details) {
                 if ($variation_details->product->enable_stock == 1) {
-                    if (empty($variation_details->variation_location_details[0]) || $variation_details->variation_location_details[0]->qty_available < $input['products'][$variation_details->id]['quantity']) {
+                    if (
+                        empty($variation_details->variation_location_details[0]) ||
+                        $variation_details->variation_location_details[0]->qty_available < $input['products'][$variation_details->id]['quantity']
+                    ) {
                         $is_valid = false;
-                        $error_messages[] = 'Only ' . $variation_details->variation_location_details[0]->qty_available . ' ' . $variation_details->product->unit->short_name . ' of ' . $input['products'][$variation_details->id]['product_name'] . ' available';
+                        $error_messages[] = 'Only ' . $variation_details->variation_location_details[0]->qty_available . ' ' .
+                            $variation_details->product->unit->short_name . ' of ' .
+                            $input['products'][$variation_details->id]['product_name'] . ' available';
                     }
                 }
 
@@ -2773,7 +3003,8 @@ class SellPosController extends Controller
                     'tax_id' => null,
                 ];
 
-                $final_total += ($input['products'][$variation_details->id]['quantity'] * $variation_details->unit_price_inc_tax);
+                $final_total += ($input['products'][$variation_details->id]['quantity'] *
+                    $variation_details->unit_price_inc_tax);
             }
 
             if (!$is_valid) {
@@ -2824,10 +3055,24 @@ class SellPosController extends Controller
 
             DB::beginTransaction();
 
-            $transaction = $this->transactionUtil->createSellTransaction($business_id, $order_data, $invoice_total, $user_id, false);
+            $transaction = $this->transactionUtil->createSellTransaction(
+                $business_id,
+                $order_data,
+                $invoice_total,
+                $user_id,
+                false
+            );
 
             //Create sell lines
-            $this->transactionUtil->createOrUpdateSellLines($transaction, $order_data['products'], $order_data['location_id'], false, null, [], false);
+            $this->transactionUtil->createOrUpdateSellLines(
+                $transaction,
+                $order_data['products'],
+                $order_data['location_id'],
+                false,
+                null,
+                [],
+                false
+            );
 
             //update product stock
             foreach ($order_data['products'] as $product) {
@@ -2843,7 +3088,12 @@ class SellPosController extends Controller
 
             $this->transactionUtil->mapPurchaseSell($business_data, $transaction->sell_lines, 'purchase');
             //Auto send notification
-            $this->notificationUtil->autoSendNotification($business_id, 'new_sale', $transaction, $transaction->contact);
+            $this->notificationUtil->autoSendNotification(
+                $business_id,
+                'new_sale',
+                $transaction,
+                $transaction->contact
+            );
 
             DB::commit();
 
@@ -2949,22 +3199,37 @@ class SellPosController extends Controller
         $error_msg = trans('messages.something_went_wrong');
 
         //Check for prefix.
-        if ((strlen($scale_setting['label_prefix']) == 0) || Str::startsWith($scale_barcode, $scale_setting['label_prefix'])) {
+        if ((strlen($scale_setting['label_prefix']) == 0) || Str::startsWith(
+            $scale_barcode,
+            $scale_setting['label_prefix']
+        )) {
             $scale_barcode = substr($scale_barcode, strlen($scale_setting['label_prefix']));
 
             //Get product sku, trim left side 0
             $sku = ltrim(substr($scale_barcode, 0, $scale_setting['product_sku_length'] + 1), '0');
 
             //Get quantity integer
-            $qty_int = substr($scale_barcode, $scale_setting['product_sku_length'] + 1, $scale_setting['qty_length'] + 1);
+            $qty_int = substr($scale_barcode, $scale_setting['product_sku_length'] + 1, $scale_setting['qty_length'] +
+                1);
 
             //Get quantity decimal
-            $qty_decimal = '0.' . substr($scale_barcode, $scale_setting['product_sku_length'] + $scale_setting['qty_length'] + 2, $scale_setting['qty_length_decimal'] + 1);
+            $qty_decimal = '0.' . substr($scale_barcode, $scale_setting['product_sku_length'] +
+                $scale_setting['qty_length'] + 2, $scale_setting['qty_length_decimal'] + 1);
 
             $qty = (float) $qty_int + (float) $qty_decimal;
 
             //Find the variation id
-            $result = $this->productUtil->filterProduct($business_id, $sku, null, false, null, [], ['sub_sku'], false, 'exact')->first();
+            $result = $this->productUtil->filterProduct(
+                $business_id,
+                $sku,
+                null,
+                false,
+                null,
+                [],
+                ['sub_sku'],
+                false,
+                'exact'
+            )->first();
 
             if (!empty($result)) {
                 return [
@@ -3003,7 +3268,7 @@ class SellPosController extends Controller
     public function convertToInvoice($id)
     {
         if (!auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access')) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -3078,7 +3343,8 @@ class SellPosController extends Controller
 
                         if (!empty($value['unit_id'])) {
                             $unit = Unit::find($value['unit_id']);
-                            $base_unit_multiplier = !empty($unit->base_unit_multiplier) ? $unit->base_unit_multiplier : $base_unit_multiplier;
+                            $base_unit_multiplier = !empty($unit->base_unit_multiplier) ? $unit->base_unit_multiplier :
+                                $base_unit_multiplier;
                         }
 
                         $combo_variations[$key]['product_id'] = $sell_line->product_id;
@@ -3097,7 +3363,8 @@ class SellPosController extends Controller
             $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
 
             $business_details = $this->businessUtil->getDetails($business_id);
-            $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+            $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() :
+                json_decode($business_details->pos_settings, true);
 
             $business = [
                 'id' => $business_id,
@@ -3131,13 +3398,19 @@ class SellPosController extends Controller
             }
 
             //Auto send notification
-            $this->notificationUtil->autoSendNotification($business_id, 'new_sale', $transaction, $transaction->contact);
+            $this->notificationUtil->autoSendNotification(
+                $business_id,
+                'new_sale',
+                $transaction,
+                $transaction->contact
+            );
 
             $this->transactionUtil->activityLog($transaction, 'edited', $transaction_before);
 
             DB::commit();
 
-            $output = ['success' => 1, 'msg' => __('lang_v1.converted_to_invoice_successfully', ['invoice_no' => $transaction->invoice_no])];
+            $output = ['success' => 1, 'msg' => __('lang_v1.converted_to_invoice_successfully', ['invoice_no' =>
+            $transaction->invoice_no])];
         } catch (Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -3168,7 +3441,7 @@ class SellPosController extends Controller
     public function convertToProforma($id)
     {
         if (!auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access')) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -3205,7 +3478,7 @@ class SellPosController extends Controller
     public function copyQuotation($id)
     {
         if (!auth()->user()->can('quotation.update')) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -3260,7 +3533,7 @@ class SellPosController extends Controller
     public function downloadPdf($id)
     {
         if (!(config('constants.enable_download_pdf') && auth()->user()->can('print_invoice'))) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -3306,7 +3579,7 @@ class SellPosController extends Controller
     public function downloadQuotationPdf($id)
     {
         if (!(config('constants.enable_download_pdf'))) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -3319,7 +3592,8 @@ class SellPosController extends Controller
         $body = view('sale_pos.receipts.download_quotation_pdf')
             ->with(compact('receipt_details', 'location_details', 'sub_status'))
             ->render();
-        $pdf_name = (!empty($sub_status) && $sub_status == 'proforma') ? __('lang_v1.proforma_invoice') : 'QUOTATION';
+        $pdf_name = (!empty($sub_status) && $sub_status == 'proforma') ? __('lang_v1.proforma_invoice') :
+            'QUOTATION';
         $mpdf = new \Mpdf\Mpdf([
             'tempDir' => public_path('uploads/temp'),
             'mode' => 'utf-8',
@@ -3346,7 +3620,7 @@ class SellPosController extends Controller
     public function downloadPackingListPdf($id)
     {
         if (!(config('constants.enable_download_pdf'))) {
-            //temp  abort(403, 'Unauthorized action.');
+            //temp abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

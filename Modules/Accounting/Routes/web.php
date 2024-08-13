@@ -32,6 +32,7 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
 
     Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
     Route::post('/create_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_payment'])->name('accounting.payrolls.create_payment');
+    Route::post('/create_single_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_single_payment'])->name('accounting.payrolls.create_single_payment');
     Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
     Route::get('primary-accounts-dropdown', 'AccountingController@primaryAccountsDropdown')->name('primary-accounts-dropdown');

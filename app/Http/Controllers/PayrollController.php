@@ -163,7 +163,7 @@ class PayrollController extends Controller
 
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
-        $company_id = $user->company_id ?? 1;
+        $company_id = $request->company_id ;
         try {
             DB::beginTransaction();
             $payroll_group['business_id'] = $business_id;
@@ -708,7 +708,14 @@ class PayrollController extends Controller
                     if (($from == 'accountant')) {
                         $transaction  = Transaction::where('payroll_group_id', $row->id)?->first();
                         $status =  $transaction?->payment_status;
-
+                        if ($status && $status == 'partial') {
+                            $html = '<div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                                __('lang_v1.partial') .
+                                '</button>
+                            </div>';
+                            return $html;
+                        }
                         if ($status && $status != 'paid') {
                             $html = '<div class="btn-group">
                             <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
@@ -768,8 +775,11 @@ class PayrollController extends Controller
     public function payrolls_list_index()
     {
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
 
+        $company_id = Session::get('selectedCompanyId');
+        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1)->whereHas('user', function ($query) use ($company_id) {
+            $query->where('company_id', $company_id);
+        });
         if (request()->ajax()) {
             return DataTables::of($payrollGroupUsers)
                 ->addColumn('name', function ($row) {
@@ -799,8 +809,14 @@ class PayrollController extends Controller
 
 
                     $html = '';
-                    if (true) {
-                        $html .= '<div><a class="btn btn-xs btn-info btn-warning"   >' . __('lang_v1.yet_to_be_paind') . '</a></div>';
+                    if ($row->status == 'paid') {
+                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.paid') .
+                            '</button></div>';
+                    } else {
+                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.yet_to_be_paind') .
+                            '</button></div>';
                     }
 
 
@@ -853,6 +869,71 @@ class PayrollController extends Controller
                 ])
                 ->make(true);
         }
+    }
+
+    public function create_single_payment(Request $request, $id)
+    {
+        
+        try {
+
+            $payroll_group_user = PayrollGroupUser::where('id', $id)
+               ->first();
+         
+
+            
+            $payroll_grouo = PayrollGroup::where('id', $payroll_group_user->payroll_group_id)->first();
+            $transaction = Transaction::where('payroll_group_id',   $payroll_grouo->id)?->first();
+            if ($transaction->payment_status && $transaction->payment_status != "paid") {
+
+                $inputs['method'] = $request->payment_method;
+                $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('paid_on'), true);
+                $inputs['transaction_id'] = $transaction->id;
+                $inputs['amount'] = $this->transactionUtil->num_uf($payroll_group_user->final_salary);
+                $inputs['created_by'] = auth()->user()->id;
+                $inputs['note'] = $request->note;
+               
+                $payment_line =  TransactionPayment::create($inputs);
+                PayrollGroupUser::where('id', $id)->update(['status' => "paid"]);
+            }
+
+            $payroll_group_users = PayrollGroupUser::where('payroll_group_id',   $payroll_grouo->id)->get();
+            $paid = true;
+            $partial = false;
+            foreach ($payroll_group_users as $payroll_user) {
+                if ($payroll_user->status != "paid") {
+                    $paid = false;
+                }
+                if ($payroll_user->status == "paid") {
+                    $partial = true;
+                    
+                }
+            }
+            Transaction::where('payroll_group_id',   $payroll_grouo->id)->update([
+                'payment_status' => $paid ? 'paid' : ($partial ? 'partial' : 'due'),
+            ]);
+
+            // $transaction = Transaction::where('payroll_group_id',$payroll_grouo->id)?->first();
+            $user = User::find($payroll_group_user->user_id);
+            $user_type = $user?->user_type;
+            $user_id = $user?->id;
+
+            $util = new Util();
+            $auto_migration = $util->createTransactionJournal_entry_single_payment($transaction->id, $user_type, $user_id);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
     }
 
     public function create_payment(Request $request, $id)

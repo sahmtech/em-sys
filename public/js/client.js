@@ -110,7 +110,6 @@ $(document).on('click', '.delete-client', function() {
     });
 });
 
-// Event delegation to handle edit button click
 $(document).on('click', '.edit-client', function() {
     var clientId = $(this).data('client-id');
 
@@ -148,19 +147,19 @@ $(document).on('click', '.edit-client', function() {
                             '</td>' +
                             '<td>' +
                             '<input type="text" name="amount[]" class="form-control width-60 pull-left" placeholder="Amount" value="' + allowance.amount + '">' +
-                            '</td>' +
-                            '</tr>';
+                            '</td>';
+
+                        // If contract form is 'operating_fees', add a checkbox column
+                        if ($('#contract_form').val() === 'operating_fees') {
+                            newRow += '<td><input type="checkbox" name="include_salary[]" class="include-salary-checkbox" style="margin:auto; display:block;"' + (allowance.include_salary ? ' checked' : '') + '></td>';
+                        }
+
+                        newRow += '</tr>';
                         $('#salary-table-body').append(newRow);
 
-                        // Set the selected value for the allowance type
-                        $('#salary-table-body select[name="salary_type[]"]').last().val(allowance.salaryType).trigger('change');
-
-                        // Set the type based on the amount
-                        if (allowance.amount == 0) {
-                            $('#salary-table-body select[name="type[]"]').last().val('insured_by_the_other').trigger('change');
-                        } else {
-                            $('#salary-table-body select[name="type[]"]').last().val('cash').trigger('change');
-                        }
+                        // Set the selected value for the allowance type and payment type
+                        $('#salary-table-body select[name="salary_type[]"]').last().val(allowance.type).trigger('change');
+                        $('#salary-table-body select[name="type[]"]').last().val(allowance.payment_type).trigger('change');
                     });
                 } else {
                     // Add an empty row with placeholders if there are no additional allowances
@@ -177,8 +176,14 @@ $(document).on('click', '.edit-client', function() {
                         '</td>' +
                         '<td>' +
                         '<input type="text" name="amount[]" class="form-control width-60 pull-left" placeholder="Amount" value="">' +
-                        '</td>' +
-                        '</tr>';
+                        '</td>';
+
+                    // Add the checkbox if 'operating_fees' is selected
+                    if ($('#contract_form').val() === 'operating_fees') {
+                        emptyRow += '<td><input type="checkbox" name="include_salary[]" class="include-salary-checkbox" style="margin:auto; display:block;"></td>';
+                    }
+
+                    emptyRow += '</tr>';
                     $('#salary-table-body').append(emptyRow);
                 }
 
@@ -196,14 +201,27 @@ $(document).on('click', '.edit-client', function() {
     });
 });
 
+
 function updateMonthlyCostAndTotal() {
     var essentialsSalary = parseFloat($('#essentials_salary').val()) || 0;
     var totalAllowances = 0;
-
-    $('input[name="amount[]"]').each(function() {
-        totalAllowances += parseFloat($(this).val()) || 0;
-    });
-
+    console.log('updateMonthlyCost');
+    if ($('#contract_form').val() == 'operating_fees') {
+        console.log('11111111111111111');
+        $('#salary-table-body tr').each(function() {
+            var includeSalary = $(this).find('.include-salary-checkbox').is(':checked');
+            console.log(includeSalary);
+            if (includeSalary) {
+                var amount = parseFloat($(this).find('input[name="amount[]"]').val()) || 0;
+                totalAllowances += amount;
+            }
+        });
+    } else {
+        $('input[name="amount[]"]').each(function() {
+            var amount = parseFloat($(this).val()) || 0;
+            totalAllowances += amount;
+        });
+    }
     var gosiAmount = essentialsSalary * 0.02 * 24;
     var vacationAmount = (essentialsSalary / 30) * 21 * 2;
     var endServiceAmount = essentialsSalary / 2 * 2;
@@ -225,7 +243,12 @@ function updateMonthlyCostAndTotal() {
 
 
     var additionalMonthlyCost = gosiMonthlyAmount + vacationMonthlyAmount + endServiceMonthlyAmount + administrativeMonthlyAmount;
-    var monthlyCost = totalAllowances + additionalMonthlyCost;
+    if ($('#contract_form').val() == 'operating_fees') {
+        var additionalMonthlyCost = administrativeMonthlyAmount;
+        var monthlyCost = totalAllowances + additionalMonthlyCost;
+    } else {
+        var monthlyCost = essentialsSalary + totalAllowances + additionalMonthlyCost;
+    }
     $('#monthly_cost').val(monthlyCost.toFixed(2));
 
     var input_number = parseFloat($('#input_number').val()) || 0;
@@ -234,6 +257,9 @@ function updateMonthlyCostAndTotal() {
 }
 
 $(document).on('input', '#essentials_salary, input[name="amount[]"], #input_number', function() {
+    updateMonthlyCostAndTotal();
+});
+$(document).on('change', '.include-salary-checkbox', function() {
     updateMonthlyCostAndTotal();
 });
 
@@ -290,3 +316,23 @@ function updateSumOfQuantityArr() {
     $('#quantityArrDisplay').val(quantityArrDisplay);
     $('#quantityArrDisplay2').text(quantityArrDisplay);
 }
+
+function addRow() {
+    var newRow = $('#salary-table-body tr:first').clone();
+    newRow.find('input[name="amount[]"]').val(''); // Clear the amount input
+    newRow.find('.include-salary-checkbox').remove(); // Remove any existing checkbox
+
+    if ($('#contract_form').val() === 'operating_fees') {
+        newRow.prepend(
+            '<td><input type="checkbox" name="include_salary[]" class="include-salary-checkbox"></td>'
+        );
+    } else {
+        newRow.prepend('<td></td>');
+    }
+
+    $('#salary-table-body').append(newRow);
+}
+
+$('#add-row').click(function() {
+    addRow();
+});

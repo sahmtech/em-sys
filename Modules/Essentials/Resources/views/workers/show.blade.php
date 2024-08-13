@@ -31,7 +31,7 @@
                             alt="User profile picture">
 
                         <h3 class="profile-username text-center">
-                            {{ $user->first_name. ' ' .$user->mid_name .' '. $user->last_name }}
+                            {{ $user->first_name . ' ' . $user->mid_name . ' ' . $user->last_name }}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
@@ -116,19 +116,19 @@
                         @if (!empty($documents))
                             <div class="checkbox-group">
                                 @foreach ($documents as $document)
-                                @if (isset($document->file_path) || isset($document->attachment))
-                                    <div class="checkbox">
-                                        <label>
-                                            @if ($document->file_path || $document->attachment)
-                                                <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
-                                                    data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                    @if (isset($document->file_path) || isset($document->attachment))
+                                        <div class="checkbox">
+                                            <label>
+                                                @if ($document->file_path || $document->attachment)
+                                                    <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
+                                                        data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                    </a>
+                                                @else
                                                     {{ trans('followup::lang.' . $document->type) }}
-                                                </a>
-                                            @else
-                                                {{ trans('followup::lang.' . $document->type) }}
-                                            @endif
-                                        </label>
-                                    </div>
+                                                @endif
+                                            </label>
+                                        </div>
                                     @endif
                                 @endforeach
                             </div>
@@ -175,14 +175,14 @@
                                     aria-hidden="true"></i> @lang('essentials::lang.employee_info')</a>
                         </li>
                         <li>
-                            <a href="#activities_tab" data-toggle="tab" aria-expanded="true">
+                            <a href="#payrolls_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-money-check" aria-hidden="true"></i>
 
                                 @lang('followup::lang.salaries')</a>
                         </li>
 
                         <li>
-                            <a href="#activities_tab" data-toggle="tab" aria-expanded="true">
+                            <a href="#timesheet_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
 
 
@@ -234,7 +234,122 @@
 
 
                         </div>
+                        <div class="tab-pane" id="payrolls_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('essentials::lang.company')</th>
+                                                    <th>@lang('essentials::lang.project')</th>
+                                                    <th>@lang('essentials::lang.date')</th>
+                                                    <th>@lang('essentials::lang.the_total')</th>
+                                                    <th>@lang('essentials::lang.status')</th>
+                                                    <th>@lang('messages.view')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($payrolls as $payroll)
+                                                    <tr>
+                                                        <td>{{ $payroll['company'] }}</td>
+                                                        <td>{{ $payroll['project_name'] }}</td>
+                                                        <td>{{ $payroll['payrollGroup']['payroll_date'] }}</td>
+                                                        <td>{{ $payroll['final_salary'] }}</td>
+                                                        @if ($payroll['status'] == 'paid')
+                                                            <td><a class="btn btn-xs  btn-success"> @lang('lang_v1.paid') </a>
+                                                            </td>
+                                                        @else
+                                                            <td><a class="btn btn-xs  btn-warning"> @lang('lang_v1.yet_to_be_paind') </a>
+                                                            </td>
+                                                        @endif
+                                                        <td><a href="#"
+                                                                data-href="{{ route('show_payroll_details', ['id' => $payroll['id']]) }}"
+                                                                data-container=".view_modal"
+                                                                class="btn-modal btn btn-xs  btn-info"><i class="fa fa-eye"
+                                                                    aria-hidden="true"></i>
+                                                                @lang('messages.view') </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="timesheet_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('worker.sponser')</th>
+                                                    <th>@lang('worker.project')</th> 
+                                                    <th>@lang('essentials::lang.date')</th>
+                                                    <th>@lang('worker.wd')</th>
+                                                    <th>@lang('worker.basic')</th>
+                                                    <th>@lang('worker.monthly_cost')</th>
 
+
+                                                    <th>@lang('worker.housing')</th>
+                                                    <th>@lang('worker.transport')</th>
+                                                    <th>@lang('worker.other_allowances')</th>
+                                                    <th>@lang('worker.total_salary')</th>
+
+
+                                                    <th>@lang('worker.absence_day')</th>
+                                                    <th>@lang('worker.absence_amount')</th>
+                                                    <th>@lang('worker.other_deduction')</th>
+                                                    <th>@lang('worker.over_time_h')</th>
+                                                    <th>@lang('worker.over_time')</th>
+
+                                                    <th>@lang('worker.other_addition')</th>
+
+
+
+
+                                                    <th>@lang('worker.deductions')</th>
+                                                    <th>@lang('worker.additions')</th>
+                                                    <th>@lang('worker.final_salary')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($timesheets as $timesheet)
+                                                    <tr>
+                                                        
+                                                        <td>{{ $timesheet['sponser'] }}</td>
+                                                        <td>{{ $timesheet['project'] }}</td>
+                                                         <td>{{ $timesheet['timesheet_date'] }}</td>
+                                                        <td>{{ $timesheet['wd'] }}</td>
+                                                        <td>{{ number_format($timesheet['basic'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['monthly_cost'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['housing'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['transport'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['other_allowances'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['total_salary'], 2) }}</td>
+                                                        <td>{{ $timesheet['absence_day'] }}</td>
+                                                        <td>{{ number_format($timesheet['absence_amount'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['other_deduction'], 2) }}</td>
+                                                        <td>{{ $timesheet['over_time_h'] }}</td>
+                                                        <td>{{ number_format($timesheet['over_time'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['other_addition'], 2) }}</td>
+
+
+                                                        <td>{{ number_format($timesheet['deductions'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['additions'], 2) }}</td>
+                                                        <td>{{ number_format($timesheet['final_salary'], 2) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog"
                             aria-labelledby="gridSystemModalLabel">
                             <div class="modal-dialog" role="document">
@@ -242,8 +357,8 @@
 
                                     {!! Form::open(['route' => 'storeOfficialDoc', 'enctype' => 'multipart/form-data']) !!}
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                                aria-hidden="true">&times;</span></button>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                         <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
                                     </div>
 

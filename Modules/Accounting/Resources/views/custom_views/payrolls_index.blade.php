@@ -17,19 +17,24 @@
                 <div class="col-md-12">
                     <ul class="nav nav-tabs">
                         <li class="active">
-                            <a href="#payrolls_groups_tab" data-toggle="tab" aria-expanded="true">
+                            <a href="#payrolls_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-coins" aria-hidden="true"></i>
                                 @lang('agent.payroll_groups')
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#payrolls_groups_tab" data-toggle="tab" aria-expanded="false">
+                                <i class="fas fa-coins" aria-hidden="true"></i>
+                                @lang('essentials::lang.hrm_payrolls')
                             </a>
                         </li>
                     </ul>
                     <div class="tab-content">
                         <br><br>
-                        <div class="tab-pane active" id="payrolls_groups_tab">
+                        <div class="tab-pane active" id="payrolls_tab">
                             <div class="col-md-12">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-striped" id="payroll_group_table"
-                                        style="width: 100%;">
+                                    <table class="table table-bordered table-striped" id="payroll_table" style="width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>@lang('essentials::lang.name')</th>
@@ -45,6 +50,28 @@
                                                 <th class="table-td-width-300px">@lang('essentials::lang.ceo_cleared_by')</th>
                                                 <th>@lang('essentials::lang.status')</th>
                                                 <th>@lang('essentials::lang.action')</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="payrolls_groups_tab">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" id="payroll_group_table"
+                                        style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>@lang('essentials::lang.name')</th>
+                                                <th>@lang('essentials::lang.eqama')</th>
+                                                <th>@lang('essentials::lang.department')</th>
+                                                <th>@lang('essentials::lang.company')</th>
+                                                <th>@lang('essentials::lang.project')</th>
+                                                <th>@lang('essentials::lang.date')</th>
+                                                <th>@lang('essentials::lang.the_total')</th>
+                                                <th>@lang('essentials::lang.status')</th>
+                                                <th>@lang('messages.actions')</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -243,7 +270,22 @@
 
 
     {{-- 
- route('accounting.payrolls.create_payment', ['id' => $row->id, 'from' => $from])
+        $(document).ready(function() {
+            $('#createPaymentModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var payrollId = button.data('id'); // Extract info from data-* attributes
+                var amount = button.data('amount'); // Extract amount
+
+                // Update the form action with the correct payroll ID
+                var actionUrl = "{{ route('accounting.payrolls.create_single_payment', ['id' => ':id']) }}";
+                actionUrl = actionUrl.replace(':id', payrollId);
+                $('#create_payment_form').attr('action', actionUrl);
+
+                // Set the payment amount
+                $('#payment_amount').val(amount);
+            });
+        });
+
 --}}
 
 
@@ -261,7 +303,7 @@
                 var amount = button.data('amount'); // Extract amount
 
                 // Update the form action with the correct payroll ID
-                var actionUrl = "{{ route('accounting.payrolls.create_payment', ['id' => ':id']) }}";
+                var actionUrl = "{{ route('accounting.payrolls.create_single_payment', ['id' => ':id']) }}";
                 actionUrl = actionUrl.replace(':id', payrollId);
                 $('#create_payment_form').attr('action', actionUrl);
 
@@ -312,8 +354,59 @@
                 minViewMode: "months"
             });
 
-            // Initialize payroll group table
+
             payroll_group_table = $('#payroll_group_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('payrolls_list_index') }}",
+                columns: [{
+                        data: 'name',
+                        name: 'name',
+                    },
+
+                    {
+                        data: 'eqama',
+                        name: 'eqama',
+                    },
+                    {
+                        data: 'department',
+                        name: 'department',
+                    },
+                    {
+                        data: 'company',
+                        name: 'company',
+                    },
+
+                    {
+                        data: 'project',
+                        name: 'project',
+                    },
+                    {
+                        data: 'date',
+                        name: 'date',
+                    },
+
+                    {
+                        data: 'the_total',
+                        name: 'the_total',
+                    },
+                    {
+                        data: 'status',
+                        name: 'status',
+                    },
+
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+            });
+
+
+            // Initialize payroll group table
+            payroll_group_table = $('#payroll_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('hrm.payrolls_checkpoint', ['from' => 'accountant']) }}",

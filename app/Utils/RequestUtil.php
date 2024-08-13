@@ -534,6 +534,7 @@ class RequestUtil extends Util
             $success = 1;
 
             foreach ($request->user_id as $userId) {
+                error_log($userId);
                 $count_of_users = count($request->user_id);
                 if ($userId === null) continue;
                 $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
@@ -544,8 +545,9 @@ class RequestUtil extends Util
                     ];
                     return redirect()->back()->withErrors([$output['msg']]);
                 }
-                if (!$isExists) {
 
+                if (!$isExists) {
+                    error_log('not exist');
                     $user = User::find($userId);
                     $business_id = ($user && $user->company_id == 2) ? 2 : 1;
                     $userType = User::where('id', $userId)->first()->user_type;
@@ -872,6 +874,8 @@ class RequestUtil extends Util
 
                         $success = 0;
                     }
+                    } else {
+                        continue;
                 }
             }
 
