@@ -14,6 +14,7 @@ use App\BusinessLocation;
 use App\Contact;
 use App\TaxRate;
 use App\User;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Entities\AccountingAccountsTransaction;
 use Modules\Accounting\Entities\AccountingAccountType;
@@ -105,7 +106,7 @@ class ReportController extends Controller
 
         $aggregated = $request->input('aggregated', 0);
 
-        $with_zero_balances = $request->input('with_zero_balances', 0); 
+        $with_zero_balances = $request->input('with_zero_balances', 0);
 
         $accounts = AccountingAccount::leftJoin(
             'accounting_accounts_transactions as AAT',
@@ -199,11 +200,6 @@ class ReportController extends Controller
             $end_date = $fy['end'];
         }
 
-
-
-
-
-
         if ($request->ajax()) {
 
             $users = User::where('users.business_id', $business_id)
@@ -220,6 +216,7 @@ class ReportController extends Controller
                     'aat.sub_type',
                     'aat.type',
                     'atm.ref_no',
+                    'atm.id as atm_id',
                     'cc.ar_name as cost_center_name',
                     'atm.note',
                     'aat.amount',
@@ -233,6 +230,7 @@ class ReportController extends Controller
                     'aat.sub_type',
                     'aat.type',
                     'atm.ref_no',
+                    'atm_id',
                     'cc.ar_name',
                     'atm.note',
                     'aat.amount',
@@ -248,21 +246,29 @@ class ReportController extends Controller
                 })
                 ->editColumn('ref_no', function ($row) {
                     $description = '';
-
                     if ($row->sub_type == 'journal_entry') {
-                        $description = '<b>' . __('accounting::lang.journal_entry') . '</b>';
-                        $description .= '<br>' . __('purchase.ref_no') . ': ' . $row->ref_no;
-                    }
-
-                    if ($row->sub_type == 'opening_balance') {
-                        $description = '<b>' . __('accounting::lang.opening_balance') . '</b>';
+                        $description =  $row->ref_no;
                     }
 
                     if ($row->sub_type == 'sell') {
-                        $description = '<b>' . __('sale.sale') . '</b>';
-                        $description .= '<br>' . __('sale.invoice_no') . ': ' . $row->invoice_no;
+                        $description = $row->invoice_no;
                     }
+                    if ($row->atm_id) {
+                        $description = '<a class=" btn-modal" 
+                      data-container="#printJournalEntry"
+                         data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@print', [$row->atm_id]) . '">
+                            <i class="fa fa-print" aria-hidden="true"></i>' . $description . '
+                        </a>';
+                    }
+                    return $description;
+                })
+                ->addColumn('transaction', function ($row) {
+                    if (Lang::has('accounting::lang.' . $row->sub_type)) {
 
+                        $description = __('accounting::lang.' . $row->sub_type);
+                    } else {
+                        $description = $row->sub_type;
+                    }
                     return $description;
                 })
                 ->addColumn('debit', function ($row) {
@@ -277,18 +283,13 @@ class ReportController extends Controller
                     }
                     return '';
                 })
+                ->filterColumn('cost_center_name', function ($query, $keyword) {
+                    $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
+                })
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                ->filterColumn('operation_date', function ($query, $keyword) {
-                    // Assuming the keyword is in the format of "YYYY-MM-DD" or partial match
-                    $query->whereRaw("DATE_FORMAT(aat.operation_date, '%m/%d/%Y') LIKE ?", ["%{$keyword}%"]);
-                })
-                ->filterColumn('cost_center_name', function ($query, $keyword) {
-                    // Use the correct alias for filtering
-                    $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
-                })
-                ->rawColumns(['ref_no', 'credit', 'debit', 'balance'])
+                ->rawColumns(['ref_no', 'credit', 'debit', 'balance', 'action'])
                 ->make(true);
         }
 
@@ -310,8 +311,42 @@ class ReportController extends Controller
 
         $current_bal = $current_bal?->first()->balance;
 
+
+        $total_debit_bal = User::where('users.business_id', $business_id)
+            ->where('users.company_id', $company_id)
+            ->where('users.id', $user_id)
+            ->join('payroll_group_users as pgu', 'pgu.user_id', '=', 'users.id')
+            ->join('transactions as t', 't.payroll_group_id', '=', 'pgu.payroll_group_id')
+            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'AAT.transaction_id')
+            ->leftjoin(
+                'accounting_accounts as accounting_accounts',
+                'AAT.accounting_account_id',
+                '=',
+                'accounting_accounts.id'
+            )
+            ->select(DB::raw("SUM(IF((AAT.type = 'debit'), AAT.amount, 0)) as balance"))
+            ->first();
+        $total_debit_bal = $total_debit_bal->balance;
+
+        $total_credit_bal = User::where('users.business_id', $business_id)
+            ->where('users.company_id', $company_id)
+            ->where('users.id', $user_id)
+            ->join('payroll_group_users as pgu', 'pgu.user_id', '=', 'users.id')
+            ->join('transactions as t', 't.payroll_group_id', '=', 'pgu.payroll_group_id')
+            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'AAT.transaction_id')
+            ->leftjoin(
+                'accounting_accounts as accounting_accounts',
+                'AAT.accounting_account_id',
+                '=',
+                'accounting_accounts.id'
+            )
+            ->select(DB::raw("SUM(IF((AAT.type = 'credit'), AAT.amount, 0)) as balance"))
+            ->first();
+
+        $total_credit_bal = $total_credit_bal->balance;
+
         return view('accounting::chart_of_accounts.employees-statement')
-            ->with(compact('user', 'employee_dropdown', 'current_bal'));
+            ->with(compact('user', 'employee_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
     }
 
     public function customersSuppliersStatement($contact_id, Request $request)
@@ -350,6 +385,7 @@ class ReportController extends Controller
                     'aat.sub_type',
                     'aat.type',
                     'atm.ref_no',
+                    'atm.id as atm_id',
                     'cc.ar_name as cost_center_name',
                     'atm.note',
                     'aat.amount',
@@ -363,6 +399,7 @@ class ReportController extends Controller
                     'aat.operation_date',
                     'aat.sub_type',
                     'aat.type',
+                    'atm_id',
                     'atm.ref_no',
                     'cc.ar_name',
                     'atm.note',
@@ -379,21 +416,29 @@ class ReportController extends Controller
                 })
                 ->editColumn('ref_no', function ($row) {
                     $description = '';
-
                     if ($row->sub_type == 'journal_entry') {
-                        $description = '<b>' . __('accounting::lang.journal_entry') . '</b>';
-                        $description .= '<br>' . __('purchase.ref_no') . ': ' . $row->ref_no;
-                    }
-
-                    if ($row->sub_type == 'opening_balance') {
-                        $description = '<b>' . __('accounting::lang.opening_balance') . '</b>';
+                        $description =  $row->ref_no;
                     }
 
                     if ($row->sub_type == 'sell') {
-                        $description = '<b>' . __('sale.sale') . '</b>';
-                        $description .= '<br>' . __('sale.invoice_no') . ': ' . $row->invoice_no;
+                        $description = $row->invoice_no;
                     }
+                    if ($row->atm_id) {
+                        $description = '<a class=" btn-modal" 
+                      data-container="#printJournalEntry"
+                         data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@print', [$row->atm_id]) . '">
+                            <i class="fa fa-print" aria-hidden="true"></i>' . $description . '
+                        </a>';
+                    }
+                    return $description;
+                })
+                ->addColumn('transaction', function ($row) {
+                    if (Lang::has('accounting::lang.' . $row->sub_type)) {
 
+                        $description = __('accounting::lang.' . $row->sub_type);
+                    } else {
+                        $description = $row->sub_type;
+                    }
                     return $description;
                 })
                 ->addColumn('debit', function ($row) {
@@ -408,18 +453,13 @@ class ReportController extends Controller
                     }
                     return '';
                 })
+                ->filterColumn('cost_center_name', function ($query, $keyword) {
+                    $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
+                })
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                ->filterColumn('operation_date', function ($query, $keyword) {
-                    // Assuming the keyword is in the format of "YYYY-MM-DD" or partial match
-                    $query->whereRaw("DATE_FORMAT(aat.operation_date, '%m/%d/%Y') LIKE ?", ["%{$keyword}%"]);
-                })
-                ->filterColumn('cost_center_name', function ($query, $keyword) {
-                    // Use the correct alias for filtering
-                    $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
-                })
-                ->rawColumns(['ref_no', 'credit', 'debit', 'balance'])
+                ->rawColumns(['ref_no', 'credit', 'debit', 'balance', 'action'])
                 ->make(true);
         }
 
@@ -440,8 +480,42 @@ class ReportController extends Controller
 
         $current_bal = $current_bal?->first()->balance;
 
+
+        $total_debit_bal = Contact::join('transactions as t', 'contacts.id', '=', 't.contact_id')
+            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'AAT.transaction_id')
+            ->leftjoin(
+                'accounting_accounts as accounting_accounts',
+                'AAT.accounting_account_id',
+                '=',
+                'accounting_accounts.id'
+            )
+            ->where('contacts.business_id', $business_id)
+            ->where('contacts.company_id', $company_id)
+            ->where('contacts.id', $contact_id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'debit'), AAT.amount, 0)) as balance"))
+            ->first();
+        $total_debit_bal = $total_debit_bal->balance;
+
+        $total_credit_bal = Contact::join('transactions as t', 'contacts.id', '=', 't.contact_id')
+            ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'AAT.transaction_id')
+            ->leftjoin(
+                'accounting_accounts as accounting_accounts',
+                'AAT.accounting_account_id',
+                '=',
+                'accounting_accounts.id'
+            )
+            ->where('contacts.business_id', $business_id)
+            ->where('contacts.company_id', $company_id)
+            ->where('contacts.id', $contact_id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'credit'), AAT.amount, 0)) as balance"))
+            ->first();
+
+        $total_credit_bal = $total_credit_bal->balance;
+
+
+
         return view('accounting::chart_of_accounts.customers-suppliers-statement')
-            ->with(compact('contact', 'contact_dropdown', 'current_bal'));
+            ->with(compact('contact', 'contact_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
     }
 
     /**
