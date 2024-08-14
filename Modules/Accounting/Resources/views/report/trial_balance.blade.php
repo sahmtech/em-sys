@@ -139,7 +139,11 @@
                                         }
                                     @endphp
                                     <tr>
-                                        <td>{{ $account->name }}</td>
+                                        @if (Lang::has('accounting::lang.' . $account->name))
+                                            <td>@lang('accounting::lang.' . $account->name)</td>
+                                        @else
+                                            <td>{{ $account->name }}</td>
+                                        @endif
                                         <td>
                                             @format_currency($account->debit_opening_balance)
                                         </td>
