@@ -9,6 +9,19 @@
     </section>
     <!-- Main content -->
     <section class="content">
+        @component('components.filters', ['title' => __('report.filters')])
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="department_filter">@lang('essentials::lang.department'):</label>
+                    {!! Form::select('select_department_id', $departments, null, [
+                        'class' => 'form-control select2',
+                        'id' => 'select_department_id',
+                        'style' => 'height:40px; width:100%',
+                        'placeholder' => __('lang_v1.all'),
+                    ]) !!}
+                </div>
+            </div>
+        @endcomponent
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
 
@@ -256,6 +269,14 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+            $('#select_department_id')
+                .change(
+                    function() {
+                        payroll_group_table.ajax.reload();
+
+                    });
+
+
             // Initially hide both containers
             $('#projects_container').hide();
 
@@ -299,7 +320,14 @@
             payroll_group_table = $('#payroll_group_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('payrolls_list_index') }}",
+
+                ajax: {
+                    url: "{{ route('payrolls_list_index') }}",
+                    data: function(d) {
+                        d.status = $('#select_department_id').val();
+                        d.select_department_id = $('#select_department_id').val();
+                    }
+                },
                 columns: [{
                         data: 'name',
                         name: 'name',

@@ -163,7 +163,7 @@ class PayrollController extends Controller
 
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
-        $company_id = $request->company_id ;
+        $company_id = $request->company_id;
         try {
             DB::beginTransaction();
             $payroll_group['business_id'] = $business_id;
@@ -777,9 +777,18 @@ class PayrollController extends Controller
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
 
         $company_id = Session::get('selectedCompanyId');
-        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1)->whereHas('user', function ($query) use ($company_id) {
-            $query->where('company_id', $company_id);
-        });
+        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
+        if (request()->input('select_department_id') && request()->input('select_department_id') != 'all') {
+            $select_department_id = request()->input('select_department_id');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id, $select_department_id) {
+                $query->where('company_id', $company_id)->where('essentials_department_id', $select_department_id);
+            });
+        } else {
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id) {
+                $query->where('company_id', $company_id);
+            });
+        }
         if (request()->ajax()) {
             return DataTables::of($payrollGroupUsers)
                 ->addColumn('name', function ($row) {
@@ -873,14 +882,14 @@ class PayrollController extends Controller
 
     public function create_single_payment(Request $request, $id)
     {
-        
+
         try {
 
             $payroll_group_user = PayrollGroupUser::where('id', $id)
-               ->first();
-         
+                ->first();
 
-            
+
+
             $payroll_grouo = PayrollGroup::where('id', $payroll_group_user->payroll_group_id)->first();
             $transaction = Transaction::where('payroll_group_id',   $payroll_grouo->id)?->first();
             if ($transaction->payment_status && $transaction->payment_status != "paid") {
@@ -891,7 +900,7 @@ class PayrollController extends Controller
                 $inputs['amount'] = $this->transactionUtil->num_uf($payroll_group_user->final_salary);
                 $inputs['created_by'] = auth()->user()->id;
                 $inputs['note'] = $request->note;
-               
+
                 $payment_line =  TransactionPayment::create($inputs);
                 PayrollGroupUser::where('id', $id)->update(['status' => "paid"]);
             }
@@ -905,7 +914,6 @@ class PayrollController extends Controller
                 }
                 if ($payroll_user->status == "paid") {
                     $partial = true;
-                    
                 }
             }
             Transaction::where('payroll_group_id',   $payroll_grouo->id)->update([
