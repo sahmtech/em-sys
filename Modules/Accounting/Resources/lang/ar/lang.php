@@ -307,6 +307,7 @@ return [
     'bank_balance' => 'Bank Balance',
     'active' => 'نشط',
     'asset' => 'الأصول',
+    'property_rights' => 'حقوق الملكية',
     'liability' => 'الخصوم ',
     'expenses' => 'المصاريف',
     'income' => 'الإيرادات',

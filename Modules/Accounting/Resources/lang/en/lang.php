@@ -329,6 +329,7 @@ return [
    'bank_balance' => 'Bank Balance',
    'active' => 'Active',
    'asset' => 'Asset',
+   'property_rights' => 'Property rights',
    'expenses' => 'Expenses',
    'income' => 'Income',
    'equity' => 'Equity',

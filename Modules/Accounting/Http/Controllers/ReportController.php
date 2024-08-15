@@ -106,62 +106,99 @@ class ReportController extends Controller
 
         $aggregated = $request->input('aggregated', 0);
 
-        $with_zero_balances = $request->input('with_zero_balances', 0);
+        $accounts = AccountingAccount::where('accounting_accounts.business_id', $business_id)
+            ->where('accounting_accounts.company_id', $company_id);
 
-        $accounts = AccountingAccount::leftJoin(
-            'accounting_accounts_transactions as AAT',
-            function ($join) use ($start_date, $end_date) {
-                $join->on('AAT.accounting_account_id', '=', 'accounting_accounts.id')
-                    ->where(function ($query) use ($start_date, $end_date) {
+        if ($with_zero_balances == 0) {
+            $accounts->join(
+                'accounting_accounts_transactions as AAT',
+                'AAT.accounting_account_id',
+                '=',
+                'accounting_accounts.id'
+            )
+                ->where(function ($query) use ($start_date, $end_date) {
+                    $query->where(function ($query) use ($start_date, $end_date) {
                         $query->where('AAT.sub_type', '!=', 'opening_balance')
                             ->whereDate('AAT.operation_date', '>=', $start_date)
                             ->whereDate('AAT.operation_date', '<=', $end_date);
                     })
-                    ->orWhere(function ($query) use ($start_date, $end_date) {
-                        $query->where('AAT.sub_type', 'opening_balance')
-                            ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
-                            ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
-                    });
-            }
-        )
-            ->where('accounting_accounts.business_id', $business_id)
-            ->where('accounting_accounts.company_id', $company_id)
-            ->when($type, function ($query, $type) {
-                return $query->where('accounting_accounts.gl_code', 'like', $type . '%');
-            })
-            ->when($aggregated == 1, function ($query) {
-                return $query->whereRaw("LENGTH(accounting_accounts.gl_code) = 1");
-            })
+                        ->orWhere(function ($query) use ($start_date, $end_date) {
+                            $query->where('AAT.sub_type', 'opening_balance')
+                                ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
+                                ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
+                        });
+                });
+        } else {
+            $accounts->leftJoin(
+                'accounting_accounts_transactions as AAT',
+                function ($join) use ($start_date, $end_date) {
+                    $join->on('AAT.accounting_account_id', '=', 'accounting_accounts.id')
+                        ->where(function ($query) use ($start_date, $end_date) {
+                            $query->where('AAT.sub_type', '!=', 'opening_balance')
+                                ->whereBetween('AAT.operation_date', [$start_date, $end_date]);
+                        })
+                        ->orWhere(function ($query) use ($start_date, $end_date) {
+                            $query->where('AAT.sub_type', 'opening_balance')
+                                ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
+                                ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
+                        });
+                }
+            );
+        }
+
+        $accounts->when($type, function ($query, $type) {
+            return $query->where('accounting_accounts.gl_code', 'like', $type . '%');
+        })
             ->select(
-                'accounting_accounts.name',
-                'accounting_accounts.gl_code',
+                DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
                 DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
-                DB::raw("IFNULL(
-            (SELECT AAT2.amount 
-             FROM accounting_accounts_transactions as AAT2 
-             WHERE AAT2.accounting_account_id = accounting_accounts.id 
-             AND AAT2.sub_type = 'opening_balance'
-             AND AAT2.type = 'credit'
-             ORDER BY AAT2.operation_date ASC 
+                DB::raw("IFNULL((SELECT AAT.amount 
+             FROM accounting_accounts_transactions as AAT 
+             WHERE AAT.accounting_account_id = accounting_accounts.id 
+             AND AAT.sub_type = 'opening_balance'
+             AND AAT.type = 'credit'
+             ORDER BY AAT.operation_date ASC 
              LIMIT 1), 
             0) as credit_opening_balance"),
-                DB::raw("IFNULL(
-            (SELECT AAT2.amount 
-             FROM accounting_accounts_transactions as AAT2 
-             WHERE AAT2.accounting_account_id = accounting_accounts.id 
-             AND AAT2.sub_type = 'opening_balance'
-             AND AAT2.type = 'debit'
-             ORDER BY AAT2.operation_date ASC 
+                DB::raw("IFNULL((SELECT AAT.amount 
+             FROM accounting_accounts_transactions as AAT 
+             WHERE AAT.accounting_account_id = accounting_accounts.id 
+             AND AAT.sub_type = 'opening_balance'
+             AND AAT.type = 'debit'
+             ORDER BY AAT.operation_date ASC 
              LIMIT 1), 
-            0) as debit_opening_balance")
+            0) as debit_opening_balance"),
+                'AAT.sub_type as sub_type',
+                'AAT.type as type',
             )
-            ->groupBy('accounting_accounts.name', 'accounting_accounts.gl_code')
-            ->when($with_zero_balances == 0, function ($query) {
-                return $query->havingRaw('SUM(IF(AAT.type = "credit", AAT.amount, 0)) != 0 OR SUM(IF(AAT.type = "debit", AAT.amount, 0)) != 0');
-            })
-            ->orderBy('accounting_accounts.gl_code')
-            ->get();
+            ->groupBy(
+                'name',
+            )
+            ->orderBy('accounting_accounts.gl_code');
+
+        $accounts = $accounts->get();
+        if ($aggregated == 1) {
+            $aggregatedAccounts = [];
+            foreach ($accounts as $account) {
+
+                $groupKey = $account->name;
+                if (!isset($aggregatedAccounts[$groupKey])) {
+                    $aggregatedAccounts[$groupKey] =  (object) [
+                        'name' => $groupKey,
+                        'credit_balance' => 0,
+                        'debit_balance' => 0,
+                        'credit_opening_balance' => 0,
+                        'debit_opening_balance' => 0,
+                    ];
+                }
+                $aggregatedAccounts[$groupKey]->credit_balance += $account->credit_balance;
+                $aggregatedAccounts[$groupKey]->debit_balance += $account->debit_balance;
+                $aggregatedAccounts[$groupKey]->credit_opening_balance += $account->credit_opening_balance;
+                $aggregatedAccounts[$groupKey]->debit_opening_balance += $account->debit_opening_balance;
+            }
+            $accounts = $aggregatedAccounts;
+        }
 
         $account_types = AccountingAccountType::accounting_primary_type();
 

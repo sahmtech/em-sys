@@ -496,7 +496,8 @@ return [
     'reason' => 'السبب',
     'contract_type' => 'نوع العقد',
     'select_contract_type' => 'نوع العقد',
+    'editable' => 'قابلة للتعديل',
 
 ];
 
-// ''=>'',
+// 

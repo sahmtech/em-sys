@@ -181,14 +181,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- <div class="form-group col-md-12">
-                            <div class="checkbox">
-                                <label>
-                                    {!! Form::checkbox('selfish_service', '1', false, ['id' => 'edit_selfish_service']) !!}
-                                    @lang('ceomanagment::lang.selfish_service')
-                                </label>
-                            </div>
-                        </div> --}}
+
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
@@ -453,41 +446,36 @@
                     url: url,
                     type: 'GET',
                     success: function(response) {
-                        console.log(response);
                         var tasksContainer = $('#editRequestTypeModal #tasks-container-modal');
                         tasksContainer.empty();
 
                         response.requestType.tasks.forEach(function(task) {
                             var taskHtml = `
-                                    <div class="form-group col-md-12 task-input-group">
-                                        <label for="task">${translations.task}:</label>
-                                        <div class="input-group">
-                                            <div class="col-md-6">
-                                                <input type="text" name="tasks[description][]" class="form-control task" placeholder="${translations.task}" style="width:100%; height:40px;" value="${task.description}">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <input type="text" name="tasks[link][]" class="form-control task-link" placeholder="${translations.task_link}" style="width:100%; height:40px;" value="${task.link}">
-                                            </div>
-                                            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_request_type_tasks'))
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-danger remove-task-btn-edit" type="button" style="margin-left: 10px;">
-                                                    ${translations.remove}
-                                                </button>
-                                            </span>
-                                            @endif
-                                        </div>
-                                    </div>`;
+            <div class="form-group col-md-12 task-input-group">
+                <label for="task">${translations.task}:</label>
+                <div class="input-group">
+                    <div class="col-md-6">
+                        <input type="hidden" name="tasks[id][old][]" value="${task.id}">
+                        <input type="text" name="tasks[description][old][]" class="form-control task" placeholder="${translations.task}" style="width:100%; height:40px;" value="${task.description}">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" name="tasks[link][old][]" class="form-control task-link" placeholder="${translations.task_link}" style="width:100%; height:40px;" value="${task.link}">
+                    </div>
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_request_type_tasks'))
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger remove-task-btn-edit" type="button" style="margin-left: 10px;">
+                            ${translations.remove}
+                        </button>
+                    </span>
+                    @endif
+                </div>
+            </div>`;
                             tasksContainer.append(taskHtml);
                         });
 
-
-
-
-
                         tasksContainer.append(
-                            '<button class="btn btn-primary add-task-btn" type="button">Add New Task </button>'
+                            '<button class="btn btn-primary add-task-btn" type="button">Add New Task</button>'
                         );
-
 
                         tasksContainer.on('click', '.remove-task-btn-edit', function() {
                             $(this).closest('.task-input-group').remove();
@@ -495,31 +483,28 @@
 
                         $('.add-task-btn').off('click').on('click', function() {
                             var newTaskHtml = `
-                                <div class="form-group col-md-12 task-input-group">
-                                    <label for="task">${translations.task}:</label>
-                                    <div class="input-group">
-                                        <div class="col-md-6">
-                                            <input type="text" name="tasks[description][]" class="form-control task" placeholder="${translations.task}" style="width:100%; height:40px;" value="">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="text" name="tasks[link][]" class="form-control task-link" placeholder="${translations.task_link}" style="width:100%; height:40px;" value="">
-                                        </div>
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-danger remove-task-btn-edit" type="button" style="margin-left: 10px;">
-                                                ${translations.remove}
-                                            </button>
-                                        </span>
-                                    </div>
-                                </div>`;
+            <div class="form-group col-md-12 task-input-group">
+                <label for="task">${translations.task}:</label>
+                <div class="input-group">
+                    <div class="col-md-6">
+                        <input type="text" name="tasks[description][new][]" class="form-control task" placeholder="${translations.task}" style="width:100%; height:40px;" value="">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" name="tasks[link][new][]" class="form-control task-link" placeholder="${translations.task_link}" style="width:100%; height:40px;" value="">
+                    </div>
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger remove-task-btn-edit" type="button" style="margin-left: 10px;">
+                            ${translations.remove}
+                        </button>
+                    </span>
+                </div>
+            </div>`;
                             tasksContainer.append(newTaskHtml);
-
-
-
                         });
-
 
                         $('#editRequestTypeModal').modal('show');
                     }
+
 
                 });
                 $('#editRequestTypeForm').submit(function(e) {
