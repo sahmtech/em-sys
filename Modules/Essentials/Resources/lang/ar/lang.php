@@ -1982,5 +1982,23 @@ return [
   'late_deduction' => 'خصم التأخير',
   'over_time_hours_addition' => 'مبلغ الساعات الإضافية',
 
+  'ask_for_worker' => 'استعلام عن عامل',
+  'close' => 'إغلاق',
+  'worker_identifier' => 'الاسم ، رقم الإقامة أو رقم الحدود',
+
+  'worker_information' => 'معلومات العامل',
+  'full_name' => 'الاسم الكامل',
+  'emp_number' => 'الرقم الوظيفي',
+  'id_proof_number' => 'رقم الإقامة',
+  'residence_permit_expiration' => 'تاريخ انتهاء الاقامة',
+  'passport_number' => 'رقم الجواز',
+  'passport_expire_date' => 'تاريخ انتهاء الجواز',
+  'border_number' => 'رقم الحدود',
+  'company_name' => 'اسم الشركة',
+  'assigned_to' => 'اسم المشروع',
+  'worker_not_found' => 'العامل غير موجود',
+  'error_occurred' => 'لقد حدث شيء خاطئ، أعد المحاولة'
+
+
 
 ];

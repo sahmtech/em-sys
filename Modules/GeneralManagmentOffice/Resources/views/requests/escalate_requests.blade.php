@@ -113,9 +113,21 @@
 
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
+                <div style="margin-bottom: 10px;">
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('generalmanagmentoffice.change_request_status'))
+                        <button type="button" class="btn btn-warning change_status2">
+                            @lang('request.change_status')
+                        </button>
+                    @endif
+
+
+                </div>
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
+                            <th>
+                                <input type="checkbox" id="select-all">
+                            </th>
                             <th>@lang('request.company')</th>
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
@@ -227,6 +239,22 @@
                 },
 
                 columns: [{
+                        data: null,
+                        render: function(data, type, row, meta) {
+
+
+                            if (row.status_now === 'pending' && row.action_type ===
+                                'accept_reject') {
+                                return '<input type="checkbox" class="select-row" data-id="' + row
+                                    .id + '" data-requestId="' + row.id + '">';
+
+                            } else {
+                                return '';
+                            }
+                        },
+                        orderable: false,
+                        searchable: false,
+                    }, {
                         data: 'company_id'
                     },
                     {
@@ -312,6 +340,26 @@
                 ],
             });
 
+            $(document).on('click', '.change_status2', function(e) {
+                e.preventDefault();
+
+                var selectedRows = [];
+                $('.select-row:checked').each(function() {
+                    selectedRows.push($(this).data('id'));
+                });
+
+                if (selectedRows.length === 0) {
+                    toastr.error('Please select at least one request.');
+                    return;
+                }
+
+                // Set the selected rows in a hidden input in the modal
+                $('#change_status_modal').find('#request_ids').val(selectedRows.join(','));
+
+                // Show the modal
+                $('#change_status_modal').modal('show');
+            });
+
             $(document).on('click', 'a.change_status', function(e) {
                 e.preventDefault();
 
@@ -348,7 +396,14 @@
                 });
             });
 
+            $('#select-all').change(function() {
+                $('.select-row').prop('checked', $(this).prop('checked'));
+            });
 
+            $('#requests_table').on('change', '.select-row', function() {
+                $('#select-all').prop('checked', $('.select-row:checked').length === requests_table.rows()
+                    .count());
+            });
 
             $(document).on('click', '.btn-view-request', function() {
                 var requestId = $(this).data('request-id');

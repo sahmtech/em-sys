@@ -248,6 +248,36 @@ class EssentailsworkersController extends Controller
         return view('essentials::workers.index')
             ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
+    public function getWorkerInfo(Request $request)
+    {
+        $identifier = $request->input('worker_identifier');
+
+        // Adjust the query to match the identifier with either name, ID proof number, or border number
+        $worker = User::where('first_name', 'like', '%' . $identifier . '%')
+            ->orWhere('id_proof_number', $identifier)
+            ->orWhere('border_no', $identifier)
+            ->with(['company', 'assignedTo', 'contract'])
+            ->first();
+
+        if ($worker) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'full_name' => $worker->first_name . ' ' . $worker->last_name,
+                    'emp_number' => $worker->emp_number,
+                    'id_proof_number' => $worker->id_proof_number,
+                    'residence_permit_expiration' => optional($worker->OfficialDocument->where('type', 'residence_permit')->where('is_active', 1)->first())->number,
+                    'passport_number' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->number,
+                    'passport_expire_date' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->expiration_date,
+                    'border_no' => $worker->border_no,
+                    'company_name' => optional($worker->company)->name,
+                    'assigned_to' => optional($worker->assignedTo)->name,
+                ]
+            ]);
+        }
+
+        return response()->json(['success' => false]);
+    }
 
     private function getDocumentnumber($user, $documentType)
     {

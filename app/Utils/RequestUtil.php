@@ -181,6 +181,7 @@ class RequestUtil extends Util
 
             'process.id as process_id',
             'process.status',
+            'process.status as status_now',
             'process.note as note',
             'process.procedure_id as procedure_id',
             'process.superior_department_id as superior_department_id',
@@ -435,7 +436,7 @@ class RequestUtil extends Util
                     if ($departmentIdsForGeneralManagment) {
                         if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
                             if ($is_admin || $can_return_request) {
-                                $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
+                                $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->id . '">' . trans('request.return_the_request') . '</button>';
                             }
                         }
                     } else {
@@ -443,7 +444,7 @@ class RequestUtil extends Util
 
 
                             if ($is_admin || $can_return_request) {
-                                $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
+                                $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->id . '">' . trans('request.return_the_request') . '</button>';
                             }
                         }
                     }
@@ -874,8 +875,8 @@ class RequestUtil extends Util
 
                         $success = 0;
                     }
-                    } else {
-                        continue;
+                } else {
+                    continue;
                 }
             }
 
@@ -968,13 +969,12 @@ class RequestUtil extends Util
         $process = RequestProcess::where('request_id', $request->id)->latest()->first();
         $users = [];
 
-        error_log('here');
-        error_log($userCompanyId);
+
 
         $acessRoleCompany = AccessRoleCompany::where('company_id', $userCompanyId)->pluck('access_role_id')->toArray();
-        error_log(json_encode($acessRoleCompany));
+
         $rolesFromAccessRoles = AccessRole::whereIn('id', $acessRoleCompany)->pluck('role_id')->toArray();
-        error_log(json_encode($rolesFromAccessRoles));
+
         if ($process->superior_department_id) {
             $viewRequestPermission = $this->getViewRequestsPermission($process->superior_department_id);
             if ($viewRequestPermission) {
@@ -1043,13 +1043,53 @@ class RequestUtil extends Util
     ////// change request status /////////////////// 
     public function changeRequestStatus(Request $request)
     {
-        $first_step = RequestProcess::where('request_id', $request->request_id)->where('status', 'pending')->where('sub_status', null)->first();
-        if ($first_step->procedure_id != Null) {
-            return $this->changeRequestStatusAfterProcedure($request);
-        } elseif ($first_step->superior_department_id != Null) {
 
-            return $this->changeRequestStatusBeforProcedure($request);
+
+
+        if ($request->request_id) {
+
+            $first_step = RequestProcess::where('request_id', $request->request_id)
+                ->where('status', 'pending')
+                ->whereNull('sub_status')
+                ->first();
+
+            if ($first_step) {
+                if ($first_step->procedure_id !== null) {
+                    return $this->changeRequestStatusAfterProcedure($request);
+                } elseif ($first_step->superior_department_id !== null) {
+                    return $this->changeRequestStatusBeforProcedure($request);
+                }
+            }
         }
+
+
+        if ($request->request_ids) {
+            $requestIds = explode(',', $request->request_ids);
+
+            foreach ($requestIds as $request_id) {
+
+                $first_step = RequestProcess::where('request_id', $request_id)
+                    ->where('status', 'pending')
+                    ->whereNull('sub_status')
+                    ->first();
+
+                if ($first_step) {
+
+                    $request->merge(['request_id' => $request_id]);
+
+                    if ($first_step->procedure_id !== null) {
+                        $this->changeRequestStatusAfterProcedure($request);
+                    } elseif ($first_step->superior_department_id !== null) {
+                        $this->changeRequestStatusBeforProcedure($request);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'msg' => __('lang_v1.updated_success'),
+        ]);
     }
 
     private function changeRequestStatusAfterProcedure($request)
@@ -1117,9 +1157,11 @@ class RequestUtil extends Util
                         $leaveBalance->save();
                     }
                 } else {
+
                     $nextDepartmentId = $procedure->next_department_id;
                     $visitedProcedures = RequestProcess::where('request_id', $requestProcess->request_id)
                         ->pluck('procedure_id')
+                        ->filter()
                         ->toArray();
 
                     $nextProcedure = WkProcedure::where('department_id', $nextDepartmentId)
@@ -1127,6 +1169,7 @@ class RequestUtil extends Util
                         ->where('business_id', $procedure_business_id)
                         ->whereNotIn('id', $visitedProcedures)
                         ->first();
+
 
                     if ($nextProcedure) {
                         $newRequestProcess = new RequestProcess();
@@ -1685,85 +1728,24 @@ class RequestUtil extends Util
 
     public function returnRequest(Request $request)
     {
-        error_log(json_encode($request->all()));
         try {
+            if ($request->requestId && $request->requestId != null) {
+                $this->processReturnRequest($request->requestId, $request->reason);
+            }
 
-            $requestId = $request->input('requestId'); // id of process 
-
-            $requestProcess = RequestProcess::find($requestId);
-            $peivious_note = $requestProcess->note;
-            $userRequest = $requestProcess->request_id;
-            $firstStep =  RequestProcess::where('request_id', $userRequest)->first();
-
-            if ($requestProcess) {
-
-
-                $procedure = WkProcedure::find($requestProcess->procedure_id);
-                $goes_to_superior = RequestsType::where('id', $procedure->request_type_id)->first()->goes_to_superior;
-                if ($procedure) {
-
-                    $departmentId = $procedure->department_id;
-
-                    $nameDepartment = EssentialsDepartment::where('id', $departmentId)->first()->name;
-
-                    $newProcedure = WkProcedure::where('next_department_id', $departmentId)
-                        ->where('request_type_id', $procedure->request_type_id)
-                        ->first();
-
-
-                    if ($newProcedure) {
-
-                        $requestProcess->update([
-                            'procedure_id' => $newProcedure->id,
-                            'status' => 'pending',
-                            'is_returned' => 1,
-                            // 'updated_by' => auth()->user()->id,
-                            'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ":" . $request->reason,
-
-                        ]);
-
-                        //  return response()->json(['success' => true, 'msg' => 'Request returned successfully']);
-                        $output = [
-                            'success' => true,
-                            'msg' => __('request.returned_successfully'),
-                        ];
-                    } else {
-                        if ($procedure->request_owner_type == 'employee' && $goes_to_superior == 1) {
-
-
-                            $requestProcess->update([
-                                'procedure_id' => null,
-                                'superior_department_id' => $firstStep->superior_department_id,
-                                'status' => 'pending',
-                                'is_returned' => 1,
-                                //   'updated_by' => auth()->user()->id,
-                                'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ":" . $request->reason,
-
-                            ]);
-                            $output = [
-                                'success' => true,
-                                'msg' => __('request.returned_successfully'),
-                            ];
-                        } else {
-                            $requestProcess->update([
-                                'procedure_id' => null,
-                                'superior_department_id' => $firstStep->started_department_id,
-                                'status' => 'pending',
-                                'is_returned' => 1,
-                                //  'updated_by' => auth()->user()->id,
-                                'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ":" . $request->reason,
-
-                            ]);
-                            $output = [
-                                'success' => true,
-                                'msg' => __('request.returned_successfully'),
-                            ];
-                        }
-                    }
+            if ($request->requestIds) {
+                $requestIds = explode(',', $request->requestIds);
+                foreach ($requestIds as $requestId) {
+                    $this->processReturnRequest($requestId, $request->reason);
                 }
             }
+
+            $output = [
+                'success' => true,
+                'msg' => __('request.returned_successfully'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -1771,8 +1753,69 @@ class RequestUtil extends Util
             ];
         }
 
-        return $output;
+        return response()->json($output);
     }
+
+    private function processReturnRequest($requestId, $reason)
+    {
+        $requestProcess = RequestProcess::where('request_id', $requestId)
+            ->where('status', 'pending')
+            ->whereNull('sub_status')
+            ->first();
+
+        if ($requestProcess) {
+
+
+            $procedure = WkProcedure::find($requestProcess->procedure_id);
+            if ($procedure && $procedure->can_return == 0) {
+                return;
+            }
+            $peivious_note = $requestProcess->note;
+            $userRequest = $requestProcess->request_id;
+            $firstStep = RequestProcess::where('request_id', $userRequest)->first();
+            $goes_to_superior = RequestsType::where('id', $procedure->request_type_id)->first()->goes_to_superior;
+
+
+
+            if ($procedure) {
+
+                $departmentId = $procedure->department_id;
+                $nameDepartment = EssentialsDepartment::where('id', $departmentId)->first()->name;
+
+                $newProcedure = WkProcedure::where('next_department_id', $departmentId)
+                    ->where('request_type_id', $procedure->request_type_id)
+                    ->first();
+
+                if ($newProcedure) {
+                    $requestProcess->update([
+                        'procedure_id' => $newProcedure->id,
+                        'status' => 'pending',
+                        'is_returned' => 1,
+                        'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ": " . $reason,
+                    ]);
+                } else {
+                    if ($procedure->request_owner_type == 'employee' && $goes_to_superior == 1) {
+                        $requestProcess->update([
+                            'procedure_id' => null,
+                            'superior_department_id' => $firstStep->superior_department_id,
+                            'status' => 'pending',
+                            'is_returned' => 1,
+                            'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ": " . $reason,
+                        ]);
+                    } else {
+                        $requestProcess->update([
+                            'procedure_id' => null,
+                            'superior_department_id' => $firstStep->started_department_id,
+                            'status' => 'pending',
+                            'is_returned' => 1,
+                            'note' => $peivious_note . ', ' . __('request.returned_by') . " " . $nameDepartment . ' , ' . __('request.reason') . ": " . $reason,
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
 
 
 
