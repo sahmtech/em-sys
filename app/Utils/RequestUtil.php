@@ -1764,14 +1764,21 @@ class RequestUtil extends Util
             ->first();
 
         if ($requestProcess) {
+
+
+            $procedure = WkProcedure::find($requestProcess->procedure_id);
+            if ($procedure && $procedure->can_return == 0) {
+                return;
+            }
             $peivious_note = $requestProcess->note;
             $userRequest = $requestProcess->request_id;
             $firstStep = RequestProcess::where('request_id', $userRequest)->first();
-
-            $procedure = WkProcedure::find($requestProcess->procedure_id);
             $goes_to_superior = RequestsType::where('id', $procedure->request_type_id)->first()->goes_to_superior;
 
+
+
             if ($procedure) {
+
                 $departmentId = $procedure->department_id;
                 $nameDepartment = EssentialsDepartment::where('id', $departmentId)->first()->name;
 
