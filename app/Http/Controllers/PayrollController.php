@@ -557,6 +557,8 @@ class PayrollController extends Controller
             $company_id = Session::get('selectedCompanyId');
             $payrollGroups = $payrollGroups->where('company_id', $company_id);
         }
+
+
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
                 ->addColumn('name', function ($row) {
@@ -747,6 +749,7 @@ class PayrollController extends Controller
                 ])
                 ->make(true);
         }
+        $departments = EssentialsDepartment::where('is_main', 1)->pluck('name', 'id');
         if ($from == 'hr') {
             return view('essentials::payrolls_index');
         }
@@ -758,7 +761,7 @@ class PayrollController extends Controller
                 'bank_transfer' => __('lang_v1.bank_transfer'),
                 'other' => __('lang_v1.other')
             ];
-            return view('accounting::custom_views.payrolls_index')->with(compact('payment_types'));
+            return view('accounting::custom_views.payrolls_index')->with(compact('payment_types', 'departments'));
         }
         if ($from == 'financial') {
             return view('accounting::custom_views.payrolls_index_financial');
@@ -778,15 +781,118 @@ class PayrollController extends Controller
 
         $company_id = Session::get('selectedCompanyId');
         $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
+        if (!empty(request()->input('select_department_id')) && request()->input('select_department_id') != 'all') {
+            $select_department_id = request()->input('select_department_id');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
+                $query->where('essentials_department_id', $select_department_id);
+            });
+        }
+
+        $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id) {
+            $query->where('company_id', $company_id);
+        });
+
+        if (request()->ajax()) {
+            return DataTables::of($payrollGroupUsers)
+                ->addColumn('name', function ($row) {
+                    return $row?->name ?? '';
+                })
+                ->addColumn('eqama', function ($row) {
+                    return $row?->identity_card_number ?? '';
+                })
+                ->addColumn('department', function ($row) use ($departments) {
+                    $item = $departments[$row->user?->essentials_department_id] ?? '';
+                    return $item;
+                })
+                ->addColumn('company', function ($row) {
+                    return $row?->company ?? '';
+                })
+                ->addColumn('project', function ($row) {
+                    return $row?->project_name ?? '';
+                })
+                ->addColumn('date', function ($row) {
+                    return Carbon::parse($row->created_at)->format('m/Y');
+                })
+                ->addColumn('the_total', function ($row) {
+                    return $row?->final_salary ?? 0;
+                })
+                ->addColumn('status', function ($row) {
+
+
+
+                    $html = '';
+                    if ($row->status == 'paid') {
+                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.paid') .
+                            '</button></div>';
+                    } else {
+                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.yet_to_be_paind') .
+                            '</button></div>';
+                    }
+
+
+                    return $html;
+                })
+
+
+
+
+                ->addColumn('action', function ($row) {
+                    $html = '<div class="btn-group">
+                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                        data-toggle="dropdown" aria-expanded="false">' .
+                        __('messages.actions') .
+                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+                    $html .= '<li><a href="#" data-href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+
+
+                    $html .= '</ul></div>';
+
+                    return $html;
+
+
+
+
+                    $html = '';
+                    if (true) {
+                        $html .= '<div><a class="btn btn-xs btn-info btn-modal" href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" ><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></div>';
+                    }
+
+
+                    return $html;
+                })
+
+                ->rawColumns([
+                    'name',
+                    'eqama',
+                    'department',
+                    'company',
+                    'project',
+                    'date',
+                    'the_total',
+                    'status',
+                    'action',
+                ])
+                ->make(true);
+        }
+    }
+    public function payrolls_list_index_all()
+    {
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+
+        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
         if (request()->input('select_department_id') && request()->input('select_department_id') != 'all') {
             $select_department_id = request()->input('select_department_id');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id, $select_department_id) {
-                $query->where('company_id', $company_id)->where('essentials_department_id', $select_department_id);
-            });
-        } else {
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id) {
-                $query->where('company_id', $company_id);
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
+                $query->where('essentials_department_id', $select_department_id);
             });
         }
 
@@ -881,7 +987,6 @@ class PayrollController extends Controller
                 ->make(true);
         }
     }
-
     public function create_single_payment(Request $request, $id)
     {
 

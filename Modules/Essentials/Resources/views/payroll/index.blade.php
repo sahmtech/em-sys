@@ -9,19 +9,7 @@
     </section>
     <!-- Main content -->
     <section class="content">
-        @component('components.filters', ['title' => __('report.filters')])
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="department_filter">@lang('essentials::lang.department'):</label>
-                    {!! Form::select('select_department_id', $departments, null, [
-                        'class' => 'form-control select2',
-                        'id' => 'select_department_id',
-                        'style' => 'height:40px; width:100%',
-                        'placeholder' => __('lang_v1.all'),
-                    ]) !!}
-                </div>
-            </div>
-        @endcomponent
+
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
 
@@ -77,6 +65,19 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="payrolls_groups_tab">
+                            @component('components.filters', ['title' => __('report.filters')])
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="department_filter">@lang('essentials::lang.department'):</label>
+                                        {!! Form::select('select_department_id', $departments, null, [
+                                            'class' => 'form-control select2',
+                                            'id' => 'select_department_id',
+                                            'style' => 'height:40px; width:100%',
+                                            'placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                            @endcomponent
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="payroll_group_table"
@@ -270,10 +271,9 @@
     <script>
         $(document).ready(function() {
             $('#select_department_id')
-                .change(
+                .on('change',
                     function() {
                         payroll_group_table.ajax.reload();
-
                     });
 
 
@@ -322,9 +322,8 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('payrolls_list_index') }}",
+                    url: "{{ route('payrolls_list_index_all') }}",
                     data: function(d) {
-                        d.status = $('#select_department_id').val();
                         d.select_department_id = $('#select_department_id').val();
                     }
                 },

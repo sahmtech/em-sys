@@ -9,23 +9,9 @@
     </section>
     <!-- Main content -->
     <section class="content">
-        @component('components.filters', ['title' => __('report.filters')])
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="department_filter">@lang('essentials::lang.department'):</label>
-                    {!! Form::select('select_department_id', $departments, null, [
-                        'class' => 'form-control select2',
-                        'id' => 'select_department_id',
-                        'style' => 'height:40px; width:100%',
-                        'placeholder' => __('lang_v1.all'),
-                    ]) !!}
-                </div>
-            </div>
-        @endcomponent
+
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
-
-
                 <br><br><br>
                 <div class="col-md-12">
                     <ul class="nav nav-tabs">
@@ -70,6 +56,19 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="payrolls_groups_tab">
+                            @component('components.filters', ['title' => __('report.filters')])
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="department_filter">@lang('essentials::lang.department'):</label>
+                                        {!! Form::select('select_department_id', $departments, null, [
+                                            'class' => 'form-control select2',
+                                            'id' => 'select_department_id',
+                                            'style' => 'height:40px; width:100%',
+                                            'placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                            @endcomponent
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="payroll_group_table"
@@ -182,127 +181,7 @@
 
 
 
-        {{-- <div class="modal fade" id="createPaymentModel" tabindex="-1" role="dialog" aria-labelledby="editbuildingModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {!! Form::open(['route' => ['updateBuilding', 'buildingId'], 'method' => 'post', 'id' => 'edit_building_form']) !!}
-
-                    <input type="hidden" id="buildingIdInput" name="buildingIdInput">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('housingmovements::lang.edit_building')</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                {!! Form::label('name', __('housingmovements::lang.building_name') . ':*') !!}
-                                {!! Form::text('name', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('housingmovements::lang.building_name'),
-                                    'required',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('address', __('housingmovements::lang.address') . ':') !!}
-                                {!! Form::text('address', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('housingmovements::lang.address'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('city', __('housingmovements::lang.city') . ':*') !!}
-                                {!! Form::select('city', $cities, null, [
-                                    'class' => 'form-control select2',
-                                    'style' => 'height:40px; width:100%',
-                                    'placeholder' => __('housingmovements::lang.city'),
-                                    'required',
-                                ]) !!}
-                            </div>
-
-                            <div class="clearfix"></div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':') !!}
-                                {!! Form::select('guard[]', $users2, null, [
-                                    'class' => 'form-control select2',
-                                    'multiple' => 'multiple',
-                                    'style' => 'height:40px; width:100%',
-                                    'placeholder' => __('housingmovements::lang.building_guard'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':') !!}
-                                {!! Form::select('supervisor[]', $users2, null, [
-                                    'class' => 'form-control select2',
-                                    'multiple' => 'multiple',
-                                    'style' => 'height:40px; width:100%',
-                                    'placeholder' => __('housingmovements::lang.building_supervisor'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':') !!}
-                                {!! Form::select('cleaner[]', $users2, null, [
-                                    'class' => 'form-control select2',
-                                    'style' => 'height:40px; width:100%',
-                                    'multiple' => 'multiple',
-                                    'placeholder' => __('housingmovements::lang.building_cleaner'),
-                                ]) !!}
-                            </div>
-
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('building_end_date', __('housingmovements::lang.building_end_date') . ':') !!}
-                                {!! Form::date('building_end_date', null, [
-                                    'class' => 'form-control ',
-                                    'style' => 'width:100%;height:36px;',
-                                    'placeholder' => __('housingmovements::lang.building_end_date'),
-                                ]) !!}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-
-                    {!! Form::close() !!}
-
-                </div>
-            </div>
-
-        </div> --}}
-
     </section>
-    <!-- /.content -->
-
-
-
-    {{-- 
-        $(document).ready(function() {
-            $('#createPaymentModal').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget); // Button that triggered the modal
-                var payrollId = button.data('id'); // Extract info from data-* attributes
-                var amount = button.data('amount'); // Extract amount
-
-                // Update the form action with the correct payroll ID
-                var actionUrl = "{{ route('accounting.payrolls.create_single_payment', ['id' => ':id']) }}";
-                actionUrl = actionUrl.replace(':id', payrollId);
-                $('#create_payment_form').attr('action', actionUrl);
-
-                // Set the payment amount
-                $('#payment_amount').val(amount);
-            });
-        });
-
---}}
-
-
-
 
 
 
@@ -366,7 +245,11 @@
                 format: 'mm/yyyy',
                 minViewMode: "months"
             });
-
+            $('#select_department_id')
+                .on('change',
+                    function() {
+                        payroll_group_table.ajax.reload();
+                    });
 
             payroll_group_table = $('#payroll_group_table').DataTable({
                 processing: true,
@@ -374,7 +257,6 @@
                 ajax: {
                     url: "{{ route('payrolls_list_index') }}",
                     data: function(d) {
-                        d.status = $('#select_department_id').val();
                         d.select_department_id = $('#select_department_id').val();
                     }
                 },
@@ -425,7 +307,7 @@
 
 
             // Initialize payroll group table
-            payroll_group_table = $('#payroll_table').DataTable({
+            payroll_table = $('#payroll_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('hrm.payrolls_checkpoint', ['from' => 'accountant']) }}",
