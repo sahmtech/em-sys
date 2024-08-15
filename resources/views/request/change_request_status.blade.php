@@ -25,6 +25,8 @@
                         @endforeach
                     </select>
                 </div>
+                <input type="hidden" id="request_ids" name="request_ids" value="">
+
                 <div class="form-group col-md-12">
                     {!! Form::label('note', __('followup::lang.note') . ':') !!}
                     {!! Form::textarea('note', null, [
