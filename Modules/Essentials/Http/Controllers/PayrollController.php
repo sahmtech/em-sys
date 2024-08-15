@@ -388,8 +388,8 @@ class PayrollController extends Controller
                 $other_allowance += floatval($allowance->amount ?? "0");
             }
         }
-        $salary = $user->essentials_salary;
-
+        $salary = $user->essentials_salary + $housing_allowance + $transportation_allowance + $other_allowance;
+        error_log(json_encode($user));
         $data = [
             'user_id' => $user->id,
             'work_days' => 30,

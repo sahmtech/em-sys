@@ -327,10 +327,9 @@
                         data.user_id + '</td></tr>';
                     salaryHtml += '<tr><th name="work_days">@lang('essentials::lang.work_days')</th><td>' + data
                         .work_days + '</td></tr>';
-                    salaryHtml += '<tr><th name="salary">@lang('essentials::lang.salary')</th><td>' + data.salary +
+                    salaryHtml += '<tr><th name="salary">@lang('essentials::lang.Basic_salary')</th><td>' + data.salary +
                         '</td></tr>';
-                    salaryHtml += '<tr><th name="total">@lang('essentials::lang.total')</th><td>' + data.total +
-                        '</td></tr>';
+
                     salaryHtml += '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td>' + data
                         .housing_allowance + '</td></tr>';
                     salaryHtml +=
@@ -338,6 +337,8 @@
                         .transportation_allowance + '</td></tr>';
                     salaryHtml += '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td>' + data
                         .other_allowance + '</td></tr>';
+                    salaryHtml += '<tr><th name="total">@lang('worker.final_salary')</th><td>' + data.total +
+                        '</td></tr>';
                     salaryHtml += '</table>';
                     salaryHtml +=
                         '<button class="btn btn-sm btn-primary edit-salary" data-worker-id="' +
