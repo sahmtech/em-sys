@@ -750,6 +750,15 @@ class PayrollController extends Controller
                 ->make(true);
         }
         $departments = EssentialsDepartment::where('is_main', 1)->pluck('name', 'id');
+        $projects = SalesProject::pluck('name', 'id');
+        $companies = Company::pluck('name', 'id');
+        $user_types = [
+            // 'manager' => __('essentials::lang.manager'),
+            "employee" => __('essentials::lang.user_type.employee'),
+            "worker" => __('essentials::lang.user_type.worker'),
+            // 'department_head' => __('essentials::lang.   '),
+            "remote_employee" => __('essentials::lang.user_type.remote_employee'),
+        ];
         if ($from == 'hr') {
             return view('essentials::payrolls_index');
         }
@@ -761,7 +770,7 @@ class PayrollController extends Controller
                 'bank_transfer' => __('lang_v1.bank_transfer'),
                 'other' => __('lang_v1.other')
             ];
-            return view('accounting::custom_views.payrolls_index')->with(compact('payment_types', 'departments'));
+            return view('accounting::custom_views.payrolls_index')->with(compact('payment_types', 'projects', 'departments', 'user_types'));
         }
         if ($from == 'financial') {
             return view('accounting::custom_views.payrolls_index_financial');
@@ -788,6 +797,22 @@ class PayrollController extends Controller
                 $query->where('essentials_department_id', $select_department_id);
             });
         }
+        if (request()->input('user_type') && request()->input('user_type') != 'all') {
+            $user_type = request()->input('user_type');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
+                $query->where('user_type', $user_type);
+            });
+        }
+
+        if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
+            $project_name_filter = request()->input('project_name_filter');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
+                $query->where('assigned_to', $project_name_filter);
+            });
+        }
+
 
         $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id) {
             $query->where('company_id', $company_id);
@@ -895,6 +920,30 @@ class PayrollController extends Controller
                 $query->where('essentials_department_id', $select_department_id);
             });
         }
+        if (request()->input('user_type') && request()->input('user_type') != 'all') {
+            $user_type = request()->input('user_type');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
+                $query->where('user_type', $user_type);
+            });
+        }
+
+        if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
+            $project_name_filter = request()->input('project_name_filter');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
+                $query->where('assigned_to', $project_name_filter);
+            });
+        }
+
+        if (request()->input('select_company_id') && request()->input('select_company_id') != 'all') {
+            $select_company_id = request()->input('select_company_id');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_company_id) {
+                $query->whereIn('company_id', $select_company_id);
+            });
+        }
+
 
 
         if (request()->ajax()) {

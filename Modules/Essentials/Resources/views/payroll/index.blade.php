@@ -68,11 +68,48 @@
                             @component('components.filters', ['title' => __('report.filters')])
                                 <div class="col-md-3">
                                     <div class="form-group">
+                                        <label for="business_filter">@lang('essentials::lang.companies'):</label>
+                                        {!! Form::select('select_company_id', $companies, null, [
+                                            'class' => 'form-control select2',
+                                            'id' => 'select_company_id',
+                                            'style' => 'height:40px; width:100%',
+                                        
+                                            'multiple' => 'multiple',
+                                            'autofocus',
+                                            'data-placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="business_filter">@lang('essentials::lang.user_type'):</label>
+                                        {!! Form::select('user_type', $user_types, null, [
+                                            'class' => 'form-control select2',
+                                            'style' => 'width: 100%;',
+                                            'id' => 'user_type',
+                                            'placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
                                         <label for="department_filter">@lang('essentials::lang.department'):</label>
                                         {!! Form::select('select_department_id', $departments, null, [
                                             'class' => 'form-control select2',
                                             'id' => 'select_department_id',
                                             'style' => 'height:40px; width:100%',
+                                            'placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-3" id="project_name_filter_div">
+                                    <div class="form-group">
+                                        {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                                        {!! Form::select('project_name_filter', $projects, null, [
+                                            'class' => 'form-control select2',
+                                            'style' => 'width:100%;padding:2px;',
+                                            'id' => 'project_name_filter',
+                                        
                                             'placeholder' => __('lang_v1.all'),
                                         ]) !!}
                                     </div>
@@ -270,7 +307,7 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('#select_department_id')
+            $('#select_department_id,  #user_type, #project_name_filter, #select_company_id')
                 .on('change',
                     function() {
                         payroll_group_table.ajax.reload();
@@ -325,6 +362,9 @@
                     url: "{{ route('payrolls_list_index_all') }}",
                     data: function(d) {
                         d.select_department_id = $('#select_department_id').val();
+                        d.user_type = $('#user_type').val();
+                        d.project_name_filter = $('#project_name_filter').val();
+                        d.select_company_id = $('#select_company_id').val();
                     }
                 },
                 columns: [{
