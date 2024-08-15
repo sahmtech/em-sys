@@ -789,6 +789,8 @@ class PayrollController extends Controller
                 $query->where('company_id', $company_id);
             });
         }
+
+
         if (request()->ajax()) {
             return DataTables::of($payrollGroupUsers)
                 ->addColumn('name', function ($row) {
