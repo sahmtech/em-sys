@@ -60,6 +60,10 @@
                         </div>
                     </div>
                     @php
+
+                        array_unshift($fields, __('followup::lang.select'));
+                    @endphp
+                    @php
                         $default_fields = [
                             $fields[0],
                             $fields[1],
@@ -862,15 +866,14 @@
 
 
         });
-
-
         chooseFields = function() {
+
             var selectedOptions = $('#choose_fields_select').val();
 
             var dt = $('#workers_table').DataTable();
 
             var fields = fields;
-
+            console.log(selectedOptions);
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);
 

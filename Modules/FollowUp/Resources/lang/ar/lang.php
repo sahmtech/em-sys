@@ -128,7 +128,7 @@ return [
 
 
 
-
+    'select' => 'تحديد الاسطر',
     'curd_contracts_wishes' => 'إضافة \حذف\تعديل العقود والرغبات',
     'contrascts_wishes' => 'الرغبات والعقود',
     'renew_contract' => 'تجديد العقد',
