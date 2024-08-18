@@ -245,8 +245,10 @@
                         render: function(data, type, row, meta) {
 
 
-                            if (row.status_now === 'pending' && row.action_type ===
-                                'accept_reject') {
+                            if ((row.status_now === 'pending' && row.action_type !==
+                                    'task') || (row.status_now === 'pending' && row
+                                    .is_superior ===
+                                    1)) {
                                 return '<input type="checkbox" class="select-row" data-id="' + row
                                     .id + '" data-requestId="' + row.id + '">';
 

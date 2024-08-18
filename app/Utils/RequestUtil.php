@@ -196,7 +196,7 @@ class RequestUtil extends Util
             'users.assigned_to',
             'users.company_id',
             'users.id as userId',
-
+            DB::raw("IF(process.superior_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_superior")
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
                 $join->on('requests.id', '=', 'latest_process.request_id');
@@ -226,7 +226,7 @@ class RequestUtil extends Util
                     });
             })
             ->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
-
+        // return $requestsProcess->get();
         if (request()->input('status') && request()->input('status') !== 'all') {
             error_log(request()->input('status'));
             $requestsProcess->where('process.status', request()->input('status'));
