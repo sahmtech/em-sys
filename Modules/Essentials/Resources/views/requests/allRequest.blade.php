@@ -1356,8 +1356,9 @@
                         render: function(data, type, row, meta) {
 
 
-                             if ((row.status_now === 'pending' && row.action_type !==
-                                    'task') || (row.status_now === 'pending' && row
+                            if ((row.status_now === 'pending' && row.action_type !==
+                                    'task' && row.is_started === 0) || (row.status_now ===
+                                    'pending' && row
                                     .is_superior ===
                                     1)) {
                                 return '<input type="checkbox" class="select-row" data-id="' + row
