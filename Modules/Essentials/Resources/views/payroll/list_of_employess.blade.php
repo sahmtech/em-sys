@@ -339,6 +339,8 @@
                         .other_allowance + '</td></tr>';
                     salaryHtml += '<tr><th name="total">@lang('worker.final_salary')</th><td>' + data.total +
                         '</td></tr>';
+                    salaryHtml += '<tr><th name="iban">@lang('lang_v1.bank_code')</th><td>' + data.iban +
+                        '</td></tr>';
                     salaryHtml += '</table>';
                     salaryHtml +=
                         '<button class="btn btn-sm btn-primary edit-salary" data-worker-id="' +
