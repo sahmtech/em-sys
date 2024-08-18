@@ -114,7 +114,8 @@ return [
     'client' => 'العميل',
     'resident' => 'مقيم',
     'citizen' => 'مواطن',
-    '.user_type' => 'نوع صاحب الطلب'
+    'user_type' => 'نوع صاحب الطلب',
+    'task_linked_procedure_error' => 'يوجد اجراءات متعلقة بالمهمات المحذوفة'
 
 
 
