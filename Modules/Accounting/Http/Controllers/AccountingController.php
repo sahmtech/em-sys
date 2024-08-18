@@ -136,9 +136,21 @@ class AccountingController extends Controller
         }
 
         $colors = [
-            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
-            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+            '#E75E82',
+            '#37A2EC',
+            '#FACD56',
+            '#5CA85C',
+            '#605CA8',
+            '#2f7ed8',
+            '#0d233a',
+            '#8bbc21',
+            '#910000',
+            '#1aadce',
+            '#492970',
+            '#f28f43',
+            '#77a1e5',
+            '#c42525',
+            '#a6c96a'
         ];
         $coa_overview_chart = new CommonChart;
         $coa_overview_chart->labels($labels)
@@ -250,8 +262,8 @@ class AccountingController extends Controller
 
             $accounts_array[] = [
                 'id' => ' ',
-                'text' => ' ',
-                'html' => '<strong>All</strong>',
+                'text' => '<strong>' . __('lang_v1.all') . '</strong>',
+                'html' => '<strong>' . __('lang_v1.all') . '</strong>',
             ];
 
             foreach ($account_types as $key => $account_type) {

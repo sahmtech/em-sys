@@ -102,7 +102,7 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::resource('budget', 'BudgetController')->except(['show', 'edit', 'update', 'destroy']);
 
     Route::get('reports', 'ReportController@index');
-    Route::get('reports/trial-balance/{type?}', 'ReportController@trialBalance')->name('accounting.trialBalance');
+    Route::get('reports/trial-balance', 'ReportController@trialBalance')->name('accounting.trialBalance');
     Route::get('reports/income-statement', 'ReportController@incomeStatement')->name('accounting.incomeStatement');
     Route::get('reports/employees-statement/{id}', 'ReportController@employeesStatement')->name('accounting.employeesStatement');
     Route::get('reports/customers-suppliers-statement/{id}', 'ReportController@customersSuppliersStatement')->name('accounting.customersSuppliersStatement');

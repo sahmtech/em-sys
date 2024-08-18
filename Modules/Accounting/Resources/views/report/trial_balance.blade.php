@@ -11,186 +11,139 @@
         <h1>@lang('accounting::lang.trial_balance')</h1>
     </section>
 
-    <section class="content container">
+    <section class="content">
 
         <div class="row">
-            <div class="box-body">
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        {!! Form::label('date_range_filter', __('report.date_range') . ':') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            {!! Form::text('date_range_filter', null, [
-                                'placeholder' => __('lang_v1.select_a_date_range'),
-                                'class' => 'form-control',
-                                'readonly',
-                                'id' => 'date_range_filter',
-                            ]) !!}
+            <div class="col-md-12">
+                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('all_levels', __('accounting::lang.account_level') . ':') !!}
+                                {!! Form::select('level_filter', $levelsArray, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'width:100%',
+                                    'id' => 'level_filter',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('with_zero_balances', __('accounting::lang.balance') . ':') !!}
+                                <select class="form-control" name="with_zero_balances" id='with_zero_balances'
+                                    style="padding: 2px;">
+                                    <option value="0" selected>{{ __('accounting::lang.without_zero_balances') }}
+                                    </option>
+                                    <option value="1">{{ __('accounting::lang.with_zero_balances') }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('classification', __('accounting::lang.classification') . ':') !!}
+                                <select class="form-control" name="classification" id='classification' style="padding: 2px;">
+                                    <option value="0" selected>{{ __('accounting::lang.detailed') }}</option>
+                                    <option value="1">{{ __('accounting::lang.aggregated') }}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        {!! Form::label('all_accounts', __('accounting::lang.account') . ':') !!}
-                        {!! Form::select(
-                            'account_filter',
-                            isset($type_label) ? [$type_label['GLC'] => $type_label['label']] : [],
-                            isset($type_label) ? $type_label['GLC'] : null,
-                            [
-                                'class' => 'form-control accounts-dropdown',
-                                'style' => 'width:100%',
-                                'id' => 'account_filter',
-                            ],
-                        ) !!}
-                    </div>
-                </div>
 
+                    <div class="row">
+
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('start_date_filter', __('accounting::lang.from_date') . ':') !!}
+                                {!! Form::date('start_date_filter', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('lang_v1.select_start_date'),
+                                    'id' => 'start_date_filter',
+                                ]) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('end_date_filter', __('accounting::lang.to_date') . ':') !!}
+                                {!! Form::date('end_date_filter', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('lang_v1.select_end_date'),
+                                    'id' => 'end_date_filter',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-11">
+                            <div class="form-group">
+                                {!! Form::label('choose_fields', __('accounting::lang.account') . ':') !!}
+                                {!! Form::select('choose_accounts_select[]', $accounts_array, array_keys($accounts_array), [
+                                    'class' => 'form-control select2 ',
+                                    'multiple',
+                                    'id' => 'choose_accounts_select',
+                                ]) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-md-1 ">
+                            <button class="btn btn-primary pull-right btn-flat" onclick="accounts_table.ajax.reload();"
+                                style="margin-top: 24px;
+                        width: 62px;
+                        height: 40px;
+                        border-radius: 4px;">تطبيق</button>
+                        </div>
+                    </div>
+                @endcomponent
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="checkbox">
-                        {!! Form::checkbox('with_zero_balances', 1, $with_zero_balances, [
-                            'class' => 'input-icheck',
-                            'id' => 'with_zero_balances',
-                        ]) !!} {{ __('accounting::lang.with_zero_balances') }}
-                    </div>
-                </div>
+
+        <div class="box box-warning">
+            <div class="box-header with-border text-center">
+                <h2 class="box-title">@lang('accounting::lang.trial_balance')</h2>
+                {{-- <p>{{ @format_date($start_date) }} ~ {{ @format_date($end_date) }}</p> --}}
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="radio">
-                        {!! Form::radio('aggregated', 1, $aggregated, [
-                            'class' => 'input-icheck',
-                            'id' => 'aggregated',
-                        ]) !!} {{ __('accounting::lang.aggregated') }}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="radio">
-                        {!! Form::radio('detailed', 1, $aggregated ? false : true, [
-                            'class' => 'input-icheck',
-                            'id' => 'detailed',
-                        ]) !!} {{ __('accounting::lang.detailed') }}
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-md-8 col-md-offset-2 col-lg-12 col-md-offset-0">
-
-            <div class="box box-warning">
-                <div class="box-header with-border text-center">
-                    <h2 class="box-title">@lang('accounting::lang.trial_balance')</h2>
-                    <p>{{ @format_date($start_date) }} ~ {{ @format_date($end_date) }}</p>
-                </div>
-
-                <div class="box-body">
-                    <div class="table-responsive">
-                        <table class="table table-stripped" id="accounts-table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th colspan="2">@lang('accounting::lang.autoMigration.opening_balance')</th>
-                                    <th colspan="2">@lang('accounting::lang.accounting_transactions')</th>
-                                    <th colspan="2">@lang('accounting::lang.closing_balance')</th>
-                                </tr>
-                                <tr>
-                                    <th></th>
-                                    <th>@lang('accounting::lang.debit')</th>
-                                    <th>@lang('accounting::lang.credit')</th>
-                                    <th>@lang('accounting::lang.debit')</th>
-                                    <th>@lang('accounting::lang.credit')</th>
-                                    <th>@lang('accounting::lang.debit')</th>
-                                    <th>@lang('accounting::lang.credit')</th>
-                                </tr>
-                            </thead>
-
-                            @php
-                                $total_debit = 0;
-                                $total_credit = 0;
-                                $total_credit_opening_balance = 0;
-                                $total_debit_opening_balance = 0;
-                                $total_closing_debit_balance = 0;
-                                $total_closing_credit_balance = 0;
-                            @endphp
-
-                            <tbody>
-                                @foreach ($accounts as $account)
-                                    @php
-                                        $total_credit_opening_balance += $account->credit_opening_balance;
-                                        $total_debit_opening_balance += $account->debit_opening_balance;
-                                        $total_debit += $account->debit_balance;
-                                        $total_credit += $account->credit_balance;
-
-                                        $closing_debit_balance =
-                                            $account->debit_opening_balance + $account->debit_balance;
-                                        $closing_credit_balance =
-                                            $account->credit_opening_balance + $account->credit_balance;
-                                        $closing_balance = $closing_credit_balance - $closing_debit_balance;
-
-                                        if ($closing_balance >= 0) {
-                                            $total_closing_credit_balance += $closing_balance;
-                                        } else {
-                                            $total_closing_debit_balance += abs($closing_balance);
-                                        }
-                                    @endphp
-                                    <tr>
-                                        @if (Lang::has('accounting::lang.' . $account->name))
-                                            <td>@lang('accounting::lang.' . $account->name)</td>
-                                        @else
-                                            <td>{{ $account->name }}</td>
-                                        @endif
-                                        <td>
-                                            @format_currency($account->debit_opening_balance)
-                                        </td>
-                                        <td>
-                                            @format_currency($account->credit_opening_balance)
-                                        </td>
-                                        <td>
-                                            @format_currency($account->debit_balance)
-                                        </td>
-                                        <td>
-                                            @format_currency($account->credit_balance)
-                                        </td>
-                                        <td>
-                                            @if ($closing_balance < 0)
-                                                @format_currency(abs($closing_balance))
-                                            @else
-                                                @format_currency(0)
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($closing_balance >= 0)
-                                                @format_currency($closing_balance)
-                                            @else
-                                                @format_currency(0)
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-
-                            <tfoot>
-                                <tr>
-                                    <th>Total</th>
-                                    <th class="total_credit">@format_currency($total_debit_opening_balance)</th>
-                                    <th class="total_debit">@format_currency($total_credit_opening_balance)</th>
-                                    <th class="total_debit">@format_currency($total_debit)</th>
-                                    <th class="total_credit">@format_currency($total_credit)</th>
-                                    <th class="total_debit">@format_currency($total_closing_debit_balance)</th>
-                                    <th class="total_credit">@format_currency($total_closing_credit_balance)</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
+            <div class="box-body">
+                <div class="table-responsive">
+                    <table class="table table-stripped table-bordered" id="accounts-table">
+                        <thead>
+                            <tr>
+                                <th colspan="2"></th>
+                                <th colspan="2">@lang('accounting::lang.autoMigration.opening_balance')</th>
+                                <th colspan="2">@lang('accounting::lang.accounting_transactions')</th>
+                                <th colspan="2">@lang('accounting::lang.closing_balance')</th>
+                            </tr>
+                            <tr>
+                                <th>@lang('accounting::lang.number')</th>
+                                <th>@lang('accounting::lang.name')</th>
+                                <th>@lang('accounting::lang.debit')</th>
+                                <th>@lang('accounting::lang.credit')</th>
+                                <th>@lang('accounting::lang.debit')</th>
+                                <th>@lang('accounting::lang.credit')</th>
+                                <th>@lang('accounting::lang.debit')</th>
+                                <th>@lang('accounting::lang.credit')</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" class="text-center">Total:</th>
+                                <th id="debitOpeningTotal" class="debit_opening_total"></th>
+                                <th id="creditOpeningTotal" class="credit_opening_total"></th>
+                                <th id="debitTotal" class="debit_total"></th>
+                                <th id="creditTotal" class="credit_total"></th>
+                                <th id="closingDebitTotal" class="closing_debit_total"></th>
+                                <th id="closingCreditTotal" class="closing_credit_total"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
 
             </div>
+
         </div>
 
     </section>
@@ -203,108 +156,131 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-            $('#account_filter').change(function() {
-                account = $(this).val();
-                url = base_path + '/accounting/reports/trial-balance/' + account;
-                window.location = url;
-            })
-
-            $('#with_zero_balances').on('ifChecked ifUnchecked', function(event) {
-
-                var with_zero_balances = (event.type === 'ifChecked') ? 1 : 0;
-
-                var currentUrl = window.location.href;
-
-                var url = new URL(currentUrl);
-
-                url.searchParams.set('with_zero_balances', with_zero_balances);
-
-                window.location.href = url.href;
-            });
-
-            $('input[name="detailed"]').on('ifChecked', function(event) {
-                var selectedOption = $(this).val();
-
-                var currentUrl = window.location.href;
-
-                var url = new URL(currentUrl);
-
-                url.searchParams.delete('aggregated');
-
-                window.location.href = url.href;
-            });
-
-            $('input[name="aggregated"]').on('ifChecked', function(event) {
-                var selectedOption = $(this).val();
-
-                var currentUrl = window.location.href;
-
-                var url = new URL(currentUrl);
-
-                url.searchParams.set('aggregated', selectedOption);
-
-                window.location.href = url.href;
-            });
+            $('#classification').select2();
+            $('#with_zero_balances').select2();
+            $('#level_filter').select2();
 
 
-            $("select.accounts-dropdown").select2({
-                placeholder: "Select an option",
+            $('#level_filter,#end_date_filter,#start_date_filter,#with_zero_balances,#classification,#account_filter')
+                .on('change',
+                    function() {
+                        accounts_table.ajax.reload();
+                    });
+
+            accounts_table = $('#accounts-table').DataTable({
+                processing: true,
+                serverSide: true,
                 ajax: {
-                    url: '{{ route('primary-accounts-dropdown') }}',
-                    dataType: 'json',
-                    processResults: function(data) {
-                        return {
-                            results: data
-                        };
+                    url: "{{ route('accounting.trialBalance') }}",
+                    data: function(d) {
+                        if ($('#start_date_filter').val()) {
+                            d.start_date = $('#start_date_filter').val();
+                        }
+                        if ($('#end_date_filter').val()) {
+                            d.end_date = $('#end_date_filter').val();
+                        }
+                        if ($('#classification').val()) {
+                            d.aggregated = $('#classification').val();
+                        }
+                        if ($('#account_filter').val()) {
+                            d.type = $('#account_filter').val();
+                        }
+                        if ($('#level_filter').val()) {
+                            d.level_filter = $('#level_filter').val();
+                        }
+                        if ($('#with_zero_balances').val()) {
+                            d.with_zero_balances = $('#with_zero_balances').val();
+                        }
+                        if ($('#choose_accounts_select').val()) {
+                            d.choose_accounts_select = $('#choose_accounts_select').val();
+                        }
+                    }
+                },
+                columns: [{
+                        data: 'gl_code',
+                        name: 'gl_code'
                     },
-                },
-                escapeMarkup: function(markup) {
-                    return markup;
-                },
-                templateResult: function(data) {
-                    return data.html;
-                },
-                templateSelection: function(data) {
-                    return data.text;
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'debit_opening_balance',
+                        name: 'debit_opening_balance',
+                        render: function(data, type, row) {
+                            return __currency_trans_from_en(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: 'credit_opening_balance',
+                        name: 'credit_opening_balance',
+                        render: function(data, type, row) {
+                            return __currency_trans_from_en(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: 'debit_balance',
+                        name: 'debit_balance',
+                        render: function(data, type, row) {
+                            return __currency_trans_from_en(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: 'credit_balance',
+                        name: 'credit_balance',
+                        render: function(data, type, row) {
+                            return __currency_trans_from_en(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: 'closing_debit_balance',
+                        name: 'closing_debit_balance',
+                        render: function(data, type, row) {
+                            return __currency_trans_from_en(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: 'closing_credit_balance',
+                        name: 'closing_credit_balance',
+                        render: function(data, type, row) {
+                            return __currency_trans_from_en(parseFloat(data));
+                        }
+                    },
+                ],
+                "footerCallback": function(row, data, start, end, display) {
+                    var debit_opening_total = 0;
+                    var credit_opening_total = 0;
+                    var debit_total = 0;
+                    var credit_total = 0;
+                    var closing_debit_total = 0;
+                    var closing_credit_total = 0;
+                    for (var r in data) {
+                        debit_opening_total += data[r].debit_opening_balance ?
+                            parseFloat(data[r].debit_opening_balance) : 0;
+
+                        credit_opening_total += data[r].credit_opening_balance ?
+                            parseFloat(data[r].credit_opening_balance) : 0;
+
+                        debit_total += data[r].debit_balance ?
+                            parseFloat(data[r].debit_balance) : 0;
+
+                        credit_total += $(data[r].credit_balance) ?
+                            parseFloat(data[r].credit_balance) : 0;
+
+                        closing_debit_total += data[r].closing_debit_balance ?
+                            parseFloat(data[r].closing_debit_balance) : 0;
+
+                        closing_credit_total += data[r].closing_credit_balance ?
+                            parseFloat(data[r].closing_credit_balance) : 0;
+                    }
+                    $('.debit_opening_total').html(__currency_trans_from_en(debit_opening_total));
+                    $('.credit_opening_total').html(__currency_trans_from_en(credit_opening_total));
+                    $('.debit_total').html(__currency_trans_from_en(debit_total));
+                    $('.credit_total').html(__currency_trans_from_en(credit_total));
+                    $('.closing_debit_total').html(__currency_trans_from_en(closing_debit_total));
+                    $('.closing_credit_total').html(__currency_trans_from_en(closing_credit_total));
                 }
             });
-
-
-            dateRangeSettings.startDate = moment('{{ $start_date }}');
-            dateRangeSettings.endDate = moment('{{ $end_date }}');
-
-            $('#date_range_filter').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#date_range_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(
-                        moment_date_format));
-                    apply_filter();
-                }
-            );
-            $('#date_range_filter').on('cancel.daterangepicker', function(ev, picker) {
-                $('#date_range_filter').val('');
-                apply_filter();
-            });
-
-            function apply_filter() {
-                var start = '';
-                var end = '';
-
-                if ($('#date_range_filter').val()) {
-                    start = $('input#date_range_filter')
-                        .data('daterangepicker')
-                        .startDate.format('YYYY-MM-DD');
-                    end = $('input#date_range_filter')
-                        .data('daterangepicker')
-                        .endDate.format('YYYY-MM-DD');
-                }
-
-                const urlParams = new URLSearchParams(window.location.search);
-                urlParams.set('start_date', start);
-                urlParams.set('end_date', end);
-                window.location.search = urlParams;
-            }
-            $('#accounts-table').DataTable();
         });
     </script>
 
