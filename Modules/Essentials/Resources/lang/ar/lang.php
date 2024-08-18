@@ -1997,7 +1997,8 @@ return [
   'company_name' => 'اسم الشركة',
   'assigned_to' => 'اسم المشروع',
   'worker_not_found' => 'العامل غير موجود',
-  'error_occurred' => 'لقد حدث شيء خاطئ، أعد المحاولة'
+  'error_occurred' => 'لقد حدث شيء خاطئ، أعد المحاولة',
+  'sub_status' => 'الحالة الفرعية'
 
 
 
