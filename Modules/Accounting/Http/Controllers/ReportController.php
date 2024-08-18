@@ -208,9 +208,7 @@ class ReportController extends Controller
                 DB::raw('LENGTH(REGEXP_REPLACE(gl_code, "[0-9]", "")) AS code_length')
             )
             ->when($level_filter, function ($query, $level_filter) {
-
-                return $query->havingRaw('code_length = ?', [$level_filter - 1])
-                    ->orHavingRaw('code_length < ?', [$level_filter - 1]);
+                return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
             })
             ->groupBy(
                 'name',
