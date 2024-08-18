@@ -369,11 +369,11 @@
 
 
                 </div>
-           
+
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                          
+
                             <th>
                                 <input type="checkbox" id="select-all">
                             </th>
@@ -858,12 +858,12 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                         <form id="returnModalForm">
+                        <form id="returnModalForm">
                             <div class="form-group">
                                 <label for="reasonInput">@lang('request.reason')</label>
                                 <input type="text" class="form-control" id="reasonInput" required>
                             </div>
-                           
+
                             <input type="hidden" name="request_id" id="request_id">
                             <button type="submit" class="btn btn-primary">@lang('request.update')</button>
                         </form>
@@ -1344,8 +1344,11 @@
                         render: function(data, type, row, meta) {
 
 
-                            if (row.status_now === 'pending' && row.action_type ===
-                                'accept_reject') {
+                            if ((row.status_now === 'pending' && row.action_type !==
+                                    'task' && row.is_started === 0) || (row.status_now ===
+                                    'pending' && row
+                                    .is_superior ===
+                                    1)) {
                                 return '<input type="checkbox" class="select-row" data-id="' + row
                                     .id + '" data-requestId="' + row.id + '">';
 
@@ -1542,7 +1545,7 @@
                 $('#change_status_modal').modal('show');
             });
 
-             
+
             $(document).on('click', 'a.change_status', function(e) {
                 e.preventDefault();
 
@@ -1598,7 +1601,7 @@
                 // Show the modal
                 $('#returnModal').modal('show');
             });
-          
+
             $('#requests_table').on('click', '.btn-return', function() {
                 var requestId = $(this).data('request-id');
                 $('#returnModal').modal('show');
@@ -1609,15 +1612,15 @@
                 e.preventDefault();
                 var requestId = $('#returnModal').data('id');
                 var requestIds = $('#returnModal').find('#request_id').val();
-             
+
                 var reason = $('#reasonInput').val();
 
                 $.ajax({
                     url: "{{ route('returnRequest') }}",
                     method: "POST",
                     data: {
-                         requestId: requestId,
-                     
+                        requestId: requestId,
+
                         requestIds: requestIds,
                         reason: reason,
                         _token: "{{ csrf_token() }}"
