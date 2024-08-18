@@ -86,7 +86,7 @@
                                         {!! Form::select('user_type', $user_types, null, [
                                             'class' => 'form-control select2',
                                             'style' => 'width: 100%;',
-                                            'id' => 'user_type',
+                                            'id' => 'user_type2',
                                             'placeholder' => __('lang_v1.all'),
                                         ]) !!}
                                     </div>
@@ -307,7 +307,7 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('#select_department_id,  #user_type, #project_name_filter, #select_company_id')
+            $('#select_department_id,  #user_type2, #project_name_filter, #select_company_id')
                 .on('change',
                     function() {
                         payroll_group_table.ajax.reload();
