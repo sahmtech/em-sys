@@ -89,8 +89,8 @@
 
                             <td>@lang('followup::lang.project_name')</td>
                             <td>@lang('essentials::lang.project_assigner')</td>
-                            <td>@lang('essentials::lang.salary_voucher')</td>
-                            <td>@lang('essentials::lang.actions')</td>
+                            <td class="actions-column">@lang('essentials::lang.salary_voucher')</td>
+                            <td class="actions-column">@lang('essentials::lang.actions')</td>
 
 
 
@@ -113,6 +113,14 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+
+
+
+
+
+
+
+
 
             $('#status_fillter').select2();
 
@@ -220,6 +228,19 @@
 
 
                 ]
+            });
+            $('#workers_table tbody').on('click', 'tr', function(e) {
+                var $target = $(e.target);
+                // Check if the clicked element is inside the actions column
+                if (!$target.closest('.actions-column').length) {
+                    var data = workers_table.row(this).data(); // Get the row data
+                    var id = data
+                        .worker_id; // Assume emp_number is the employee's ID or any unique identifier
+                    var url =
+                        "{{ route('show_workers_affairs', ':id') }}"; // Replace 'your.route.name' with the actual route name
+                    url = url.replace(':id', id);
+                    window.location.href = url;
+                }
             });
 
 
