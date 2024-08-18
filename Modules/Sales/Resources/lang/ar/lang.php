@@ -497,6 +497,10 @@ return [
     'contract_type' => 'نوع العقد',
     'select_contract_type' => 'نوع العقد',
     'editable' => 'قابلة للتعديل',
+    'approve_offer' => 'تعميد',
+    'status' => 'الحالة',
+    'approve_offer_price' => 'تعميد عرض السعر'
+
 
 ];
 
