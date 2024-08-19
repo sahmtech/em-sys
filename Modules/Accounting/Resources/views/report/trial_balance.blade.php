@@ -130,13 +130,22 @@
                         </thead>
                         <tfoot>
                             <tr>
-                                <th colspan="2" class="text-center">Total:</th>
+                                <th colspan="2" class="text-center">@lang('accounting::lang.total'):</th>
                                 <th id="debitOpeningTotal" class="debit_opening_total"></th>
                                 <th id="creditOpeningTotal" class="credit_opening_total"></th>
                                 <th id="debitTotal" class="debit_total"></th>
                                 <th id="creditTotal" class="credit_total"></th>
                                 <th id="closingDebitTotal" class="closing_debit_total"></th>
                                 <th id="closingCreditTotal" class="closing_credit_total"></th>
+                            </tr>
+                            <tr>
+                                <th colspan="2" class="text-center">@lang('accounting::lang.total_for_all_pages'):</th>
+                                <th id="allpagesdebitOpeningTotal" class="all_pages_debit_opening_total"></th>
+                                <th id="allpagescreditOpeningTotal" class="all_pages_credit_opening_total"></th>
+                                <th id="allpagesdebitTotal" class="all_pages_debit_total"></th>
+                                <th id="allpagescreditTotal" class="all_pages_credit_total"></th>
+                                <th id="allpagesclosingDebitTotal" class="all_pages_closing_debit_total"></th>
+                                <th id="allpagesclosingCreditTotal" class="all_pages_closing_credit_total"></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -159,7 +168,6 @@
             $('#classification').select2();
             $('#with_zero_balances').select2();
             $('#level_filter').select2();
-
 
             $('#level_filter,#end_date_filter,#start_date_filter,#with_zero_balances,#classification,#account_filter')
                 .on('change',
@@ -202,7 +210,7 @@
                     },
                     {
                         data: 'name',
-                        name: 'name'
+                        name: 'name',
                     },
                     {
                         data: 'debit_opening_balance',
@@ -248,37 +256,59 @@
                     },
                 ],
                 "footerCallback": function(row, data, start, end, display) {
-                    var debit_opening_total = 0;
-                    var credit_opening_total = 0;
-                    var debit_total = 0;
-                    var credit_total = 0;
-                    var closing_debit_total = 0;
-                    var closing_credit_total = 0;
-                    for (var r in data) {
-                        debit_opening_total += data[r].debit_opening_balance ?
-                            parseFloat(data[r].debit_opening_balance) : 0;
+                    var api = this.api();
 
-                        credit_opening_total += data[r].credit_opening_balance ?
-                            parseFloat(data[r].credit_opening_balance) : 0;
+                    var debit_opening_total = api.column(2).data().reduce(function(a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0);
 
-                        debit_total += data[r].debit_balance ?
-                            parseFloat(data[r].debit_balance) : 0;
+                    var credit_opening_total = api.column(3).data().reduce(function(a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0);
 
-                        credit_total += $(data[r].credit_balance) ?
-                            parseFloat(data[r].credit_balance) : 0;
+                    var debit_total = api.column(4).data().reduce(function(a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0);
 
-                        closing_debit_total += data[r].closing_debit_balance ?
-                            parseFloat(data[r].closing_debit_balance) : 0;
+                    var credit_total = api.column(5, ).data().reduce(function(a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0);
 
-                        closing_credit_total += data[r].closing_credit_balance ?
-                            parseFloat(data[r].closing_credit_balance) : 0;
-                    }
+                    var closing_debit_total = api.column(6).data().reduce(function(a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0);
+
+                    var closing_credit_total = api.column(7).data().reduce(function(a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0);
+
                     $('.debit_opening_total').html(__currency_trans_from_en(debit_opening_total));
                     $('.credit_opening_total').html(__currency_trans_from_en(credit_opening_total));
                     $('.debit_total').html(__currency_trans_from_en(debit_total));
                     $('.credit_total').html(__currency_trans_from_en(credit_total));
                     $('.closing_debit_total').html(__currency_trans_from_en(closing_debit_total));
                     $('.closing_credit_total').html(__currency_trans_from_en(closing_credit_total));
+
+
+                    var debit_opening_total_all = api.ajax.json().totalDebitOpeningBalance;
+                    var credit_opening_total_all = api.ajax.json().totalCreditOpeningBalance;
+                    var debit_total_all = api.ajax.json().totalDebitBalance;
+                    var credit_total_all = api.ajax.json().totalCreditBalance;
+                    var closing_debit_total_all = api.ajax.json().totalClosingDebitBalance;
+                    var closing_credit_total_all = api.ajax.json().totalClosingCreditBalance;
+
+                    $('.all_pages_debit_opening_total')
+                        .html(__currency_trans_from_en(debit_opening_total_all));
+                    $('.all_pages_credit_opening_total')
+                        .html(__currency_trans_from_en(credit_opening_total_all));
+                    $('.all_pages_debit_total')
+                        .html(__currency_trans_from_en(debit_total_all));
+                    $('.all_pages_credit_total')
+                        .html(__currency_trans_from_en(credit_total_all));
+                    $('.all_pages_closing_debit_total')
+                        .html(__currency_trans_from_en(closing_debit_total_all));
+                    $('.all_pages_closing_credit_total')
+                        .html(__currency_trans_from_en(closing_credit_total_all));
                 }
             });
         });

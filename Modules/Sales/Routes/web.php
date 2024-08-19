@@ -23,6 +23,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
     Route::prefix('sale')->group(function () {
 
 
+        Route::patch('/offer/approve/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'approve'])->name('offer.approve');
 
         Route::get('/', [\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->name('sales_landing');
         Route::get('/getOperationAvailableContracts', [\Modules\Sales\Http\Controllers\SalesController::class, 'getOperationAvailableContracts'])->name('getOperationAvailableContracts');

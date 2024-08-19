@@ -349,6 +349,7 @@ return [
    'debit' => 'Debit',
    'credit' => 'Credit',
    'total' => 'Total',
+   'total_for_all_pages' => 'Total for all pages',
    'credit_debit_equal' => 'Credit & Debit needs to be equal to proceed',
    'select_all_accounts' => 'Select account for all used rows',
    'journal_date' => 'Journal Date',
