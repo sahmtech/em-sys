@@ -309,10 +309,15 @@
                 },
                 success: function(response) {
                     console.log(response);
-
+                    if (response.data.user_type != "worker") {
+                        $('#worker_assigned_to').closest('p').hide();
+                        $('#worker_border_no').closest('p').hide();
+                        $('#worker_residence_permit_expiration').closest('p').hide();
+                        $('#worker_status').closest('p').hide();
+                        $('#worker_sub_status').closest('p').hide();
+                    }
                     $('#worker_full_name').text(response.data.full_name);
                     $('#worker_emp_number').text(response.data.emp_number);
-
                     $('#worker_status').text(response.data.status);
                     $('#worker_sub_status').text(response.data.sub_status);
                     $('#worker_id_proof_number').text(response.data.id_proof_number);

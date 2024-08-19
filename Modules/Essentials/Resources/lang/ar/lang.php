@@ -2001,8 +2001,8 @@ return [
   'sub_status' => 'الحالة الفرعية',
   'employees&workers' => 'الموظفين والعمال',
   'insurance_status' => 'حالة التأمين',
-  'business_insurance_contracts' => 'فرز شركات التأمين'
-
+  'business_insurance_contracts' => 'فرز شركات التأمين',
+  'view_personal_data' => 'عرض البيانات الشخصية',
 
 
 ];
