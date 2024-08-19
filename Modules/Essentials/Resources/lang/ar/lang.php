@@ -2001,7 +2001,10 @@ return [
   'sub_status' => 'الحالة الفرعية',
   'employees&workers' => 'الموظفين والعمال',
   'insurance_status' => 'حالة التأمين',
-  'business_insurance_contracts' => 'فرز شركات التأمين'
+  'business_insurance_contracts' => 'فرز شركات التأمين',
+  'all_requests' => 'جميع الطلبات',
+  'pending_requests' => 'الطلبات الحالية',
+  'done_requests' => 'الطلبات المنتهية',
 
 
 

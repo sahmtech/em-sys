@@ -17,25 +17,25 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
 
-                    <li @if (request()->segment(2) == 'president_pending_requests') class="active" @endif>
-                        <a href="{{ route('president_pending_requests') }}">
+                    <li @if (request()->segment(2) == 'pendingEmployeeAffairsRequests') class="active" @endif>
+                        <a href="{{ route('pendingEmployeeAffairsRequests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('generalmanagement::lang.pending_requests')
+                            @lang('essentials::lang.pending_requests')
                         </a>
                     </li>
-                    <li @if (request()->segment(2) == 'president_requests') class="active" @endif>
-                        <a href="{{ route('president_requests') }}">
+                    <li @if (request()->segment(2) == 'allEmployeeAffairsRequests') class="active" @endif>
+                        <a href="{{ route('allEmployeeAffairsRequests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('generalmanagement::lang.all_requests')
+                            @lang('essentials::lang.all_requests')
                         </a>
                     </li>
 
 
 
-                    <li @if (request()->segment(2) == 'president_done_requests') class="active" @endif>
-                        <a href="{{ route('president_done_requests') }}">
+                    <li @if (request()->segment(2) == 'doneEmployeeAffairsRequests') class="active" @endif>
+                        <a href="{{ route('doneEmployeeAffairsRequests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('generalmanagement::lang.done_requests')
+                            @lang('essentials::lang.done_requests')
                         </a>
                     </li>
                 </ul>

@@ -99,6 +99,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/work_cards_dashboard', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'word_cards_dashboard'])->name('essentials_word_cards_dashboard');
         Route::get('/work_cards_all_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_all_requests'])->name('work_cards_all_requests');
+        Route::get('/work_cards_done_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_done_requests'])->name('work_cards_done_requests');
+        Route::get('/work_cards_pending_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_pending_requests'])->name('work_cards_pending_requests');
+
+
         Route::get('/work_cards_vaction_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_vaction_requests'])->name('work_cards_vaction_requests');
         Route::get('/work_cards_operation',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_operation'])->name('work_cards_operation');
         Route::post('/post_return_visa_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_return_visa_data'])->name('post_return_visa_data');
@@ -271,6 +275,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/userTravelCat/{id}', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class, 'destroyUserTravelCat'])->name('userTravelCat.destroy');
 
         Route::get('/allEmployeeAffairsRequests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_affairs_all_requests'])->name('allEmployeeAffairsRequests');
+        Route::get('/pendingEmployeeAffairsRequests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'pendingEmployeeAffairsRequests'])->name('pendingEmployeeAffairsRequests');
+        Route::get('/doneEmployeeAffairsRequests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'doneEmployeeAffairsRequests'])->name('doneEmployeeAffairsRequests');
+
         Route::get('/viewEmployeeAffairsRequest/{requestId}', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'viewEmployeeAffairsRequest'])->name('viewEmployeeAffairsRequest');
         Route::get('/viewEmployeeAffRequest/{requestId}', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'viewEmployeeAffRequest'])->name('viewEmployeeAffRequest');
         Route::post('/storeEmployeeAffairsRequest', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'storeEmployeeAffairsRequest'])->name('storeEmployeeAffairsRequest');

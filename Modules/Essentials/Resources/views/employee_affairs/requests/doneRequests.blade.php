@@ -284,6 +284,7 @@
         @endif
     @endif
     <section class="content">
+
         @component('components.filters', ['title' => __('request.filters')])
             <div class="col-md-3">
                 <div class="form-group">
@@ -340,9 +341,9 @@
                 </div>
             </div>
         @endcomponent
-
+        @include('essentials::layouts.nav_requests_status_for_affaris')
         @component('components.widget', ['class' => 'box-primary'])
-            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.insurances_add_requests'))
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.employees_affairs_add_requests'))
                 @slot('tool')
                     <div class="box-tools">
 
@@ -355,12 +356,12 @@
             @endif
             <div class="table-responsive">
                 <div style="margin-bottom: 10px;">
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.change_insurance_request_status'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.change_employees_request_status'))
                         <button type="button" class="btn btn-warning change_status2">
                             @lang('request.change_status')
                         </button>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_insurance_request'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_employees_request'))
                         <button class="btn btn-danger btn-sm btn-return2">
                             {{ trans('request.return_the_request') }}
                         </button>
@@ -398,7 +399,7 @@
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'insurance_storeRequest', 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'storeEmployeeAffairsRequest', 'enctype' => 'multipart/form-data']) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -410,9 +411,8 @@
                         <div class="row">
 
 
-
                             <div class="form-group col-md-6">
-                                {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
+                                {!! Form::label('type', __('request.type') . ':*') !!}
                                 {!! Form::select(
                                     'type',
                                     collect($requestTypes)->mapWithKeys(function ($requestType) {
@@ -426,13 +426,13 @@
                                         'class' => 'form-control',
                                         'required',
                                         'style' => 'height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
                                         'id' => 'requestType',
                                     ],
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('user_id', __('essentials::lang.name') . ':*') !!}
+                                {!! Form::label('user_id', __('request.name') . ':*') !!}
                                 {!! Form::select('user_id[]', $users, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
@@ -452,22 +452,22 @@
                             </div>
 
                             <div class="form-group col-md-6" id="start_date" style="display: none;">
-                                {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
+                                {!! Form::label('start_date', __('request.start_date') . ':*') !!}
                                 {!! Form::date('start_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.start_date'),
+                                    'placeholder' => __('request.start_date'),
                                     'id' => 'startDateField',
                                 ]) !!}
                             </div>
 
 
                             <div class="form-group col-md-6" id="end_date" style="display: none;">
-                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
+                                {!! Form::label('end_date', __('request.end_date') . ':*') !!}
                                 {!! Form::date('end_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.end_date'),
+                                    'placeholder' => __('request.end_date'),
                                     'id' => 'endDateField',
                                 ]) !!}
                             </div>
@@ -500,11 +500,11 @@
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
+                                {!! Form::label('escape_date', __('request.escape_date') . ':*') !!}
                                 {!! Form::date('escape_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.escape_date'),
+                                    'placeholder' => __('request.escape_date'),
                                     'id' => 'escapeDateField',
                                 ]) !!}
                             </div>
@@ -529,7 +529,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
                                     ],
                                 ) !!}
                             </div>
@@ -546,7 +546,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
                                         'id' => 'atmType',
                                     ],
                                 ) !!}
@@ -582,7 +582,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
                                     ],
                                 ) !!}
                             </div>
@@ -845,6 +845,7 @@
             </div>
         </div>
 
+
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
             aria-hidden="true">
@@ -873,6 +874,7 @@
                 </div>
             </div>
         </div>
+
         {{-- edit request --}}
         <div class="modal fade" id="editRequestModal" tabindex="-1" role="dialog"
             aria-labelledby="editRequestModalLabel">
@@ -1331,12 +1333,13 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('insurance_requests') }}",
+                    url: "{{ route('doneEmployeeAffairsRequests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
                         d.company = $('#company_filter').val();
                         d.project = $('#project_filter').val();
+
                     }
                 },
                 columns: [{
@@ -1778,10 +1781,7 @@
                                     label: '{{ __('request.installmentsNumber') }}',
                                     value: requestInfo.installmentsNumber
                                 },
-                                {
-                                    label: '{{ __('request.baladyCardType') }}',
-                                    value: requestInfo.baladyCardType
-                                },
+
                                 {
                                     label: '{{ __('request.workInjuriesDate') }}',
                                     value: requestInfo.workInjuriesDate
