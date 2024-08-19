@@ -138,6 +138,7 @@
                                 <th id="creditTotal" class="credit_total"></th>
                                 <th id="closingDebitTotal" class="closing_debit_total"></th>
                                 <th id="closingCreditTotal" class="closing_credit_total"></th>
+                                <th></th>
                             </tr>
                             <tr>
                                 <th colspan="2" class="text-center">@lang('accounting::lang.total_for_all_pages'):</th>
@@ -146,7 +147,8 @@
                                 <th id="allpagesdebitTotal" class="all_pages_debit_total"></th>
                                 <th id="allpagescreditTotal" class="all_pages_credit_total"></th>
                                 <th id="allpagesclosingDebitTotal" class="all_pages_closing_debit_total"></th>
-                                <th id="allpagesclosingCreditTotal" class="all_pages_closing_credit_total"></th>
+                                <th  id="allpagesclosingCreditTotal" class="all_pages_closing_credit_total"></th>
+                                <th></th>
                             </tr>
                         </tfoot>
                     </table>
