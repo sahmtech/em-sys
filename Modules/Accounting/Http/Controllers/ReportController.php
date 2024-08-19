@@ -209,6 +209,7 @@ class ReportController extends Controller
                 'AAT.sub_type as sub_type',
                 'AAT.type as type',
                 'accounting_accounts.gl_code',
+                'accounting_accounts.id'
             )
             /* ->when($level_filter, function ($query, $level_filter) {
                 return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
@@ -241,9 +242,9 @@ class ReportController extends Controller
             $accounts = $aggregatedAccounts;
         }
 
-        
+
         if (request()->ajax()) {
-            
+
             $totalDebitOpeningBalance = 0;
             $totalCreditOpeningBalance = 0;
             $totalClosingDebitBalance = 0;
@@ -288,6 +289,19 @@ class ReportController extends Controller
                 ->addColumn('closing_credit_balance', function ($account) {
                     $closing_balance = $this->calculateClosingBalance($account);
                     return $closing_balance['closing_credit_balance'];
+                })
+                ->addColumn('action', function ($account) {
+                    $html =
+                        '<div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs" >' . '
+                                <a class=" btn-modal text-white" data-container="#printledger"
+                                    data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
+                                >
+                                    ' . __("accounting::lang.account_statement") . '
+                                </a>
+                            </button>
+                        </div>';
+                    return $html;
                 })
                 ->with([
                     'totalDebitOpeningBalance' => $totalDebitOpeningBalance,
@@ -360,8 +374,8 @@ class ReportController extends Controller
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as added_by"),
                     't.invoice_no',
                 )
-                ->whereDate('t.transaction_date', '>=', $start_date)
-                ->whereDate('t.transaction_date', '<=', $end_date)
+                ->whereDate('aat.operation_date', '>=', $start_date)
+                ->whereDate('aat.operation_date', '<=', $end_date)
                 ->groupBy(
                     'aat.operation_date',
                     'aat.sub_type',
@@ -529,8 +543,8 @@ class ReportController extends Controller
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as added_by"),
                     't.invoice_no',
                 )
-                ->whereDate('t.transaction_date', '>=', $start_date)
-                ->whereDate('t.transaction_date', '<=', $end_date)
+                ->whereDate('aat.operation_date', '>=', $start_date)
+                ->whereDate('aat.operation_date', '<=', $end_date)
                 ->groupBy(
                     'contacts.id',
                     'aat.operation_date',

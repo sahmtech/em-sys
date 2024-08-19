@@ -61,6 +61,7 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('save-importe-accounts', 'CoaController@importe_accounts')->name('accounting.saveImporte_accounts');
     Route::get('activate-deactivate/{id}', 'CoaController@activateDeactivate');
     Route::get('create-default-accounts', 'CoaController@createDefaultAccounts')->name('accounting.create-default-accounts');
+    Route::get('ledger/print/{id}', 'CoaController@ledgerPrint');
 
 
 
