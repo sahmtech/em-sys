@@ -61,18 +61,34 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [
-                            $fields[0],
-                            $fields[1],
-                            $fields[2],
-                            $fields[3],
-                            $fields[4],
-                            $fields[5],
-                            $fields[6],
-                        ];
+                        // Remove the specified fields from the $fields array
+                        $fields = array_values(
+                            array_diff($fields, [
+                                __('essentials::lang.profile_image'),
+                                __('followup::lang.passport_numer'),
+                                __('followup::lang.passport_expire_date'),
+                                __('followup::lang.eqama_end_date'),
+                                __('followup::lang.admissions_date'),
+                                __('essentials::lang.admissions_type'),
+                                __('essentials::lang.admissions_status'),
+                                __('followup::lang.contract_end_date'),
+                                __('essentials::lang.mobile_number'),
+                                __('business.email'),
+                                __('followup::lang.Basic_salary'),
+                                __('followup::lang.total_salary'),
+                                __('followup::lang.blood_group'),
+                                __('followup::lang.bank_code'),
+                                __('essentials::lang.travel_categorie'),
+                            ]),
+                        );
+
+                        $fullNamePosition = array_search(__('followup::lang.name'), $fields);
+                        if ($fullNamePosition !== false) {
+                            array_splice($fields, $fullNamePosition + 1, 0, __('essentials::lang.english_name'));
+                        }
+                        $default_fields = array_slice($fields, 0, 7);
 
                         $default = array_keys($default_fields);
-
                     @endphp
 
                     <div style="row">
