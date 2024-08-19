@@ -80,8 +80,8 @@ class TimeSheetController extends Controller
         $departments = Category::forDropdown($business_id, 'hrm_department');
         $designations = Category::forDropdown($business_id, 'hrm_designation');
 
-
-        return view('followup::custom_views.agents.agent_time_sheet.index', compact('workers', 'departments', 'designations', 'projects'));
+        $companies = Company::pluck('name', 'id');
+        return view('followup::custom_views.agents.agent_time_sheet.index', compact('workers', 'companies', 'departments', 'designations', 'projects'));
     }
 
     public function create()
@@ -190,7 +190,17 @@ class TimeSheetController extends Controller
             'timesheet_groups.approved_by',
             'timesheet_groups.is_approved',
         ]);
+        if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
+            $project_name_filter = request()->input('project_name_filter');
 
+            $payrolls =    $payrolls->where('project_id', $project_name_filter);
+        }
+
+        if (request()->input('select_company_id') && request()->input('select_company_id') != 'all') {
+            $select_company_id = request()->input('select_company_id');
+
+            $payrolls =    $payrolls->whereIn('company_id', $select_company_id);
+        }
         $all_users = User::where('status', '!=', 'inactive')
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
             ->get();

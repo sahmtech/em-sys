@@ -202,62 +202,139 @@ class RequestTypeController extends Controller
     }
 
 
+    // public function update(Request $request)
+
+    // {
+
+    //     try {
+    //         $requests = WkProcedure::where('request_type_id', $request->request_type_id)->get();
+
+    //         if ($requests->count() != 0) {
+
+    //             $output = [
+    //                 'success' => false,
+    //                 'msg' => __('ceomanagment::lang.cant_edit_type_it_have_procedures'),
+    //             ];
+    //             return $output;
+    //         }
+    //         Task::where('request_type_id', $request->request_type_id)->delete();
+    //         if (isset($request->tasks)) {
+
+    //             $descriptions = $request->tasks['description'] ?? [];
+    //             $links = $request->tasks['link'] ?? [];
+
+    //             foreach ($descriptions as $index => $description) {
 
 
+    //                 if (!empty($description)) {
+
+    //                     $taskInput = [
+    //                         'description' => $description,
+    //                         'link' => $links[$index] ?? null,
+    //                         'request_type_id' => $request->request_type_id,
+    //                     ];
+
+
+    //                     Task::create($taskInput);
+    //                 }
+    //             }
+    //         }
+
+
+    //         $output = [
+    //             'success' => true,
+    //             'msg' => __('lang_v1.updated_success'),
+    //         ];
+    //     } catch (\Exception $e) {
+    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+    //         $output = [
+    //             'success' => false,
+    //             'msg' => __('messages.something_went_wrong'),
+    //         ];
+    //     }
+
+    //     return $output;
+    // }
     public function update(Request $request)
-
     {
-
         try {
-            $requests = WkProcedure::where('request_type_id', $request->request_type_id)->get();
+            // Log the incoming request data
+            error_log(json_encode($request->all()));
 
-            if ($requests->count() != 0) {
+            $tasks = $request->tasks ?? [];
+            $deletedTasks = json_decode($request->deleted_tasks, true) ?? [];
 
-                $output = [
-                    'success' => false,
-                    'msg' => __('ceomanagment::lang.cant_edit_type_it_have_procedures'),
-                ];
-                return $output;
+            // Check for linked tasks in procedure_tasks table
+            if (!empty($deletedTasks)) {
+                error_log(json_encode($deletedTasks));
+                $linkedTasks = DB::table('procedure_tasks')
+                    ->whereIn('task_id', $deletedTasks)
+                    ->pluck('task_id')
+                    ->toArray();
+                error_log(json_encode($linkedTasks));
+
+                if (!empty($linkedTasks)) {
+                    // If there are tasks linked in ProcedureTask, return an error
+                    $output = [
+                        'success' => false,
+                        'msg' => __('ceomanagment::lang.task_linked_procedure_error'),
+                    ];
+                    return response()->json($output);
+                }
+
+                // Delete tasks if no linked tasks found
+                Task::whereIn('id', $deletedTasks)->delete();
             }
-            Task::where('request_type_id', $request->request_type_id)->delete();
-            if (isset($request->tasks)) {
 
-                $descriptions = $request->tasks['description'] ?? [];
-                $links = $request->tasks['link'] ?? [];
+            if (!empty($tasks)) {
+                foreach ($tasks['description'] as $type => $taskDescriptions) {
+                    foreach ($taskDescriptions as $index => $description) {
+                        if (!empty($description)) {
+                            $link = $tasks['link'][$type][$index] ?? null;
 
-                foreach ($descriptions as $index => $description) {
-
-
-                    if (!empty($description)) {
-
-                        $taskInput = [
-                            'description' => $description,
-                            'link' => $links[$index] ?? null,
-                            'request_type_id' => $request->request_type_id,
-                        ];
-
-
-                        Task::create($taskInput);
+                            if ($type === 'old') {
+                                $taskId = $tasks['id'][$type][$index];
+                                $task = Task::find($taskId);
+                                if ($task) {
+                                    $task->update([
+                                        'description' => $description,
+                                        'link' => $link !== 'null' ? $link : null,
+                                    ]);
+                                }
+                            } elseif ($type === 'new') {
+                                Task::create([
+                                    'description' => $description,
+                                    'link' => $link !== 'null' ? $link : null,
+                                    'request_type_id' => $request->request_type_id,
+                                ]);
+                            }
+                        }
                     }
                 }
             }
 
-
+            // Prepare successful response
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            // Log the exception details
+            \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
 
+            // Prepare error response
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
 
-        return $output;
+        return response()->json($output);
     }
+
+
+
 
     private function getTypePrefix($type)
     {
@@ -335,15 +412,21 @@ class RequestTypeController extends Controller
         return $output;
     }
 
-
     public function getTasksForType(Request $request)
     {
         $typeId = $request->typeId;
 
+        // Log the typeId and the tasks retrieved
+        \Log::info('Received type ID: ' . $typeId);
+
+        // Retrieve tasks associated with the typeId
         $tasks = Task::where('request_type_id', $typeId)->pluck('description', 'id');
+
+        \Log::info('Tasks retrieved: ' . json_encode($tasks));
 
         return response()->json($tasks);
     }
+
 
     public function getRequestType($id)
     {

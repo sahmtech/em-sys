@@ -99,6 +99,11 @@
                     </div>
                 @endcomponent
             </div>
+            <div class="col-md-12" style="margin-bottom: 5px;">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#askForWorkerModal">
+                    @lang('essentials::lang.ask_for_worker')
+                </button>
+            </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
@@ -169,7 +174,48 @@
             </div>
         @endcomponent
 
+        <div class="modal fade" id="askForWorkerModal" tabindex="-1" role="dialog"
+            aria-labelledby="askForWorkerModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="askForWorkerModalLabel">@lang('essentials::lang.ask_for_worker')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="askForWorkerForm">
+                            @csrf
+                            <div class="form-group">
+                                <label for="worker_identifier">@lang('essentials::lang.worker_identifier')</label>
+                                <input type="text" class="form-control" id="worker_identifier" name="worker_identifier"
+                                    required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('essentials::lang.submit')</button>
+                        </form>
 
+                        <!-- Worker info section -->
+                        <div id="worker-info" style="display:none; margin-top: 20px;">
+                            <h5>@lang('essentials::lang.worker_information')</h5>
+                            <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
+                            <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                            <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                            <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+
+                            <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
+                            <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span id="worker_residence_permit_expiration"></span>
+                            </p>
+                            <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
+                            <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span></p>
+                            <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
+                            <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
+                            <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </section>
     <!-- /.content -->
@@ -413,14 +459,56 @@
             var dt = $('#workers_table').DataTable();
 
             var fields = fields;
-            //  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-            //     13, 14, 15,
-            //     16, 17, 18
-            // ];
 
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);
 
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#askForWorkerForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var worker_identifier = $('#worker_identifier').val();
+
+                $.ajax({
+                    url: '{{ route('get-worker-info') }}', // Replace with your actual route
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        worker_identifier: worker_identifier
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Display the worker info in the modal
+                            $('#worker_full_name').text(response.data.full_name);
+                            $('#worker_emp_number').text(response.data.emp_number);
+
+                            $('#worker_status').text(response.data.status);
+                            $('#worker_sub_status').text(response.data.sub_status);
+                            $('#worker_id_proof_number').text(response.data.id_proof_number);
+                            $('#worker_residence_permit_expiration').text(response.data
+                                .residence_permit_expiration);
+                            $('#worker_passport_number').text(response.data.passport_number);
+                            $('#worker_passport_expire_date').text(response.data
+                                .passport_expire_date);
+                            $('#worker_border_no').text(response.data.border_no);
+                            $('#worker_company_name').text(response.data.company_name);
+                            $('#worker_assigned_to').text(response.data.assigned_to);
+
+                            $('#worker-info').show();
+                        } else {
+                            $('#worker-info').hide();
+                            alert('@lang('essentials::lang.worker_not_found')');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#worker-info').hide();
+                        alert('@lang('essentials::lang.error_occurred')');
+                    }
+                });
+            });
+        });
     </script>
 @endsection

@@ -409,12 +409,12 @@
                                 </div>
                                 <br>
                             </div>
-                            <div>
+                            {{-- <div>
                                 <button type="button"class="btn btn-sm btn-warning my-button addStep"
                                     id="edit_modal_add_step">
                                     @lang('essentials::lang.add_managment')
                                 </button>
-                            </div>
+                            </div> --}}
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
@@ -792,6 +792,7 @@
                             $('#editProcedureForm input[name="start_from_customer"]').prop(
                                 'checked', false);
                         }
+                        var requestTypeId = response.request_type_id;
                         var procedures = typeof response.procedures === 'string' ? JSON.parse(
                             response.procedures) : response.procedures;
 
@@ -803,9 +804,9 @@
                                 if (index === 0) {
 
                                     populateStepData('#edit_modal_step_0', index,
-                                        procedure);
+                                        procedure, requestTypeId);
                                 } else {
-                                    addStepToEditModal(procedure, index);
+                                    addStepToEditModal(procedure, index, requestTypeId);
 
                                 }
                             });
@@ -820,165 +821,365 @@
                 });
 
 
-                function populateStepData(stepSelector, index, stepData) {
+                // function populateStepData(stepSelector, index, stepData) {
 
-                    // Populate the step with data
+                //     // Populate the step with data
+                //     $(stepSelector).find('[name^="step[' + index + '][edit_modal_department_id_steps]"]')
+                //         .val(stepData.department_id);
+                //     $(stepSelector).find('[name^="step[' + index + '][edit_modal_can_reject_steps]"]').prop(
+                //         'checked', stepData.can_reject);
+                //     $(stepSelector).find('[name^="step[' + index + '][edit_modal_can_return_steps]"]').prop(
+                //         'checked', stepData.can_return);
+                //     $(stepSelector).find('[name^="step[' + index + '][edit_action_type]"]')
+                //         .val(stepData.action_type);
+                //     // Populate the first escalation directly
+                //     if (stepData.escalations && stepData.escalations.length > 0) {
+                //         var firstEscalation = stepData.escalations[0];
+                //         var firstEscalationContainer = $(stepSelector).find('.escalation-field-template')
+                //             .first();
+                //         firstEscalationContainer.find('select[name^="step[' + index +
+                //             '][edit_modal_escalates_to_steps]"]').val(firstEscalation.escalates_to);
+                //         firstEscalationContainer.find('input[name^="step[' + index +
+                //             '][edit_modal_escalates_after_steps]"]').val(firstEscalation
+                //             .escalates_after);
+                //     }
+                //     $(stepSelector).closest('.entire_step').find('.edit-can-reject-checkbox-container')
+                //         .show()
+                //     // Clone and populate additional escalations if they exist
+                //     var escalationsContainer = $(stepSelector).find('.escalations-container');
+                //     if (stepData.escalations.length > 1) {
+                //         stepData.escalations.slice(1).forEach(function(escalation, escalationIndex) {
+
+                //             var stepContainer = $(stepSelector).closest('.entire_step');
+                //             var escalationContainer = stepContainer.find('.escalations-container');
+                //             var escalationCountInput = stepContainer.find(
+                //                 'input[name^="escalation_count"]');
+                //             var currentEscalationCount = parseInt(escalationCountInput.val());
+
+                //             var escalationClone = $(stepSelector).find('.escalation-field-template')
+                //                 .first().clone();
+
+                //             // Update names for the escalation fields
+                //             escalationClone.find('[name]').each(function() {
+                //                 var newName = $(this).attr('name').replace(/step\[0\]/,
+                //                         'step[' + index + ']')
+                //                     .replace(/\[\]$/, '[' + (escalationIndex + 1) +
+                //                         ']'
+                //                     ); // +1 because first escalation is already there
+                //                 $(this).attr('name', newName);
+                //             });
+
+                //             // Populate escalation data
+                //             escalationClone.find('select[name^="step[' + index +
+                //                 '][edit_modal_escalates_to_steps]"]').val(escalation
+                //                 .escalates_to);
+                //             escalationClone.find('input[name^="step[' + index +
+                //                 '][edit_modal_escalates_after_steps]"]').val(escalation
+                //                 .escalates_after);
+
+                //             // Remove ID attributes to avoid duplicates
+                //             escalationClone.find('[id]').removeAttr('id');
+
+                //             escalationCountInput.val(currentEscalationCount + 1);
+
+                //             escalationsContainer.append(escalationClone);
+                //         });
+                //     }
+
+
+                //     if (stepData.tasks && stepData.tasks.length > 0) {
+                //         var firstTask = stepData.tasks[0];
+                //         var parent = $(stepSelector).closest('.entire_step');
+                //         var container = parent.find('.task-select-container').first();
+                //         container.show();
+                //         container.find('.add-task-btn').show();
+                //         container.find('.remove-task-btn')
+                //             .hide();
+                //         parent.find('.edit-can-reject-checkbox-container').hide();
+
+
+                //         var typeId = stepData.request_type_id;
+
+                //         $.ajax({
+                //             url: '/ceomanagment/get-tasks-for-type',
+                //             type: 'GET',
+                //             data: {
+                //                 typeId: typeId
+                //             },
+                //             success: function(response) {
+                //                 var container = $(stepSelector).find('.task-select-container');
+
+                //                 var tasksSelect = container.find(
+                //                     'select[name="step[' + index + '][edit_tasks][]"]');
+                //                 tasksSelect.empty();
+                //                 tasksSelect.append('<option value="">' + 'Select Task' +
+                //                     '</option>');
+                //                 $.each(response, function(key, value) {
+                //                     tasksSelect.append('<option value="' + key + '">' +
+                //                         value + '</option>');
+                //                 });
+                //                 tasksSelect.val(firstTask.id);
+                //             }
+                //         });
+
+                //     }
+
+                //     if (stepData.tasks && stepData.tasks.length > 1) {
+
+
+                //         stepData.tasks.slice(1).forEach(function(task) {
+
+                //             var stepContainer = $(stepSelector).closest('.entire_step');
+                //             var taskContainers = stepContainer.find('.task-select-container');
+                //             var taskClone = taskContainers.find('.task_template').clone();
+                //             stepContainer.find('.edit-can-reject-checkbox-container').hide();
+
+                //             // var newIndex = index;
+                //             var newSelect = taskClone.find('select').val('');
+                //             taskClone.find('.add-task-btn').hide();
+                //             taskClone.find('.remove-task-btn').show().css('display',
+                //                 'inline-block');
+                //             taskClone.css('display', '');
+
+
+                //             var typeId = stepData
+                //                 .request_type_id;
+                //             $.ajax({
+                //                 url: '/ceomanagment/get-tasks-for-type',
+                //                 type: 'GET',
+                //                 data: {
+                //                     typeId: typeId
+                //                 },
+                //                 success: function(response) {
+                //                     newSelect.empty();
+                //                     newSelect.append('<option value="">' +
+                //                         'Select Task' + '</option>');
+                //                     $.each(response, function(key, value) {
+                //                         newSelect.append($('<option>', {
+                //                             value: key,
+                //                             text: value
+                //                         }));
+                //                     });
+                //                     newSelect.val(task.id);
+                //                 }
+                //             });
+                //             taskContainers.append(taskClone);
+
+                //         });
+                //     }
+
+
+
+                //     // Add click event listener for the remove button
+
+                //     $(stepSelector).find('.select2').select2();
+                //     edit_modal_steps_count++;
+                // }
+
+                function populateStepData(stepSelector, index, stepData, requestTypeId) {
+                    // Set the requestTypeId as a data attribute on the step container
+                    $(stepSelector).data('request-type-id', requestTypeId);
+
+                    // Existing code for populating the data...
+                    let procedureIdInput = $(stepSelector).find('input[name^="step[' + index +
+                        '][procedure_id]"]');
+                    if (procedureIdInput.length === 0) {
+                        $(stepSelector).append('<input type="hidden" name="step[' + index +
+                            '][procedure_id]" value="' + stepData.id + '">');
+                    } else {
+                        procedureIdInput.val(stepData.id);
+                    }
+
                     $(stepSelector).find('[name^="step[' + index + '][edit_modal_department_id_steps]"]')
                         .val(stepData.department_id);
                     $(stepSelector).find('[name^="step[' + index + '][edit_modal_can_reject_steps]"]').prop(
                         'checked', stepData.can_reject);
                     $(stepSelector).find('[name^="step[' + index + '][edit_modal_can_return_steps]"]').prop(
                         'checked', stepData.can_return);
-                    $(stepSelector).find('[name^="step[' + index + '][edit_action_type]"]')
-                        .val(stepData.action_type);
-                    // Populate the first escalation directly
-                    if (stepData.escalations && stepData.escalations.length > 0) {
-                        var firstEscalation = stepData.escalations[0];
-                        var firstEscalationContainer = $(stepSelector).find('.escalation-field-template')
-                            .first();
-                        firstEscalationContainer.find('select[name^="step[' + index +
-                            '][edit_modal_escalates_to_steps]"]').val(firstEscalation.escalates_to);
-                        firstEscalationContainer.find('input[name^="step[' + index +
-                            '][edit_modal_escalates_after_steps]"]').val(firstEscalation
-                            .escalates_after);
-                    }
-                    $(stepSelector).closest('.entire_step').find('.edit-can-reject-checkbox-container')
-                        .show()
-                    // Clone and populate additional escalations if they exist
-                    var escalationsContainer = $(stepSelector).find('.escalations-container');
-                    if (stepData.escalations.length > 1) {
-                        stepData.escalations.slice(1).forEach(function(escalation, escalationIndex) {
+                    $(stepSelector).find('[name^="step[' + index + '][edit_action_type]"]').val(stepData
+                        .action_type);
 
-                            var stepContainer = $(stepSelector).closest('.entire_step');
-                            var escalationContainer = stepContainer.find('.escalations-container');
-                            var escalationCountInput = stepContainer.find(
-                                'input[name^="escalation_count"]');
-                            var currentEscalationCount = parseInt(escalationCountInput.val());
-
-                            var escalationClone = $(stepSelector).find('.escalation-field-template')
-                                .first().clone();
-
-                            // Update names for the escalation fields
-                            escalationClone.find('[name]').each(function() {
-                                var newName = $(this).attr('name').replace(/step\[0\]/,
-                                        'step[' + index + ']')
-                                    .replace(/\[\]$/, '[' + (escalationIndex + 1) +
-                                        ']'
-                                    ); // +1 because first escalation is already there
-                                $(this).attr('name', newName);
-                            });
-
-                            // Populate escalation data
-                            escalationClone.find('select[name^="step[' + index +
-                                '][edit_modal_escalates_to_steps]"]').val(escalation
-                                .escalates_to);
-                            escalationClone.find('input[name^="step[' + index +
-                                '][edit_modal_escalates_after_steps]"]').val(escalation
-                                .escalates_after);
-
-                            // Remove ID attributes to avoid duplicates
-                            escalationClone.find('[id]').removeAttr('id');
-
-                            escalationCountInput.val(currentEscalationCount + 1);
-
-                            escalationsContainer.append(escalationClone);
-                        });
-                    }
-
-
-                    if (stepData.tasks && stepData.tasks.length > 0) {
-                        var firstTask = stepData.tasks[0];
-                        var parent = $(stepSelector).closest('.entire_step');
-                        var container = parent.find('.task-select-container').first();
-                        container.show();
-                        container.find('.add-task-btn').show();
-                        container.find('.remove-task-btn')
-                            .hide();
-                        parent.find('.edit-can-reject-checkbox-container').hide();
-
-
-                        var typeId = stepData.request_type_id;
+                    if (stepData.action_type === 'task') {
+                        $(stepSelector).find('.task-select-container').show(); // Show task select input
 
                         $.ajax({
                             url: '/ceomanagment/get-tasks-for-type',
                             type: 'GET',
                             data: {
-                                typeId: typeId
+                                typeId: requestTypeId
                             },
                             success: function(response) {
-                                var container = $(stepSelector).find('.task-select-container');
+                                // Clear any existing task templates to start fresh
+                                $(stepSelector).find('.task-select-container .task_template')
+                                    .remove();
 
-                                var tasksSelect = container.find(
-                                    'select[name="step[' + index + '][edit_tasks][]"]');
-                                tasksSelect.empty();
-                                tasksSelect.append('<option value="">' + 'Select Task' +
-                                    '</option>');
-                                $.each(response, function(key, value) {
-                                    tasksSelect.append('<option value="' + key + '">' +
-                                        value + '</option>');
+                                if (stepData.tasks && stepData.tasks.length > 0) {
+                                    // Loop through each task in stepData and create a select input for each
+                                    stepData.tasks.forEach(function(task, taskIndex) {
+                                        // Create a new task select container
+                                        var newTaskTemplate = $(
+                                            '<div class="task_template"></div>');
+                                        var taskSelect = $('<select name="step[' +
+                                                index + '][edit_tasks][]"></select>')
+                                            .addClass('form-control task-select')
+                                            .css({
+                                                width: '100%',
+                                                height: '40px'
+                                            });
+
+                                        // Add the "Select Task" option
+                                        taskSelect.append(
+                                            '<option disabled>Select Task</option>');
+
+                                        // Populate the select input with options
+                                        $.each(response, function(key, value) {
+                                            taskSelect.append(
+                                                '<option value="' + key +
+                                                '">' + value + '</option>');
+                                        });
+
+                                        // Set the selected value for the task
+                                        taskSelect.val(task.id);
+                                        if (taskSelect.val() !== task.id) {
+                                            console.warn('Option with value ' + task
+                                                .id + ' not found');
+                                        } else {
+                                            console.log('Option with value ' + task.id +
+                                                ' successfully selected');
+                                        }
+
+                                        // Append the select input to the task template
+                                        newTaskTemplate.append(taskSelect);
+
+                                        // Add the remove button for dynamically added tasks
+                                        var removeButton = $(
+                                                '<button class="btn btn-danger remove-task-btn" type="button">Remove</button>'
+                                            )
+                                            .css('display', 'inline-block')
+                                            .on('click', function() {
+                                                $(this).closest('.task_template')
+                                                    .remove();
+                                            });
+
+                                        newTaskTemplate.append(removeButton);
+
+                                        // Append the new task template to the task select container
+                                        $(stepSelector).find('.task-select-container')
+                                            .append(newTaskTemplate);
+                                    });
+                                }
+
+                                // Ensure the "Add Task" button is still visible and functional
+                                var addTaskButton = $(stepSelector).find('.add-task-btn')
+                                    .first();
+                                if (addTaskButton.length === 0) {
+                                    addTaskButton = $(
+                                        '<button class="btn btn-default add-task-btn" type="button">Add Task</button>'
+                                    );
+                                    $(stepSelector).find('.task-select-container').append(
+                                        addTaskButton);
+                                }
+
+                                addTaskButton
+                                    .show(); // Make sure the "Add Task" button is visible
+
+                                addTaskButton.off('click').on('click', function() {
+                                    var newTaskTemplate = $(
+                                        '<div class="task_template"></div>');
+                                    var taskSelect = $('<select name="step[' + index +
+                                            '][edit_tasks][]"></select>')
+                                        .addClass('form-control task-select')
+                                        .css({
+                                            width: '100%',
+                                            height: '40px'
+                                        });
+
+                                    taskSelect.append(
+                                        '<option disabled>Select Task</option>');
+
+                                    $.each(response, function(key, value) {
+                                        taskSelect.append('<option value="' +
+                                            key + '">' + value + '</option>'
+                                        );
+                                    });
+
+                                    newTaskTemplate.append(taskSelect);
+
+                                    var removeButton = $(
+                                            '<button class="btn btn-danger remove-task-btn" type="button">Remove</button>'
+                                        )
+                                        .css('display', 'inline-block')
+                                        .on('click', function() {
+                                            $(this).closest('.task_template')
+                                                .remove();
+                                        });
+
+                                    newTaskTemplate.append(removeButton);
+
+                                    $(stepSelector).find('.task-select-container')
+                                        .append(newTaskTemplate);
                                 });
-                                tasksSelect.val(firstTask.id);
                             }
                         });
-
+                    } else {
+                        $(stepSelector).find('.task-select-container').hide();
+                        $(stepSelector).find('.can-reject-checkbox-container').show();
+                        $(stepSelector).find('.edit-can-reject-checkbox-container').show();
                     }
 
-                    if (stepData.tasks && stepData.tasks.length > 1) {
+                    // Remove existing escalation fields except the first one
+                    $(stepSelector).find('.escalation-field-template').not(':first').remove();
 
+                    // Handle escalations (if any)
+                    if (stepData.escalations && stepData.escalations.length > 0) {
+                        var firstEscalation = stepData.escalations[0];
+                        var firstEscalationContainer = $(stepSelector).find('.escalation-field-template')
+                            .first();
 
-                        stepData.tasks.slice(1).forEach(function(task) {
+                        // Set the values for the first escalation
+                        firstEscalationContainer.find('select[name^="step[' + index +
+                            '][edit_modal_escalates_to_steps]"]').val(firstEscalation.escalates_to);
+                        firstEscalationContainer.find('input[name^="step[' + index +
+                            '][edit_modal_escalates_after_steps]"]').val(firstEscalation
+                            .escalates_after);
 
-                            var stepContainer = $(stepSelector).closest('.entire_step');
-                            var taskContainers = stepContainer.find('.task-select-container');
-                            var taskClone = taskContainers.find('.task_template').clone();
-                            stepContainer.find('.edit-can-reject-checkbox-container').hide();
-
-                            // var newIndex = index;
-                            var newSelect = taskClone.find('select').val('');
-                            taskClone.find('.add-task-btn').hide();
-                            taskClone.find('.remove-task-btn').show().css('display',
-                                'inline-block');
-                            taskClone.css('display', '');
-
-
-                            var typeId = stepData
-                                .request_type_id;
-                            $.ajax({
-                                url: '/ceomanagment/get-tasks-for-type',
-                                type: 'GET',
-                                data: {
-                                    typeId: typeId
-                                },
-                                success: function(response) {
-                                    newSelect.empty();
-                                    newSelect.append('<option value="">' +
-                                        'Select Task' + '</option>');
-                                    $.each(response, function(key, value) {
-                                        newSelect.append($('<option>', {
-                                            value: key,
-                                            text: value
-                                        }));
-                                    });
-                                    newSelect.val(task.id);
-                                }
+                        // Add additional escalation fields if there are more escalations
+                        if (stepData.escalations.length > 1) {
+                            stepData.escalations.slice(1).forEach(function(escalation, escalationIndex) {
+                                var escalationClone = firstEscalationContainer.clone();
+                                escalationClone.find('select').val(escalation.escalates_to);
+                                escalationClone.find('input').val(escalation.escalates_after);
+                                $(stepSelector).find('.escalations-container').append(
+                                    escalationClone);
                             });
-                            taskContainers.append(taskClone);
-
-                        });
+                        }
                     }
-
-
-
-                    // Add click event listener for the remove button
-
-                    $(stepSelector).find('.select2').select2();
-                    edit_modal_steps_count++;
                 }
 
+                // function addStepToEditModal(stepData, stepIndex) {
 
+                //     var stepTemplate = $('#edit_modal_step_0').clone();
+                //     stepTemplate.find('.task_template').not(':first').remove();
+                //     stepTemplate.attr('id', 'edit_modal_step_' + stepIndex);
+                //     stepTemplate.find('[id]').each(function() {
+                //         var newId = $(this).attr('id').replace(/_0$/, '_' + stepIndex);
+                //         $(this).attr('id', newId);
+                //     });
+                //     stepTemplate.find('[name]').each(function() {
+                //         var newName = $(this).attr('name').replace(/step\[0\]/, 'step[' +
+                //             stepIndex + ']');
+                //         $(this).attr('name', newName);
+                //     });
+                //     // var parent = $(stepTemplate).closest('.entire_step');
+                //     stepTemplate.find('.task-select-container').hide();
 
-                function addStepToEditModal(stepData, stepIndex) {
+                //     populateStepData(stepTemplate, stepIndex, stepData);
+                //     stepTemplate.css('display', 'block');
+                //     stepTemplate.find('.edit_modal_remove_step_btn').css('display', 'block');
+                //     $('#workflow-step_edit_modal').append(stepTemplate);
 
+                // }
+                function addStepToEditModal(stepData, stepIndex, requestTypeId) {
                     var stepTemplate = $('#edit_modal_step_0').clone();
                     stepTemplate.find('.task_template').not(':first').remove();
                     stepTemplate.attr('id', 'edit_modal_step_' + stepIndex);
@@ -991,21 +1192,25 @@
                             stepIndex + ']');
                         $(this).attr('name', newName);
                     });
-                    // var parent = $(stepTemplate).closest('.entire_step');
-                    stepTemplate.find('.task-select-container').hide();
 
-                    populateStepData(stepTemplate, stepIndex, stepData);
+                    populateStepData(stepTemplate, stepIndex, stepData, requestTypeId);
                     stepTemplate.css('display', 'block');
                     stepTemplate.find('.edit_modal_remove_step_btn').css('display', 'block');
                     $('#workflow-step_edit_modal').append(stepTemplate);
-
                 }
+
+
+                setTimeout(function() {
+                    tasksSelect.val(taskId).trigger('change');
+                    console.log('Selected value:', tasksSelect
+                        .val()); // Check if it’s correctly set
+                }, 100);
 
             });
             /////////////////////////////end/////////////////////////////////////////////////////////
 
 
-            function adjustTaskInputs(container, actionType) {
+            function adjustTaskInputs(container, actionType, requestTypeId) {
                 if (actionType === 'task') {
                     container.find('.task-select-container').first().show();
                     container.find('.task-select-container').not(':first').remove();
@@ -1013,6 +1218,24 @@
                     container.find('.add-task-btn').first().show();
                     container.find('.can-reject-checkbox-container').hide();
                     container.find('.edit-can-reject-checkbox-container').hide();
+
+                    $.ajax({
+                        url: '/ceomanagment/get-tasks-for-type',
+                        type: 'GET',
+                        data: {
+                            typeId: requestTypeId
+                        },
+                        success: function(response) {
+                            var tasksSelect = container.find(
+                                'select[name^="step"][name$="[edit_tasks][]"]');
+                            tasksSelect.empty();
+                            tasksSelect.append('<option value="">' + 'Select Task' + '</option>');
+                            $.each(response, function(key, value) {
+                                tasksSelect.append('<option value="' + key + '">' + value +
+                                    '</option>');
+                            });
+                        }
+                    });
                 } else {
                     container.find('.task-select-container').find('select').val('');
                     container.find('.task-select-container').hide();
@@ -1022,11 +1245,26 @@
                 }
             }
 
+
             $(document).on('change', '.action_type_select', function() {
                 var selectedActionType = $(this).val();
                 var stepContainer = $(this).closest('.entire_step');
 
-                adjustTaskInputs(stepContainer, selectedActionType);
+                var requestTypeId;
+
+                if ($('#addProceduresModal').is(':visible')) {
+                    requestTypeId = $('#type_select').val();
+                    console.log('Add Mode - Request Type ID:', requestTypeId);
+                } else if ($('#editProceduresModal').is(':visible')) {
+
+                    requestTypeId = stepContainer.data('request-type-id');
+                    console.log('Edit Mode - Request Type ID:', requestTypeId);
+                } else {
+                    console.error('No valid mode (Add/Edit) detected!');
+                    return;
+                }
+
+                adjustTaskInputs(stepContainer, selectedActionType, requestTypeId);
             });
 
             $(document).on('click', '.add-task-btn', function(e) {

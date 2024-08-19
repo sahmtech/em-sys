@@ -401,7 +401,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/timesheet-group/{id}/issuePayrolls', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'issuePayrolls'])->name('payroll.agentTimeSheet.issuePayrolls');
         Route::get('/pay_agentTimeSheetGroups', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroupsPayroll'])->name('payroll.agentTimeSheetGroups');
 
-
+        Route::get('/payrolls_list_index_all',   [App\Http\Controllers\PayrollController::class, 'payrolls_list_index_all'])->name('payrolls_list_index_all');
         Route::get('/payrolls_list_index',   [App\Http\Controllers\PayrollController::class, 'payrolls_list_index'])->name('payrolls_list_index');
         Route::get('/show_payroll_details/{id}',   [App\Http\Controllers\PayrollController::class, 'show_payroll_details'])->name('show_payroll_details');
     });
@@ -410,6 +410,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/get-essentials-workers',  [Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'index'])->name('get-essentials-workers');
         Route::get('/show-essentials-workers/{id}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show-essentials-workers');
+        Route::post('/get-worker-info', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'getWorkerInfo'])->name('get-worker-info');
 
         Route::get('/get-amount/{salaryType}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'getAmount'])->name('get-amount');
         Route::get('/dashboard', [Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard'])->name('hrmDashboard');
