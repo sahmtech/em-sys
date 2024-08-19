@@ -490,7 +490,7 @@
                 var worker_identifier = $('#worker_identifier').val();
 
                 $.ajax({
-                    url: '{{ route('get-worker-info') }}', // Replace with your actual route
+                    url: '{{ route('get-worker-info') }}',
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
@@ -498,7 +498,7 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            // Display the worker info in the modal
+
                             $('#worker_full_name').text(response.data.full_name);
                             $('#worker_emp_number').text(response.data.emp_number);
 
