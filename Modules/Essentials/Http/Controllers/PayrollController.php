@@ -301,13 +301,10 @@ class PayrollController extends Controller
                         $html = '';
 
                         if ($is_admin || $can_view_worker_project) {
-                            if ($row->assigned_to) {
-                                $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_project" id="view_worker_project" data-href="' . route('payrolls.view_worker_project', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view_project') . '</button>';
-                            } else {
-                                $html .= "&nbsp; ";
-                            }
-                        }
 
+                            $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_project" id="view_worker_project" data-href="' . route('payrolls.view_worker_project', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view_project') . '</button>';
+                        }
+                        $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_info" id="view_worker_info" data-href="' . route('payrolls.view_worker_info', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view_worker_info') . '</button>';
                         if ($is_admin || $can_view_salary_info) {
 
 
@@ -364,6 +361,32 @@ class PayrollController extends Controller
             'contract_end_date' => $contract_end_date,
             'contact_location' => $contact_location_name,
             'project_manager' => $project_manager_name,
+        ];
+        return response()->json(['data' => $data]);
+    }
+
+
+    public function view_worker_info()
+    {
+
+        $identifier = request()->input('worker_id');
+
+        $worker = User::where('id',  $identifier)
+            ->with(['company', 'assignedTo', 'contract'])
+            ->first();
+
+        $data = [
+            'full_name' => $worker->first_name . ' ' . $worker->last_name,
+            'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
+            'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
+            'emp_number' => $worker->emp_number,
+            'id_proof_number' => $worker->id_proof_number,
+            'residence_permit_expiration' => optional($worker->OfficialDocument->where('type', 'residence_permit')->where('is_active', 1)->first())->number,
+            'passport_number' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->number,
+            'passport_expire_date' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->expiration_date,
+            'border_no' => $worker->border_no,
+            'company_name' => optional($worker->company)->name,
+            'assigned_to' => optional($worker->assignedTo)->name,
         ];
         return response()->json(['data' => $data]);
     }

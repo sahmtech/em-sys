@@ -107,7 +107,38 @@
     @include('essentials::payroll.partials.editVoucherModal')
     @include('essentials::payroll.partials.salary_info')
 
+    <div class="modal fade" id="worker-info" tabindex="-1" role="dialog" aria-labelledby="askForWorkerModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="askForWorkerModalLabel">@lang('essentials::lang.ask_for_worker')</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Worker info section -->
+                    <div style="display:none; margin-top: 20px;">
+                        <h5>@lang('essentials::lang.worker_information')</h5>
+                        <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
+                        <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                        <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                        <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
 
+                        <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
+                        <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span id="worker_residence_permit_expiration"></span>
+                        </p>
+                        <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
+                        <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span></p>
+                        <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
+                        <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
+                        <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')
@@ -229,19 +260,6 @@
 
                 ]
             });
-            $('#workers_table tbody').on('click', 'tr', function(e) {
-                var $target = $(e.target);
-                // Check if the clicked element is inside the actions column
-                if (!$target.closest('.actions-column').length) {
-                    var data = workers_table.row(this).data(); // Get the row data
-                    var id = data
-                        .worker_id; // Assume emp_number is the employee's ID or any unique identifier
-                    var url =
-                        "{{ route('show_workers_affairs', ':id') }}"; // Replace 'your.route.name' with the actual route name
-                    url = url.replace(':id', id);
-                    window.location.href = url;
-                }
-            });
 
 
             $('#project_name_filter,#user_type,#select_company_id,#select_department_id')
@@ -283,7 +301,47 @@
             }, );
         });
     </script>
+    <script>
+        $(document).on('click', '#view_worker_info', function(e) {
+            e.preventDefault();
+            var workerId = $(this).data('worker-id');
+            var url = $(this).data('href');
+            console.log(url);
 
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {
+                    worker_id: workerId
+                },
+                success: function(response) {
+
+
+                    $('#worker_full_name').text(response.data.full_name);
+                    $('#worker_emp_number').text(response.data.emp_number);
+
+                    $('#worker_status').text(response.data.status);
+                    $('#worker_sub_status').text(response.data.sub_status);
+                    $('#worker_id_proof_number').text(response.data.id_proof_number);
+                    $('#worker_residence_permit_expiration').text(response.data
+                        .residence_permit_expiration);
+                    $('#worker_passport_number').text(response.data.passport_number);
+                    $('#worker_passport_expire_date').text(response.data
+                        .passport_expire_date);
+                    $('#worker_border_no').text(response.data.border_no);
+                    $('#worker_company_name').text(response.data.company_name);
+                    $('#worker_assigned_to').text(response.data.assigned_to);
+
+                    $('#worker-info').show();
+
+                },
+                error: function(xhr, status, error) {
+                    $('#worker-info').hide();
+                    alert('@lang('essentials::lang.error_occurred')');
+                }
+            });
+        });
+    </script>
     <script>
         $(document).on('click', '#view_worker_project', function(e) {
             e.preventDefault();
