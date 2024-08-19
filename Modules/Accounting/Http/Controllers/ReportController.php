@@ -182,6 +182,10 @@ class ReportController extends Controller
                 }
             });
         })
+            ->when($level_filter, function ($query, $level_filter) {
+                return $query->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
+                    ->orwhereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) < ?', [$level_filter - 1]);
+            })
             ->select(
                 DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
@@ -205,16 +209,15 @@ class ReportController extends Controller
                 'AAT.sub_type as sub_type',
                 'AAT.type as type',
                 'accounting_accounts.gl_code',
-                DB::raw('LENGTH(REGEXP_REPLACE(gl_code, "[0-9]", "")) AS code_length')
             )
-            ->when($level_filter, function ($query, $level_filter) {
+            /* ->when($level_filter, function ($query, $level_filter) {
                 return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
-            })
+            }) */
             ->groupBy(
                 'name',
             )
             ->orderBy('accounting_accounts.gl_code');
-        /*  dd($accounts->get()); */
+
         if ($aggregated == 1) {
             $aggregatedAccounts = [];
             foreach ($accounts->get() as $account) {
@@ -238,8 +241,27 @@ class ReportController extends Controller
             $accounts = $aggregatedAccounts;
         }
 
-
+        
         if (request()->ajax()) {
+            
+            $totalDebitOpeningBalance = 0;
+            $totalCreditOpeningBalance = 0;
+            $totalClosingDebitBalance = 0;
+            $totalClosingCreditBalance = 0;
+            $totalDebitBalance = 0;
+            $totalCreditBalance = 0;
+
+            foreach ($aggregated == 1 ? $accounts : $accounts->get() as $account) {
+                $totalDebitOpeningBalance += $account->debit_opening_balance;
+                $totalCreditOpeningBalance += $account->credit_opening_balance;
+                $totalDebitBalance += $account->debit_balance;
+                $totalCreditBalance += $account->credit_balance;
+
+                $closing_balance = $this->calculateClosingBalance($account);
+                $totalClosingDebitBalance += $closing_balance['closing_debit_balance'];
+                $totalClosingCreditBalance += $closing_balance['closing_credit_balance'];
+            }
+
             return DataTables::of($accounts)
                 ->editColumn('gl_code', function ($account) {
                     return $account->gl_code;
@@ -267,6 +289,14 @@ class ReportController extends Controller
                     $closing_balance = $this->calculateClosingBalance($account);
                     return $closing_balance['closing_credit_balance'];
                 })
+                ->with([
+                    'totalDebitOpeningBalance' => $totalDebitOpeningBalance,
+                    'totalCreditOpeningBalance' => $totalCreditOpeningBalance,
+                    'totalDebitBalance' => $totalDebitBalance,
+                    'totalCreditBalance' => $totalCreditBalance,
+                    'totalClosingDebitBalance' => $totalClosingDebitBalance,
+                    'totalClosingCreditBalance' => $totalClosingCreditBalance,
+                ])
                 ->make(true);
         }
 

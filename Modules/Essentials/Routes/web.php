@@ -355,6 +355,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/dashboard',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'dashboard'])->name('payrolls_dashboard');
         Route::get('/list_of_employess',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'list_of_employess'])->name('list_of_employess');
         Route::get('/view_worker_project',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewWorkerProject'])->name('payrolls.view_worker_project');
+        Route::get('/view_worker_info',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'view_worker_info'])->name('payrolls.view_worker_info');
         Route::get('/view_salary_info',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewSalaryInfo'])->name('payrolls.view_salary_info');
         Route::post('/update_salary',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateSalaryInfo'])->name('payrolls.update.salary');
         Route::post('/update-voucher-status',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateVoucherStatus'])->name('payrolls.update-voucher-status');
