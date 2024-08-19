@@ -622,10 +622,7 @@
                                     label: '{{ __('request.installmentsNumber') }}',
                                     value: requestInfo.installmentsNumber
                                 },
-                                {
-                                    label: '{{ __('request.baladyCardType') }}',
-                                    value: requestInfo.baladyCardType
-                                },
+
                                 {
                                     label: '{{ __('request.workInjuriesDate') }}',
                                     value: requestInfo.workInjuriesDate
