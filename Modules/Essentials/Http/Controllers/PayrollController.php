@@ -438,10 +438,10 @@ class PayrollController extends Controller
 
     public function updateSalaryInfo(Request $request)
     {
-
+        error_log(json_encode($request->all()));
         $userId = $request->input('user_id');
         $updatedSalaryData = $request->except('_token', 'user_id', 'iban');
-        error_log(json_encode($updatedSalaryData));
+
 
         $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
         if ($user) {
