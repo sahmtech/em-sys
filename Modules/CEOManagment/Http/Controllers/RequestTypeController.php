@@ -259,50 +259,71 @@ class RequestTypeController extends Controller
     public function update(Request $request)
     {
         try {
-            // $requests = WkProcedure::where('request_type_id', $request->request_type_id)->get();
-
-            // if ($requests->count() != 0) {
-            //     $output = [
-            //         'success' => false,
-            //         'msg' => __('ceomanagment::lang.cant_edit_type_it_have_procedures'),
-            //     ];
-            //     return $output;
-            // }
+            // Log the incoming request data
             error_log(json_encode($request->all()));
+
             $tasks = $request->tasks ?? [];
+            $deletedTasks = json_decode($request->deleted_tasks, true) ?? [];
 
-            foreach ($tasks['description'] as $type => $taskDescriptions) {
-                foreach ($taskDescriptions as $index => $description) {
-                    if (!empty($description)) {
-                        $link = $tasks['link'][$type][$index] ?? null;
+            // Check for linked tasks in procedure_tasks table
+            if (!empty($deletedTasks)) {
+                error_log(json_encode($deletedTasks));
+                $linkedTasks = DB::table('procedure_tasks')
+                    ->whereIn('task_id', $deletedTasks)
+                    ->pluck('task_id')
+                    ->toArray();
+                error_log(json_encode($linkedTasks));
 
-                        if ($type === 'old') {
-                            $taskId = $tasks['id'][$type][$index];
-                            $task = Task::find($taskId);
-                            if ($task) {
-                                $task->update([
+                if (!empty($linkedTasks)) {
+                    // If there are tasks linked in ProcedureTask, return an error
+                    $output = [
+                        'success' => false,
+                        'msg' => __('ceomanagment::lang.task_linked_procedure_error'),
+                    ];
+                    return response()->json($output);
+                }
+
+                // Delete tasks if no linked tasks found
+                Task::whereIn('id', $deletedTasks)->delete();
+            }
+
+            if (!empty($tasks)) {
+                foreach ($tasks['description'] as $type => $taskDescriptions) {
+                    foreach ($taskDescriptions as $index => $description) {
+                        if (!empty($description)) {
+                            $link = $tasks['link'][$type][$index] ?? null;
+
+                            if ($type === 'old') {
+                                $taskId = $tasks['id'][$type][$index];
+                                $task = Task::find($taskId);
+                                if ($task) {
+                                    $task->update([
+                                        'description' => $description,
+                                        'link' => $link !== 'null' ? $link : null,
+                                    ]);
+                                }
+                            } elseif ($type === 'new') {
+                                Task::create([
                                     'description' => $description,
-                                    'link' => $link,
+                                    'link' => $link !== 'null' ? $link : null,
+                                    'request_type_id' => $request->request_type_id,
                                 ]);
                             }
-                        } elseif ($type === 'new') {
-                            Task::create([
-                                'description' => $description,
-                                'link' => $link,
-                                'request_type_id' => $request->request_type_id,
-                            ]);
                         }
                     }
                 }
             }
 
+            // Prepare successful response
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
+            // Log the exception details
             \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
 
+            // Prepare error response
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
@@ -311,6 +332,8 @@ class RequestTypeController extends Controller
 
         return response()->json($output);
     }
+
+
 
 
     private function getTypePrefix($type)

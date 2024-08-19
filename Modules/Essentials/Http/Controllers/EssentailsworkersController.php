@@ -264,6 +264,10 @@ class EssentailsworkersController extends Controller
                 'success' => true,
                 'data' => [
                     'full_name' => $worker->first_name . ' ' . $worker->last_name,
+
+                    'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
+                    'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
+
                     'emp_number' => $worker->emp_number,
                     'id_proof_number' => $worker->id_proof_number,
                     'residence_permit_expiration' => optional($worker->OfficialDocument->where('type', 'residence_permit')->where('is_active', 1)->first())->number,

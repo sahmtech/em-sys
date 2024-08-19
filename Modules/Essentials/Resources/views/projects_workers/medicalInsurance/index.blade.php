@@ -185,6 +185,9 @@
                             <h5>@lang('essentials::lang.worker_information')</h5>
                             <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
                             <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                            <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                            <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+
                             <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
                             <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span id="worker_residence_permit_expiration"></span>
                             </p>
@@ -453,6 +456,9 @@
                             // Display the worker info in the modal
                             $('#worker_full_name').text(response.data.full_name);
                             $('#worker_emp_number').text(response.data.emp_number);
+
+                            $('#worker_status').text(response.data.status);
+                            $('#worker_sub_status').text(response.data.sub_status);
                             $('#worker_id_proof_number').text(response.data.id_proof_number);
                             $('#worker_residence_permit_expiration').text(response.data
                                 .residence_permit_expiration);

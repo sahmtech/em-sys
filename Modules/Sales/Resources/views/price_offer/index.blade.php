@@ -37,6 +37,7 @@
                             <th>@lang('sales::lang.customer_number')</th>
                             <th>@lang('sales::lang.date')</th>
                             <th>@lang('sales::lang.value')</th>
+                            <th>@lang('sales::lang.status')</th>
                             <th>@lang('sales::lang.offer_approve')</th>
                             {{-- <th>@lang('messages.action')</th> --}}
                         </tr>
@@ -123,6 +124,9 @@
 
                         {
                             data: 'status'
+                        },
+                        {
+                            data: 'is_approved'
                         },
                         // {
                         //     data: 'action'

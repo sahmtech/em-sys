@@ -105,6 +105,7 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_change_offer_price_status = auth()->user()->can('sales.change_offer_price_status');
+        $can_approve_offer_price = auth()->user()->can('sales.approve_offer_price');
         $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
 
 
@@ -124,9 +125,15 @@ class OfferPriceController extends Controller
                 'contacts.mobile as mobile',
                 'contacts.name as name',
                 'transactions.status as status',
+                'transactions.is_approved as is_approved',
+                'transactions.approved_by as approved_by',
+
+
 
 
             );
+        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
 
         if (request()->ajax()) {
 
@@ -137,7 +144,6 @@ class OfferPriceController extends Controller
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $sells->where('status', request()->input('status'));
             }
-
 
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_offer_price_status) {
@@ -150,6 +156,25 @@ class OfferPriceController extends Controller
                     }
                     return $status;
                 })
+                ->editColumn('is_approved', function ($row) use ($is_admin, $users, $can_approve_offer_price) {
+                    if ($row->is_approved == 1) {
+
+                        $approvedBy = $users[$row->approved_by];
+                        return $approvedBy ? $approvedBy : 'Unknown';
+                    } else {
+
+                        if ($is_admin || $can_approve_offer_price) {
+
+                            return '<form action="' . route('offer.approve', $row->id) . '" method="POST" style="display:inline;">
+                                        ' . csrf_field() . method_field('PATCH') . '
+                                               <button type="submit" class="btn btn-primary" onclick="return confirm(\'Are you sure you want to approve this offer?\')">' . __('sales::lang.approve_offer') . '</button>
+                                    </form>';
+                        } else {
+                            return 'Not Authorized';
+                        }
+                    }
+                })
+
                 ->editColumn('location_id', function ($row) use ($business_locations) {
                     $item = $business_locations[$row->location_id] ?? '';
 
@@ -182,7 +207,7 @@ class OfferPriceController extends Controller
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
 
-                ->rawColumns(['action', 'invoice_no', 'status', 'transaction_date', 'supplier_business_name'])
+                ->rawColumns(['action', 'invoice_no', 'status', 'transaction_date', 'supplier_business_name', 'is_approved'])
                 ->make(true);
         }
 
@@ -200,7 +225,7 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_approve_offer_price = auth()->user()->can('sales.approve_offer_price');
 
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
@@ -216,6 +241,7 @@ class OfferPriceController extends Controller
                 'contacts.supplier_business_name as supplier_business_name',
                 'contacts.mobile as mobile',
                 'contacts.name as name',
+                'transactions.is_approved as is_approved',
 
 
             );
@@ -259,14 +285,24 @@ class OfferPriceController extends Controller
                 //         return $html;
                 //     }
                 // )
-                ->addColumn(
+                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_print_offer_price) {
+                    function ($row)  use ($is_admin, $can_print_offer_price, $can_approve_offer_price) {
                         $html = '';
-                        if ($is_admin || $can_print_offer_price) {
-                            $html = '<a href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" target="_blank" class="btn btn-xs btn-primary">
+                        if ($row->is_approved == 1) {
+                            if ($is_admin || $can_print_offer_price) {
+                                $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
                             <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
                             </a>';
+                            }
+                        } else {
+                            if ($is_admin || $can_approve_offer_price) {
+
+                                return '<form action="' . route('offer.approve', $row->id) . '" method="POST" style="display:inline;">
+                                            ' . csrf_field() . method_field('PATCH') . '
+                                                   <button type="submit" class="btn btn-primary" onclick="return confirm(\'Are you sure you want to approve this offer?\')">' . __('sales::lang.approve_offer') . '</button>
+                                        </form>';
+                            }
                         }
                         return $html;
                     }
@@ -1359,5 +1395,17 @@ class OfferPriceController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function approve($id)
+    {
+
+        $offer = Transaction::findOrFail($id);
+
+
+        $offer->is_approved = 1;
+        $offer->approved_by = auth()->user()->id;
+        $offer->save();
+
+        return redirect()->back()->with('success', 'Offer approved successfully.');
     }
 }
