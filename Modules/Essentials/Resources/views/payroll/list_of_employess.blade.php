@@ -105,7 +105,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="workerInfoModalLabel">@lang('essentials::lang.worker_information')</h5>
+                        <h5 class="modal-title" id="workerInfoModalLabel">@lang('essentials::lang.personal_info')</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
                             <span aria-hidden="true">&times;</span>
                         </button>
