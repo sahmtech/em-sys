@@ -285,7 +285,7 @@ class OfferPriceController extends Controller
                 //         return $html;
                 //     }
                 // )
-                ->addColumn(
+                 ->addColumn(
                     'action',
                     function ($row)  use ($is_admin, $can_print_offer_price, $can_approve_offer_price) {
                         $html = '';
@@ -374,7 +374,7 @@ class OfferPriceController extends Controller
                     function ($row)  use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                            $html = '<a href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" target="_blank" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
                         <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
                         </a>';
                         }

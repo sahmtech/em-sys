@@ -581,6 +581,34 @@ class CoaController extends Controller
         }
     }
 
+    /*     public function print($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
+        $journal = AccountingAccTransMapping::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('type', 'journal_entry')
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $journal_history = AccountingAccTransMappingHistory::where('accounting_accounts_transactions_history_id', $id)
+            ->latest('created_at')
+            ->first();
+        if ($journal_history) {
+            $journal['latest_update'] = $journal_history->creator->first_name . ' ' . $journal_history->creator->last_name;
+            $journal['latest_update_at'] = $journal_history->created_at;
+        } else {
+            $journal['latest_update'] = ' - ';
+            $journal['latest_update_at'] = null;
+        }
+        $accounts_transactions = AccountingAccountsTransaction::with('account')
+            ->where('acc_trans_mapping_id', $journal->id)
+            ->get();
+
+        return view('accounting::journal_entry.print', compact('journal', 'accounts_transactions'));
+    } */
+
     /**
      * Displays the ledger of the account
      * @param int $account_id
@@ -620,7 +648,8 @@ class CoaController extends Controller
                     'accounting_accounts_transactions.operation_date',
                     'accounting_accounts_transactions.sub_type',
                     'accounting_accounts_transactions.type',
-                    'ATM.ref_no',
+                    'ATM.ref_no as ref_no',
+                    'ATM.id as id',
                     'cc.ar_name as cost_center_name',
                     'ATM.note',
                     'accounting_accounts_transactions.amount',
@@ -651,21 +680,29 @@ class CoaController extends Controller
                 })
                 ->editColumn('ref_no', function ($row) {
                     $description = '';
-
                     if ($row->sub_type == 'journal_entry') {
-                        $description = '<b>' . __('accounting::lang.journal_entry') . '</b>';
-                        $description .= '<br>' . __('purchase.ref_no') . ': ' . $row->ref_no;
-                    }
-
-                    if ($row->sub_type == 'opening_balance') {
-                        $description = '<b>' . __('accounting::lang.opening_balance') . '</b>';
+                        $description =  $row->ref_no;
                     }
 
                     if ($row->sub_type == 'sell') {
-                        $description = '<b>' . __('sale.sale') . '</b>';
-                        $description .= '<br>' . __('sale.invoice_no') . ': ' . $row->invoice_no;
+                        $description = $row->invoice_no;
                     }
+                    if ($row->id) {
+                        $description = '<a class=" btn-modal" 
+                      data-container="#printJournalEntry"
+                         data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@print', [$row->id]) . '">
+                            <i class="fa fa-print" aria-hidden="true"></i>' . $description . '
+                        </a>';
+                    }
+                    return $description;
+                })
+                ->addColumn('transaction', function ($row) {
+                    if (Lang::has('accounting::lang.' . $row->sub_type)) {
 
+                        $description = __('accounting::lang.' . $row->sub_type);
+                    } else {
+                        $description = $row->sub_type;
+                    }
                     return $description;
                 })
                 ->addColumn('debit', function ($row) {
@@ -691,12 +728,6 @@ class CoaController extends Controller
                 //     $bal = $bal_before_start_date + $current_bal;
                 //     return '<span class="balance" data-orig-value="' . $bal . '">' . $this->accountingUtil->num_f($bal, true) . '</span>';
                 // })
-                ->editColumn('action', function ($row) {
-                    $action = '';
-
-
-                    return $action;
-                })
                 ->filterColumn('cost_center_name', function ($query, $keyword) {
                     $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
                 })
@@ -724,8 +755,35 @@ class CoaController extends Controller
             ->select([DB::raw($this->accountingUtil->balanceFormula())]);
         $current_bal = $current_bal->first()->balance;
 
+        $total_debit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'debit'), AAT.amount, 0)) as balance"))
+            ->first();
+        $total_debit_bal = $total_debit_bal->balance;
+
+        $total_credit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'credit'), AAT.amount, 0)) as balance"))
+            ->first();
+
+        $total_credit_bal = $total_credit_bal->balance;
+
         return view('accounting::chart_of_accounts.ledger')
-            ->with(compact('account', 'current_bal'));
+            ->with(compact('account', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
     }
 
 

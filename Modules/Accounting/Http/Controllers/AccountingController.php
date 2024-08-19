@@ -136,9 +136,21 @@ class AccountingController extends Controller
         }
 
         $colors = [
-            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
-            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+            '#E75E82',
+            '#37A2EC',
+            '#FACD56',
+            '#5CA85C',
+            '#605CA8',
+            '#2f7ed8',
+            '#0d233a',
+            '#8bbc21',
+            '#910000',
+            '#1aadce',
+            '#492970',
+            '#f28f43',
+            '#77a1e5',
+            '#c42525',
+            '#a6c96a'
         ];
         $coa_overview_chart = new CommonChart;
         $coa_overview_chart->labels($labels)
@@ -238,6 +250,29 @@ class AccountingController extends Controller
                 ];
             }
 
+            return $accounts_array;
+        }
+    }
+
+    public function primaryAccountsDropdown()
+    {
+        if (request()->ajax()) {
+            $account_types = AccountingAccountType::accounting_primary_type();
+            $accounts_array = [];
+
+            $accounts_array[] = [
+                'id' => ' ',
+                'text' => '<strong>' . __('lang_v1.all') . '</strong>',
+                'html' => '<strong>' . __('lang_v1.all') . '</strong>',
+            ];
+
+            foreach ($account_types as $key => $account_type) {
+                $accounts_array[] = [
+                    'id' => $account_type['GLC'],
+                    'text' => $account_type['label'] . ' - <small class="text-muted">' . $account_type['GLC'],
+                    'html' => $account_type['label'] . ' - <small class="text-muted">' . $account_type['GLC']
+                ];
+            }
             return $accounts_array;
         }
     }

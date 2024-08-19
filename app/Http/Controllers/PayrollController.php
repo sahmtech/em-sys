@@ -163,7 +163,7 @@ class PayrollController extends Controller
 
         $user = User::find(auth()->user()->id);
         $business_id = $user->business_id ?? 1;
-        $company_id = $request->company_id ;
+        $company_id = $request->company_id;
         try {
             DB::beginTransaction();
             $payroll_group['business_id'] = $business_id;
@@ -557,6 +557,8 @@ class PayrollController extends Controller
             $company_id = Session::get('selectedCompanyId');
             $payrollGroups = $payrollGroups->where('company_id', $company_id);
         }
+
+
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
                 ->addColumn('name', function ($row) {
@@ -747,6 +749,16 @@ class PayrollController extends Controller
                 ])
                 ->make(true);
         }
+        $departments = EssentialsDepartment::where('is_main', 1)->pluck('name', 'id');
+        $projects = SalesProject::pluck('name', 'id');
+        $companies = Company::pluck('name', 'id');
+        $user_types = [
+            // 'manager' => __('essentials::lang.manager'),
+            "employee" => __('essentials::lang.user_type.employee'),
+            "worker" => __('essentials::lang.user_type.worker'),
+            // 'department_head' => __('essentials::lang.   '),
+            "remote_employee" => __('essentials::lang.user_type.remote_employee'),
+        ];
         if ($from == 'hr') {
             return view('essentials::payrolls_index');
         }
@@ -758,7 +770,7 @@ class PayrollController extends Controller
                 'bank_transfer' => __('lang_v1.bank_transfer'),
                 'other' => __('lang_v1.other')
             ];
-            return view('accounting::custom_views.payrolls_index')->with(compact('payment_types'));
+            return view('accounting::custom_views.payrolls_index')->with(compact('payment_types', 'projects', 'departments', 'user_types'));
         }
         if ($from == 'financial') {
             return view('accounting::custom_views.payrolls_index_financial');
@@ -777,9 +789,35 @@ class PayrollController extends Controller
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
 
         $company_id = Session::get('selectedCompanyId');
-        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1)->whereHas('user', function ($query) use ($company_id) {
+        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
+        if (!empty(request()->input('select_department_id')) && request()->input('select_department_id') != 'all') {
+            $select_department_id = request()->input('select_department_id');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
+                $query->where('essentials_department_id', $select_department_id);
+            });
+        }
+        if (request()->input('user_type') && request()->input('user_type') != 'all') {
+            $user_type = request()->input('user_type');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
+                $query->where('user_type', $user_type);
+            });
+        }
+
+        if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
+            $project_name_filter = request()->input('project_name_filter');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
+                $query->where('assigned_to', $project_name_filter);
+            });
+        }
+
+
+        $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id) {
             $query->where('company_id', $company_id);
         });
+
         if (request()->ajax()) {
             return DataTables::of($payrollGroupUsers)
                 ->addColumn('name', function ($row) {
@@ -870,17 +908,144 @@ class PayrollController extends Controller
                 ->make(true);
         }
     }
+    public function payrolls_list_index_all()
+    {
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
 
+        $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
+        if (request()->input('select_department_id') && request()->input('select_department_id') != 'all') {
+            $select_department_id = request()->input('select_department_id');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
+                $query->where('essentials_department_id', $select_department_id);
+            });
+        }
+        if (request()->input('user_type') && request()->input('user_type') != 'all') {
+            $user_type = request()->input('user_type');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
+                $query->where('user_type', $user_type);
+            });
+        }
+
+        if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
+            $project_name_filter = request()->input('project_name_filter');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
+                $query->where('assigned_to', $project_name_filter);
+            });
+        }
+
+        if (request()->input('select_company_id') && request()->input('select_company_id') != 'all') {
+            $select_company_id = request()->input('select_company_id');
+
+            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_company_id) {
+                $query->whereIn('company_id', $select_company_id);
+            });
+        }
+
+
+
+        if (request()->ajax()) {
+            return DataTables::of($payrollGroupUsers)
+                ->addColumn('name', function ($row) {
+                    return $row?->name ?? '';
+                })
+                ->addColumn('eqama', function ($row) {
+                    return $row?->identity_card_number ?? '';
+                })
+                ->addColumn('department', function ($row) use ($departments) {
+                    $item = $departments[$row->user?->essentials_department_id] ?? '';
+                    return $item;
+                })
+                ->addColumn('company', function ($row) {
+                    return $row?->company ?? '';
+                })
+                ->addColumn('project', function ($row) {
+                    return $row?->project_name ?? '';
+                })
+                ->addColumn('date', function ($row) {
+                    return Carbon::parse($row->created_at)->format('m/Y');
+                })
+                ->addColumn('the_total', function ($row) {
+                    return $row?->final_salary ?? 0;
+                })
+                ->addColumn('status', function ($row) {
+
+
+
+                    $html = '';
+                    if ($row->status == 'paid') {
+                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.paid') .
+                            '</button></div>';
+                    } else {
+                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.yet_to_be_paind') .
+                            '</button></div>';
+                    }
+
+
+                    return $html;
+                })
+
+
+
+
+                ->addColumn('action', function ($row) {
+                    $html = '<div class="btn-group">
+                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                        data-toggle="dropdown" aria-expanded="false">' .
+                        __('messages.actions') .
+                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">';
+
+                    $html .= '<li><a href="#" data-href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
+
+
+
+                    $html .= '</ul></div>';
+
+                    return $html;
+
+
+
+
+                    $html = '';
+                    if (true) {
+                        $html .= '<div><a class="btn btn-xs btn-info btn-modal" href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" ><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></div>';
+                    }
+
+
+                    return $html;
+                })
+
+                ->rawColumns([
+                    'name',
+                    'eqama',
+                    'department',
+                    'company',
+                    'project',
+                    'date',
+                    'the_total',
+                    'status',
+                    'action',
+                ])
+                ->make(true);
+        }
+    }
     public function create_single_payment(Request $request, $id)
     {
-        
+
         try {
 
             $payroll_group_user = PayrollGroupUser::where('id', $id)
-               ->first();
-         
+                ->first();
 
-            
+
+
             $payroll_grouo = PayrollGroup::where('id', $payroll_group_user->payroll_group_id)->first();
             $transaction = Transaction::where('payroll_group_id',   $payroll_grouo->id)?->first();
             if ($transaction->payment_status && $transaction->payment_status != "paid") {
@@ -891,7 +1056,7 @@ class PayrollController extends Controller
                 $inputs['amount'] = $this->transactionUtil->num_uf($payroll_group_user->final_salary);
                 $inputs['created_by'] = auth()->user()->id;
                 $inputs['note'] = $request->note;
-               
+
                 $payment_line =  TransactionPayment::create($inputs);
                 PayrollGroupUser::where('id', $id)->update(['status' => "paid"]);
             }
@@ -905,7 +1070,6 @@ class PayrollController extends Controller
                 }
                 if ($payroll_user->status == "paid") {
                     $partial = true;
-                    
                 }
             }
             Transaction::where('payroll_group_id',   $payroll_grouo->id)->update([

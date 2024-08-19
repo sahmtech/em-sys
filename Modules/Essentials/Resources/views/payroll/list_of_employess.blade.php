@@ -89,8 +89,8 @@
 
                             <td>@lang('followup::lang.project_name')</td>
                             <td>@lang('essentials::lang.project_assigner')</td>
-                            <td>@lang('essentials::lang.salary_voucher')</td>
-                            <td>@lang('essentials::lang.actions')</td>
+                            <td class="actions-column">@lang('essentials::lang.salary_voucher')</td>
+                            <td class="actions-column">@lang('essentials::lang.actions')</td>
 
 
 
@@ -113,6 +113,14 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+
+
+
+
+
+
+
+
 
             $('#status_fillter').select2();
 
@@ -221,6 +229,19 @@
 
                 ]
             });
+            $('#workers_table tbody').on('click', 'tr', function(e) {
+                var $target = $(e.target);
+                // Check if the clicked element is inside the actions column
+                if (!$target.closest('.actions-column').length) {
+                    var data = workers_table.row(this).data(); // Get the row data
+                    var id = data
+                        .worker_id; // Assume emp_number is the employee's ID or any unique identifier
+                    var url =
+                        "{{ route('show_workers_affairs', ':id') }}"; // Replace 'your.route.name' with the actual route name
+                    url = url.replace(':id', id);
+                    window.location.href = url;
+                }
+            });
 
 
             $('#project_name_filter,#user_type,#select_company_id,#select_department_id')
@@ -327,10 +348,9 @@
                         data.user_id + '</td></tr>';
                     salaryHtml += '<tr><th name="work_days">@lang('essentials::lang.work_days')</th><td>' + data
                         .work_days + '</td></tr>';
-                    salaryHtml += '<tr><th name="salary">@lang('essentials::lang.salary')</th><td>' + data.salary +
+                    salaryHtml += '<tr><th name="salary">@lang('essentials::lang.Basic_salary')</th><td>' + data.salary +
                         '</td></tr>';
-                    salaryHtml += '<tr><th name="total">@lang('essentials::lang.total')</th><td>' + data.total +
-                        '</td></tr>';
+
                     salaryHtml += '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td>' + data
                         .housing_allowance + '</td></tr>';
                     salaryHtml +=
@@ -338,6 +358,10 @@
                         .transportation_allowance + '</td></tr>';
                     salaryHtml += '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td>' + data
                         .other_allowance + '</td></tr>';
+                    salaryHtml += '<tr><th name="total">@lang('worker.final_salary')</th><td>' + data.total +
+                        '</td></tr>';
+                    salaryHtml += '<tr><th name="iban">@lang('lang_v1.bank_code')</th><td>' + data.iban +
+                        '</td></tr>';
                     salaryHtml += '</table>';
                     salaryHtml +=
                         '<button class="btn btn-sm btn-primary edit-salary" data-worker-id="' +
