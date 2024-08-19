@@ -57,7 +57,7 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, ['all-accounting',])) {
             $this->allAccountingMenu();
-        } elseif (Str::startsWith($currentPath, ['accounting', 'sells', 'expense', 'purchase', 'contacts', 'customer'])) {
+        } elseif (Str::startsWith($currentPath, ['accounting', 'sells','sell-return', 'expense', 'purchase', 'contacts', 'customer'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
             $this->followUpMenu();
@@ -2553,6 +2553,14 @@ class CustomAdminSidebarMenu
                             __('lang_v1.sells_pills'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
                         );
+                      
+                        $sub->url(
+                            action([\App\Http\Controllers\SellReturnController::class, 'index']),
+                            __('lang_v1.list_sell_return'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sell-return']
+                        );
+                      
+                      
                         // }
 
 
