@@ -2000,7 +2000,8 @@ return [
   'error_occurred' => 'لقد حدث شيء خاطئ، أعد المحاولة',
   'sub_status' => 'الحالة الفرعية',
   'employees&workers' => 'الموظفين والعمال',
-  'insurance_status' => 'حالة التأمين'
+  'insurance_status' => 'حالة التأمين',
+  'business_insurance_contracts' => 'فرز شركات التأمين'
 
 
 
