@@ -1794,10 +1794,7 @@
                                     label: '{{ __('request.visa_number') }}',
                                     value: requestInfo.visa_number
                                 },
-                                {
-                                    label: '{{ __('request.atmCardType') }}',
-                                    value: requestInfo.atmCardType
-                                },
+                           
                                 {
                                     label: '{{ __('request.insurance_class') }}',
                                     value: requestInfo.insurance_classes_id
@@ -1820,7 +1817,12 @@
                                     value: requestInfo.updated_at
                                 }
                             ];
-
+                            if (requestInfo.baladyCardType) {
+                                requestInfoData.push({
+                                    label: '{{ __('request.baladyCardType') }}',
+                                    value: requestInfo.baladyCardType
+                                });
+                            }
                             requestInfoData.forEach(function(info) {
                                 if (info.value !== null && info.value !==
                                     '') { // Check for null or empty values
