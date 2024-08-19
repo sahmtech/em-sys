@@ -950,9 +950,9 @@ class CustomAdminSidebarMenu
             }
             if ($is_admin  || auth()->user()->can('essentials.insurance_index_workers')) {
                 $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'index']),
-                    __('essentials::lang.index_workers'),
-                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'workers']
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'employeesAndworkers']),
+                    __('essentials::lang.employees&workers'),
+                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'workersAndEmployees']
                 );
             }
             $menu->url(
@@ -961,17 +961,6 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'employee_insurance'],
             );
 
-
-            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
-                $menu->url(
-                    route('insurance_contracts'),
-                    __('essentials::lang.insurance_contracts'),
-                    ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_contracts'],
-                );
-            }
-
-
-
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_companies')) {
                 $menu->url(
                     route('insurance_companies'),
@@ -979,15 +968,24 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-hospital', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_companies'],
                 );
             }
+
+
             if ($is_admin  || auth()->user()->can('essentials.view_insurance_contracts')) {
                 $menu->url(
-                    route('get_companies_insurance_contracts'),
+                    // route(''),
+                    route('insurance_contracts'),
                     __('essentials::lang.companies_insurance_contracts'),
                     ['icon' => 'fa fas fa-hospital', 'active' => request()->segment(1) == 'medicalInsurance'
                         && request()->segment(2) == 'insurance_contracts'],
                 );
             }
-
+            // if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
+            //     $menu->url(
+            //         route('get_companies_insurance_contracts'),
+            //         __('essentials::lang.business_insurance_contracts'),
+            //         ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'get_companies_insurance_contracts'],
+            //     );
+            // }
 
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_classes')) {
                 $menu->dropdown(

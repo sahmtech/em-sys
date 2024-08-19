@@ -326,6 +326,11 @@ class EssentialsEmployeeInsuranceController extends Controller
 
 
                             $emp->has_insurance = 1;
+
+                            if (!empty($emp_array['marital_status'])) {
+
+                                $emp->marital_status =  $emp_array['marital_status'];
+                            }
                             $emp->save();
 
 
@@ -352,6 +357,10 @@ class EssentialsEmployeeInsuranceController extends Controller
 
 
                             $emp_border_no->has_insurance = 1;
+                            if (!empty($emp_array['marital_status'])) {
+
+                                $emp_border_no->marital_status =  $emp_array['marital_status'];
+                            }
                             $emp_border_no->save();
 
 
@@ -377,7 +386,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                             $insurance->is_deleted = 0;
                             $insurance->family_id = $family->id;
                             $insurance->save();
+                            if (!empty($emp_array['marital_status'])) {
 
+                                $family->marital_status =  $emp_array['marital_status'];
+                                $family->save();
+                            }
                             $processedEqamaEmpNos[] = $eqama_emp_no;
                         }
                     }
@@ -625,7 +638,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                                 $insurance->insurance_company_id = $emp_data['insurance_company_id'];
                                 $insurance->save();
                             }
+                            if (!empty($emp_array['marital_status'])) {
 
+                                $emp->marital_status =  $emp_array['marital_status'];
+                                $emp->save();
+                            }
                             $processedEqamaEmpNos[] = $eqama_emp_no;
                         } else if ($emp_border_no != null && $emp == null &&  $family == null) {
                             $insurance = EssentialsEmployeesInsurance::where('employee_id', $emp_border_no->id)
@@ -639,6 +656,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                                 $insurance->insurance_company_id = $emp_data['insurance_company_id'];
                                 $insurance->save();
                             }
+                            if (!empty($emp_array['marital_status'])) {
+
+                                $emp_border_no->marital_status =  $emp_array['marital_status'];
+                                $emp_border_no->save();
+                            }
                             $processedEqamaEmpNos[] = $eqama_emp_no;
                         } else if ($family != null &&  $emp == null && $emp_border_no == null) {
                             $insurance = EssentialsEmployeesInsurance::where('family_id', $family->id)
@@ -651,6 +673,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                                 $insurance->insurance_classes_id = $emp_data['insurance_class_id'];
                                 $insurance->insurance_company_id = $emp_data['insurance_company_id'];
                                 $insurance->save();
+                            }
+                            if (!empty($emp_array['marital_status'])) {
+
+                                $family->marital_status =  $emp_array['marital_status'];
+                                $family->save();
                             }
                             $processedEqamaEmpNos[] = $eqama_emp_no;
                         }
