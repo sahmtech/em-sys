@@ -46,6 +46,7 @@ use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
 use App\PayrollGroup;
 use App\PayrollGroupUser;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 
@@ -388,8 +389,15 @@ class PayrollController extends Controller
                 $other_allowance += floatval($allowance->amount ?? "0");
             }
         }
-        $salary = $user->essentials_salary;
-
+        $salary = $user->essentials_salary + $housing_allowance + $transportation_allowance + $other_allowance;
+        error_log(json_encode($user));
+        $iban = '';
+        if ($user->bank_details) {
+            $decoded = json_decode($user->bank_details);
+            if (isset($decoded->bank_code) && isset($decoded->bank_code) != null) {
+                $iban = $decoded->bank_code;
+            }
+        }
         $data = [
             'user_id' => $user->id,
             'work_days' => 30,
@@ -398,6 +406,7 @@ class PayrollController extends Controller
             'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
             'other_allowance' => number_format($other_allowance, 0, '.', ''),
             'total' => number_format($salary, 0, '.', ''),
+            'iban' => $iban,
         ];
         return response()->json(['data' => $data]);
     }
@@ -406,7 +415,7 @@ class PayrollController extends Controller
     {
 
         $userId = $request->input('user_id');
-        $updatedSalaryData = $request->except('_token', 'user_id');
+        $updatedSalaryData = $request->except('_token', 'user_id', 'iban');
         error_log(json_encode($updatedSalaryData));
 
         $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
@@ -432,6 +441,39 @@ class PayrollController extends Controller
                         ]);
                     }
                 }
+            }
+            if ($request->iban && $user->bank_details) {
+                $decoded = json_decode($user->bank_details);
+                $decoded->bank_code = $request->iban;
+                $user->bank_details = json_encode($decoded);
+                EssentialsOfficialDocument::updateOrCreate(
+                    [
+                        'type' => 'Iban',
+                        'employee_id' => $userId,
+                        'is_active' => 1
+                    ],
+                    [
+                        'number' => $request->iban
+                    ]
+                );
+            } else if ($request->iban) {
+                $arr = [
+                    "account_holder_name" => null,
+                    "account_number" => null,
+                    "bank_name" => null,
+                    "bank_code" => $request->iban,
+                ];
+                $user->bank_details = json_encode($arr);
+                EssentialsOfficialDocument::updateOrCreate(
+                    [
+                        'type' => 'Iban',
+                        'employee_id' => $userId,
+                        'is_active' => 1
+                    ],
+                    [
+                        'number' => $request->iban
+                    ]
+                );
             }
             $user->essentials_salary = $updatedSalaryData['salary'];
             $user->total_salary = $updatedSalaryData['total'];

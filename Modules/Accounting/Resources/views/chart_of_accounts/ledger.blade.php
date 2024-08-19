@@ -148,30 +148,31 @@
                                 <table class="table table-bordered table-striped" id="ledger">
                                     <thead>
                                         <tr>
+                                            <th>@lang('accounting::lang.number')</th>
                                             <th>@lang('messages.date')</th>
-                                            <th>@lang('lang_v1.description')</th>
+                                            <th>@lang('accounting::lang.transaction')</th>
                                             <th>@lang('lang_v1.cost_senter')</th>
                                             <th>@lang('accounting::lang.partner_name')</th>
                                             <th>@lang('brand.note')</th>
                                             <th>@lang('lang_v1.added_by')</th>
                                             <th>@lang('account.debit')</th>
                                             <th>@lang('account.credit')</th>
-                                            <!-- <th>@lang('lang_v1.balance')</th> -->
-                                            <th>@lang('messages.action')</th>
                                         </tr>
                                     </thead>
-
-
-
                                     <tfoot>
                                         <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
+                                            <td colspan="7"><strong>@lang('accounting::lang.period_total'):</strong></td>
                                             <td class="footer_total_debit"></td>
                                             <td class="footer_total_credit"></td>
-                                            <td></td>
+                                        </tr>
+                                        <tr class="bg-gray font-17 footer-total text-center">
+                                            <td colspan="7"><strong>@lang('accounting::lang.autoMigration.final_total'):</strong></td>
+                                            <td class="footer_final_total_debit"></td>
+                                            <td class="footer_final_total_credit"></td>
                                         </tr>
                                     </tfoot>
                                 </table>
+                                <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
                             </div>
                         @endcan
                     </div>
@@ -227,12 +228,16 @@
                 },
                 "ordering": false,
                 columns: [{
+                        data: 'ref_no',
+                        name: 'ref_no'
+                    },
+                    {
                         data: 'operation_date',
                         name: 'operation_date'
                     },
                     {
-                        data: 'ref_no',
-                        name: 'ATM.ref_no'
+                        data: 'transaction',
+                        name: 'transaction'
                     },
                     {
                         data: 'cost_center_name',
@@ -261,11 +266,6 @@
                         searchable: false
                     },
                     //{data: 'balance', name: 'balance', searchable: false},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        searchable: false
-                    }
                 ],
                 "fnDrawCallback": function(oSettings) {
                     __currency_convert_recursively($('#ledger'));
@@ -273,7 +273,6 @@
                 "footerCallback": function(row, data, start, end, display) {
                     var footer_total_debit = 0;
                     var footer_total_credit = 0;
-
                     for (var r in data) {
                         footer_total_debit += $(data[r].debit).data('orig-value') ? parseFloat($(data[r]
                             .debit).data('orig-value')) : 0;
@@ -282,6 +281,10 @@
                     }
                     $('.footer_total_debit').html(__currency_trans_from_en(footer_total_debit));
                     $('.footer_total_credit').html(__currency_trans_from_en(footer_total_credit));
+                    $('.footer_final_total_debit').html(__currency_trans_from_en(
+                        {{ $total_debit_bal }}));
+                    $('.footer_final_total_credit').html(__currency_trans_from_en(
+                        {{ $total_credit_bal }}));
                 }
             });
             $('#transaction_date_range').on('cancel.daterangepicker', function(ev, picker) {
