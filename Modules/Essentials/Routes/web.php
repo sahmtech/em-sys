@@ -333,7 +333,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/insurance_categories/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceCategoryController::class, 'destroy'])->name('insurance_categories.destroy');
         Route::get('/insurance_categories.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceCategoryController::class, 'show'])->name('insurance_categories.view');
 
-        Route::get('/workers', [\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'index'])->name('insurance-workers');
+        Route::get('/workersAndEmployees', [\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'employeesAndworkers'])->name('insurance-workersAndEmployee');
         Route::get('/workers/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'show'])->name('insurance-showWorker');
 
 

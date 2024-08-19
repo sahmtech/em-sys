@@ -950,9 +950,9 @@ class CustomAdminSidebarMenu
             }
             if ($is_admin  || auth()->user()->can('essentials.insurance_index_workers')) {
                 $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'index']),
-                    __('essentials::lang.index_workers'),
-                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'workers']
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'employeesAndworkers']),
+                    __('essentials::lang.employees&workers'),
+                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'workersAndEmployees']
                 );
             }
             $menu->url(
