@@ -388,8 +388,9 @@
                                         </div>
 
                                         <div class="larger-text">
-                                            <b>@lang('sales::lang.total_amount_with_fees'):</b>
-                                            <span id="total_amount_with_fees" contenteditable="true">0.00</span>
+                                            <b>@lang('sales::lang.total_amount_with_fees'):(@lang('sales::lang.editable'))</b>
+                                            <span style="background-color: #091141; color: white; margin-left: 10px;"
+                                                id="total_amount_with_fees" contenteditable="true">0.00</span>
                                         </div>
 
                                         <div class="larger-text">

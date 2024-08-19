@@ -358,6 +358,11 @@ class DataController extends Controller
                         'label' => __('sales::lang.templates_settings'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'sales.approve_offer_price',
+                        'label' => __('sales::lang.approve_offer_price'),
+                        'default' => false,
+                    ],
                 ]
 
             ],

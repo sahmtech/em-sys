@@ -163,15 +163,30 @@ class FollowUpRequestController extends Controller
         $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
 
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.created_at',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+            'wk_procedures.action_type as action_type',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
+            'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.company_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.assigned_to',
+            'users.company_id',
 
-
+            DB::raw("IF(process.superior_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_superior"),
+            DB::raw("IF(process.started_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_started")
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
