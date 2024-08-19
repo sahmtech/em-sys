@@ -352,6 +352,7 @@ return [
     '3rd_quarter' => '3rd Quarter',
     '4th_quarter' => '4th Quarter',
     'ledger' => 'كشف الحسابات',
+    'account_statement' => 'كشف حساب', 
     'reports' => 'التقارير',
     'view_report' => 'عرض التقرير',
     'ledger_report' => 'تقرير كشف الحسابات',

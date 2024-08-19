@@ -13,6 +13,7 @@ return [
   'exitRequest' => 'طلب خروح نهائي',
   'returnRequest' => 'طلب خروج وعودة',
   'advanceSalary' => 'طلب سلفة',
+  'baladyCardType' => 'نوع بطاقة الصراف',
   'leavesAndDepartures' => 'الإجازات والمغادرات',
   'atmCard' => 'بطاقة صراف آلي',
   'residenceRenewal' => 'طلب تجديد إقامة',
