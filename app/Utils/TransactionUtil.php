@@ -6063,6 +6063,7 @@ class TransactionUtil extends Util
         ];
 
         $business = Business::with(['currency'])->findOrFail($business_id);
+        $company_id = Session::get('selectedCompanyId');
 
         $productUtil = new \App\Utils\ProductUtil();
 
@@ -6105,6 +6106,7 @@ class TransactionUtil extends Util
         if (empty($sell_return)) {
             $sell_return_data['transaction_date'] = $sell_return_data['transaction_date'] ?? \Carbon::now();
             $sell_return_data['business_id'] = $business_id;
+            $sell_return_data['company_id'] = $company_id;
             $sell_return_data['location_id'] = $sell->location_id;
             $sell_return_data['contact_id'] = $sell->contact_id;
             $sell_return_data['customer_group_id'] = $sell->customer_group_id;
