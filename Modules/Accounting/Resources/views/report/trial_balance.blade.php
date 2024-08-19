@@ -126,6 +126,7 @@
                                 <th>@lang('accounting::lang.credit')</th>
                                 <th>@lang('accounting::lang.debit')</th>
                                 <th>@lang('accounting::lang.credit')</th>
+                                <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
                         <tfoot>
@@ -149,6 +150,7 @@
                             </tr>
                         </tfoot>
                     </table>
+                    <div class="modal fade" id="printledger" tabindex="-1" role="dialog"></div>
                 </div>
 
             </div>
@@ -253,6 +255,12 @@
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
                     },
                 ],
                 "footerCallback": function(row, data, start, end, display) {
