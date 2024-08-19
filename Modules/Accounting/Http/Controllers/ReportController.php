@@ -225,7 +225,7 @@ class ReportController extends Controller
                 $groupKey = $account->name;
                 if (!isset($aggregatedAccounts[$groupKey])) {
                     $aggregatedAccounts[$groupKey] =  (object) [
-                        'name' => $groupKey,
+                        'name' => Lang::has('accounting::lang.' . $groupKey) ? __('accounting::lang.' . $groupKey) : $groupKey,
                         'gl_code' => $account->gl_code[0],
                         'credit_balance' => 0,
                         'debit_balance' => 0,
