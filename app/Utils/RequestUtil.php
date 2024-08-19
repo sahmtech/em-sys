@@ -551,7 +551,7 @@ class RequestUtil extends Util
                 if (!$isExists) {
                     error_log('not exist');
                     $user = User::find($userId);
-                    $business_id = ($user && $user->company_id == 2) ? 2 : 1;
+                    $business_id = ($user && in_array($user->company_id, [2, 7])) ? 2 : 1;
                     $userType = User::where('id', $userId)->first()->user_type;
                     $procedure = WkProcedure::where('business_id', $business_id)
                         ->where('request_type_id', $request->type)->where('start', 1)->first();
@@ -1563,7 +1563,7 @@ class RequestUtil extends Util
 
         // $firstProcedure = WkProcedure::where('id', $firstStep->procedure_id)->first();
         $user = User::find($request->related_to);
-        $business_id = ($user && $user->company_id == 2) ? 2 : 1;
+        $business_id = ($user && in_array($user->company_id, [2, 7])) ? 2 : 1;
         $firstProcedure = WkProcedure::where('request_type_id', $request->request_type_id)->where('business_id', $business_id)->where('start', 1)->first();
         $visitedProcedures = [];
 
