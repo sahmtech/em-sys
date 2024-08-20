@@ -154,7 +154,8 @@
                     ledger.ajax.reload();
                 }
             );
-
+            
+            $('#contact_filter').select2();
 
             // Account Book
             ledger = $('#ledger').DataTable({
