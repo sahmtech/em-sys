@@ -581,33 +581,86 @@ class CoaController extends Controller
         }
     }
 
-    /*     public function print($id)
+    public function ledgerPrint($account_id)
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
 
-        $journal = AccountingAccTransMapping::where('business_id', $business_id)
+        $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
+            ->with(['account_sub_type', 'detail_type'])
+            ->findorFail($account_id);
+            
+            $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
+                ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
+                ->leftjoin('transactions as T', 'accounting_accounts_transactions.transaction_id', '=', 'T.id')
+                ->leftjoin('users AS u', 'accounting_accounts_transactions.created_by', 'u.id')
+                ->leftjoin('users AS employee_partner', function ($join) {
+                    $join->on('accounting_accounts_transactions.partner_id', '=', 'employee_partner.id')
+                        ->where('accounting_accounts_transactions.partner_type', '=', 'employees');
+                })
+                ->leftjoin('contacts AS customer_partner', function ($join) {
+                    $join->on('accounting_accounts_transactions.partner_id', '=', 'customer_partner.id')
+                        ->where('accounting_accounts_transactions.partner_type', '=', 'customers_suppliers');
+                })
+                ->leftjoin('accounting_cost_centers AS cc', 'accounting_accounts_transactions.cost_center_id', 'cc.id')
+                ->select(
+                    'accounting_accounts_transactions.operation_date',
+                    'accounting_accounts_transactions.sub_type',
+                    'accounting_accounts_transactions.type',
+                    'ATM.ref_no as ref_no',
+                    'ATM.id as id',
+                    'cc.ar_name as cost_center_name',
+                    'ATM.note',
+                    'accounting_accounts_transactions.amount',
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                    'T.invoice_no',
+                    DB::raw("CASE 
+                        WHEN accounting_accounts_transactions.partner_type = 'employees' THEN CONCAT(COALESCE(employee_partner.first_name, ''), ' ', COALESCE(employee_partner.last_name, ''))
+                        WHEN accounting_accounts_transactions.partner_type = 'customers_suppliers' THEN customer_partner.supplier_business_name
+                        END as partner_name")
+                )->get();
+        
+
+        $current_bal = AccountingAccount::leftjoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select([DB::raw($this->accountingUtil->balanceFormula())]);
+        $current_bal = $current_bal->first()->balance;
+
+        $total_debit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
             ->where('company_id', $company_id)
-            ->where('type', 'journal_entry')
-            ->where('id', $id)
-            ->firstOrFail();
-
-        $journal_history = AccountingAccTransMappingHistory::where('accounting_accounts_transactions_history_id', $id)
-            ->latest('created_at')
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'debit'), AAT.amount, 0)) as balance"))
             ->first();
-        if ($journal_history) {
-            $journal['latest_update'] = $journal_history->creator->first_name . ' ' . $journal_history->creator->last_name;
-            $journal['latest_update_at'] = $journal_history->created_at;
-        } else {
-            $journal['latest_update'] = ' - ';
-            $journal['latest_update_at'] = null;
-        }
-        $accounts_transactions = AccountingAccountsTransaction::with('account')
-            ->where('acc_trans_mapping_id', $journal->id)
-            ->get();
+        $total_debit_bal = $total_debit_bal->balance;
 
-        return view('accounting::journal_entry.print', compact('journal', 'accounts_transactions'));
-    } */
+        $total_credit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'credit'), AAT.amount, 0)) as balance"))
+            ->first();
+
+        $total_credit_bal = $total_credit_bal->balance;
+
+        return view('accounting::report.ledger-print', compact('account', 'transactions', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
+    }
 
     /**
      * Displays the ledger of the account
@@ -618,9 +671,6 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
-
-
-
 
         $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
             ->with(['account_sub_type', 'detail_type'])

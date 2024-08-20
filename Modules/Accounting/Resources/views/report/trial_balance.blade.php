@@ -126,6 +126,7 @@
                                 <th>@lang('accounting::lang.credit')</th>
                                 <th>@lang('accounting::lang.debit')</th>
                                 <th>@lang('accounting::lang.credit')</th>
+                                <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
                         <tfoot>
@@ -137,6 +138,7 @@
                                 <th id="creditTotal" class="credit_total"></th>
                                 <th id="closingDebitTotal" class="closing_debit_total"></th>
                                 <th id="closingCreditTotal" class="closing_credit_total"></th>
+                                <th></th>
                             </tr>
                             <tr>
                                 <th colspan="2" class="text-center">@lang('accounting::lang.total_for_all_pages'):</th>
@@ -145,10 +147,12 @@
                                 <th id="allpagesdebitTotal" class="all_pages_debit_total"></th>
                                 <th id="allpagescreditTotal" class="all_pages_credit_total"></th>
                                 <th id="allpagesclosingDebitTotal" class="all_pages_closing_debit_total"></th>
-                                <th id="allpagesclosingCreditTotal" class="all_pages_closing_credit_total"></th>
+                                <th  id="allpagesclosingCreditTotal" class="all_pages_closing_credit_total"></th>
+                                <th></th>
                             </tr>
                         </tfoot>
                     </table>
+                    <div class="modal fade" id="printledger" tabindex="-1" role="dialog"></div>
                 </div>
 
             </div>
@@ -215,6 +219,7 @@
                     {
                         data: 'debit_opening_balance',
                         name: 'debit_opening_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -222,6 +227,7 @@
                     {
                         data: 'credit_opening_balance',
                         name: 'credit_opening_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -229,6 +235,7 @@
                     {
                         data: 'debit_balance',
                         name: 'debit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -236,6 +243,7 @@
                     {
                         data: 'credit_balance',
                         name: 'credit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -243,6 +251,7 @@
                     {
                         data: 'closing_debit_balance',
                         name: 'closing_debit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -250,9 +259,16 @@
                     {
                         data: 'closing_credit_balance',
                         name: 'closing_credit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
                     },
                 ],
                 "footerCallback": function(row, data, start, end, display) {

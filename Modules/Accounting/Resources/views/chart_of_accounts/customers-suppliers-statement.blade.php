@@ -99,29 +99,40 @@
                         <h3 class="box-title"> <i class="fa fa-filter" aria-hidden="true"></i> @lang('report.filters'):</h3>
                     </div>
                     <div class="box-body">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                {!! Form::label('transaction_date_range', __('report.date_range') . ':') !!}
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    {!! Form::text('transaction_date_range', null, [
-                                        'class' => 'form-control',
-                                        'readonly',
-                                        'placeholder' => __('report.date_range'),
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('all_accounts', __('accounting::lang.suppliers_and_customers') . ':') !!}
+                                    {!! Form::select('contact_filter', $contact_dropdown, $contact->id, [
+                                        'class' => 'form-control contact_filter',
+                                        'style' => 'width:100%',
+                                        'id' => 'contact_filter',
+                                        'data-default' => $contact->id,
                                     ]) !!}
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                {!! Form::label('all_accounts', __('accounting::lang.suppliers_and_customers') . ':') !!}
-                                {!! Form::select('contact_filter', $contact_dropdown, $contact->id, [
-                                    'class' => 'form-control contact_filter',
-                                    'style' => 'width:100%',
-                                    'id' => 'contact_filter',
-                                    'data-default' => $contact->id,
-                                ]) !!}
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('start_date_filter', __('accounting::lang.from_date') . ':') !!}
+                                    {!! Form::date('start_date_filter', null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('lang_v1.select_start_date'),
+                                        'id' => 'start_date_filter',
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('end_date_filter', __('accounting::lang.to_date') . ':') !!}
+                                    {!! Form::date('end_date_filter', null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('lang_v1.select_end_date'),
+                                        'id' => 'end_date_filter',
+                                    ]) !!}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -205,17 +216,13 @@
                 ajax: {
                     url: '{{ action('\Modules\Accounting\Http\Controllers\ReportController@customersSuppliersStatement', [$contact->id]) }}',
                     data: function(d) {
-                        var start = '';
-                        var end = '';
-                        if ($('#transaction_date_range').val()) {
-                            start = $('input#transaction_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            end = $('input#transaction_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
+                        if ($('#start_date_filter').val()) {
+                            d.start_date = $('#start_date_filter').val();
+                        }
+                        if ($('#end_date_filter').val()) {
+                            d.end_date = $('#end_date_filter').val();
                         }
                         var transaction_type = $('select#transaction_type').val();
-                        d.start_date = start;
-                        d.end_date = end;
                         d.type = transaction_type;
                     }
                 },
@@ -276,8 +283,7 @@
                         {{ $total_credit_bal }}));
                 }
             });
-            $('#transaction_date_range').on('cancel.daterangepicker', function(ev, picker) {
-                $('#transaction_date_range').val('');
+            $('#end_date_filter,#start_date_filter').on('change', function() {
                 ledger.ajax.reload();
             });
         });
