@@ -855,6 +855,15 @@ class PayrollController extends Controller
         $user_type = request()->input('user_type');
         $month_year = request()->input('month_year');
 
+        $departments = EssentialsDepartment::all();
+
+        foreach ($departments as  $department) {
+            if ($department->parent_department_id && in_array($department->parent_department_id, $departments_ids)) {
+                $departments_ids[] = $department->id;
+            }
+        }
+
+
         $payroll_date = Carbon::createFromFormat('m/Y', $month_year);
         $timesheet_group_date = $payroll_date->format('F Y');
         $timesheet_groups = TimesheetGroup::where('timesheet_date', $timesheet_group_date)->where('is_approved', 1)->where('is_payrolls_issued', 0)->pluck('id')->toArray();
@@ -1183,6 +1192,8 @@ class PayrollController extends Controller
         $allowance_names_array = [];
         $allowance_percent_array = [];
         $allowance_amounts = [];
+
+
 
 
         if (isset($payroll['over_time_hours_addition']) && $payroll['over_time_hours_addition'] != 0) {

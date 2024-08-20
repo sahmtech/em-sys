@@ -594,7 +594,7 @@ Route::get('/updateShifts', function () {
 //         return response()->json(['success' => false, 'message' => $e->getMessage()]);
 //     }
 // });
-Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
+// Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
 
 Route::get('/clear_cache', function () {
     try {

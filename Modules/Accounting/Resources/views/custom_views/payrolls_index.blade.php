@@ -60,10 +60,10 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="business_filter">@lang('essentials::lang.user_type'):</label>
-                                        {!! Form::select('user_type', $user_types, null, [
+                                        {!! Form::select('user_type2', $user_types, null, [
                                             'class' => 'form-control select2',
                                             'style' => 'width: 100%;',
-                                            'id' => 'user_type',
+                                            'id' => 'user_type2',
                                             'placeholder' => __('lang_v1.all'),
                                         ]) !!}
                                     </div>
@@ -268,7 +268,7 @@
                 format: 'mm/yyyy',
                 minViewMode: "months"
             });
-            $('#select_department_id,  #user_type, #project_name_filter')
+            $('#select_department_id,  #user_type2, #project_name_filter')
                 .on('change',
                     function() {
                         payroll_group_table.ajax.reload();
@@ -281,7 +281,7 @@
                     url: "{{ route('payrolls_list_index') }}",
                     data: function(d) {
                         d.select_department_id = $('#select_department_id').val();
-                        d.user_type = $('#user_type').val();
+                        d.user_type = $('#user_type2').val();
                         d.project_name_filter = $('#project_name_filter').val();
                     }
                 },
