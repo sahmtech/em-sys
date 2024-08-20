@@ -61,18 +61,34 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [
-                            $fields[0],
-                            $fields[1],
-                            $fields[2],
-                            $fields[3],
-                            $fields[4],
-                            $fields[5],
-                            $fields[6],
-                        ];
+                        // Remove the specified fields from the $fields array
+                        $fields = array_values(
+                            array_diff($fields, [
+                                __('essentials::lang.profile_image'),
+                                __('followup::lang.passport_numer'),
+                                __('followup::lang.passport_expire_date'),
+                                __('followup::lang.eqama_end_date'),
+                                __('followup::lang.admissions_date'),
+                                __('essentials::lang.admissions_type'),
+                                __('essentials::lang.admissions_status'),
+                                __('followup::lang.contract_end_date'),
+                                __('essentials::lang.mobile_number'),
+                                __('business.email'),
+                                __('followup::lang.Basic_salary'),
+                                __('followup::lang.total_salary'),
+                                __('followup::lang.blood_group'),
+                                __('followup::lang.bank_code'),
+                                __('essentials::lang.travel_categorie'),
+                            ]),
+                        );
+
+                        $fullNamePosition = array_search(__('followup::lang.name'), $fields);
+                        if ($fullNamePosition !== false) {
+                            array_splice($fields, $fullNamePosition + 1, 0, __('essentials::lang.english_name'));
+                        }
+                        $default_fields = array_slice($fields, 0, 7);
 
                         $default = array_keys($default_fields);
-
                     @endphp
 
                     <div style="row">
@@ -111,45 +127,43 @@
                         <tr>
 
                             <td>#</td>
-                            <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td>
+                            {{-- <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td> --}}
                             <td class="table-td-width-100px">@lang('essentials::lang.employee_number')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.english_name')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.id_proof_number')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
-
-
-                            <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
-
-
                             <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
+
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td> --}}
+
+                            <td class="table-td-width-100px">@lang('essentials::lang.insurance_status')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.insurance_class')</td>
+
 
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
 
-
-
-                            <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
-
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td> --}}
                             <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
-                            <td class="table-td-width-100px">@lang('business.email')</td>
+                            {{-- <td class="table-td-width-100px">@lang('business.email')</td> --}}
 
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td> --}}
                             <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
 
                             <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
-                            <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td> --}}
 
 
 
@@ -219,7 +233,7 @@
 
                 ajax: {
 
-                    url: "{{ route('insurance-workers') }}",
+                    url: "{{ route('insurance-workersAndEmployee') }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
@@ -244,19 +258,19 @@
                 columns: [{
                         "data": "worker_id"
                     },
-                    {
-                        "data": "profile_image",
-                        "render": function(data, type, row) {
-                            if (data) {
+                    // {
+                    //     "data": "profile_image",
+                    //     "render": function(data, type, row) {
+                    //         if (data) {
 
-                                var imageUrl = '/uploads/' + data;
-                                return '<img src="' + imageUrl +
-                                    '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
-                            } else {
-                                return '@lang('essentials::lang.no_image')';
-                            }
-                        }
-                    },
+                    //             var imageUrl = '/uploads/' + data;
+                    //             return '<img src="' + imageUrl +
+                    //                 '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                    //         } else {
+                    //             return '@lang('essentials::lang.no_image')';
+                    //         }
+                    //     }
+                    // },
                     {
                         "data": "emp_number"
                     },
@@ -270,7 +284,10 @@
                             return link;
                         }
                     },
+                    {
+                        data: 'english_name',
 
+                    },
                     {
                         data: 'id_proof_number'
                     },
@@ -278,18 +295,23 @@
                         "data": "company_name"
                     },
                     {
-                        data: 'passport_number'
-                    },
-                    {
-                        data: 'passport_expire_date'
-                    },
-                    {
                         data: 'border_no'
-                    }, {
+                    },
+                    {
                         data: 'dob'
                     },
+                    // {
+                    //     data: 'passport_number'
+                    // },
+                    // {
+                    //     data: 'passport_expire_date'
+                    // },
+
                     {
                         data: 'insurance'
+                    },
+                    {
+                        data: 'insurance_class'
                     },
                     {
                         data: 'contact_name'
@@ -299,46 +321,46 @@
                     },
 
 
-                    {
-                        data: 'residence_permit_expiration'
-                    },
-                    {
-                        data: 'admissions_date'
-                    },
-                    {
-                        data: 'admissions_type',
-                        render: function(data, type, row) {
+                    // {
+                    //     data: 'residence_permit_expiration'
+                    // },
+                    // {
+                    //     data: 'admissions_date'
+                    // },
+                    // {
+                    //     data: 'admissions_type',
+                    //     render: function(data, type, row) {
 
-                            if (data === 'first_time') {
-                                return '@lang('essentials::lang.first_time')';
-                            } else if (data === 'after_vac') {
-                                return '@lang('essentials::lang.after_vac')';
-                            } else {
-                                return '@lang('essentials::lang.no_addmission_yet')';
-                            }
-                        }
-                    },
-                    {
-                        data: 'admissions_status',
-                        render: function(data, type, row) {
-                            if (data === 'on_date') {
-                                return '@lang('essentials::lang.on_date')';
-                            } else if (data === 'delay') {
-                                return '@lang('essentials::lang.delay')';
-                            } else {
-                                return '';
-                            }
-                        }
-                    },
-                    {
-                        data: 'contract_end_date'
-                    },
-                    {
-                        data: "contact_number"
-                    },
-                    {
-                        data: "email"
-                    },
+                    //         if (data === 'first_time') {
+                    //             return '@lang('essentials::lang.first_time')';
+                    //         } else if (data === 'after_vac') {
+                    //             return '@lang('essentials::lang.after_vac')';
+                    //         } else {
+                    //             return '@lang('essentials::lang.no_addmission_yet')';
+                    //         }
+                    //     }
+                    // },
+                    // {
+                    //     data: 'admissions_status',
+                    //     render: function(data, type, row) {
+                    //         if (data === 'on_date') {
+                    //             return '@lang('essentials::lang.on_date')';
+                    //         } else if (data === 'delay') {
+                    //             return '@lang('essentials::lang.delay')';
+                    //         } else {
+                    //             return '';
+                    //         }
+                    //     }
+                    // },
+                    // {
+                    //     data: 'contract_end_date'
+                    // },
+                    // {
+                    //     data: "contact_number"
+                    // },
+                    // {
+                    //     data: "email"
+                    // },
 
                     {
                         data: "profession",
@@ -361,20 +383,20 @@
                             }
                         }
                     },
-                    {
+                    // {
 
-                        data: 'essentials_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
+                    //     data: 'essentials_salary',
+                    //     render: function(data, type, row) {
+                    //         return Math.floor(data);
+                    //     }
 
-                    },
-                    {
-                        data: 'total_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
-                    },
+                    // },
+                    // {
+                    //     data: 'total_salary',
+                    //     render: function(data, type, row) {
+                    //         return Math.floor(data);
+                    //     }
+                    // },
 
                     {
                         data: 'gender',
@@ -390,19 +412,29 @@
                         }
                     },
                     {
-                        data: 'marital_status'
-                    },
-                    {
-                        data: 'blood_group'
-                    },
-                    {
-                        data: 'bank_code',
+                        data: 'marital_status',
+                        render: function(data, type, row) {
+                            if (data === 'married') {
+                                return '@lang('lang_v1.married')';
+                            } else if (data === 'unmarried') {
+                                return '@lang('lang_v1.unmarried')';
 
+                            } else {
+                                return '@lang('lang_v1.others')';
+                            }
+                        }
                     },
-                    {
-                        data: 'categorie_id',
+                    // {
+                    //     data: 'blood_group'
+                    // },
+                    // {
+                    //     data: 'bank_code',
 
-                    },
+                    // },
+                    // {
+                    //     data: 'categorie_id',
+
+                    // },
 
 
 

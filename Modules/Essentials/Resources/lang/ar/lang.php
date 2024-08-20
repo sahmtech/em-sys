@@ -1989,7 +1989,7 @@ return [
   'worker_information' => 'معلومات العامل',
   'full_name' => 'الاسم الكامل',
   'emp_number' => 'الرقم الوظيفي',
-  'id_proof_number' => 'رقم الإقامة',
+  'id_proof_number' => 'رقم إثبات الهوية',
   'residence_permit_expiration' => 'تاريخ انتهاء الاقامة',
   'passport_number' => 'رقم الجواز',
   'passport_expire_date' => 'تاريخ انتهاء الجواز',
@@ -1998,8 +1998,11 @@ return [
   'assigned_to' => 'اسم المشروع',
   'worker_not_found' => 'العامل غير موجود',
   'error_occurred' => 'لقد حدث شيء خاطئ، أعد المحاولة',
-  'sub_status' => 'الحالة الفرعية'
-
+  'sub_status' => 'الحالة الفرعية',
+  'employees&workers' => 'الموظفين والعمال',
+  'insurance_status' => 'حالة التأمين',
+  'business_insurance_contracts' => 'فرز شركات التأمين',
+  'view_personal_data' => 'عرض البيانات الشخصية',
 
 
 ];

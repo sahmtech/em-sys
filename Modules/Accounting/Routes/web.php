@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\SellReturnController;
 use Illuminate\Support\Facades\Route;
 use Modules\Accounting\Http\Controllers\OpeningBalanceController;
 use Modules\Accounting\Http\Controllers\PaymentVouchersController;
@@ -143,4 +144,11 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('install', 'InstallController@install');
     Route::get('install/uninstall', 'InstallController@uninstall');
     Route::get('install/update', 'InstallController@update');
+
+
+    Route::get('validate-invoice-to-return/{invoice_no}', [SellReturnController::class, 'validateInvoiceToReturn']);
+    Route::resource('sell-return', SellReturnController::class);
+    Route::get('sell-return/get-product-row', [SellReturnController::class, 'getProductRow']);
+    Route::get('/sell-return/print/{id}', [SellReturnController::class, 'printInvoice']);
+    Route::get('/sell-return/add/{id}', [SellReturnController::class, 'add']);
 });

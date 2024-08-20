@@ -252,7 +252,7 @@ class EssentailsworkersController extends Controller
     {
         $identifier = $request->input('worker_identifier');
 
-        // Adjust the query to match the identifier with either name, ID proof number, or border number
+
         $worker = User::where('first_name', 'like', '%' . $identifier . '%')
             ->orWhere('id_proof_number', $identifier)
             ->orWhere('border_no', $identifier)

@@ -434,6 +434,9 @@ class TransactionPaymentController extends Controller
 
                 $bankAccount = BankAccount::forDropdown();
 
+                $util = new Util();
+                $auto_migration = $util->createTransactionJournal_entry($transaction->id,);
+    
                 $view = view('transaction_payment.payment_row')
 
                     ->with(compact('transaction', 'payment_types', 'payment_line', 'amount_formated', 'accounts','bankAccount'))->render();
