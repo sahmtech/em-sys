@@ -113,6 +113,7 @@ class ReportController extends Controller
 
         $max_levels = AccountingAccount::where('accounting_accounts.business_id', $business_id)
             ->where('accounting_accounts.company_id', $company_id)->pluck('gl_code')->toArray();
+
         $lengths = array_map(function ($length) {
             return str_replace(".", "", $length);
         }, $max_levels);
@@ -190,22 +191,17 @@ class ReportController extends Controller
                 DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
                 DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount 
-     FROM accounting_accounts_transactions as AAT 
-     WHERE AAT.accounting_account_id = accounting_accounts.id 
-     AND AAT.sub_type = 'opening_balance'
-     AND AAT.type = 'credit'
-     ORDER BY AAT.operation_date ASC 
-     LIMIT 1), 
-    0) as credit_opening_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount 
-     FROM accounting_accounts_transactions as AAT 
-     WHERE AAT.accounting_account_id = accounting_accounts.id 
-     AND AAT.sub_type = 'opening_balance'
-     AND AAT.type = 'debit'
-     ORDER BY AAT.operation_date ASC 
-     LIMIT 1), 
-    0) as debit_opening_balance"),
+                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT 
+            WHERE AAT.accounting_account_id = accounting_accounts.id 
+            AND AAT.sub_type = 'opening_balance'
+            AND AAT.type = 'credit'
+            ORDER BY AAT.operation_date ASC 
+            LIMIT 1), 0) as credit_opening_balance"),
+                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT 
+            WHERE AAT.accounting_account_id = accounting_accounts.id 
+            AND AAT.sub_type = 'opening_balance'
+            AND AAT.type = 'debit'
+            ORDER BY AAT.operation_date ASC LIMIT 1), 0) as debit_opening_balance"),
                 'AAT.sub_type as sub_type',
                 'AAT.type as type',
                 'accounting_accounts.gl_code',
@@ -290,9 +286,9 @@ class ReportController extends Controller
                     $closing_balance = $this->calculateClosingBalance($account);
                     return $closing_balance['closing_credit_balance'];
                 })
-                ->addColumn('action', function ($account) use ($aggregated){
+                ->addColumn('action', function ($account) use ($aggregated) {
                     $html = ' ';
-                    if($aggregated == 0){
+                    if ($aggregated == 0) {
                         $html =
                             '<div class="btn-group">
                                 <button type="button" class="btn btn-info btn-xs" >' . '
