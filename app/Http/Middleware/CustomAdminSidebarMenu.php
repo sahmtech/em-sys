@@ -57,7 +57,7 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, ['all-accounting',])) {
             $this->allAccountingMenu();
-        } elseif (Str::startsWith($currentPath, ['accounting', 'sells', 'expense', 'purchase', 'contacts', 'customer'])) {
+        } elseif (Str::startsWith($currentPath, ['accounting', 'sells','sell-return', 'expense', 'purchase', 'contacts', 'customer'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
             $this->followUpMenu();
@@ -1049,9 +1049,9 @@ class CustomAdminSidebarMenu
             if ($is_admin  || auth()->user()->can('essentials.crud_workcards_request')) {
 
                 $menu->url(
-                    route('work_cards_all_requests'),
+                    route('work_cards_pending_requests'),
                     __('essentials::lang.workcards_allrequest'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_pending_requests'],
                 );
             }
 
@@ -1163,9 +1163,9 @@ class CustomAdminSidebarMenu
                 );
                 if ($is_admin  || auth()->user()->can('essentials.view_employees_affairs_requests')) {
                     $menu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_affairs_all_requests']),
+                        action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'pendingEmployeeAffairsRequests']),
                         __('essentials::lang.employees_requests'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' &&  (request()->segment(2) == 'allEmployeeAffairsRequests')]
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' &&  (request()->segment(2) == 'pendingEmployeeAffairsRequests')]
                     );
                 }
                 if (
@@ -2551,6 +2551,14 @@ class CustomAdminSidebarMenu
                             __('lang_v1.sells_pills'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
                         );
+                      
+                        $sub->url(
+                            action([\App\Http\Controllers\SellReturnController::class, 'index']),
+                            __('lang_v1.list_sell_return'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sell-return']
+                        );
+                      
+                      
                         // }
 
 

@@ -219,6 +219,7 @@
                     {
                         data: 'debit_opening_balance',
                         name: 'debit_opening_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -226,6 +227,7 @@
                     {
                         data: 'credit_opening_balance',
                         name: 'credit_opening_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -233,6 +235,7 @@
                     {
                         data: 'debit_balance',
                         name: 'debit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -240,6 +243,7 @@
                     {
                         data: 'credit_balance',
                         name: 'credit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -247,6 +251,7 @@
                     {
                         data: 'closing_debit_balance',
                         name: 'closing_debit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }
@@ -254,6 +259,7 @@
                     {
                         data: 'closing_credit_balance',
                         name: 'closing_credit_balance',
+                        searchable: false,
                         render: function(data, type, row) {
                             return __currency_trans_from_en(parseFloat(data));
                         }

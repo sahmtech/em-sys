@@ -113,6 +113,7 @@ class ReportController extends Controller
 
         $max_levels = AccountingAccount::where('accounting_accounts.business_id', $business_id)
             ->where('accounting_accounts.company_id', $company_id)->pluck('gl_code')->toArray();
+
         $lengths = array_map(function ($length) {
             return str_replace(".", "", $length);
         }, $max_levels);
@@ -135,11 +136,8 @@ class ReportController extends Controller
             $end_date = $fy['end'];
         }
 
-        $accounts = AccountingAccount::where('accounting_accounts.business_id', $business_id)
-            ->where('accounting_accounts.company_id', $company_id);
-
-        if ($with_zero_balances == 0) {
-            $accounts->join(
+        if (! $with_zero_balances) {
+            $accounts = AccountingAccount::join(
                 'accounting_accounts_transactions as AAT',
                 'AAT.accounting_account_id',
                 '=',
@@ -158,7 +156,7 @@ class ReportController extends Controller
                         });
                 });
         } else {
-            $accounts->leftJoin(
+            $accounts = AccountingAccount::leftJoin(
                 'accounting_accounts_transactions as AAT',
                 function ($join) use ($start_date, $end_date) {
                     $join->on('AAT.accounting_account_id', '=', 'accounting_accounts.id')
@@ -183,29 +181,28 @@ class ReportController extends Controller
             });
         })
             ->when($level_filter, function ($query, $level_filter) {
-                return $query->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
+
+                return $query
+                    ->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
                     ->orwhereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) < ?', [$level_filter - 1]);
             })
+            ->where('accounting_accounts.business_id', $business_id)
+            ->where('accounting_accounts.company_id', $company_id)
             ->select(
                 DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
                 DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount 
-     FROM accounting_accounts_transactions as AAT 
-     WHERE AAT.accounting_account_id = accounting_accounts.id 
-     AND AAT.sub_type = 'opening_balance'
-     AND AAT.type = 'credit'
-     ORDER BY AAT.operation_date ASC 
-     LIMIT 1), 
-    0) as credit_opening_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount 
-     FROM accounting_accounts_transactions as AAT 
-     WHERE AAT.accounting_account_id = accounting_accounts.id 
-     AND AAT.sub_type = 'opening_balance'
-     AND AAT.type = 'debit'
-     ORDER BY AAT.operation_date ASC 
-     LIMIT 1), 
-    0) as debit_opening_balance"),
+                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT 
+            WHERE AAT.accounting_account_id = accounting_accounts.id 
+            AND AAT.sub_type = 'opening_balance'
+            AND AAT.type = 'credit'
+            ORDER BY AAT.operation_date ASC 
+            LIMIT 1), 0) as credit_opening_balance"),
+                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT 
+            WHERE AAT.accounting_account_id = accounting_accounts.id 
+            AND AAT.sub_type = 'opening_balance'
+            AND AAT.type = 'debit'
+            ORDER BY AAT.operation_date ASC LIMIT 1), 0) as debit_opening_balance"),
                 'AAT.sub_type as sub_type',
                 'AAT.type as type',
                 'accounting_accounts.gl_code',
@@ -219,7 +216,7 @@ class ReportController extends Controller
             )
             ->orderBy('accounting_accounts.gl_code');
 
-        if ($aggregated == 1) {
+        if ($aggregated) {
             $aggregatedAccounts = [];
             foreach ($accounts->get() as $account) {
 
@@ -252,7 +249,7 @@ class ReportController extends Controller
             $totalDebitBalance = 0;
             $totalCreditBalance = 0;
 
-            foreach ($aggregated == 1 ? $accounts : $accounts->get() as $account) {
+            foreach ($aggregated ? $accounts : $accounts->get() as $account) {
                 $totalDebitOpeningBalance += $account->debit_opening_balance;
                 $totalCreditOpeningBalance += $account->credit_opening_balance;
                 $totalDebitBalance += $account->debit_balance;
@@ -290,17 +287,20 @@ class ReportController extends Controller
                     $closing_balance = $this->calculateClosingBalance($account);
                     return $closing_balance['closing_credit_balance'];
                 })
-                ->addColumn('action', function ($account) {
-                    $html =
-                        '<div class="btn-group">
-                            <button type="button" class="btn btn-info btn-xs" >' . '
-                                <a class=" btn-modal text-white" data-container="#printledger"
-                                    data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
-                                >
-                                    ' . __("accounting::lang.account_statement") . '
-                                </a>
-                            </button>
-                        </div>';
+                ->addColumn('action', function ($account) use ($aggregated) {
+                    $html = ' ';
+                    if (! $aggregated) {
+                        $html =
+                            '<div class="btn-group">
+                                <button type="button" class="btn btn-info btn-xs" >' . '
+                                    <a class=" btn-modal text-white" data-container="#printledger"
+                                        data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
+                                    >
+                                        ' . __("accounting::lang.account_statement") . '
+                                    </a>
+                                </button>
+                            </div>';
+                    }
                     return $html;
                 })
                 ->with([
