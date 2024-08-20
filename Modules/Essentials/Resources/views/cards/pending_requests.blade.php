@@ -340,9 +340,9 @@
                 </div>
             </div>
         @endcomponent
-
+        @include('essentials::layouts.nav_requests_status_for_cards')
         @component('components.widget', ['class' => 'box-primary'])
-            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.insurances_add_requests'))
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.workcards_add_requests'))
                 @slot('tool')
                     <div class="box-tools">
 
@@ -353,14 +353,15 @@
                     </div>
                 @endslot
             @endif
+
             <div class="table-responsive">
                 <div style="margin-bottom: 10px;">
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.change_insurance_request_status'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.workcards_requests_change_status'))
                         <button type="button" class="btn btn-warning change_status2">
                             @lang('request.change_status')
                         </button>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_insurance_request'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_workcards_request'))
                         <button class="btn btn-danger btn-sm btn-return2">
                             {{ trans('request.return_the_request') }}
                         </button>
@@ -383,11 +384,12 @@
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
                             <th>@lang('request.created_by')</th>
+
                             <th>@lang('request.status')</th>
                             <th>@lang('request.note')</th>
                             <th>@lang('request.action')</th>
-                            <th></th>
 
+                            <th></th>
                         </tr>
                     </thead>
                 </table>
@@ -398,7 +400,7 @@
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'insurance_storeRequest', 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'Wk_storeRequest', 'enctype' => 'multipart/form-data']) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -412,7 +414,7 @@
 
 
                             <div class="form-group col-md-6">
-                                {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
+                                {!! Form::label('type', __('request.type') . ':*') !!}
                                 {!! Form::select(
                                     'type',
                                     collect($requestTypes)->mapWithKeys(function ($requestType) {
@@ -426,13 +428,13 @@
                                         'class' => 'form-control',
                                         'required',
                                         'style' => 'height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
                                         'id' => 'requestType',
                                     ],
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('user_id', __('essentials::lang.name') . ':*') !!}
+                                {!! Form::label('user_id', __('request.name') . ':*') !!}
                                 {!! Form::select('user_id[]', $users, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
@@ -452,22 +454,22 @@
                             </div>
 
                             <div class="form-group col-md-6" id="start_date" style="display: none;">
-                                {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
+                                {!! Form::label('start_date', __('request.start_date') . ':*') !!}
                                 {!! Form::date('start_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.start_date'),
+                                    'placeholder' => __('request.start_date'),
                                     'id' => 'startDateField',
                                 ]) !!}
                             </div>
 
 
                             <div class="form-group col-md-6" id="end_date" style="display: none;">
-                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
+                                {!! Form::label('end_date', __('request.end_date') . ':*') !!}
                                 {!! Form::date('end_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.end_date'),
+                                    'placeholder' => __('request.end_date'),
                                     'id' => 'endDateField',
                                 ]) !!}
                             </div>
@@ -500,11 +502,11 @@
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
+                                {!! Form::label('escape_date', __('request.escape_date') . ':*') !!}
                                 {!! Form::date('escape_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.escape_date'),
+                                    'placeholder' => __('request.escape_date'),
                                     'id' => 'escapeDateField',
                                 ]) !!}
                             </div>
@@ -529,7 +531,8 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'resEditType',
                                     ],
                                 ) !!}
                             </div>
@@ -546,7 +549,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
                                         'id' => 'atmType',
                                     ],
                                 ) !!}
@@ -582,7 +585,8 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('request.select_type'),
+                                        'id' => 'baladyType',
                                     ],
                                 ) !!}
                             </div>
@@ -844,6 +848,7 @@
                 </div>
             </div>
         </div>
+
 
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
@@ -1254,9 +1259,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- view request details --}}
-
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -1326,12 +1328,15 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+            function reload() {
+                requests_table.ajax.reload();
+            }
 
             var requests_table = $('#requests_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('insurance_requests') }}",
+                    url: "{{ route('work_cards_pending_requests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
@@ -1342,6 +1347,7 @@
                 columns: [{
                         data: null,
                         render: function(data, type, row, meta) {
+
 
 
                             if ((row.status_now === 'pending' && row.action_type !==
@@ -1366,6 +1372,7 @@
                     {
                         data: 'user'
                     },
+
                     {
                         data: 'assigned_to'
                     },
@@ -1566,7 +1573,6 @@
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
 
-
                 var formData = new FormData(this);
 
                 var ladda = Ladda.create(document.querySelector('.update-offer-status'));
@@ -1638,6 +1644,7 @@
                         if (result.success == true) {
                             $('#returnModal').modal('hide');
                             toastr.success(result.msg);
+                            // requests_table.ajax.reload();
                             window.location.reload();
 
                         } else {
@@ -1778,10 +1785,7 @@
                                     label: '{{ __('request.installmentsNumber') }}',
                                     value: requestInfo.installmentsNumber
                                 },
-                                {
-                                    label: '{{ __('request.baladyCardType') }}',
-                                    value: requestInfo.baladyCardType
-                                },
+
                                 {
                                     label: '{{ __('request.workInjuriesDate') }}',
                                     value: requestInfo.workInjuriesDate
@@ -1802,10 +1806,7 @@
                                     label: '{{ __('request.visa_number') }}',
                                     value: requestInfo.visa_number
                                 },
-                                {
-                                    label: '{{ __('request.atmCardType') }}',
-                                    value: requestInfo.atmCardType
-                                },
+
                                 {
                                     label: '{{ __('request.insurance_class') }}',
                                     value: requestInfo.insurance_classes_id
@@ -1828,7 +1829,12 @@
                                     value: requestInfo.updated_at
                                 }
                             ];
-
+                            if (requestInfo.baladyCardType) {
+                                requestInfoData.push({
+                                    label: '{{ __('request.baladyCardType') }}',
+                                    value: requestInfo.baladyCardType
+                                });
+                            }
                             requestInfoData.forEach(function(info) {
                                 if (info.value !== null && info.value !==
                                     '') { // Check for null or empty values

@@ -378,6 +378,7 @@
                             <th>@lang('request.company')</th>
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
+                            <th>@lang('request.project')</th>
                             <th>@lang('request.eqama_number')</th>
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
@@ -1437,6 +1438,10 @@
                     {
                         data: 'user'
                     },
+
+                    {
+                        data: 'assigned_to'
+                    },
                     {
                         data: 'id_proof_number'
                     },
@@ -1633,16 +1638,22 @@
 
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
-                var data = $(this).serialize();
-                var ladda = Ladda.create(document.querySelector(
-                    '.update-offer-status'));
+
+
+                var formData = new FormData(this);
+
+                var ladda = Ladda.create(document.querySelector('.update-offer-status'));
                 ladda.start();
+
                 $.ajax({
                     method: $(this).attr('method'),
                     url: $(this).attr('action'),
                     dataType: 'json',
-                    data: data,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(result) {
+                        console.log(result);
                         ladda.stop();
                         if (result.success == true) {
                             $('div#change_status_modal').modal('hide');

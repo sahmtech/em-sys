@@ -1045,14 +1045,13 @@ class RequestUtil extends Util
     public function changeRequestStatus(Request $request)
     {
 
-
-
         if ($request->request_id) {
 
             $first_step = RequestProcess::where('request_id', $request->request_id)
                 ->where('status', 'pending')
                 ->whereNull('sub_status')
                 ->first();
+
 
             if ($first_step) {
                 if ($first_step->procedure_id !== null) {
@@ -1211,6 +1210,15 @@ class RequestUtil extends Util
             $requestProcess->request->is_new = 0;
             $requestProcess->request->save();
 
+            $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+            if ($attachmentPath) {
+                RequestAttachment::create([
+                    'request_id' => $request->request_id,
+                    'added_by' => auth()->user()->id,
+                    'name' => $request->status,
+                    'file_path' => $attachmentPath,
+                ]);
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -1311,7 +1319,15 @@ class RequestUtil extends Util
 
             $process->request->is_new = 0;
             $process->request->save();
-
+            $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+            if ($attachmentPath) {
+                RequestAttachment::create([
+                    'request_id' => $request->request_id,
+                    'added_by' => auth()->user()->id,
+                    'name' => $request->status,
+                    'file_path' => $attachmentPath,
+                ]);
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
