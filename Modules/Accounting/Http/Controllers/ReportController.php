@@ -136,10 +136,7 @@ class ReportController extends Controller
             $end_date = $fy['end'];
         }
 
-/*         $accounts = AccountingAccount::where('accounting_accounts.business_id', $business_id)
-            ->where('accounting_accounts.company_id', $company_id); */
-
-        if ($with_zero_balances == 0) {
+        if (! $with_zero_balances) {
             $accounts = AccountingAccount::join(
                 'accounting_accounts_transactions as AAT',
                 'AAT.accounting_account_id',
@@ -183,7 +180,7 @@ class ReportController extends Controller
                 }
             });
         })
-            ->when($level_filter, function ($query, $level_filter) use($business_id, $company_id){
+            ->when($level_filter, function ($query, $level_filter) use ($business_id, $company_id) {
 
                 return $query
                     ->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
@@ -219,7 +216,7 @@ class ReportController extends Controller
             )
             ->orderBy('accounting_accounts.gl_code');
 
-        if ($aggregated == 1) {
+        if ($aggregated) {
             $aggregatedAccounts = [];
             foreach ($accounts->get() as $account) {
 
@@ -252,7 +249,7 @@ class ReportController extends Controller
             $totalDebitBalance = 0;
             $totalCreditBalance = 0;
 
-            foreach ($aggregated == 1 ? $accounts : $accounts->get() as $account) {
+            foreach ($aggregated ? $accounts : $accounts->get() as $account) {
                 $totalDebitOpeningBalance += $account->debit_opening_balance;
                 $totalCreditOpeningBalance += $account->credit_opening_balance;
                 $totalDebitBalance += $account->debit_balance;
@@ -292,7 +289,7 @@ class ReportController extends Controller
                 })
                 ->addColumn('action', function ($account) use ($aggregated) {
                     $html = ' ';
-                    if ($aggregated == 0) {
+                    if (! $aggregated) {
                         $html =
                             '<div class="btn-group">
                                 <button type="button" class="btn btn-info btn-xs" >' . '
