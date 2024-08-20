@@ -290,17 +290,20 @@ class ReportController extends Controller
                     $closing_balance = $this->calculateClosingBalance($account);
                     return $closing_balance['closing_credit_balance'];
                 })
-                ->addColumn('action', function ($account) {
-                    $html =
-                        '<div class="btn-group">
-                            <button type="button" class="btn btn-info btn-xs" >' . '
-                                <a class=" btn-modal text-white" data-container="#printledger"
-                                    data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
-                                >
-                                    ' . __("accounting::lang.account_statement") . '
-                                </a>
-                            </button>
-                        </div>';
+                ->addColumn('action', function ($account) use ($aggregated){
+                    $html = ' ';
+                    if($aggregated == 0){
+                        $html =
+                            '<div class="btn-group">
+                                <button type="button" class="btn btn-info btn-xs" >' . '
+                                    <a class=" btn-modal text-white" data-container="#printledger"
+                                        data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
+                                    >
+                                        ' . __("accounting::lang.account_statement") . '
+                                    </a>
+                                </button>
+                            </div>';
+                    }
                     return $html;
                 })
                 ->with([
