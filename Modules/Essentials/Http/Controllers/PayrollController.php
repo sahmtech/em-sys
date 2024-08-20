@@ -305,7 +305,7 @@ class PayrollController extends Controller
                                 $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_project" id="view_worker_project" data-href="' . route('payrolls.view_worker_project', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view_project') . '</button>';
                             }
                         }
-                        $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_info" id="view_worker_info" data-href="' . route('payrolls.view_worker_info', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('essentials::lang.view_personal_data') . '</button>';
+                        //   $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_info" id="view_worker_info" data-href="' . route('payrolls.view_worker_info', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('essentials::lang.view_personal_data') . '</button>';
                         if ($is_admin || $can_view_salary_info) {
 
 
