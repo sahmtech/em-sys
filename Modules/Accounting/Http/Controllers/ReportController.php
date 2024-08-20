@@ -180,7 +180,7 @@ class ReportController extends Controller
                 }
             });
         })
-            ->when($level_filter, function ($query, $level_filter) use ($business_id, $company_id) {
+            ->when($level_filter, function ($query, $level_filter) {
 
                 return $query
                     ->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
