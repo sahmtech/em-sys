@@ -136,11 +136,11 @@ class ReportController extends Controller
             $end_date = $fy['end'];
         }
 
-        $accounts = AccountingAccount::where('accounting_accounts.business_id', $business_id)
-            ->where('accounting_accounts.company_id', $company_id);
+/*         $accounts = AccountingAccount::where('accounting_accounts.business_id', $business_id)
+            ->where('accounting_accounts.company_id', $company_id); */
 
         if ($with_zero_balances == 0) {
-            $accounts->join(
+            $accounts = AccountingAccount::join(
                 'accounting_accounts_transactions as AAT',
                 'AAT.accounting_account_id',
                 '=',
@@ -159,7 +159,7 @@ class ReportController extends Controller
                         });
                 });
         } else {
-            $accounts->leftJoin(
+            $accounts = AccountingAccount::leftJoin(
                 'accounting_accounts_transactions as AAT',
                 function ($join) use ($start_date, $end_date) {
                     $join->on('AAT.accounting_account_id', '=', 'accounting_accounts.id')
@@ -183,10 +183,14 @@ class ReportController extends Controller
                 }
             });
         })
-            ->when($level_filter, function ($query, $level_filter) {
-                return $query->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
+            ->when($level_filter, function ($query, $level_filter) use($business_id, $company_id){
+
+                return $query
+                    ->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
                     ->orwhereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) < ?', [$level_filter - 1]);
             })
+            ->where('accounting_accounts.business_id', $business_id)
+            ->where('accounting_accounts.company_id', $company_id)
             ->select(
                 DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
