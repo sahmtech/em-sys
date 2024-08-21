@@ -105,7 +105,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="workerInfoModalLabel">@lang('essentials::lang.worker_information')</h5>
+                        <h5 class="modal-title" id="workerInfoModalLabel">@lang('essentials::lang.personal_info')</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -309,10 +309,15 @@
                 },
                 success: function(response) {
                     console.log(response);
-
+                    if (response.data.user_type != "worker") {
+                        $('#worker_assigned_to').closest('p').hide();
+                        $('#worker_border_no').closest('p').hide();
+                        $('#worker_residence_permit_expiration').closest('p').hide();
+                        $('#worker_status').closest('p').hide();
+                        $('#worker_sub_status').closest('p').hide();
+                    }
                     $('#worker_full_name').text(response.data.full_name);
                     $('#worker_emp_number').text(response.data.emp_number);
-
                     $('#worker_status').text(response.data.status);
                     $('#worker_sub_status').text(response.data.sub_status);
                     $('#worker_id_proof_number').text(response.data.id_proof_number);
@@ -401,18 +406,27 @@
                         data.user_id + '</td></tr>';
                     salaryHtml += '<tr><th name="work_days">@lang('essentials::lang.work_days')</th><td>' + data
                         .work_days + '</td></tr>';
-                    salaryHtml += '<tr><th name="salary">@lang('essentials::lang.Basic_salary')</th><td>' + data.salary +
+                    salaryHtml +=
+                        '<tr><th name="salary">@lang('essentials::lang.Basic_salary')</th><td class="editable-cell">' + data
+                        .salary +
                         '</td></tr>';
 
-                    salaryHtml += '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td>' + data
+                    salaryHtml +=
+                        '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td class="editable-cell">' +
+                        data
                         .housing_allowance + '</td></tr>';
                     salaryHtml +=
-                        '<tr><th name="transportation_allowance">@lang('essentials::lang.transportation_allowance')</th><td>' + data
+                        '<tr><th name="transportation_allowance">@lang('essentials::lang.transportation_allowance')</th><td class="editable-cell">' +
+                        data
                         .transportation_allowance + '</td></tr>';
-                    salaryHtml += '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td>' + data
+                    salaryHtml +=
+                        '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td class="editable-cell">' +
+                        data
                         .other_allowance + '</td></tr>';
-                    salaryHtml += '<tr><th name="total">@lang('worker.final_salary')</th><td>' + data.total +
-                        '</td></tr>';
+                    salaryHtml +=
+                        '<tr><th name="total">@lang('worker.final_salary')</th><td><input type="text" id="total_salary" class="form-control" value="' +
+                        data.total +
+                        '" readonly></td></tr>';
                     salaryHtml += '<tr><th name="iban">@lang('lang_v1.bank_code')</th><td>' + data.iban +
                         '</td></tr>';
                     salaryHtml += '</table>';
@@ -429,48 +443,66 @@
             });
         });
 
-
         $(document).on('click', '.edit-salary', function(e) {
             e.preventDefault();
 
-
-            $('#salaryModalBody td').each(function() {
+            $('#salaryModalBody td.editable-cell').each(function() {
                 var value = $(this).text();
-                $(this).html('<input type="text" class="form-control" value="' + value + '">');
+                $(this).html('<input type="text" class="form-control allowance-input" value="' + value +
+                    '">');
             });
 
-
             $(this).replaceWith('<button class="btn btn-sm btn-success save-salary">@lang('essentials::lang.save')</button>');
+
+            // Recalculate the total whenever any of the allowance inputs are changed
+            $(document).on('input', '.allowance-input', function() {
+                var totalSalary = 0;
+
+                $('.allowance-input').each(function() {
+                    var inputVal = parseFloat($(this).val());
+                    totalSalary += isNaN(inputVal) ? 0 : inputVal;
+                });
+
+                $('#total_salary').val(totalSalary);
+            });
         });
 
         $(document).on('click', '.save-salary', function(e) {
             e.preventDefault();
 
             var updatedData = {};
-            $('#salaryModalBody input').each(function() {
-                var columnName = $(this).closest('tr').find('th').attr('name');
-                var value = $(this).val();
-                updatedData[columnName] = value;
-                $(this).replaceWith('<td>' + value + '</td>');
+            $('#salaryModalBody tr').each(function() {
+                var columnName = $(this).find('th').attr('name');
+                var value;
+
+                // If the cell contains an input field, get its value
+                if ($(this).find('td input').length) {
+                    value = $(this).find('td input').val();
+                } else {
+                    // Otherwise, get the text content of the cell
+                    value = $(this).find('td').text();
+                }
+
+                if (columnName) {
+                    updatedData[columnName] = value;
+                }
             });
 
-
+            // Send the updated data via AJAX
             $.ajax({
                 url: '{{ route('payrolls.update.salary') }}',
                 type: 'POST',
                 data: updatedData,
                 success: function(response) {
                     $('#salaryInfoModal').modal('hide');
-                    // location.reload();
-
                     console.log('Data updated successfully:', response);
                 },
                 error: function(xhr, status, error) {
-
                     console.error('Error updating data:', xhr.responseText);
                 }
             });
         });
+
 
 
 

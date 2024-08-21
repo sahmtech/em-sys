@@ -37,6 +37,8 @@ class ProductController extends Controller
 
     protected $moduleUtil;
 
+
+
     private $barcode_types;
 
     /**
@@ -1468,11 +1470,45 @@ class ProductController extends Controller
         try {
             $business_id = $request->session()->get('user.business_id');
             $form_fields = [
-                'name', 'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'tax_type', 'sku',
-                'alert_quantity', 'type', 'sub_unit_ids', 'sub_category_id', 'weight', 'product_description', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20'
+                'name',
+                'brand_id',
+                'unit_id',
+                'category_id',
+                'tax',
+                'barcode_type',
+                'tax_type',
+                'sku',
+                'alert_quantity',
+                'type',
+                'sub_unit_ids',
+                'sub_category_id',
+                'weight',
+                'product_description',
+                'product_custom_field1',
+                'product_custom_field2',
+                'product_custom_field3',
+                'product_custom_field4',
+                'product_custom_field5',
+                'product_custom_field6',
+                'product_custom_field7',
+                'product_custom_field8',
+                'product_custom_field9',
+                'product_custom_field10',
+                'product_custom_field11',
+                'product_custom_field12',
+                'product_custom_field13',
+                'product_custom_field14',
+                'product_custom_field15',
+                'product_custom_field16',
+                'product_custom_field17',
+                'product_custom_field18',
+                'product_custom_field19',
+                'product_custom_field20'
             ];
 
-            $module_form_fields = $this->moduleUtil->getModuleData('product_form_fields');
+            $moduleUtil  = new ModuleUtil();
+            $productUtil  = new ProductUtil();
+            $module_form_fields = $moduleUtil->getModuleData('product_form_fields');
             if (!empty($module_form_fields)) {
                 foreach ($module_form_fields as $key => $value) {
                     if (!empty($value) && is_array($value)) {
@@ -1489,10 +1525,10 @@ class ProductController extends Controller
                 $product_details['barcode_type'] = 'C128';
                 $product_details['unit_id'] = 1;
                 $product_details['profit_percent'] = 0;
-                $request['single_dpp']= $_products->unit_price;
-                $request['single_dpp_inc_tax']= $_products->unit_price_inc_tax;
-                $request['single_dsp']= $_products->unit_price;
-                $request['single_dsp_inc_tax']= $_products->unit_price_inc_tax;
+                $request['single_dpp'] = $_products->unit_price;
+                $request['single_dpp_inc_tax'] = $_products->unit_price_inc_tax;
+                $request['single_dsp'] = $_products->unit_price;
+                $request['single_dsp_inc_tax'] = $_products->unit_price_inc_tax;
                 $product_details['created_by'] = $request->session()->get('user.id');
                 if (!empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) {
                     $product_details['enable_stock'] = 1;
@@ -1507,13 +1543,13 @@ class ProductController extends Controller
                 }
 
                 if (!empty($product_details['alert_quantity'])) {
-                    $product_details['alert_quantity'] = $this->productUtil->num_uf($product_details['alert_quantity']);
+                    $product_details['alert_quantity'] = $productUtil->num_uf($product_details['alert_quantity']);
                 }
 
                 $expiry_enabled = $request->session()->get('business.enable_product_expiry');
                 if (!empty($request->input('expiry_period_type')) && !empty($request->input('expiry_period')) && !empty($expiry_enabled)) {
                     $product_details['expiry_period_type'] = $request->input('expiry_period_type');
-                    $product_details['expiry_period'] = $this->productUtil->num_uf($request->input('expiry_period'));
+                    $product_details['expiry_period'] = $productUtil->num_uf($request->input('expiry_period'));
                 }
 
                 if (!empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) {
@@ -1528,12 +1564,12 @@ class ProductController extends Controller
                 event(new ProductsCreatedOrModified($product_details, 'added'));
 
                 if (empty(trim($request->input('sku')))) {
-                    $sku = $this->productUtil->generateProductSku($product->id);
+                    $sku = $productUtil->generateProductSku($product->id);
                     $product->sku = $sku;
                     $product->save();
                 }
 
-                $this->productUtil->createSingleProductVariation(
+                $productUtil->createSingleProductVariation(
                     $product->id,
                     $product->sku,
                     $request->input('single_dpp'),
@@ -1550,7 +1586,7 @@ class ProductController extends Controller
                     $transaction_date = $request->session()->get('financial_year.start');
                     $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
 
-                    $this->productUtil->addSingleProductOpeningStock($business_id, $product, $request->input('opening_stock'), $transaction_date, $user_id);
+                    $productUtil->addSingleProductOpeningStock($business_id, $product, $request->input('opening_stock'), $transaction_date, $user_id);
                 }
 
                 //Add product locations
@@ -1985,8 +2021,13 @@ class ProductController extends Controller
             $query = Product::where('business_id', $api_settings->business_id)
                 ->active()
                 ->with([
-                    'brand', 'unit', 'category', 'sub_category',
-                    'product_variations', 'product_variations.variations', 'product_variations.variations.media',
+                    'brand',
+                    'unit',
+                    'category',
+                    'sub_category',
+                    'product_variations',
+                    'product_variations.variations',
+                    'product_variations.variations.media',
                     'product_variations.variations.variation_location_details' => function ($q) use ($location_id) {
                         $q->where('location_id', $location_id);
                     },

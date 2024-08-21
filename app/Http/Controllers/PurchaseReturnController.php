@@ -8,8 +8,10 @@ use App\PurchaseLine;
 use App\Transaction;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
+use App\Utils\Util;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -235,6 +237,7 @@ class PurchaseReturnController extends Controller
 
         try {
             $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
             $purchase = Transaction::where('business_id', $business_id)
                         ->where('type', 'purchase')
@@ -301,6 +304,7 @@ class PurchaseReturnController extends Controller
             } else {
                 $return_transaction_data['business_id'] = $business_id;
                 $return_transaction_data['location_id'] = $purchase->location_id;
+                $return_transaction_data['company_id'] = $purchase->company_id;
                 $return_transaction_data['type'] = 'purchase_return';
                 $return_transaction_data['status'] = 'final';
                 $return_transaction_data['contact_id'] = $purchase->contact_id;
@@ -316,6 +320,11 @@ class PurchaseReturnController extends Controller
             //update payment status
             $this->transactionUtil->updatePaymentStatus($return_transaction->id, $return_transaction->final_total);
 
+            $util = new Util();
+            $auto_migration = $util->createTransactionJournal_entry($return_transaction->id,);
+
+
+            
             $output = ['success' => 1,
                 'msg' => __('lang_v1.purchase_return_added_success'),
             ];

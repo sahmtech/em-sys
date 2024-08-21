@@ -301,10 +301,11 @@ class PayrollController extends Controller
                         $html = '';
 
                         if ($is_admin || $can_view_worker_project) {
-
-                            $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_project" id="view_worker_project" data-href="' . route('payrolls.view_worker_project', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view_project') . '</button>';
+                            if ($row->assigned_to) {
+                                $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_project" id="view_worker_project" data-href="' . route('payrolls.view_worker_project', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view_project') . '</button>';
+                            }
                         }
-                        $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_info" id="view_worker_info" data-href="' . route('payrolls.view_worker_info', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('essentials::lang.showWorkerProjects') . '</button>';
+                        $html .= '&nbsp; <button class="btn btn-xs btn-primary view_worker_info" id="view_worker_info" data-href="' . route('payrolls.view_worker_info', ['id' => $row->id]) . '" data-worker-id="' . $row->id . '"><i class="glyphicon glyphicon-eye"></i> ' . __('essentials::lang.view_personal_data') . '</button>';
                         if ($is_admin || $can_view_salary_info) {
 
 
@@ -376,6 +377,7 @@ class PayrollController extends Controller
             ->first();
 
         $data = [
+            'user_type' => $worker->user_type,
             'full_name' => $worker->first_name . ' ' . $worker->last_name,
             'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
             'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
@@ -436,10 +438,10 @@ class PayrollController extends Controller
 
     public function updateSalaryInfo(Request $request)
     {
-
+        error_log(json_encode($request->all()));
         $userId = $request->input('user_id');
         $updatedSalaryData = $request->except('_token', 'user_id', 'iban');
-        error_log(json_encode($updatedSalaryData));
+
 
         $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
         if ($user) {
