@@ -18,6 +18,8 @@ use App\Request as UserRequest;
 use App\RequestProcess;
 use App\User;
 use Illuminate\Http\Request;
+use App\RequestAttachment;
+use Modules\Sales\Entities\SalesProject;
 
 class RequestController extends Controller
 {
@@ -152,7 +154,10 @@ class RequestController extends Controller
             $query->where('name', 'LIKE', '%تنفيذ%');
         })
             ->pluck('id')->toArray();
-
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
+        $companies = Company::all()->pluck('name', 'id');
+        $all_status = ['approved', 'pending', 'rejected'];
 
         $escalatedRequests = null;
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->groupBy('request_id');
@@ -165,9 +170,12 @@ class RequestController extends Controller
             'requests.request_type_id',
             'requests.created_at',
             'requests.reason',
+            'requests.is_new',
+            'requests.created_by',
 
             'process.id as process_id',
             'process.status',
+            'process.status as status_now',
             'process.note as note',
             'process.procedure_id as procedure_id',
             'process.superior_department_id as superior_department_id',
@@ -205,9 +213,22 @@ class RequestController extends Controller
             ->join('procedure_escalations', 'procedure_escalations.procedure_id', '=', 'wk_procedures.id')
 
             ->whereIn('requests.related_to', $userIds)->whereIn('procedure_escalations.escalates_to', $departmentIds)
-            ->where('process.status', 'pending')->where('users.status', '!=', 'inactive')->groupBy('requests.id');
+            ->where('process.status', 'pending')->where('users.status', '!=', 'inactive')->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
 
+        if (request()->input('company') && request()->input('company') !== 'all') {
+            error_log(request()->input('company'));
+            $escalatedRequests->where('users.company_id', request()->input('company'));
+        }
+        if (request()->input('project') && request()->input('project') !== 'all') {
+            error_log(request()->input('project'));
+            $escalatedRequests->where('users.assigned_to', request()->input('project'));
+        }
 
+        if (request()->input('type') && request()->input('type') !== 'all') {
+            error_log(request()->input('type'));
+            $types = RequestsType::where('type', request()->input('type'))->pluck('id')->toArray();
+            $escalatedRequests->whereIn('requests.request_type_id', $types);
+        }
         if (request()->ajax()) {
 
 
@@ -237,11 +258,19 @@ class RequestController extends Controller
                         return '';
                     }
                 })
+                ->editColumn('assigned_to', function ($row) use ($saleProjects) {
+                    if ($row->assigned_to) {
+                        return $saleProjects[$row->assigned_to];
+                    } else {
+                        return '';
+                    }
+                })
                 ->editColumn('company_id', function ($row) use ($companies) {
                     if ($row->company_id) {
                         return $companies[$row->company_id];
                     }
                 })
+
                 ->editColumn('status', function ($row) {
                     $status = '';
 
@@ -256,15 +285,23 @@ class RequestController extends Controller
                     }
 
                     return $status;
+                })->editColumn('can_return', function ($row) {
+                    $buttonsHtml = '';
+
+                    $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                    $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+
+                    return $buttonsHtml;
                 })
 
-                ->rawColumns(['status', 'id_proof_number'])
+                ->rawColumns(['status', 'id_proof_number', 'can_return'])
+
 
 
                 ->make(true);
         }
         $statuses = $this->statuses;
-        return view('ceomanagment::requests.escalate_requests')->with(compact('statuses'));
+        return view('ceomanagment::requests.escalate_requests')->with(compact('statuses', 'allRequestTypes', 'all_status', 'companies', 'saleProjects'));
     }
 
     public function changeEscalationStatus(Request $request)
@@ -273,7 +310,15 @@ class RequestController extends Controller
             error_log($request->request_id);
             UserRequest::where('id', $request->request_id)->update(['status' => $request->status]);
             UserRequest::where('id', $request->request_id)->update(['updated_by' => auth()->user()->id]);
-
+            $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+            if ($attachmentPath) {
+                RequestAttachment::create([
+                    'request_id' => $request->request_id,
+                    'added_by' => auth()->user()->id,
+                    'name' => $request->status,
+                    'file_path' => $attachmentPath,
+                ]);
+            }
             RequestProcess::where('request_id', $request->request_id)->where('status', 'pending')->update(['status' => $request->status]);
 
             $output = [
