@@ -183,8 +183,8 @@ class ApiEssentialsController extends ApiController
                 // loan
                 $allowances_and_deductions = $this->getAllowanceAndDeductionJson($payrollUser);
 
-                $allowances = json_encode($allowances_and_deductions['essentials_allowances']);
-                $deductions = json_encode($allowances_and_deductions['essentials_deductions']);
+                $allowances = json_decode($allowances_and_deductions['essentials_allowances']);
+                $deductions = json_decode($allowances_and_deductions['essentials_deductions']);
 
                 $res[] = [
                     'payroll' => [
