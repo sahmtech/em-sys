@@ -490,7 +490,7 @@
                 "'][data-field='total']").val()) || 0;
             var work_days = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='work_days']").val()) || 0;
-            var over_time_hours_addition = over_time_hours * (total / work_days / 8);
+            var over_time_hours_addition = over_time_hours * ((total / work_days / 8) * 1.5);
             $("span[data-index='" + index + "'][data-field='over_time_hours_addition']").text(over_time_hours_addition
                 .toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='over_time_hours_addition']").val(

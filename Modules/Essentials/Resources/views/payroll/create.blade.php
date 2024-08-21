@@ -463,7 +463,35 @@
             </div>
             {!! Form::close() !!}
         @endcomponent
-
+        <div class="modal fade" id="worker-info" tabindex="-1" role="dialog" aria-labelledby="workerInfoModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="workerInfoModalLabel">@lang('essentials::lang.personal_info')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-top: 20px;">
+                            <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
+                            <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                            <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                            <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+                            <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
+                            <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span id="worker_residence_permit_expiration"></span>
+                            </p>
+                            <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
+                            <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span></p>
+                            <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
+                            <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
+                            <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
     </section>
@@ -478,6 +506,66 @@
 
         $(document).ready(function() {
 
+
+            $('#workers_table_timesheet tbody').on('click', 'tr', function(e) {
+                var cellIndex = $(e.target).closest('td').index();
+
+
+                if (!$(e.target).closest('td').hasClass('editable')) {
+                    var worker_id = $(this).find('input.form-hidden[data-field="id"]').val();
+                    console.log(worker_id);
+                    var rowData = $(this).data();
+                    // Construct the URL from the worker's ID
+                    var url = '{{ route('payrolls.view_worker_info', ':id') }}';
+                    url = url.replace(':id', worker_id);
+
+                    // Perform the AJAX call, simulating the button click
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: {
+                            worker_id: worker_id
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response.data.user_type != "worker") {
+                                $('#worker_assigned_to').closest('p').hide();
+                                $('#worker_border_no').closest('p').hide();
+                                $('#worker_residence_permit_expiration').closest('p')
+                                    .hide();
+                                $('#worker_status').closest('p').hide();
+                                $('#worker_sub_status').closest('p').hide();
+                            }
+                            $('#worker_full_name').text(response.data.full_name);
+                            $('#worker_emp_number').text(response.data.emp_number);
+                            $('#worker_status').text(response.data.status);
+                            $('#worker_sub_status').text(response.data.sub_status);
+                            $('#worker_id_proof_number').text(response.data
+                                .id_proof_number);
+                            $('#worker_residence_permit_expiration').text(response.data
+                                .residence_permit_expiration);
+                            $('#worker_passport_number').text(response.data
+                                .passport_number);
+                            $('#worker_passport_expire_date').text(response.data
+                                .passport_expire_date);
+                            $('#worker_border_no').text(response.data.border_no);
+                            $('#worker_company_name').text(response.data.company_name);
+                            $('#worker_assigned_to').text(response.data.assigned_to);
+
+                            // Show the worker information section
+                            $('.modal-body div').show();
+
+                            $('#worker-info').modal('show');
+                        },
+                        error: function(xhr, status, error) {
+                            $('#worker-info').modal('hide');
+                            alert('@lang('essentials::lang.error_occurred')');
+                        }
+                    });
+
+                }
+
+            });
 
             $('.custom-scrollbar').on('scroll', function() {
                 $('.table-responsive2').scrollLeft($(this).scrollLeft());
@@ -565,7 +653,7 @@
                 "'][data-field='total']").val()) || 0;
             var work_days = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='work_days']").val()) || 0;
-            var over_time_hours_addition = over_time_hours * (total / work_days / 8);
+            var over_time_hours_addition = over_time_hours * ((total / work_days / 8) * 1.5);
             $("span[data-index='" + index + "'][data-field='over_time_hours_addition']").text(over_time_hours_addition
                 .toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='over_time_hours_addition']").val(
