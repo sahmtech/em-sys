@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
                 ->emailOutputTo($email);
         }
 
-        $schedule->command('escalate:pending-requests')->dailyAt('11:20')->timezone('Asia/Riyadh');
+        $schedule->command('escalate:pending-requests')->dailyAt('12:02')->timezone('Asia/Riyadh');
         // $schedule->command('escalate:pending-requests')->everyMinute()->timezone('Asia/Riyadh');
         $schedule->command('populate:userleavebalances')->dailyAt('16:27')->timezone('Asia/Riyadh');
         $schedule->command('run:dialy-checks')->dailyAt('23:55')->timezone('Asia/Riyadh');
