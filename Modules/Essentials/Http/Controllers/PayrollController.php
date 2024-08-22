@@ -46,6 +46,7 @@ use Modules\CEOManagment\Entities\RequestsType;
 use App\AccessRoleRequest;
 use App\PayrollGroup;
 use App\PayrollGroupUser;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
@@ -376,12 +377,14 @@ class PayrollController extends Controller
             ->with(['company', 'assignedTo', 'contract'])
             ->first();
 
+        $countries =  EssentialsCountry::nationalityForDropdown();
+
         $data = [
             'user_type' => $worker->user_type,
             'full_name' => $worker->first_name . ' ' . $worker->last_name,
-            // 'nationality'=>,
-            // 'IBAN'=>,
-            // 'final_salary'=>,
+            'nationality' => $countries[$worker->nationality_id] ?? ' ',
+            'iban' => json_decode($worker->bank_details)->bank_code ?? ' ',
+            'final_salary' => $worker->total_salary ?? 0,
             'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
             'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
             'emp_number' => $worker->emp_number,
