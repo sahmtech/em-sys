@@ -379,6 +379,9 @@ class PayrollController extends Controller
         $data = [
             'user_type' => $worker->user_type,
             'full_name' => $worker->first_name . ' ' . $worker->last_name,
+            'nationality'=>,
+            'IBAN'=>,
+            'final_salary'=>,
             'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
             'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
             'emp_number' => $worker->emp_number,
