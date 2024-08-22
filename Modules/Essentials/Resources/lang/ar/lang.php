@@ -1151,6 +1151,7 @@ return [
   'expired_contracts' => 'العقود المنتهية',
   'remaining_contracts' => 'العقود انتهت فترة التجربة',
   'escape_date' => 'تاريخ الهروب',
+  'escape' => 'هروب',
   'user_info_eqama_not_completed' => 'معلومات الاقامة لصاحب الكرت غير موجودة  قم باكملها ',
   'card_added_sucessfully' => 'تم إضافة رخصة العمل بنجاح',
   'years' => 'سنة',

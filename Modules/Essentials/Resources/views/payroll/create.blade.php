@@ -463,7 +463,7 @@
             </div>
             {!! Form::close() !!}
         @endcomponent
-        <div class="modal fade" id="worker-info" tabindex="-1" role="dialog" aria-labelledby="workerInfoModalLabel"
+        {{-- <div class="modal fade" id="worker-info" tabindex="-1" role="dialog" aria-labelledby="workerInfoModalLabel"
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -480,6 +480,9 @@
                             <p><strong>@lang('essentials::lang.contry_nationality'):</strong> <span id="nationality"></span></p>
                             <p><strong>@lang('essentials::lang.IBAN_number'):</strong> <span id="iban"></span></p>
                             <p><strong>@lang('essentials::lang.Basic_salary'):</strong> <span id="basic_salary"></span></p>
+                            <p><strong>@lang('essentials::lang.housing_allowance'):</strong> <span id="housing_allowance"></span></p>
+                            <p><strong>@lang('essentials::lang.transportation_allowance'):</strong> <span id="transportation_allowance"></span></p>
+                            <p><strong>@lang('essentials::lang.other_allowance'):</strong> <span id="other_allowance"></span></p>
                             <p><strong>@lang('essentials::lang.final_salary'):</strong> <span id="final_salary"></span></p>
                             <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
                             <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
@@ -502,8 +505,83 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
+        <!-- Modal Template -->
+        <!-- Reusable Modal Template -->
+        {{-- <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modalBodyContent">
+                        <!-- Content will be dynamically injected here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="edit-worker-modal" class="btn btn-primary">@lang('essentials::lang.edit')</button>
+                        <button type="button" id="save-worker-modal" class="btn btn-success"
+                            style="display:none;">@lang('essentials::lang.save')</button>
+                        <button type="button" id="cancel-worker-modal" class="btn btn-secondary"
+                            style="display:none;">@lang('essentials::lang.cancel')</button>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
 
+
+        <!-- Combined Modal -->
+        <div class="modal fade" id="salaryInfoModal" tabindex="-1" role="dialog" aria-labelledby="salaryInfoModal"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document"> <!-- Make the modal larger -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="salaryInfoModalLabel">@lang('essentials::lang.view_salary_info') & @lang('essentials::lang.personal_info')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Left Table: Salary Information -->
+                            <div class="col-md-6">
+                                <div id="salaryModalBody"></div>
+                            </div>
+
+                            <!-- Right Table: Worker Information -->
+                            <div class="col-md-6">
+                                <div id="workerInfoBody">
+                                    <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
+                                    <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                                    <p><strong>@lang('essentials::lang.contry_nationality'):</strong> <span id="nationality"></span></p>
+
+                                    <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                                    <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+                                    <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
+                                    <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span
+                                            id="worker_residence_permit_expiration"></span></p>
+                                    <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
+                                    <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span>
+                                    </p>
+                                    <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
+                                    <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
+                                    <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-primary edit-salary">@lang('essentials::lang.edit')</button>
+                            <button type="button" class="btn btn-sm btn-success save-salary"
+                                style="display: none;">@lang('essentials::lang.save')</button>
+                            <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">@lang('essentials::lang.close')</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </section>
     <!-- /.content -->
@@ -517,136 +595,251 @@
 
         $(document).ready(function() {
 
-
-            $('#edit-worker-info').on('click', function() {
-                var ibanValue = $('#iban').text().trim();
-                var basicSalaryValue = $('#basic_salary').text().trim();
-                $('#iban').html('<input type="text" class="form-control" id="iban_input" value="' +
-                    ibanValue + '" style="display:inline-block; width:auto;">');
-                $('#basic_salary').html(
-                    '<input type="text" class="form-control" id="basic_salary_input" value="' +
-                    basicSalaryValue + '" style="display:inline-block; width:auto;">');
-
-                $(this).hide();
-                $('#save-worker-info, #cancel-worker-info').show();
-            });
-
-            $('#cancel-worker-info').on('click', function() {
-                // Reset the fields to original values (revert to non-editable text)
-                var originalIbanValue = $('#iban_input').val();
-                var originalBasicSalaryValue = $('#basic_salary_input').val();
-
-                $('#iban').text(originalIbanValue).css('background-color', '');
-                $('#basic_salary').text(originalBasicSalaryValue).css('background-color', '');
-
-                $('#save-worker-info, #cancel-worker-info').hide();
-                $('#edit-worker-info').show();
-            });
-            $('#save-worker-info').on('click', function() {
-                var updatedIban = $('#iban_input').val();
-                var updatedFinalSalary = $('#basic_salary_input').val();
-                var workerId = $('#worker-info').data(
-                    'worker-id'); // Assuming you have a worker ID stored in the modal
-                if (!storedWorkerId) {
-                    console.error('No worker ID stored. Cannot save.');
-                    return;
-                }
-                $.ajax({
-                    url: '{{ route('payrolls.update.salary') }}',
-                    type: 'POST',
-                    data: {
-                        user_id: storedWorkerId,
-                        iban: updatedIban,
-                        salary: updatedFinalSalary
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        // Replace input fields with updated text and revert to original style
-                        $('#iban').text(updatedIban).css('background-color', '');
-                        $('#basic_salary').text(updatedFinalSalary).css('background-color', '');
-
-                        $('#save-worker-info, #cancel-worker-info').hide();
-                        $('#edit-worker-info').show();
-
-                        // Optionally, you can hide the modal and refresh the page
-                        $('#worker-info').modal('hide');
-                        location.reload();
-                    },
-                    error: function(xhr, status, error) {
-                        alert('@lang('essentials::lang.error_occurred')');
-                    }
-                });
-            });
-            var storedWorkerId = null;
+            // Handle Table Row Click
             $(document).ready(function() {
-                $('#workers_table_timesheet tbody').on('click', 'tr', function(e) {
-                    var cellIndex = $(e.target).closest('td').index();
+                var clickedCellIndex = null; // Declare clickedCellIndex globally
+                var clickedWorkerId = null; // Declare clickedWorkerId globally
 
+                // Handle Table Row Click
+                $('#workers_table_timesheet tbody').on('click', 'tr', function(e) {
+                    clickedCellIndex = $(e.target).closest('td')
+                .index(); // Set the index on row click
+
+                    // Ensure the clicked cell is not an editable cell
                     if (!$(e.target).closest('td').hasClass('editable')) {
                         // Capture the worker_id from the hidden input field
-                        var worker_id = $(this).find('input.form-hidden[data-field="id"]').val();
-                        console.log('Worker ID:', worker_id);
-                        storedWorkerId = $(this).find('input.form-hidden[data-field="id"]').val();
-                        if (!worker_id) {
+                        clickedWorkerId = $(this).find('input.form-hidden[data-field="id"]').val();
+
+                        console.log('Clicked Worker ID:', clickedWorkerId);
+
+                        if (!clickedWorkerId) {
                             console.error('Worker ID not found in the row.');
                             return;
                         }
 
-                        var rowData = $(this).data();
-                        var url = '{{ route('payrolls.view_worker_info', ':id') }}';
-                        url = url.replace(':id', worker_id);
+                        // Generate URL for Salary Info
+                        var salaryInfoUrl = '{{ route('payrolls.view_salary_info', ':id') }}';
+                        salaryInfoUrl = salaryInfoUrl.replace(':id', clickedWorkerId);
 
-                        // Perform the AJAX call, simulating the button click
+                        // Fetch Salary Info
                         $.ajax({
-                            url: url,
+                            url: salaryInfoUrl,
                             type: 'GET',
                             data: {
-                                worker_id: worker_id
+                                worker_id: clickedWorkerId
                             },
                             success: function(response) {
-                                console.log('Worker Data:', response);
-                                if (response.data.user_type != "worker") {
-                                    $('#worker_assigned_to').closest('p').hide();
-                                    $('#worker_border_no').closest('p').hide();
-                                    $('#worker_residence_permit_expiration').closest(
-                                        'p').hide();
-                                    $('#worker_status').closest('p').hide();
-                                    $('#worker_sub_status').closest('p').hide();
-                                }
-                                $('#worker_full_name').text(response.data.full_name);
-                                $('#worker_emp_number').text(response.data.emp_number);
-                                $('#worker_status').text(response.data.status);
-                                $('#worker_sub_status').text(response.data.sub_status);
-                                $('#worker_id_proof_number').text(response.data
-                                    .id_proof_number);
-                                $('#worker_residence_permit_expiration').text(response
-                                    .data.residence_permit_expiration);
-                                $('#worker_passport_number').text(response.data
-                                    .passport_number);
-                                $('#worker_passport_expire_date').text(response.data
-                                    .passport_expire_date);
-                                $('#worker_border_no').text(response.data.border_no);
-                                $('#worker_company_name').text(response.data
-                                    .company_name);
-                                $('#worker_assigned_to').text(response.data
-                                    .assigned_to);
-                                $('#nationality').text(response.data.nationality);
-                                $('#iban').text(response.data.iban);
-                                $('#basic_salary').text(response.data.basic_salary);
-                                $('#final_salary').text(response.data.final_salary);
+                                var data = response.data;
 
-                                // Show the worker information section
-                                $('.modal-body div').show();
-                                $('#worker-info').modal('show');
+                                // Generate the Salary Info HTML with name attributes
+                                var salaryHtml =
+                                    '<table class="table table-bordered table-striped">';
+                                salaryHtml +=
+                                    '<tr><th style="display:none"></th><td style="display:none" name="user_id">' +
+                                    data.user_id + '</td></tr>';
+                                salaryHtml +=
+                                    '<tr><th>@lang('essentials::lang.work_days')</th><td name="work_days">' +
+                                    data
+                                    .work_days + '</td></tr>';
+                                salaryHtml +=
+                                    '<tr><th>@lang('essentials::lang.Basic_salary')</th><td class="editable-cell" name="salary">' +
+                                    data.salary + '</td></tr>';
+                                salaryHtml +=
+                                    '<tr><th>@lang('essentials::lang.housing_allowance')</th><td class="editable-cell" name="housing_allowance">' +
+                                    data.housing_allowance + '</td></tr>';
+                                salaryHtml +=
+                                    '<tr><th>@lang('essentials::lang.transportation_allowance')</th><td class="editable-cell" name="transportation_allowance">' +
+                                    data.transportation_allowance + '</td></tr>';
+                                salaryHtml +=
+                                    '<tr><th>@lang('essentials::lang.other_allowance')</th><td class="editable-cell" name="other_allowance">' +
+                                    data.other_allowance + '</td></tr>';
+                                salaryHtml +=
+                                    '<tr><th>@lang('worker.final_salary')</th><td><input type="text" id="total_salary" class="form-control" name="total" value="' +
+                                    data.total + '" readonly></td></tr>';
+                                salaryHtml +=
+                                    '<tr><th>@lang('lang_v1.bank_code')</th><td name="iban">' +
+                                    data.iban +
+                                    '</td></tr>';
+                                salaryHtml += '</table>';
+                                $('#salaryModalBody').html(salaryHtml);
+
+                                // Generate URL for Worker Info
+                                var workerInfoUrl =
+                                    '{{ route('payrolls.view_worker_info', ':id') }}';
+                                workerInfoUrl = workerInfoUrl.replace(':id',
+                                    clickedWorkerId);
+
+                                // Fetch Worker Info
+                                $.ajax({
+                                    url: workerInfoUrl,
+                                    type: 'GET',
+                                    data: {
+                                        worker_id: clickedWorkerId
+                                    },
+                                    success: function(response) {
+                                        var workerData = response.data;
+
+                                        // Populate Worker Info HTML
+                                        $('#worker_full_name').text(
+                                            workerData
+                                            .full_name);
+                                        $('#worker_emp_number').text(
+                                            workerData
+                                            .emp_number);
+                                        $('#worker_status').text(workerData
+                                            .status);
+                                        $('#worker_sub_status').text(
+                                            workerData
+                                            .sub_status);
+                                        $('#worker_id_proof_number').text(
+                                            workerData
+                                            .id_proof_number);
+                                        $('#worker_residence_permit_expiration')
+                                            .text(
+                                                workerData
+                                                .residence_permit_expiration
+                                                );
+                                        $('#worker_passport_number').text(
+                                            workerData
+                                            .passport_number);
+                                        $('#worker_passport_expire_date')
+                                            .text(
+                                                workerData
+                                                .passport_expire_date);
+                                        $('#worker_border_no').text(
+                                            workerData
+                                            .border_no);
+                                        $('#worker_company_name').text(
+                                            workerData
+                                            .company_name);
+                                        $('#worker_assigned_to').text(
+                                            workerData
+                                            .assigned_to);
+                                        $('#nationality').text(workerData
+                                            .nationality);
+                                        $('#iban').text(workerData.iban);
+                                        $('#final_salary').text(workerData
+                                            .final_salary);
+                                        $('#basic_salary').text(workerData
+                                            .basic_salary);
+
+                                        // Show the Modal
+                                        $('#salaryInfoModal').modal('show');
+                                    },
+                                    error: function(xhr) {
+                                        console.error(xhr.responseText);
+                                    }
+                                });
                             },
-                            error: function(xhr, status, error) {
-                                $('#worker-info').modal('hide');
-                                alert('@lang('essentials::lang.error_occurred')');
+                            error: function(xhr) {
+                                console.error(xhr.responseText);
                             }
                         });
                     }
                 });
+
+                // Handle modal hidden event to reset the modal state
+                $('#salaryInfoModal').on('hidden.bs.modal', function() {
+                    // Reset all editable fields to non-editable state
+                    $('#salaryModalBody td.editable-cell').each(function() {
+                        var input = $(this).find('input');
+                        if (input.length > 0) {
+                            var value = input.val();
+                            $(this).html(value);
+                        }
+                    });
+
+                    // Reset the IBAN field
+                    $('#salaryModalBody td[name="iban"], #workerInfoBody span#iban').each(
+                function() {
+                        var input = $(this).find('input');
+                        if (input.length > 0) {
+                            var value = input.val();
+                            $(this).html(value);
+                        }
+                    });
+
+                    // Reset buttons
+                    $('.edit-salary').show();
+                    $('.save-salary').hide();
+                });
+
+                // Handle Edit Button Click
+                $(document).on('click', '.edit-salary', function(e) {
+                    e.preventDefault();
+
+                    $('#salaryModalBody td.editable-cell').each(function() {
+                        var value = $(this).text();
+                        $(this).html(
+                            '<input type="text" class="form-control allowance-input" value="' +
+                            value + '">');
+                    });
+
+                    // Make the IBAN field editable in both salary and worker info
+                    $('#salaryModalBody td[name="iban"], #workerInfoBody span#iban').each(
+                function() {
+                        var value = $(this).text();
+                        $(this).html('<input type="text" class="form-control" value="' +
+                            value + '">');
+                    });
+
+                    $('.edit-salary').hide();
+                    $('.save-salary').show();
+
+                    // Recalculate the total salary when any allowance input is changed
+                    $(document).on('input', '.allowance-input', function() {
+                        var totalSalary = 0;
+
+                        $('.allowance-input').each(function() {
+                            var inputVal = parseFloat($(this).val());
+                            totalSalary += isNaN(inputVal) ? 0 : inputVal;
+                        });
+
+                        $('#total_salary').val(totalSalary);
+                    });
+                });
+
+                // Restrict numeric input for all editable cells except IBAN
+                $(document).on('input', '.allowance-input', function() {
+                    this.value = this.value.replace(/[^0-9.]/g,
+                    ''); // Allow only numbers and a single decimal point
+                });
+
+                // Handle Save Button Click
+                $(document).on('click', '.save-salary', function(e) {
+                    e.preventDefault();
+                    var updatedData = {};
+                    updatedData['user_id'] =
+                    clickedWorkerId; // Use the worker ID captured from the row click
+
+                    // Collect the values using name attributes
+                    $('#salaryModalBody td[name], #salaryModalBody input[name], #workerInfoBody span[name]')
+                        .each(function() {
+                            var name = $(this).attr('name');
+                            var value = $(this).find('input').val() || $(this).text();
+                            updatedData[name] = value;
+                        });
+
+                    console.log(updatedData);
+                    // Send the updated data via AJAX
+                    $.ajax({
+                        url: '{{ route('payrolls.update.salary') }}',
+                        type: 'POST',
+                        data: updatedData,
+                        success: function(response) {
+                            $('#salaryInfoModal').modal('hide');
+                            console.log('Data updated successfully:', response);
+                            location.reload();
+                        },
+                        error: function(xhr) {
+                            console.error('Error updating data:', xhr.responseText);
+                        }
+                    });
+                });
             });
+
+
+
 
 
             $('.custom-scrollbar').on('scroll', function() {
@@ -723,9 +916,9 @@
             var work_days = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='work_days']").val()) || 0;
             var late_deduction = late * (total / work_days / 8);
-            $("span[data-index='" + index + "'][data-field='late_deduction']").text(late_deduction.toFixed(0));
+            $("span[data-index='" + index + "'][data-field='late_deduction']").text(late_deduction.toFixed(2));
             $("input.form-hidden[data-index='" + index + "'][data-field='late_deduction']").val(late_deduction
-                .toFixed(0));
+                .toFixed(2));
         }
 
         function updateOverTimeHoursAddition(index) {
@@ -737,10 +930,10 @@
                 "'][data-field='work_days']").val()) || 0;
             var over_time_hours_addition = over_time_hours * ((total / work_days / 8) * 1.5);
             $("span[data-index='" + index + "'][data-field='over_time_hours_addition']").text(over_time_hours_addition
-                .toFixed(0));
+                .toFixed(2));
             $("input.form-hidden[data-index='" + index + "'][data-field='over_time_hours_addition']").val(
                 over_time_hours_addition
-                .toFixed(0));
+                .toFixed(2));
         }
 
         function initializeCalculations(index) {
@@ -789,7 +982,7 @@
             var total_deduction = violations + absence_deduction + late_deduction + other_deductions + loan;
             $("span[data-index='" + index + "'][data-field='total_deduction']").text(total_deduction.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='total_deduction']").val(total_deduction.toFixed(
-                0));
+                2));
         }
 
         function updateTotalAdditions(index) {
@@ -811,7 +1004,7 @@
                 $("span[data-index='" + index + "'][data-field='total_additions']").text(total_additions.toFixed(0));
                 $("input.form-hidden[data-index='" + index + "'][data-field='total_additions']").val(total_additions
                     .toFixed(
-                        0));
+                        2));
             }
         }
 
@@ -829,7 +1022,7 @@
             var final_salary = total - total_deduction + total_additions;
             $("span[data-index='" + index + "'][data-field='final_salary']").text(final_salary.toFixed(0));
             $("input.form-hidden[data-index='" + index + "'][data-field='final_salary']").val(final_salary.toFixed(
-                0));
+                2));
         }
 
 

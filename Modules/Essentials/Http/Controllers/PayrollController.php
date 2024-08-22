@@ -374,7 +374,7 @@ class PayrollController extends Controller
         $identifier = request()->input('worker_id');
 
         $worker = User::where('id',  $identifier)
-            ->with(['company', 'assignedTo', 'contract', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
+            ->with(['company', 'assignedTo', 'contract', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction', 'essentialsUserShifts.shift'])
             ->first();
 
         $countries =  EssentialsCountry::nationalityForDropdown();
@@ -402,12 +402,15 @@ class PayrollController extends Controller
             'nationality' => $countries[$worker->nationality_id] ?? ' ',
             'iban' => json_decode($worker->bank_details)->bank_code ?? ' ',
             'basic_salary' => number_format($worker->essentials_salary ?? 0, 0, '.', ''),
+            'housing_allowance' => number_format($housing_allowance, 0, '.', ''),
+            'transportation_allowance' => number_format($transportation_allowance, 0, '.', ''),
+            'other_allowance' => number_format($other_allowance, 0, '.', ''),
             'final_salary' => $final_salary ?? 0,
             'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
             'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
             'emp_number' => $worker->emp_number,
             'id_proof_number' => $worker->id_proof_number,
-            'residence_permit_expiration' => optional($worker->OfficialDocument->where('type', 'residence_permit')->where('is_active', 1)->first())->number,
+            'residence_permit_expiration' => optional($worker->OfficialDocument->where('type', 'residence_permit')->where('is_active', 1)->first())->expiration_date,
             'passport_number' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->number,
             'passport_expire_date' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->expiration_date,
             'border_no' => $worker->border_no,
@@ -466,6 +469,7 @@ class PayrollController extends Controller
         $userId = $request->input('user_id');
         $updatedSalaryData = $request->except('_token', 'user_id', 'iban');
 
+        error_log(json_encode($updatedSalaryData));
 
         $user = User::with('userAllowancesAndDeductions.essentialsAllowanceAndDeduction')->find($userId);
         if ($user) {
@@ -525,11 +529,11 @@ class PayrollController extends Controller
                 );
             }
             $user->essentials_salary = $updatedSalaryData['salary'];
-            // $user->total_salary = $updatedSalaryData['total'];
+            $user->total_salary = $updatedSalaryData['total'];
             $user->save();
             return response()->json(['message' => 'Salary data updated successfully', $user], 200);
         } else {
-            return response()->json(['message' => 'user not found'], 200);
+            return response()->json(['message' => 'user not found ' . $userId], 200);
         }
     }
 
