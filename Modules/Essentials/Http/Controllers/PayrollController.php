@@ -374,17 +374,35 @@ class PayrollController extends Controller
         $identifier = request()->input('worker_id');
 
         $worker = User::where('id',  $identifier)
-            ->with(['company', 'assignedTo', 'contract'])
+            ->with(['company', 'assignedTo', 'contract', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])
             ->first();
 
         $countries =  EssentialsCountry::nationalityForDropdown();
+
+        $other_allowance = 0;
+        $housing_allowance = 0;
+        $transportation_allowance = 0;
+        $allowances = json_decode($worker)->user_allowances_and_deductions ?? [];
+        foreach ($allowances as $allowance) {
+            $allowance_dsc = $allowance?->essentials_allowance_and_deduction?->description;
+            if ((stripos($allowance_dsc, 'سكن') !== false) || (stripos($allowance_dsc, 'house') !== false)) {
+                $housing_allowance = number_format($allowance->amount, 0, '.', '');
+            } elseif ((stripos($allowance_dsc, 'نقل') !== false) || (stripos($allowance_dsc, 'مواصلات') !== false) || (stripos($allowance_dsc, 'transport') !== false)) {
+                $transportation_allowance = number_format($allowance->amount, 0, '.', '');
+            } else {
+                $other_allowance += floatval($allowance->amount ?? "0");
+            }
+        }
+
+        $final_salary = number_format($worker->essentials_salary + $other_allowance +  $transportation_allowance +   $housing_allowance, 0, '.', '');
 
         $data = [
             'user_type' => $worker->user_type,
             'full_name' => $worker->first_name . ' ' . $worker->last_name,
             'nationality' => $countries[$worker->nationality_id] ?? ' ',
             'iban' => json_decode($worker->bank_details)->bank_code ?? ' ',
-            'final_salary' => $worker->total_salary ?? 0,
+            'basic_salary' => number_format($worker->essentials_salary ?? 0, 0, '.', ''),
+            'final_salary' => $final_salary ?? 0,
             'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
             'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
             'emp_number' => $worker->emp_number,
@@ -507,7 +525,7 @@ class PayrollController extends Controller
                 );
             }
             $user->essentials_salary = $updatedSalaryData['salary'];
-            $user->total_salary = $updatedSalaryData['total'];
+            // $user->total_salary = $updatedSalaryData['total'];
             $user->save();
             return response()->json(['message' => 'Salary data updated successfully', $user], 200);
         } else {

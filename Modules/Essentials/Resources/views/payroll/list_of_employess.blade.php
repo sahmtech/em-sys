@@ -116,6 +116,7 @@
                             <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
                             <p><strong>@lang('essentials::lang.contry_nationality'):</strong> <span id="nationality"></span></p>
                             <p><strong>@lang('essentials::lang.IBAN_number'):</strong> <span id="iban"></span></p>
+                            <p><strong>@lang('essentials::lang.Basic_salary'):</strong> <span id="basic_salary"></span></p>
                             <p><strong>@lang('essentials::lang.final_salary'):</strong> <span id="final_salary"></span></p>
                             <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
                             <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
@@ -310,6 +311,7 @@
                             $('#nationality').text(response.data.nationality);
                             $('#iban').text(response.data.iban);
                             $('#final_salary').text(response.data.final_salary);
+                            $('#basic_salary').text(response.data.basic_salary);
                             // Show the worker information section
                             $('.modal-body div').show();
 

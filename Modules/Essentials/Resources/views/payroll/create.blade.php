@@ -479,6 +479,7 @@
                             <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
                             <p><strong>@lang('essentials::lang.contry_nationality'):</strong> <span id="nationality"></span></p>
                             <p><strong>@lang('essentials::lang.IBAN_number'):</strong> <span id="iban"></span></p>
+                            <p><strong>@lang('essentials::lang.Basic_salary'):</strong> <span id="basic_salary"></span></p>
                             <p><strong>@lang('essentials::lang.final_salary'):</strong> <span id="final_salary"></span></p>
                             <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
                             <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
@@ -491,6 +492,13 @@
                             <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
                             <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="edit-worker-info" class="btn btn-primary">@lang('essentials::lang.edit')</button>
+                        <button type="button" id="save-worker-info" class="btn btn-success"
+                            style="display:none;">@lang('essentials::lang.save')</button>
+                        <button type="button" id="cancel-worker-info" class="btn btn-secondary"
+                            style="display:none;">@lang('essentials::lang.cancel')</button>
                     </div>
                 </div>
             </div>
@@ -510,67 +518,136 @@
         $(document).ready(function() {
 
 
-            $('#workers_table_timesheet tbody').on('click', 'tr', function(e) {
-                var cellIndex = $(e.target).closest('td').index();
+            $('#edit-worker-info').on('click', function() {
+                var ibanValue = $('#iban').text().trim();
+                var basicSalaryValue = $('#basic_salary').text().trim();
+                $('#iban').html('<input type="text" class="form-control" id="iban_input" value="' +
+                    ibanValue + '" style="display:inline-block; width:auto;">');
+                $('#basic_salary').html(
+                    '<input type="text" class="form-control" id="basic_salary_input" value="' +
+                    basicSalaryValue + '" style="display:inline-block; width:auto;">');
 
-
-                if (!$(e.target).closest('td').hasClass('editable')) {
-                    var worker_id = $(this).find('input.form-hidden[data-field="id"]').val();
-                    console.log(worker_id);
-                    var rowData = $(this).data();
-                    // Construct the URL from the worker's ID
-                    var url = '{{ route('payrolls.view_worker_info', ':id') }}';
-                    url = url.replace(':id', worker_id);
-
-                    // Perform the AJAX call, simulating the button click
-                    $.ajax({
-                        url: url,
-                        type: 'GET',
-                        data: {
-                            worker_id: worker_id
-                        },
-                        success: function(response) {
-                            console.log(response);
-                            if (response.data.user_type != "worker") {
-                                $('#worker_assigned_to').closest('p').hide();
-                                $('#worker_border_no').closest('p').hide();
-                                $('#worker_residence_permit_expiration').closest('p')
-                                    .hide();
-                                $('#worker_status').closest('p').hide();
-                                $('#worker_sub_status').closest('p').hide();
-                            }
-                            $('#worker_full_name').text(response.data.full_name);
-                            $('#worker_emp_number').text(response.data.emp_number);
-                            $('#worker_status').text(response.data.status);
-                            $('#worker_sub_status').text(response.data.sub_status);
-                            $('#worker_id_proof_number').text(response.data
-                                .id_proof_number);
-                            $('#worker_residence_permit_expiration').text(response.data
-                                .residence_permit_expiration);
-                            $('#worker_passport_number').text(response.data
-                                .passport_number);
-                            $('#worker_passport_expire_date').text(response.data
-                                .passport_expire_date);
-                            $('#worker_border_no').text(response.data.border_no);
-                            $('#worker_company_name').text(response.data.company_name);
-                            $('#worker_assigned_to').text(response.data.assigned_to);
-                            $('#nationality').text(response.data.nationality);
-                            $('#iban').text(response.data.iban);
-                            $('#final_salary').text(response.data.final_salary);
-                            // Show the worker information section
-                            $('.modal-body div').show();
-
-                            $('#worker-info').modal('show');
-                        },
-                        error: function(xhr, status, error) {
-                            $('#worker-info').modal('hide');
-                            alert('@lang('essentials::lang.error_occurred')');
-                        }
-                    });
-
-                }
-
+                $(this).hide();
+                $('#save-worker-info, #cancel-worker-info').show();
             });
+
+            $('#cancel-worker-info').on('click', function() {
+                // Reset the fields to original values (revert to non-editable text)
+                var originalIbanValue = $('#iban_input').val();
+                var originalBasicSalaryValue = $('#basic_salary_input').val();
+
+                $('#iban').text(originalIbanValue).css('background-color', '');
+                $('#basic_salary').text(originalBasicSalaryValue).css('background-color', '');
+
+                $('#save-worker-info, #cancel-worker-info').hide();
+                $('#edit-worker-info').show();
+            });
+            $('#save-worker-info').on('click', function() {
+                var updatedIban = $('#iban_input').val();
+                var updatedFinalSalary = $('#basic_salary_input').val();
+                var workerId = $('#worker-info').data(
+                    'worker-id'); // Assuming you have a worker ID stored in the modal
+                if (!storedWorkerId) {
+                    console.error('No worker ID stored. Cannot save.');
+                    return;
+                }
+                $.ajax({
+                    url: '{{ route('payrolls.update.salary') }}',
+                    type: 'POST',
+                    data: {
+                        user_id: storedWorkerId,
+                        iban: updatedIban,
+                        salary: updatedFinalSalary
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        // Replace input fields with updated text and revert to original style
+                        $('#iban').text(updatedIban).css('background-color', '');
+                        $('#basic_salary').text(updatedFinalSalary).css('background-color', '');
+
+                        $('#save-worker-info, #cancel-worker-info').hide();
+                        $('#edit-worker-info').show();
+
+                        // Optionally, you can hide the modal and refresh the page
+                        $('#worker-info').modal('hide');
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('@lang('essentials::lang.error_occurred')');
+                    }
+                });
+            });
+            var storedWorkerId = null;
+            $(document).ready(function() {
+                $('#workers_table_timesheet tbody').on('click', 'tr', function(e) {
+                    var cellIndex = $(e.target).closest('td').index();
+
+                    if (!$(e.target).closest('td').hasClass('editable')) {
+                        // Capture the worker_id from the hidden input field
+                        var worker_id = $(this).find('input.form-hidden[data-field="id"]').val();
+                        console.log('Worker ID:', worker_id);
+                        storedWorkerId = $(this).find('input.form-hidden[data-field="id"]').val();
+                        if (!worker_id) {
+                            console.error('Worker ID not found in the row.');
+                            return;
+                        }
+
+                        var rowData = $(this).data();
+                        var url = '{{ route('payrolls.view_worker_info', ':id') }}';
+                        url = url.replace(':id', worker_id);
+
+                        // Perform the AJAX call, simulating the button click
+                        $.ajax({
+                            url: url,
+                            type: 'GET',
+                            data: {
+                                worker_id: worker_id
+                            },
+                            success: function(response) {
+                                console.log('Worker Data:', response);
+                                if (response.data.user_type != "worker") {
+                                    $('#worker_assigned_to').closest('p').hide();
+                                    $('#worker_border_no').closest('p').hide();
+                                    $('#worker_residence_permit_expiration').closest(
+                                        'p').hide();
+                                    $('#worker_status').closest('p').hide();
+                                    $('#worker_sub_status').closest('p').hide();
+                                }
+                                $('#worker_full_name').text(response.data.full_name);
+                                $('#worker_emp_number').text(response.data.emp_number);
+                                $('#worker_status').text(response.data.status);
+                                $('#worker_sub_status').text(response.data.sub_status);
+                                $('#worker_id_proof_number').text(response.data
+                                    .id_proof_number);
+                                $('#worker_residence_permit_expiration').text(response
+                                    .data.residence_permit_expiration);
+                                $('#worker_passport_number').text(response.data
+                                    .passport_number);
+                                $('#worker_passport_expire_date').text(response.data
+                                    .passport_expire_date);
+                                $('#worker_border_no').text(response.data.border_no);
+                                $('#worker_company_name').text(response.data
+                                    .company_name);
+                                $('#worker_assigned_to').text(response.data
+                                    .assigned_to);
+                                $('#nationality').text(response.data.nationality);
+                                $('#iban').text(response.data.iban);
+                                $('#basic_salary').text(response.data.basic_salary);
+                                $('#final_salary').text(response.data.final_salary);
+
+                                // Show the worker information section
+                                $('.modal-body div').show();
+                                $('#worker-info').modal('show');
+                            },
+                            error: function(xhr, status, error) {
+                                $('#worker-info').modal('hide');
+                                alert('@lang('essentials::lang.error_occurred')');
+                            }
+                        });
+                    }
+                });
+            });
+
 
             $('.custom-scrollbar').on('scroll', function() {
                 $('.table-responsive2').scrollLeft($(this).scrollLeft());
