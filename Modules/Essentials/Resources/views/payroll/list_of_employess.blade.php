@@ -185,12 +185,18 @@
                 columns: [
 
                     {
-                        "data": "emp_number"
+                        "data": "emp_number",
+                        render: function(data, type, row) {
+                            return '<a >' + data + '</a>';
+                        }
                     },
 
 
                     {
                         data: 'worker',
+                        render: function(data, type, row) {
+                            return '<a >' + data + '</a>';
+                        }
 
                     },
                     {
@@ -212,7 +218,10 @@
                         data: "company_name"
                     },
                     {
-                        data: 'id_proof_number'
+                        data: 'id_proof_number',
+                        render: function(data, type, row) {
+                            return '<a >' + data + '</a>';
+                        }
                     },
 
                     {
