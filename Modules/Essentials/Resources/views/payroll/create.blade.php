@@ -131,7 +131,7 @@
                                                 'class' => 'form-hidden',
                                             ]) !!}
                                         </td>
-                                        <td name="name">{{ $payroll['name'] }}
+                                        <td name="name"><a>{{ $payroll['name'] }}</a>
                                             {!! Form::hidden('payrolls[' . $index . '][name]', $payroll['name'], [
                                                 'data-index' => $index,
                                                 'data-field' => 'name',
@@ -145,7 +145,7 @@
                                                 'class' => 'form-hidden',
                                             ]) !!}
                                         </td>
-                                        <td name="identity_card_number">{{ $payroll['identity_card_number'] }}
+                                        <td name="identity_card_number"><a>{{ $payroll['identity_card_number'] }}</a>
                                             {!! Form::hidden('payrolls[' . $index . '][identity_card_number]', $payroll['identity_card_number'], [
                                                 'data-index' => $index,
                                                 'data-field' => 'identity_card_number',
