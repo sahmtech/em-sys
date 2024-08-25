@@ -161,7 +161,7 @@ class WorkerController extends Controller
 
 
 
-        return redirect()->route('Unsupported_workers');
+        return redirect()->route('ir.Unsupported_workers');
     }
     public function proposed_laborIndex(Request $request)
     {
