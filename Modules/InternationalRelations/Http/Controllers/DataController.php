@@ -131,7 +131,12 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.view_proposed_workers'),
                         'default' => false,
                     ],
-
+                    //internationalrelations.Unsupported_workers
+                    [
+                        'value' => 'internationalrelations.Unsupported_workers',
+                        'label' => __('sales::lang.Unsupported_workers'),
+                        'default' => false,
+                    ],
                     [
                         'value' => 'internationalrelations.view_accepted_workers',
                         'label' => __('internationalrelations::lang.view_accepted_workers'),

@@ -124,5 +124,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/ir_residencyPrint', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'residencyPrint'])->name('ir_residencyPrint');
         Route::get('/ir_residencyDelivery', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'residencyDelivery'])->name('ir_residencyDelivery');
         Route::get('/ir_advanceSalaryRequest', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'advanceSalaryRequest'])->name('ir_advanceSalaryRequest');
+
+
+        Route::get('/Unsupported_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'indexUnsupported'])->name('ir.Unsupported_workers');
+        Route::post('/storeUnsupported_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeUnsupported'])->name('ir.storeUnsupported_workers');
     });
 });

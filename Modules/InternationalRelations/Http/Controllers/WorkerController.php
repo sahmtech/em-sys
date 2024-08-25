@@ -59,6 +59,110 @@ class WorkerController extends Controller
         ];
     }
 
+
+    public function indexUnsupported()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_Unsupported_workers = auth()->user()->can('internationalrelations.Unsupported_workers');
+        if (!($is_admin || $can_Unsupported_workers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        if (request()->ajax()) {
+
+            $unSupportedWorker = SalesUnSupportedWorker::all();
+
+
+
+            return Datatables::of($unSupportedWorker)
+
+
+                ->editColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item = $nationalities[$row->nationality_id] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('profession_id', function ($row) use ($professions) {
+                    $item = $professions[$row->profession_id] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('specialization_id', function ($row) use ($specializations) {
+                    $item = $specializations[$row->specialization_id] ?? '';
+
+                    return $item;
+                })
+
+
+
+                ->removeColumn('id')
+                ->make(true);
+        }
+
+
+        return view('internationalrelations::requests.unSupportedWorker')->with(compact('specializations', 'professions', 'nationalities'));
+    }
+
+    public function storeUnsupported(Request $request)
+    {
+
+        try {
+            $input = $request->only(['nationlity', 'quantity', 'date', 'attachment', 'profession', 'salary', 'specialization', 'note']);
+
+            $input2['nationality_id'] = $input['nationlity'];
+            $input2['date'] = $input['date'];
+            $input2['note'] = $input['note'];
+            $input2['total_quantity'] = $input['quantity'];
+            $input2['remaining_quantity_for_operation'] = $input['quantity'];
+            $input2['remaining_quantity_for_delegation'] = $input['quantity'];
+            $input2['profession_id'] = $input['profession'];
+            $input2['salary'] = $input['salary'];
+            $input2['specialization_id'] = $input['specialization'];
+            $latestRecord = SalesUnSupportedWorker::orderBy('order_no', 'desc')->first();
+
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->order_no;
+                $numericPart = (int)substr($latestRefNo, 3);
+                $numericPart++;
+                $input2['order_no'] = 'USW' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+            } else {
+                $input2['order_no'] = 'USW1111';
+            }
+
+            if (isset($request->attachment) && !empty($request->attachment)) {
+                $attachmentPath = $request->attachment->store('/unsupportedWorkersRequests');
+                $input2['attachment'] = $attachmentPath;
+            }
+
+            SalesUnSupportedWorker::create($input2);
+
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+
+
+
+        return redirect()->route('Unsupported_workers');
+    }
     public function proposed_laborIndex(Request $request)
     {
 
@@ -89,7 +193,9 @@ class WorkerController extends Controller
             'permanent_address',
             'current_address',
             'interviewStatus',
-            'agency_id', 'transaction_sell_line_id', 'unSupportedworker_order_id'
+            'agency_id',
+            'transaction_sell_line_id',
+            'unSupportedworker_order_id'
         ]);
 
 
@@ -212,9 +318,20 @@ class WorkerController extends Controller
             ->where('interviewStatus', 'acceptable')->where('arrival_status', '!=', 1)->select([
                 'id',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-                'age', 'gender', 'email', 'profile_image', 'dob', 'marital_status', 'blood_group',
-                'contact_number', 'permanent_address', 'current_address', 'is_price_offer_sent',
-                'is_accepted_by_worker', 'agency_id', 'transaction_sell_line_id'
+                'age',
+                'gender',
+                'email',
+                'profile_image',
+                'dob',
+                'marital_status',
+                'blood_group',
+                'contact_number',
+                'permanent_address',
+                'current_address',
+                'is_price_offer_sent',
+                'is_accepted_by_worker',
+                'agency_id',
+                'transaction_sell_line_id'
             ]);
 
         if (!empty($request->input('specialization'))) {
@@ -331,7 +448,8 @@ class WorkerController extends Controller
             'permanent_address',
             'current_address',
             'interviewStatus',
-            'agency_id', 'transaction_sell_line_id'
+            'agency_id',
+            'transaction_sell_line_id'
         ]);
 
         if (!empty($request->input('specialization'))) {
@@ -453,7 +571,8 @@ class WorkerController extends Controller
                 'permanent_address',
                 'current_address',
                 'interviewStatus',
-                'agency_id', 'transaction_sell_line_id'
+                'agency_id',
+                'transaction_sell_line_id'
             ]);
 
         if (!empty($request->input('specialization'))) {
@@ -1125,12 +1244,24 @@ class WorkerController extends Controller
         try {
 
             $input = $request->only([
-                'first_name', 'mid_name', 'last_name',
-                'email', 'dob', 'gender',
-                'marital_status', 'blood_group', 'age',
-                'contact_number', 'alt_number', 'family_number', 'permanent_address',
-                'current_address', 'agency_id',
-                'profile_picture', 'delegation_id', 'passport_number'
+                'first_name',
+                'mid_name',
+                'last_name',
+                'email',
+                'dob',
+                'gender',
+                'marital_status',
+                'blood_group',
+                'age',
+                'contact_number',
+                'alt_number',
+                'family_number',
+                'permanent_address',
+                'current_address',
+                'agency_id',
+                'profile_picture',
+                'delegation_id',
+                'passport_number'
             ]);
             if ($request->input('transaction_sell_line_id')) {
                 $input['transaction_sell_line_id'] = $request->input('transaction_sell_line_id');
@@ -1194,11 +1325,22 @@ class WorkerController extends Controller
 
         try {
             $input = $request->only([
-                'first_name', 'mid_name', 'last_name',
-                'email', 'dob', 'gender',
-                'marital_status', 'blood_group', 'age',
-                'contact_number', 'alt_number', 'family_number', 'permanent_address',
-                'current_address',  'profile_picture', 'passport_number'
+                'first_name',
+                'mid_name',
+                'last_name',
+                'email',
+                'dob',
+                'gender',
+                'marital_status',
+                'blood_group',
+                'age',
+                'contact_number',
+                'alt_number',
+                'family_number',
+                'permanent_address',
+                'current_address',
+                'profile_picture',
+                'passport_number'
             ]);
 
             $passport_number = IrProposedLabor::where('passport_number', $request->input('passport_number'))->first();
