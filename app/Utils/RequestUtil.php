@@ -239,6 +239,16 @@ class RequestUtil extends Util
         if ($condition && $condition == 'done') {
             $requestsProcess->whereIn('process.status', ['approved', 'rejected']);
         }
+      //  $todayDate = Carbon::now()->toDateString();
+        $todayDate = Carbon::now()->format('Y-m-d');
+        if ($condition && $condition == 'today') {
+            error_log($todayDate);
+            $requestsProcess->whereDate('process.created_at', $todayDate);
+        }
+        if ($condition && $condition == 'pending_and_old') {
+            $requestsProcess->where('process.status', 'pending')
+                ->whereDate('process.created_at', '<', $todayDate);
+        }
         if (request()->input('company') && request()->input('company') !== 'all') {
             error_log(request()->input('company'));
             $requestsProcess->where('users.company_id', request()->input('company'));

@@ -97,11 +97,11 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
     }
+
     public function president_pending_requests()
     {
-        error_log('president_pending_requests');
         $business_id = request()->session()->get('user.business_id');
 
         $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
@@ -127,7 +127,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'today');
     }
     public function president_done_requests()
     {
