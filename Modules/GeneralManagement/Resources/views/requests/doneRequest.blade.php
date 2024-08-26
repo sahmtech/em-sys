@@ -340,6 +340,17 @@
                     ]) !!}
                 </div>
             </div>
+            {{-- <div class="col-md-3">
+                <div class="form-group">
+                    <label for="department_filter">@lang('request.department'):</label>
+                    {!! Form::select('department_filter', $departments, null, [
+                        'class' => 'form-control select2',
+                        'style' => 'height:40px',
+                        'placeholder' => __('lang_v1.all'),
+                        'id' => 'department_filter',
+                    ]) !!}
+                </div>
+            </div> --}}
         @endcomponent
         @include('generalmanagement::layouts.nav_requests_status')
 
@@ -498,6 +509,7 @@
                         d.type = $('#type_filter').val();
                         d.company = $('#company_filter').val();
                         d.project = $('#project_filter').val();
+                        d.department = $('#department_filter').val();
                     }
                 },
                 columns: [{
@@ -597,9 +609,10 @@
 
                 ]
             });
-            $('#status_filter, #type_filter, #company_filter, #project_filter').change(function() {
-                requests_table.ajax.reload();
-            });
+            $('#status_filter, #type_filter, #company_filter, #project_filter,#department_filter').change(
+                function() {
+                    requests_table.ajax.reload();
+                });
             $('#select-all').change(function() {
                 $('.select-row').prop('checked', $(this).prop('checked'));
             });

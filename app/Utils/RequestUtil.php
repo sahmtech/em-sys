@@ -165,7 +165,7 @@ class RequestUtil extends Util
         $saleProjects = SalesProject::all()->pluck('name', 'id');
         $companies = Company::all()->pluck('name', 'id');
 
-
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $requestsProcess = null;
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
 
@@ -239,11 +239,11 @@ class RequestUtil extends Util
         if ($condition && $condition == 'done') {
             $requestsProcess->whereIn('process.status', ['approved', 'rejected']);
         }
-      //  $todayDate = Carbon::now()->toDateString();
+        //  $todayDate = Carbon::now()->toDateString();
         $todayDate = Carbon::now()->format('Y-m-d');
         if ($condition && $condition == 'today') {
             error_log($todayDate);
-            $requestsProcess->whereDate('process.created_at', $todayDate);
+            $requestsProcess->where('process.status', 'pending')->whereDate('process.created_at', $todayDate);
         }
         if ($condition && $condition == 'pending_and_old') {
             $requestsProcess->where('process.status', 'pending')
@@ -256,6 +256,15 @@ class RequestUtil extends Util
         if (request()->input('project') && request()->input('project') !== 'all') {
             error_log(request()->input('project'));
             $requestsProcess->where('users.assigned_to', request()->input('project'));
+        }
+        if (request()->input('department') && request()->input('department') !== 'all') {
+            error_log(request()->input('department'));
+            $department = request()->input('department');
+            $requestsProcess->where(function ($query) use ($department) {
+                $query->where('wk_procedures.department_id', $department)
+                    ->orWhere('process.superior_department_id', $department);
+                // ->orWhere('process.started_department_id', $department);
+            });
         }
 
         if (request()->input('type') && request()->input('type') !== 'all') {
@@ -481,6 +490,7 @@ class RequestUtil extends Util
         return view($view)->with(compact(
             'users',
             'requestTypes',
+            'departments',
             'statuses',
             'main_reasons',
             'classes',
