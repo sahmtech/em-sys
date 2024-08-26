@@ -539,7 +539,11 @@ class EssentialsCardsController extends Controller
             $can_change_status,
             $can_return_request,
             $can_show_request,
-            $requestsTypes
+            $requestsTypes,
+            [],
+            false,
+            null,
+            'pending_and_old'
         );
     }
     public function work_cards_pending_requests()
@@ -596,7 +600,7 @@ class EssentialsCardsController extends Controller
             [],
             false,
             null,
-            'pending'
+            'today'
         );
     }
     public function work_cards_done_requests()

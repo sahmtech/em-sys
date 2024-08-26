@@ -32,7 +32,7 @@ class Request extends Model
 
     public function process()
     {
-        return $this->hasMany(RequestProcess::class, 'request_id');
+        return $this->hasMany(RequestProcess::class, 'request_id')->whereNull('sub_status');
     }
 
     public function attachments()

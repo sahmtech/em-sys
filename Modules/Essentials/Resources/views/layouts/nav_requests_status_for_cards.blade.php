@@ -20,13 +20,13 @@
                     <li @if (request()->segment(2) == 'work_cards_pending_requests') class="active" @endif>
                         <a href="{{ route('work_cards_pending_requests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('essentials::lang.pending_requests')
+                            @lang('generalmanagement::lang.today_pending_requests')
                         </a>
                     </li>
                     <li @if (request()->segment(2) == 'work_cards_all_requests') class="active" @endif>
                         <a href="{{ route('work_cards_all_requests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('essentials::lang.all_requests')
+                            @lang('generalmanagement::lang.old_pending_requests')
                         </a>
                     </li>
 

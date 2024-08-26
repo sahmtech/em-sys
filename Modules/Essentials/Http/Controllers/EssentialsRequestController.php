@@ -110,7 +110,7 @@ class EssentialsRequestController extends Controller
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'pending_and_old');
     }
     public function doneEmployeeAffairsRequests()
     {
@@ -166,7 +166,7 @@ class EssentialsRequestController extends Controller
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'pending');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'today');
     }
 
     public function storeEmployeeAffairsRequest(Request $request)

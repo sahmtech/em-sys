@@ -20,14 +20,14 @@
                     <li @if (request()->segment(2) == 'ceo_pending_requests') class="active" @endif>
                         <a href="{{ route('ceo_pending_requests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('generalmanagement::lang.pending_requests')
+                            @lang('generalmanagement::lang.today_pending_requests')
                         </a>
                     </li>
 
                     <li @if (request()->segment(2) == 'requests') class="active" @endif>
                         <a href="{{ route('view_CEO_requests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('generalmanagement::lang.all_requests')
+                            @lang('generalmanagement::lang.old_pending_requests')
                         </a>
                     </li>
 

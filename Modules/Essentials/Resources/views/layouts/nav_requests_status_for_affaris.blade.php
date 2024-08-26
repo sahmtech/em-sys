@@ -20,13 +20,13 @@
                     <li @if (request()->segment(2) == 'pendingEmployeeAffairsRequests') class="active" @endif>
                         <a href="{{ route('pendingEmployeeAffairsRequests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('essentials::lang.pending_requests')
+                            @lang('generalmanagement::lang.today_pending_requests')
                         </a>
                     </li>
                     <li @if (request()->segment(2) == 'allEmployeeAffairsRequests') class="active" @endif>
                         <a href="{{ route('allEmployeeAffairsRequests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('essentials::lang.all_requests')
+                            @lang('generalmanagement::lang.old_pending_requests')
                         </a>
                     </li>
 
