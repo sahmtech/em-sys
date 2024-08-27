@@ -489,6 +489,8 @@
         </div>
 
         @include('request.change_request_status')
+        @include('request.changeAfterTransferModal')
+
 
     </section>
     <!-- /.content -->
@@ -715,7 +717,14 @@
 
 
             });
+            $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var requestId = button.data('request-id');
 
+
+                var modal = $(this);
+                modal.find('#request_id').val(requestId);
+            });
 
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();

@@ -292,7 +292,10 @@ return [
   '6 months' => 'ستة أشهر',
   '9 months' => 'تسعة أشهر',
   '12 months' => 'اثنا عشر شهراً',
-  'change_status' => 'تغيير الحالة'
+  'change_status' => 'تغيير الحالة',
+  'transfer_to_department' => 'تحويل إلى إدارة',
+  'transfer' => 'تحويل ',
+  'tranfered_from_GM' => 'تم التحويل من الإدارة العامة'
 
 
 ];

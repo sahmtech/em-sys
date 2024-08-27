@@ -163,7 +163,7 @@ class RequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -182,7 +182,7 @@ class RequestController extends Controller
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->groupBy('request_id');
         $allRequestTypes = RequestsType::pluck('type', 'id');
         $companies = Company::all()->pluck('name', 'id');
-        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->select([
+        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->where('process.is_transfered_from_GM', 0)->select([
 
             'requests.request_no',
             'requests.id',
@@ -299,6 +299,7 @@ class RequestController extends Controller
 
 
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        $status .= '<button type="button" style="height:25px;" class="btn btn-primary transfer_department" data-request-id="' . $row->id . '" data-toggle="modal" data-target="#transferDepartmentModal">' . trans('request.transfer_to_department') . '</button>';
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
@@ -319,7 +320,7 @@ class RequestController extends Controller
                 ->make(true);
         }
         $statuses = $this->statuses;
-        return view('generalmanagement::requests.escalate_requests')->with(compact('statuses', 'allRequestTypes', 'all_status', 'companies', 'saleProjects'));
+        return view('generalmanagement::requests.escalate_requests')->with(compact('statuses', 'departments', 'allRequestTypes', 'all_status', 'companies', 'saleProjects'));
     }
 
     public function changeEscalationStatus(Request $request)
@@ -352,5 +353,36 @@ class RequestController extends Controller
         }
 
         return $output;
+    }
+    public function transferToDepartment(Request $request)
+    {
+        error_log(json_encode($request->all()));
+        try {
+            $requestId = $request->input('request_id');
+            $department = $request->input('department_filter');
+
+            $requestProcesses = RequestProcess::where('request_id', $requestId)->get();
+
+            foreach ($requestProcesses as $requestProcess) {
+                $requestProcess->to_department_after_escalation = $department;
+                $requestProcess->is_transfered_from_GM = 1;
+                $requestProcess->save();
+            }
+
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->back()->with('status', $output);
     }
 }

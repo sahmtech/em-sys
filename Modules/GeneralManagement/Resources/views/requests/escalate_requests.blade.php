@@ -443,6 +443,69 @@
         </div>
 
         @include('generalmanagement::requests.change_escalation_status')
+        <!-- Transfer to Department Modal -->
+        <div class="modal fade" id="transferDepartmentModal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    {!! Form::open([
+                        'url' => action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'transferToDepartment']),
+                        'method' => 'post',
+                        'id' => 'transfer_department_form',
+                        'enctype' => 'multipart/form-data',
+                    ]) !!}
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('request.transfer_to_department')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="hidden" name="request_id" id="transfer_request_id">
+                            <label for="department_filter">@lang('request.department'):</label>
+                            {!! Form::select('department_filter', $departments, null, [
+                                'class' => 'form-control select2',
+                                'style' => 'height:40px',
+                                'placeholder' => __('lang_v1.all'),
+                                'id' => 'department_filter',
+                            ]) !!}
+                        </div>
+                        {{-- <div class="form-group col-md-6">
+                            {!! Form::label('note', __('followup::lang.note') . ':') !!}
+                            {!! Form::textarea('note', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('followup::lang.note'),
+                                'rows' => 3,
+                            ]) !!}
+                        </div> --}}
+
+                        {{-- <div class="form-group col-md-6">
+                            {!! Form::label('attachment', __('request.attachment') . ':') !!}
+                            {!! Form::file('attachment', [
+                                'class' => 'form-control',
+                                'placeholder' => __('request.attachment'),
+                            ]) !!}
+                        </div> --}}
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary ladda-button" data-style="expand-right">
+                            <span class="ladda-label">@lang('request.transfer')</span>
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+
+                    {!! Form::close() !!}
+
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+
+
 
     </section>
     <!-- /.content -->
@@ -455,6 +518,44 @@
             approved: '{{ __('request.approved') }}',
             rejected: '{{ __('request.rejected') }}'
         };
+        $(document).ready(function() {
+            $('#transferDepartmentModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var requestId = button.data('request-id');
+
+                var modal = $(this);
+                modal.find('#transfer_request_id').val(requestId);
+            });
+
+            $('#submitTransferDepartment').on('click', function() {
+                var formData = $('#transferDepartmentForm').serialize();
+
+                $.ajax({
+                    url: '/transferRequestToDepartment', // Replace with your route
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        // Handle success (e.g., close modal, reload table)
+                        $('#transferDepartmentModal').modal('hide');
+                        alert('Request transferred successfully.');
+                        // Optionally, reload the DataTable here
+                    },
+                    error: function(response) {
+                        // Handle error
+                        alert('Failed to transfer request.');
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+            $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var requestId = button.data('request-id');
+
+                var modal = $(this);
+                modal.find('#after_transfer_request_id').val(requestId);
+            });
+        });
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -616,7 +717,14 @@
 
 
             });
+            $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var requestId = button.data('request-id');
 
+
+                var modal = $(this);
+                modal.find('#request_id').val(requestId);
+            });
 
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
