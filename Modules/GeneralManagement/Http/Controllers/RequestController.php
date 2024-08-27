@@ -100,6 +100,14 @@ class RequestController extends Controller
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
     }
 
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
+        $can_return_request = auth()->user()->can('generalmanagement.return_request');
+        $can_show_request = auth()->user()->can('generalmanagement.view_request');
+        return $this->requestUtil->getFilteredRequests('generalmanagement', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
+
     public function president_pending_requests()
     {
         $business_id = request()->session()->get('user.business_id');

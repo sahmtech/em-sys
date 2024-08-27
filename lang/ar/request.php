@@ -292,7 +292,12 @@ return [
   '6 months' => 'ستة أشهر',
   '9 months' => 'تسعة أشهر',
   '12 months' => 'اثنا عشر شهراً',
-  'change_status' => 'تغيير الحالة'
+  'change_status' => 'تغيير الحالة',
+  'today_requests' => 'طلبات اليوم',
+  'pending_requests' => 'الطلبات المعلقة',
+  'completed_requests' => 'الطلبات المنتهية',
+  'all_requests' => 'جمبيع الطلبات',
+
 
 
 ];
