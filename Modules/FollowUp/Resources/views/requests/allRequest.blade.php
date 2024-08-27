@@ -1315,7 +1315,10 @@
             </div>
         </div>
 
-        @include('request.change_request_status')
+             @include('request.change_request_status')
+        @include('request.changeAfterTransferModal')
+
+
 
     </section>
     <!-- /.content -->
@@ -1560,7 +1563,28 @@
 
 
             });
+            // $(document).on('click', 'a.change_status', function(e) {
+            //     e.preventDefault();
 
+            //     $('#change_status_modal').find('select#status_dropdown').val($(this)
+            //             .data('orig-value'))
+            //         .change();
+            //     $('#change_status_modal').find('#request_id').val($(this).data(
+            //         'request-id'));
+            //     $('#change_status_modal').modal('show');
+
+
+            // });
+
+
+            $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var requestId = button.data('request-id');
+
+
+                var modal = $(this);
+                modal.find('#request_id').val(requestId);
+            });
 
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
