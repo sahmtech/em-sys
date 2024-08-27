@@ -28,7 +28,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/president_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index'])->name('president_requests');
         Route::get('/president_pending_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_pending_requests'])->name('president_pending_requests');
         Route::get('/president_done_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_done_requests'])->name('president_done_requests');
-
+        Route::get('/filtered_requests/{filter}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('generalmanagement.getFilteredRequests');
 
         Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');
         Route::post('/changeEscalationStatus', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('generalmanagement.changeEscalationStatus');

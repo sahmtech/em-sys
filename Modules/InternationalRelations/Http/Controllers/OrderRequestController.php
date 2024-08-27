@@ -436,9 +436,7 @@ class OrderRequestController extends Controller
         }
     }
 
-    public function store(Request $request)
-    {
-    }
+    public function store(Request $request) {}
     public function orderOperationForUnsupportedWorkers()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -453,7 +451,6 @@ class OrderRequestController extends Controller
         $can_add_operation_order_visa = auth()->user()->can('internationalrelations.add_operation_order_visa');
         $can_delegate_operation_order = auth()->user()->can('internationalrelations.delegate_operation_order');
         $can_view_order_delegations = auth()->user()->can('internationalrelations.view_order_delegations');
-
 
         $operations =
             DB::table('sales_un_supported_operation_orders')
