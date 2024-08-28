@@ -987,6 +987,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::get('/fetch-users-by-type', [\App\Utils\RequestUtil::class, 'fetchUsersByType'])->name('fetch.users.by.type');
+    Route::post('/changeStatusAfterTransfer', [\App\Utils\RequestUtil::class, 'changeStatusAfterTransfer'])->name('changeStatusAfterTransfer');
 
 
     Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');

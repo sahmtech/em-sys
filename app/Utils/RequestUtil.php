@@ -844,12 +844,14 @@ class RequestUtil extends Util
             'requests.id',
             'requests.request_type_id',
             'requests.is_new',
+            'requests.status as final_status',
             'requests.created_at',
             'requests.created_by',
             'requests.reason',
 
             'process.id as process_id',
             'process.status',
+            'process.is_transfered_from_GM',
             'process.status as status_now',
             'process.note as note',
             'process.procedure_id as procedure_id',
@@ -881,10 +883,23 @@ class RequestUtil extends Util
             })
             ->leftJoin('users', 'users.id', '=', 'requests.related_to')
             ->where(function ($query) use ($departmentIds) {
-                $query->whereIn('wk_procedures.department_id', $departmentIds)
-                    ->orWhereIn('process.superior_department_id', $departmentIds)
-                    ->orWhereIn('process.started_department_id', $departmentIds);
+                $query->where(function ($subQuery) use ($departmentIds) {
+                    $subQuery->whereIn('wk_procedures.department_id', $departmentIds)
+                        ->where('process.is_transfered_from_GM', 0);
+                })
+                    ->orWhere(function ($subQuery) use ($departmentIds) {
+                        $subQuery->whereIn('process.superior_department_id', $departmentIds)
+                            ->where('process.is_transfered_from_GM', 0);
+                    })
+                    ->orWhere(function ($subQuery) use ($departmentIds) {
+                        $subQuery->whereIn('process.started_department_id', $departmentIds);
+                    })
+                    ->orWhere(function ($subQuery) use ($departmentIds) {
+                        $subQuery->whereIn('process.to_department_after_escalation', $departmentIds)
+                            ->where('process.is_transfered_from_GM', 1);
+                    });
             })
+
 
 
             ->whereIn('requests.related_to', $userIds)
@@ -930,9 +945,19 @@ class RequestUtil extends Util
             error_log(request()->input('department'));
             $department = request()->input('department');
             $requestsProcess->where(function ($query) use ($department) {
-                $query->where('wk_procedures.department_id', $department)
-                    ->orWhere('process.superior_department_id', $department);
-                // ->orWhere('process.started_department_id', $department);
+                $query->where(function ($subQuery) use ($department) {
+                    $subQuery->where('wk_procedures.department_id', $department)
+                        ->where('process.is_transfered_from_GM', 0);
+                })
+                    ->orWhere(function ($subQuery) use ($department) {
+                        $subQuery->where('process.superior_department_id', $department)
+                            ->where('process.is_transfered_from_GM', 0);
+                    })
+
+                    ->orWhere(function ($subQuery) use ($department) {
+                        $subQuery->where('process.to_department_after_escalation', $department)
+                            ->where('process.is_transfered_from_GM', 1);
+                    });
             });
         }
 
@@ -1000,7 +1025,7 @@ class RequestUtil extends Util
                     return $all_users[$row->created_by];
                 })
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds,  $departmentIdsForGeneralManagment, $statuses) {
-                    if ($row->status) {
+                    if ($row->status && $row->is_transfered_from_GM == 0) {
                         $status = '';
                         if ($row->action_type === 'accept_reject' || $row->action_type === null) {
                             $status = trans('request.' . $row->status);
@@ -1112,11 +1137,17 @@ class RequestUtil extends Util
                                 }
                             }
                         }
-
-
-
-
                         return $status;
+                    } else {
+                        $statusLabel = '';
+                        if ($row->final_status == 'pending') {
+                            $statusLabel = __('request.tranfered_from_GM');
+                            $changeStatusButton = '<button type="button" class="btn btn-warning change_after_transfer" data-request-id="' . $row->id . '" data-toggle="modal" data-target="#changeAfterTransferModal">'
+                                . trans('request.change_status')  . '</button>';
+                        } else {
+                            $changeStatusButton = trans('request.' . $row->final_status);
+                        }
+                        return $statusLabel . ' ' . $changeStatusButton;
                     }
                 })
 
@@ -2033,6 +2064,19 @@ class RequestUtil extends Util
         return $output;
     }
 
+    public function changeStatusAfterTransfer(Request $request)
+    {
+        error_log(json_encode($request->all()));
+        $requestId = $request->input('request_id');
+        $status = $request->input('status');
+
+        $request = UserRequest::find($requestId);
+        $request->status = $status;
+        //   $requestProcess->is_transfered_from_GM = 1;
+        $request->save();
+
+        return redirect()->back()->with('status', __('messages.status_updated'));
+    }
 
 
     ////// view request /////////////////// 

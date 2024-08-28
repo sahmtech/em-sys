@@ -171,7 +171,7 @@ class RequestController extends Controller
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->groupBy('request_id');
         $allRequestTypes = RequestsType::pluck('type', 'id');
         $companies = Company::all()->pluck('name', 'id');
-        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->select([
+        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->where('process.is_transfered_from_GM', 0)->select([
 
             'requests.request_no',
             'requests.id',
