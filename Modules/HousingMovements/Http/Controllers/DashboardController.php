@@ -42,6 +42,15 @@ class DashboardController extends Controller
         $this->requestUtil = $requestUtil;
     }
 
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('housingmovements.change_request_status');
+        $can_return_request = auth()->user()->can('housingmovements.return_request');
+        $can_show_request = auth()->user()->can('housingmovements.view_request');
+        return $this->requestUtil->getFilteredRequests('housingmovements', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
+
     public function index()
     {
 
@@ -96,13 +105,24 @@ class DashboardController extends Controller
             })->count();
         $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.created_at',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.company_id',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -157,8 +177,12 @@ class DashboardController extends Controller
                 ->make(true);
         }
 
-
-        return view('housingmovements::dashboard.hm_dashboard', compact('empty_rooms_count', 'leaves_count', 'available_shopping_count', 'reserved_shopping_count', 'final_exit_count'));
+        $counts =  $this->requestUtil->getCounts('housingmovements');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
+        return view('housingmovements::dashboard.hm_dashboard', compact('empty_rooms_count', 'leaves_count', 'available_shopping_count', 'reserved_shopping_count', 'final_exit_count', 'today_requests', 'pending_requests', 'completed_requests', 'all_requests'));
     }
 
     /**

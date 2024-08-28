@@ -16,6 +16,7 @@ use App\User;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\ModuleUtil;
+use App\Utils\RequestUtil;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Illuminate\Support\Facades\Session;
@@ -25,15 +26,18 @@ class AccountingController extends Controller
 {
     protected $accountingUtil;
     protected $moduleUtil;
+    protected $requestUtil;
+
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(AccountingUtil $accountingUtil, ModuleUtil $moduleUtil)
+    public function __construct(AccountingUtil $accountingUtil, ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
         $this->accountingUtil = $accountingUtil;
         $this->moduleUtil = $moduleUtil;
+        $this->requestUtil = $requestUtil;
     }
 
 
@@ -69,6 +73,16 @@ class AccountingController extends Controller
         Session::put('selectedCompanyId', $request->companyId);
         return redirect()->route('accounting.dashboard');
     }
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('accounting.change_request_status');
+        $can_return_request = auth()->user()->can('accounting.return_request');
+        $can_show_request = auth()->user()->can('accounting.view_request');
+        return $this->requestUtil->getFilteredRequests('accounting', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
+
+
     /**
      * @return Factory|View|Application
      * @throws ContainerExceptionInterface
@@ -205,13 +219,23 @@ class AccountingController extends Controller
 
             $all_charts[$k] = $chart;
         }
+
+        $counts =  $this->requestUtil->getCounts('accounting');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
         return view('accounting::accounting.dashboard')->with(compact(
             'coa_overview_chart',
             'all_charts',
             'coa_overview',
             'account_types',
             'end_date',
-            'start_date'
+            'start_date',
+            'today_requests',
+            'pending_requests',
+            'completed_requests',
+            'all_requests'
         ));
     }
 

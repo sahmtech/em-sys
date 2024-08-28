@@ -4,26 +4,122 @@
 
 @section('content')
     {{-- @include('accounting::layouts.nav') --}}
-    
+    <section class="content-header">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="row widget-statistic">
+                <a href="{{ route('accounting.getFilteredRequests', ['filter' => 'today_requests']) }}">
+                    <div class="col-md-3">
+                        <div class="custom_card custom_card_requests">
+
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.today_requests') }}</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 class="custom_card_requests_h5">{{ $today_requests ?? 0 }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ route('accounting.getFilteredRequests', ['filter' => 'pending_requests']) }}">
+                    <div class="col-md-3">
+                        <div class="custom_card custom_card_requests">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.pending_requests') }}</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 class="custom_card_requests_h5">{{ $pending_requests ?? 0 }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ route('accounting.getFilteredRequests', ['filter' => 'completed_requests']) }}">
+                    <div class="col-md-3">
+                        <div class="custom_card custom_card_requests">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.completed_requests') }}</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 class="custom_card_requests_h5">{{ $completed_requests ?? 0 }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ route('accounting.getFilteredRequests', ['filter' => 'all']) }}">
+                    <div class="col-md-3">
+                        <div class="custom_card custom_card_requests">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.all_requests') }}</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 class="custom_card_requests_h5">{{ $all_requests ?? 0 }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+
+            </div>
+            <br>
+
+        </div>
+    </section>
     <section class="content">
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group pull-right">
-                        <div class="input-group">
+                    <div class="input-group">
                         <button type="button" class="btn btn-primary" id="dashboard_date_filter">
                             <span>
-                            <i class="fa fa-calendar"></i> {{ __('messages.filter_by_date') }}
+                                <i class="fa fa-calendar"></i> {{ __('messages.filter_by_date') }}
                             </span>
                             <i class="fa fa-caret-down"></i>
                         </button>
-                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                @component('components.widget', ['class' => 'box-primary', 
-                'title' => __('accounting::lang.chart_of_account_overview')])
+                @component('components.widget', [
+                    'class' => 'box-primary',
+                    'title' => __('accounting::lang.chart_of_account_overview'),
+                ])
                     <div class="col-md-4">
                         <table class="table table-bordered table-striped">
                             <thead>
@@ -33,30 +129,29 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($account_types as $k => $v)
+                                @foreach ($account_types as $k => $v)
                                     @php
                                         $bal = 0;
-                                        foreach($coa_overview as $overview) {
-                                            if($overview->account_primary_type==$k && !empty($overview->balance)) {
-                                                $bal = (float)$overview->balance;
+                                        foreach ($coa_overview as $overview) {
+                                            if ($overview->account_primary_type == $k && !empty($overview->balance)) {
+                                                $bal = (float) $overview->balance;
                                             }
                                         }
                                     @endphp
 
                                     <tr>
                                         <td>
-                                            {{$v['label']}}
+                                            {{ $v['label'] }}
 
                                             {{-- Suffix CR/DR as per value --}}
-                                            @if($bal < 0)
-                                                {{ (in_array($v['label'], ['Asset', 'Expenses']) ? ' (CR)' : ' (DR)') }}
+                                            @if ($bal < 0)
+                                                {{ in_array($v['label'], ['Asset', 'Expenses']) ? ' (CR)' : ' (DR)' }}
                                             @endif
                                         </td>
                                         <td>
                                             @format_currency(abs($bal))
                                         </td>
                                     </tr>
-                                    
                                 @endforeach
                             </tbody>
                         </table>
@@ -69,46 +164,47 @@
         </div>
 
         <div class="row">
-            @foreach($all_charts as $key => $chart)
-            <div class="col-md-6">
-                @component('components.widget', ['class' => 'box-primary', 
-                'title' => __('accounting::lang.' . $key)])
-                {!! $chart->container() !!}
-                @endcomponent
-            </div>
+            @foreach ($all_charts as $key => $chart)
+                <div class="col-md-6">
+                    @component('components.widget', ['class' => 'box-primary', 'title' => __('accounting::lang.' . $key)])
+                        {!! $chart->container() !!}
+                    @endcomponent
+                </div>
             @endforeach
         </div>
     </section>
 @stop
 
 @section('javascript')
-{!! $coa_overview_chart->script() !!}
-@foreach($all_charts as $key => $chart)
-{!! $chart->script() !!}
+    {!! $coa_overview_chart->script() !!}
+    @foreach ($all_charts as $key => $chart)
+        {!! $chart->script() !!}
 
-<script type="text/javascript">
-    $(document).ready( function(){
-        dateRangeSettings.startDate = moment('{{$start_date}}', 'YYYY-MM-DD');
-        dateRangeSettings.endDate = moment('{{$end_date}}', 'YYYY-MM-DD');
-        $('#dashboard_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
-            $('#dashboard_date_filter span').html(
-                start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
-            );  
-            
-            var start = $('#dashboard_date_filter')
-                    .data('daterangepicker')
-                    .startDate.format('YYYY-MM-DD');
+        <script type="text/javascript">
+            $(document).ready(function() {
+                dateRangeSettings.startDate = moment('{{ $start_date }}', 'YYYY-MM-DD');
+                dateRangeSettings.endDate = moment('{{ $end_date }}', 'YYYY-MM-DD');
+                $('#dashboard_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+                    $('#dashboard_date_filter span').html(
+                        start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+                    );
 
-            var end = $('#dashboard_date_filter')
-                    .data('daterangepicker')
-                    .endDate.format('YYYY-MM-DD');
-            var url = "{{action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard')}}?start_date=" + start + '&end_date=' + end;
+                    var start = $('#dashboard_date_filter')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
 
-            window.location.href = url;
-        });
-    });
-</script>
-@endforeach
+                    var end = $('#dashboard_date_filter')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                    var url =
+                        "{{ action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard') }}?start_date=" +
+                        start + '&end_date=' + end;
+
+                    window.location.href = url;
+                });
+            });
+        </script>
+    @endforeach
 
 
 @stop

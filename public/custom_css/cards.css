@@ -44,6 +44,13 @@
 
 }
 
+.custom_card_requests{
+    background-color: #fabc17; 
+}
+.custom_card_requests_h5{
+    color:#000;
+}
+
 .widget-statistic2 {
     display: flex;
 }

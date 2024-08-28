@@ -96,7 +96,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/get_residency_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports'])->name('getResidencyreport');
 
-
+        Route::get('/filtered_requests/{filter}',  [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getFilteredRequests'])->name('work_cards.getFilteredRequests');
         Route::get('/work_cards_dashboard', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'word_cards_dashboard'])->name('essentials_word_cards_dashboard');
         Route::get('/work_cards_all_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_all_requests'])->name('work_cards_all_requests');
         Route::get('/work_cards_done_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_done_requests'])->name('work_cards_done_requests');
@@ -140,6 +140,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
     Route::prefix('employee_affairs')->group(function () {
+
+        Route::get('/filtered_requests/{filter}', [Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'getFilteredRequests'])->name('employee_affairs.getFilteredRequests');
+
+
+
         Route::get('/attachements', [Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'attachements'])->name('attachements');
         Route::post('/attachements/import', [Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'importAttachements'])->name('attachements.import');
 

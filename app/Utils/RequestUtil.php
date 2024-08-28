@@ -101,7 +101,10 @@ class RequestUtil extends Util
         }
         $todayDate = Carbon::now()->format('Y-m-d');
         $ownerTypes = [];
+        $view = '';
+
         if ($from == 'generalmanagement' || $from == 'generalmanagmentoffice') {
+            $view = 'generalmanagement::requests.filteredRequests';
             $departmentIds = EssentialsDepartment::pluck('id')->toArray();
             $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
                 ->where(function ($query) {
@@ -118,22 +121,104 @@ class RequestUtil extends Util
                 })->pluck('id')->toArray();
             $ownerTypes = ['employee', 'manager', 'worker'];
         }
+        if ($from == 'generalmanagmentoffice') {
+            $view = 'generalmanagmentoffice::dashboard.filteredRequests';
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+            $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+                ->where(function ($query) {
+                    $query->Where('name', 'like', '%مكتب%');
+                })
+                ->pluck('id')->toArray();
+            $roles = DB::table('roles')
+                ->where(function ($query) {
+                    $query->Where('name', 'like', '%مكتب%');
+                })->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
         if ($from == 'ceomanagment') {
+            $view = 'ceomanagment::requests.filteredRequests';
             $departmentIds = EssentialsDepartment::pluck('id')->toArray();
             $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
                 ->where(function ($query) {
                     $query->where('name', 'LIKE', '%تنفيذ%');
                 })
                 ->pluck('id')->toArray();
+            $roles = DB::table('roles')->where('name', 'LIKE', '%تنفيذ%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'employee_affairs') {
+            $view = 'essentials::employee_affairs.filteredRequests';
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+                ->where('name', 'LIKE', '%موظف%')
+                ->pluck('id')->toArray();
+
+            $roles = DB::table('roles')
+                ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'work_cards') {
+            $view = 'essentials::filteredRequests';
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+                ->where('name', 'LIKE', '%حكومية%')
+                ->pluck('id')
+                ->toArray();
+
+            $roles = DB::table('roles')
+                ->where('name', 'LIKE', '%حكومية%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'housingmovements') {
+            $view = 'housingmovements::dashboard.filteredRequests';
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+                ->where('name', 'LIKE', '%سكن%')
+                ->pluck('id')->toArray();
+
+            $roles = DB::table('roles')
+                ->where('name', 'LIKE', '%سكن%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'followup') {
+            $view = 'followup::filteredRequests';
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
+            })
+                ->pluck('id')->toArray();
+
             $roles = DB::table('roles')
                 ->where(function ($query) {
-                    $query->Where('name', 'like', '%مجلس%')
-                        ->orWhere('name', 'like', '%عليا%')
-                        ->orWhere('name', 'like', '%عام%');
+                    $query->where('name', 'LIKE', '%متابعة%')
+                        ->orWhere(function ($query) {
+                            $query->where('name', 'LIKE', '%تشغيل%')
+                                ->where('name', 'LIKE', '%أعمال%');
+                        })->orWhere(function ($query) {
+                            $query->where('name', 'LIKE', '%تشغيل%')
+                                ->where('name', 'LIKE', '%شركات%');
+                        });
                 })->pluck('id')->toArray();
             $ownerTypes = ['employee', 'manager', 'worker'];
         }
+        if ($from == 'accounting') {
+            $view = 'accounting::accounting.filteredRequests';
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'like', '%حاسب%')
+                    ->orWhere('name', 'like', '%مالي%');
+            })
+                ->pluck('id')->toArray();
 
+            $roles = DB::table('roles')
+                ->where(function ($query) {
+                    $query->where('name', 'like', '%حاسب%')
+                        ->orWhere('name', 'like', '%مالي%');
+                })->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
         $requestsProcess = UserRequest::select([
 
             'requests.request_no',
@@ -457,11 +542,6 @@ class RequestUtil extends Util
                 ->make(true);
         }
 
-        $view = '';
-
-        if ($from == 'generalmanagement') {
-            $view = 'generalmanagement::requests.filteredRequests';
-        }
 
         $users = DB::table('users')
             ->join('companies', 'users.company_id', '=', 'companies.id')
@@ -539,14 +619,48 @@ class RequestUtil extends Util
         }
         $todayDate = Carbon::now()->format('Y-m-d');
 
-        if ($from == 'generalmanagement' || $from == 'generalmanagmentoffice') {
+        if ($from == 'generalmanagement') {
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+        }
+        if ($from == 'generalmanagmentoffice') {
             $departmentIds = EssentialsDepartment::pluck('id')->toArray();
         }
         if ($from == 'ceomanagment') {
             $departmentIds = EssentialsDepartment::pluck('id')->toArray();
         }
-
-
+        if ($from == 'employee_affairs') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
+                ->pluck('id')->toArray();
+        }
+        if ($from == 'work_cards') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%حكومية%')
+                ->pluck('id')
+                ->toArray();
+        }
+        if ($from == 'housingmovements') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
+                ->pluck('id')->toArray();
+        }
+        if ($from == 'followup') {
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
+            })
+                ->pluck('id')->toArray();
+        }
+        if ($from == 'accounting') {
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'like', '%حاسب%')
+                    ->orWhere('name', 'like', '%مالي%');
+            })
+                ->pluck('id')->toArray();
+        }
         $requestsProcess = UserRequest::select([
 
             'requests.request_no',

@@ -8,23 +8,22 @@
 
 
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+
             <div class="row widget-statistic">
-
-
-                <a href="{{ route('filteredRequests', ['filter' => 'new']) }}">
+                <a href="{{ route('followup.getFilteredRequests', ['filter' => 'today_requests']) }}">
                     <div class="col-md-3">
-                        <div class="custom_card">
+                        <div class="custom_card custom_card_requests">
 
                             <div class="widget widget-one_hybrid widget-engagement">
                                 <div class="widget-heading">
                                     <div class="w-title">
                                         <div>
                                             <p class="w-value"></p>
-                                            <h5 style="color:#fff">{{ __('followup::lang.new_request') }}</h5>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.today_requests') }}</h5>
                                         </div>
                                         <div>
                                             <p class="w-value"></p>
-                                            <h4 style="color:#fff">{{ $new_requests }}</h4>
+                                            <h4 class="custom_card_requests_h5">{{ $today_requests ?? 0 }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -33,19 +32,19 @@
                         </div>
                     </div>
                 </a>
-                <a href="{{ route('filteredRequests', ['filter' => 'under_process']) }}">
+                <a href="{{ route('followup.getFilteredRequests', ['filter' => 'pending_requests']) }}">
                     <div class="col-md-3">
-                        <div class="custom_card">
+                        <div class="custom_card custom_card_requests">
                             <div class="widget widget-one_hybrid widget-engagement">
                                 <div class="widget-heading">
                                     <div class="w-title">
                                         <div>
                                             <p class="w-value"></p>
-                                            <h5 style="color:#fff">{{ __('followup::lang.on_going_request') }}</h5>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.pending_requests') }}</h5>
                                         </div>
                                         <div>
                                             <p class="w-value"></p>
-                                            <h4 style="color:#fff">{{ $on_going_requests }}</h4>
+                                            <h4 class="custom_card_requests_h5">{{ $pending_requests ?? 0 }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -54,19 +53,19 @@
                         </div>
                     </div>
                 </a>
-                <a href="{{ route('filteredRequests', ['filter' => 'finished']) }}">
+                <a href="{{ route('followup.getFilteredRequests', ['filter' => 'completed_requests']) }}">
                     <div class="col-md-3">
-                        <div class="custom_card">
+                        <div class="custom_card custom_card_requests">
                             <div class="widget widget-one_hybrid widget-engagement">
                                 <div class="widget-heading">
                                     <div class="w-title">
                                         <div>
                                             <p class="w-value"></p>
-                                            <h5 style="color:#fff">{{ __('followup::lang.finished_request') }}</h5>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.completed_requests') }}</h5>
                                         </div>
                                         <div>
                                             <p class="w-value"></p>
-                                            <h4 style="color:#fff">{{ $finished_requests }}</h4>
+                                            <h4 class="custom_card_requests_h5">{{ $completed_requests ?? 0 }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -75,19 +74,19 @@
                         </div>
                     </div>
                 </a>
-                <a href="{{ action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']) }}">
+                <a href="{{ route('followup.getFilteredRequests', ['filter' => 'all']) }}">
                     <div class="col-md-3">
-                        <div class="custom_card">
+                        <div class="custom_card custom_card_requests">
                             <div class="widget widget-one_hybrid widget-engagement">
                                 <div class="widget-heading">
                                     <div class="w-title">
                                         <div>
                                             <p class="w-value"></p>
-                                            <h5 style="color:#fff">{{ __('followup::lang.total_requests') }}</h5>
+                                            <h5 class="custom_card_requests_h5">{{ __('request.all_requests') }}</h5>
                                         </div>
                                         <div>
                                             <p class="w-value"></p>
-                                            <h4 style="color:#fff">{{ $total_requests }}</h4>
+                                            <h4 class="custom_card_requests_h5">{{ $all_requests ?? 0 }}</h4>
                                         </div>
                                     </div>
                                 </div>

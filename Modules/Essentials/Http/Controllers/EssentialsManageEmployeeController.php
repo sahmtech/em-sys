@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeesNotFoundExport;
 use App\PayrollGroupUser;
+use App\Utils\RequestUtil;
 use Exception;
 
 class EssentialsManageEmployeeController extends Controller
@@ -60,6 +61,7 @@ class EssentialsManageEmployeeController extends Controller
     protected $moduleUtil;
     protected $newArrivalUtil;
 
+    protected $requestUtil;
 
     /**
      * Constructor
@@ -67,12 +69,21 @@ class EssentialsManageEmployeeController extends Controller
      * @param  Util  $commonUtil
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil, RequestUtil $requestUtil)
     {
         $this->moduleUtil = $moduleUtil;
         $this->newArrivalUtil = $newArrivalUtil;
+        $this->requestUtil = $requestUtil;
     }
 
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('employee_affairs.change_request_status');
+        $can_return_request = auth()->user()->can('employee_affairs.return_request');
+        $can_show_request = auth()->user()->can('employee_affairs.view_request');
+        return $this->requestUtil->getFilteredRequests('employee_affairs', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
     public function getAmount($salaryType)
     {
 
@@ -635,12 +646,21 @@ class EssentialsManageEmployeeController extends Controller
 
                 ->make(true);
         }
+        $counts =  $this->requestUtil->getCounts('employee_affairs');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
         return view('essentials::employee_affairs.dashboard')
             ->with(compact(
                 'probation_period',
                 'contract_end_date',
                 'late_vacation',
-                'nullCount'
+                'nullCount',
+                'today_requests',
+                'pending_requests',
+                'completed_requests',
+                'all_requests'
             ));
     }
 

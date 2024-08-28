@@ -20,22 +20,23 @@ use Illuminate\Support\Carbon;
 use Modules\CEOManagment\Entities\RequestsType;
 use Yajra\DataTables\Facades\DataTables;
 use Alkoumi\LaravelHijriDate\Hijri;
-
+use App\Utils\RequestUtil;
 
 class EssentialsController extends Controller
 {
 
     protected $moduleUtil;
-
+    protected $requestUtil;
     /**
      * Constructor
      *
      * @param  Util  $commonUtil
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->requestUtil = $requestUtil;
     }
 
     /**
@@ -63,9 +64,21 @@ class EssentialsController extends Controller
 
         $chart = new CommonChart;
         $colors = [
-            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
-            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+            '#E75E82',
+            '#37A2EC',
+            '#FACD56',
+            '#5CA85C',
+            '#605CA8',
+            '#2f7ed8',
+            '#0d233a',
+            '#8bbc21',
+            '#910000',
+            '#1aadce',
+            '#492970',
+            '#f28f43',
+            '#77a1e5',
+            '#c42525',
+            '#a6c96a'
         ];
         $labels = [__('user.worker'), __('user.employee'), __('user.manager')];
         $values = [$num_workers, $num_employees, $num_managers];
@@ -443,13 +456,24 @@ class EssentialsController extends Controller
             ->groupBy('request_id');
         $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.created_at',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.company_id',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -495,7 +519,11 @@ class EssentialsController extends Controller
         }
 
 
-
+        $counts =  $this->requestUtil->getCounts('work_cards');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
         return view('essentials::work_cards_index')
             ->with(compact(
                 'last15_expire_date_residence',
@@ -503,10 +531,20 @@ class EssentialsController extends Controller
                 'escapeRequest',
                 'vacationrequest',
                 'final_visa',
-                'late_vacation'
+                'late_vacation',
+                'today_requests',
+                'pending_requests',
+                'completed_requests',
+                'all_requests'
             ));
     }
-
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('work_cards.change_request_status');
+        $can_return_request = auth()->user()->can('work_cards.return_request');
+        $can_show_request = auth()->user()->can('work_cards.view_request');
+        return $this->requestUtil->getFilteredRequests('work_cards', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
 
     private function __chartOptions()
     {
@@ -547,13 +585,25 @@ class EssentialsController extends Controller
                 ->groupBy('request_id');
 
             $requestsProcess = UserRequest::select([
-                'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason', 'requests.start_date',
+                'requests.request_no',
+                'requests.id',
+                'requests.request_type_id',
+                'requests.created_at',
+                'requests.reason',
+                'requests.start_date',
 
-                'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+                'process.id as process_id',
+                'process.status',
+                'process.note as note',
+                'process.procedure_id as procedure_id',
+                'process.superior_department_id as superior_department_id',
 
-                'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+                'wk_procedures.department_id as department_id',
+                'wk_procedures.can_return',
 
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'users.id_proof_number',
+                'users.company_id',
 
             ])
                 ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -698,9 +748,7 @@ class EssentialsController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function store(Request $request)
-    {
-    }
+    public function store(Request $request) {}
 
     /**
      * Show the specified resource.
@@ -728,16 +776,12 @@ class EssentialsController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function update(Request $request)
-    {
-    }
+    public function update(Request $request) {}
 
     /**
      * Remove the specified resource from storage.
      *
      * @return Response
      */
-    public function destroy()
-    {
-    }
+    public function destroy() {}
 }
