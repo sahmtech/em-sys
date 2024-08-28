@@ -27,6 +27,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/GMO_escalate_requests', [\Modules\GeneralManagmentOffice\Http\Controllers\RequestController::class, 'escalateRequests'])->name('GMO_escalate_requests');
         Route::post('/GMO_changeEscalationStatus', [\Modules\GeneralManagmentOffice\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('GMO_changeEscalationStatus');
         Route::get('/viewGmORequest/{requestId}', [\Modules\GeneralManagmentOffice\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewGmORequest');
-        Route::get('/filtered_requests/{filter}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('generalmanagmentoffice.getFilteredRequests');
+        Route::get('/filtered_requests/{filter}', [\Modules\GeneralManagmentOffice\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('generalmanagmentoffice.getFilteredRequests');
     });
 });

@@ -113,7 +113,7 @@ class FollowUpController extends Controller
     {
         $can_change_status = auth()->user()->can('followup.change_request_status');
         $can_return_request = auth()->user()->can('followup.return_request');
-        $can_show_request = auth()->user()->can('followup.view_request');
+        $can_show_request = auth()->user()->can('followup.show_request');
         return $this->requestUtil->getFilteredRequests('followup', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
     }
 

@@ -79,9 +79,9 @@ class EssentialsManageEmployeeController extends Controller
 
     public function getFilteredRequests($filter = null)
     {
-        $can_change_status = auth()->user()->can('employee_affairs.change_request_status');
-        $can_return_request = auth()->user()->can('employee_affairs.return_request');
-        $can_show_request = auth()->user()->can('employee_affairs.view_request');
+        $can_change_status = auth()->user()->can('essentials.change_employees_request_status');
+        $can_return_request = auth()->user()->can('essentials.return_employees_request');
+        $can_show_request = auth()->user()->can('essentials.show_employees_request');
         return $this->requestUtil->getFilteredRequests('employee_affairs', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
     }
     public function getAmount($salaryType)

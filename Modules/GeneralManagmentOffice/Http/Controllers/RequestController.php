@@ -57,6 +57,18 @@ class RequestController extends Controller
             ],
         ];
     }
+
+
+
+
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('generalmanagmentoffice.change_request_status');
+        $can_return_request = auth()->user()->can('generalmanagmentoffice.return_request');
+        $can_show_request = auth()->user()->can('generalmanagmentoffice.view_request');
+        return $this->requestUtil->getFilteredRequests('followup', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
     public function index()
     {
 

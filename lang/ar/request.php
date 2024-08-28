@@ -296,7 +296,7 @@ return [
 
   'transfer_to_department' => 'تحويل إلى إدارة',
   'transfer' => 'تحويل ',
-  'tranfered_from_GM' => 'تم التحويل من الإدارة العامة'
+  'tranfered_from_GM' => 'تم التحويل من الإدارة العامة',
 
   'today_requests' => 'طلبات اليوم',
   'pending_requests' => 'الطلبات المعلقة',

@@ -87,8 +87,14 @@ class EssentialsController extends Controller
             ->dataset(__('user.employee_staff'), 'pie', $values)
             ->color($colors);
 
-        return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
+        $counts =  $this->requestUtil->getCounts('generalmanagement');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
+        return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers', 'today_requests', 'pending_requests', 'completed_requests', 'all_requests'));
     }
+
 
     public function hijriToGregorian(Request $request)
     {
@@ -540,9 +546,9 @@ class EssentialsController extends Controller
     }
     public function getFilteredRequests($filter = null)
     {
-        $can_change_status = auth()->user()->can('work_cards.change_request_status');
-        $can_return_request = auth()->user()->can('work_cards.return_request');
-        $can_show_request = auth()->user()->can('work_cards.view_request');
+        $can_change_status = auth()->user()->can('essentials.workcards_requests_change_status');
+        $can_return_request = auth()->user()->can('essentials.return_workcards_request');
+        $can_show_request = auth()->user()->can('essentials.show_workcards_request');
         return $this->requestUtil->getFilteredRequests('work_cards', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
     }
 

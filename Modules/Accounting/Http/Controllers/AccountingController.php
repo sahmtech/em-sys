@@ -76,9 +76,9 @@ class AccountingController extends Controller
 
     public function getFilteredRequests($filter = null)
     {
-        $can_change_status = auth()->user()->can('accounting.change_request_status');
-        $can_return_request = auth()->user()->can('accounting.return_request');
-        $can_show_request = auth()->user()->can('accounting.view_request');
+        $can_change_status = auth()->user()->can('accounting.change_status');
+        $can_return_request = auth()->user()->can('accounting.return_the_request');
+        $can_show_request = auth()->user()->can('accounting.show_request');
         return $this->requestUtil->getFilteredRequests('accounting', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
     }
 

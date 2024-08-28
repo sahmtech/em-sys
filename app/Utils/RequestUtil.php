@@ -219,6 +219,12 @@ class RequestUtil extends Util
                 })->pluck('id')->toArray();
             $ownerTypes = ['employee', 'manager', 'worker'];
         }
+        if ($from == 'essentials') {
+            $view = 'essentials::requests.filteredRequests';
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+            $roles = DB::table('roles')->where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
         $requestsProcess = UserRequest::select([
 
             'requests.request_no',
@@ -660,6 +666,9 @@ class RequestUtil extends Util
                     ->orWhere('name', 'like', '%مالي%');
             })
                 ->pluck('id')->toArray();
+        }
+        if ($from == 'essentials') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
         }
         $requestsProcess = UserRequest::select([
 

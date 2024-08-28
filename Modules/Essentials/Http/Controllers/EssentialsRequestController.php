@@ -112,6 +112,13 @@ class EssentialsRequestController extends Controller
 
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'pending_and_old');
     }
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('essentials.change_HR_status');
+        $can_return_request = auth()->user()->can('essentials.return_essentials_request');
+        $can_show_request = auth()->user()->can('essentials.show_essentials_request');
+        return $this->requestUtil->getFilteredRequests('essentials', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
     public function doneEmployeeAffairsRequests()
     {
 

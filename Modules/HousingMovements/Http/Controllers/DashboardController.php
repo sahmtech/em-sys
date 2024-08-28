@@ -45,8 +45,8 @@ class DashboardController extends Controller
 
     public function getFilteredRequests($filter = null)
     {
-        $can_change_status = auth()->user()->can('housingmovements.change_request_status');
-        $can_return_request = auth()->user()->can('housingmovements.return_request');
+        $can_change_status = auth()->user()->can('housingmovements.change_status');
+        $can_return_request = auth()->user()->can('housingmovements.return_the_request');
         $can_show_request = auth()->user()->can('housingmovements.view_request');
         return $this->requestUtil->getFilteredRequests('housingmovements', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
     }
