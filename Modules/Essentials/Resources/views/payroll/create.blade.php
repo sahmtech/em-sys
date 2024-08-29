@@ -568,6 +568,7 @@
                                     <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
                                     <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
                                     <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                                    <p><strong>@lang('worker.location'):</strong> <span id="worker_location"></span></p>
                                 </div>
                             </div>
                         </div>
@@ -603,7 +604,7 @@
                 // Handle Table Row Click
                 $('#workers_table_timesheet tbody').on('click', 'tr', function(e) {
                     clickedCellIndex = $(e.target).closest('td')
-                .index(); // Set the index on row click
+                        .index(); // Set the index on row click
 
                     // Ensure the clicked cell is not an editable cell
                     if (!$(e.target).closest('td').hasClass('editable')) {
@@ -698,7 +699,7 @@
                                             .text(
                                                 workerData
                                                 .residence_permit_expiration
-                                                );
+                                            );
                                         $('#worker_passport_number').text(
                                             workerData
                                             .passport_number);
@@ -715,6 +716,9 @@
                                         $('#worker_assigned_to').text(
                                             workerData
                                             .assigned_to);
+                                        $('#worker_location').text(
+                                            workerData
+                                            .worker_location);
                                         $('#nationality').text(workerData
                                             .nationality);
                                         $('#iban').text(workerData.iban);
@@ -751,13 +755,13 @@
 
                     // Reset the IBAN field
                     $('#salaryModalBody td[name="iban"], #workerInfoBody span#iban').each(
-                function() {
-                        var input = $(this).find('input');
-                        if (input.length > 0) {
-                            var value = input.val();
-                            $(this).html(value);
-                        }
-                    });
+                        function() {
+                            var input = $(this).find('input');
+                            if (input.length > 0) {
+                                var value = input.val();
+                                $(this).html(value);
+                            }
+                        });
 
                     // Reset buttons
                     $('.edit-salary').show();
@@ -777,11 +781,11 @@
 
                     // Make the IBAN field editable in both salary and worker info
                     $('#salaryModalBody td[name="iban"], #workerInfoBody span#iban').each(
-                function() {
-                        var value = $(this).text();
-                        $(this).html('<input type="text" class="form-control" value="' +
-                            value + '">');
-                    });
+                        function() {
+                            var value = $(this).text();
+                            $(this).html('<input type="text" class="form-control" value="' +
+                                value + '">');
+                        });
 
                     $('.edit-salary').hide();
                     $('.save-salary').show();
@@ -802,7 +806,7 @@
                 // Restrict numeric input for all editable cells except IBAN
                 $(document).on('input', '.allowance-input', function() {
                     this.value = this.value.replace(/[^0-9.]/g,
-                    ''); // Allow only numbers and a single decimal point
+                        ''); // Allow only numbers and a single decimal point
                 });
 
                 // Handle Save Button Click
@@ -810,7 +814,7 @@
                     e.preventDefault();
                     var updatedData = {};
                     updatedData['user_id'] =
-                    clickedWorkerId; // Use the worker ID captured from the row click
+                        clickedWorkerId; // Use the worker ID captured from the row click
 
                     // Collect the values using name attributes
                     $('#salaryModalBody td[name], #salaryModalBody input[name], #workerInfoBody span[name]')
@@ -903,9 +907,9 @@
             var work_days = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='work_days']").val()) || 0;
             var absence_deduction = absence * (total / work_days);
-            $("span[data-index='" + index + "'][data-field='absence_deduction']").text(absence_deduction.toFixed(0));
+            $("span[data-index='" + index + "'][data-field='absence_deduction']").text(absence_deduction.toFixed(2));
             $("input.form-hidden[data-index='" + index + "'][data-field='absence_deduction']").val(absence_deduction
-                .toFixed(0));
+                .toFixed(2));
         }
 
         function updateLateDeduction(index) {
@@ -961,9 +965,9 @@
                 "'][data-field='other_allowance']").val()) || 0;
 
             var total = salary + housing_allowance + transportation_allowance + other_allowance;
-            $("span[data-index='" + index + "'][data-field='total']").text(total.toFixed(0));
+            $("span[data-index='" + index + "'][data-field='total']").text(total.toFixed(2));
 
-            $("input.form-hidden[data-index='" + index + "'][data-field='total']").val(total.toFixed(0));
+            $("input.form-hidden[data-index='" + index + "'][data-field='total']").val(total.toFixed(2));
         }
 
         function updateTotalDeduction(index) {
@@ -980,7 +984,7 @@
                 "'][data-field='loan']").val()) || 0;
 
             var total_deduction = violations + absence_deduction + late_deduction + other_deductions + loan;
-            $("span[data-index='" + index + "'][data-field='total_deduction']").text(total_deduction.toFixed(0));
+            $("span[data-index='" + index + "'][data-field='total_deduction']").text(total_deduction.toFixed(2));
             $("input.form-hidden[data-index='" + index + "'][data-field='total_deduction']").val(total_deduction.toFixed(
                 2));
         }
@@ -1001,7 +1005,7 @@
 
 
                 var total_additions = over_time_hours_addition + additional_addition + other_additions;
-                $("span[data-index='" + index + "'][data-field='total_additions']").text(total_additions.toFixed(0));
+                $("span[data-index='" + index + "'][data-field='total_additions']").text(total_additions.toFixed(2));
                 $("input.form-hidden[data-index='" + index + "'][data-field='total_additions']").val(total_additions
                     .toFixed(
                         2));
@@ -1020,7 +1024,7 @@
 
 
             var final_salary = total - total_deduction + total_additions;
-            $("span[data-index='" + index + "'][data-field='final_salary']").text(final_salary.toFixed(0));
+            $("span[data-index='" + index + "'][data-field='final_salary']").text(final_salary.toFixed(2));
             $("input.form-hidden[data-index='" + index + "'][data-field='final_salary']").val(final_salary.toFixed(
                 2));
         }

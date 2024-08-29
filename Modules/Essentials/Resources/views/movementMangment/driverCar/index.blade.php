@@ -92,7 +92,7 @@
                     </div>
                 @endcomponent
             </div>
-
+            @include('essentials::movementMangment.driverCar.delete')
 
     </section>
     <!-- /.content -->
@@ -103,7 +103,21 @@
 
 
     <script type="text/javascript">
+        // Your existing JavaScript code for other features
         $(document).ready(function() {
+
+
+            $(document).on('click', '.delete_user_button', function() {
+                const driverCarId = $(this).data('id'); // Get the ID from the button's data attribute
+                const deleteUrl = '{{ url('movment/cardrivers-delete') }}/' +
+                    driverCarId; // Construct the delete URL
+
+                // Set the form action to the delete URL with the ID
+                $('#delete_driver_form').attr('action', deleteUrl);
+
+                // Open the modal
+                $('#delete_confirmation_modal').modal('show');
+            });
 
 
             $('#carTypeSelect').select2();

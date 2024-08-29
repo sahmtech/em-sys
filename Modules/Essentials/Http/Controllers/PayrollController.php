@@ -416,6 +416,7 @@ class PayrollController extends Controller
             'border_no' => $worker->border_no,
             'company_name' => optional($worker->company)->name,
             'assigned_to' => optional($worker->assignedTo)->name,
+            'worker_location' => optional($worker->assignedTo)->name,
         ];
         return response()->json(['data' => $data]);
     }

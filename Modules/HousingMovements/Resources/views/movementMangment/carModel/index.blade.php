@@ -29,38 +29,9 @@
                                     {{ $type->name_ar . ' - ' . $type->name_en }}</option>
                             @endforeach
                         </select>
-                        {{-- <div class="form-group">
-                            {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}
-                            {!! Form::select('carType_id', $carTypes->name, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
 
-                        </div> --}}
                     </div>
-                    {{-- <div class="col-sm-4">
-                        <div class="form-group row">
-                            {!! Form::label('search_lable', __('housingmovements::lang.search') . '  ') !!}
-                            {!! Form::text('search', '', [
-                                'class' => 'form-control',
-                            
-                                'placeholder' => __('housingmovements::lang.name_in_ar_en'),
-                                'id' => 'search',
-                            ]) !!}
 
-                        </div>
-                    </div> --}}
-                    {{-- <div class="col-sm-4" style="padding-right: 3px;">
-                        <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            @lang('housingmovements::lang.search')</button>
-                        @if ($after_serch)
-                            <a class="btn btn-primary pull-right m-5 "
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@index') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@index') }}">
-                                @lang('housingmovements::lang.viewAll') </a>
-                        @endif
-                    </div> --}}
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -98,9 +69,7 @@
                             </thead>
 
                         </table>
-                        {{-- <center class="mt-5">
-                            {{ $carModles->links() }}
-                        </center> --}}
+
                     </div>
 
 
