@@ -329,9 +329,9 @@ class CustomAdminSidebarMenu
 
 
                 $menu->url(
-                    ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
+                    ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_pending_requests']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
                     __('generalmanagement::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_pending_requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
             if ($is_admin   || auth()->user()->can('generalmanagement.view_notifications') || auth()->user()->can('generalmanagement.send_notifications')) {
@@ -468,7 +468,7 @@ class CustomAdminSidebarMenu
             if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') || auth()->user()->can('ceomanagment.view_CEO_escalate_requests')) {
 
                 $menu->url(
-                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
+                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'ceo_pending_requests']),
                     __('ceomanagment::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );

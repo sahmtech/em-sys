@@ -190,6 +190,8 @@ class RequestUtil extends Util
 
             'wk_procedures.action_type as action_type',
             'wk_procedures.department_id as department_id',
+            'wk_procedures.department_id as department_now',
+
             'wk_procedures.can_return',
             'wk_procedures.start as start',
 
@@ -355,11 +357,15 @@ class RequestUtil extends Util
 
                     return $all_users[$row->created_by];
                 })
-                ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds,  $departmentIdsForGeneralManagment, $statuses) {
+                ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departments, $departmentIds,  $departmentIdsForGeneralManagment, $statuses) {
                     if ($row->status && $row->is_transfered_from_GM == 0) {
                         $status = '';
                         if ($row->action_type === 'accept_reject' || $row->action_type === null) {
-                            $status = trans('request.' . $row->status);
+                            if ($row->department_now && $row->status == 'pending') {
+                                $status = trans('request.' . $row->status) . '-' . $departments[$row->department_now];
+                            } else {
+                                $status = trans('request.' . $row->status);
+                            }
                             if ($departmentIdsForGeneralManagment) {
                                 if ($row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
                                     if ($is_admin || $can_change_status) {
