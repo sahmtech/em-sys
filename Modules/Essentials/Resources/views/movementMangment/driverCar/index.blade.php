@@ -81,15 +81,10 @@
                             </thead>
 
                         </table>
-                        {{-- <center class="mt-5">
-                            {{ $Cars->links() }}
-                        </center> --}}
                     </div>
-
 
                     <div class="modal fade" id="add_car_model" tabindex="-1" role="dialog"></div>
-                    <div class="modal fade" id="edit_driver_model" tabindex="-1" role="dialog">
-                    </div>
+                    <div class="modal fade" id="edit_driver_model" tabindex="-1" role="dialog"></div>
                 @endcomponent
             </div>
             @include('essentials::movementMangment.driverCar.delete')
@@ -101,29 +96,27 @@
 
 @section('javascript')
 
-
     <script type="text/javascript">
-        // Your existing JavaScript code for other features
         $(document).ready(function() {
 
-
+            // Handle delete button click
             $(document).on('click', '.delete_user_button', function() {
                 const driverCarId = $(this).data('id'); // Get the ID from the button's data attribute
                 const deleteUrl = '{{ url('movment/cardrivers-delete') }}/' +
                     driverCarId; // Construct the delete URL
 
                 // Set the form action to the delete URL with the ID
-                $('#delete_driver_form').attr('action', deleteUrl);
+                $('#form_delete_car_driver').attr('action', deleteUrl);
 
                 // Open the modal
-                $('#delete_confirmation_modal').modal('show');
+                $('#modal_delete_car_driver').modal('show');
             });
 
-
+            // Initialize select2 for dropdowns
             $('#carTypeSelect').select2();
             $('#driver_select').select2();
 
-
+            // Initialize DataTable
             carDrivers_table = $('#carDrivers_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -132,17 +125,13 @@
                     data: function(d) {
                         if ($('#carTypeSelect').val()) {
                             d.carTypeSelect = $('#carTypeSelect').val();
-                            // console.log(d.project_name_filter);
                         }
                         if ($('#driver_select').val()) {
                             d.driver_select = $('#driver_select').val();
-                            // console.log(d.project_name_filter);
                         }
                     }
                 },
-                columns: [
-                    // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
-                    {
+                columns: [{
                         "data": "driver"
                     },
                     {
@@ -158,12 +147,13 @@
                         "data": "plate_number"
                     },
                     {
-                        data: 'action'
+                        "data": "action"
                     }
                 ]
             });
-            $(document).on('click', 'button.delete_user_button', function() {
 
+            // Handle delete functionality via AJAX
+            $(document).on('click', 'button.delete_user_button', function() {
                 var href = $(this).data('href');
                 var data = $(this).serialize();
                 $.ajax({
@@ -172,7 +162,7 @@
                     dataType: "json",
                     data: data,
                     success: function(result) {
-                        if (result.success == true) {
+                        if (result.success) {
                             toastr.success(result.msg);
                             carDrivers_table.ajax.reload();
                         } else {
@@ -180,13 +170,10 @@
                         }
                     }
                 });
-
-
             });
 
-
+            // Handle edit functionality via AJAX
             $(document).on('click', 'button.edit_user_button', function() {
-
                 var href = $(this).data('href');
                 var data = $(this).serialize();
                 $.ajax({
@@ -195,7 +182,7 @@
                     dataType: "json",
                     data: data,
                     success: function(result) {
-                        if (result.success == true) {
+                        if (result.success) {
                             toastr.success(result.msg);
                             users_table.ajax.reload();
                         } else {
@@ -203,16 +190,13 @@
                         }
                     }
                 });
-
-
             });
 
-
-            $('#carTypeSelect,#driver_select').on('change',
-                function() {
-                    carDrivers_table.ajax.reload();
-                });
-
+            // Reload DataTable on filter change
+            $('#carTypeSelect,#driver_select').on('change', function() {
+                carDrivers_table.ajax.reload();
+            });
         });
     </script>
+
 @endsection

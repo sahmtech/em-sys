@@ -110,8 +110,9 @@ class DriverCarController extends Controller
                             //     <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                             // ';
                             $html .= '
-                <button data-id="' . $row->id . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
-                ';
+                            <button data-id="' . $row->id . '" class="btn btn-xs btn-danger delete_user_button">
+                                <i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '
+                            </button>';
                         }
 
                         return $html;
