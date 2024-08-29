@@ -19,8 +19,8 @@
                 <h3>@lang('essentials::lang.view_employee')</h3>
             </div>
             <!-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
-                                                                                                                                                                                                {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
-                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                            {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
+                                                                                                                                                                                                                                        </div> -->
         </div>
 
         <div class="row">
@@ -85,6 +85,11 @@
 
                         <div style=" pointer-events: none; opacity: 0.5;">
 
+                            <label>
+                                <input type="checkbox" name="contracts"
+                                    {{ $user->profile_image ? 'checked' : '' }}>@lang('essentials::lang.profile_picture')
+                            </label>
+                            <br>
                             <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
                             </label>

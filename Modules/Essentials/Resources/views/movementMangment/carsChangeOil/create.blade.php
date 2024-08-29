@@ -119,6 +119,29 @@
 <script>
     $(document).ready(function() {
 
+
+        // Set the default date to one month from now
+        let dateInput = document.getElementById('date');
+        let today = new Date();
+        today.setMonth(today.getMonth() + 1); // Add one month
+        let month = today.getMonth() + 1; // Months are zero-based in JavaScript
+        let day = today.getDate();
+        let year = today.getFullYear();
+        if (month < 10) month = '0' + month;
+        if (day < 10) day = '0' + day;
+        dateInput.value = year + '-' + month + '-' + day;
+
+        // Update next_change_oil when current_speedometer is entered
+        $('#current_speedometer').on('input', function() {
+            let currentSpeedometer = parseInt($(this).val());
+            if (!isNaN(currentSpeedometer)) {
+                $('#next_change_oil').val(currentSpeedometer + 5000);
+            } else {
+                $('#next_change_oil').val('');
+            }
+        });
+
+
         $('#add_carsChangeOil_model').on('shown.bs.modal', function(e) {
             $('#car_type_select').select2({
                 dropdownParent: $(

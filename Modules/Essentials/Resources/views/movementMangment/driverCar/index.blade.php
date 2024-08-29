@@ -44,10 +44,10 @@
                                     </option>
                                 @endforeach
                             </select>
-                         
+
                         </div>
                     </div>
-             
+
                     {!! Form::close() !!}
                 @endcomponent
             </div>

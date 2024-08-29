@@ -87,6 +87,11 @@
                         <div>
 
                             <label>
+                                <input type="checkbox" name="contracts"
+                                    {{ $user->profile_image ? 'checked' : '' }}>@lang('essentials::lang.profile_picture')
+                            </label>
+                            <br>
+                            <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
                             </label>
                             <br>
@@ -288,7 +293,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>@lang('worker.sponser')</th>
-                                                    <th>@lang('worker.project')</th> 
+                                                    <th>@lang('worker.project')</th>
                                                     <th>@lang('essentials::lang.date')</th>
                                                     <th>@lang('worker.wd')</th>
                                                     <th>@lang('worker.basic')</th>
@@ -320,10 +325,10 @@
                                             <tbody>
                                                 @foreach ($timesheets as $timesheet)
                                                     <tr>
-                                                        
+
                                                         <td>{{ $timesheet['sponser'] }}</td>
                                                         <td>{{ $timesheet['project'] }}</td>
-                                                         <td>{{ $timesheet['timesheet_date'] }}</td>
+                                                        <td>{{ $timesheet['timesheet_date'] }}</td>
                                                         <td>{{ $timesheet['wd'] }}</td>
                                                         <td>{{ number_format($timesheet['basic'], 2) }}</td>
                                                         <td>{{ number_format($timesheet['monthly_cost'], 2) }}</td>

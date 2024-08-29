@@ -29,7 +29,7 @@
 
                         <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
                             alt="User profile picture">
-                     
+
 
                         <h3 class="profile-username text-center">
                             {{ $user->user_full_name }}
@@ -75,6 +75,11 @@
                         <div>
 
                             <label>
+                                <input type="checkbox" name="contracts"
+                                    {{ $user->profile_image ? 'checked' : '' }}>@lang('essentials::lang.profile_picture')
+                            </label>
+                            <br>
+                            <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
                             </label>
                             <br>
@@ -104,19 +109,19 @@
                         @if (!empty($documents))
                             <div class="checkbox-group">
                                 @foreach ($documents as $document)
-                                @if (isset($document->file_path) || isset($document->attachment))
-                                    <div class="checkbox">
-                                        <label>
-                                            @if ($document->file_path || $document->attachment)
-                                                <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
-                                                    data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                    @if (isset($document->file_path) || isset($document->attachment))
+                                        <div class="checkbox">
+                                            <label>
+                                                @if ($document->file_path || $document->attachment)
+                                                    <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
+                                                        data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                    </a>
+                                                @else
                                                     {{ trans('followup::lang.' . $document->type) }}
-                                                </a>
-                                            @else
-                                                {{ trans('followup::lang.' . $document->type) }}
-                                            @endif
-                                        </label>
-                                    </div>
+                                                @endif
+                                            </label>
+                                        </div>
                                     @endif
                                 @endforeach
                             </div>
@@ -152,7 +157,7 @@
                     </div>
                 </div>
 
-{{-- 
+                {{-- 
      <div class="box box-primary" id="add-attachments-box">
                 <div class="box-body box-profile text-center">
                     <div class="row">
@@ -166,10 +171,10 @@
                 </div>
             </div>
  --}}
-            
+
             </div>
 
-@include('followup::workers.add_attachment_modal')
+            @include('followup::workers.add_attachment_modal')
             <div class="col-md-9">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs nav-justified">

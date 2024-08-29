@@ -90,10 +90,10 @@
 
                     <div class="modal fade" id="add_car_model" tabindex="-1" role="dialog"></div>
                     <div class="modal fade" id="edit_car_model" tabindex="-1" role="dialog"></div>
-                        <div class="modal fade" id="show_car_model" tabindex="-1" role="dialog"></div>
-                        {{-- </div> --}}
-                    @endcomponent
-                </div>
+                    <div class="modal fade" id="show_car_model" tabindex="-1" role="dialog"></div>
+                    {{-- </div> --}}
+                @endcomponent
+            </div>
 
 
     </section>
