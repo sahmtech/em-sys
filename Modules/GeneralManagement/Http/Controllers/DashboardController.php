@@ -2,20 +2,35 @@
 
 namespace Modules\GeneralManagement\Http\Controllers;
 
+use App\AccessRole;
+use App\Utils\RequestUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class DashboardController extends Controller
 {
+
+    protected $requestUtil;
+    public function __construct(RequestUtil $requestUtil)
+    {
+        $this->requestUtil = $requestUtil;
+    }
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
-        return view('generalmanagement::dashboard.generalmanagement_dashboard');
-    }  
+        $counts =  $this->requestUtil->getCounts('generalmanagement');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
+        return view('generalmanagement::dashboard.generalmanagement_dashboard')
+            ->with(compact('today_requests', 'pending_requests', 'completed_requests', 'all_requests'));
+    }
+
 
     /**
      * Show the form for creating a new resource.

@@ -29,6 +29,7 @@ use App\TransactionSellLine;
 use Modules\InternationalRelations\Entities\IrVisaCard;
 use Modules\Sales\Entities\SalesUnSupportedWorker;
 use App\Utils\NewArrivalUtil;
+use Modules\Sales\Entities\SalesUnSupportedOperationOrder;
 
 class WorkerController extends Controller
 {
@@ -59,6 +60,68 @@ class WorkerController extends Controller
         ];
     }
 
+    public function storeOrderOperation(Request $request)
+    {
+        try {
+            DB::transaction(function () use ($request) {
+                $operation_order = [
+                    'order_id',
+                    'quantity',
+                    'Industry',
+                    'Interview',
+                    'Location',
+                    'Delivery',
+                ];
+
+                $operation_details = $request->only($operation_order);
+
+                $latestRecord = SalesUnSupportedOperationOrder::orderBy('operation_order_no', 'desc')->first();
+
+                if ($latestRecord) {
+                    $latestRefNo = $latestRecord->operation_order_no;
+                    $numericPart = (int)substr($latestRefNo, 3);
+                    $numericPart++;
+                    $operation_details['operation_order_no'] = 'UOP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                } else {
+                    $operation_details['operation_order_no'] = 'UOP1111';
+                }
+
+                $operation_details['orderQuantity'] = $request->input('quantity');
+                $operation_details['workers_order_id'] = $request->input('order_id');
+
+                SalesUnSupportedOperationOrder::create($operation_details);
+                $order = SalesUnSupportedWorker::where('id', $request->input('order_id'))->first();
+
+
+                if ($order) {
+                    $order->remaining_quantity_for_operation = $order->remaining_quantity_for_operation - $request->input('quantity');
+
+                    if ($order->remaining_quantity_for_operation == 0) {
+                        $order->status = 'ended';
+                    } else {
+                        $order->status = 'pending';
+                    }
+
+                    $order->save();
+                }
+            });
+
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+
+        return redirect()->route('ir.orderOperationForUnsupportedWorkers')->with($output);
+    }
 
     public function indexUnsupported()
     {
