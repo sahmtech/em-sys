@@ -37,7 +37,7 @@ class ConnectorController extends Controller
                     $html = '';
                     if ($is_admin) {
 
-                        $html .= '<button class="btn btn-xs btn-danger delete_job_title_button" data-href="' . route('user_device_delete', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        $html .= '<a class="btn btn-xs btn-danger" href="' . route('user_device_delete', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</a>';
                     }
 
                     return $html;
@@ -50,11 +50,20 @@ class ConnectorController extends Controller
 
     public function user_device_delete($id)
     {
-        UserDevice::where('id', $id)->delete();
-        $output = [
-            'success' => true,
-            'msg' => __('lang_v1.deleted_successfully'),
-        ];
+        try {
+            UserDevice::where('id', $id)->delete();
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.deleted_successfully'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
         return redirect()->back()->with('status', $output);
     }
 
