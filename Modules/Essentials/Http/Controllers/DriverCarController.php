@@ -75,7 +75,9 @@ class DriverCarController extends Controller
                 ->editColumn('driver', function ($row) {
                     return $row->user?->id_proof_number . ' - ' . $row->user?->first_name . ' ' . $row->user?->last_name . ' - ' . $row->user?->essentialsEmployeeAppointmets?->specialization?->name ?? '';
                 })
-
+                ->addColumn('status', function ($row) {
+                    return $row->ended_at ? __('housingmovements::lang.ended') : __('housingmovements::lang.active');
+                })
                 ->editColumn('car_typeModel', function ($row) {
                     return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
                 })
@@ -111,7 +113,7 @@ class DriverCarController extends Controller
                             // ';
                             $html .= '
                             <button data-id="' . $row->id . '" class="btn btn-xs btn-danger delete_user_button">
-                                <i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '
+                                <i class="glyphicon glyphicon-trash"></i>' . __("housingmovements::lang.confirm_delete") . '
                             </button>';
                         }
 
@@ -126,7 +128,7 @@ class DriverCarController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'driver', 'car_typeModel', 'plate_number', 'counter_number', 'delivery_date'])
+                ->rawColumns(['status', 'action', 'driver', 'car_typeModel', 'plate_number', 'counter_number', 'delivery_date'])
                 ->make(true);
         }
         $car_Drivers = DriverCar::whereIn('user_id', $userIds)->get();
@@ -332,17 +334,21 @@ class DriverCarController extends Controller
                 // Save the uploaded image if there is one
                 if ($request->hasFile('car_image')) {
                     $imagePath = $request->file('car_image')->store('car_images');
-                    $driverCar->car_image = $imagePath; // assuming you have a field to store the image path
+                    $driverCar->update([
+                        'end_car_image' => $imagePath
+                    ]);
                 }
 
-                // Save the next_change_oil value
-                $driverCar->next_change_oil = $request->input('next_change_oil');
 
-                $driverCar->delete();
+                $driverCar->update([
+                    'end_counter_number' => $request->input('next_change_oil'),
+                    'ended_by' => auth()->user()->id,
+                    'ended_at' => Carbon::now(),
+                ]);
 
                 $output = [
                     'success' => true,
-                    'msg' => 'تم حذف السائق بنجاح',
+                    'msg' => 'تم الغاء التفويض بنجاح',
                 ];
             } catch (Exception $e) {
                 return response()->json([
