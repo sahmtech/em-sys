@@ -332,7 +332,7 @@ class ApiCustomerController extends ApiController
                     'transactions.contract_form as contract_form',
                     'transactions.contact_id',
                     'transactions.id as tra'
-                ])->where('contact_id', $contact_id)->get();
+                ])->where('transactions.contact_id', $contact_id)->get();
 
 
             $cont = [];
