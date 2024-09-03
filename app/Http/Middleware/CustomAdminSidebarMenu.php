@@ -3171,6 +3171,11 @@ class CustomAdminSidebarMenu
                             ['icon' => 'fa fas fa-user-circle', 'active' => request()->segment(1) == 'types-of-service']
                         );
                     }
+                    $sub->url(
+                        action([\Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device']),
+                        __('connector::lang.user_device'),
+                        ['icon' => 'fa fas fa-user-circle', 'active' => request()->segment(1) == 'user_device']
+                    );
                 },
                 ['icon' => 'fa fas fa-cog', 'id' => 'tour_step3']
             );
