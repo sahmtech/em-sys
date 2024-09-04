@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
@@ -111,10 +112,12 @@ class DriverCarController extends Controller
                             //             $html .= '
                             //     <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                             // ';
-                            $html .= '
+                            if (!($row->ended_at)) {
+                                $html .= '
                             <button data-id="' . $row->id . '" class="btn btn-xs btn-danger delete_user_button">
                                 <i class="glyphicon glyphicon-trash"></i>' . __("housingmovements::lang.confirm_delete") . '
                             </button>';
+                            }
                         }
 
                         return $html;
@@ -325,38 +328,37 @@ class DriverCarController extends Controller
     //         return $output;
     //     }
     // }
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        if ($request->ajax()) {
-            try {
-                $driverCar = DriverCar::find($request->input('driver_car_id'));
 
-                // Save the uploaded image if there is one
-                if ($request->hasFile('car_image')) {
-                    $imagePath = $request->file('car_image')->store('car_images');
-                    $driverCar->update([
-                        'end_car_image' => $imagePath
-                    ]);
-                }
+        try {
+            $driverCar = DriverCar::find($id);
 
-
+            // Save the uploaded image if there is one
+            if (request()->hasFile('car_image')) {
+                $imagePath = request()->file('car_image')->store('car_images');
                 $driverCar->update([
-                    'end_counter_number' => $request->input('next_change_oil'),
-                    'ended_by' => auth()->user()->id,
-                    'ended_at' => Carbon::now(),
-                ]);
-
-                $output = [
-                    'success' => true,
-                    'msg' => 'تم الغاء التفويض بنجاح',
-                ];
-            } catch (Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'msg' => __('messages.something_went_wrong'),
+                    'end_car_image' => $imagePath
                 ]);
             }
-            return response()->json($output);
+
+
+            $driverCar->update([
+                'end_counter_number' => request()->input('next_change_oil'),
+                'ended_by' => auth()->user()->id,
+                'ended_at' => Carbon::now(),
+            ]);
+
+            $output = [
+                'success' => true,
+                'msg' => 'تم الغاء التفويض بنجاح',
+            ];
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
         }
+        return redirect()->back()->with('status', $output);
     }
 }

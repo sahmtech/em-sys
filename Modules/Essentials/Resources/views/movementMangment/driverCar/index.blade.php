@@ -115,12 +115,12 @@
                                         <div class="row" style="margin-top: 5px;">
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    {!! Form::label('next_change_oil', __('housingmovements::lang.next_change_oil') . '  ') !!}
+                                                    {!! Form::label('next_change_oil', __('housingmovements::lang.counter_number') . '  ') !!}
                                                     <span style="color: red; font-size:10px"> *</span>
                                                     {!! Form::number('next_change_oil', '', [
                                                         'class' => 'form-control',
                                                         'required',
-                                                        'placeholder' => __('housingmovements::lang.next_change_oil'),
+                                                        'placeholder' => __('housingmovements::lang.counter_number'),
                                                         'id' => 'input_delete_next_change_oil',
                                                     ]) !!}
                                                 </div>
