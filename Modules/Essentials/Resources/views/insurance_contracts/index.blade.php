@@ -67,6 +67,7 @@
                     <thead>
                         <tr>
                             <th>@lang('essentials::lang.insurance_company')</th>
+                            <th>@lang('essentials::lang.company')</th>
                             <th>@lang('essentials::lang.insurance_policy_number')</th>
                             <th>@lang('essentials::lang.insurance_start_date')</th>
                             <th>@lang('essentials::lang.insurance_end_date')</th>
@@ -97,8 +98,18 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
                                 {!! Form::select('insurance_company', $insuramce_companies, null, [
-                                    'class' => 'form-control',
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%;padding:2px;',
                                     'placeholder' => __('essentials::lang.insurance_company'),
+                                    'required',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-12">
+                                {!! Form::label('company_ids', __('essentials::lang.business') . ':') !!}
+                                {!! Form::select('company_ids[]', $companies, null, [
+                                    'class' => 'form-control select2',
+                                    'multiple',
+                                    'style' => 'width:100%;padding:2px;',
                                     'required',
                                 ]) !!}
                             </div>
@@ -143,6 +154,81 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="editInsuranceContractModal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    {!! Form::open(['route' => ['updateInsuranceContract', ''], 'method' => 'put', 'id' => 'edit_contract_form']) !!}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">@lang('essentials::lang.edit_contract')</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                {!! Form::label('edit_insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
+                                {!! Form::select('insurance_company', $insuramce_companies, null, [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%;padding:2px;',
+                                    'id' => 'edit_insurance_company', // Add unique id
+                                    'placeholder' => __('essentials::lang.insurance_company'),
+                                    'required',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-12">
+                                {!! Form::label('edit_company_ids', __('essentials::lang.business') . ':') !!}
+                                {!! Form::select('company_ids[]', $companies, null, [
+                                    'class' => 'form-control select2',
+                                    'multiple',
+                                    'style' => 'width:100%;padding:2px;',
+                                    'id' => 'edit_company_ids', // Add unique id
+                                    'required',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('edit_policy_number', __('essentials::lang.insurance_policy_number') . ':*') !!}
+                                {!! Form::number('policy_number', null, [
+                                    'class' => 'form-control',
+                                    'id' => 'edit_policy_number', // Add unique id
+                                    'placeholder' => __('essentials::lang.insurance_policy_number'),
+                                    'required',
+                                ]) !!}
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('edit_insurance_start_date', __('essentials::lang.insurance_start_date') . ':*') !!}
+                                {!! Form::date('insurance_start_date', null, [
+                                    'class' => 'form-control',
+                                    'id' => 'edit_insurance_start_date', // Add unique id
+                                    'placeholder' => __('essentials::lang.insurance_start_date'),
+                                    'required',
+                                ]) !!}
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('edit_insurance_end_date', __('essentials::lang.insurance_end_date') . ':*') !!}
+                                {!! Form::date('insurance_end_date', null, [
+                                    'class' => 'form-control',
+                                    'id' => 'edit_insurance_end_date', // Add unique id
+                                    'placeholder' => __('essentials::lang.insurance_end_date'),
+                                    'required',
+                                ]) !!}
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+
 
     </section>
     <!-- /.content -->
@@ -151,6 +237,36 @@
 
 @section('javascript')
     <script type="text/javascript">
+        $(document).ready(function() {
+            // Handle the click event on the edit button
+            $(document).on('click', '.edit_button', function() {
+                var id = $(this).data('id');
+                var insurance_company = $(this).data('insurance_company');
+                var policy_number = $(this).data('policy_number');
+                var start_date = $(this).data('start_date');
+                var end_date = $(this).data('end_date');
+                var companies = $(this).data('companies');
+
+                // Populate the modal fields
+                $('#edit_insurance_company').val(insurance_company).trigger('change');
+                $('#edit_policy_number').val(policy_number);
+                $('#edit_insurance_start_date').val(start_date);
+                $('#edit_insurance_end_date').val(end_date);
+
+                $('#edit_company_ids').val(null).trigger('change'); // Clear previous selections
+                if (companies.length > 0) {
+                    $('#edit_company_ids').val(companies).trigger('change'); // Set new selections
+                }
+
+                // Update the form action URL with the correct contract ID
+                var formAction = "{{ route('updateInsuranceContract', '') }}/" + id;
+                $('#edit_contract_form').attr('action', formAction);
+
+                // Fetch company ids dynamically if needed (you can add more data fetching logic here)
+            });
+        });
+
+
         $(document).ready(function() {
             var insurance_contracts_table;
 
@@ -177,6 +293,9 @@
                 },
                 columns: [{
                         data: 'insurance_company_id'
+                    },
+                    {
+                        data: 'company'
                     },
                     {
                         data: 'policy_number'

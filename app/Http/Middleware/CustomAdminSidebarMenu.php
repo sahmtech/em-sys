@@ -979,13 +979,13 @@ class CustomAdminSidebarMenu
                         && request()->segment(2) == 'insurance_contracts'],
                 );
             }
-            // if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
-            //     $menu->url(
-            //         route('get_companies_insurance_contracts'),
-            //         __('essentials::lang.business_insurance_contracts'),
-            //         ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'get_companies_insurance_contracts'],
-            //     );
-            // }
+            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
+                $menu->url(
+                    route('get_companies_insurance_contracts'),
+                    __('essentials::lang.business_insurance_contracts'),
+                    ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'get_companies_insurance_contracts'],
+                );
+            }
 
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_classes')) {
                 $menu->dropdown(
