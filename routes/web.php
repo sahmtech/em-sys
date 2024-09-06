@@ -842,6 +842,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/products/validate_variation_skus', [ProductController::class, 'validateVaritionSkus']); //validates multiple skus at once
     Route::get('/products/quick_add', [ProductController::class, 'quickAdd']);
     Route::post('/products/save_quick_product', [ProductController::class, 'saveQuickProduct'])->name('save_Quick_Product');
+    Route::post('/products/save-quick-product', [ProductController::class, 'saveQuickProduct_'])->name('save_Quick_Product_');
     Route::get('/products/get-combo-product-entry-row', [ProductController::class, 'getComboProductEntryRow']);
     Route::post('/products/toggle-woocommerce-sync', [ProductController::class, 'toggleWooCommerceSync']);
 

@@ -843,6 +843,8 @@ class AccountingUtil extends Util
             'payroll_employee',
             'payroll_worker',
             'payroll_remote_employee',
+            'receipt_vouchers',
+            'payment_vouchers',
 
         ];
         $types = [
@@ -857,8 +859,9 @@ class AccountingUtil extends Util
             'payroll',
             'payroll',
             'payroll',
+            'receipt_vouchers',
+            'payment_vouchers'
 
-            
 
         ];
         $payment_status = [

@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
-            {!! Form::open(['method' => 'post', 'id' => 'create_payment_voucher_form' ]) !!}
+            {!! Form::open(['route' => 'payment_vouchers-index-store','method' => 'post', 'id' => 'create_payment_voucher_form' ]) !!}
             @csrf
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>

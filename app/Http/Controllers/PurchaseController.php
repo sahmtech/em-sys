@@ -24,6 +24,7 @@ use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\PurchaseCreatedOrModified;
 use App\Utils\Util;
+use Illuminate\Support\Facades\Session;
 
 class PurchaseController extends Controller
 {
@@ -297,6 +298,7 @@ class PurchaseController extends Controller
 
         try {
             $business_id = $request->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
             //Check if subscribed or not
             if (! $this->moduleUtil->isSubscribed($business_id)) {
@@ -347,6 +349,7 @@ class PurchaseController extends Controller
             $transaction_data['final_total'] = $this->productUtil->num_uf($transaction_data['final_total'], $currency_details) * $exchange_rate;
 
             $transaction_data['business_id'] = $business_id;
+            $transaction_data['company_id'] = $company_id;
             $transaction_data['created_by'] = $user_id;
             $transaction_data['type'] = 'purchase';
             $transaction_data['payment_status'] = 'due';
