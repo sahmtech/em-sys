@@ -71,7 +71,9 @@ class TransactionUtil extends Util
             'invoice_no' => $invoice_no,
             'ref_no' => '',
             'source' => !empty($input['source']) ? $input['source'] : null,
-            'total_before_tax' => $invoice_total['total_before_tax'] - $input['order_tax'],
+            // 'total_before_tax' => $invoice_total['total_before_tax'] - $input['order_tax'],
+            'total_before_tax' => floatval($invoice_total['total_before_tax']) - floatval($input['order_tax']),
+
             'transaction_date' => $input['transaction_date'],
             'tax_id' => !empty($input['tax_rate_id']) ? $input['tax_rate_id'] : null,
             'discount_type' => !empty($input['discount_type']) ? $input['discount_type'] : null,
@@ -5968,7 +5970,7 @@ class TransactionUtil extends Util
         ]);
 
         //payment type option is available on pay contact modal
-        $is_reverse = $request->has('is_reverse') && $request->input('is_reverse') == 1 ? true : false;
+           $is_reverse = $request->has('is_reverse') && $request->input('is_reverse') == 1 ? true : false;
 
         $payment_types = $this->payment_types();
 
@@ -5976,13 +5978,13 @@ class TransactionUtil extends Util
         if (!array_key_exists($inputs['method'], $payment_types)) {
             throw new \Exception('Payment method not found');
         }
-        $inputs['paid_on'] = $request->input('paid_on', \Carbon::now()->toDateTimeString());
+           $inputs['paid_on'] = $request->input('paid_on', \Carbon::now()->toDateTimeString());
         if ($format_data) {
             $inputs['paid_on'] = $this->uf_date($inputs['paid_on'], true);
             $inputs['amount'] = $this->num_uf($inputs['amount']);
         }
 
-        $inputs['created_by'] = auth()->user()->id;
+           $inputs['created_by'] = auth()->user()->id;
         $inputs['payment_for'] = $contact_id;
         $inputs['business_id'] = $business_id;
         $inputs['company_id'] = $company_id;
@@ -5997,8 +5999,10 @@ class TransactionUtil extends Util
             }
         }
 
-        $contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
-            ->findOrFail($contact_id);
+     
+           $contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
+           ->where('id', $contact_id)
+           ->first();
 
         $due_payment_type = $request->input('due_payment_type');
         if (empty($due_payment_type)) {
@@ -6037,7 +6041,7 @@ class TransactionUtil extends Util
         //Upload documents if added
         $inputs['document'] = $this->uploadFile($request, 'document', 'documents');
 
-        $parent_payment = TransactionPayment::create($inputs);
+           $parent_payment = TransactionPayment::create($inputs);
 
         $inputs['transaction_type'] = $due_payment_type;
 

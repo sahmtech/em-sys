@@ -48,7 +48,9 @@ class ReceiptVouchersController extends Controller
                 $q->where('type', 'sell');
             })
             ->orderBy('id');
-        $contacts = Contact::whereNot('id', 1)->where('type', 'customer')->get();
+        // $contacts = Contact::whereNot('id', 1)->where('type', 'customer')->get();
+        $contacts = Contact::whereNot('id', 1)->whereIn('type', [ 'customer'])->get();
+
         $transactionUtil = new TransactionUtil();
         $moduleUtil = new ModuleUtil();
         $accounts = $moduleUtil->accountsDropdown($business_id, $company_id, true, false, true);
@@ -88,9 +90,9 @@ class ReceiptVouchersController extends Controller
                     'contact_id',
                     function ($row) {
                         if ($row->contact) {
-                            return $row->contact->first_name ?: '';
+                            return $row->contact->supplier_business_name ?: '';
                         } elseif ($row->transaction) {
-                            return $row->transaction->contact ? $row->transaction->contact->first_name ?: '' : '';
+                            return $row->transaction->contact ? $row->transaction->contact->supplier_business_name ?: '' : '';
                         } else {
                             return '';
                         }
@@ -114,7 +116,7 @@ class ReceiptVouchersController extends Controller
     {
         $transaction_id = $request->input('transaction_id');
         if ($transaction_id) {
-            // try {
+            try {
                 $business_id = $request->session()->get('user.business_id');
                  $company_id = Session::get('selectedCompanyId');
 
@@ -179,6 +181,7 @@ class ReceiptVouchersController extends Controller
 
                     $this->transactionUtil->activityLog($transaction, 'payment_edited', $transaction_before);
 
+                    
                     DB::commit();
                 }
 
@@ -186,21 +189,21 @@ class ReceiptVouchersController extends Controller
                     'success' => true,
                     'msg' => __('purchase.payment_added_success'),
                 ];
-            // } catch (\Exception $e) {
-            //     DB::rollBack();
-            //     $msg = __('messages.something_went_wrong');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $msg = __('messages.something_went_wrong');
 
-            //     if (get_class($e) == \App\Exceptions\AdvanceBalanceNotAvailable::class) {
-            //         $msg = $e->getMessage();
-            //     } else {
-            //         Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            //     }
+                if (get_class($e) == \App\Exceptions\AdvanceBalanceNotAvailable::class) {
+                    $msg = $e->getMessage();
+                } else {
+                    Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+                }
 
-            //     $output = [
-            //         'success' => false,
-            //         'msg' => $msg,
-            //     ];
-            // }
+                $output = [
+                    'success' => false,
+                    'msg' => $msg,
+                ];
+            }
 
             return redirect()->back()->with(['status' => $output]);
         } else {
@@ -208,7 +211,7 @@ class ReceiptVouchersController extends Controller
                 //temp  abort(403, 'Unauthorized action.');
             }
 
-            // try {
+            try {
                 DB::beginTransaction();
 
                 $business_id = request()->session()->get('business.id');
@@ -243,15 +246,15 @@ class ReceiptVouchersController extends Controller
                     'success' => true,
                     'msg' => __('purchase.payment_added_success'),
                 ];
-            // } catch (\Exception $e) {
-            //     DB::rollBack();
-            //     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            //     $output = [
-            //         'success' => false,
-            //         'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
-            //     ];
-            // }
+                $output = [
+                    'success' => false,
+                    'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
+                ];
+            }
 
             return redirect()->back()->with(['status' => $output]);
         }

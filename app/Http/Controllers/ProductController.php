@@ -1467,7 +1467,7 @@ class ProductController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        try {
+        // try {
             $business_id = $request->session()->get('user.business_id');
             $form_fields = [
                 'name',
@@ -1604,10 +1604,128 @@ class ProductController extends Controller
                 'variation' => $product->variations->first(),
                 'locations' => $product_locations,
             ];
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        //     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        //     $output = [
+        //         'success' => 0,
+        //         'msg' => __('messages.something_went_wrong'),
+        //     ];
+        // }
+
+        return $output;
+    }
+
+
+
+
+
+
+
+    public function saveQuickProduct_(Request $request)
+    {
+        if (!auth()->user()->can('product.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $business_id = $request->session()->get('user.business_id');
+            $form_fields = [
+                'name', 'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'tax_type', 'sku',
+                'alert_quantity', 'type', 'sub_unit_ids', 'sub_category_id', 'weight', 'product_description', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20'
+            ];
+
+            $module_form_fields = $this->moduleUtil->getModuleData('product_form_fields');
+            if (!empty($module_form_fields)) {
+                foreach ($module_form_fields as $key => $value) {
+                    if (!empty($value) && is_array($value)) {
+                        $form_fields = array_merge($form_fields, $value);
+                    }
+                }
+            }
+            $product_details = $request->only($form_fields);
+
+            $product_details['type'] = empty($product_details['type']) ? 'single' : $product_details['type'];
+            $product_details['business_id'] = $business_id;
+            $product_details['created_by'] = $request->session()->get('user.id');
+            if (!empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) {
+                $product_details['enable_stock'] = 1;
+                //TODO: Save total qty
+                //$product_details['total_qty_available'] = 0;
+            }
+            if (!empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) {
+                $product_details['not_for_selling'] = 1;
+            }
+            if (empty($product_details['sku'])) {
+                $product_details['sku'] = ' ';
+            }
+
+            if (!empty($product_details['alert_quantity'])) {
+                $product_details['alert_quantity'] = $this->productUtil->num_uf($product_details['alert_quantity']);
+            }
+
+            $expiry_enabled = $request->session()->get('business.enable_product_expiry');
+            if (!empty($request->input('expiry_period_type')) && !empty($request->input('expiry_period')) && !empty($expiry_enabled)) {
+                $product_details['expiry_period_type'] = $request->input('expiry_period_type');
+                $product_details['expiry_period'] = $this->productUtil->num_uf($request->input('expiry_period'));
+            }
+
+            if (!empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) {
+                $product_details['enable_sr_no'] = 1;
+            }
+
+            $product_details['warranty_id'] = !empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
+
+            DB::beginTransaction();
+
+            $product = Product::create($product_details);
+            event(new ProductsCreatedOrModified($product_details, 'added'));
+
+            if (empty(trim($request->input('sku')))) {
+                $sku = $this->productUtil->generateProductSku($product->id);
+                $product->sku = $sku;
+                $product->save();
+            }
+
+            $this->productUtil->createSingleProductVariation(
+                $product->id,
+                $product->sku,
+                $request->input('single_dpp'),
+                $request->input('single_dpp_inc_tax'),
+                $request->input('profit_percent'),
+                $request->input('single_dsp'),
+                $request->input('single_dsp_inc_tax')
+            );
+
+            if ($product->enable_stock == 1 && !empty($request->input('opening_stock'))) {
+                $user_id = $request->session()->get('user.id');
+
+                $transaction_date = $request->session()->get('financial_year.start');
+                $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+
+                $this->productUtil->addSingleProductOpeningStock($business_id, $product, $request->input('opening_stock'), $transaction_date, $user_id);
+            }
+
+            //Add product locations
+            $product_locations = $request->input('product_locations');
+            if (!empty($product_locations)) {
+                $product->product_locations()->sync($product_locations);
+            }
+
+            DB::commit();
+
+            $output = [
+                'success' => 1,
+                'msg' => __('product.product_added_success'),
+                'product' => $product,
+                'variation' => $product->variations->first(),
+                'locations' => $product_locations,
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
             $output = [
                 'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
@@ -1617,6 +1735,9 @@ class ProductController extends Controller
         return $output;
     }
 
+
+
+    
     /**
      * Display the specified resource.
      *

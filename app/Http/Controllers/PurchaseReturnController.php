@@ -321,7 +321,7 @@ class PurchaseReturnController extends Controller
             $this->transactionUtil->updatePaymentStatus($return_transaction->id, $return_transaction->final_total);
 
             $util = new Util();
-            $auto_migration = $util->createTransactionJournal_entry($return_transaction->id,);
+            $auto_migration = $util->createTransactionJournal_entry($return_transaction->id);
 
 
             

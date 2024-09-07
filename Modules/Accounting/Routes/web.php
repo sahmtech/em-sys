@@ -131,11 +131,12 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('/opening-balance/save-importe', [OpeningBalanceController::class, 'importe_openingBalance'])->name('save-importe_openingBalance');
     Route::resource('receipt_vouchers', 'ReceiptVouchersController');
     Route::get('/accounting/receipt_vouchers/load/data', [ReceiptVouchersController::class, 'loadNeededData'])->name('receipt_vouchers.load');
-    Route::resource('payment_vouchers', 'PaymentVouchersController');
-    Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
-    Route::post('/accounting/payment_vouchers', [PaymentVouchersController::class, 'store'])->name('index-store');
+    Route::post('/accounting/payment_vouchers', [PaymentVouchersController::class, 'store'])->name('payment_vouchers-index-store');
     Route::get('/accounting/payment_vouchers', [PaymentVouchersController::class, 'index'])->name('index-payment_vouchers');
 
+    Route::resource('payment_vouchers', 'PaymentVouchersController');
+    Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
+  
 
     Route::get('transactions', 'TransactionController@index')->name('getTransaction');
     Route::get('transactions/map', 'TransactionController@map');
