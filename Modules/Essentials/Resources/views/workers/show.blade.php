@@ -50,24 +50,35 @@
                             <li class="list-group-item">
                                 <b>{{ __('lang_v1.status_for_user') }}</b>
                                 @if ($user->status == 'active')
-                                    <span class="label label-success pull-right">
+                                    <span class="label label-success pull-right" style="padding: 6px">
                                         @lang('business.is_active')
                                     </span>
                                 @else
-                                    <span class="label label-danger pull-right">
+                                    <span class="label label-danger pull-right" style="padding: 6px">
                                         @lang('lang_v1.inactive')
                                     </span>
                                 @endif
                             </li>
+                            @if ($user->status != 'active')
+                                <li class="list-group-item">
+                                    <b>{{ __('lang_v1.status') }}</b>
+
+                                    <span class="label label-success pull-right" style="padding: 6px">
+                                        {{ __('essentials::lang.' . $user->sub_status) }}
+
+                                    </span>
+
+                                </li>
+                            @endif
                             <li class="list-group-item">
                                 <b>{{ __('followup::lang.is_booking') }}</b>
                                 @if ($user->booking)
-                                    <span class="label label-danger pull-right">
+                                    <span class="label label-danger pull-right" style="padding: 6px">
 
                                         @lang('followup::lang.booking')
                                     </span>
                                 @else
-                                    <span class="label label-success pull-right">
+                                    <span class="label label-success pull-right" style="padding: 6px">
                                         @lang('followup::lang.not_booking')
                                     </span>
                                 @endif

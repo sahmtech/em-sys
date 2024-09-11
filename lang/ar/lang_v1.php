@@ -1552,7 +1552,8 @@ return [
     'is_approved_by_accounting' => 'الاعتماد من المالية',
     'issue payrolls' => 'إصدار الراتب',
     'sending_success' => 'تم الارسال بنجاح',
-    'show_in_words' => 'الراتب المستحق كتابة'
+    'show_in_words' => 'الراتب المستحق كتابة',
+    'status' => 'الحالة',
 
 
 
