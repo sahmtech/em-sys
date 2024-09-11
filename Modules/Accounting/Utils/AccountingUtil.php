@@ -21,7 +21,12 @@ class AccountingUtil extends Util
     public function allowedCompanies()
     {
         $user_id = auth()->user()->id;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_access_all = auth()->user()->can('accounting.access_to_all') ? true : false;
         $companies_ids = AccountingUserAccessCompany::where('user_id', $user_id)->pluck('company_id')->unique()->toArray();
+        if ($can_access_all ||  $is_admin) {
+            $companies_ids = Company::pluck('id')->unique()->toArray();
+        }
         return  array_unique($companies_ids);
     }
 

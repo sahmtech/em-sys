@@ -318,9 +318,8 @@ class EssentailsworkersController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id, $can_edit = false)
+    public function show($id, $can_edit = false, $from = null)
     {
-
         error_log($can_edit);
         $business_id = request()->session()->get('user.business_id');
 
@@ -438,7 +437,6 @@ class EssentailsworkersController extends Controller
                 'timesheet_date' => $user->timesheetGroup->timesheet_date,
             ];
         });
-
         return view('essentials::workers.show')->with(compact(
             'user',
             'view_partials',
@@ -455,6 +453,7 @@ class EssentailsworkersController extends Controller
             'payrolls',
             'timesheets',
             'can_edit',
+            'from'
         ));
     }
 

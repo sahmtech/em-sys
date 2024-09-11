@@ -168,12 +168,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/employee_affairs_department_employees', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'employee_affairs_department_employees'])->name('employee_affairs_department_employees');
         //workers
         Route::get('/workers_affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'index'])->name('workers_affairs');
-        Route::get('/show_workers_affairs/{id}/{can_edit?}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show_workers_affairs');
+        Route::get('/show_workers_affairs/{id}/{can_edit?}/{from?}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show_workers_affairs')->defaults('from', 'employee_affairs');;
         Route::get('/add_workers_affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'create'])->name('add_workers_affairs');
         Route::post('/store-worker-affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'store'])->name('store-worker-affairs');
         Route::put('/updateWorkerProfilePicture/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'updateWorkerProfilePicture'])->name('updateWorkerProfilePicture');
-        Route::get('/editWorker/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'])->name('editWorker');
-        Route::put('/updateWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'])->name('updateWorker');
+        Route::get('/editWorker/{id}/edit/{from?}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'])->name('editWorker');
+        Route::put('/updateWorker/{id}/{from?}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'])->name('updateWorker');
         Route::post('/worker/{id}/salaries', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class,  'getSalaries'])->name('worker.salaries');
         Route::post('/worker/{id}/timesheet', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'getTimesheet'])->name('worker.timesheet');
 
@@ -423,9 +423,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
     Route::prefix('hrm')->group(function () {
 
         Route::get('/get-essentials-workers',  [Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'index'])->name('get-essentials-workers');
-        Route::get('/show-essentials-workers/{id}/{can_edit?}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show-essentials-workers');
+        Route::get('/show-essentials-workers/{id}/{can_edit?}/{from?}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show-essentials-workers')->defaults('from', 'hrm');
         Route::post('/get-worker-info', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'getWorkerInfo'])->name('get-worker-info');
-
+        Route::get('/editWorker/{id}/edit/{from?}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'])->name('hrm.editWorker');
         Route::get('/get-amount/{salaryType}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'getAmount'])->name('get-amount');
         Route::get('/dashboard', [Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard'])->name('hrmDashboard');
         Route::resource('/leave-type', 'Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController');

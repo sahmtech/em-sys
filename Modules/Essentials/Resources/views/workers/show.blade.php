@@ -85,7 +85,9 @@
                             </li>
                         </ul>
                         @if ($can_edit)
-                            <a href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'], [$user->id]) }}"
+                            <a href="{{ $from == 'hrm'
+                                ? route('hrm.editWorker', ['id' => $user->id, 'from' => $from])
+                                : route('editWorker', ['id' => $user->id, 'from' => $from]) }}"
                                 class="btn btn-primary btn-block">
                                 <i class="glyphicon glyphicon-edit"></i>
                                 @lang('messages.edit')

@@ -14,7 +14,7 @@
         {!! Form::open([
             'url' => action(
                 [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'],
-                [$user->id],
+                ['id' => $user->id, 'from' => $from],
             ),
             'files' => true,
             'method' => 'PUT',
