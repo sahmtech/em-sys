@@ -1513,7 +1513,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.crud_all_manual_attendance')) {
+                $menu->url(
 
+                    action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'manual_attendance']),
+                    __('essentials::lang.crud_all_manual_attendance'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'manual_attendance'],
+                );
+            }
 
 
             if ($is_admin  || auth()->user()->can('essentials.view_HR_requests')) {

@@ -270,6 +270,7 @@ return [
   'view_leave_balances' => 'عرض رصيد الإجازات',
   "crud_own_leave" => "إضافة / عرض الإجازة الخاصة",
   "crud_all_attendance" => "عرض كل الحضور",
+  'crud_all_manual_attendance' => 'الحضور والانصراف اليدوي',
   "view_own_attendance" => "عرض الحضور الخاص بي",
   "crud_department" => "عرض قسم",
   "crud_designation" => "عرض تسمية",

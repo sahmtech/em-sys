@@ -568,6 +568,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/import-attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'importAttendance']);
         Route::resource('/attendance', 'Modules\Essentials\Http\Controllers\AttendanceController');
+        Route::get('/manual_attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'manual_attendance'])->name('manual_attendance');
+        Route::post('/add_manual_attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'add_manual_attendance'])->name('add_manual_attendance');
+        Route::post('/end_manual_attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'end_manual_attendance'])->name('end_manual_attendance');
         Route::post('/clock-in-clock-out', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'clockInClockOut']);
 
         Route::post('/validate-clock-in-clock-out', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'validateClockInClockOut']);

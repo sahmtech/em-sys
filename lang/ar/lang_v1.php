@@ -1554,6 +1554,7 @@ return [
     'sending_success' => 'تم الارسال بنجاح',
     'show_in_words' => 'الراتب المستحق كتابة',
     'status' => 'الحالة',
+    'already_clocked_in' => 'تم تسجيل الحضور مسبقا',
 
 
 

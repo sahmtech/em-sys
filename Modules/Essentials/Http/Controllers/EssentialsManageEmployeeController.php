@@ -331,7 +331,6 @@ class EssentialsManageEmployeeController extends Controller
             $users->where('users.status', $request->input('status'));
         }
         if (!empty($request->input('department')) && $request->input('department') != 'all') {
-            error_log($request->input('department'));
             $users->where('users.essentials_department_id', $request->input('department'));
         }
         if (!empty($request->input('contract_type')) && $request->input('contract_type') != 'all') {
