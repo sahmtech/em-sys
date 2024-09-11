@@ -348,6 +348,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.show_payroll_checkpoint_financial'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'accounting.access_to_all',
+                        'label' => __('essentials::lang.access_to_all'),
+                        'default' => false,
+                    ],
 
                 ]
 

@@ -46,6 +46,7 @@ class AccountingController extends Controller
         $companies = Company::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_accounting_view_companies = auth()->user()->can('accounting.view_companies') ? true : false;
+        $can_access_all = auth()->user()->can('accounting.access_to_all') ? true : false;
 
         if (!($is_admin || $can_accounting_view_companies)) {
             return redirect()->route('home')->with('status', [
@@ -53,7 +54,7 @@ class AccountingController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        if (!$is_admin) {
+        if (!$is_admin && !$can_access_all) {
             $companies = Company::whereIn('id', $this->accountingUtil->allowedCompanies())->get();
         }
         $cardsOfCompanies = [];

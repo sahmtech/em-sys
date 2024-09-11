@@ -1965,7 +1965,7 @@ return [
   'view_payroll_checkpoint_financial' => 'عرض صفحة الرواتب (المدير المالي)',
   'confirm_payroll_checkpoint_financial' => 'اعتماد الرواتب (المدير المالي)',
   'show_payroll_checkpoint_financial' => 'عرض تفاصيل الرواتب (المدير المالي)',
-
+  'access_to_all' => 'الوصول إلى كل الشركات',
   'hr_management_cleared' => 'مدير الموارد',
   'hr_management_cleared_at' => 'تاريخ الاعتماد',
   'hr_management_cleared_by' => 'تم من قبل',
