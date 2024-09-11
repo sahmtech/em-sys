@@ -84,8 +84,13 @@
                                 @endif
                             </li>
                         </ul>
-
-
+                        @if ($can_edit)
+                            <a href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'], [$user->id]) }}"
+                                class="btn btn-primary btn-block">
+                                <i class="glyphicon glyphicon-edit"></i>
+                                @lang('messages.edit')
+                            </a>
+                        @endif
                     </div>
                     <!-- /.box-body -->
                 </div>
@@ -107,7 +112,8 @@
                             </label>
                             <br>
                             <label>
-                                <input type="checkbox" name="admissions_to_work" {{ $admissions_to_work ? 'checked' : '' }}>
+                                <input type="checkbox" name="admissions_to_work"
+                                    {{ $admissions_to_work ? 'checked' : '' }}>
                                 @lang('essentials::lang.admissions_to_work')
                             </label>
                             <br>
@@ -283,8 +289,8 @@
                                                         <td><a href="#"
                                                                 data-href="{{ route('show_payroll_details', ['id' => $payroll['id']]) }}"
                                                                 data-container=".view_modal"
-                                                                class="btn-modal btn btn-xs  btn-info"><i class="fa fa-eye"
-                                                                    aria-hidden="true"></i>
+                                                                class="btn-modal btn btn-xs  btn-info"><i
+                                                                    class="fa fa-eye" aria-hidden="true"></i>
                                                                 @lang('messages.view') </a>
                                                         </td>
                                                     </tr>
