@@ -50,31 +50,49 @@
                             <li class="list-group-item">
                                 <b>{{ __('lang_v1.status_for_user') }}</b>
                                 @if ($user->status == 'active')
-                                    <span class="label label-success pull-right">
+                                    <span class="label label-success pull-right" style="padding: 6px">
                                         @lang('business.is_active')
                                     </span>
                                 @else
-                                    <span class="label label-danger pull-right">
+                                    <span class="label label-danger pull-right" style="padding: 6px">
                                         @lang('lang_v1.inactive')
                                     </span>
                                 @endif
                             </li>
+                            @if ($user->status != 'active')
+                                <li class="list-group-item">
+                                    <b>{{ __('lang_v1.status') }}</b>
+
+                                    <span class="label label-success pull-right" style="padding: 6px">
+                                        {{ __('essentials::lang.' . $user->sub_status) }}
+
+                                    </span>
+
+                                </li>
+                            @endif
                             <li class="list-group-item">
                                 <b>{{ __('followup::lang.is_booking') }}</b>
                                 @if ($user->booking)
-                                    <span class="label label-danger pull-right">
+                                    <span class="label label-danger pull-right" style="padding: 6px">
 
                                         @lang('followup::lang.booking')
                                     </span>
                                 @else
-                                    <span class="label label-success pull-right">
+                                    <span class="label label-success pull-right" style="padding: 6px">
                                         @lang('followup::lang.not_booking')
                                     </span>
                                 @endif
                             </li>
                         </ul>
-
-
+                        @if ($can_edit)
+                            <a href="{{ $from == 'hrm'
+                                ? route('hrm.editWorker', ['id' => $user->id, 'from' => $from])
+                                : route('editWorker', ['id' => $user->id, 'from' => $from]) }}"
+                                class="btn btn-primary btn-block">
+                                <i class="glyphicon glyphicon-edit"></i>
+                                @lang('messages.edit')
+                            </a>
+                        @endif
                     </div>
                     <!-- /.box-body -->
                 </div>
@@ -87,11 +105,17 @@
                         <div>
 
                             <label>
+                                <input type="checkbox" name="contracts"
+                                    {{ $user->profile_image ? 'checked' : '' }}>@lang('essentials::lang.profile_picture')
+                            </label>
+                            <br>
+                            <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
                             </label>
                             <br>
                             <label>
-                                <input type="checkbox" name="admissions_to_work" {{ $admissions_to_work ? 'checked' : '' }}>
+                                <input type="checkbox" name="admissions_to_work"
+                                    {{ $admissions_to_work ? 'checked' : '' }}>
                                 @lang('essentials::lang.admissions_to_work')
                             </label>
                             <br>
@@ -267,8 +291,8 @@
                                                         <td><a href="#"
                                                                 data-href="{{ route('show_payroll_details', ['id' => $payroll['id']]) }}"
                                                                 data-container=".view_modal"
-                                                                class="btn-modal btn btn-xs  btn-info"><i class="fa fa-eye"
-                                                                    aria-hidden="true"></i>
+                                                                class="btn-modal btn btn-xs  btn-info"><i
+                                                                    class="fa fa-eye" aria-hidden="true"></i>
                                                                 @lang('messages.view') </a>
                                                         </td>
                                                     </tr>
@@ -288,7 +312,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>@lang('worker.sponser')</th>
-                                                    <th>@lang('worker.project')</th> 
+                                                    <th>@lang('worker.project')</th>
                                                     <th>@lang('essentials::lang.date')</th>
                                                     <th>@lang('worker.wd')</th>
                                                     <th>@lang('worker.basic')</th>
@@ -320,10 +344,10 @@
                                             <tbody>
                                                 @foreach ($timesheets as $timesheet)
                                                     <tr>
-                                                        
+
                                                         <td>{{ $timesheet['sponser'] }}</td>
                                                         <td>{{ $timesheet['project'] }}</td>
-                                                         <td>{{ $timesheet['timesheet_date'] }}</td>
+                                                        <td>{{ $timesheet['timesheet_date'] }}</td>
                                                         <td>{{ $timesheet['wd'] }}</td>
                                                         <td>{{ number_format($timesheet['basic'], 2) }}</td>
                                                         <td>{{ number_format($timesheet['monthly_cost'], 2) }}</td>

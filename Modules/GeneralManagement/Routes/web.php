@@ -28,12 +28,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/president_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index'])->name('president_requests');
         Route::get('/president_pending_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_pending_requests'])->name('president_pending_requests');
         Route::get('/president_done_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_done_requests'])->name('president_done_requests');
-
+        Route::get('/filtered_requests/{filter}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('generalmanagement.getFilteredRequests');
 
         Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');
         Route::post('/changeEscalationStatus', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('generalmanagement.changeEscalationStatus');
         Route::get('/viewGmRequest/{requestId}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewGmRequest');
-
+        Route::post('/transferRequestToDepartment', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'transferToDepartment'])->name('transferRequestToDepartment');
 
         Route::get('/requests_types', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index'])->name('requests_types');
         Route::post('storeRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'store'])->name('storeRequestType');

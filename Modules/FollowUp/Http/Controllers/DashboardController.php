@@ -13,7 +13,7 @@ class DashboardController extends Controller
      * @return Renderable
      */
 
-    
+
     public function index()
     {
         return view('followup::dashboard.followup_dashboard');

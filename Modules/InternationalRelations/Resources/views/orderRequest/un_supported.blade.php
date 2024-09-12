@@ -17,6 +17,17 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.add_ir_operation_orders'))
+                @slot('tool')
+                    <div class="box-tools">
+
+                        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                            data-target="#addOperationModal">
+                            <i class="fa fa-plus"></i> @lang('messages.add')
+                        </button>
+                    </div>
+                @endslot
+            @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped ajax_view" id="operation_table">
                     <thead>
@@ -39,6 +50,96 @@
                 </table>
             </div>
         @endcomponent
+
+        <div class="modal fade" id="addOperationModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    {!! Form::open([
+                        'url' => action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeOrderOperation']),
+                        'method' => 'post',
+                    ]) !!}
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('sales::lang.create_sale_operation')</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="row">
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('order_id', __('sales::lang.order_number') . ':*') !!}
+                                {!! Form::select('order_id', $orders, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:40px',
+                                    'placeholder' => __('sales::lang.select_order'),
+                                    'required',
+                                    'id' => 'order-select',
+                                ]) !!}
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('Industry', __('sales::lang.Industry') . ':') !!}
+                                {!! Form::text('Industry', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Industry')]) !!}
+                            </div>
+                            <div class='clearfix'></div>
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('quantity', __('sales::lang.quantity') . ':*') !!}
+                                {!! Form::Number('quantity', null, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'placeholder' => __('sales::lang.quantity'),
+                                    'id' => 'quantity-input',
+                                ]) !!}
+                                <p id="quantity-message" style="color: red;"></p>
+                            </div>
+
+
+
+                            <div class="form-group col-md-6">
+
+                                {!! Form::label('Interview', __('sales::lang.Interview') . ':*') !!}
+                                {!! Form::select(
+                                    'Interview',
+                                    ['Client ' => __('sales::lang.Client'), 'Company' => __('sales::lang.Company')],
+                                    null,
+                                    ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.Interview')],
+                                ) !!}
+
+
+                            </div>
+                            <div class='clearfix'></div>
+                            <div class="form-group col-md-6">
+
+                                {!! Form::label('Location', __('sales::lang.Location') . ':') !!}
+                                {!! Form::text('Location', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Location')]) !!}
+
+
+                            </div>
+
+                            <div class="form-group col-md-6">
+
+                                {!! Form::label('Delivery', __('sales::lang.Delivery') . ':') !!}
+                                {!! Form::text('Delivery', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Delivery')]) !!}
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
 
 
         <div class="modal fade" id="addVisaModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

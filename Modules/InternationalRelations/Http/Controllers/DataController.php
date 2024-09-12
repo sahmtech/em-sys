@@ -42,6 +42,11 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.view_operations_order_for_unSupported_workers'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'internationalrelations.add_ir_operation_orders',
+                        'label' => __('sales::lang.add_sale_operation_orders'),
+                        'default' => false,
+                    ],
 
 
                     [
@@ -59,6 +64,8 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.view_order_delegations'),
                         'default' => false,
                     ],
+
+                    //
 
 
                     [
@@ -131,7 +138,12 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.view_proposed_workers'),
                         'default' => false,
                     ],
-
+                    //internationalrelations.Unsupported_workers
+                    [
+                        'value' => 'internationalrelations.Unsupported_workers',
+                        'label' => __('sales::lang.Unsupported_workers'),
+                        'default' => false,
+                    ],
                     [
                         'value' => 'internationalrelations.view_accepted_workers',
                         'label' => __('internationalrelations::lang.view_accepted_workers'),

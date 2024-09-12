@@ -322,8 +322,9 @@
                         data: 'worker',
                         render: function(data, type, row) {
                             var link = '<a href="' +
-                                '{{ route('show_workers_affairs', ['id' => ':id']) }}'
-                                .replace(':id', row.id) + '">' + data + '</a>';
+                                '{{ route('show_workers_affairs', ['id' => ':id', 'can_edit' => ':can_edit']) }}'
+                                .replace(':id', row.id).replace(':can_edit', true) + '">' + data +
+                                '</a>';
                             return link;
                         }
                     },

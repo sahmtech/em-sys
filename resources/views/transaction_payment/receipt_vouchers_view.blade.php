@@ -17,8 +17,8 @@
                         justify-content: flex-start;
                          ">
 
-                    <p> {{ $transaction?->location->name }}</p>
-                    <p> {{ $transaction?->location->landmark }}</p>
+                    <p> {{ $transaction?->location?->name }}</p>
+                    <p> {{ $transaction?->location?->landmark }}</p>
                 </div>
                 <div class="col-xs-4" style="text-align: center;">
                     @if (!empty(Session::get('business.logo')))

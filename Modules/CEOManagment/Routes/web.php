@@ -21,6 +21,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index'])->name('view_CEO_requests');
         Route::get('/ceo_pending_requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'ceo_pending_requests'])->name('ceo_pending_requests');
         Route::get('/ceo_done_requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'ceo_done_requests'])->name('ceo_done_requests');
+        Route::get('/filtered_requests/{filter}', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('ceomanagment.getFilteredRequests');
 
         Route::get('/escalate_requests', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'escalateRequests'])->name('ceomanagment.escalate_requests');
         Route::post('/change-status', [\Modules\CEOManagment\Http\Controllers\RequestController::class, 'changeStatus'])->name('ceomanagment.changeStatus');

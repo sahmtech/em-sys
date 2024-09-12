@@ -11,5 +11,4 @@ Route::middleware('web', 'SetSessionData', 'auth', 'language', 'timezone', 'Cust
     Route::get('/api', [Modules\Connector\Http\Controllers\ConnectorController::class, 'index']);
     Route::resource('/client', 'Modules\Connector\Http\Controllers\ClientController');
     Route::get('/regenerate', [Modules\Connector\Http\Controllers\ClientController::class, 'regenerate']);
-    Route::get('/user_device', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device'])->name('user_device');
 });

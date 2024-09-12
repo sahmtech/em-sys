@@ -153,6 +153,7 @@ class DriverCarController extends Controller
             DB::beginTransaction();
             $carImage_name = null;
             if ($request->hasFile('car_image')) {
+                error_log("1111");
                 $image = $request->file('car_image');
                 $carImage_name = $image->store('/cars_image');
             }

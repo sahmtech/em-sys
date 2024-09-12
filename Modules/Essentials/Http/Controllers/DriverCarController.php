@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
@@ -46,7 +47,7 @@ class DriverCarController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-       
+
         $car_driver_edit = auth()->user()->can('driver.edit');
         $car_driver_delete  = auth()->user()->can('driver.delete');
 
@@ -75,7 +76,9 @@ class DriverCarController extends Controller
                 ->editColumn('driver', function ($row) {
                     return $row->user?->id_proof_number . ' - ' . $row->user?->first_name . ' ' . $row->user?->last_name . ' - ' . $row->user?->essentialsEmployeeAppointmets?->specialization?->name ?? '';
                 })
-
+                ->addColumn('status', function ($row) {
+                    return $row->ended_at ? __('housingmovements::lang.ended') : __('housingmovements::lang.active');
+                })
                 ->editColumn('car_typeModel', function ($row) {
                     return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
                 })
@@ -106,9 +109,15 @@ class DriverCarController extends Controller
                     ';
                         }
                         if ($is_admin  || $car_driver_delete) {
-                            $html .= '
-                    <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
-                ';
+                            //             $html .= '
+                            //     <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                            // ';
+                            if (!($row->ended_at)) {
+                                $html .= '
+                            <button data-id="' . $row->id . '" class="btn btn-xs btn-danger delete_user_button">
+                                <i class="glyphicon glyphicon-trash"></i>' . __("housingmovements::lang.confirm_delete") . '
+                            </button>';
+                            }
                         }
 
                         return $html;
@@ -122,7 +131,7 @@ class DriverCarController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'driver', 'car_typeModel', 'plate_number', 'counter_number', 'delivery_date'])
+                ->rawColumns(['status', 'action', 'driver', 'car_typeModel', 'plate_number', 'counter_number', 'delivery_date'])
                 ->make(true);
         }
         $car_Drivers = DriverCar::whereIn('user_id', $userIds)->get();
@@ -137,46 +146,44 @@ class DriverCarController extends Controller
      */
     public function create()
     {
-        
-            $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
-          
-            $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
-       
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-          
-            $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-            if (!$is_admin) {
-                $userIds = [];
-                $userIds = $this->moduleUtil->applyAccessRole();
-            }
-            $driver_ids = DriverCar::whereIn('user_id', $userIds)->pluck('user_id');
-    
-            
-    
-            $workers = User::where('user_type', 'worker')
-                ->whereIn('id', $essentials_employee_appointmets_ids)
-                ->whereNotIn('id', $driver_ids)->get();
 
-            
-            if (count($workers) == 0) {
-                
-                $message = 'notFountAvilableWorkers';
-                return view('essentials::movementMangment.driverCar.message', compact('message'));
-            }
-            $carDriver_ids = DriverCar::all()->pluck('car_id');
-         
-            $cars = Car::whereNotIn('id', $carDriver_ids)->get();
-       
-            if (count($cars) == 0) {
-                $message = 'notFountAvilableCars';
-                return view('essentials::movementMangment.driverCar.message', compact('message'));
-            }
-    
-    
-    
-            return view('essentials::movementMangment.driverCar.create', compact('workers', 'cars'));
-        
-      
+        $essentials_specializations_ids = EssentialsProfession::where('type', 'job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+
+        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $driver_ids = DriverCar::whereIn('user_id', $userIds)->pluck('user_id');
+
+
+
+        $workers = User::where('user_type', 'worker')
+            ->whereIn('id', $essentials_employee_appointmets_ids)
+            ->whereNotIn('id', $driver_ids)->get();
+
+
+        if (count($workers) == 0) {
+
+            $message = 'notFountAvilableWorkers';
+            return view('essentials::movementMangment.driverCar.message', compact('message'));
+        }
+        $carDriver_ids = DriverCar::all()->pluck('car_id');
+
+        $cars = Car::whereNotIn('id', $carDriver_ids)->get();
+
+        if (count($cars) == 0) {
+            $message = 'notFountAvilableCars';
+            return view('essentials::movementMangment.driverCar.message', compact('message'));
+        }
+
+
+
+        return view('essentials::movementMangment.driverCar.create', compact('workers', 'cars'));
     }
 
     /**
@@ -235,7 +242,7 @@ class DriverCarController extends Controller
      */
     public function edit($id)
     {
-        $essentials_specializations_ids = EssentialsProfession::where('type','job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
+        $essentials_specializations_ids = EssentialsProfession::where('type', 'job_title')->where('name', 'like', "%سائق%")->get()->pluck('id');
         $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('profession_id', $essentials_specializations_ids)->get()->pluck('employee_id');
         $driver = DriverCar::find($id);
         $driver_ids = DriverCar::all()->pluck('user_id');
@@ -302,23 +309,56 @@ class DriverCarController extends Controller
      * @param int $id
      * @return Renderable
      */
+    // public function destroy($id)
+    // {
+    //     if (request()->ajax()) {
+    //         try {
+    //             DriverCar::find($id)->delete();
+    //             $output = [
+    //                 'success' => true,
+    //                 'msg' => 'تم حذف السائق بنجاح',
+    //             ];
+    //         } catch (Exception $e) {
+    //             return redirect()->back()
+    //                 ->with('status', [
+    //                     'success' => false,
+    //                     'msg' => __('messages.something_went_wrong'),
+    //                 ]);
+    //         }
+    //         return $output;
+    //     }
+    // }
     public function destroy($id)
     {
-        if (request()->ajax()) {
-            try {
-                DriverCar::find($id)->delete();
-                $output = [
-                    'success' => true,
-                    'msg' => 'تم حذف السائق بنجاح',
-                ];
-            } catch (Exception $e) {
-                return redirect()->back()
-                    ->with('status', [
-                        'success' => false,
-                        'msg' => __('messages.something_went_wrong'),
-                    ]);
+
+        try {
+            $driverCar = DriverCar::find($id);
+
+            // Save the uploaded image if there is one
+            if (request()->hasFile('car_image')) {
+                $imagePath = request()->file('car_image')->store('car_images');
+                $driverCar->update([
+                    'end_car_image' => $imagePath
+                ]);
             }
-            return $output;
+
+
+            $driverCar->update([
+                'end_counter_number' => request()->input('next_change_oil'),
+                'ended_by' => auth()->user()->id,
+                'ended_at' => Carbon::now(),
+            ]);
+
+            $output = [
+                'success' => true,
+                'msg' => 'تم الغاء التفويض بنجاح',
+            ];
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
         }
+        return redirect()->back()->with('status', $output);
     }
 }

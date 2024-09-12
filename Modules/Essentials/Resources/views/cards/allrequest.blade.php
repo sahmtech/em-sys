@@ -340,6 +340,7 @@
                 </div>
             </div>
         @endcomponent
+        @include('essentials::layouts.nav_requests_status_for_cards')
         @component('components.widget', ['class' => 'box-primary'])
             @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.workcards_add_requests'))
                 @slot('tool')
@@ -378,6 +379,7 @@
                             <th>@lang('request.company')</th>
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
+                            <th>@lang('request.project')</th>
                             <th>@lang('request.eqama_number')</th>
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
@@ -1317,6 +1319,8 @@
         </div>
 
         @include('request.change_request_status')
+        @include('request.changeAfterTransferModal')
+
 
     </section>
     <!-- /.content -->
@@ -1369,6 +1373,9 @@
                     },
                     {
                         data: 'user'
+                    },
+                    {
+                        data: 'assigned_to'
                     },
                     {
                         data: 'id_proof_number'
@@ -1562,27 +1569,37 @@
 
 
             });
+            $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var requestId = button.data('request-id');
 
+
+                var modal = $(this);
+                modal.find('#request_id').val(requestId);
+            });
 
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
-                var data = $(this).serialize();
-                var ladda = Ladda.create(document.querySelector(
-                    '.update-offer-status'));
+
+                var formData = new FormData(this);
+
+                var ladda = Ladda.create(document.querySelector('.update-offer-status'));
                 ladda.start();
+
                 $.ajax({
                     method: $(this).attr('method'),
                     url: $(this).attr('action'),
                     dataType: 'json',
-                    data: data,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(result) {
+                        console.log(result);
                         ladda.stop();
                         if (result.success == true) {
                             $('div#change_status_modal').modal('hide');
                             toastr.success(result.msg);
-                            // requests_table.ajax.reload();
                             window.location.reload();
-
                         } else {
                             toastr.error(result.msg);
                         }
@@ -1776,7 +1793,7 @@
                                     label: '{{ __('request.installmentsNumber') }}',
                                     value: requestInfo.installmentsNumber
                                 },
-                             
+
                                 {
                                     label: '{{ __('request.workInjuriesDate') }}',
                                     value: requestInfo.workInjuriesDate

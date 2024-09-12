@@ -35,6 +35,8 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('/create_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_payment'])->name('accounting.payrolls.create_payment');
     Route::post('/create_single_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_single_payment'])->name('accounting.payrolls.create_single_payment');
     Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
+    Route::get('/filtered_requests/{filter}', [\Modules\Accounting\Http\Controllers\AccountingController::class, 'getFilteredRequests'])->name('accounting.getFilteredRequests');
+
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
     Route::get('primary-accounts-dropdown', 'AccountingController@primaryAccountsDropdown')->name('primary-accounts-dropdown');
     Route::get('accounting-business-settings', 'SettingsController@getBusinessSettings_accounting')->name('accounting-business-settings');
@@ -129,11 +131,12 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('/opening-balance/save-importe', [OpeningBalanceController::class, 'importe_openingBalance'])->name('save-importe_openingBalance');
     Route::resource('receipt_vouchers', 'ReceiptVouchersController');
     Route::get('/accounting/receipt_vouchers/load/data', [ReceiptVouchersController::class, 'loadNeededData'])->name('receipt_vouchers.load');
-    Route::resource('payment_vouchers', 'PaymentVouchersController');
-    Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
-    Route::post('/accounting/payment_vouchers', [PaymentVouchersController::class, 'store'])->name('index-store');
+    Route::post('/accounting/payment_vouchers', [PaymentVouchersController::class, 'store'])->name('payment_vouchers-index-store');
     Route::get('/accounting/payment_vouchers', [PaymentVouchersController::class, 'index'])->name('index-payment_vouchers');
 
+    Route::resource('payment_vouchers', 'PaymentVouchersController');
+    Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
+  
 
     Route::get('transactions', 'TransactionController@index')->name('getTransaction');
     Route::get('transactions/map', 'TransactionController@map');

@@ -527,6 +527,13 @@ class DataController extends Controller
 
                     ],
                     [
+                        'value' => 'essentials.crud_all_manual_attendance',
+                        'label' => __('essentials::lang.crud_all_manual_attendance'),
+                        'default' => false,
+
+
+                    ],
+                    [
                         'value' => 'essentials.return_essentials_request',
                         'label' => __('essentials::lang.return_essentials_request'),
                         'default' => false,

@@ -7,6 +7,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Routing\Controller;
 use App\User;
 use App\Company;
+use App\RequestAttachment;
+use Modules\Sales\Entities\SalesProject;
 
 use App\AccessRole;
 use App\AccessRoleRequest;
@@ -95,11 +97,19 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
     }
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
+        $can_return_request = auth()->user()->can('generalmanagement.return_request');
+        $can_show_request = auth()->user()->can('generalmanagement.view_request');
+        return $this->requestUtil->getFilteredRequests('generalmanagement', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
+
     public function president_pending_requests()
     {
-        error_log('president_pending_requests');
         $business_id = request()->session()->get('user.business_id');
 
         $can_change_status = auth()->user()->can('generalmanagement.change_request_status');
@@ -125,7 +135,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'today');
     }
     public function president_done_requests()
     {
@@ -161,7 +171,7 @@ class RequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -172,22 +182,27 @@ class RequestController extends Controller
                 ->orWhere('name', 'like', '%عليا%')->orWhere('name', 'like', '%عام%');
         })
             ->pluck('id')->toArray();
-
-
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
+        $companies = Company::all()->pluck('name', 'id');
+        $all_status = ['approved', 'pending', 'rejected'];
         $escalatedRequests = null;
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->groupBy('request_id');
         $allRequestTypes = RequestsType::pluck('type', 'id');
         $companies = Company::all()->pluck('name', 'id');
-        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->select([
+        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->where('process.is_transfered_from_GM', 0)->select([
 
             'requests.request_no',
             'requests.id',
             'requests.request_type_id',
             'requests.created_at',
             'requests.reason',
+            'requests.is_new',
+            'requests.created_by',
 
             'process.id as process_id',
             'process.status',
+            'process.status as status_now',
             'process.note as note',
             'process.procedure_id as procedure_id',
             'process.superior_department_id as superior_department_id',
@@ -202,6 +217,7 @@ class RequestController extends Controller
             'users.assigned_to',
             'users.company_id',
             'users.id as userId',
+
 
 
             'procedure_escalations.escalates_to'
@@ -225,9 +241,22 @@ class RequestController extends Controller
             ->join('procedure_escalations', 'procedure_escalations.procedure_id', '=', 'wk_procedures.id')
 
             ->whereIn('requests.related_to', $userIds)->whereIn('procedure_escalations.escalates_to', $departmentIds)
-            ->where('process.status', 'pending')->where('users.status', '!=', 'inactive')->groupBy('requests.id');
+            ->where('process.status', 'pending')->where('users.status', '!=', 'inactive')->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
 
+        if (request()->input('company') && request()->input('company') !== 'all') {
+            error_log(request()->input('company'));
+            $escalatedRequests->where('users.company_id', request()->input('company'));
+        }
+        if (request()->input('project') && request()->input('project') !== 'all') {
+            error_log(request()->input('project'));
+            $escalatedRequests->where('users.assigned_to', request()->input('project'));
+        }
 
+        if (request()->input('type') && request()->input('type') !== 'all') {
+            error_log(request()->input('type'));
+            $types = RequestsType::where('type', request()->input('type'))->pluck('id')->toArray();
+            $escalatedRequests->whereIn('requests.request_type_id', $types);
+        }
         if (request()->ajax()) {
 
 
@@ -245,6 +274,13 @@ class RequestController extends Controller
                 ->editColumn('company_id', function ($row) use ($companies) {
                     if ($row->company_id) {
                         return $companies[$row->company_id];
+                    }
+                })
+                ->editColumn('assigned_to', function ($row) use ($saleProjects) {
+                    if ($row->assigned_to) {
+                        return $saleProjects[$row->assigned_to];
+                    } else {
+                        return '';
                     }
                 })
                 ->editColumn('id_proof_number', function ($row) {
@@ -271,29 +307,46 @@ class RequestController extends Controller
 
 
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        $status .= '<button type="button" style="height:25px;" class="btn btn-primary transfer_department" data-request-id="' . $row->id . '" data-toggle="modal" data-target="#transferDepartmentModal">' . trans('request.transfer_to_department') . '</button>';
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
 
                     return $status;
+                })->editColumn('can_return', function ($row) {
+                    $buttonsHtml = '';
+
+                    $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                    $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+
+                    return $buttonsHtml;
                 })
 
-                ->rawColumns(['status', 'id_proof_number'])
+                ->rawColumns(['status', 'id_proof_number', 'can_return'])
 
 
                 ->make(true);
         }
         $statuses = $this->statuses;
-        return view('generalmanagement::requests.escalate_requests')->with(compact('statuses'));
+        return view('generalmanagement::requests.escalate_requests')->with(compact('statuses', 'departments', 'allRequestTypes', 'all_status', 'companies', 'saleProjects'));
     }
 
     public function changeEscalationStatus(Request $request)
     {
+        error_log(json_encode($request->all()));
         try {
 
             UserRequest::where('id', $request->request_id)->update(['status' => $request->status]);
             RequestProcess::where('request_id', $request->request_id)->where('status', 'pending')->update(['status' => $request->status]);
-
+            $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+            if ($attachmentPath) {
+                RequestAttachment::create([
+                    'request_id' => $request->request_id,
+                    'added_by' => auth()->user()->id,
+                    'name' => $request->status,
+                    'file_path' => $attachmentPath,
+                ]);
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -308,5 +361,36 @@ class RequestController extends Controller
         }
 
         return $output;
+    }
+    public function transferToDepartment(Request $request)
+    {
+        error_log(json_encode($request->all()));
+        try {
+            $requestId = $request->input('request_id');
+            $department = $request->input('department_filter');
+
+            $requestProcesses = RequestProcess::where('request_id', $requestId)->get();
+
+            foreach ($requestProcesses as $requestProcess) {
+                $requestProcess->to_department_after_escalation = $department;
+                $requestProcess->is_transfered_from_GM = 1;
+                $requestProcess->save();
+            }
+
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->back()->with('status', $output);
     }
 }

@@ -21,6 +21,7 @@
                             <th class="table-td-width-60px">@lang('followup::lang.emp_id_proof_number')</th>
                             <th class="table-td-width-100px">@lang('connector::lang.device_name')</th>
                             <th class="table-td-width-100px">@lang('connector::lang.device_number')</th>
+                            <th class="table-td-width-100px">@lang('messages.action')</th>
                         </tr>
                     </thead>
                 </table>
@@ -55,6 +56,9 @@
                     },
                     {
                         data: 'device_number'
+                    },
+                    {
+                        data: 'action'
                     },
                 ]
 

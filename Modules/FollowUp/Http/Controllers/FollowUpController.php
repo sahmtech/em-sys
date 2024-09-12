@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller;
 use App\User;
 use App\Request as UserRequest;
 use App\Utils\ModuleUtil;
+use App\Utils\RequestUtil;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
@@ -23,10 +24,12 @@ class FollowUpController extends Controller
 {
 
     protected $moduleUtil;
+    protected $requestUtil;
 
-    public function __construct(ModuleUtil $moduleUtil)
+    public function __construct(ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->requestUtil = $requestUtil;
     }
     /**
      * Display a listing of the resource.
@@ -96,12 +99,24 @@ class FollowUpController extends Controller
             })->count();
 
 
-
+        $counts =  $this->requestUtil->getCounts('followup');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
         return view(
             'followup::index',
-            compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests')
+            compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests', 'today_requests', 'pending_requests', 'completed_requests', 'all_requests')
         );
     }
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('followup.change_request_status');
+        $can_return_request = auth()->user()->can('followup.return_request');
+        $can_show_request = auth()->user()->can('followup.show_request');
+        return $this->requestUtil->getFilteredRequests('followup', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
+
 
 
     public function followup_department_employees()

@@ -5,6 +5,7 @@ namespace App\Utils;
 use App\AccessRole;
 use App\Company;
 use App\AccessRoleCompany;
+use App\AccessRoleRequest;
 use App\Request as UserRequest;
 use App\RequestProcess;
 use App\RequestAttachment;
@@ -70,53 +71,20 @@ class RequestUtil extends Util
             ],
         ];
     }
-
-
-    ////// get requests /////////////////// 
-    public function getRequests($departmentIds,  $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null, $condition = null)
+    public function getFilteredRequests($from = null, $filter = 'all', $can_change_status,  $can_return_request, $can_show_request, $isFollowup = false, $company_id = null,)
     {
 
+        $departmentIds = [];
+        $roles = [];
+        $departmentIdsForGeneralManagment = [];
+        $business_id = request()->session()->get('user.business_id');
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-
-        $allRequestTypes = RequestsType::pluck('type', 'id');
-        //  $requestTypeIds = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
-
-        // $requestTypeIds = WkProcedure::distinct()
-        //     ->with('request_type')
-        //     ->whereIn('department_id', $departmentIds)
-        //     ->whereIn('request_owner_type', $ownerTypes)
-        //     ->where('start', '1')
-        //     ->pluck('request_type_id')
-        //     ->toArray();
-
-        $requestTypes = RequestsType::whereIn('id', $requestsTypes)
-            ->get()
-            ->map(function ($requestType) {
-                return [
-                    'id' => $requestType->id,
-                    'type' => $requestType->type,
-                    'for' => $requestType->for,
-                ];
-            })
-            ->toArray();
-
-
-
-        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $statuses = $this->statuses;
-        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
-        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->whereIn('employee_type', $ownerTypes)->pluck('reason', 'id');
-
-        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-        $all_users = $all_users->pluck('full_name', 'id');
 
         if ($isFollowup) {
             $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
@@ -131,44 +99,132 @@ class RequestUtil extends Util
             $ids = User::whereIn('id', $userIds)->where('company_id',  $company_id)->pluck('id')->toArray();
             $userIds = array_intersect($userIds, $ids);
         }
+        $todayDate = Carbon::now()->format('Y-m-d');
+        $ownerTypes = [];
+        $view = '';
 
+        if ($from == 'generalmanagement' || $from == 'generalmanagmentoffice') {
+            $view = 'generalmanagement::requests.filteredRequests';
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+            $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+                ->where(function ($query) {
+                    $query->Where('name', 'like', '%مجلس%')
+                        ->orWhere('name', 'like', '%عليا%')
+                        ->orWhere('name', 'like', '%عام%');
+                })
+                ->pluck('id')->toArray();
+            $roles = DB::table('roles')
+                ->where(function ($query) {
+                    $query->Where('name', 'like', '%مجلس%')
+                        ->orWhere('name', 'like', '%عليا%')
+                        ->orWhere('name', 'like', '%عام%');
+                })->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'generalmanagmentoffice') {
+            $view = 'generalmanagmentoffice::dashboard.filteredRequests';
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+            $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+                ->where(function ($query) {
+                    $query->Where('name', 'like', '%مكتب%');
+                })
+                ->pluck('id')->toArray();
+            $roles = DB::table('roles')
+                ->where(function ($query) {
+                    $query->Where('name', 'like', '%مكتب%');
+                })->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'ceomanagment') {
+            $view = 'ceomanagment::requests.filteredRequests';
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+            $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+                ->where(function ($query) {
+                    $query->where('name', 'LIKE', '%تنفيذ%');
+                })
+                ->pluck('id')->toArray();
+            $roles = DB::table('roles')->where('name', 'LIKE', '%تنفيذ%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'employee_affairs') {
+            $view = 'essentials::employee_affairs.filteredRequests';
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+                ->where('name', 'LIKE', '%موظف%')
+                ->pluck('id')->toArray();
 
-        // $users = User::whereIn('id', $userIds)
-        //     // ->whereIn('user_type', $ownerTypes)
-        //     ->where(function ($query) {
-        //         $query->where('status', 'active')
-        //             ->orWhere(function ($subQuery) {
-        //                 $subQuery->where('status', 'inactive')
-        //                     ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
-        //             });
-        //     })
-        //     ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'') ,' - ',COALESCE(company_id,'')) as full_name"))
-        //     ->pluck('full_name', 'id');
-        $users = DB::table('users')
-            ->join('companies', 'users.company_id', '=', 'companies.id')
-            ->select('users.id', DB::raw("CONCAT(
-                COALESCE(users.first_name, ''), ' ', 
-                COALESCE(users.last_name, ''), ' - ', 
-                COALESCE(users.id_proof_number, ''), ' - ', 
-                COALESCE(companies.name, '')
-            ) as full_name"))
-            ->where(function ($query) use ($userIds) {
-                $query->where('users.status', 'active')
-                    ->orWhere(function ($subQuery) use ($userIds) {
-                        $subQuery->where('users.status', 'inactive')
-                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+            $roles = DB::table('roles')
+                ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'work_cards') {
+            $view = 'essentials::filteredRequests';
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+                ->where('name', 'LIKE', '%حكومية%')
+                ->pluck('id')
+                ->toArray();
+
+            $roles = DB::table('roles')
+                ->where('name', 'LIKE', '%حكومية%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'housingmovements') {
+            $view = 'housingmovements::dashboard.filteredRequests';
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+                ->where('name', 'LIKE', '%سكن%')
+                ->pluck('id')->toArray();
+
+            $roles = DB::table('roles')
+                ->where('name', 'LIKE', '%سكن%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'followup') {
+            $view = 'followup::filteredRequests';
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
                     });
             })
-            ->whereIn('users.id', $userIds)
-            ->pluck('full_name', 'users.id');
+                ->pluck('id')->toArray();
 
-        $saleProjects = SalesProject::all()->pluck('name', 'id');
-        $companies = Company::all()->pluck('name', 'id');
+            $roles = DB::table('roles')
+                ->where(function ($query) {
+                    $query->where('name', 'LIKE', '%متابعة%')
+                        ->orWhere(function ($query) {
+                            $query->where('name', 'LIKE', '%تشغيل%')
+                                ->where('name', 'LIKE', '%أعمال%');
+                        })->orWhere(function ($query) {
+                            $query->where('name', 'LIKE', '%تشغيل%')
+                                ->where('name', 'LIKE', '%شركات%');
+                        });
+                })->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'accounting') {
+            $view = 'accounting::accounting.filteredRequests';
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'like', '%حاسب%')
+                    ->orWhere('name', 'like', '%مالي%');
+            })
+                ->pluck('id')->toArray();
 
-
-        $requestsProcess = null;
-        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
-
+            $roles = DB::table('roles')
+                ->where(function ($query) {
+                    $query->where('name', 'like', '%حاسب%')
+                        ->orWhere('name', 'like', '%مالي%');
+                })->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
+        if ($from == 'essentials') {
+            $view = 'essentials::requests.filteredRequests';
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+            $roles = DB::table('roles')->where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+            $ownerTypes = ['employee', 'manager', 'worker'];
+        }
         $requestsProcess = UserRequest::select([
 
             'requests.request_no',
@@ -227,17 +283,28 @@ class RequestUtil extends Util
                     });
             })
             ->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
-        //  return $requestsProcess->get();
+
+
+
+        $title = __('request.all_requests');
+        if ($filter == 'pending_requests') {
+            $requestsProcess->where('process.status', 'pending');
+            $title = __('request.pending_requests');
+        }
+        if ($filter == 'today_requests') {
+            $requestsProcess->where('process.status', 'pending')->whereDate('process.created_at', $todayDate);
+            $title = __('request.today_requests');
+        }
+        if ($filter == 'completed_requests') {
+            $requestsProcess->whereIn('process.status', ['approved', 'rejected']);
+            $title = __('request.completed_requests');
+        } else {
+            error_log("=====");
+            error_log("'" . $filter . "'");
+        }
         if (request()->input('status') && request()->input('status') !== 'all') {
             error_log(request()->input('status'));
             $requestsProcess->where('process.status', request()->input('status'));
-        }
-        error_log($condition);
-        if ($condition && $condition == 'pending') {
-            $requestsProcess->where('process.status', 'pending');
-        }
-        if ($condition && $condition == 'done') {
-            $requestsProcess->whereIn('process.status', ['approved', 'rejected']);
         }
         if (request()->input('company') && request()->input('company') !== 'all') {
             error_log(request()->input('company'));
@@ -246,6 +313,15 @@ class RequestUtil extends Util
         if (request()->input('project') && request()->input('project') !== 'all') {
             error_log(request()->input('project'));
             $requestsProcess->where('users.assigned_to', request()->input('project'));
+        }
+        if (request()->input('department') && request()->input('department') !== 'all') {
+            error_log(request()->input('department'));
+            $department = request()->input('department');
+            $requestsProcess->where(function ($query) use ($department) {
+                $query->where('wk_procedures.department_id', $department)
+                    ->orWhere('process.superior_department_id', $department);
+                // ->orWhere('process.started_department_id', $department);
+            });
         }
 
         if (request()->input('type') && request()->input('type') !== 'all') {
@@ -268,8 +344,14 @@ class RequestUtil extends Util
             $request->tasksDetails = $tasksDetails;
         }
 
-        if (request()->ajax()) {
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        $companies = Company::all()->pluck('name', 'id');
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
+        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $all_users->pluck('full_name', 'id');
+        $statuses = $this->statuses;
 
+        if (request()->ajax()) {
 
             return DataTables::of($requests ?? [])
                 ->editColumn('created_at', function ($row) {
@@ -455,6 +537,658 @@ class RequestUtil extends Util
                     }
 
 
+
+
+                    return $buttonsHtml;
+                })
+
+                ->rawColumns(['status', 'request_type_id', 'can_return', 'created_user', 'id_proof_number', 'assigned_to'])
+
+
+                ->make(true);
+        }
+
+
+        $users = DB::table('users')
+            ->join('companies', 'users.company_id', '=', 'companies.id')
+            ->select('users.id', DB::raw("CONCAT(
+            COALESCE(users.first_name, ''), ' ', 
+            COALESCE(users.last_name, ''), ' - ', 
+            COALESCE(users.id_proof_number, ''), ' - ', 
+            COALESCE(companies.name, '')
+        ) as full_name"))
+            ->where(function ($query) use ($userIds) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) use ($userIds) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->whereIn('users.id', $userIds)
+            ->pluck('full_name', 'users.id');
+
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        $requestTypes = RequestsType::whereIn('id', $requestsTypes)
+            ->get()
+            ->map(function ($requestType) {
+                return [
+                    'id' => $requestType->id,
+                    'type' => $requestType->type,
+                    'for' => $requestType->for,
+                ];
+            })
+            ->toArray();
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->whereIn('employee_type', $ownerTypes)->pluck('reason', 'id');
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $all_status = ['approved', 'pending', 'rejected'];
+        return view($view)->with(compact(
+            'title',
+            'filter',
+            'users',
+            'requestTypes',
+            'departments',
+            'statuses',
+            'main_reasons',
+            'classes',
+            'saleProjects',
+            'companies',
+            'leaveTypes',
+            'job_titles',
+            'specializations',
+            'nationalities',
+            'allRequestTypes',
+            'all_status'
+        ));
+    }
+
+    public function getCounts($from = null)
+    {
+        $today_requests = 0;
+        $pending_requests = 0;
+        $completed_requests = 0;
+        $all_requests = 0;
+        $departmentIds = [];
+
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $todayDate = Carbon::now()->format('Y-m-d');
+
+        if ($from == 'generalmanagement') {
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+        }
+        if ($from == 'generalmanagmentoffice') {
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+        }
+        if ($from == 'ceomanagment') {
+            $departmentIds = EssentialsDepartment::pluck('id')->toArray();
+        }
+        if ($from == 'employee_affairs') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
+                ->pluck('id')->toArray();
+        }
+        if ($from == 'work_cards') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%حكومية%')
+                ->pluck('id')
+                ->toArray();
+        }
+        if ($from == 'housingmovements') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
+                ->pluck('id')->toArray();
+        }
+        if ($from == 'followup') {
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'LIKE', '%متابعة%')
+                    ->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%أعمال%');
+                    })->orWhere(function ($query) {
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
+            })
+                ->pluck('id')->toArray();
+        }
+        if ($from == 'accounting') {
+            $departmentIds = EssentialsDepartment::where(function ($query) {
+                $query->where('name', 'like', '%حاسب%')
+                    ->orWhere('name', 'like', '%مالي%');
+            })
+                ->pluck('id')->toArray();
+        }
+        if ($from == 'essentials') {
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+        }
+        $requestsProcess = UserRequest::select([
+
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.is_new',
+            'requests.created_at',
+            'requests.created_by',
+            'requests.reason',
+
+            'process.id as process_id',
+            'process.status',
+            'process.status as status_now',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
+
+            'wk_procedures.action_type as action_type',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
+            'wk_procedures.start as start',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.assigned_to',
+            'users.company_id',
+            'users.id as userId',
+            DB::raw("IF(process.superior_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_superior"),
+            DB::raw("IF(process.started_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_started")
+        ])
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('requests.id', '=', 'latest_process.request_id');
+            })
+            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+            ->leftjoin('procedure_tasks', 'procedure_tasks.procedure_id', '=', 'wk_procedures.id')
+            ->leftjoin('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+            ->leftjoin('request_procedure_tasks', function ($join) {
+                $join->on('request_procedure_tasks.procedure_task_id', '=', 'procedure_tasks.id')
+                    ->on('request_procedure_tasks.request_id', '=', 'requests.id');
+            })
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+            ->where(function ($query) use ($departmentIds) {
+                $query->whereIn('wk_procedures.department_id', $departmentIds)
+                    ->orWhereIn('process.superior_department_id', $departmentIds)
+                    ->orWhereIn('process.started_department_id', $departmentIds);
+            })
+
+
+            ->whereIn('requests.related_to', $userIds)
+            ->where(function ($query) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
+
+        $pendingRequestsQuery = clone $requestsProcess;
+        $todayRequestsQuery = clone $requestsProcess;
+        $completedRequestsQuery = clone $requestsProcess;
+        $allRequestsQuery = clone $requestsProcess;
+
+        $pending_requests = $pendingRequestsQuery->where('process.status', 'pending')->get()->count();
+        $today_requests = $todayRequestsQuery->where('process.status', 'pending')->whereDate('process.created_at', $todayDate)->get()->count();
+        $completed_requests = $completedRequestsQuery->whereIn('process.status', ['approved', 'rejected'])->get()->count();
+        $all_requests = $allRequestsQuery->get()->count();
+
+
+
+
+        return (object)([
+            'today_requests' => $today_requests,
+            'pending_requests' => $pending_requests,
+            'completed_requests' => $completed_requests,
+            'all_requests' => $all_requests,
+        ]);
+    }
+
+    ////// get requests /////////////////// 
+    public function getRequests($departmentIds,  $ownerTypes, $view, $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment = [], $isFollowup = false, $company_id = null, $condition = null)
+    {
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $allRequestTypes = RequestsType::pluck('type', 'id');
+        //  $requestTypeIds = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+
+        // $requestTypeIds = WkProcedure::distinct()
+        //     ->with('request_type')
+        //     ->whereIn('department_id', $departmentIds)
+        //     ->whereIn('request_owner_type', $ownerTypes)
+        //     ->where('start', '1')
+        //     ->pluck('request_type_id')
+        //     ->toArray();
+
+        $requestTypes = RequestsType::whereIn('id', $requestsTypes)
+            ->get()
+            ->map(function ($requestType) {
+                return [
+                    'id' => $requestType->id,
+                    'type' => $requestType->type,
+                    'for' => $requestType->for,
+                ];
+            })
+            ->toArray();
+
+
+
+        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $statuses = $this->statuses;
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->whereIn('employee_type', $ownerTypes)->pluck('reason', 'id');
+
+        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $all_users->pluck('full_name', 'id');
+
+        if ($isFollowup) {
+            $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
+            if (!($is_admin || $is_manager)) {
+                $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+                $worker_ids = User::whereIn('id', $userIds)->whereIn('assigned_to',  $followupUserAccessProject)->pluck('id')->toArray();
+                $userIds = array_intersect($userIds, $worker_ids);
+            }
+        }
+        if ($company_id) {
+
+            $ids = User::whereIn('id', $userIds)->where('company_id',  $company_id)->pluck('id')->toArray();
+            $userIds = array_intersect($userIds, $ids);
+        }
+
+
+        // $users = User::whereIn('id', $userIds)
+        //     // ->whereIn('user_type', $ownerTypes)
+        //     ->where(function ($query) {
+        //         $query->where('status', 'active')
+        //             ->orWhere(function ($subQuery) {
+        //                 $subQuery->where('status', 'inactive')
+        //                     ->whereIn('sub_status', ['vacation', 'escape', 'return_exit']);
+        //             });
+        //     })
+        //     ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'') ,' - ',COALESCE(company_id,'')) as full_name"))
+        //     ->pluck('full_name', 'id');
+        $users = DB::table('users')
+            ->join('companies', 'users.company_id', '=', 'companies.id')
+            ->select('users.id', DB::raw("CONCAT(
+                COALESCE(users.first_name, ''), ' ', 
+                COALESCE(users.last_name, ''), ' - ', 
+                COALESCE(users.id_proof_number, ''), ' - ', 
+                COALESCE(companies.name, '')
+            ) as full_name"))
+            ->where(function ($query) use ($userIds) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) use ($userIds) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->whereIn('users.id', $userIds)
+            ->pluck('full_name', 'users.id');
+
+        $saleProjects = SalesProject::all()->pluck('name', 'id');
+        $companies = Company::all()->pluck('name', 'id');
+
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $requestsProcess = null;
+        $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->whereNull('sub_status')->groupBy('request_id');
+
+        $requestsProcess = UserRequest::select([
+
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.is_new',
+            'requests.status as final_status',
+            'requests.created_at',
+            'requests.created_by',
+            'requests.reason',
+
+            'process.id as process_id',
+            'process.status',
+            'process.is_transfered_from_GM',
+            'process.status as status_now',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
+
+            'wk_procedures.action_type as action_type',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.department_id as department_now',
+
+            'wk_procedures.can_return',
+            'wk_procedures.start as start',
+
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.assigned_to',
+            'users.company_id',
+            'users.id as userId',
+            DB::raw("IF(process.superior_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_superior"),
+            DB::raw("IF(process.started_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_started")
+        ])
+            ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
+                $join->on('requests.id', '=', 'latest_process.request_id');
+            })
+            ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
+            ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
+            ->leftjoin('procedure_tasks', 'procedure_tasks.procedure_id', '=', 'wk_procedures.id')
+            ->leftjoin('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+            ->leftjoin('request_procedure_tasks', function ($join) {
+                $join->on('request_procedure_tasks.procedure_task_id', '=', 'procedure_tasks.id')
+                    ->on('request_procedure_tasks.request_id', '=', 'requests.id');
+            })
+            ->leftJoin('users', 'users.id', '=', 'requests.related_to')
+            ->where(function ($query) use ($departmentIds) {
+                $query->where(function ($subQuery) use ($departmentIds) {
+                    $subQuery->whereIn('wk_procedures.department_id', $departmentIds)
+                        ->where('process.is_transfered_from_GM', 0);
+                })
+                    ->orWhere(function ($subQuery) use ($departmentIds) {
+                        $subQuery->whereIn('process.superior_department_id', $departmentIds)
+                            ->where('process.is_transfered_from_GM', 0);
+                    })
+                    ->orWhere(function ($subQuery) use ($departmentIds) {
+                        $subQuery->whereIn('process.started_department_id', $departmentIds);
+                    })
+                    ->orWhere(function ($subQuery) use ($departmentIds) {
+                        $subQuery->whereIn('process.to_department_after_escalation', $departmentIds)
+                            ->where('process.is_transfered_from_GM', 1);
+                    });
+            })
+
+
+
+            ->whereIn('requests.related_to', $userIds)
+            ->where(function ($query) {
+                $query->where('users.status', 'active')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('users.status', 'inactive')
+                            ->whereIn('users.sub_status', ['vacation', 'escape', 'return_exit']);
+                    });
+            })
+            ->groupBy('requests.id')->orderBy('requests.created_at', 'desc');
+        //  return $requestsProcess->get();
+        if (request()->input('status') && request()->input('status') !== 'all') {
+            error_log(request()->input('status'));
+            $requestsProcess->where('process.status', request()->input('status'));
+        }
+        error_log($condition);
+        if ($condition && $condition == 'pending') {
+            $requestsProcess->where('process.status', 'pending');
+        }
+        if ($condition && $condition == 'done') {
+            $requestsProcess->whereIn('process.status', ['approved', 'rejected']);
+        }
+        //  $todayDate = Carbon::now()->toDateString();
+        $todayDate = Carbon::now()->format('Y-m-d');
+        if ($condition && $condition == 'today') {
+            error_log($todayDate);
+            $requestsProcess->where('process.status', 'pending')->whereDate('process.created_at', $todayDate);
+        }
+        if ($condition && $condition == 'pending_and_old') {
+            $requestsProcess->where('process.status', 'pending')
+                ->whereDate('process.created_at', '<', $todayDate);
+        }
+        if (request()->input('company') && request()->input('company') !== 'all') {
+            error_log(request()->input('company'));
+            $requestsProcess->where('users.company_id', request()->input('company'));
+        }
+        if (request()->input('project') && request()->input('project') !== 'all') {
+            error_log(request()->input('project'));
+            $requestsProcess->where('users.assigned_to', request()->input('project'));
+        }
+        if (request()->input('department') && request()->input('department') !== 'all') {
+            error_log(request()->input('department'));
+            $department = request()->input('department');
+            $requestsProcess->where(function ($query) use ($department) {
+                $query->where(function ($subQuery) use ($department) {
+                    $subQuery->where('wk_procedures.department_id', $department)
+                        ->where('process.is_transfered_from_GM', 0);
+                })
+                    ->orWhere(function ($subQuery) use ($department) {
+                        $subQuery->where('process.superior_department_id', $department)
+                            ->where('process.is_transfered_from_GM', 0);
+                    })
+
+                    ->orWhere(function ($subQuery) use ($department) {
+                        $subQuery->where('process.to_department_after_escalation', $department)
+                            ->where('process.is_transfered_from_GM', 1);
+                    });
+            });
+        }
+
+        if (request()->input('type') && request()->input('type') !== 'all') {
+            error_log(request()->input('type'));
+            $types = RequestsType::where('type', request()->input('type'))->pluck('id')->toArray();
+            $requestsProcess->whereIn('requests.request_type_id', $types);
+        }
+        $requests = $requestsProcess->get();
+
+        foreach ($requests as $request) {
+            $tasksDetails = DB::table('request_procedure_tasks')
+                ->join('procedure_tasks', 'procedure_tasks.id', '=', 'request_procedure_tasks.procedure_task_id')
+                ->join('tasks', 'tasks.id', '=', 'procedure_tasks.task_id')
+                ->where('procedure_tasks.procedure_id', $request->procedure_id)
+                ->where('request_procedure_tasks.request_id', $request->id)
+                ->select('tasks.description', 'request_procedure_tasks.id', 'request_procedure_tasks.procedure_task_id', 'tasks.link', 'request_procedure_tasks.isDone', 'procedure_tasks.procedure_id')
+                ->get();
+
+
+            $request->tasksDetails = $tasksDetails;
+        }
+
+        if (request()->ajax()) {
+
+
+            return DataTables::of($requests ?? [])
+                ->editColumn('created_at', function ($row) {
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
+                    if ($row->request_type_id) {
+                        return $allRequestTypes[$row->request_type_id];
+                    }
+                })
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    if ($row->company_id) {
+                        return $companies[$row->company_id];
+                    }
+                })
+                ->editColumn('assigned_to', function ($row) use ($saleProjects) {
+                    if ($row->assigned_to) {
+                        return $saleProjects[$row->assigned_to];
+                    } else {
+                        return '';
+                    }
+                })
+                ->editColumn('id_proof_number', function ($row) {
+                    if ($row->id_proof_number) {
+                        $expiration_date = optional(
+                            DB::table('essentials_official_documents')
+                                ->where('employee_id', $row->userId)
+                                ->where('type', 'residence_permit')
+                                ->where('is_active', 1)
+                                ->first()
+                        )->expiration_date;
+
+                        return $row->id_proof_number . '<br>' . $expiration_date;
+                    } else {
+                        return '';
+                    }
+                })
+                ->addColumn('created_user', function ($row) use ($all_users) {
+
+                    return $all_users[$row->created_by];
+                })
+                ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departments, $departmentIds,  $departmentIdsForGeneralManagment, $statuses) {
+                    if ($row->status && $row->is_transfered_from_GM == 0) {
+                        $status = '';
+                        if ($row->action_type === 'accept_reject' || $row->action_type === null) {
+                            if ($row->department_now && $row->status == 'pending') {
+                                $status = trans('request.' . $row->status) . '-' . $departments[$row->department_now];
+                            } else {
+                                $status = trans('request.' . $row->status);
+                            }
+                            if ($departmentIdsForGeneralManagment) {
+                                if ($row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
+                                    if ($is_admin || $can_change_status) {
+                                        $status = '<span class="label ' . $statuses[$row->status]['class'] . '">' . __($statuses[$row->status]['name']) . '</span>';
+                                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                                    }
+                                }
+                            } else {
+                                if ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
+                                    if ($is_admin || $can_change_status) {
+                                        $status = '<span class="label ' . $statuses[$row->status]['class'] . '">'
+                                            . __($statuses[$row->status]['name']) . '</span>';
+                                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                                    }
+                                }
+                            }
+                        } elseif ($row->action_type === 'task') {
+
+                            if (isset($row->tasksDetails) && !empty($row->tasksDetails)) {
+
+                                $status = '<ul style="list-style-type:none; padding-left: 0;">';
+
+                                foreach ($row->tasksDetails as $taskDetail) {
+                                    $checkmark = $taskDetail->isDone ? '&#9989;' : '';
+                                    $taskLink = $taskDetail->link;
+
+                                    $status .= "<li><label>";
+                                    if ($taskDetail->isDone) {
+                                        if ($taskLink) {
+                                            $status .= "<a href='{$taskLink}' target='_blank' style='color: green; font-size: large; text-decoration: none;'>$checkmark</a>";
+                                        } else {
+                                            $status .= "<span style='color: green; font-size: large;'>$checkmark</span>";
+                                        }
+                                    } else {
+                                        $status .= "<input type='checkbox' disabled>";
+                                    }
+
+                                    if ($taskLink) {
+                                        $status .= " <a href='{$taskLink}' target='_blank'>{$taskDetail->description}</a>";
+                                    } else {
+                                        $status .= " {$taskDetail->description}";
+                                    }
+
+                                    $status .= "</label></li>";
+                                }
+
+                                $status .= '</ul>';
+                            }
+
+                            if (isset($departmentIdsForGeneralManagment) && !empty($departmentIdsForGeneralManagment)) {
+
+                                if ($row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
+                                    if ($row->tasksDetails) {
+                                        $status = '<ul style="list-style-type:none; padding-left: 0;">';
+
+                                        foreach ($row->tasksDetails as $taskDetail) {
+                                            $checkmark = $taskDetail->isDone ? '&#9989;' : '';
+
+                                            $taskLink = $taskDetail->link;
+
+                                            $status .= "<li><label>";
+                                            if ($taskDetail->isDone) {
+
+                                                $status .= "<a href='{$taskLink}' target='_blank' style='color: green; font-size: large; text-decoration: none;'>$checkmark</a>";
+                                            } else {
+                                                if (!$taskLink) {
+                                                    $status .= "<li><label><input type='checkbox' class='task-checkbox' data-task-id='{$taskDetail->id}' " . ($taskDetail->isDone ? "checked='checked'" : "") . "> {$taskDetail->description}</label></li>";
+                                                } else {
+                                                    $status .= "<input type='checkbox' disabled>";
+                                                }
+                                                $status .= " <a href='{$taskLink}' target='_blank'>{$taskDetail->description}</a></label></li>";
+                                            }
+                                        }
+                                        $status .= '</ul>';
+                                    }
+                                }
+                            } elseif ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
+
+
+
+                                if ($row->tasksDetails) {
+                                    $status = '<ul style="list-style-type:none; padding-left: 0;">';
+
+                                    foreach ($row->tasksDetails as $taskDetail) {
+
+                                        $checkmark = $taskDetail->isDone ? '&#9989;' : '';
+
+                                        $taskLink = $taskDetail->link;
+
+                                        $status .= "<li><label>";
+                                        if ($taskDetail->isDone) {
+
+                                            $status .= "<a href='{$taskLink}' target='_blank' style='color: green; font-size: large; text-decoration: none;'>$checkmark</a>";
+                                            $status .= " <a href='{$taskLink}' target='_blank'>{$taskDetail->description}</a></label></li>";
+                                        } else {
+                                            if (!$taskLink) {
+
+                                                $status .= "<li><label><input type='checkbox' class='task-checkbox' data-task-id='{$taskDetail->id}' " . ($taskDetail->isDone ? "checked='checked'" : "") . "> {$taskDetail->description}</label></li>";
+                                            } else {
+                                                $status .= "<input type='checkbox' disabled>";
+                                                $status .= " <a href='{$taskLink}' target='_blank'>{$taskDetail->description}</a></label></li>";
+                                            }
+                                        }
+                                    }
+                                    $status .= '</ul>';
+                                }
+                            }
+                        }
+                        return $status;
+                    } else {
+                        $statusLabel = '';
+                        if ($row->final_status == 'pending') {
+                            $statusLabel = __('request.tranfered_from_GM');
+                            $changeStatusButton = '<button type="button" class="btn btn-warning change_after_transfer" data-request-id="' . $row->id . '" data-toggle="modal" data-target="#changeAfterTransferModal">'
+                                . trans('request.change_status')  . '</button>';
+                        } else {
+                            $changeStatusButton = trans('request.' . $row->final_status);
+                        }
+                        return $statusLabel . ' ' . $changeStatusButton;
+                    }
+                })
+
+                ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request, $departmentIds, $departmentIdsForGeneralManagment) {
+                    $buttonsHtml = '';
+                    if ($departmentIdsForGeneralManagment) {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
+                            if ($is_admin || $can_return_request) {
+                                $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->id . '">' . trans('request.return_the_request') . '</button>';
+                            }
+                        }
+                    } else {
+                        if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds)) {
+
+
+                            if ($is_admin || $can_return_request) {
+                                $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->id . '">' . trans('request.return_the_request') . '</button>';
+                            }
+                        }
+                    }
+                    if ($is_admin || $can_show_request) {
+                        $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                        $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+                    }
+
+
                     // if ($is_admin || $can_show_request) {
                     //     $buttonsHtml .= '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' . $row->id . '">' . trans('request.view_request') . '</button>';
                     // }
@@ -471,6 +1205,7 @@ class RequestUtil extends Util
         return view($view)->with(compact(
             'users',
             'requestTypes',
+            'departments',
             'statuses',
             'main_reasons',
             'classes',
@@ -1045,14 +1780,13 @@ class RequestUtil extends Util
     public function changeRequestStatus(Request $request)
     {
 
-
-
         if ($request->request_id) {
 
             $first_step = RequestProcess::where('request_id', $request->request_id)
                 ->where('status', 'pending')
                 ->whereNull('sub_status')
                 ->first();
+
 
             if ($first_step) {
                 if ($first_step->procedure_id !== null) {
@@ -1211,6 +1945,15 @@ class RequestUtil extends Util
             $requestProcess->request->is_new = 0;
             $requestProcess->request->save();
 
+            $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+            if ($attachmentPath) {
+                RequestAttachment::create([
+                    'request_id' => $request->request_id,
+                    'added_by' => auth()->user()->id,
+                    'name' => $request->status,
+                    'file_path' => $attachmentPath,
+                ]);
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -1311,7 +2054,15 @@ class RequestUtil extends Util
 
             $process->request->is_new = 0;
             $process->request->save();
-
+            $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
+            if ($attachmentPath) {
+                RequestAttachment::create([
+                    'request_id' => $request->request_id,
+                    'added_by' => auth()->user()->id,
+                    'name' => $request->status,
+                    'file_path' => $attachmentPath,
+                ]);
+            }
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -1328,6 +2079,19 @@ class RequestUtil extends Util
         return $output;
     }
 
+    public function changeStatusAfterTransfer(Request $request)
+    {
+        error_log(json_encode($request->all()));
+        $requestId = $request->input('request_id');
+        $status = $request->input('status');
+
+        $request = UserRequest::find($requestId);
+        $request->status = $status;
+        //   $requestProcess->is_transfered_from_GM = 1;
+        $request->save();
+
+        return redirect()->back()->with('status', __('messages.status_updated'));
+    }
 
 
     ////// view request /////////////////// 

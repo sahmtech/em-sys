@@ -57,7 +57,7 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, ['all-accounting',])) {
             $this->allAccountingMenu();
-        } elseif (Str::startsWith($currentPath, ['accounting', 'sells','sell-return', 'expense', 'purchase', 'contacts', 'customer'])) {
+        } elseif (Str::startsWith($currentPath, ['accounting', 'sells', 'sell-return', 'expense', 'purchase', 'contacts', 'customer'])) {
             $this->accountingMenu();
         } elseif (Str::startsWith($currentPath, 'followup')) {
             $this->followUpMenu();
@@ -329,9 +329,9 @@ class CustomAdminSidebarMenu
 
 
                 $menu->url(
-                    ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
+                    ($is_admin  || auth()->user()->can('generalmanagement.view_president_requests')) ? action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_pending_requests']) : action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests']),
                     __('generalmanagement::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_pending_requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
             if ($is_admin   || auth()->user()->can('generalmanagement.view_notifications') || auth()->user()->can('generalmanagement.send_notifications')) {
@@ -468,7 +468,7 @@ class CustomAdminSidebarMenu
             if ($is_admin  || auth()->user()->can('ceomanagment.view_CEO_requests') || auth()->user()->can('ceomanagment.view_CEO_escalate_requests')) {
 
                 $menu->url(
-                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
+                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'ceo_pending_requests']),
                     __('ceomanagment::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
                 );
@@ -1049,9 +1049,9 @@ class CustomAdminSidebarMenu
             if ($is_admin  || auth()->user()->can('essentials.crud_workcards_request')) {
 
                 $menu->url(
-                    route('work_cards_all_requests'),
+                    route('work_cards_pending_requests'),
                     __('essentials::lang.workcards_allrequest'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_pending_requests'],
                 );
             }
 
@@ -1163,9 +1163,9 @@ class CustomAdminSidebarMenu
                 );
                 if ($is_admin  || auth()->user()->can('essentials.view_employees_affairs_requests')) {
                     $menu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_affairs_all_requests']),
+                        action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'pendingEmployeeAffairsRequests']),
                         __('essentials::lang.employees_requests'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' &&  (request()->segment(2) == 'allEmployeeAffairsRequests')]
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' &&  (request()->segment(2) == 'pendingEmployeeAffairsRequests')]
                     );
                 }
                 if (
@@ -1513,7 +1513,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.crud_all_manual_attendance')) {
+                $menu->url(
 
+                    action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'manual_attendance']),
+                    __('essentials::lang.crud_all_manual_attendance'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'manual_attendance'],
+                );
+            }
 
 
             if ($is_admin  || auth()->user()->can('essentials.view_HR_requests')) {
@@ -2551,14 +2558,14 @@ class CustomAdminSidebarMenu
                             __('lang_v1.sells_pills'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
                         );
-                      
+
                         $sub->url(
                             action([\App\Http\Controllers\SellReturnController::class, 'index']),
                             __('lang_v1.list_sell_return'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sell-return']
                         );
-                      
-                      
+
+
                         // }
 
 
@@ -3000,7 +3007,14 @@ class CustomAdminSidebarMenu
                     ],
                 );
             }
+            if ($is_admin  || auth()->user()->can('internationalrelations.Unsupported_workers')) {
 
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'indexUnsupported']),
+                    __('sales::lang.Unsupported_workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'Unsupported_workers']
+                );
+            }
 
             if ($is_admin || auth()->user()->can('internationalrelations.view_visa_cards')) {
                 $menu->url(
@@ -3164,6 +3178,11 @@ class CustomAdminSidebarMenu
                             ['icon' => 'fa fas fa-user-circle', 'active' => request()->segment(1) == 'types-of-service']
                         );
                     }
+                    $sub->url(
+                        action([\Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device']),
+                        __('connector::lang.user_device'),
+                        ['icon' => 'fa fas fa-user-circle', 'active' => request()->segment(1) == 'user_device']
+                    );
                 },
                 ['icon' => 'fa fas fa-cog', 'id' => 'tour_step3']
             );

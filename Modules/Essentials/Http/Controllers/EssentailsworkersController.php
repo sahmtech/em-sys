@@ -318,8 +318,9 @@ class EssentailsworkersController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
+    public function show($id, $can_edit = false, $from = null)
     {
+        error_log($can_edit);
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
@@ -436,7 +437,6 @@ class EssentailsworkersController extends Controller
                 'timesheet_date' => $user->timesheetGroup->timesheet_date,
             ];
         });
-
         return view('essentials::workers.show')->with(compact(
             'user',
             'view_partials',
@@ -452,6 +452,8 @@ class EssentailsworkersController extends Controller
             'document_delivery',
             'payrolls',
             'timesheets',
+            'can_edit',
+            'from'
         ));
     }
 

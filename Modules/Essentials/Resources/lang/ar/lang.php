@@ -270,6 +270,7 @@ return [
   'view_leave_balances' => 'عرض رصيد الإجازات',
   "crud_own_leave" => "إضافة / عرض الإجازة الخاصة",
   "crud_all_attendance" => "عرض كل الحضور",
+  'crud_all_manual_attendance' => 'الحضور والانصراف اليدوي',
   "view_own_attendance" => "عرض الحضور الخاص بي",
   "crud_department" => "عرض قسم",
   "crud_designation" => "عرض تسمية",
@@ -1151,6 +1152,7 @@ return [
   'expired_contracts' => 'العقود المنتهية',
   'remaining_contracts' => 'العقود انتهت فترة التجربة',
   'escape_date' => 'تاريخ الهروب',
+  'escape' => 'هروب',
   'user_info_eqama_not_completed' => 'معلومات الاقامة لصاحب الكرت غير موجودة  قم باكملها ',
   'card_added_sucessfully' => 'تم إضافة رخصة العمل بنجاح',
   'years' => 'سنة',
@@ -1964,7 +1966,7 @@ return [
   'view_payroll_checkpoint_financial' => 'عرض صفحة الرواتب (المدير المالي)',
   'confirm_payroll_checkpoint_financial' => 'اعتماد الرواتب (المدير المالي)',
   'show_payroll_checkpoint_financial' => 'عرض تفاصيل الرواتب (المدير المالي)',
-
+  'access_to_all' => 'الوصول إلى كل الشركات',
   'hr_management_cleared' => 'مدير الموارد',
   'hr_management_cleared_at' => 'تاريخ الاعتماد',
   'hr_management_cleared_by' => 'تم من قبل',
@@ -2002,7 +2004,11 @@ return [
   'employees&workers' => 'الموظفين والعمال',
   'insurance_status' => 'حالة التأمين',
   'business_insurance_contracts' => 'فرز شركات التأمين',
+  'all_requests' => 'جميع الطلبات',
+  'pending_requests' => 'الطلبات الحالية',
+  'done_requests' => 'الطلبات المنتهية',
   'view_personal_data' => 'عرض البيانات الشخصية',
+
 
 
 ];

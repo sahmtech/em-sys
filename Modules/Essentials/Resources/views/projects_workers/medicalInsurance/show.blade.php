@@ -86,6 +86,11 @@
                         <div>
 
                             <label>
+                                <input type="checkbox" name="contracts"
+                                    {{ $user->profile_image ? 'checked' : '' }}>@lang('essentials::lang.profile_picture')
+                            </label>
+                            <br>
+                            <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
                             </label>
                             <br>
@@ -115,22 +120,21 @@
 
                         @if (!empty($documents))
                             <div class="checkbox-group">
-                                @foreach($documents as $document)
-                                
-                                @if(isset($document->file_path) ||isset( $document->attachment))
-                                    <div class="checkbox">
-                                        <label>
-                                            @if ($document->file_path || $document->attachment)
-                                                <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
-                                                    data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                @foreach ($documents as $document)
+                                    @if (isset($document->file_path) || isset($document->attachment))
+                                        <div class="checkbox">
+                                            <label>
+                                                @if ($document->file_path || $document->attachment)
+                                                    <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
+                                                        data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                    </a>
+                                                @else
                                                     {{ trans('followup::lang.' . $document->type) }}
-                                                </a>
-                                            @else
-                                                {{ trans('followup::lang.' . $document->type) }}
-                                            @endif
-                                        </label>
-                                    </div>
-                                @endif
+                                                @endif
+                                            </label>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
                         @else

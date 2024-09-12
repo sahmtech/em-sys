@@ -279,8 +279,9 @@
                         render: function(data, type, row) {
                             @can('essentials.show_essentials_worker')
                                 var link = '<a href="' +
-                                    '{{ route('show-essentials-workers', ['id' => ':id']) }}'
-                                    .replace(':id', row.id) + '">' + data + '</a>';
+                                    '{{ route('show-essentials-workers', ['id' => ':id', 'can_edit' => ':can_edit']) }}'
+                                    .replace(':id', row.id).replace(':can_edit', true) +
+                                    '">' + data + '</a>';
                                 return link;
                             @else
                                 return data;

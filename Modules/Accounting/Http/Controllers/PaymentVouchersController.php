@@ -39,7 +39,7 @@ class PaymentVouchersController extends Controller
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_payment_vouchers = auth()->user()->can('accounting.payment_vouchers');
@@ -50,7 +50,8 @@ class PaymentVouchersController extends Controller
             ]);
         }
 
-        $contacts = Contact::whereNot('id', 1)->where('type', 'supplier')->get();
+        $contacts = Contact::whereNot('id', 1)->whereIn('type', ['converted', 'supplier'])->get();
+
         $transactionUtil = new TransactionUtil();
         $moduleUtil = new ModuleUtil();
         //        $accounts = $moduleUtil->accountsDropdown($business_id, true, false, true);
@@ -76,6 +77,7 @@ class PaymentVouchersController extends Controller
 
         if (request()->ajax()) {
             $transactions = TransactionPayment::with('transaction');
+          
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end =  request()->end_date;
@@ -95,7 +97,7 @@ class PaymentVouchersController extends Controller
             }
             $transactions->where(function ($q) {
                 $q->where('payment_type', 'debit')->orWhereHas('transaction', function ($q) {
-                    $q->whereIn('type', ['purchase', 'expense']);
+                    $q->whereIn('type', ['purchase', 'expense','payroll']);
                 });
             })->orderBy('id');
             return Datatables::of($transactions)
@@ -122,9 +124,9 @@ class PaymentVouchersController extends Controller
                     'contact_id',
                     function ($row) {
                         if ($row->contact) {
-                            return $row->contact->first_name ?: '';
+                            return $row->contact->supplier_business_name ?: '';
                         } elseif ($row->transaction) {
-                            return $row->transaction->contact ? $row->transaction->contact->first_name ?: '' : '';
+                            return $row->transaction->contact ? $row->transaction->contact->supplier_business_name ?: '' : '';
                         } else {
                             return '';
                         }
@@ -147,13 +149,14 @@ class PaymentVouchersController extends Controller
 
     protected function store(Request $request)
     {
-        $transaction_id = $request->input('transaction_id');
+          $transaction_id = $request->input('transaction_id');
         if ($transaction_id) {
+        
             try {
                 $business_id = $request->session()->get('user.business_id');
-                 $company_id = Session::get('selectedCompanyId');
+                $company_id = Session::get('selectedCompanyId');
 
-                $transaction = Transaction::where('business_id', $business_id)->where('company_id', $company_id)->with(['contact'])->findOrFail($transaction_id);
+                $transaction = Transaction::with(['contact'])->findOrFail($transaction_id);
 
                 $transaction_before = $transaction->replicate();
 
@@ -246,56 +249,60 @@ class PaymentVouchersController extends Controller
             }
             return redirect()->back()->with(['status' => $output]);
         } else {
+
+
             if (!$request->account_id) {
-                if (!(auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-                    //temp  abort(403, 'Unauthorized action.');
-                }
 
-                try {
-                    DB::beginTransaction();
+                // if (!(auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
+                //     //temp  abort(403, 'Unauthorized action.');
+                // }
 
-                    $business_id = request()->session()->get('business.id');
-                     $company_id = Session::get('selectedCompanyId');
-                    $tp = $this->transactionUtil->payContact($request, true, $company_id);
-                    $pos_settings = !empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
-                    $enable_cash_denomination_for_payment_methods = !empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];
-                    //add cash denomination
-                    if (in_array($tp->method, $enable_cash_denomination_for_payment_methods) && !empty($request->input('denominations')) && !empty($pos_settings['enable_cash_denomination_on']) && $pos_settings['enable_cash_denomination_on'] == 'all_screens') {
-                        $denominations = [];
+                // try {
+                DB::beginTransaction();
 
-                        foreach ($request->input('denominations') as $key => $value) {
-                            if (!empty($value)) {
-                                $denominations[] = [
-                                    'business_id' => $business_id,
-                                    'company_id' => $company_id,
-                                    'amount' => $key,
-                                    'total_count' => $value,
-                                ];
-                            }
-                        }
+                $business_id = request()->session()->get('business.id');
+                $company_id = Session::get('selectedCompanyId');
+                $tp = $this->transactionUtil->payContact($request, true, $company_id);
+                $pos_settings = !empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
+                $enable_cash_denomination_for_payment_methods = !empty($pos_settings['enable_cash_denomination_for_payment_methods']) ? $pos_settings['enable_cash_denomination_for_payment_methods'] : [];
+                //add cash denomination
+                if (in_array($tp->method, $enable_cash_denomination_for_payment_methods) && !empty($request->input('denominations')) && !empty($pos_settings['enable_cash_denomination_on']) && $pos_settings['enable_cash_denomination_on'] == 'all_screens') {
+                    $denominations = [];
 
-                        if (!empty($denominations)) {
-                            $tp->denominations()->createMany($denominations);
+                    foreach ($request->input('denominations') as $key => $value) {
+                        if (!empty($value)) {
+                            $denominations[] = [
+                                'business_id' => $business_id,
+                                'company_id' => $company_id,
+                                'amount' => $key,
+                                'total_count' => $value,
+                            ];
                         }
                     }
 
-                    DB::commit();
-                    $output = [
-                        'success' => true,
-                        'msg' => __('purchase.payment_added_success'),
-                    ];
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-                    $output = [
-                        'success' => false,
-                        'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
-                    ];
+                    if (!empty($denominations)) {
+                        $tp->denominations()->createMany($denominations);
+                    }
                 }
+
+                DB::commit();
+                $output = [
+                    'success' => true,
+                    'msg' => __('purchase.payment_added_success'),
+                ];
+                // } catch (\Exception $e) {
+                //     DB::rollBack();
+                //     Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+                //     $output = [
+                //         'success' => false,
+                //         'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
+                //     ];
+                // }
 
                 return redirect()->back()->with(['status' => $output]);
             } else {
+               
                 if (!auth()->user()->can('account.access')) {
                     //temp  abort(403, 'Unauthorized action.');
                 }
@@ -356,8 +363,9 @@ class PaymentVouchersController extends Controller
     {
         if ($request->contact_id) {
             $contact = Contact::query()->where('id', $request->contact_id)->first();
+            //   return $contact->transactions->whereIn('payment_status', ['due', 'partial'])->toArray();
             if ($contact) {
-                $trans = $contact->transactions->whereIn('payment_status', ['due', 'partial'])->toArray();
+                $trans = $contact->transactions->whereIn('payment_status', ['due', 'partial'])->get();
                 return response()->json(['success' => true, 'trans' => $trans], 200);
             }
         }

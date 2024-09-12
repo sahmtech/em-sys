@@ -45,6 +45,8 @@ return [
     'all_requests' => 'جميع الطلبات',
     'pending_requests' => 'الطلبات الحالية',
     'done_requests' => 'الطلبات المنجزة',
+    'old_pending_requests' => 'المعلقات',
+    'today_pending_requests' => 'طلبات اليوم',
     'organizational_structure' => 'الهيكل التنظيمي',
     'crud_all_procedures' => 'إضافة/حذف/تعديل إجراءات سير العمل',
     'delegatingManager_name' => 'تفويض مدير',

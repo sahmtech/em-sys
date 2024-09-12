@@ -594,6 +594,7 @@ Route::get('/updateShifts', function () {
 //         return response()->json(['success' => false, 'message' => $e->getMessage()]);
 //     }
 // });
+// Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
 
 Route::get('/clear_cache', function () {
     try {
@@ -717,10 +718,13 @@ Route::middleware(['setData'])->group(function () {
         ->name('confirm_payment');
 });
 
+
+
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu', 'CheckUserLogin'])->group(function () {
     Route::get('/my_notifications', [HomeController::class, 'getMyNotifications'])->name('getMyNotification');
-
+    Route::get('/user_device', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device'])->name('user_device');
+    Route::get('/user_device_delete/{id}', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device_delete'])->name('user_device_delete');
     Route::middleware(['compay_session'])->group(function () {
         Route::post('/sells/pos/get-types-of-service-details', 'SellPosController@getTypesOfServiceDetails');
         Route::get('/sells/subscriptions', 'SellPosController@listSubscriptions');
@@ -849,6 +853,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/products/validate_variation_skus', [ProductController::class, 'validateVaritionSkus']); //validates multiple skus at once
     Route::get('/products/quick_add', [ProductController::class, 'quickAdd']);
     Route::post('/products/save_quick_product', [ProductController::class, 'saveQuickProduct'])->name('save_Quick_Product');
+    Route::post('/products/save-quick-product', [ProductController::class, 'saveQuickProduct_'])->name('save_Quick_Product_');
     Route::get('/products/get-combo-product-entry-row', [ProductController::class, 'getComboProductEntryRow']);
     Route::post('/products/toggle-woocommerce-sync', [ProductController::class, 'toggleWooCommerceSync']);
 
@@ -986,6 +991,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::get('/fetch-users-by-type', [\App\Utils\RequestUtil::class, 'fetchUsersByType'])->name('fetch.users.by.type');
+    Route::post('/changeStatusAfterTransfer', [\App\Utils\RequestUtil::class, 'changeStatusAfterTransfer'])->name('changeStatusAfterTransfer');
 
 
     Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');
