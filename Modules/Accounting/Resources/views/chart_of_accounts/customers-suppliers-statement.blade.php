@@ -146,7 +146,6 @@
             <div class="col-sm-12">
                 <div class="box">
                     <div class="box-body">
-                        @can('account.access')
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped" id="ledger">
                                     <thead>
@@ -176,7 +175,6 @@
                                 </table>
                                 <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
                             </div>
-                        @endcan
                     </div>
                 </div>
             </div>
