@@ -725,6 +725,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/my_notifications', [HomeController::class, 'getMyNotifications'])->name('getMyNotification');
     Route::get('/user_device', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device'])->name('user_device');
     Route::get('/user_device_delete/{id}', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device_delete'])->name('user_device_delete');
+
+
     Route::middleware(['compay_session'])->group(function () {
         Route::post('/sells/pos/get-types-of-service-details', 'SellPosController@getTypesOfServiceDetails');
         Route::get('/sells/subscriptions', 'SellPosController@listSubscriptions');

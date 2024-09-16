@@ -10,6 +10,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
     Route::get('/hijriToGregorian', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'hijriToGregorian'])->name('hijriToGregorian');
     Route::get('/gregorianToHijri', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'gregorianToHijri'])->name('gregorianToHijri');
+    Route::get('/user/personalAttendance/{year?}/{month?}', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'personalAttendance'])->name('personalAttendance');
 
 
     Route::prefix('essentials')->group(function () {

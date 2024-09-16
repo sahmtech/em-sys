@@ -42,6 +42,200 @@ class AttendanceController extends Controller
         $this->essentialsUtil = $essentialsUtil;
     }
 
+    public function personalAttendance($year = null, $month = null)
+    {
+
+        $user = auth()->user();
+        $business_id = $user->business_id;
+        $business = Business::where('id', $business_id)->first();
+
+
+
+        if (!$year) {
+            $year = Carbon::now()->year;
+        }
+        if (!$month) {
+            $month = Carbon::now()->month;
+        }
+
+
+        $attendanceList = EssentialsAttendance::where([['user_id', '=', $user->id], ['business_id', '=', $business_id]])->with('shift')->get();
+        $firstDayOfMonth = Carbon::createFromDate($year, $month, 1);
+        $lastDayOfMonth = $firstDayOfMonth->copy()->endOfMonth();
+        $month_name = Carbon::create()->month($month)->format('F');
+
+
+        //days before
+        $daysBefore = [];
+        $attended = 0;
+        $late = 0;
+        $absent = 0;
+        $day = $firstDayOfMonth->subWeek();
+        for ($i = 0; $i < 7; $i++) {
+            error_log($day);
+            $clock_in_time = null;
+            $clock_out_time = null;
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 4;
+
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->toDateString() == $attendanceDate) {
+                        if ($attendance->status_id == 1) {
+                            $status = 1;
+                        } else if ($attendance->status_id == 2 || $attendance->status_id == 3) {
+                            $status = 2;
+                        }
+                        break;
+                    }
+                }
+                if ($status == 1) {
+                    $attended += 1;
+                } elseif ($status == 2 || $status == 3) {
+                    $late += 1;
+                } elseif ($status == 4) {
+                    $absent += 1;
+                }
+            }
+            $daysBefore[] = [
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 8,
+                'month' => $month == 1 ? 12 : $month - 1,
+                'year' =>  $month == 1 ? $year - 1 : $year,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status == 1 ? 'حضور' : (($status == 2 || $status == 3) ? 'تأخير' : ($status == 4 ? 'غياب' : '')),
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+            ];
+            $day->addDay();
+        }
+
+        //days
+        $days = [];
+        $attended_in_this_month = 0;
+        $late_in_this_month = 0;
+        $absent_in_this_month = 0;
+        for ($day = $firstDayOfMonth; $day->lte($lastDayOfMonth); $day->addDay()) {
+            $clock_in_time = null;
+            $clock_out_time = null;
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 4;
+
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->toDateString() == $attendanceDate) {
+
+                        if ($attendance->status_id == 1) {
+                            $status = 1;
+                        } else if ($attendance->status_id == 2 || $attendance->status_id == 3) {
+                            $status = 2;
+                        }
+                        break;
+                        break;
+                    }
+                }
+                if ($status == 1) {
+                    $attended_in_this_month += 1;
+                } elseif ($status == 2 || $status == 3) {
+                    $late_in_this_month += 1;
+                } elseif ($status == 4) {
+                    $absent_in_this_month += 1;
+                }
+            }
+
+            $days[] = [
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 8,
+                'month' => (int)$month,
+                'year' => $year,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status == 1 ? 'حضور' : (($status == 2 || $status == 3) ? 'تأخير' : ($status == 4 ? 'غياب' : '')),
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+            ];
+        }
+
+
+        //days after
+        $daysAfter = [];
+        $attended = 0;
+        $late = 0;
+        $absent = 0;
+        $day = $lastDayOfMonth->addDay();
+        for ($i = 0; $i < 7; $i++) {
+            $clock_in_time = null;
+            $clock_out_time = null;
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 4;
+
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->toDateString() == $attendanceDate) {
+
+                        if ($attendance->status_id == 1) {
+                            $status = 1;
+                        } else if ($attendance->status_id == 2 || $attendance->status_id == 3) {
+                            $status = 2;
+                        }
+                        break;
+                    }
+                }
+                if ($status == 1) {
+                    $attended += 1;
+                } elseif ($status == 2 || $status == 3) {
+                    $late += 1;
+                } elseif ($status == 4) {
+                    $absent += 1;
+                }
+            }
+
+            $daysAfter[] = [
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 8,
+                'month' => $month == 12 ? 1 : $month + 1,
+                'year' => $month == 12 ? $year + 1 : $year,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status == 1 ? 'حضور' : (($status == 2 || $status == 3) ? 'تأخير' : ($status == 4 ? 'غياب' : '')),
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+            ];
+            $day->addDay();
+        }
+
+
+
+
+        $res = [
+            'attended' => $attended_in_this_month,
+            'late' => $late_in_this_month,
+            'absent' => $absent_in_this_month,
+            'month_name' => $month_name,
+            'days_before' => $daysBefore,
+            'days' => $days,
+            'days_after' => $daysAfter,
+        ];
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'data' => $res,
+            ]);
+        }
+
+        return view('essentials::attendance.personal_attendance')->with(compact('res'));
+    }
+
     public function end_manual_attendance()
     {
         $output = '';

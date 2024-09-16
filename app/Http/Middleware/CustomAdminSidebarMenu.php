@@ -123,6 +123,8 @@ class CustomAdminSidebarMenu
             $this->helpdeskMenu();
         } elseif (Str::startsWith($currentPath, ['employee_requests'])) {
             $this->myMenu();
+        } elseif (Str::startsWith($currentPath, ['user'])) {
+            $this->userMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -3081,6 +3083,27 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 );
             }
+        });
+    }
+
+
+
+    public function userMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fa fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'personalAttendance']),
+                __('essentials::lang.attendance'),
+                ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'user' && request()->segment(2) == 'attendance'],
+            );
         });
     }
 
