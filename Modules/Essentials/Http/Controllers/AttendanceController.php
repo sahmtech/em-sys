@@ -265,7 +265,7 @@ class AttendanceController extends Controller
             foreach ($attendances as $attendance) {
                 $startTime = Carbon::createFromTime(16, 45, 0, 'Asia/Riyadh');
 
-                $randomSeconds = rand(0, 15 * 60);
+                $randomSeconds = rand(0, 30 * 60);
 
                 $randomTime = $startTime->copy()->addSeconds($randomSeconds);
                 $attendance->update(['clock_out_time' => $randomTime]);
@@ -336,9 +336,9 @@ class AttendanceController extends Controller
 
             foreach ($users_ids as  $user_id) {
 
-                $startTime = Carbon::createFromTime(9, 0, 0, 'Asia/Riyadh');
+                $startTime = Carbon::createFromTime(8, 45, 0, 'Asia/Riyadh');
 
-                $randomSeconds = rand(0, 15 * 60);
+                $randomSeconds = rand(0, 30 * 60);
 
                 $randomTime = $startTime->copy()->addSeconds($randomSeconds);
 
