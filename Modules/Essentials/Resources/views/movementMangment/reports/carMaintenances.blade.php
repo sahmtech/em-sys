@@ -14,7 +14,6 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                 
                     <div class="col-md-4">
                         {!! Form::label('carType_label', __('housingmovements::lang.car')) !!}
 
@@ -22,12 +21,13 @@
                             <option value="all" selected>@lang('lang_v1.all')</option>
                             @foreach ($cars as $car)
                                 <option value="{{ $car->id }}">
-                                    {{ $car->plate_number . ' - ' .$car->CarModel->CarType->name_ar . ' - ' . $car->CarModel->name_ar }}</option>
+                                    {{ $car->plate_number . ' - ' . $car->CarModel->CarType?->name_ar ?? ('' . ' - ' . $car->CarModel?->name_ar ?? '') }}
+                                </option>
                             @endforeach
                         </select>
-                         
+
                     </div>
-               
+
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -37,7 +37,8 @@
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-primary'])
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="carMaintenances_table" style="margin-bottom: 100px;">
+                        <table class="table table-bordered table-striped" id="carMaintenances_table"
+                            style="margin-bottom: 100px;">
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">@lang('housingmovements::lang.car')</th>
@@ -47,10 +48,10 @@
                                     <th style="text-align: center;">@lang('housingmovements::lang.maintenance_description')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.invoice_no')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.date')</th>
-                                
+
                                 </tr>
                             </thead>
-                           
+
                         </table>
                         {{-- <center class="mt-5">
                             {{ $carModles->links() }}
@@ -76,7 +77,7 @@
             $('#car__type_id').select2();
             $('#carSelect').select2();
 
-            
+
             carMaintenances_table = $('#carMaintenances_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -87,10 +88,10 @@
                             d.carSelect = $('#carSelect').val();
                             // console.log(d.project_name_filter);
                         }
-                       
+
                     }
                 },
-            
+
                 columns: [
                     // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
                     {
@@ -101,7 +102,7 @@
                         "data": "plate_number"
                     },
 
-                    
+
                     {
                         "data": "current_speedometer"
                     },
@@ -119,10 +120,10 @@
                     }
                 ]
             });
-         
 
-         
-        
+
+
+
             $('#carSelect,#name').on('change',
                 function() {
                     carMaintenances_table.ajax.reload();
