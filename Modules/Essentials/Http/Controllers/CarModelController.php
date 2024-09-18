@@ -22,7 +22,7 @@ class CarModelController extends Controller
     public function index(Request $request)
     {
 
-        
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_carModels = auth()->user()->can('essentials.carModels');
         if (!($is_admin || $can_carModels)) {
@@ -33,7 +33,7 @@ class CarModelController extends Controller
         }
         $carModles = CarModel::all();
         $carTypes = CarType::all();
-       
+
         $can_carmodel_edit = auth()->user()->can('carmodel.edit');
         $can_carmodel_delete = auth()->user()->can('carmodel.delete');
         if (request()->ajax()) {
@@ -48,15 +48,15 @@ class CarModelController extends Controller
             return DataTables::of($carModles)
 
                 ->editColumn('name_ar', function ($row) {
-                    return $row->name_ar  ?? '';
+                    return $row?->name_ar  ?? '';
                 })
 
                 ->editColumn('name_en', function ($row) {
-                    return $row->name_en ?? '';
+                    return $row?->name_en ?? '';
                 })
 
                 ->editColumn('carType', function ($row) {
-                    return $row->CarType->name_ar . ' - ' . $row->CarType->name_en  ?? '';
+                    return $row->CarType?->name_ar ?? '' . ' - ' . $row->CarType?->name_en  ?? '';
                 })
 
                 ->addColumn(
