@@ -9,6 +9,7 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use App\User;
 use App\AccessRole;
 use App\AccessRoleRequest;
+use App\Company;
 use Carbon\Carbon;
 use App\Request as Req;
 use Modules\CEOManagment\Entities\RequestsType;
@@ -271,15 +272,16 @@ class EssentialsRequestController extends Controller
         $saleProjects = SalesProject::all()->pluck('name', 'id');
         $requestsProcess = null;
         $all_status = ['approved', 'pending', 'rejected'];
-
-        if ($user_type == 'admin' || $user_type == 'department_head' || $user_type == 'manager') {
-            $allRequestTypes = RequestsType::where('for', 'employee')->where('selfish_service', 1)->pluck('type', 'id');
-        } else {
-            $allRequestTypes = RequestsType::where('for', $user_type)->where('selfish_service', 1)->pluck('type', 'id');
-        }
+        // $allRequestTypes = [];
+        // if ($user_type == 'admin' || $user_type == 'department_head' || $user_type == 'manager') {
+        //     $allRequestTypes = RequestsType::where('for', 'employee')->where('selfish_service', 1)->pluck('type', 'id');
+        // } else {
+        //     $allRequestTypes = RequestsType::where('for', $user_type)->where('selfish_service', 1)->pluck('type', 'id');
+        // }
+        $allRequestTypes = RequestsType::pluck('type', 'id');
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
-
+        $companies = Company::pluck('name', 'id');
 
         $requestsProcess = Req::select([
             'requests.request_no',
@@ -296,6 +298,8 @@ class EssentialsRequestController extends Controller
             'users.id_proof_number',
             'wk_procedures.can_return',
             'process.procedure_id as procedure_id',
+            'users.company_id',
+            'users.assigned_to',
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
                 $join->on('requests.id', '=', 'latest_process.request_id');
@@ -320,6 +324,12 @@ class EssentialsRequestController extends Controller
                 })
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
+                })
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    return $companies[$row->company_id];
+                })
+                ->editColumn('assigned_to', function ($row) use ($saleProjects) {
+                    return $saleProjects[$row->assigned_to] ?? '';
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
