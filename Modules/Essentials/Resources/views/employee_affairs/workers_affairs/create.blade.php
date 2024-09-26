@@ -4,10 +4,10 @@
 
 @section('content')
 
-  
-        <section class="content-header">
-            <h1>@lang('essentials::lang.add_new_worker')</h1>
-        </section>
+
+    <section class="content-header">
+        <h1>@lang('essentials::lang.add_new_worker')</h1>
+    </section>
 
 
     <section class="content">
@@ -16,10 +16,13 @@
             <div class="col-md-12">
                 <div class="col-md-12 box box-primary">
                     <h4>@lang('essentials::lang.basic_info'):</h4>
-                     <div class="col-md-4">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
-                            {!! Form::text('emp_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.emp_number')]) !!}
+                            {!! Form::text('emp_number', null, [
+                                'class' => 'form-control',
+                                'placeholder' => __('essentials::lang.emp_number'),
+                            ]) !!}
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -54,28 +57,31 @@
                             {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
-                            {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
-                        </div>
 
-                    </div>
-                 
 
-                    <div id="workerInput"  class="col-md-4">
+
+                    <div id="workerInput" class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':') !!}
                             {!! Form::select('assigned_to', $contacts, null, [
                                 'class' => 'form-control select2',
                                 'style' => 'height:40px',
-                               
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
+                            {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                        </div>
+                    </div>
+                    @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
                 </div>
                 @include('essentials::employee_affairs.workers_affairs.personal_info')
-          
+
                 <div class="row">
                     <div class="col-md-12 text-center">
                         <button type="submit" class="btn btn-primary btn-big"
