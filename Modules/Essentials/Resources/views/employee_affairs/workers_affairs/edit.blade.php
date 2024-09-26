@@ -4,6 +4,14 @@
 
 @section('content')
 
+    <head>
+        <style>
+            #video {
+                transform: scaleX(-1);
+                /* Flip the video horizontally */
+            }
+        </style>
+    </head>
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('essentials::lang.edit_worker')</h1>
