@@ -4,6 +4,14 @@
 
 @section('content')
 
+    <head>
+        <style>
+            #video {
+                transform: scaleX(-1);
+                /* Flip the video horizontally */
+            }
+        </style>
+    </head>
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('essentials::lang.edit_employee')</h1>
@@ -87,7 +95,25 @@
                     ) !!}
                 </div>
             </div>
+            <div class="clearfix"></div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
+                    {!! Form::file('profile_picture', [
+                        'class' => 'form-control',
+                        'id' => 'fileInputWrapper',
+                        'accept' => 'image/*',
+                    ]) !!}
+                </div>
 
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                </div>
+
+                <!-- Hidden file input to store the captured photo -->
+
+            </div>
+            @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
 
 
         </div>
@@ -251,7 +277,8 @@
                             </div>
                             @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.delete_official_documents'))
                                 <div class="col-md-3">
-                                    <button type="button" class="btn btn-danger deleteIbanFile">@lang('messages.delete')</button>
+                                    <button type="button"
+                                        class="btn btn-danger deleteIbanFile">@lang('messages.delete')</button>
                                 </div>
                             @endif
                         </div>

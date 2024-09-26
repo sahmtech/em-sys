@@ -1822,6 +1822,7 @@ class EssentialsManageEmployeeController extends Controller
                 'first_name',
                 'last_name',
                 'email',
+                'profile_picture',
                 'selected_contacts',
                 'marital_status',
                 'border_no',
@@ -1972,6 +1973,11 @@ class EssentialsManageEmployeeController extends Controller
 
                             $Iban_doc->update($input);
                         }
+                    }
+                    if ($request->hasFile('profile_picture')) {
+                        $image = $request->file('profile_picture');
+                        $profile = $image->store('/profile_images');
+                        $user_data['profile_image'] = $profile;
                     }
 
                     $user_data['updated_by'] = Auth::user()->id;
