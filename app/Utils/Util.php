@@ -258,7 +258,7 @@ class Util
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
-        $date = $updatedString = str_replace(['/', '\\'], '-', $date);
+        $date = str_replace(['/', '\\'], '-', $date);
 
         return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
     }
