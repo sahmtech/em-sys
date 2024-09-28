@@ -1437,9 +1437,13 @@ class EssentialsManageEmployeeController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
+                // 'msg' => __('messages.something_went_wrong'),
             ];
         }
+
+        //test
+
 
         return redirect()->route('employees')->with('status', $output);
     }
