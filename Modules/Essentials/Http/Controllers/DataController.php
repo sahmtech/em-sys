@@ -2343,7 +2343,7 @@ class DataController extends Controller
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
 
-            $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+            $departments = EssentialsDepartment::pluck('name', 'id');
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
             $user = !empty($data['user']) ? $data['user'] : null;
