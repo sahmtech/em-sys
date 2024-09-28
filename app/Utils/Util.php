@@ -258,6 +258,7 @@ class Util
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
+        $date = $updatedString = str_replace(['/', '\\'], '-', $date);
 
         return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
     }
@@ -2057,7 +2058,7 @@ class Util
             ->where('company_id', $transaction->company_id)
             ->where('active', true)->first();
 
-            $company_id =$transaction->company_id;
+        $company_id = $transaction->company_id;
         // return   [$transaction->type, $transaction->payment_status, $transaction->location_id];
         if ($accountMappingSetting) {
             // find account transaction mapping setting by accounting mapping setting
@@ -2081,7 +2082,7 @@ class Util
                 $acc_trans_mapping->note = $request->get('note');
                 $acc_trans_mapping->type = 'journal_entry';
                 $acc_trans_mapping->created_by = $user_id;
-                $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s');// $this->uf_date($request->input('transaction_date'), true);
+                $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s'); // $this->uf_date($request->input('transaction_date'), true);
                 $acc_trans_mapping->save();
 
                 foreach ($accTransMappingSetting as $accTrans) {
@@ -2092,7 +2093,7 @@ class Util
                     $transaction_row['type'] = $accTrans->type;
                     $transaction_row['cost_center_id'] = $accTrans->cost_center_id;
                     $transaction_row['created_by'] = $user_id;
-                    $transaction_row['operation_date'] = now()->format('Y-m-d H:i:s');//$this->uf_date($request->input('transaction_date'), true);
+                    $transaction_row['operation_date'] = now()->format('Y-m-d H:i:s'); //$this->uf_date($request->input('transaction_date'), true);
                     $transaction_row['sub_type'] = 'journal_entry';
                     $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
 
@@ -2125,7 +2126,7 @@ class Util
         } else {
             $method = 'other';
         }
-        $company_id =$transaction->company_id;
+        $company_id = $transaction->company_id;
         if ($transaction->type == 'payroll') {
             $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
                 ->where('type', $transaction->type)
@@ -2144,7 +2145,7 @@ class Util
         // return $accountMappingSetting;
         if ($accountMappingSetting) {
             // find account transaction mapping setting by accounting mapping setting
-                 $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
+            $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
 
 
             if (count($accTransMappingSetting) > 0) {
@@ -2226,9 +2227,9 @@ class Util
         } else {
             $method = 'other';
         }
-        $company_id =$transaction->company_id;
+        $company_id = $transaction->company_id;
         if ($transaction->type == 'payroll') {
-                $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
+            $accountMappingSetting = AccountingMappingSettingAutoMigration::where('name', 'payroll_' . $user_type)
                 ->where('type', $transaction->type)
                 ->where('payment_status', $transaction->payment_status)
                 ->where('method', $method)
@@ -2238,7 +2239,7 @@ class Util
             $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
                 ->where('payment_status', $transaction->payment_status)
                 ->where('method', $method)
-                ->where('company_id',$transaction->company_id)
+                ->where('company_id', $transaction->company_id)
                 ->where('active', true)->first();
         }
         //  return  [ $transaction->type, $transaction->payment_status,$payment_lines->method, $company_id];
