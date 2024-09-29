@@ -247,14 +247,13 @@ class Util
      */
     public function uf_date($date, $time = false)
     {
-
         $date_format = session('business.date_format');
         $mysql_format = 'Y-m-d';
         if ($time) {
             if (session('business.time_format') == 12) {
-                $date_format = $date_format . ' h:i A';
+                $date_format = $date_format . 'h:i A';
             } else {
-                $date_format = $date_format . ' H:i';
+                $date_format = $date_format . 'H:i';
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
