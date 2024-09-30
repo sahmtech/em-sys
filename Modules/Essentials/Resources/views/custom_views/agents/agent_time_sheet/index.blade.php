@@ -7,6 +7,35 @@
     </section>
     <!-- Main content -->
     <section class="content">
+        @component('components.filters', ['title' => __('report.filters')])
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="business_filter">@lang('essentials::lang.companies'):</label>
+                    {!! Form::select('select_company_id', $companies, null, [
+                        'class' => 'form-control select2',
+                        'id' => 'select_company_id',
+                        'style' => 'height:40px; width:100%',
+                    
+                        'multiple' => 'multiple',
+                        'autofocus',
+                        'data-placeholder' => __('lang_v1.all'),
+                    ]) !!}
+                </div>
+            </div>
+
+            <div class="col-md-3" id="project_name_filter_div">
+                <div class="form-group">
+                    {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                    {!! Form::select('project_name_filter', $projects, null, [
+                        'class' => 'form-control select2',
+                        'style' => 'width:100%;padding:2px;',
+                        'id' => 'project_name_filter',
+                    
+                        'placeholder' => __('lang_v1.all'),
+                    ]) !!}
+                </div>
+            </div>
+        @endcomponent
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
                 <div class="col-md-12">
@@ -288,10 +317,27 @@
                 //     ],
                 // });
 
+
+
+                $(' #project_name_filter, #select_company_id')
+                    .on('change',
+                        function() {
+                            payroll_group_table.ajax.reload();
+                        });
+
+
+
+
                 payroll_group_table = $('#payroll_group_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ route('hrm.agentTimeSheetGroups') }}",
+                    ajax: {
+                        url: "{{ route('hrm.agentTimeSheetGroups') }}",
+                        data: function(d) {
+                            d.project_name_filter = $('#project_name_filter').val();
+                            d.select_company_id = $('#select_company_id').val();
+                        }
+                    },
                     columns: [{
                             data: 'name',
                             name: 'name'

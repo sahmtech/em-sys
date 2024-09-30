@@ -81,7 +81,8 @@ class TimeSheetController extends Controller
         $designations = Category::forDropdown($business_id, 'hrm_designation');
 
 
-        return view('essentials::custom_views.agents.agent_time_sheet.index', compact('workers', 'departments', 'designations', 'projects'));
+        $companies = Company::pluck('name', 'id');
+        return view('essentials::custom_views.agents.agent_time_sheet.index', compact('workers', 'departments', 'companies', 'designations', 'projects'));
     }
 
     public function create()
@@ -191,7 +192,17 @@ class TimeSheetController extends Controller
                 'timesheet_groups.is_approved',
                 'timesheet_groups.approved_by',
             ]);
+        if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
+            $project_name_filter = request()->input('project_name_filter');
 
+            $payrolls =    $payrolls->where('project_id', $project_name_filter);
+        }
+
+        if (request()->input('select_company_id') && request()->input('select_company_id') != 'all') {
+            $select_company_id = request()->input('select_company_id');
+
+            $payrolls =    $payrolls->whereIn('company_id', $select_company_id);
+        }
 
         $all_users = User::where('status', '!=', 'inactive')
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
@@ -562,7 +573,8 @@ class TimeSheetController extends Controller
                 'u.last_name',
                 'u.bank_details',
                 'u.assigned_to',
-                'u.id'
+                'u.id',
+                'u.company_id'
             ])
             ->get();
 
@@ -809,9 +821,9 @@ class TimeSheetController extends Controller
 
         $departments = Category::forDropdown($business_id, 'hrm_department');
         $designations = Category::forDropdown($business_id, 'hrm_designation');
+        $companies = Company::pluck('name', 'id');
 
-
-        return view('essentials::custom_views.agents.agent_time_sheet.payroll_index', compact('workers', 'departments', 'designations', 'projects'));
+        return view('essentials::custom_views.agents.agent_time_sheet.payroll_index', compact('workers', 'departments', 'designations', 'projects', 'companies'));
     }
 
 
@@ -834,6 +846,17 @@ class TimeSheetController extends Controller
             'timesheet_groups.approved_by',
 
         ]);
+        if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
+            $project_name_filter = request()->input('project_name_filter');
+
+            $payrolls =    $payrolls->where('project_id', $project_name_filter);
+        }
+
+        if (request()->input('select_company_id') && request()->input('select_company_id') != 'all') {
+            $select_company_id = request()->input('select_company_id');
+
+            $payrolls =    $payrolls->whereIn('company_id', $select_company_id);
+        }
 
         $all_users = User::where('status', '!=', 'inactive')
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))

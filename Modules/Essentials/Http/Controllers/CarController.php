@@ -56,7 +56,7 @@ class CarController extends Controller
 
 
                 ->editColumn('car_typeModel', function ($row) {
-                    return $row->CarModel->CarType->name_ar . ' - ' . $row->CarModel->name_ar ?? '';
+                    return $row->CarModel->CarType?->name_ar ?? '' . ' - ' . $row->CarModel?->name_ar ?? '';
                 })
 
                 ->editColumn('plate_number', function ($row) {

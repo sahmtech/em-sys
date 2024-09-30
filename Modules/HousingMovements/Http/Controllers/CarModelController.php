@@ -33,15 +33,15 @@ class CarModelController extends Controller
             return DataTables::of($carModles)
 
                 ->editColumn('name_ar', function ($row) {
-                    return $row->name_ar  ?? '';
+                    return $row?->name_ar  ?? '';
                 })
 
                 ->editColumn('name_en', function ($row) {
-                    return $row->name_en ?? '';
+                    return $row?->name_en ?? '';
                 })
 
                 ->editColumn('carType', function ($row) {
-                    return $row->CarType->name_ar . ' - ' . $row->CarType->name_en  ?? '';
+                    return $row->CarType?->name_ar ?? '' . ' - ' . $row->CarType?->name_en  ?? '';
                 })
 
                 ->addColumn(

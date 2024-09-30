@@ -35,7 +35,10 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('/create_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_payment'])->name('accounting.payrolls.create_payment');
     Route::post('/create_single_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_single_payment'])->name('accounting.payrolls.create_single_payment');
     Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
+    Route::get('/filtered_requests/{filter}', [\Modules\Accounting\Http\Controllers\AccountingController::class, 'getFilteredRequests'])->name('accounting.getFilteredRequests');
+
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
+    Route::get('primary-accounts-dropdown', 'AccountingController@primaryAccountsDropdown')->name('primary-accounts-dropdown');
     Route::get('accounting-business-settings', 'SettingsController@getBusinessSettings_accounting')->name('accounting-business-settings');
 
 
@@ -61,6 +64,7 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('save-importe-accounts', 'CoaController@importe_accounts')->name('accounting.saveImporte_accounts');
     Route::get('activate-deactivate/{id}', 'CoaController@activateDeactivate');
     Route::get('create-default-accounts', 'CoaController@createDefaultAccounts')->name('accounting.create-default-accounts');
+    Route::get('ledger/print/{id}', 'CoaController@ledgerPrint');
 
 
 

@@ -13,6 +13,7 @@ return [
   'exitRequest' => 'طلب خروح نهائي',
   'returnRequest' => 'طلب خروج وعودة',
   'advanceSalary' => 'طلب سلفة',
+  'baladyCardType' => 'نوع بطاقة الصراف',
   'leavesAndDepartures' => 'الإجازات والمغادرات',
   'atmCard' => 'بطاقة صراف آلي',
   'residenceRenewal' => 'طلب تجديد إقامة',
@@ -291,6 +292,18 @@ return [
   '6 months' => 'ستة أشهر',
   '9 months' => 'تسعة أشهر',
   '12 months' => 'اثنا عشر شهراً',
+  'change_status' => 'تغيير الحالة',
+
+  'transfer_to_department' => 'تحويل إلى إدارة',
+  'transfer' => 'تحويل ',
+  'tranfered_from_GM' => 'تم التحويل من الإدارة العامة',
+
+  'today_requests' => 'طلبات اليوم',
+  'pending_requests' => 'الطلبات المعلقة',
+  'completed_requests' => 'الطلبات المنتهية',
+  'all_requests' => 'جمبيع الطلبات',
+
+
 
 
 ];

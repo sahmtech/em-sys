@@ -57,6 +57,18 @@ class RequestController extends Controller
             ],
         ];
     }
+
+
+
+
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('generalmanagmentoffice.change_request_status');
+        $can_return_request = auth()->user()->can('generalmanagmentoffice.return_request');
+        $can_show_request = auth()->user()->can('generalmanagmentoffice.view_request');
+        return $this->requestUtil->getFilteredRequests('followup', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
     public function index()
     {
 
@@ -114,15 +126,29 @@ class RequestController extends Controller
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')->groupBy('request_id');
         $allRequestTypes = RequestsType::pluck('type', 'id');
 
-        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->select([
+        $escalatedRequests = UserRequest::where('process.sub_status', 'escalateRequest')->where('process.is_transfered_from_GM', 0)->select([
 
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.created_at',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.action_type as action_type', 'wk_procedures.department_id as department_id', 'wk_procedures.can_return', 'wk_procedures.start as start',
+            'wk_procedures.action_type as action_type',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
+            'wk_procedures.start as start',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.assigned_to', 'users.id as userId',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.assigned_to',
+            'users.id as userId',
 
 
             'procedure_escalations.escalates_to'

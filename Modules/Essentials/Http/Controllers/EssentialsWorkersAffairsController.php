@@ -672,7 +672,7 @@ class EssentialsWorkersAffairsController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit($id, $from = null)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
@@ -745,6 +745,8 @@ class EssentialsWorkersAffairsController extends Controller
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)->where('is_active', 1)
             ->first();
         $officalDocuments = $user->OfficialDocument;
+
+
         return view('essentials::employee_affairs.workers_affairs.edit')
             ->with(compact(
                 'officalDocuments',
@@ -774,6 +776,7 @@ class EssentialsWorkersAffairsController extends Controller
                 'companies',
                 'job_titles',
                 'allowance_types',
+                'from',
             ));
     }
 
@@ -783,7 +786,7 @@ class EssentialsWorkersAffairsController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, $from = null)
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -792,16 +795,58 @@ class EssentialsWorkersAffairsController extends Controller
         }
         try {
             $user_data = $request->only([
-                'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status', 'border_no', 'bank_details',
-                'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1', 'location_id',
-                'social_media_2', 'permanent_address', 'current_address', 'profession', 'specialization',
-                'company_id', 'guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
-                'contract_duration', 'probation_period', 'user_type',
-                'is_renewable', 'contract_file', 'essentials_salary', 'essentials_pay_period',
-                'salary_type', 'amount', 'can_add_category',
-                'travel_ticket_categorie', 'health_insurance', 'selectedData',
-                'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number', 'emp_number'
+                'surname',
+                'first_name',
+                'last_name',
+                'email',
+                'profile_picture',
+                'selected_contacts',
+                'marital_status',
+                'border_no',
+                'bank_details',
+                'blood_group',
+                'contact_number',
+                'fb_link',
+                'twitter_link',
+                'social_media_1',
+                'location_id',
+                'social_media_2',
+                'permanent_address',
+                'current_address',
+                'profession',
+                'specialization',
+                'company_id',
+                'guardian_name',
+                'custom_field_1',
+                'custom_field_2',
+                'nationality',
+                'contract_type',
+                'contract_start_date',
+                'contract_end_date',
+                'contract_duration',
+                'probation_period',
+                'user_type',
+                'is_renewable',
+                'contract_file',
+                'essentials_salary',
+                'essentials_pay_period',
+                'salary_type',
+                'amount',
+                'can_add_category',
+                'travel_ticket_categorie',
+                'health_insurance',
+                'selectedData',
+                'custom_field_3',
+                'custom_field_4',
+                'id_proof_name',
+                'id_proof_number',
+                'cmmsn_percent',
+                'gender',
+                'essentials_department_id',
+                'max_sales_discount_percent',
+                'family_number',
+                'alt_number',
+                'emp_number'
 
             ]);
 
@@ -917,6 +962,13 @@ class EssentialsWorkersAffairsController extends Controller
                     $inpu['updated_by'] = auth()->user()->id;
                     $Iban_doc->update($input);
                 }
+
+                if ($request->hasFile('profile_picture')) {
+                    $image = $request->file('profile_picture');
+                    $profile = $image->store('/profile_images');
+                    $user_data['profile_image'] = $profile;
+                }
+
                 $user_data['updated_by'] = Auth::user()->id;
                 $user->update($user_data);
 
@@ -936,7 +988,8 @@ class EssentialsWorkersAffairsController extends Controller
                         if ($filePath) {
                             Storage::delete($filePath);
                             EssentialsOfficialDocument::where('id', $deleted_document)->update([
-                                'file_path' => Null, 'updated_by' => Auth::user()->id
+                                'file_path' => Null,
+                                'updated_by' => Auth::user()->id
                             ]);
                         }
                     }
@@ -986,7 +1039,16 @@ class EssentialsWorkersAffairsController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        return redirect()->route('show_workers_affairs', ['id' => $id])->with('status', $output);
+
+        if ($from == 'hrm') {
+
+            return redirect()->route('show-essentials-workers', ['id' => $id, 'can_edit' => true])->with('status', $output);
+        }
+        if ($from == 'employee_affairs') {
+
+            return redirect()->route('show_workers_affairs', ['id' => $id, 'can_edit' => true])->with('status', $output);
+        }
+        return redirect()->route('show_workers_affairs', ['id' => $id, 'can_edit' => true])->with('status', $output);
     }
     public function getSalaries(Request $request, $id)
     {

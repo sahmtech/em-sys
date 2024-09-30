@@ -2,12 +2,19 @@
 
 namespace Modules\GeneralManagmentOffice\Http\Controllers;
 
+use App\Utils\RequestUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class DashboardController extends Controller
 {
+
+    protected $requestUtil;
+    public function __construct(RequestUtil $requestUtil)
+    {
+        $this->requestUtil = $requestUtil;
+    }
     /**
      * Display a listing of the resource.
      * @return Renderable
@@ -15,7 +22,13 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('generalmanagmentoffice::dashboard.generalmanagmentoffice_dashboard');
+        $counts =  $this->requestUtil->getCounts('generalmanagement');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
+        return view('generalmanagmentoffice::dashboard.generalmanagmentoffice_dashboard')
+            ->with(compact('today_requests', 'pending_requests', 'completed_requests', 'all_requests'));
     }
 
     /**

@@ -16,6 +16,7 @@ use App\User;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Utils\AccountingUtil;
 use App\Utils\ModuleUtil;
+use App\Utils\RequestUtil;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Illuminate\Support\Facades\Session;
@@ -25,15 +26,18 @@ class AccountingController extends Controller
 {
     protected $accountingUtil;
     protected $moduleUtil;
+    protected $requestUtil;
+
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(AccountingUtil $accountingUtil, ModuleUtil $moduleUtil)
+    public function __construct(AccountingUtil $accountingUtil, ModuleUtil $moduleUtil, RequestUtil $requestUtil)
     {
         $this->accountingUtil = $accountingUtil;
         $this->moduleUtil = $moduleUtil;
+        $this->requestUtil = $requestUtil;
     }
 
 
@@ -42,6 +46,7 @@ class AccountingController extends Controller
         $companies = Company::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_accounting_view_companies = auth()->user()->can('accounting.view_companies') ? true : false;
+        $can_access_all = auth()->user()->can('accounting.access_to_all') ? true : false;
 
         if (!($is_admin || $can_accounting_view_companies)) {
             return redirect()->route('home')->with('status', [
@@ -49,7 +54,7 @@ class AccountingController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        if (!$is_admin) {
+        if (!$is_admin && !$can_access_all) {
             $companies = Company::whereIn('id', $this->accountingUtil->allowedCompanies())->get();
         }
         $cardsOfCompanies = [];
@@ -69,6 +74,16 @@ class AccountingController extends Controller
         Session::put('selectedCompanyId', $request->companyId);
         return redirect()->route('accounting.dashboard');
     }
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('accounting.change_status');
+        $can_return_request = auth()->user()->can('accounting.return_the_request');
+        $can_show_request = auth()->user()->can('accounting.show_request');
+        return $this->requestUtil->getFilteredRequests('accounting', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
+
+
     /**
      * @return Factory|View|Application
      * @throws ContainerExceptionInterface
@@ -136,9 +151,21 @@ class AccountingController extends Controller
         }
 
         $colors = [
-            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
-            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+            '#E75E82',
+            '#37A2EC',
+            '#FACD56',
+            '#5CA85C',
+            '#605CA8',
+            '#2f7ed8',
+            '#0d233a',
+            '#8bbc21',
+            '#910000',
+            '#1aadce',
+            '#492970',
+            '#f28f43',
+            '#77a1e5',
+            '#c42525',
+            '#a6c96a'
         ];
         $coa_overview_chart = new CommonChart;
         $coa_overview_chart->labels($labels)
@@ -193,13 +220,23 @@ class AccountingController extends Controller
 
             $all_charts[$k] = $chart;
         }
+
+        $counts =  $this->requestUtil->getCounts('accounting');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
         return view('accounting::accounting.dashboard')->with(compact(
             'coa_overview_chart',
             'all_charts',
             'coa_overview',
             'account_types',
             'end_date',
-            'start_date'
+            'start_date',
+            'today_requests',
+            'pending_requests',
+            'completed_requests',
+            'all_requests'
         ));
     }
 
@@ -238,6 +275,29 @@ class AccountingController extends Controller
                 ];
             }
 
+            return $accounts_array;
+        }
+    }
+
+    public function primaryAccountsDropdown()
+    {
+        if (request()->ajax()) {
+            $account_types = AccountingAccountType::accounting_primary_type();
+            $accounts_array = [];
+
+            $accounts_array[] = [
+                'id' => ' ',
+                'text' => '<strong>' . __('lang_v1.all') . '</strong>',
+                'html' => '<strong>' . __('lang_v1.all') . '</strong>',
+            ];
+
+            foreach ($account_types as $key => $account_type) {
+                $accounts_array[] = [
+                    'id' => $account_type['GLC'],
+                    'text' => $account_type['label'] . ' - <small class="text-muted">' . $account_type['GLC'],
+                    'html' => $account_type['label'] . ' - <small class="text-muted">' . $account_type['GLC']
+                ];
+            }
             return $accounts_array;
         }
     }

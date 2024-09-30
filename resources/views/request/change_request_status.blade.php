@@ -6,6 +6,7 @@
                 'url' => action([\App\Utils\RequestUtil::class, 'changeRequestStatus']),
                 'method' => 'post',
                 'id' => 'change_status_form',
+                'enctype' => 'multipart/form-data',
             ]) !!}
 
             <div class="modal-header">
@@ -25,23 +26,24 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-12">
-                    {!! Form::label('note', __('followup::lang.note') . ':') !!}
+                <input type="hidden" id="request_ids" name="request_ids" value="">
+
+                <div class="form-group col-md-6">
+                    {!! Form::label('note', __('request.note') . ':') !!}
                     {!! Form::textarea('note', null, [
                         'class' => 'form-control',
-                        'placeholder' => __('followup::lang.note'),
+                        'placeholder' => __('request.note'),
                         'rows' => 3,
                     ]) !!}
                 </div>
-                {{-- 
                 <div class="form-group col-md-6">
-                    {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
-                    {!! Form::textarea('reason', null, [
+                    {!! Form::label('attachment', __('request.attachment') . ':') !!}
+                    {!! Form::file('attachment', [
                         'class' => 'form-control',
-                        'placeholder' => __('followup::lang.reason'),
-                        'rows' => 3,
+                        'placeholder' => __('request.attachment'),
                     ]) !!}
-                </div> --}}
+                </div>
+
 
             </div>
 

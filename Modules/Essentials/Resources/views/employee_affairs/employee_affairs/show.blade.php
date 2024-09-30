@@ -5,10 +5,12 @@
 @section('content')
     <!-- Main content -->
     <section class="content">
+
         <head>
-                <style>
+            <style>
                 #video {
-                    transform: scaleX(-1); /* Flip the video horizontally */
+                    transform: scaleX(-1);
+                    /* Flip the video horizontally */
                 }
             </style>
         </head>
@@ -17,8 +19,8 @@
                 <h3>@lang('essentials::lang.view_employee')</h3>
             </div>
             <!-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
-                                                                                                                                                            {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
-                                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                            {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
+                                                                                                                                                                                                                                        </div> -->
         </div>
 
         <div class="row">
@@ -37,8 +39,8 @@
                             <img class="profile-user-img img-responsive img-circle" src="{{ $img_src }}"
                                 alt="@lang('essentials::lang.profile_picture')" id="profileImage">
                         </a>
-                         <h3 class="profile-username text-center">
-                            {{ $user->first_name . ' ' .$user->mid_name .' '. $user->last_name }}
+                        <h3 class="profile-username text-center">
+                            {{ $user->first_name . ' ' . $user->mid_name . ' ' . $user->last_name }}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
@@ -84,6 +86,11 @@
                         <div style=" pointer-events: none; opacity: 0.5;">
 
                             <label>
+                                <input type="checkbox" name="contracts"
+                                    {{ $user->profile_image ? 'checked' : '' }}>@lang('essentials::lang.profile_picture')
+                            </label>
+                            <br>
+                            <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
                             </label>
                             <br>
@@ -120,10 +127,12 @@
                                             <label>
 
 
-                                               @if ($document->file_path)
-                                               <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}" target="_blank" >
+                                                @if ($document->file_path)
+                                                    <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
+                                                        data-file-url="{{ $document->file_path ?? $document->attachment }}"
+                                                        target="_blank">
                                                         @if ($document instanceof \Modules\Essentials\Entities\EssentialsOfficialDocument)
-                                                            {{ trans('followup::lang.' .$document->type) }}
+                                                            {{ trans('followup::lang.' . $document->type) }}
                                                         @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesContract)
                                                             {{ trans('followup::lang.contract_file') }}
                                                         @elseif ($document instanceof \Modules\Essentials\Entities\EssentialsEmployeesQualification)
@@ -131,7 +140,6 @@
                                                         @endif
 
                                                     </a>
-
                                                 @elseif($document->attachment)
                                                     <a href="/uploads/{{ $document->attachment }}"
                                                         data-file-url="{{ $document->attachment }}">
@@ -164,9 +172,12 @@
                             <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user"
                                     aria-hidden="true"></i> @lang('essentials::lang.employee_info')</a>
                         </li>
+                        <li>
+                            <a href="#payrolls_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-money-check" aria-hidden="true"></i>
 
-
-
+                                @lang('followup::lang.salaries')</a>
+                        </li>
                         <li>
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square"
                                     aria-hidden="true"></i> @lang('lang_v1.activities')</a>
@@ -218,7 +229,7 @@
                                         <p><strong>@lang('lang_v1.mobile_number'):</strong> {{ $user->contact_number ?? '' }}</p>
 
                                     </div>
-                                   
+
 
 
                                     <div class="clearfix"></div>
@@ -242,23 +253,25 @@
                                             {{ $user->id_proof_number ?? '' }}</p>
                                     </div>
 
-                                    @if(isset($user->nationality_id) && $user->nationality_id != 5)
-                                    <div class="clearfix"></div>
-                                    <div class="col-md-4">
-                                        <p><strong>@lang('essentials::lang.passport_number'):</strong>
-                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->number ?? '' }}</p>
-                                    </div>
+                                    @if (isset($user->nationality_id) && $user->nationality_id != 5)
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('essentials::lang.passport_number'):</strong>
+                                                {{ $user->OfficialDocument()->where('is_active', 1)->where('type', 'passport')->first()->number ?? '' }}
+                                            </p>
+                                        </div>
 
-                                     <div class="col-md-4">
-                                        <p><strong>@lang('essentials::lang.passport_expire_date'):</strong>
-                                            {{ $user->OfficialDocument()->where('is_active',1)->where('type','passport')->first()->expiration_date ?? '' }}</p>
-                                    </div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('essentials::lang.passport_expire_date'):</strong>
+                                                {{ $user->OfficialDocument()->where('is_active', 1)->where('type', 'passport')->first()->expiration_date ?? '' }}
+                                            </p>
+                                        </div>
 
-                                    <div class="clearfix"></div>
-                                      <div class="col-md-4">
-                                        <p><strong>@lang('essentials::lang.border_number'):</strong>
-                                            {{ $user->border_no ?? '' }}</p>
-                                    </div>
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-4">
+                                            <p><strong>@lang('essentials::lang.border_number'):</strong>
+                                                {{ $user->border_no ?? '' }}</p>
+                                        </div>
                                     @endif
 
 
@@ -361,7 +374,49 @@
 
                         </div>
 
-                      
+                        <div class="tab-pane" id="payrolls_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('essentials::lang.company')</th>
+                                                    <th>@lang('essentials::lang.date')</th>
+                                                    <th>@lang('essentials::lang.the_total')</th>
+                                                    <th>@lang('essentials::lang.status')</th>
+                                                    <th>@lang('messages.view')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($payrolls as $payroll)
+                                                    <tr>
+                                                        <td>{{ $payroll['company'] }}</td>
+                                                        <td>{{ $payroll['payrollGroup']['payroll_date'] }}</td>
+                                                        <td>{{ $payroll['final_salary'] }}</td>
+                                                        @if ($payroll['status'] == 'paid')
+                                                            <td><a class="btn btn-xs  btn-success"> @lang('lang_v1.paid') </a>
+                                                            </td>
+                                                        @else
+                                                            <td><a class="btn btn-xs  btn-warning"> @lang('lang_v1.yet_to_be_paind') </a>
+                                                            </td>
+                                                        @endif
+                                                        <td><a href="#"
+                                                                data-href="{{ route('show_payroll_details', ['id' => $payroll['id']]) }}"
+                                                                data-container=".view_modal"
+                                                                class="btn-modal btn btn-xs  btn-info"><i
+                                                                    class="fa fa-eye" aria-hidden="true"></i>
+                                                                @lang('messages.view') </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
                         <div class="tab-pane" id="activities_tab">
@@ -373,209 +428,207 @@
                         </div>
                     </div>
 
-                      <div class="modal fade" id="imagePopupModal" tabindex="-1" role="dialog"
+                    <div class="modal fade" id="imagePopupModal" tabindex="-1" role="dialog"
+                        aria-labelledby="gridSystemModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+
+                                {!! Form::open([
+                                    'url' => action(
+                                        [
+                                            \Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class,
+                                            'updateEmployeeProfilePicture',
+                                        ],
+                                        [$user->id],
+                                    ),
+                                    'enctype' => 'multipart/form-data',
+                                    'method' => 'PUT',
+                                    'id' => 'update_profile_picture_form',
+                                ]) !!}
+                                {!! Form::hidden('delete_image', '0', ['id' => 'delete_image_input']) !!}
+
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">@lang('essentials::lang.edit_profile_picture')</h4>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="form-group col-md-12">
+                                            <video id="video" width="100%" height="auto" autoplay
+                                                style="display: none"></video>
+                                            <img src="" id="popupImage" alt="@lang('essentials::lang.profile_picture')"
+                                                style="max-width: 100%; height: auto;" />
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-primary"
+                                                    id="capturePhoto">@lang('essentials::lang.open_camera')</button>
+                                                <button type="button"
+                                                    class="btn btn-danger deleteImage">@lang('messages.delete')</button>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+
+                                                {!! Form::file('profile_picture', [
+                                                    'class' => 'form-control',
+                                                    'id' => 'fileInputWrapper',
+                                                    'accept' => 'image/*',
+                                                ]) !!}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6" style="float:none;margin:auto;" justify-content-md-center>
+                                            <div class="form-group">
+
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                    id="cancelCameraBtn" style="display: none">@lang('essentials::lang.cancel_camera')</button>
+                                                <button type="button" class="btn btn-primary" id="takePhotoBtn"
+                                                    style="display: none">@lang('essentials::lang.capture_photo')</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary saveImage"
+                                            disabled>@lang('messages.save')</button>
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">@lang('messages.close')</button>
+                                    </div>
+                                    {!! Form::close() !!}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog"
                             aria-labelledby="gridSystemModalLabel">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
 
-                                    {!! Form::open([
-                                        'url' => action(
-                                            [
-                                                \Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class,
-                                                'updateEmployeeProfilePicture',
-                                            ],
-                                            [$user->id],
-                                        ),
-                                        'enctype' => 'multipart/form-data',
-                                        'method' => 'PUT',
-                                        'id' => 'update_profile_picture_form',
-                                    ]) !!}
-                                    {!! Form::hidden('delete_image', '0', ['id' => 'delete_image_input']) !!}
-
+                                    {!! Form::open(['route' => 'storeOfficialDoc', 'enctype' => 'multipart/form-data']) !!}
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                                aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title">@lang('essentials::lang.edit_profile_picture')</h4>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
                                     </div>
 
                                     <div class="modal-body">
+
                                         <div class="row">
-                                            <div class="form-group col-md-12">
-                                                <video id="video" width="100%" height="auto" autoplay
-                                                    style="display: none"></video>
-                                                <img src="" id="popupImage" alt="@lang('essentials::lang.profile_picture')"
-                                                    style="max-width: 100%; height: auto;" />
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
+                                                {!! Form::select('employee', $users, null, [
+                                                    'class' => 'form-control',
+                                                    'placeholder' => __('essentials::lang.select_employee'),
+                                                    'required',
+                                                ]) !!}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
+                                                {!! Form::select(
+                                                    'doc_type',
+                                                    [
+                                                        'national_id' => __('essentials::lang.national_id'),
+                                                        'passport' => __('essentials::lang.passport'),
+                                                        'residence_permit' => __('essentials::lang.residence_permit'),
+                                                        'drivers_license' => __('essentials::lang.drivers_license'),
+                                                        'car_registration' => __('essentials::lang.car_registration'),
+                                                        'international_certificate' => __('essentials::lang.international_certificate'),
+                                                    ],
+                                                    null,
+                                                    ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_type'), 'required'],
+                                                ) !!}
                                             </div>
 
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="capturePhoto">@lang('essentials::lang.open_camera')</button>
-                                                    <button type="button"
-                                                        class="btn btn-danger deleteImage">@lang('messages.delete')</button>
-
-                                                </div>
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
+                                                {!! Form::number('doc_number', null, [
+                                                    'class' => 'form-control',
+                                                    'style' => 'height:40px',
+                                                    'placeholder' => __('essentials::lang.doc_number'),
+                                                    'required',
+                                                ]) !!}
                                             </div>
 
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-
-                                                    {!! Form::file('profile_picture', [
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
+                                                {!! Form::date('issue_date', null, [
+                                                    'class' => 'form-control',
+                                                    'style' => 'height:40px',
+                                                    'placeholder' => __('essentials::lang.issue_date'),
+                                                    'required',
+                                                ]) !!}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
+                                                {!! Form::text('issue_place', null, [
+                                                    'class' => 'form-control',
+                                                    'style' => 'height:40px',
+                                                    'placeholder' => __('essentials::lang.issue_place'),
+                                                    'required',
+                                                ]) !!}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
+                                                {!! Form::select(
+                                                    'status',
+                                                    [
+                                                        'valid' => __('essentials::lang.valid'),
+                                                        'expired' => __('essentials::lang.expired'),
+                                                    ],
+                                                    null,
+                                                    [
                                                         'class' => 'form-control',
-                                                        'id' => 'fileInputWrapper',
-                                                        'accept' => 'image/*',
-                                                    ]) !!}
-                                                </div>
+                                                        'style' => 'height:40px',
+                                                        'placeholder' => __('essentials::lang.select_status'),
+                                                        'required',
+                                                    ],
+                                                ) !!}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
+                                                {!! Form::date('expiration_date', null, [
+                                                    'class' => 'form-control',
+                                                    'style' => 'height:40px',
+                                                    'placeholder' => __('essentials::lang.expiration_date'),
+                                                    'required',
+                                                ]) !!}
                                             </div>
 
-                                            <div class="col-md-6" style="float:none;margin:auto;"
-                                                justify-content-md-center>
-                                                <div class="form-group">
-
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                                        id="cancelCameraBtn"
-                                                        style="display: none">@lang('essentials::lang.cancel_camera')</button>
-                                                    <button type="button" class="btn btn-primary" id="takePhotoBtn"
-                                                        style="display: none">@lang('essentials::lang.capture_photo')</button>
-                                                </div>
+                                            <div class="form-group col-md-6">
+                                                {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
+                                                {!! Form::file('file', null, [
+                                                    'class' => 'form-control',
+                                                    'placeholder' => __('essentials::lang.file'),
+                                                    'required',
+                                                ]) !!}
                                             </div>
-
                                         </div>
-
-
-
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary saveImage"
-                                                disabled>@lang('messages.save')</button>
-                                            <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">@lang('messages.close')</button>
-                                        </div>
-                                        {!! Form::close() !!}
                                     </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">@lang('messages.close')</button>
+                                    </div>
+                                    {!! Form::close() !!}
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog"
-                                aria-labelledby="gridSystemModalLabel">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-
-                                        {!! Form::open(['route' => 'storeOfficialDoc', 'enctype' => 'multipart/form-data']) !!}
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal"
-                                                aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
-                                        </div>
-
-                                        <div class="modal-body">
-
-                                            <div class="row">
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                                    {!! Form::select('employee', $users, null, [
-                                                        'class' => 'form-control',
-                                                        'placeholder' => __('essentials::lang.select_employee'),
-                                                        'required',
-                                                    ]) !!}
-                                                </div>
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
-                                                    {!! Form::select(
-                                                        'doc_type',
-                                                        [
-                                                            'national_id' => __('essentials::lang.national_id'),
-                                                            'passport' => __('essentials::lang.passport'),
-                                                            'residence_permit' => __('essentials::lang.residence_permit'),
-                                                            'drivers_license' => __('essentials::lang.drivers_license'),
-                                                            'car_registration' => __('essentials::lang.car_registration'),
-                                                            'international_certificate' => __('essentials::lang.international_certificate'),
-                                                        ],
-                                                        null,
-                                                        ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_type'), 'required'],
-                                                    ) !!}
-                                                </div>
-
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
-                                                    {!! Form::number('doc_number', null, [
-                                                        'class' => 'form-control',
-                                                        'style' => 'height:40px',
-                                                        'placeholder' => __('essentials::lang.doc_number'),
-                                                        'required',
-                                                    ]) !!}
-                                                </div>
-
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
-                                                    {!! Form::date('issue_date', null, [
-                                                        'class' => 'form-control',
-                                                        'style' => 'height:40px',
-                                                        'placeholder' => __('essentials::lang.issue_date'),
-                                                        'required',
-                                                    ]) !!}
-                                                </div>
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
-                                                    {!! Form::text('issue_place', null, [
-                                                        'class' => 'form-control',
-                                                        'style' => 'height:40px',
-                                                        'placeholder' => __('essentials::lang.issue_place'),
-                                                        'required',
-                                                    ]) !!}
-                                                </div>
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
-                                                    {!! Form::select(
-                                                        'status',
-                                                        [
-                                                            'valid' => __('essentials::lang.valid'),
-                                                            'expired' => __('essentials::lang.expired'),
-                                                        ],
-                                                        null,
-                                                        [
-                                                            'class' => 'form-control',
-                                                            'style' => 'height:40px',
-                                                            'placeholder' => __('essentials::lang.select_status'),
-                                                            'required',
-                                                        ],
-                                                    ) !!}
-                                                </div>
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
-                                                    {!! Form::date('expiration_date', null, [
-                                                        'class' => 'form-control',
-                                                        'style' => 'height:40px',
-                                                        'placeholder' => __('essentials::lang.expiration_date'),
-                                                        'required',
-                                                    ]) !!}
-                                                </div>
-
-                                                <div class="form-group col-md-6">
-                                                    {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
-                                                    {!! Form::file('file', null, [
-                                                        'class' => 'form-control',
-                                                        'placeholder' => __('essentials::lang.file'),
-                                                        'required',
-                                                    ]) !!}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                                            <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">@lang('messages.close')</button>
-                                        </div>
-                                        {!! Form::close() !!}
-                                    </div>
-                                </div>
-                            </div>
-
+                    </div>
                 </div>
             </div>
-        </div>
     </section>
 @endsection
 @section('javascript')

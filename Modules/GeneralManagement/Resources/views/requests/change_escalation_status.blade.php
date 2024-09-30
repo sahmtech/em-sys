@@ -6,6 +6,7 @@
                 'url' => action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeEscalationStatus']),
                 'method' => 'post',
                 'id' => 'change_status_form',
+                'enctype' => 'multipart/form-data',
             ]) !!}
 
             <div class="modal-header">
@@ -35,11 +36,10 @@
                 </div>
 
                 <div class="form-group col-md-6">
-                    {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
-                    {!! Form::textarea('reason', null, [
+                    {!! Form::label('attachment', __('request.attachment') . ':') !!}
+                    {!! Form::file('attachment', [
                         'class' => 'form-control',
-                        'placeholder' => __('followup::lang.reason'),
-                        'rows' => 3,
+                        'placeholder' => __('request.attachment'),
                     ]) !!}
                 </div>
 

@@ -9,6 +9,7 @@
     </section>
     <!-- Main content -->
     <section class="content">
+
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
 
@@ -64,6 +65,56 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="payrolls_groups_tab">
+                            @component('components.filters', ['title' => __('report.filters')])
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="business_filter">@lang('essentials::lang.companies'):</label>
+                                        {!! Form::select('select_company_id', $companies, null, [
+                                            'class' => 'form-control select2',
+                                            'id' => 'select_company_id',
+                                            'style' => 'height:40px; width:100%',
+                                        
+                                            'multiple' => 'multiple',
+                                            'autofocus',
+                                            'data-placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="business_filter">@lang('essentials::lang.user_type'):</label>
+                                        {!! Form::select('user_type2', $user_types, null, [
+                                            'class' => 'form-control select2',
+                                            'style' => 'width: 100%;',
+                                            'id' => 'user_type2',
+                                            'placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="department_filter">@lang('essentials::lang.department'):</label>
+                                        {!! Form::select('select_department_id', $departments, null, [
+                                            'class' => 'form-control select2',
+                                            'id' => 'select_department_id',
+                                            'style' => 'height:40px; width:100%',
+                                            'placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-3" id="project_name_filter_div">
+                                    <div class="form-group">
+                                        {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                                        {!! Form::select('project_name_filter', $projects, null, [
+                                            'class' => 'form-control select2',
+                                            'style' => 'width:100%;padding:2px;',
+                                            'id' => 'project_name_filter',
+                                        
+                                            'placeholder' => __('lang_v1.all'),
+                                        ]) !!}
+                                    </div>
+                                </div>
+                            @endcomponent
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="payroll_group_table"
@@ -198,64 +249,18 @@
     </div>
 
 
-    <!-- Add Payroll Modal -->
-    {{-- <div class="modal fade" id="addPayrollModal" tabindex="-1" role="dialog" aria-labelledby="addPayrollModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="addPayrollModalLabel">@lang('essentials::lang.add_payroll')</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="addPayrollForm" action="{{ route('payrolls.create') }}" method="GET">
-                            <div class="form-group">
-                                <label for="user_type">@lang('essentials::lang.user_type')</label>
-                                <select class="form-control" id="user_type" name="user_type">
-                                    <option value="worker">@lang('essentials::lang.worker')</option>
-                                    <option value="employee">@lang('essentials::lang.employee')</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="projects_container">
-                                <label for="projects">@lang('essentials::lang.project')</label>
-                                <select class="form-control select2" id="projects" name="projects[]" multiple>
-                                    @foreach ($projects as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group" id="companies_container">
-                                <label for="companies">@lang('essentials::lang.company')</label>
-                                <select class="form-control select2" id="companies" name="companies[]" multiple>
-                                    @foreach ($companies as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                {!! Form::label('month_year', __('essentials::lang.month_year') . ':*') !!}
-                                <div class="input-group">
-                                    {!! Form::text('month_year', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.month_year'),
-                                        'required',
-                                        'readonly',
-                                    ]) !!}
-                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">@lang('essentials::lang.add_payroll')</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
 
 @endsection
 @section('javascript')
     <script>
         $(document).ready(function() {
+            $('#select_department_id,  #user_type2, #project_name_filter, #select_company_id')
+                .on('change',
+                    function() {
+                        payroll_group_table.ajax.reload();
+                    });
+
+
             // Initially hide both containers
             $('#projects_container').hide();
 
@@ -299,7 +304,16 @@
             payroll_group_table = $('#payroll_group_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('payrolls_list_index') }}",
+
+                ajax: {
+                    url: "{{ route('payrolls_list_index_all') }}",
+                    data: function(d) {
+                        d.select_department_id = $('#select_department_id').val();
+                        d.user_type = $('#user_type2').val();
+                        d.project_name_filter = $('#project_name_filter').val();
+                        d.select_company_id = $('#select_company_id').val();
+                    }
+                },
                 columns: [{
                         data: 'name',
                         name: 'name',

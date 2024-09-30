@@ -4,6 +4,14 @@
 
 @section('content')
 
+    <head>
+        <style>
+            #video {
+                transform: scaleX(-1);
+                /* Flip the video horizontally */
+            }
+        </style>
+    </head>
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('essentials::lang.edit_worker')</h1>
@@ -14,7 +22,7 @@
         {!! Form::open([
             'url' => action(
                 [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'],
-                [$user->id],
+                ['id' => $user->id, 'from' => $from],
             ),
             'files' => true,
             'method' => 'PUT',
@@ -23,7 +31,7 @@
 
         <div class="col-md-12 box box-primary">
             <h4>@lang('essentials::lang.basic_info'):</h4>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group">
                     {!! Form::label('emp_number', __('essentials::lang.emp_number') . ':') !!}
                     {!! Form::text('emp_number', $user->emp_number, [
@@ -48,11 +56,11 @@
                     {!! Form::label('mid_name', __('business.mid_name') . ':') !!}
                     {!! Form::text('mid_name', $user->mid_name, [
                         'class' => 'form-control',
-                    
                         'placeholder' => __('business.mid_name'),
                     ]) !!}
                 </div>
             </div>
+            <div class="clearfix"></div>
             <div class="col-md-4">
                 <div class="form-group">
                     {!! Form::label('last_name', __('business.last_name') . ':') !!}
@@ -68,6 +76,18 @@
                     {!! Form::email('email', $user->email, ['class' => 'form-control', 'placeholder' => __('business.email')]) !!}
                 </div>
             </div>
+            <div class="clearfix"></div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
+                    {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" id="captureButton">@lang('essentials::lang.capture_photo')</button>
+                </div>
+            </div>
+            @include('essentials::employee_affairs.employee_affairs.popup_camera_modal')
+
 
 
         </div>

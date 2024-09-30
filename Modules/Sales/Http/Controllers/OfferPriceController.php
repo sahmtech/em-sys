@@ -2,6 +2,8 @@
 
 namespace Modules\Sales\Http\Controllers;
 
+use App\SentNotification;
+use App\SentNotificationsUser;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\Essentials\Entities\EssentialsCity;
 use Illuminate\Http\Request;
@@ -30,6 +32,7 @@ use Carbon\Carbon;
 use Modules\Sales\Entities\salesOfferPricesCost;
 use PhpOffice\PhpWord\PhpWord;
 use DOMDocument;
+use Modules\Essentials\Entities\EssentialsDepartment;
 
 class OfferPriceController extends Controller
 {
@@ -71,8 +74,20 @@ class OfferPriceController extends Controller
         ];
 
         $this->dummyPaymentLine = [
-            'method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
-            'is_return' => 0, 'transaction_no' => '',
+            'method' => '',
+            'amount' => 0,
+            'note' => '',
+            'card_transaction_number' => '',
+            'card_number' => '',
+            'card_type' => '',
+            'card_holder_name' => '',
+            'card_month' => '',
+            'card_year' => '',
+            'card_security' => '',
+            'cheque_number' => '',
+            'bank_account_number' => '',
+            'is_return' => 0,
+            'transaction_no' => '',
         ];
 
         $this->shipping_status_colors = [
@@ -90,6 +105,7 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_change_offer_price_status = auth()->user()->can('sales.change_offer_price_status');
+        $can_approve_offer_price = auth()->user()->can('sales.approve_offer_price');
         $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
 
 
@@ -109,9 +125,15 @@ class OfferPriceController extends Controller
                 'contacts.mobile as mobile',
                 'contacts.name as name',
                 'transactions.status as status',
+                'transactions.is_approved as is_approved',
+                'transactions.approved_by as approved_by',
+
+
 
 
             );
+        $all_users = User::select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
 
         if (request()->ajax()) {
 
@@ -122,7 +144,6 @@ class OfferPriceController extends Controller
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $sells->where('status', request()->input('status'));
             }
-
 
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_offer_price_status) {
@@ -135,24 +156,45 @@ class OfferPriceController extends Controller
                     }
                     return $status;
                 })
+                ->editColumn('is_approved', function ($row) use ($is_admin, $users, $can_approve_offer_price) {
+                    if ($row->is_approved == 1) {
+
+                        $approvedBy = $users[$row->approved_by];
+                        return $approvedBy ? $approvedBy : 'Unknown';
+                    } else {
+
+                        if ($is_admin || $can_approve_offer_price) {
+
+                            return '<form action="' . route('offer.approve', $row->id) . '" method="POST" style="display:inline;">
+                                        ' . csrf_field() . method_field('PATCH') . '
+                                               <button type="submit" class="btn btn-primary" onclick="return confirm(\'Are you sure you want to approve this offer?\')">' . __('sales::lang.approve_offer') . '</button>
+                                    </form>';
+                        } else {
+                            return 'Not Authorized';
+                        }
+                    }
+                })
+
                 ->editColumn('location_id', function ($row) use ($business_locations) {
                     $item = $business_locations[$row->location_id] ?? '';
 
                     return $item;
                 })
-                ->addColumn(
-                    'action',
-                    function ($row)  use ($is_admin, $can_print_offer_price) {
-                        $html = '';
-                        if ($is_admin || $can_print_offer_price) {
-                            $html = '<a href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" target="_blank" class="btn btn-xs btn-primary">
-                                        <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
-                                     </a>';
-                        }
 
-                        return $html;
-                    }
-                )
+                // ->addColumn(
+                //     'action',
+                //     function ($row)  use ($is_admin, $can_print_offer_price) {
+                //         $html = '';
+
+                //         if ($is_admin || $can_print_offer_price) {
+                //             $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                //             <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
+                //             </a>';
+                //         }
+                //         return $html;
+                //     }
+                // )
+
                 ->removeColumn('id')
 
                 ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
@@ -165,7 +207,7 @@ class OfferPriceController extends Controller
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
 
-                ->rawColumns(['action', 'invoice_no', 'status', 'transaction_date', 'supplier_business_name'])
+                ->rawColumns(['action', 'invoice_no', 'status', 'transaction_date', 'supplier_business_name', 'is_approved'])
                 ->make(true);
         }
 
@@ -183,7 +225,7 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_approve_offer_price = auth()->user()->can('sales.approve_offer_price');
 
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
@@ -199,6 +241,7 @@ class OfferPriceController extends Controller
                 'contacts.supplier_business_name as supplier_business_name',
                 'contacts.mobile as mobile',
                 'contacts.name as name',
+                'transactions.is_approved as is_approved',
 
 
             );
@@ -242,14 +285,24 @@ class OfferPriceController extends Controller
                 //         return $html;
                 //     }
                 // )
-                ->addColumn(
+                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_print_offer_price) {
+                    function ($row)  use ($is_admin, $can_print_offer_price, $can_approve_offer_price) {
                         $html = '';
-                        if ($is_admin || $can_print_offer_price) {
-                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                        if ($row->is_approved == 1) {
+                            if ($is_admin || $can_print_offer_price) {
+                                $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
                             <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
                             </a>';
+                            }
+                        } else {
+                            if ($is_admin || $can_approve_offer_price) {
+
+                                return '<form action="' . route('offer.approve', $row->id) . '" method="POST" style="display:inline;">
+                                            ' . csrf_field() . method_field('PATCH') . '
+                                                   <button type="submit" class="btn btn-primary" onclick="return confirm(\'Are you sure you want to approve this offer?\')">' . __('sales::lang.approve_offer') . '</button>
+                                        </form>';
+                            }
                         }
                         return $html;
                     }
@@ -321,7 +374,7 @@ class OfferPriceController extends Controller
                     function ($row)  use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
-                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                            $html = '<a href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" target="_blank" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
                         <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
                         </a>';
                         }
@@ -361,13 +414,15 @@ class OfferPriceController extends Controller
 
 
         try {
-            $input = $request->only(['status', 'offer_id']);
+            $input = $request->only(['status', 'offer_id', 'note']);
 
             $offer = Transaction::find($input['offer_id']);
             $contact = $offer->contact_id;
 
 
             $offer->status = $input['status'];
+            $offer->additional_notes = $input['note'];
+
 
             $offer->save();
 
@@ -793,6 +848,39 @@ class OfferPriceController extends Controller
                     $transactionSellLine->save();
                 }
             }
+            $contacts = Contact::all()->pluck('supplier_business_name', 'id');
+            $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%مبيعات%')
+                ->pluck('id')->toArray();
+            error_log(json_encode($departmentIds));
+            $rolesIds = DB::table('roles')
+                ->where('name', 'LIKE', '%مبيعات%')->pluck('id')->toArray();
+            error_log(json_encode($rolesIds));
+
+            $users = User::whereHas('roles', function ($query) use ($rolesIds) {
+                $query->whereIn('id', $rolesIds);
+            })->whereIn('essentials_department_id', $departmentIds)->where('user_type', 'manager');
+            $user_ids = $users->pluck('id')->toArray();
+            error_log(json_encode($user_ids));
+
+            $to =  $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+                ->pluck('full_name')->toArray();
+            if (!empty($user_ids)) {
+
+                $sentNotification = SentNotification::create([
+                    'via' => 'dashboard',
+                    'type' => 'GeneralManagementNotification',
+                    'title' =>  $contacts[$client->contact_id],
+                    'msg' => __('sales::lang.new offer price') . ' ' . $client->ref_no,
+                    'sender_id' => auth()->user()->id,
+                    'to' => json_encode($to),
+                ]);
+            }
+            foreach ($user_ids as $user_id) {
+                SentNotificationsUser::create([
+                    'sent_notifications_id' => $sentNotification->id,
+                    'user_id' => $user_id,
+                ]);
+            }
             $output = [
                 'success' => 1,
                 'msg' => __('sales::lang.client_added_success'),
@@ -856,6 +944,169 @@ class OfferPriceController extends Controller
                     }
                 }
 
+
+
+                foreach ($sections as  $section) {
+                    if ($section->content) {
+                        $htmlString = $section->content;
+
+                        $firstStartPos = strpos($htmlString, '<tr');
+                        $firstEndPos = strpos($htmlString, '</tr>', $firstStartPos) + 5; // Include length of '</tr>'
+                        $startPos = strpos($htmlString, '<tr', $firstEndPos);
+                        $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
+                        $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
+                        $columnCount =  substr_count($firstRowHtml, '<td');
+
+
+                        if ($columnCount > 8) {
+                            $original_clone =  $firstRowHtml;
+                            $i = 1;
+                            $final_rows = '';
+                            foreach ($query->sell_lines as $sell_line) {
+                                $clone =   $original_clone;
+                                $food = 0;
+                                $housing = 0;
+                                $transportaions = 0;
+                                $others = 0;
+                                $uniform = 0;
+                                $recruit = 0;
+
+                                $food_allowance_exist = false;
+                                $housing_allowance_exist = false;
+                                $transportation_allowance_exist = false;
+                                $other_allowances_exist = false;
+                                $uniform_allowance_exist = false;
+                                $recruit_allowance_exist = false;
+                                foreach (json_decode($sell_line['service']['additional_allwances']) as $allwance) {
+
+                                    if (is_object($allwance) && property_exists($allwance, 'type') && property_exists($allwance, 'amount')) {
+
+                                        if ($allwance->type == 'food_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $food = $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $food = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $food = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
+                                            }
+                                            $food_allowance_exist = true;
+                                        }
+                                        if ($allwance->type == 'housing_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $housing = $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $housing = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $housing = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
+                                            }
+                                            $housing_allowance_exist = true;
+                                        }
+                                        if ($allwance->type == 'transportation_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $transportaions = $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $transportaions = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $transportaions = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
+                                            }
+                                            $transportation_allowance_exist = true;
+                                        }
+                                        if ($allwance->type == 'other_allowances') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $others = $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $others = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $others = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
+                                            }
+                                            $other_allowances_exist = true;
+                                        }
+                                        if ($allwance->type == 'uniform_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $uniform = $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $uniform = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $uniform = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
+                                            }
+                                            $uniform_allowance_exist = true;
+                                        }
+                                        if ($allwance->type == 'recruit_allowance') {
+
+                                            if ($allwance->payment_type == 'cash') {
+                                                $recruit = $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_emdadat') {
+                                                $recruit = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
+                                            } else if ($allwance->payment_type == 'insured_by_the_customer') {
+                                                $recruit = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
+                                            }
+                                            $recruit_allowance_exist = true;
+                                        }
+                                    }
+                                }
+                                if ($food_allowance_exist == false) {
+                                    $food = __('sales::lang.undefiend');
+                                }
+                                if ($housing_allowance_exist == false) {
+                                    $housing = __('sales::lang.undefiend');
+                                }
+                                if ($transportation_allowance_exist == false) {
+                                    $transportaions = __('sales::lang.undefiend');
+                                }
+                                if ($other_allowances_exist == false) {
+                                    $others = __('sales::lang.undefiend');
+                                }
+                                if ($uniform_allowance_exist == false) {
+                                    $uniform = __('sales::lang.undefiend');
+                                }
+                                if ($recruit_allowance_exist == false) {
+                                    $recruit = __('sales::lang.undefiend');
+                                }
+                                $replacements2 = [
+                                    '${R}' => $i,
+                                    '${A}' => $sell_line['service']['profession']['name'] ?? '',
+                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', '') . ' SR',
+                                    '${C}' => $food,
+                                    '${D}' => $transportaions,
+                                    '${E}' => $housing,
+                                    '${F}' => $others,
+                                    '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
+                                    '${H}' => $sell_line->quantity ?? 0,
+                                    '${I}' => number_format($query->total_worker_monthly / $query->total_worker_number ?? 0, 2, '.', '') . ' SR',
+                                    '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
+                                    '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
+                                    '${L}' => number_format($query->total_worker_monthly, 2, '.', '') . ' SR',
+                                    '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', '') . ' SR',
+                                    '${N}' =>  number_format(($query->total_worker_monthly ?? 0) +  (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', '') . ' SR',
+
+                                    //$sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity
+                                ];
+
+
+
+                                foreach ($replacements2 as $placeholder => $value) {
+                                    $clone = str_replace($placeholder, $value,   $clone);
+                                    // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
+                                    // $endPos += strlen($clone);
+                                }
+                                $final_rows .= $clone;
+                                $i++;
+                            }
+                            $htmlString = substr_replace($htmlString,      $final_rows, $endPos, 0);
+                            $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
+                            $section->content = $htmlString;
+                        }
+                    }
+                }
+
+
+
+
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
             } else if ($query->contract_form == 'monthly_cost') {
                 $template = Template::with('sections')->where('id', 2)->first();
@@ -892,61 +1143,61 @@ class OfferPriceController extends Controller
                                     if (is_object($allwance) && property_exists($allwance, 'type') && property_exists($allwance, 'amount')) {
                                         if ($allwance->type == 'food_allowance') {
                                             if ($allwance->payment_type == 'cash') {
-                                                $food = $allwance->amount;
+                                                $food = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $food = __('sales::lang.insured_by_emdadat');
+                                                $food = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $food = __('sales::lang.insured_by_the_customer');
+                                                $food = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
                                             }
                                             $food_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'housing_allowance') {
                                             if ($allwance->payment_type == 'cash') {
-                                                $housing = $allwance->amount;
+                                                $housing = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $housing = __('sales::lang.insured_by_emdadat');
+                                                $housing = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $housing = __('sales::lang.insured_by_the_customer');
+                                                $housing = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
                                             }
                                             $housing_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'transportation_allowance') {
                                             if ($allwance->payment_type == 'cash') {
-                                                $transportaions = $allwance->amount;
+                                                $transportaions = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $transportaions = __('sales::lang.insured_by_emdadat');
+                                                $transportaions = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $transportaions = __('sales::lang.insured_by_the_customer');
+                                                $transportaions = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
                                             }
                                             $transportation_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'other_allowances') {
                                             if ($allwance->payment_type == 'cash') {
-                                                $others = $allwance->amount;
+                                                $others = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $others = __('sales::lang.insured_by_emdadat');
+                                                $others = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $others = __('sales::lang.insured_by_the_customer');
+                                                $others = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
                                             }
                                             $other_allowances_exist = true;
                                         }
                                         if ($allwance->type == 'uniform_allowance') {
                                             if ($allwance->payment_type == 'cash') {
-                                                $uniform = $allwance->amount;
+                                                $uniform = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $uniform = __('sales::lang.insured_by_emdadat');
+                                                $uniform = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $uniform = __('sales::lang.insured_by_the_customer');
+                                                $uniform = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
                                             }
                                             $uniform_allowance_exist = true;
                                         }
                                         if ($allwance->type == 'recruit_allowance') {
                                             if ($allwance->payment_type == 'cash') {
-                                                $recruit = $allwance->amount;
+                                                $recruit = $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_emdadat') {
-                                                $recruit = __('sales::lang.insured_by_emdadat');
+                                                $recruit = __('sales::lang.insured_by_emdadat') . ':' . $allwance->amount . ' SR';
                                             } else if ($allwance->payment_type == 'insured_by_the_customer') {
-                                                $recruit = __('sales::lang.insured_by_the_customer');
+                                                $recruit = __('sales::lang.insured_by_the_customer') . ':' . $allwance->amount . ' SR';
                                             }
                                             $recruit_allowance_exist = true;
                                         }
@@ -974,19 +1225,23 @@ class OfferPriceController extends Controller
                                 $replacements2 = [
                                     '${R}' => $i,
                                     '${A}' => $sell_line['service']['profession']['name'] ?? '',
-                                    '${B}' => number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''),
+
+                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', '') . ' SR',
+
                                     '${C}' => $food,
                                     '${D}' => $transportaions,
                                     '${E}' => $housing,
                                     '${F}' => $others,
                                     '${G}' => __('sales::lang.' . $sell_line['service']['gender']) ?? '',
                                     '${H}' => $sell_line->quantity ?? __('sales::lang.undefiend'),
-                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number ?? __('sales::lang.undefiend'),
+                                    '${I}' => $query->total_worker_monthly / $query->total_worker_number . ' SR' ?? __('sales::lang.undefiend'),
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
-                                    '${L}' => number_format($query->total_worker_monthly, 2, '.', ''),
-                                    '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', ''),
-                                    '${N}' => number_format(($query->final_total ?? 0), 2, '.', ''),
+
+                                    '${L}' =>  number_format($query->total_worker_monthly, 2, '.', '') . ' SR',
+                                    '${M}' =>  number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', '') . ' SR',
+                                    '${N}' => number_format(($query->final_total ?? 0), 2, '.', '') . ' SR',
+
                                 ];
                                 foreach ($replacements2 as $placeholder => $value) {
                                     $clone = str_replace($placeholder, $value, $clone);
@@ -1140,5 +1395,17 @@ class OfferPriceController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function approve($id)
+    {
+
+        $offer = Transaction::findOrFail($id);
+
+
+        $offer->is_approved = 1;
+        $offer->approved_by = auth()->user()->id;
+        $offer->save();
+
+        return redirect()->back()->with('success', 'Offer approved successfully.');
     }
 }

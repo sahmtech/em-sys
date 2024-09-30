@@ -356,12 +356,31 @@
                 @endslot
             @endif
             <div class="table-responsive">
+                <div style="margin-bottom: 10px;">
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.change_HR_status'))
+                        <button type="button" class="btn btn-warning change_status2">
+                            @lang('request.change_status')
+                        </button>
+                    @endif
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_essentials_request'))
+                        <button class="btn btn-danger btn-sm btn-return2">
+                            {{ trans('request.return_the_request') }}
+                        </button>
+                    @endif
+
+
+
+                </div>
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
+                            <th>
+                                <input type="checkbox" id="select-all">
+                            </th>
                             <th>@lang('request.company')</th>
                             <th>@lang('request.request_number')</th>
                             <th>@lang('request.request_owner')</th>
+                            <th>@lang('request.project')</th>
                             <th>@lang('request.eqama_number')</th>
                             <th>@lang('request.request_type')</th>
                             <th>@lang('request.request_date')</th>
@@ -851,6 +870,8 @@
                                 <label for="reasonInput">@lang('request.reason')</label>
                                 <input type="text" class="form-control" id="reasonInput" required>
                             </div>
+                            <input type="hidden" name="request_id" id="request_id">
+
                             <button type="submit" class="btn btn-primary">@lang('request.update')</button>
                         </form>
                     </div>
@@ -1308,6 +1329,8 @@
 
 
         @include('request.change_request_status')
+        @include('request.changeAfterTransferModal')
+
     </section>
     <!-- /.content -->
 
@@ -1332,6 +1355,25 @@
                     }
                 },
                 columns: [{
+                        data: null,
+                        render: function(data, type, row, meta) {
+
+
+                            if ((row.status_now === 'pending' && row.action_type !==
+                                    'task' && row.is_started === 0) || (row.status_now ===
+                                    'pending' && row
+                                    .is_superior ===
+                                    1)) {
+                                return '<input type="checkbox" class="select-row" data-id="' + row
+                                    .id + '" data-requestId="' + row.id + '">';
+
+                            } else {
+                                return '';
+                            }
+                        },
+                        orderable: false,
+                        searchable: false,
+                    }, {
                         data: 'company_id'
                     },
                     {
@@ -1339,6 +1381,9 @@
                     },
                     {
                         data: 'user'
+                    },
+                    {
+                        data: 'assigned_to'
                     },
                     {
                         data: 'id_proof_number'
@@ -1431,6 +1476,14 @@
             $('#status_filter, #type_filter ,#company_filter,#project_filter').change(function() {
                 requests_table.ajax.reload();
             });
+            $('#select-all').change(function() {
+                $('.select-row').prop('checked', $(this).prop('checked'));
+            });
+
+            $('#requests_table').on('change', '.select-row', function() {
+                $('#select-all').prop('checked', $('.select-row:checked').length === requests_table.rows()
+                    .count());
+            });
 
             $(document).on('click', '.btn-view-activities', function() {
                 var requestId = $(this).data('request-id');
@@ -1505,6 +1558,26 @@
 
 
 
+            $(document).on('click', '.change_status2', function(e) {
+                e.preventDefault();
+
+                var selectedRows = [];
+                $('.select-row:checked').each(function() {
+                    selectedRows.push($(this).data('id'));
+                });
+
+                if (selectedRows.length === 0) {
+                    toastr.error('Please select at least one request.');
+                    return;
+                }
+
+                // Set the selected rows in a hidden input in the modal
+                $('#change_status_modal').find('#request_ids').val(selectedRows.join(','));
+
+                // Show the modal
+                $('#change_status_modal').modal('show');
+            });
+
             $(document).on('click', 'a.change_status', function(e) {
                 e.preventDefault();
 
@@ -1515,27 +1588,37 @@
 
 
             });
+            $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var requestId = button.data('request-id');
 
 
+                var modal = $(this);
+                modal.find('#request_id').val(requestId);
+            });
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
-                var data = $(this).serialize();
+
+
+                var formData = new FormData(this);
+
                 var ladda = Ladda.create(document.querySelector('.update-offer-status'));
                 ladda.start();
+
                 $.ajax({
                     method: $(this).attr('method'),
                     url: $(this).attr('action'),
                     dataType: 'json',
-                    data: data,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(result) {
                         console.log(result);
                         ladda.stop();
                         if (result.success == true) {
-
                             $('div#change_status_modal').modal('hide');
                             toastr.success(result.msg);
                             window.location.reload();
-
                         } else {
                             toastr.error(result.msg);
                         }
@@ -1543,6 +1626,26 @@
                 });
             });
 
+
+            $(document).on('click', '.btn-return2', function(e) {
+                e.preventDefault();
+
+                var selectedRows = [];
+                $('.select-row:checked').each(function() {
+                    selectedRows.push($(this).data('id'));
+                });
+
+                if (selectedRows.length === 0) {
+                    toastr.error('Please select at least one request.');
+                    return;
+                }
+
+                // Set the selected request IDs in a hidden input field
+                $('#returnModal').find('#request_id').val(selectedRows.join(','));
+
+                // Show the modal
+                $('#returnModal').modal('show');
+            });
             $('#requests_table').on('click', '.btn-return', function() {
 
                 var requestId = $(this).data('request-id');
@@ -1555,6 +1658,7 @@
                 e.preventDefault();
 
                 var requestId = $('#returnModal').data('id');
+                var requestIds = $('#returnModal').find('#request_id').val();
                 var reason = $('#reasonInput').val();
 
                 $.ajax({
@@ -1562,6 +1666,7 @@
                     method: "POST",
                     data: {
                         requestId: requestId,
+                        requestIds: requestIds,
                         reason: reason
                     },
                     success: function(result) {
@@ -1712,10 +1817,6 @@
                                     value: requestInfo.installmentsNumber
                                 },
                                 {
-                                    label: '{{ __('request.baladyCardType') }}',
-                                    value: requestInfo.baladyCardType
-                                },
-                                {
                                     label: '{{ __('request.workInjuriesDate') }}',
                                     value: requestInfo.workInjuriesDate
                                 },
@@ -1735,10 +1836,7 @@
                                     label: '{{ __('request.visa_number') }}',
                                     value: requestInfo.visa_number
                                 },
-                                {
-                                    label: '{{ __('request.atmCardType') }}',
-                                    value: requestInfo.atmCardType
-                                },
+
                                 {
                                     label: '{{ __('request.insurance_class') }}',
                                     value: requestInfo.insurance_classes_id
@@ -1747,7 +1845,6 @@
                                     label: '{{ __('request.status') }}',
                                     value: requestInfo.status
                                 },
-
                                 {
                                     label: '{{ __('request.started_depatment') }}',
                                     value: requestInfo.started_depatment.name
@@ -1761,6 +1858,15 @@
                                     value: requestInfo.updated_at
                                 }
                             ];
+
+                            if (requestInfo.baladyCardType) {
+                                requestInfoData.push({
+                                    label: '{{ __('request.baladyCardType') }}',
+                                    value: requestInfo.baladyCardType
+                                });
+                            }
+
+
 
                             requestInfoData.forEach(function(info) {
                                 if (info.value !== null && info.value !==
@@ -2403,7 +2509,7 @@
                 case 'residenceRenewal':
                     $('#edit_residenceRenewalDuration').show();
                     break;
-              
+
                 case 'residenceIssue':
                     $('#edit_residenceRenewalDuration').show();
                     break;

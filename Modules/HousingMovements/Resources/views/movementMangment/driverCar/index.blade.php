@@ -44,10 +44,10 @@
                                     </option>
                                 @endforeach
                             </select>
-                         
+
                         </div>
                     </div>
-             
+
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -81,13 +81,13 @@
                             </thead>
 
                         </table>
-                      
+
                     </div>
 
 
                     <div class="modal fade" id="add_car_model" tabindex="-1" role="dialog"></div>
                     <div class="modal fade" id="edit_driver_model" tabindex="-1" role="dialog">
-                </div>
+                    </div>
                 @endcomponent
             </div>
 
@@ -116,16 +116,16 @@
                     data: function(d) {
                         if ($('#carTypeSelect').val()) {
                             d.carTypeSelect = $('#carTypeSelect').val();
-                           
+
                         }
                         if ($('#driver_select').val()) {
                             d.driver_select = $('#driver_select').val();
-                          
+
                         }
                     }
                 },
                 columns: [
-                   
+
                     {
                         "data": "driver"
                     },

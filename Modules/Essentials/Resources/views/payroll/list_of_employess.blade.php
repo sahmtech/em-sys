@@ -89,8 +89,8 @@
 
                             <td>@lang('followup::lang.project_name')</td>
                             <td>@lang('essentials::lang.project_assigner')</td>
-                            <td>@lang('essentials::lang.salary_voucher')</td>
-                            <td>@lang('essentials::lang.actions')</td>
+                            <td class="actions-column">@lang('essentials::lang.salary_voucher')</td>
+                            <td class="actions-column">@lang('essentials::lang.actions')</td>
 
 
 
@@ -100,6 +100,39 @@
             </div>
         @endcomponent
 
+        <div class="modal fade" id="worker-info" tabindex="-1" role="dialog" aria-labelledby="workerInfoModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="workerInfoModalLabel">@lang('essentials::lang.personal_info')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-top: 20px;">
+                            <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
+                            <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                            <p><strong>@lang('essentials::lang.contry_nationality'):</strong> <span id="nationality"></span></p>
+                            <p><strong>@lang('essentials::lang.IBAN_number'):</strong> <span id="iban"></span></p>
+                            <p><strong>@lang('essentials::lang.Basic_salary'):</strong> <span id="basic_salary"></span></p>
+                            <p><strong>@lang('essentials::lang.final_salary'):</strong> <span id="final_salary"></span></p>
+                            <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                            <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+                            <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
+                            <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span id="worker_residence_permit_expiration"></span>
+                            </p>
+                            <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
+                            <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span></p>
+                            <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
+                            <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
+                            <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
     </section>
@@ -113,6 +146,9 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+
+
+
 
             $('#status_fillter').select2();
 
@@ -150,12 +186,18 @@
                 columns: [
 
                     {
-                        "data": "emp_number"
+                        "data": "emp_number",
+                        render: function(data, type, row) {
+                            return '<a >' + data + '</a>';
+                        }
                     },
 
 
                     {
                         data: 'worker',
+                        render: function(data, type, row) {
+                            return '<a >' + data + '</a>';
+                        }
 
                     },
                     {
@@ -177,7 +219,10 @@
                         data: "company_name"
                     },
                     {
-                        data: 'id_proof_number'
+                        data: 'id_proof_number',
+                        render: function(data, type, row) {
+                            return '<a >' + data + '</a>';
+                        }
                     },
 
                     {
@@ -222,6 +267,65 @@
                 ]
             });
 
+            // Handle row click event, except for the actions and salary_voucher columns
+            $('#workers_table tbody').on('click', 'tr', function(e) {
+                var cellIndex = $(e.target).closest('td').index();
+                var lastIndex = $(this).children('td').length - 2;
+
+                if (cellIndex < lastIndex) {
+
+                    var rowData = workers_table.row(this).data();
+                    // Construct the URL from the worker's ID
+                    var url = '{{ route('payrolls.view_worker_info', ':id') }}';
+                    url = url.replace(':id', rowData.worker_id);
+
+                    // Perform the AJAX call, simulating the button click
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: {
+                            worker_id: rowData.id
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response.data.user_type != "worker") {
+                                $('#worker_assigned_to').closest('p').hide();
+                                $('#worker_border_no').closest('p').hide();
+                                $('#worker_residence_permit_expiration').closest('p').hide();
+                                $('#worker_status').closest('p').hide();
+                                $('#worker_sub_status').closest('p').hide();
+                            }
+                            $('#worker_full_name').text(response.data.full_name);
+                            $('#worker_emp_number').text(response.data.emp_number);
+                            $('#worker_status').text(response.data.status);
+                            $('#worker_sub_status').text(response.data.sub_status);
+                            $('#worker_id_proof_number').text(response.data.id_proof_number);
+                            $('#worker_residence_permit_expiration').text(response.data
+                                .residence_permit_expiration);
+                            $('#worker_passport_number').text(response.data.passport_number);
+                            $('#worker_passport_expire_date').text(response.data
+                                .passport_expire_date);
+                            $('#worker_border_no').text(response.data.border_no);
+                            $('#worker_company_name').text(response.data.company_name);
+                            $('#worker_assigned_to').text(response.data.assigned_to);
+                            $('#nationality').text(response.data.nationality);
+                            $('#iban').text(response.data.iban);
+                            $('#final_salary').text(response.data.final_salary);
+                            $('#basic_salary').text(response.data.basic_salary);
+                            // Show the worker information section
+                            $('.modal-body div').show();
+
+                            $('#worker-info').modal('show');
+                        },
+                        error: function(xhr, status, error) {
+                            $('#worker-info').modal('hide');
+                            alert('@lang('essentials::lang.error_occurred')');
+                        }
+                    });
+
+                }
+
+            });
 
             $('#project_name_filter,#user_type,#select_company_id,#select_department_id')
                 .on('change',
@@ -262,6 +366,7 @@
             }, );
         });
     </script>
+
 
     <script>
         $(document).on('click', '#view_worker_project', function(e) {
@@ -327,17 +432,29 @@
                         data.user_id + '</td></tr>';
                     salaryHtml += '<tr><th name="work_days">@lang('essentials::lang.work_days')</th><td>' + data
                         .work_days + '</td></tr>';
-                    salaryHtml += '<tr><th name="salary">@lang('essentials::lang.salary')</th><td>' + data.salary +
+                    salaryHtml +=
+                        '<tr><th name="salary">@lang('essentials::lang.Basic_salary')</th><td class="editable-cell">' + data
+                        .salary +
                         '</td></tr>';
-                    salaryHtml += '<tr><th name="total">@lang('essentials::lang.total')</th><td>' + data.total +
-                        '</td></tr>';
-                    salaryHtml += '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td>' + data
+
+                    salaryHtml +=
+                        '<tr><th name="housing_allowance">@lang('essentials::lang.housing_allowance')</th><td class="editable-cell">' +
+                        data
                         .housing_allowance + '</td></tr>';
                     salaryHtml +=
-                        '<tr><th name="transportation_allowance">@lang('essentials::lang.transportation_allowance')</th><td>' + data
+                        '<tr><th name="transportation_allowance">@lang('essentials::lang.transportation_allowance')</th><td class="editable-cell">' +
+                        data
                         .transportation_allowance + '</td></tr>';
-                    salaryHtml += '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td>' + data
+                    salaryHtml +=
+                        '<tr><th name="other_allowance">@lang('essentials::lang.other_allowance')</th><td class="editable-cell">' +
+                        data
                         .other_allowance + '</td></tr>';
+                    salaryHtml +=
+                        '<tr><th name="total">@lang('worker.final_salary')</th><td><input type="text" id="total_salary" class="form-control" value="' +
+                        data.total +
+                        '" readonly></td></tr>';
+                    salaryHtml += '<tr><th name="iban">@lang('lang_v1.bank_code')</th><td>' + data.iban +
+                        '</td></tr>';
                     salaryHtml += '</table>';
                     salaryHtml +=
                         '<button class="btn btn-sm btn-primary edit-salary" data-worker-id="' +
@@ -352,48 +469,75 @@
             });
         });
 
-
         $(document).on('click', '.edit-salary', function(e) {
             e.preventDefault();
 
+            $('#salaryModalBody td.editable-cell').each(function() {
+                var value = $(this).text();
+                $(this).html('<input type="text" class="form-control allowance-input" value="' + value +
+                    '">');
+            });
 
-            $('#salaryModalBody td').each(function() {
+            // Make the IBAN field editable
+            $('#salaryModalBody td').filter(function() {
+                return $(this).prev('th').attr('name') === 'iban';
+            }).each(function() {
                 var value = $(this).text();
                 $(this).html('<input type="text" class="form-control" value="' + value + '">');
             });
 
-
             $(this).replaceWith('<button class="btn btn-sm btn-success save-salary">@lang('essentials::lang.save')</button>');
+
+            // Recalculate the total whenever any of the allowance inputs are changed
+            $(document).on('input', '.allowance-input', function() {
+                var totalSalary = 0;
+
+                $('.allowance-input').each(function() {
+                    var inputVal = parseFloat($(this).val());
+                    totalSalary += isNaN(inputVal) ? 0 : inputVal;
+                });
+
+                $('#total_salary').val(totalSalary);
+            });
         });
 
         $(document).on('click', '.save-salary', function(e) {
             e.preventDefault();
 
             var updatedData = {};
-            $('#salaryModalBody input').each(function() {
-                var columnName = $(this).closest('tr').find('th').attr('name');
-                var value = $(this).val();
-                updatedData[columnName] = value;
-                $(this).replaceWith('<td>' + value + '</td>');
+            $('#salaryModalBody tr').each(function() {
+                var columnName = $(this).find('th').attr('name');
+                var value;
+
+                // If the cell contains an input field, get its value
+                if ($(this).find('td input').length) {
+                    value = $(this).find('td input').val();
+                } else {
+                    // Otherwise, get the text content of the cell
+                    value = $(this).find('td').text();
+                }
+
+                if (columnName) {
+                    updatedData[columnName] = value;
+                }
             });
 
-
+            // Send the updated data via AJAX
             $.ajax({
                 url: '{{ route('payrolls.update.salary') }}',
                 type: 'POST',
                 data: updatedData,
                 success: function(response) {
                     $('#salaryInfoModal').modal('hide');
-                    // location.reload();
-
                     console.log('Data updated successfully:', response);
                 },
                 error: function(xhr, status, error) {
-
                     console.error('Error updating data:', xhr.responseText);
                 }
             });
         });
+
+
 
 
 

@@ -594,6 +594,7 @@ Route::get('/updateShifts', function () {
 //         return response()->json(['success' => false, 'message' => $e->getMessage()]);
 //     }
 // });
+// Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
 
 Route::get('/clear_cache', function () {
     try {
@@ -662,7 +663,14 @@ Route::get('/updateWkProcedures', function () {
     return response()->json(['message' => ' updated successfully.']);
 });
 
+Route::get('/updateWkProcedures_can_reject', function () {
 
+    DB::table('wk_procedures')
+
+        ->update(['can_reject' => 1]);
+
+    return response()->json(['message' => ' updated successfully.']);
+});
 
 // Route::get('/userFromContact', function () {
 //     $contacts = Contact::where('type', 'lead')->get();
@@ -710,9 +718,14 @@ Route::middleware(['setData'])->group(function () {
         ->name('confirm_payment');
 });
 
+
+
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu', 'CheckUserLogin'])->group(function () {
     Route::get('/my_notifications', [HomeController::class, 'getMyNotifications'])->name('getMyNotification');
+    Route::get('/user_device', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device'])->name('user_device');
+    Route::get('/user_device_delete/{id}', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device_delete'])->name('user_device_delete');
+
 
     Route::middleware(['compay_session'])->group(function () {
         Route::post('/sells/pos/get-types-of-service-details', 'SellPosController@getTypesOfServiceDetails');
@@ -980,6 +993,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::get('/fetch-users-by-type', [\App\Utils\RequestUtil::class, 'fetchUsersByType'])->name('fetch.users.by.type');
+    Route::post('/changeStatusAfterTransfer', [\App\Utils\RequestUtil::class, 'changeStatusAfterTransfer'])->name('changeStatusAfterTransfer');
 
 
     Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');

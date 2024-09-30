@@ -52,6 +52,8 @@ use Modules\CEOManagment\Entities\RequestsType;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeesNotFoundExport;
+use App\PayrollGroupUser;
+use App\Utils\RequestUtil;
 use Exception;
 
 class EssentialsManageEmployeeController extends Controller
@@ -59,6 +61,7 @@ class EssentialsManageEmployeeController extends Controller
     protected $moduleUtil;
     protected $newArrivalUtil;
 
+    protected $requestUtil;
 
     /**
      * Constructor
@@ -66,12 +69,21 @@ class EssentialsManageEmployeeController extends Controller
      * @param  Util  $commonUtil
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
+    public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil, RequestUtil $requestUtil)
     {
         $this->moduleUtil = $moduleUtil;
         $this->newArrivalUtil = $newArrivalUtil;
+        $this->requestUtil = $requestUtil;
     }
 
+
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('essentials.change_employees_request_status');
+        $can_return_request = auth()->user()->can('essentials.return_employees_request');
+        $can_show_request = auth()->user()->can('essentials.show_employees_request');
+        return $this->requestUtil->getFilteredRequests('employee_affairs', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
     public function getAmount($salaryType)
     {
 
@@ -319,7 +331,6 @@ class EssentialsManageEmployeeController extends Controller
             $users->where('users.status', $request->input('status'));
         }
         if (!empty($request->input('department')) && $request->input('department') != 'all') {
-            error_log($request->input('department'));
             $users->where('users.essentials_department_id', $request->input('department'));
         }
         if (!empty($request->input('contract_type')) && $request->input('contract_type') != 'all') {
@@ -572,13 +583,24 @@ class EssentialsManageEmployeeController extends Controller
 
         $companies = Company::all()->pluck('name', 'id');
         $requestsProcess = UserRequest::select([
-            'requests.request_no', 'requests.id', 'requests.request_type_id', 'requests.created_at', 'requests.reason',
+            'requests.request_no',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.created_at',
+            'requests.reason',
 
-            'process.id as process_id', 'process.status', 'process.note as note',  'process.procedure_id as procedure_id', 'process.superior_department_id as superior_department_id',
+            'process.id as process_id',
+            'process.status',
+            'process.note as note',
+            'process.procedure_id as procedure_id',
+            'process.superior_department_id as superior_department_id',
 
-            'wk_procedures.department_id as department_id', 'wk_procedures.can_return',
+            'wk_procedures.department_id as department_id',
+            'wk_procedures.can_return',
 
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.id_proof_number', 'users.company_id',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'users.id_proof_number',
+            'users.company_id',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -623,12 +645,21 @@ class EssentialsManageEmployeeController extends Controller
 
                 ->make(true);
         }
+        $counts =  $this->requestUtil->getCounts('employee_affairs');
+        $today_requests =   $counts->today_requests;
+        $pending_requests =   $counts->pending_requests;
+        $completed_requests =   $counts->completed_requests;
+        $all_requests =   $counts->all_requests;
         return view('essentials::employee_affairs.dashboard')
             ->with(compact(
                 'probation_period',
                 'contract_end_date',
                 'late_vacation',
-                'nullCount'
+                'nullCount',
+                'today_requests',
+                'pending_requests',
+                'completed_requests',
+                'all_requests'
             ));
     }
 
@@ -1406,9 +1437,13 @@ class EssentialsManageEmployeeController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
+                // 'msg' => __('messages.something_went_wrong'),
             ];
         }
+
+        //test
+
 
         return redirect()->route('employees')->with('status', $output);
     }
@@ -1615,7 +1650,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-
+        $payrolls = PayrollGroupUser::with('payrollGroup')->where('user_id', $id)->get();
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact(
             'user',
             'view_partials',
@@ -1628,6 +1663,7 @@ class EssentialsManageEmployeeController extends Controller
             'nationalities',
             'nationality',
             'documents',
+            'payrolls',
 
         ));
     }
@@ -1659,7 +1695,8 @@ class EssentialsManageEmployeeController extends Controller
         $projects = SalesProject::pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::select([
 
-            'profession_id', 'sponsor_company'
+            'profession_id',
+            'sponsor_company'
 
         ])->where('employee_id', $id)->where('is_active', 1)
             ->first();
@@ -1785,16 +1822,58 @@ class EssentialsManageEmployeeController extends Controller
         }
         try {
             $user_data = $request->only([
-                'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status', 'border_no', 'bank_details',
-                'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1', 'location_id',
-                'social_media_2', 'permanent_address', 'current_address', 'profession', 'specialization',
-                'guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
-                'contract_duration', 'probation_period',
-                'is_renewable', 'contract_file', 'essentials_salary', 'essentials_pay_period',
-                'salary_type', 'amount', 'can_add_category',
-                'travel_ticket_categorie', 'health_insurance', 'selectedData',
-                'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                'max_sales_discount_percent', 'family_number', 'alt_number', 'Iban_file', 'emp_number', 'company_id'
+                'surname',
+                'first_name',
+                'last_name',
+                'email',
+                'profile_picture',
+                'selected_contacts',
+                'marital_status',
+                'border_no',
+                'bank_details',
+                'blood_group',
+                'contact_number',
+                'fb_link',
+                'twitter_link',
+                'social_media_1',
+                'location_id',
+                'social_media_2',
+                'permanent_address',
+                'current_address',
+                'profession',
+                'specialization',
+                'guardian_name',
+                'custom_field_1',
+                'custom_field_2',
+                'nationality',
+                'contract_type',
+                'contract_start_date',
+                'contract_end_date',
+                'contract_duration',
+                'probation_period',
+                'is_renewable',
+                'contract_file',
+                'essentials_salary',
+                'essentials_pay_period',
+                'salary_type',
+                'amount',
+                'can_add_category',
+                'travel_ticket_categorie',
+                'health_insurance',
+                'selectedData',
+                'custom_field_3',
+                'custom_field_4',
+                'id_proof_name',
+                'id_proof_number',
+                'cmmsn_percent',
+                'gender',
+                'essentials_department_id',
+                'max_sales_discount_percent',
+                'family_number',
+                'alt_number',
+                'Iban_file',
+                'emp_number',
+                'company_id'
 
             ]);
 
@@ -1899,6 +1978,11 @@ class EssentialsManageEmployeeController extends Controller
                             $Iban_doc->update($input);
                         }
                     }
+                    if ($request->hasFile('profile_picture')) {
+                        $image = $request->file('profile_picture');
+                        $profile = $image->store('/profile_images');
+                        $user_data['profile_image'] = $profile;
+                    }
 
                     $user_data['updated_by'] = Auth::user()->id;
                     $existing_user->update($user_data);
@@ -1970,7 +2054,8 @@ class EssentialsManageEmployeeController extends Controller
                         if ($filePath) {
                             Storage::delete($filePath);
                             EssentialsEmployeesQualification::where('employee_id', $id)->update([
-                                'file_path' => Null, 'updated_by' => Auth::user()->id
+                                'file_path' => Null,
+                                'updated_by' => Auth::user()->id
                             ]);
                         }
                     }
@@ -2015,9 +2100,7 @@ class EssentialsManageEmployeeController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function destroy($id)
-    {
-    }
+    public function destroy($id) {}
 
     private function getRolesArray($business_id)
     {

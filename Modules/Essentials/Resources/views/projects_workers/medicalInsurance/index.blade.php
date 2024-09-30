@@ -61,18 +61,34 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [
-                            $fields[0],
-                            $fields[1],
-                            $fields[2],
-                            $fields[3],
-                            $fields[4],
-                            $fields[5],
-                            $fields[6],
-                        ];
+                        // Remove the specified fields from the $fields array
+                        $fields = array_values(
+                            array_diff($fields, [
+                                __('essentials::lang.profile_image'),
+                                __('followup::lang.passport_numer'),
+                                __('followup::lang.passport_expire_date'),
+                                __('followup::lang.eqama_end_date'),
+                                __('followup::lang.admissions_date'),
+                                __('essentials::lang.admissions_type'),
+                                __('essentials::lang.admissions_status'),
+                                __('followup::lang.contract_end_date'),
+                                __('essentials::lang.mobile_number'),
+                                __('business.email'),
+                                __('followup::lang.Basic_salary'),
+                                __('followup::lang.total_salary'),
+                                __('followup::lang.blood_group'),
+                                __('followup::lang.bank_code'),
+                                __('essentials::lang.travel_categorie'),
+                            ]),
+                        );
+
+                        $fullNamePosition = array_search(__('followup::lang.name'), $fields);
+                        if ($fullNamePosition !== false) {
+                            array_splice($fields, $fullNamePosition + 1, 0, __('essentials::lang.english_name'));
+                        }
+                        $default_fields = array_slice($fields, 0, 7);
 
                         $default = array_keys($default_fields);
-
                     @endphp
 
                     <div style="row">
@@ -98,6 +114,11 @@
                     </div>
                 @endcomponent
             </div>
+            <div class="col-md-12" style="margin-bottom: 5px;">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#askForWorkerModal">
+                    @lang('essentials::lang.ask_for_worker')
+                </button>
+            </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
@@ -106,45 +127,43 @@
                         <tr>
 
                             <td>#</td>
-                            <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td>
+                            {{-- <td class="table-td-width-100px">@lang('essentials::lang.profile_image')</td> --}}
                             <td class="table-td-width-100px">@lang('essentials::lang.employee_number')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.english_name')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.id_proof_number')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.company_name')</td>
-
-
-                            <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td>
-
-
                             <td class="table-td-width-100px">@lang('essentials::lang.border_number')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.dob')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.insurance')</td>
+
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.passport_numer')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.passport_expire_date')</td> --}}
+
+                            <td class="table-td-width-100px">@lang('essentials::lang.insurance_status')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.insurance_class')</td>
+
 
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
 
-
-
-                            <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
-
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td> --}}
                             <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
-                            <td class="table-td-width-100px">@lang('business.email')</td>
+                            {{-- <td class="table-td-width-100px">@lang('business.email')</td> --}}
 
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td> --}}
                             <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
 
                             <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
-                            <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td> --}}
 
 
 
@@ -154,7 +173,48 @@
             </div>
         @endcomponent
 
+        <div class="modal fade" id="askForWorkerModal" tabindex="-1" role="dialog"
+            aria-labelledby="askForWorkerModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="askForWorkerModalLabel">@lang('essentials::lang.ask_for_worker')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="askForWorkerForm">
+                            @csrf
+                            <div class="form-group">
+                                <label for="worker_identifier">@lang('essentials::lang.worker_identifier')</label>
+                                <input type="text" class="form-control" id="worker_identifier" name="worker_identifier"
+                                    required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('essentials::lang.submit')</button>
+                        </form>
 
+                        <!-- Worker info section -->
+                        <div id="worker-info" style="display:none; margin-top: 20px;">
+                            <h5>@lang('essentials::lang.worker_information')</h5>
+                            <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
+                            <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                            <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                            <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+
+                            <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
+                            <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span id="worker_residence_permit_expiration"></span>
+                            </p>
+                            <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
+                            <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span></p>
+                            <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
+                            <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
+                            <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </section>
     <!-- /.content -->
@@ -173,7 +233,7 @@
 
                 ajax: {
 
-                    url: "{{ route('insurance-workers') }}",
+                    url: "{{ route('insurance-workersAndEmployee') }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
@@ -198,19 +258,19 @@
                 columns: [{
                         "data": "worker_id"
                     },
-                    {
-                        "data": "profile_image",
-                        "render": function(data, type, row) {
-                            if (data) {
+                    // {
+                    //     "data": "profile_image",
+                    //     "render": function(data, type, row) {
+                    //         if (data) {
 
-                                var imageUrl = '/uploads/' + data;
-                                return '<img src="' + imageUrl +
-                                    '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
-                            } else {
-                                return '@lang('essentials::lang.no_image')';
-                            }
-                        }
-                    },
+                    //             var imageUrl = '/uploads/' + data;
+                    //             return '<img src="' + imageUrl +
+                    //                 '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                    //         } else {
+                    //             return '@lang('essentials::lang.no_image')';
+                    //         }
+                    //     }
+                    // },
                     {
                         "data": "emp_number"
                     },
@@ -224,7 +284,10 @@
                             return link;
                         }
                     },
+                    {
+                        data: 'english_name',
 
+                    },
                     {
                         data: 'id_proof_number'
                     },
@@ -232,18 +295,23 @@
                         "data": "company_name"
                     },
                     {
-                        data: 'passport_number'
-                    },
-                    {
-                        data: 'passport_expire_date'
-                    },
-                    {
                         data: 'border_no'
-                    }, {
+                    },
+                    {
                         data: 'dob'
                     },
+                    // {
+                    //     data: 'passport_number'
+                    // },
+                    // {
+                    //     data: 'passport_expire_date'
+                    // },
+
                     {
                         data: 'insurance'
+                    },
+                    {
+                        data: 'insurance_class'
                     },
                     {
                         data: 'contact_name'
@@ -253,46 +321,46 @@
                     },
 
 
-                    {
-                        data: 'residence_permit_expiration'
-                    },
-                    {
-                        data: 'admissions_date'
-                    },
-                    {
-                        data: 'admissions_type',
-                        render: function(data, type, row) {
+                    // {
+                    //     data: 'residence_permit_expiration'
+                    // },
+                    // {
+                    //     data: 'admissions_date'
+                    // },
+                    // {
+                    //     data: 'admissions_type',
+                    //     render: function(data, type, row) {
 
-                            if (data === 'first_time') {
-                                return '@lang('essentials::lang.first_time')';
-                            } else if (data === 'after_vac') {
-                                return '@lang('essentials::lang.after_vac')';
-                            } else {
-                                return '@lang('essentials::lang.no_addmission_yet')';
-                            }
-                        }
-                    },
-                    {
-                        data: 'admissions_status',
-                        render: function(data, type, row) {
-                            if (data === 'on_date') {
-                                return '@lang('essentials::lang.on_date')';
-                            } else if (data === 'delay') {
-                                return '@lang('essentials::lang.delay')';
-                            } else {
-                                return '';
-                            }
-                        }
-                    },
-                    {
-                        data: 'contract_end_date'
-                    },
-                    {
-                        data: "contact_number"
-                    },
-                    {
-                        data: "email"
-                    },
+                    //         if (data === 'first_time') {
+                    //             return '@lang('essentials::lang.first_time')';
+                    //         } else if (data === 'after_vac') {
+                    //             return '@lang('essentials::lang.after_vac')';
+                    //         } else {
+                    //             return '@lang('essentials::lang.no_addmission_yet')';
+                    //         }
+                    //     }
+                    // },
+                    // {
+                    //     data: 'admissions_status',
+                    //     render: function(data, type, row) {
+                    //         if (data === 'on_date') {
+                    //             return '@lang('essentials::lang.on_date')';
+                    //         } else if (data === 'delay') {
+                    //             return '@lang('essentials::lang.delay')';
+                    //         } else {
+                    //             return '';
+                    //         }
+                    //     }
+                    // },
+                    // {
+                    //     data: 'contract_end_date'
+                    // },
+                    // {
+                    //     data: "contact_number"
+                    // },
+                    // {
+                    //     data: "email"
+                    // },
 
                     {
                         data: "profession",
@@ -315,20 +383,20 @@
                             }
                         }
                     },
-                    {
+                    // {
 
-                        data: 'essentials_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
+                    //     data: 'essentials_salary',
+                    //     render: function(data, type, row) {
+                    //         return Math.floor(data);
+                    //     }
 
-                    },
-                    {
-                        data: 'total_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
-                    },
+                    // },
+                    // {
+                    //     data: 'total_salary',
+                    //     render: function(data, type, row) {
+                    //         return Math.floor(data);
+                    //     }
+                    // },
 
                     {
                         data: 'gender',
@@ -344,19 +412,29 @@
                         }
                     },
                     {
-                        data: 'marital_status'
-                    },
-                    {
-                        data: 'blood_group'
-                    },
-                    {
-                        data: 'bank_code',
+                        data: 'marital_status',
+                        render: function(data, type, row) {
+                            if (data === 'married') {
+                                return '@lang('lang_v1.married')';
+                            } else if (data === 'unmarried') {
+                                return '@lang('lang_v1.unmarried')';
 
+                            } else {
+                                return '@lang('lang_v1.others')';
+                            }
+                        }
                     },
-                    {
-                        data: 'categorie_id',
+                    // {
+                    //     data: 'blood_group'
+                    // },
+                    // {
+                    //     data: 'bank_code',
 
-                    },
+                    // },
+                    // {
+                    //     data: 'categorie_id',
+
+                    // },
 
 
 
@@ -390,5 +468,51 @@
             dt.columns(selectedOptions).visible(true);
 
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#askForWorkerForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var worker_identifier = $('#worker_identifier').val();
+
+                $.ajax({
+                    url: '{{ route('get-worker-info') }}', // Replace with your actual route
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        worker_identifier: worker_identifier
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Display the worker info in the modal
+                            $('#worker_full_name').text(response.data.full_name);
+                            $('#worker_emp_number').text(response.data.emp_number);
+
+                            $('#worker_status').text(response.data.status);
+                            $('#worker_sub_status').text(response.data.sub_status);
+                            $('#worker_id_proof_number').text(response.data.id_proof_number);
+                            $('#worker_residence_permit_expiration').text(response.data
+                                .residence_permit_expiration);
+                            $('#worker_passport_number').text(response.data.passport_number);
+                            $('#worker_passport_expire_date').text(response.data
+                                .passport_expire_date);
+                            $('#worker_border_no').text(response.data.border_no);
+                            $('#worker_company_name').text(response.data.company_name);
+                            $('#worker_assigned_to').text(response.data.assigned_to);
+
+                            $('#worker-info').show();
+                        } else {
+                            $('#worker-info').hide();
+                            alert('@lang('essentials::lang.worker_not_found')');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#worker-info').hide();
+                        alert('@lang('essentials::lang.error_occurred')');
+                    }
+                });
+            });
+        });
     </script>
 @endsection

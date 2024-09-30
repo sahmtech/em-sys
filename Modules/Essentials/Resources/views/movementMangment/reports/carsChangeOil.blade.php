@@ -14,7 +14,6 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                 
                     <div class="col-md-4">
                         {!! Form::label('carType_label', __('housingmovements::lang.car')) !!}
 
@@ -22,12 +21,13 @@
                             <option value="all" selected>@lang('lang_v1.all')</option>
                             @foreach ($cars as $car)
                                 <option value="{{ $car->id }}">
-                                    {{ $car->plate_number . ' - ' .$car->CarModel->CarType->name_ar . ' - ' . $car->CarModel->name_ar }}</option>
+                                    {{ $car->plate_number . ' - ' . $car->CarModel->CarType?->name_ar ?? ('' . ' - ' . $car->CarModel?->name_ar ?? '') }}
+                                </option>
                             @endforeach
                         </select>
-                         
+
                     </div>
-               
+
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -37,17 +37,18 @@
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-primary'])
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="carsChangeOil_table" style="margin-bottom: 100px;">
+                        <table class="table table-bordered table-striped" id="carsChangeOil_table"
+                            style="margin-bottom: 100px;">
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">@lang('housingmovements::lang.car')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.plate_number')</th>
-                    
+
                                     <th style="text-align: center;">@lang('housingmovements::lang.current_speedometer')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.next_change_oil')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.invoice_no')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.date')</th>
-                                   
+
                                 </tr>
                             </thead>
 
@@ -88,7 +89,7 @@
                         }
                     }
                 },
-                
+
                 columns: [
                     // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
                     {
@@ -112,10 +113,10 @@
                     }
                 ]
             });
-         
 
 
-      
+
+
             $('#carSelect,#name').on('change',
                 function() {
                     carsChangeOil_table.ajax.reload();

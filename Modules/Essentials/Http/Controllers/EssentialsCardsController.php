@@ -539,10 +539,127 @@ class EssentialsCardsController extends Controller
             $can_change_status,
             $can_return_request,
             $can_show_request,
-            $requestsTypes
+            $requestsTypes,
+            [],
+            false,
+            null,
+            'pending_and_old'
         );
     }
+    public function work_cards_pending_requests()
+    {
+        $business_id = request()
+            ->session()
+            ->get('user.business_id');
+        $can_change_status = auth()
+            ->user()
+            ->can('essentials.workcards_requests_change_status');
+        $can_return_request = auth()
+            ->user()
+            ->can('essentials.return_workcards_request');
+        $can_show_request = auth()
+            ->user()
+            ->can('essentials.show_workcards_request');
 
+        $departmentIds = EssentialsDepartment::
+            // where(
+            //     'business_id',
+            //     $business_id
+            // )
+            //     ->
+            where('name', 'LIKE', '%حكومية%')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_governmental_dep'),
+            ];
+
+            return redirect()
+                ->back()
+                ->with('status', $output);
+        }
+
+        $ownerTypes = ['worker'];
+        $roles = DB::table('roles')
+            ->where('name', 'LIKE', '%حكومية%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+
+        return $this->requestUtil->getRequests(
+            $departmentIds,
+            $ownerTypes,
+            'essentials::cards.pending_requests',
+            $can_change_status,
+            $can_return_request,
+            $can_show_request,
+            $requestsTypes,
+            [],
+            false,
+            null,
+            'today'
+        );
+    }
+    public function work_cards_done_requests()
+    {
+        $business_id = request()
+            ->session()
+            ->get('user.business_id');
+        $can_change_status = auth()
+            ->user()
+            ->can('essentials.workcards_requests_change_status');
+        $can_return_request = auth()
+            ->user()
+            ->can('essentials.return_workcards_request');
+        $can_show_request = auth()
+            ->user()
+            ->can('essentials.show_workcards_request');
+
+        $departmentIds = EssentialsDepartment::
+            // where(
+            //     'business_id',
+            //     $business_id
+            // )
+            //     ->
+            where('name', 'LIKE', '%حكومية%')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_governmental_dep'),
+            ];
+
+            return redirect()
+                ->back()
+                ->with('status', $output);
+        }
+
+        $ownerTypes = ['worker'];
+        $roles = DB::table('roles')
+            ->where('name', 'LIKE', '%حكومية%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+
+        return $this->requestUtil->getRequests(
+            $departmentIds,
+            $ownerTypes,
+            'essentials::cards.done_requests',
+            $can_change_status,
+            $can_return_request,
+            $can_show_request,
+            $requestsTypes,
+            [],
+            false,
+            null,
+            'done'
+        );
+    }
     public function storeRequest(Request $request)
     {
         $business_id = request()
@@ -2257,9 +2374,7 @@ class EssentialsCardsController extends Controller
         }
     }
 
-    public function create(Request $request)
-    {
-    }
+    public function create(Request $request) {}
 
     /**
      * Store a newly created resource in storage.

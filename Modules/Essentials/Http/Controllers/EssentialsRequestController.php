@@ -9,6 +9,7 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use App\User;
 use App\AccessRole;
 use App\AccessRoleRequest;
+use App\Company;
 use Carbon\Carbon;
 use App\Request as Req;
 use Modules\CEOManagment\Entities\RequestsType;
@@ -110,9 +111,71 @@ class EssentialsRequestController extends Controller
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'pending_and_old');
     }
+    public function getFilteredRequests($filter = null)
+    {
+        $can_change_status = auth()->user()->can('essentials.change_HR_status');
+        $can_return_request = auth()->user()->can('essentials.return_essentials_request');
+        $can_show_request = auth()->user()->can('essentials.show_essentials_request');
+        return $this->requestUtil->getFilteredRequests('essentials', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
+    }
+    public function doneEmployeeAffairsRequests()
+    {
 
+        $business_id = request()->session()->get('user.business_id');
+
+        $can_change_status = auth()->user()->can('essentials.change_employees_request_status');
+        $can_return_request = auth()->user()->can('essentials.return_employees_request');
+        $can_show_request = auth()->user()->can('essentials.show_employees_request');
+
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
+            ->pluck('id')->toArray();
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_employee_affairs_dep'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
+
+        $ownerTypes = ['employee', 'manager'];
+        $roles = DB::table('roles')
+            ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.doneRequests', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'done');
+    }
+    public function pendingEmployeeAffairsRequests()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $can_change_status = auth()->user()->can('essentials.change_employees_request_status');
+        $can_return_request = auth()->user()->can('essentials.return_employees_request');
+        $can_show_request = auth()->user()->can('essentials.show_employees_request');
+
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
+            ->pluck('id')->toArray();
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_employee_affairs_dep'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
+
+        $ownerTypes = ['employee', 'manager'];
+        $roles = DB::table('roles')
+            ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
+        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+
+
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'today');
+    }
 
     public function storeEmployeeAffairsRequest(Request $request)
     {
@@ -209,22 +272,34 @@ class EssentialsRequestController extends Controller
         $saleProjects = SalesProject::all()->pluck('name', 'id');
         $requestsProcess = null;
         $all_status = ['approved', 'pending', 'rejected'];
-
-        if ($user_type == 'admin' || $user_type == 'department_head' || $user_type == 'manager') {
-            $allRequestTypes = RequestsType::where('for', 'employee')->where('selfish_service', 1)->pluck('type', 'id');
-        } else {
-            $allRequestTypes = RequestsType::where('for', $user_type)->where('selfish_service', 1)->pluck('type', 'id');
-        }
+        // $allRequestTypes = [];
+        // if ($user_type == 'admin' || $user_type == 'department_head' || $user_type == 'manager') {
+        //     $allRequestTypes = RequestsType::where('for', 'employee')->where('selfish_service', 1)->pluck('type', 'id');
+        // } else {
+        //     $allRequestTypes = RequestsType::where('for', $user_type)->where('selfish_service', 1)->pluck('type', 'id');
+        // }
+        $allRequestTypes = RequestsType::pluck('type', 'id');
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
-
+        $companies = Company::pluck('name', 'id');
 
         $requestsProcess = Req::select([
-            'requests.request_no', 'process.id as process_id', 'requests.id',
-            'requests.request_type_id', 'requests.created_at', 'process.status',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'requests.related_to',
-            'process.note as note', 'requests.reason', 'wk_procedures.department_id as department_id',
-            'users.id_proof_number', 'wk_procedures.can_return', 'process.procedure_id as procedure_id',
+            'requests.request_no',
+            'process.id as process_id',
+            'requests.id',
+            'requests.request_type_id',
+            'requests.created_at',
+            'process.status',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'requests.related_to',
+            'process.note as note',
+            'requests.reason',
+            'wk_procedures.department_id as department_id',
+            'users.id_proof_number',
+            'wk_procedures.can_return',
+            'process.procedure_id as procedure_id',
+            'users.company_id',
+            'users.assigned_to',
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
                 $join->on('requests.id', '=', 'latest_process.request_id');
@@ -249,6 +324,12 @@ class EssentialsRequestController extends Controller
                 })
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
+                })
+                ->editColumn('company_id', function ($row) use ($companies) {
+                    return $companies[$row->company_id];
+                })
+                ->editColumn('assigned_to', function ($row) use ($saleProjects) {
+                    return $saleProjects[$row->assigned_to] ?? '';
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';

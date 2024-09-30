@@ -23,6 +23,7 @@ class ConnectorController extends Controller
     public function user_device()
     {
         $user_devices = UserDevice::with('user');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (request()->ajax()) {
             return DataTables::of($user_devices)
                 ->addColumn('name', function ($row) {
@@ -31,10 +32,41 @@ class ConnectorController extends Controller
                 ->editColumn('id_proof_number', function ($row) {
                     return $row->user->id_proof_number;
                 })
+                ->addColumn('action', function ($row) use ($is_admin) {
+
+                    $html = '';
+                    if ($is_admin) {
+
+                        $html .= '<a class="btn btn-xs btn-danger" href="' . route('user_device_delete', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</a>';
+                    }
+
+                    return $html;
+                })
                 ->make(true);
         }
         return view('connector::user_device');
     }
+
+
+    public function user_device_delete($id)
+    {
+        try {
+            UserDevice::where('id', $id)->delete();
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.deleted_successfully'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -52,9 +84,7 @@ class ConnectorController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function store(Request $request)
-    {
-    }
+    public function store(Request $request) {}
 
     /**
      * Show the specified resource.
@@ -82,16 +112,12 @@ class ConnectorController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function update(Request $request)
-    {
-    }
+    public function update(Request $request) {}
 
     /**
      * Remove the specified resource from storage.
      *
      * @return Response
      */
-    public function destroy()
-    {
-    }
+    public function destroy() {}
 }

@@ -581,6 +581,87 @@ class CoaController extends Controller
         }
     }
 
+    public function ledgerPrint($account_id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
+        $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
+            ->with(['account_sub_type', 'detail_type'])
+            ->findorFail($account_id);
+            
+            $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
+                ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
+                ->leftjoin('transactions as T', 'accounting_accounts_transactions.transaction_id', '=', 'T.id')
+                ->leftjoin('users AS u', 'accounting_accounts_transactions.created_by', 'u.id')
+                ->leftjoin('users AS employee_partner', function ($join) {
+                    $join->on('accounting_accounts_transactions.partner_id', '=', 'employee_partner.id')
+                        ->where('accounting_accounts_transactions.partner_type', '=', 'employees');
+                })
+                ->leftjoin('contacts AS customer_partner', function ($join) {
+                    $join->on('accounting_accounts_transactions.partner_id', '=', 'customer_partner.id')
+                        ->where('accounting_accounts_transactions.partner_type', '=', 'customers_suppliers');
+                })
+                ->leftjoin('accounting_cost_centers AS cc', 'accounting_accounts_transactions.cost_center_id', 'cc.id')
+                ->select(
+                    'accounting_accounts_transactions.operation_date',
+                    'accounting_accounts_transactions.sub_type',
+                    'accounting_accounts_transactions.type',
+                    'ATM.ref_no as ref_no',
+                    'ATM.id as id',
+                    'cc.ar_name as cost_center_name',
+                    'ATM.note',
+                    'accounting_accounts_transactions.amount',
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                    'T.invoice_no',
+                    DB::raw("CASE 
+                        WHEN accounting_accounts_transactions.partner_type = 'employees' THEN CONCAT(COALESCE(employee_partner.first_name, ''), ' ', COALESCE(employee_partner.last_name, ''))
+                        WHEN accounting_accounts_transactions.partner_type = 'customers_suppliers' THEN customer_partner.supplier_business_name
+                        END as partner_name")
+                )->get();
+        
+
+        $current_bal = AccountingAccount::leftjoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select([DB::raw($this->accountingUtil->balanceFormula())]);
+        $current_bal = $current_bal->first()->balance;
+
+        $total_debit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'debit'), AAT.amount, 0)) as balance"))
+            ->first();
+        $total_debit_bal = $total_debit_bal->balance;
+
+        $total_credit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'credit'), AAT.amount, 0)) as balance"))
+            ->first();
+
+        $total_credit_bal = $total_credit_bal->balance;
+
+        return view('accounting::report.ledger-print', compact('account', 'transactions', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
+    }
+
     /**
      * Displays the ledger of the account
      * @param int $account_id
@@ -590,9 +671,6 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
-
-
-
 
         $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
             ->with(['account_sub_type', 'detail_type'])
@@ -620,7 +698,8 @@ class CoaController extends Controller
                     'accounting_accounts_transactions.operation_date',
                     'accounting_accounts_transactions.sub_type',
                     'accounting_accounts_transactions.type',
-                    'ATM.ref_no',
+                    'ATM.ref_no as ref_no',
+                    'ATM.id as id',
                     'cc.ar_name as cost_center_name',
                     'ATM.note',
                     'accounting_accounts_transactions.amount',
@@ -651,21 +730,29 @@ class CoaController extends Controller
                 })
                 ->editColumn('ref_no', function ($row) {
                     $description = '';
-
                     if ($row->sub_type == 'journal_entry') {
-                        $description = '<b>' . __('accounting::lang.journal_entry') . '</b>';
-                        $description .= '<br>' . __('purchase.ref_no') . ': ' . $row->ref_no;
-                    }
-
-                    if ($row->sub_type == 'opening_balance') {
-                        $description = '<b>' . __('accounting::lang.opening_balance') . '</b>';
+                        $description =  $row->ref_no;
                     }
 
                     if ($row->sub_type == 'sell') {
-                        $description = '<b>' . __('sale.sale') . '</b>';
-                        $description .= '<br>' . __('sale.invoice_no') . ': ' . $row->invoice_no;
+                        $description = $row->invoice_no;
                     }
+                    if ($row->id) {
+                        $description = '<a class=" btn-modal" 
+                      data-container="#printJournalEntry"
+                         data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@print', [$row->id]) . '">
+                            <i class="fa fa-print" aria-hidden="true"></i>' . $description . '
+                        </a>';
+                    }
+                    return $description;
+                })
+                ->addColumn('transaction', function ($row) {
+                    if (Lang::has('accounting::lang.' . $row->sub_type)) {
 
+                        $description = __('accounting::lang.' . $row->sub_type);
+                    } else {
+                        $description = $row->sub_type;
+                    }
                     return $description;
                 })
                 ->addColumn('debit', function ($row) {
@@ -691,12 +778,6 @@ class CoaController extends Controller
                 //     $bal = $bal_before_start_date + $current_bal;
                 //     return '<span class="balance" data-orig-value="' . $bal . '">' . $this->accountingUtil->num_f($bal, true) . '</span>';
                 // })
-                ->editColumn('action', function ($row) {
-                    $action = '';
-
-
-                    return $action;
-                })
                 ->filterColumn('cost_center_name', function ($query, $keyword) {
                     $query->whereRaw("LOWER(cc.ar_name) LIKE ?", ["%{$keyword}%"]);
                 })
@@ -724,8 +805,35 @@ class CoaController extends Controller
             ->select([DB::raw($this->accountingUtil->balanceFormula())]);
         $current_bal = $current_bal->first()->balance;
 
+        $total_debit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'debit'), AAT.amount, 0)) as balance"))
+            ->first();
+        $total_debit_bal = $total_debit_bal->balance;
+
+        $total_credit_bal = AccountingAccount::leftJoin(
+            'accounting_accounts_transactions as AAT',
+            'AAT.accounting_account_id',
+            '=',
+            'accounting_accounts.id'
+        )
+            ->where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('accounting_accounts.id', $account->id)
+            ->select(DB::raw("SUM(IF((AAT.type = 'credit'), AAT.amount, 0)) as balance"))
+            ->first();
+
+        $total_credit_bal = $total_credit_bal->balance;
+
         return view('accounting::chart_of_accounts.ledger')
-            ->with(compact('account', 'current_bal'));
+            ->with(compact('account', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
     }
 
 

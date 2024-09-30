@@ -15,6 +15,8 @@
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
     Route::prefix('followup')->group(function () {
+        Route::get('/filtered_requests/{filter}', [Modules\FollowUp\Http\Controllers\FollowUpController::class, 'getFilteredRequests'])->name('followup.getFilteredRequests');
+
         Route::get('/dashboard', [Modules\FollowUp\Http\Controllers\DashboardController::class, 'index'])->name('followup.dashboard');
         Route::get('/', [Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])->name('followup_landing');
         Route::get('/followup_department_employees', [Modules\FollowUp\Http\Controllers\FollowUpController::class, 'followup_department_employees'])->name('followup_department_employees');
@@ -25,7 +27,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/getUserProjectsPermissions/{userId}', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'getUserProjectsPermissions'])->name('getUserProjectsPermissions');
         Route::post('/projects_access_permissions/store', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'store'])->name('projects_access_permissions.store');
         Route::get('/workers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
-        Route::get('/workers/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'show'])->name('showWorker');
+        Route::get('/workers/{id}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('showWorker');
 
         //Route::get('/createWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'createWorker'])->name('createWorker');
         // Route::post('/storeWorker', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'storeWorker'])->name('storeWorker');

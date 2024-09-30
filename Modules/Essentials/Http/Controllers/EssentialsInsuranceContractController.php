@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\Company;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsCity;
+use Modules\Essentials\Entities\EssentialsCompaniesInsurancesContract;
 use Modules\Essentials\Entities\EssentialsInsuranceContract;
 
 class EssentialsInsuranceContractController extends Controller
@@ -36,18 +38,21 @@ class EssentialsInsuranceContractController extends Controller
         // if (!$can_crud_insurance_companies) {
         //    //temp  abort(403, 'Unauthorized action.');
         // }
-    
-        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
+
+        $insuramce_companies = Contact::where([['business_id', '=', $business_id], ['type', '=', 'insurance']])->pluck('supplier_business_name', 'id',);
+        $insuranceContracts = DB::table('essentials_insurance_contracts')->select([
+            'id',
+            'insurance_company_id',
+            'insurance_start_date',
+            'insurance_end_date',
+            'policy_number',
+            'is_active'
+
+        ]);
+        $companies = Company::pluck('name', 'id');
+        $essentialsCompaniesInsurancesContracts = EssentialsCompaniesInsurancesContract::select('company_id', 'insur_id')->get();;
         if (request()->ajax()) {
-            $insuranceContracts = DB::table('essentials_insurance_contracts')->select([
-                'id',
-                'insurance_company_id',
-           
-                'insurance_start_date',
-                'insurance_end_date',
-                'policy_number',
-       
-            ]);
+
 
 
             if (!empty(request()->input('insurance_company_filter')) && request()->input('insurance_company_filter') != 'all') {
@@ -71,23 +76,51 @@ class EssentialsInsuranceContractController extends Controller
 
             return Datatables::of($insuranceContracts)
                 ->editColumn('insurance_company_id', function ($row) use ($insuramce_companies) {
+
                     $item = $insuramce_companies[$row->insurance_company_id] ?? '';
                     return $item;
                 })
-              
+                ->addColumn('company', function ($row) use ($essentialsCompaniesInsurancesContracts,  $companies) {
+                    $htlm = '<ul>';
+                    foreach ($essentialsCompaniesInsurancesContracts as $essentialsCompaniesInsurancesContract) {
+                        if ($essentialsCompaniesInsurancesContract->insur_id == $row->insurance_company_id) {
+
+                            $htlm .= '<li>' .  $companies[$essentialsCompaniesInsurancesContract->company_id] . '</li>';
+                        }
+                    }
+
+                    $htlm .= '</ul>';
+                    return  $htlm;
+                })
+
                 ->addColumn(
                     'action',
-                    function ($row) use( $is_admin, $can_edit_insurance_contracts ,  $can_delete_insurance_contracts) {
+                    function ($row) use ($is_admin, $can_edit_insurance_contracts,  $can_delete_insurance_contracts, $essentialsCompaniesInsurancesContracts) {
+                        $related_companies = [];
+                        foreach ($essentialsCompaniesInsurancesContracts as $essentialsCompaniesInsurancesContract) {
+                            if ($essentialsCompaniesInsurancesContract->insur_id == $row->insurance_company_id) {
+                                $related_companies[] = $essentialsCompaniesInsurancesContract->company_id;
+                            }
+                        }
+                        $companies_json = json_encode($related_companies);
                         $html = '';
                         //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
-                       if($is_admin || $can_edit_insurance_contracts ){
-                        $html .= '<a href="'. route('insurance_contracts.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                       }
-                      
-                       if($is_admin || $can_delete_insurance_contracts){
-                        $html .= '<button class="btn btn-xs btn-danger delete_insurance_contract_button" data-href="' . route('insurance_contracts.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                    }
-                      
+                        if ($is_admin || $can_edit_insurance_contracts) {
+                            $html .= '<button data-toggle="modal" data-target="#editInsuranceContractModal" 
+                                    class="btn btn-xs btn-primary edit_button" 
+                                    data-id="' . $row->id . '" 
+                                    data-insurance_company="' . $row->insurance_company_id . '" 
+                                    data-policy_number="' . $row->policy_number . '" 
+                                    data-start_date="' . $row->insurance_start_date . '" 
+                                    data-end_date="' . $row->insurance_end_date . '" 
+                                    data-companies=\'' . $companies_json . '\'>' .
+                                '<i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>&nbsp;';
+                        }
+
+                        if ($is_admin || $can_delete_insurance_contracts) {
+                            $html .= '<button class="btn btn-xs btn-danger delete_insurance_contract_button" data-href="' . route('insurance_contracts.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
                         return $html;
                     }
                 )
@@ -95,12 +128,12 @@ class EssentialsInsuranceContractController extends Controller
                 //     $query->where('supplier_business_name',"LIKE", "%{$keyword}%");
                 // })
                 ->removeColumn('id')
-                ->rawColumns([ 'action'])
+                ->rawColumns(['action', 'company'])
                 ->make(true);
         }
 
         return view('essentials::insurance_contracts.index')
-        ->with(compact('insuramce_companies'));
+            ->with(compact('insuramce_companies', 'companies'));
     }
 
 
@@ -132,14 +165,24 @@ class EssentialsInsuranceContractController extends Controller
 
         try {
             $input = $request->only(['insurance_company', 'policy_number', 'insurance_start_date', 'insurance_end_date']);
-            
-           
-   
+
+            $company_ids = $request->company_ids;
+
+            foreach ($company_ids as   $company_id) {
+                EssentialsCompaniesInsurancesContract::create([
+                    'company_id' => $company_id,
+                    'insur_id' => $input['insurance_company'],
+                    'insurance_start_date' => $input['insurance_start_date'],
+                    'insurance_end_date' => $input['insurance_end_date'],
+                    'created_by' => auth()->user()->id,
+                ]);
+            }
+
             $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
             $insurance_contract_data['insurance_end_date'] =  $input['insurance_end_date'];
             $insurance_contract_data['insurance_company_id'] = $input['insurance_company'];
             $insurance_contract_data['policy_number'] =  $input['policy_number'];
- 
+
             EssentialsInsuranceContract::create($insurance_contract_data);
             $output = [
                 'success' => true,
@@ -155,8 +198,8 @@ class EssentialsInsuranceContractController extends Controller
             ];
         }
 
-     //   return redirect()->route('insurance_contracts')->with('status', $output);
-        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
+        //   return redirect()->route('insurance_contracts')->with('status', $output);
+        $insuramce_companies = Contact::where([['business_id', '=', $business_id], ['type', '=', 'insurance']])->pluck('supplier_business_name', 'id',);
         return redirect()->route('insurance_contracts');
     }
 
@@ -181,11 +224,11 @@ class EssentialsInsuranceContractController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-    
-        $contract = EssentialsInsuranceContract::findOrFail($id);
-        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
 
-        return view('essentials::insurance_contracts.edit')->with(compact('insuramce_companies','contract'));
+        $contract = EssentialsInsuranceContract::findOrFail($id);
+        $insuramce_companies = Contact::where([['business_id', '=', $business_id], ['type', '=', 'insurance']])->pluck('supplier_business_name', 'id',);
+
+        return view('essentials::insurance_contracts.edit')->with(compact('insuramce_companies', 'contract'));
     }
 
     /**
@@ -195,31 +238,48 @@ class EssentialsInsuranceContractController extends Controller
      * @return Renderable
      */
     public function update(Request $request, $id)
-    {  $business_id = $request->session()->get('user.business_id');
+    {
+        error_log("asdasdas");
+        $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-     
+
         try {
             $input = $request->only(['insurance_company', 'policy_number', 'insurance_start_date', 'insurance_end_date']);
-        
-      
+
+
             $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
             $insurance_contract_data['insurance_end_date'] =  $input['insurance_end_date'];
             $insurance_contract_data['insurance_company_id'] = $input['insurance_company'];
             $insurance_contract_data['policy_number'] =  $input['policy_number'];
-   
+
+            EssentialsCompaniesInsurancesContract::where('insur_id', $input['insurance_company'])->delete();
+            $company_ids = $request->company_ids;
+
+            foreach ($company_ids as   $company_id) {
+                EssentialsCompaniesInsurancesContract::create([
+                    'company_id' => $company_id,
+                    'insur_id' => $input['insurance_company'],
+                    'insurance_start_date' => $input['insurance_start_date'],
+                    'insurance_end_date' => $input['insurance_end_date'],
+                    'created_by' => auth()->user()->id,
+                ]);
+            }
+
             EssentialsInsuranceContract::where('id', $id)->update($insurance_contract_data);
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
+        $insuramce_companies = Contact::where([['business_id', '=', $business_id], ['type', '=', 'insurance']])->pluck('supplier_business_name', 'id',);
         return redirect()->route('insurance_contracts')->with(compact('insuramce_companies'));
     }
 

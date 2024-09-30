@@ -527,6 +527,13 @@ class DataController extends Controller
 
                     ],
                     [
+                        'value' => 'essentials.crud_all_manual_attendance',
+                        'label' => __('essentials::lang.crud_all_manual_attendance'),
+                        'default' => false,
+
+
+                    ],
+                    [
                         'value' => 'essentials.return_essentials_request',
                         'label' => __('essentials::lang.return_essentials_request'),
                         'default' => false,
@@ -1944,6 +1951,17 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    [
+                        'value' => 'essentials.add_return_visa_muqeem',
+                        'label' => __('essentials::lang.add_return_visa_muqeem'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_final_visa_muqeem',
+                        'label' => __('essentials::lang.add_final_visa_muqeem'),
+                        'default' => false,
+                    ],
+
                 ],
 
             ],
@@ -2325,7 +2343,7 @@ class DataController extends Controller
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
 
-            $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+            $departments = EssentialsDepartment::pluck('name', 'id');
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
             $user = !empty($data['user']) ? $data['user'] : null;

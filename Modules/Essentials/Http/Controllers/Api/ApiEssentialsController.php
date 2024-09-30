@@ -6,6 +6,7 @@ use App\Business;
 use App\BusinessLocation;
 use App\BusinessLocationPolygonMarker;
 use App\Category;
+use App\PayrollGroupUser;
 use App\Transaction;
 use App\User;
 use App\Utils\ModuleUtil;
@@ -158,10 +159,54 @@ class ApiEssentialsController extends ApiController
             $user = Auth::user();
             $business_id = $user->business_id;
 
+            $payrollUsers = PayrollGroupUser::where('user_id', $user->id)->with('payrollGroup', 'user')->orderBy('created_at', 'desc')->get();
 
 
-            $payrolls = Transaction::where('transactions.business_id', $business_id)
-                ->where('type', 'payroll')->where('transactions.expense_for', $user->id)
+            $res = [];
+            foreach ($payrollUsers as $payrollUser) {
+                $transactionDateString = $payrollUser->payrollGroup->transaction_date; // e.g., '08/2024'
+
+                // Convert the string from '08/2024' to '01-08-2024'
+                $transactionDateParts = explode('/', $transactionDateString);
+                $formattedDateString = '01-' . $transactionDateParts[0] . '-' . $transactionDateParts[1];
+
+                $month_name = Carbon::parse($formattedDateString)->format('F');
+                $year = Carbon::parse($formattedDateString)->format('Y');
+                // over_time_hours_addition
+                // other_additions
+
+
+                // violations
+                // absence
+                // late
+                // other_deductions
+                // loan
+                $allowances_and_deductions = $this->getAllowanceAndDeductionJson($payrollUser);
+
+                $allowances = json_decode($allowances_and_deductions['essentials_allowances']);
+                $deductions = json_decode($allowances_and_deductions['essentials_deductions']);
+
+                $res[] = [
+                    'payroll' => [
+                        'total_before_tax' => 0,
+                        'final_total' => $payrollUser->final_salary,
+                        'essentials_amount_per_unit_duration' => $payrollUser->salary,
+                        'exchange_rate' => "1.000",
+                    ],
+                    'year' => $year,
+                    'allowances' => $allowances,
+                    'deductions' => $deductions,
+                    'month_name' => $month_name,
+
+                ];
+            }
+            return new CommonResource($res);
+
+
+
+
+
+            $payrolls = Transaction::where('type', 'payroll')->where('transactions.expense_for', $user->id)
                 ->join('users as u', 'u.id', '=', 'transactions.expense_for')
                 ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
                 ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
@@ -181,8 +226,7 @@ class ApiEssentialsController extends ApiController
             $res = [];
             foreach ($payrolls as $payroll) {
                 $payrollId = $payroll->id;
-                $query = Transaction::where('business_id', $business_id)
-                    ->with(['transaction_for', 'payment_lines']);
+                $query = Transaction::with(['transaction_for', 'payment_lines']);
 
 
                 $payroll = $query->findOrFail($payrollId);
@@ -262,9 +306,92 @@ class ApiEssentialsController extends ApiController
             return new CommonResource($res);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            return 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage();
             return $this->otherExceptions($e);
         }
+    }
+
+    private function getAllowanceAndDeductionJson($payroll)
+    {
+        $allowance_types = [];
+        $allowance_names_array = [];
+        $allowance_percent_array = [];
+        $allowance_amounts = [];
+
+
+
+
+        if (isset($payroll['over_time_hours_addition']) && $payroll['over_time_hours_addition'] != 0) {
+            $allowance_names_array[] = 'وقت إضافي';
+            $allowance_amounts[] = $payroll['over_time_hours_addition'];
+            $allowance_percent_array[] = 0;
+            $allowance_types[] = 'fixed';
+        }
+        if (isset($payroll['additional_addition']) && $payroll['additional_addition'] != 0) {
+            $allowance_names_array[] = 'مبلغ إضافي';
+            $allowance_amounts[] = $payroll['additional_addition'];
+            $allowance_percent_array[] = 0;
+
+            $allowance_types[] = 'fixed';
+        }
+        if (isset($payroll['other_additions']) && $payroll['other_additions'] != 0) {
+            $allowance_names_array[] = 'استحفافات إخرى';
+            $allowance_amounts[] = $payroll['other_additions'];
+            $allowance_percent_array[] = 0;
+            $allowance_types[] = 'fixed';
+        }
+
+
+        $deduction_types = [];
+        $deduction_names_array = [];
+        $deduction_percents_array = [];
+        $deduction_amounts = [];
+
+        if ($payroll['violations'] != 0) {
+            $deduction_names_array[] = 'مخالفات';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['violations']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['absence'] != 0) {
+            $deduction_names_array[] = 'غياب';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['absence']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['late'] != 0) {
+            $deduction_names_array[] = 'تأخير';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['late']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['other_deductions'] != 0) {
+            $deduction_names_array[] = 'خصومات أخرى';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['other_deductions']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+        if ($payroll['loan'] != 0) {
+            $deduction_names_array[] = 'سلف';
+            $deduction_amounts[] = $this->moduleUtil->num_uf($payroll['loan']);
+            $deduction_percents_array[] = 0;
+            $deduction_types[] = 'fixed';
+        }
+
+        $output['essentials_allowances'] = json_encode([
+            'allowance_names' => $allowance_names_array,
+            'allowance_amounts' => $allowance_amounts,
+            'allowance_types' => $allowance_types,
+            'allowance_percents' => $allowance_percent_array,
+        ]);
+        $output['essentials_deductions'] = json_encode([
+            'deduction_names' => $deduction_names_array,
+            'deduction_amounts' => $deduction_amounts,
+            'deduction_types' => $deduction_types,
+            'deduction_percents' => $deduction_percents_array,
+        ]);
+
+        return $output;
     }
 
     public function clockin(Request $request)

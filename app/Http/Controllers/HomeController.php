@@ -408,7 +408,7 @@ class HomeController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $is_general_manager = auth()->user()->hasRole('الإدارة العليا#1') ? true : false;
+        $is_general_manager = auth()->user()->hasRole('رئيس مجلس الإدارة#1') ? true : false;
 
         $user_id = auth()->user()->id;
 
@@ -528,7 +528,9 @@ class HomeController extends Controller
             $purchase_details['purchase_due'] = $purchase_details['purchase_due'] - $total_ledger_discount['total_purchase_discount'];
 
             $transaction_types = [
-                'purchase_return', 'sell_return', 'expense',
+                'purchase_return',
+                'sell_return',
+                'expense',
             ];
 
             $transaction_totals = $this->transactionUtil->getTransactionTotals(

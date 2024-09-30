@@ -90,6 +90,11 @@
                         <div>
 
                             <label>
+                                <input type="checkbox" name="contracts"
+                                    {{ $user->profile_image ? 'checked' : '' }}>@lang('essentials::lang.profile_picture')
+                            </label>
+                            <br>
+                            <label>
                                 <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang('essentials::lang.contracts')
                             </label>
                             <br>

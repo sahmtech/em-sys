@@ -14,6 +14,8 @@
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
     Route::prefix('housingmovements')->group(function () {
+        Route::get('/filtered_requests/{filter}',  [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'getFilteredRequests'])->name('housingmovements.getFilteredRequests');
+
         Route::get('/dashboard', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
         Route::get('/housingmovements_department_employees', [Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'department_employees'])->name('housingmovements_department_employees');
         // Route::get('/dashboard-movment', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
@@ -86,7 +88,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/travelers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index'])->name('travelers');
         Route::get('/housed-workers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('housed_workers');
         Route::get('/workers/index/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
-        Route::get('/workers/show/{id}', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'show'])->name('htr.show.workers');
+        Route::get('/workers/show/{id}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('htr.show.workers');
 
         Route::get('/medicalExamination', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'])->name('medicalExamination');
         Route::post('/upload-medical-document', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'uploadMedicalDocument'])->name('uploadMedicalDocument');

@@ -6,9 +6,11 @@ use App\Category;
 
 use App\AccessRole;
 use App\AccessRoleProject;
-
+use App\Company;
 use App\Contact;
 use App\ContactLocation;
+use App\PayrollGroupUser;
+use App\TimesheetUser;
 use App\User;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -246,6 +248,40 @@ class EssentailsworkersController extends Controller
         return view('essentials::workers.index')
             ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
+    public function getWorkerInfo(Request $request)
+    {
+        $identifier = $request->input('worker_identifier');
+
+
+        $worker = User::where('first_name', 'like', '%' . $identifier . '%')
+            ->orWhere('id_proof_number', $identifier)
+            ->orWhere('border_no', $identifier)
+            ->with(['company', 'assignedTo', 'contract'])
+            ->first();
+
+        if ($worker) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'full_name' => $worker->first_name . ' ' . $worker->last_name,
+
+                    'status' => $worker->status ? __('essentials::lang.' . $worker->status) : null,
+                    'sub_status' => $worker->sub_status ? __('essentials::lang.' . $worker->sub_status) : null,
+
+                    'emp_number' => $worker->emp_number,
+                    'id_proof_number' => $worker->id_proof_number,
+                    'residence_permit_expiration' => optional($worker->OfficialDocument->where('type', 'residence_permit')->where('is_active', 1)->first())->number,
+                    'passport_number' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->number,
+                    'passport_expire_date' => optional($worker->OfficialDocument->where('type', 'passport')->where('is_active', 1)->first())->expiration_date,
+                    'border_no' => $worker->border_no,
+                    'company_name' => optional($worker->company)->name,
+                    'assigned_to' => optional($worker->assignedTo)->name,
+                ]
+            ]);
+        }
+
+        return response()->json(['success' => false]);
+    }
 
     private function getDocumentnumber($user, $documentType)
     {
@@ -282,8 +318,9 @@ class EssentailsworkersController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
+    public function show($id, $can_edit = false, $from = null)
     {
+        error_log($can_edit);
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
@@ -364,8 +401,42 @@ class EssentailsworkersController extends Controller
         }
 
 
-
-
+        $payrolls = PayrollGroupUser::with('payrollGroup')->where('user_id', $id)->get();
+        $timesheets = TimesheetUser::where('user_id', $id)->with('timesheetGroup', 'user')
+            ->get();
+        $projects = SalesProject::pluck('name', 'id');
+        $companies = Company::pluck('name', 'id');
+        $timesheets = $timesheets->map(function ($user) use ($projects, $companies) {
+            return [
+                'id' => $user->user_id,
+                'name' => $user->user->first_name . ' '  . $user->user->last_name,
+                'nationality' => User::find($user->user->id)->country?->nationality ?? '',
+                'residency' => $user->id_proof_number,
+                'monthly_cost' => $user->monthly_cost,
+                'wd' => $user->work_days,
+                'absence_day' => $user->absence_days,
+                'absence_amount' => $user->absence_amount,
+                'over_time_h' => $user->over_time_hours,
+                'over_time' => $user->over_time_amount,
+                'other_deduction' => $user->other_deduction,
+                'other_addition' => $user->other_addition,
+                'cost2' => $user->cost_2,
+                'invoice_value' => $user->invoice_value,
+                'vat' => $user->vat,
+                'total' => $user->total,
+                'sponser' => $user->user->company_id ? ($companies[$user->user->company_id] ?? '') : '',
+                'project' => $user->user->assigned_to ? $projects[$user->user->assigned_to] ?? '' : '',
+                'basic' => $user->basic,
+                'housing' => $user->housing,
+                'transport' => $user->transport,
+                'other_allowances' => $user->other_allowances,
+                'total_salary' => $user->total_salary,
+                'deductions' => $user->deductions,
+                'additions' => $user->additions,
+                'final_salary' => $user->final_salary,
+                'timesheet_date' => $user->timesheetGroup->timesheet_date,
+            ];
+        });
         return view('essentials::workers.show')->with(compact(
             'user',
             'view_partials',
@@ -379,6 +450,10 @@ class EssentailsworkersController extends Controller
             'nationality',
             'documents',
             'document_delivery',
+            'payrolls',
+            'timesheets',
+            'can_edit',
+            'from'
         ));
     }
 

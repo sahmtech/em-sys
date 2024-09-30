@@ -87,24 +87,34 @@
 
                                 <div class="row">
 
-                                    {{-- <div class="form-group col-md-12">
-                                                {!! Form::radio('contract_type', 'new', null, ['id' => 'new_contract']) !!}
-                                                <label for="new_contract">{{ __('sales::lang.new_contract') }}</label>
-
-                                                {!! Form::radio('contract_type', 'appendix', null, ['id' => 'appendix_contract']) !!}
-                                                <label for="appendix_contract">{{ __('sales::lang.appendix_contract') }}</label>
-
-                                        </div> --}}
-
-
 
                                     <div class="form-group col-md-6">
+                                        {!! Form::label('contract_type', __('sales::lang.contract_type') . ':*') !!}
+                                        {!! Form::select('contract_type', ['client' => 'Client', 'offer_price' => 'Offer Price'], null, [
+                                            'class' => 'form-control',
+                                            'id' => 'contract_type',
+                                            'style' => 'height:40px;',
+                                            'placeholder' => __('sales::lang.select_contract_type'),
+                                        ]) !!}
+                                    </div>
+
+
+                                    <div class="form-group col-md-6" id="offer_price_field">
                                         {!! Form::label('offer_price', __('sales::lang.offer_price') . ':*') !!}
                                         {!! Form::select('offer_price', $offer_prices, null, [
                                             'class' => 'form-control',
-                                            'id' => 'offer_price',
+                                        
                                             'style' => 'height:40px;',
                                             'placeholder' => __('sales::lang.select_offer_price'),
+                                        ]) !!}
+                                    </div>
+                                    <div class="form-group col-md-6" id="contact_field">
+                                        {!! Form::label('customer', __('sales::lang.customer') . ':*') !!}
+                                        {!! Form::select('customer', $contacts, null, [
+                                            'class' => 'form-control',
+                                        
+                                            'style' => 'height:40px;',
+                                            'placeholder' => __('sales::lang.select_customer'),
                                         ]) !!}
                                     </div>
 
@@ -167,15 +177,6 @@
 
 
 
-                                    {{-- <div class="form-group col-md-8">
-                                                {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
-                                                {!! Form::select('contract_items[]', $items, null, [
-                                                    'class' => 'form-control select2', 
-                                                    'multiple' => 'multiple', 
-                                                    'placeholder' => __('sales::lang.select_contract_items'),
-                                                    'required',
-                                                ]) !!}
-                                            </div> --}}
 
 
 
@@ -235,21 +236,7 @@
 
                                     </div>
 
-                                    {{-- <div id="appendix-contract-fields" class="form-fields" style="display:none;">
-                                            <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
-                                                            {!! Form::select('contract-select', $contracts->pluck('contract_number', 'id'), null, [
-                                                                'class' => 'form-control',
-                                                                'style' => 'height:40px',
-                                                                'placeholder' => __('lang_v1.all'),
-                                                               
-                                                                'id' => 'contract-select',
-                                                            ]) !!}
-                                                        </div>
-                                            </div>
-                                    </div>
-                             --}}
+
                                 </div>
                             </div>
 
@@ -268,7 +255,24 @@
     </section>
 @endsection
 @section('javascript')
+    <script>
+        $(document).ready(function() {
 
+            $('#offer_price_field').hide();
+            $('#contact_field').hide();
+
+            $('#contract_type').change(function() {
+                if ($(this).val() === 'offer_price') {
+                    $('#offer_price_field').show();
+                    $('#contact_field').hide();
+
+                } else {
+                    $('#contact_field').show();
+                    $('#offer_price_field').hide();
+                }
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
 
