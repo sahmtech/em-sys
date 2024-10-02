@@ -261,6 +261,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
 
+        ////// Penalties
+        Route::get('/penalties', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'index'])->name('penalties');
+        Route::post('/store-penalties', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'store'])->name('store-penalties');
+        Route::get('/edit-penalties/{id}', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'])->name('edit-penalties');
+        Route::post('/update-penalties', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'update'])->name('update-penalties');
+        Route::delete('/delete-penalties/{id}', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'destroy'])->name('delete-penalties');
+        
+
 
         Route::get('/employee_families', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'index'])->name('employee_families');
         Route::post('/storeEmployeeFamily', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'store'])->name('storeEmployeeFamily');
@@ -446,6 +454,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('time_sheet/edit/{id}', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('hrm.agentTimeSheet.editTimeSheet');
         Route::get('agent/time_sheet/deal/{id}', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('hrm.agentTimeSheet.dealTimeSheet');
 
+
+        Route::get('/violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'index'])->name('violations');
+        Route::get('/main-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'indexMain'])->name('main-violations');
+        Route::post('/store-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'store'])->name('store-violations');
+        Route::post('/store-main-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'storeMain'])->name('store-main-violations');
+        Route::get('/edit-violations/{id}', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'edit'])->name('edit-violations');
+        Route::get('/edit-main-violations/{id}', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'editMain'])->name('edit-main-violations');
+        Route::post('/update-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'update'])->name('update-violations');
+        Route::post('/update-main-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'updateMain'])->name('update-main-violations');
+        Route::delete('/delete-Violations/{id}', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'destroy'])->name('delete-Violations');
+        Route::delete('/delete-main-Violations/{id}', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'destroyMain'])->name('delete-main-Violations');
 
 
         Route::get('/users_leaves', [Modules\Essentials\Http\Controllers\UsersLeaveBalanceController::class, 'index'])->name('leaves_balance');

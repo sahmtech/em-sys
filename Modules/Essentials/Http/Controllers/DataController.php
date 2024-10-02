@@ -1590,6 +1590,37 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    [
+                        'value' => 'essentials.add_Violations',
+                        'label' => __('essentials::lang.add_Violations'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_Violations',
+                        'label' => __('essentials::lang.edit_Violations'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_Violations',
+                        'label' => __('essentials::lang.delete_Violations'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.add_Main_Violations',
+                        'label' => __('essentials::lang.add_Main_Violations'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_Main_Violations',
+                        'label' => __('essentials::lang.edit_Main_Violations'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_Main_Violations',
+                        'label' => __('essentials::lang.delete_Main_Violations'),
+                        'default' => false,
+                    ],
 
 
                     [
@@ -1681,11 +1712,28 @@ class DataController extends Controller
                     //     'label' => __('essentials::lang.view_families_insurances'),
                     //     'default' => false,
                     // ],
-                    // [
-                    //     'value' => 'essentials.add_families_insurances',
-                    //     'label' => __('essentials::lang.add_families_insurances'),
-                    //     'default' => false,
-                    // ],
+                    [
+                        'value' => 'essentials.penalties',
+                        'label' => __('essentials::lang.penalties'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_penalties',
+                        'label' => __('essentials::lang.add_penalties'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_penalties',
+                        'label' => __('essentials::lang.edit_penalties'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_penalties',
+                        'label' => __('essentials::lang.delete_penalties'),
+                        'default' => false,
+                    ],
+                    
+                    
                     [
                         'value' => 'essentials.view_employees',
                         'label' => __('essentials::lang.view_employees'),

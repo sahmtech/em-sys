@@ -34,13 +34,6 @@ class AccountingUtil extends Util
         $accounting_accounts_alias = 'accounting_accounts',
         $accounting_account_transaction_alias = 'AAT'
     ) {
-
-        // ($accounting_accounts_alias.account_primary_type='asset' AND $accounting_account_transaction_alias.type='debit')
-        // OR ($accounting_accounts_alias.account_primary_type='expense' AND $accounting_account_transaction_alias.type='debit')
-        // OR ($accounting_accounts_alias.account_primary_type='income' AND $accounting_account_transaction_alias.type='credit')
-        // OR ($accounting_accounts_alias.account_primary_type='equity' AND $accounting_account_transaction_alias.type='credit')
-        // OR ($accounting_accounts_alias.account_primary_type='liability' AND $accounting_account_transaction_alias.type='credit'), 
-
         return "SUM( IF(
             ($accounting_accounts_alias.account_primary_type='asset' AND $accounting_account_transaction_alias.type='debit')
             OR ($accounting_accounts_alias.account_primary_type='commitments' AND $accounting_account_transaction_alias.type='debit')
