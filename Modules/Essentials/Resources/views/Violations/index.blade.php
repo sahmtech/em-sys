@@ -109,7 +109,7 @@
                                     <select class="form-control select-2" required="" id="amount_type" name="amount_type"
                                         style="padding: 2px 10px;">
                                         <option value="fixed">@lang('essentials::lang.fixed')</option>
-                                        <option value="percent">@lang('essentials::lang.percent')</option>
+                                        <option value="percent_amount">@lang('essentials::lang.percent_amount')</option>
                                         <option value="warning">@lang('essentials::lang.warning')</option>
                                         <option value="1">@lang('essentials::lang.day')</option>
                                         <option value="1.5">@lang('essentials::lang.A day and a half')</option>
@@ -163,7 +163,7 @@
             $('#amount_type').change(function() {
                 var amountType = $(this).val();
 
-                if (amountType === 'fixed' || amountType === 'percent') {
+                if (amountType === 'fixed' || amountType === 'percent_amount') {
                     $('#amount_field').show();
                     $('#amount').prop('required', true);
                     // $('#file_field').hide();

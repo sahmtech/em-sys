@@ -73,7 +73,7 @@ class PenaltiesController extends Controller
                 })->editColumn('added_by', function ($row) {
                     return $row->addedBy->first_name  . ' ' . $row->addedBy->last_name;
                 })->editColumn('penalties', function ($row) {
-                    return $row?->violationPenalties->descrption . ' - ' . $row?->violationPenalties?->violation?->description . ' - ' . __('essentials::lang.' . $row?->violationPenalties->occurrence) . '-' . __('essentials::lang.' . $row?->violationPenalties->amount_type) . '' . ($row?->violationPenalties->amount > 0 ? ' - ' . $row?->violationPenalties->amount : '');
+                    return $row->violationPenalties->descrption . ' - ' . $row->violationPenalties?->violation?->description . ' - ' . __('essentials::lang.' . $row->violationPenalties->occurrence) . '-' . __('essentials::lang.' . $row->violationPenalties->amount_type) . '' . ($row->violationPenalties->amount > 0 ? ' - ' . $row->violationPenalties->amount : '');
                 })->addColumn(
                     'action',
                     function ($row)  use ($is_admin, $can_edit_penalties, $can_delete_penalties) {

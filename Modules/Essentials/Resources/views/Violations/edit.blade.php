@@ -57,7 +57,7 @@
                         style="padding: 2px 10px;">
                         <option value="fixed" @if ($ViolationPenalties->amount_type == 'fixed') selected @endif>@lang('essentials::lang.fixed')
                         </option>
-                        <option value="percent" @if ($ViolationPenalties->amount_type == 'percent') selected @endif>@lang('essentials::lang.percent')
+                        <option value="percent_amount" @if ($ViolationPenalties->amount_type == 'percent_amount') selected @endif>@lang('essentials::lang.percent_amount')
                         </option>
                     </select>
                 </div>
