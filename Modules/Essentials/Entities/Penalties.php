@@ -22,7 +22,7 @@ class Penalties extends Model
     }
 
     public function violationPenalties(){
-        return $this->belongsTo(violationPenalties::class,'violation_penalties_id');
+        return $this->belongsTo(ViolationPenalties::class,'violation_penalties_id');
     }
     
 }
