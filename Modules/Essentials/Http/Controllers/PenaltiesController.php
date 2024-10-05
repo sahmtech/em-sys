@@ -5,6 +5,7 @@ namespace Modules\Essentials\Http\Controllers;
 use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -74,18 +75,28 @@ class PenaltiesController extends Controller
                     return $row->addedBy->first_name  . ' ' . $row->addedBy->last_name;
                 })->editColumn('penalties', function ($row) {
                     return $row->violationPenalties->descrption . ' - ' . $row->violationPenalties?->violation?->description . ' - ' . __('essentials::lang.' . $row->violationPenalties->occurrence) . '-' . __('essentials::lang.' . $row->violationPenalties->amount_type) . '' . ($row->violationPenalties->amount > 0 ? ' - ' . $row->violationPenalties->amount : '');
-                })->addColumn(
+                })
+                ->editColumn('status', function ($row) {
+                    return $row->status == 1 ? __('essentials::lang.Implemented') : __('essentials::lang.Not implemented');
+                })
+                ->editColumn('application_date', function ($row) {
+                    return Carbon::parse($row->application_date)->format('m/Y');
+                })
+
+                ->addColumn(
                     'action',
                     function ($row)  use ($is_admin, $can_edit_penalties, $can_delete_penalties) {
                         $html = '';
                         if ($is_admin || $can_edit_penalties) {
-                            $html .= '<a href="' . action([\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'], ['id' => $row->id]) . '"
-                        data-href="' . action([\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'], ['id' => $row->id]) . ' "
-                         class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_violations"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>';
-                            '&nbsp;';
+                            if ($row->status != 1) {
+                                $html .= '<a href="' . action([\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'], ['id' => $row->id]) . '"
+                                data-href="' . action([\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'], ['id' => $row->id]) . ' "
+                                 class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_violations"><i class="fas fa-edit cursor-pointer"></i></a>';
+                                '';
+                            }
                         }
                         if ($is_admin || $can_delete_penalties) {
-                            $html .= '<button class="btn btn-xs btn-danger delete_violations_button" style="margin: 0px 5px;" data-href="' . route('delete-penalties', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                            $html .= '<button class="btn btn-xs btn-danger delete_violations_button" style="margin: 0px 5px;" data-href="' . route('delete-penalties', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> </button>';
                         }
                         if (!empty($row->file_path)) {
                             $html .= '<button class="btn btn-xs btn-info " style=" "  onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
@@ -96,7 +107,7 @@ class PenaltiesController extends Controller
                     }
                 )
                 ->removeColumn('id')
-                ->rawColumns(['user', 'added_by', 'penalties', 'action'])
+                ->rawColumns(['user', 'added_by', 'penalties', 'action', 'status', 'application_date'])
                 ->make(true);
         }
 
@@ -140,6 +151,7 @@ class PenaltiesController extends Controller
                 'violation_penalties_id' => $request->violation_penalties_id,
                 'business_id' => $business_id,
                 'company_id' => $company_id,
+                'application_date' => $request->application_date,
                 'file_path' => $path_file,
             ]);
 
@@ -218,6 +230,7 @@ class PenaltiesController extends Controller
                 'user_id' => $request->user_id,
                 'violation_penalties_id' => $request->violation_penalties_id,
                 'file_path' => $path_file,
+                'application_date' => $request->application_date,
             ]);
 
             DB::commit();

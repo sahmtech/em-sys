@@ -1410,6 +1410,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'allPayrollRequests')]
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('essentials.view_payroll_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'indexPenalties']),
+                    __('essentials::lang.penalties'),
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'allPayrollRequests')]
+                );
+            }
             if (
                 $is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')
                 || auth()->user()->can('housingmovements.housed')
