@@ -786,6 +786,7 @@ class PayrollController extends Controller
 
     public function payrolls_list_index()
     {
+
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
 
         $company_id = Session::get('selectedCompanyId');
@@ -840,6 +841,9 @@ class PayrollController extends Controller
                     return Carbon::parse($row->created_at)->format('m/Y');
                 })
                 ->addColumn('the_total', function ($row) {
+                    return $row?->final_salary ?? 0;
+                })
+                ->addColumn('penalties', function ($row) {
                     return $row?->final_salary ?? 0;
                 })
                 ->addColumn('status', function ($row) {
@@ -902,6 +906,7 @@ class PayrollController extends Controller
                     'project',
                     'date',
                     'the_total',
+                    'penalties',
                     'status',
                     'action',
                 ])
@@ -969,6 +974,8 @@ class PayrollController extends Controller
                 })
                 ->addColumn('the_total', function ($row) {
                     return $row?->final_salary ?? 0;
+                })->addColumn('penalties', function ($row) {
+                    return $row?->final_salary ?? 0;
                 })
                 ->addColumn('status', function ($row) {
 
@@ -1030,6 +1037,7 @@ class PayrollController extends Controller
                     'project',
                     'date',
                     'the_total',
+                    'penalties',
                     'status',
                     'action',
                 ])

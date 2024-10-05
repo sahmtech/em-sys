@@ -12,16 +12,55 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
-                    @slot('tool')
-                        <div class="box-tools">
+                    {{-- @slot('tool')
+            <div class="box-tools">
 
-                            <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                                data-target="#addEmployeesFamilyModal">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </button>
+                <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                    data-target="#addEmployeesFamilyModal">
+                    <i class="fa fa-plus"></i> @lang('messages.add')
+                </button>
+            </div>
+            @endslot --}}
+                    {{-- ViolationPenalties --}}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                                <div class="row">
+                                    
+                                    <div class="col-sm-4">
+                                        {!! Form::label('implement_status', __('essentials::lang.implement_status')) !!}
+                                        <select class="form-control" name="implement_status" id="implement_status"style="padding: 3px"
+                                            required>
+                                            <option value="all" selected>@lang('lang_v1.all')</option>
+                                            <option value="1">@lang('essentials::lang.Implemented')</option>
+                                            <option value="0">@lang('essentials::lang.Not implemented')</option>
+                                         </select>
+
+
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        {!! Form::label('penalties_action', __('essentials::lang.penalties_action')) !!}
+
+                                        <select class="form-control select-2" name="penalties_action" id='penalties_action'
+                                            style="padding: 2px;">
+                                            <option value="all" selected>@lang('lang_v1.all')</option>
+                                            @foreach ($ViolationPenalties as $violationPenaltie)
+                                                <option value="{{ $violationPenaltie->id }}">
+                                                    {{ $violationPenaltie->descrption }} -
+                                                    {{ $violationPenaltie?->violation?->description }} - @lang('essentials::lang.' . $violationPenaltie->occurrence) -
+                                                    @lang('essentials::lang.' . $violationPenaltie->amount_type) - {{ $violationPenaltie->amount }} </option>
+                                            @endforeach
+                                        </select>
+
+                                    </div>
+
+
+                                </div>
+                            @endcomponent
                         </div>
-                    @endslot
-
+                    </div>
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="penalties_table">
@@ -36,7 +75,7 @@
                                     <th>@lang('essentials::lang.application_date')</th>
 
 
-                                    <th>@lang('messages.action')</th>
+                                    {{-- <th>@lang('messages.action')</th> --}}
                                 </tr>
                             </thead>
                         </table>
@@ -102,7 +141,7 @@
                                     ]) !!}
                                 </div>
 
-                              
+
                                 {!! Form::hidden('application_date', null, ['id' => 'application_date']) !!}
 
 
@@ -133,12 +172,9 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+            $('#penalties_action').select2();
+
             $('#addEmployeesFamilyModal').on('shown.bs.modal', function(e) {
-                $('#users').select2({
-                    dropdownParent: $(
-                        '#addEmployeesFamilyModal'),
-                    width: '100%',
-                });
 
                 $('#violation_penalties').select2({
                     dropdownParent: $(
@@ -150,17 +186,17 @@
             });
 
             document.getElementById('application_date_month').addEventListener('change', function() {
-                var selectedMonth = this.value; 
+                var selectedMonth = this.value;
                 var year = selectedMonth.split('-')[0];
                 var month = selectedMonth.split('-')[1];
 
-                
+
                 var lastDayOfMonth = new Date(year, month, 0).getDate();
 
-               
+
                 var fullDate = year + '-' + month + '-' + lastDayOfMonth;
 
-               
+
                 document.getElementById('application_date').value = fullDate;
             });
 
@@ -200,7 +236,18 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('penalties') }}",
+                    url: "{{ route('index-penalties') }}",
+                    data: function(d) {
+                        if ($('#penalties_action').val()) {
+                            d.violation_penalties_id = $('#penalties_action').val();
+
+                        }
+                        if ($('#implement_status').val()) {
+                            d.implement_status = $('#implement_status').val();
+
+                        }
+                        
+                    }
 
                 },
 
@@ -214,19 +261,23 @@
                     {
                         data: 'penalties'
 
-                    }, 
+                    },
                     {
                         data: 'status'
                     },
                     {
                         data: 'application_date'
                     },
-                    {
-                        data: 'action'
-                    },
+                    // {
+                    //     data: 'action'
+                    // },
                 ],
             });
 
+            $('#penalties_action,#implement_status').on('change',
+                function() {
+                    penalties_table.ajax.reload();
+                });
             $(document).on('click', 'button.delete_violations_button', function() {
                 swal({
                     title: LANG.sure,

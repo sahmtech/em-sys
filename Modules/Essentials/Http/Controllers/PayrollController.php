@@ -49,7 +49,8 @@ use App\PayrollGroupUser;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-
+use Modules\Essentials\Entities\Penalties;
+use Modules\Essentials\Entities\ViolationPenalties;
 
 class PayrollController extends Controller
 {
@@ -3069,5 +3070,85 @@ class PayrollController extends Controller
     {
         $view = 'essentials::payroll.travelers.advanceSalaryRequest';
         return $this->newArrivalUtil->advanceSalaryRequest($view);
+    }
+
+
+    public function indexPenalties()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $penalties = Penalties::where('business_id', $business_id)->whereMonth('application_date', Carbon::now()->month)
+            ->whereYear('application_date', Carbon::now()->year)->get();
+
+        if (request()->ajax()) {
+
+            if (!empty(request()->input('violation_penalties_id')) && request()->input('violation_penalties_id') !== 'all') {
+                $penalties = $penalties->where('violation_penalties_id', request()->input('violation_penalties_id'));
+            }
+            if (!empty(request()->input('implement_status')) && request()->input('implement_status') !== 'all') {
+                $penalties = $penalties->where('status', request()->input('implement_status'));
+            }
+
+
+            
+            return DataTables::of($penalties)
+
+
+                ->editColumn('user', function ($row) {
+                    return $row->user->first_name  . ' ' . $row->user->last_name . ' - ' . $row->user->id_proof_number;
+                })->editColumn('added_by', function ($row) {
+                    return $row->addedBy->first_name  . ' ' . $row->addedBy->last_name;
+                })->editColumn('penalties', function ($row) {
+                    return $row->violationPenalties->descrption . ' - ' . $row->violationPenalties?->violation?->description . ' - ' . __('essentials::lang.' . $row->violationPenalties->occurrence) . '-' . __('essentials::lang.' . $row->violationPenalties->amount_type) . '' . ($row->violationPenalties->amount > 0 ? ' - ' . $row->violationPenalties->amount : '');
+                })
+                ->editColumn('status', function ($row) {
+                    return $row->status == 1 ? __('essentials::lang.Implemented') : __('essentials::lang.Not implemented');
+                })
+                ->editColumn('application_date', function ($row) {
+                    return Carbon::parse($row->application_date)->format('m/Y');
+                })
+
+                // ->addColumn(
+                //     'action',
+                //     function ($row)  use ($is_admin, $can_edit_penalties, $can_delete_penalties) {
+                //         $html = '';
+                //         if ($is_admin || $can_edit_penalties) {
+                //             if ($row->status != 1) {
+                //                 $html .= '<a href="' . action([\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'], ['id' => $row->id]) . '"
+                //                 data-href="' . action([\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'], ['id' => $row->id]) . ' "
+                //                  class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_violations"><i class="fas fa-edit cursor-pointer"></i></a>';
+                //                 '';
+                //             }
+                //         }
+                //         if ($is_admin || $can_delete_penalties) {
+                //             $html .= '<button class="btn btn-xs btn-danger delete_violations_button" style="margin: 0px 5px;" data-href="' . route('delete-penalties', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> </button>';
+                //         }
+                //         if (!empty($row->file_path)) {
+                //             $html .= '<button class="btn btn-xs btn-info " style=" "  onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                //             '&nbsp;';
+                //         }
+
+                //         return $html;
+                //     }
+                // )
+                ->removeColumn('id')
+                ->rawColumns(['user', 'added_by', 'penalties',  'status', 'application_date'])
+                ->make(true);
+        }
+
+
+        // 
+        $users = User::whereIn('id', $userIds)->whereIn('user_type', ['employee', 'worker'])->get();
+        $ViolationPenalties = ViolationPenalties::where('business_id', $business_id)->get();
+        return view('essentials::payroll.partials.penalties', compact('users', 'ViolationPenalties'));
     }
 }

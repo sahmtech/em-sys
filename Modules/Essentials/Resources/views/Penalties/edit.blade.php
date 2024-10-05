@@ -43,6 +43,20 @@
                     </select>
                 </div>
 
+
+                <div class="form-group col-md-6">
+                    {!! Form::label('application_date', __('essentials::lang.application_date') . ' *') !!}
+                    {!! Form::month('application_date_month', Carbon::parse($Penalties->application_date)->format('Y-m'), [
+                        'class' => 'form-control',
+                        'id' => 'application_date_month',
+                        'required' => true,
+                    ]) !!}
+                </div>
+              
+
+                {!! Form::hidden('application_date', null, ['id' => 'application_date']) !!}
+
+
                 <div class="form-group col-md-6" id="violation_file" style="display:none;">
                     {!! Form::label('file', __('essentials::lang.file') . ' *') !!}
                     {!! Form::file('violation_file', [
@@ -76,6 +90,22 @@
                     '#violation_penalties'),
                 width: '100%',
             });
+        });
+
+
+        document.getElementById('application_date_month').addEventListener('change', function() {
+            var selectedMonth = this.value;
+            var year = selectedMonth.split('-')[0];
+            var month = selectedMonth.split('-')[1];
+
+
+            var lastDayOfMonth = new Date(year, month, 0).getDate();
+
+
+            var fullDate = year + '-' + month + '-' + lastDayOfMonth;
+
+
+            document.getElementById('application_date').value = fullDate;
         });
 
 
