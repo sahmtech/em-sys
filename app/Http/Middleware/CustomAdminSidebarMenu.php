@@ -1415,7 +1415,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'indexPenalties']),
                     __('essentials::lang.penalties'),
-                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'allPayrollRequests')]
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'index-penalties')]
                 );
             }
             if (
