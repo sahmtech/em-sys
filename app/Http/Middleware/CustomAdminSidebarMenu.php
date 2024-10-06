@@ -1304,6 +1304,21 @@ class CustomAdminSidebarMenu
                     );
                 }
 
+
+
+                if ($is_admin  || auth()->user()->can('essentials.penalties')) {
+                    $menu->url(
+                        route('penalties'),
+                        __('essentials::lang.penalties'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'penalties'],
+                    );
+                }
+
+
+
+
+
+
                 if ($is_admin  || auth()->user()->can('essentials.crud_employee_families')) {
                     $menu->url(
                         route('employee_families'),
@@ -1393,6 +1408,14 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'requests']),
                     __('essentials::lang.requests'),
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'allPayrollRequests')]
+                );
+            }
+
+            if ($is_admin  || auth()->user()->can('essentials.view_payroll_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'indexPenalties']),
+                    __('essentials::lang.penalties'),
+                    ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' &&  (request()->segment(2) == 'index-penalties')]
                 );
             }
             if (
@@ -1552,6 +1575,33 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
+
+
+            $menu->dropdown(
+                __('essentials::lang.violations'),
+                function ($sub)  use ($is_admin) {
+
+                    if ($is_admin) {
+                        $sub->url(
+                            route('violations'),
+                            __('essentials::lang.violations'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'violations'],
+                        );
+                    }
+
+                    if ($is_admin) {
+                        $sub->url(
+                            route('main-violations'),
+                            __('essentials::lang.main-violations'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'main-violations'],
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-plus-circle']
+
+            );
+
+
             if ($is_admin  || auth()->user()->can('essentials.view_payroll_checkpoint')) {
                 $menu->url(
                     route('hrm.payrolls_checkpoint', ['from' => 'hr']),

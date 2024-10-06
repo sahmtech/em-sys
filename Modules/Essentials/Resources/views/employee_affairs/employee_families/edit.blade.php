@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', __('essentials::lang.employee_families'))
 
+
 @section('content')
     {{-- @include('essentials::layouts.nav_employee_affairs') --}}
     <section class="content-header">

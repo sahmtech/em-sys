@@ -105,6 +105,7 @@
                                                 <th>@lang('essentials::lang.project')</th>
                                                 <th>@lang('essentials::lang.date')</th>
                                                 <th>@lang('essentials::lang.the_total')</th>
+                                                <th>@lang('essentials::lang.the_total')</th>
                                                 <th>@lang('essentials::lang.status')</th>
                                                 <th>@lang('messages.actions')</th>
                                             </tr>
@@ -317,6 +318,10 @@
                         name: 'the_total',
                     },
                     {
+                        data:'penalties',
+                        name:'penalties',
+                    },
+                    {
                         data: 'status',
                         name: 'status',
                     },
@@ -329,6 +334,7 @@
                     }
                 ],
             });
+
 
 
             // Initialize payroll group table
