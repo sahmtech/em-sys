@@ -321,6 +321,46 @@ class AgentController extends Controller
         }
     }
 
+    public function agentBills()
+    {
+        try {
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $transactions = Transaction::where('contact_id', $contact_id)->get();
+            $companies = Company::pluck('name', 'id');
+            $bills = [];
+            foreach ($transactions as $transaction) {
+                if ($transaction->company_id) {
+                    $tmp = User::where('id', $transaction->created_by)?->first();
+                    $bills[] = [
+                        'id' => $transaction->id,
+                        'invoice_no' => $transaction->invoice_no,
+                        'transaction_date' => $transaction->transaction_date,
+                        'company' => $companies[$transaction->company_id],
+                        'type' => $transaction->type,
+                        'status' => $transaction->status,
+                        'payment_status' => $transaction->payment_status,
+                        "tax_amount" => $transaction->tax_amount,
+                        "discount_amount" => $transaction->discount_amount,
+                        'final_total' => $transaction->final_total,
+                        'created_by' => ($tmp?->first_name ?? '') . ' ' . ($tmp?->mid_name ?? '') . ' ' . ($tmp?->last_name ?? ''),
+                        'created_at' => Carbon::parse($transaction->created_at)->format(('Y-m-d')),
+                    ];
+                }
+            }
+
+            if (request()->ajax()) {
+
+                return Datatables::of($bills)
+                    ->make(true);
+            }
+            return view('custom_views.agents.agent_bills');
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
+    }
+
 
     public function agentContracts()
     {

@@ -1228,6 +1228,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('/home', [AgentController::class, 'agentHome'])->name('agent_home');
         Route::get('/workers_requests', [AgentController::class, 'agentWorkersRequests'])->name('agent_workers_requests');
         Route::get('/projects', [AgentController::class, 'agentProjects'])->name('agent_projects');
+        Route::get('/bills', [AgentController::class, 'agentBills'])->name('agent_bills');
         Route::get('/contracts', [AgentController::class, 'agentContracts'])->name('agent_contracts');
         Route::get('/workers', [AgentController::class, 'agentWorker'])->name('agent_workers');
         Route::get('/workers/{id}', [AgentController::class, 'showAgentWorker'])->name('show_agent_worker');

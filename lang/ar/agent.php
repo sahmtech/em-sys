@@ -4,7 +4,7 @@ return [
   'contracts' => 'العقود',
   'workers' => 'العمال',
   'requests' => 'الطلبات',
-  'pills' => 'الفواتير',
+
   'worker' => 'عامل',
   'active_worker' => 'عامل نشط',
   "inactive_worker" => 'عامل غير نشط',
@@ -31,7 +31,21 @@ return [
   'payrolls' => 'مسيرات الرواتب',
   'payroll' => 'مسير الرواتب',
   'time_sheet_for_the_month' => 'تايم شيت لشهر',
-  'payroll_for' => 'مسيرالرواتب لـ'
+  'payroll_for' => 'مسيرالرواتب لـ',
+
+
+  'pills' => [
+    'pills' => 'الفواتير',
+    'invoice_no' => 'الرقم',
+    'transaction_date' => 'التاريخ',
+    'company' => 'الشركة',
+    'type' => 'النوع',
+    'status' => 'الحالة',
+    'payment_status' => 'حالة الدفه',
+    'tax_amount' => 'قيمة الضريبة',
+    'discount_amount' => 'قيمة الخصم',
+    'final_total' => 'الإجمالي',
+  ],
 
 
 ];

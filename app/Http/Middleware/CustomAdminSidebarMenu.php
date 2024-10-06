@@ -590,9 +590,9 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'requests'],
             );
             $menu->url(
-                action([\App\Http\Controllers\HomeController::class, 'index']),
-                __('agent.pills'),
-                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers'],
+                route('agent_bills'),
+                __('agent.pills.pills'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'bills'],
             );
             $menu->url(
                 route('agentTimeSheet.index'),
