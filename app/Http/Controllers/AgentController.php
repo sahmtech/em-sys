@@ -44,6 +44,7 @@ use Spatie\Activitylog\Models\Activity;
 use App\AccessRole;
 use App\AccessRoleRequest;
 use App\AccessRoleCompany;
+use App\Company;
 use App\Request as UserRequest;
 use App\RequestProcess;
 use App\RequestAttachment;
@@ -343,7 +344,7 @@ class AgentController extends Controller
                         'transactions.contract_form as contract_form',
                         'transactions.contact_id',
                         'transactions.id as tra'
-                    ])->where('contact_id', $contact_id);
+                    ])->where('transactions.contact_id', $contact_id);
 
                 if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                     $contracts->where('sales_contracts.status', request()->input('status'));
@@ -1451,6 +1452,7 @@ class AgentController extends Controller
 
                 ->make(true);
         }
+        $companies = Company::pluck('name', 'id');
         $all_status = ['approved', 'pending', 'rejected'];
         return view('custom_views.agents.requests.allRequest')->with(compact(
             'users',
@@ -1465,7 +1467,8 @@ class AgentController extends Controller
             'specializations',
             'nationalities',
             'allRequestTypes',
-            'all_status'
+            'all_status',
+            'companies'
         ));
     }
     public function getViewRequestsPermission($department)
