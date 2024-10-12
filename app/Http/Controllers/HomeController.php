@@ -425,6 +425,8 @@ class HomeController extends Controller
                 ['id' => 'international_relations_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.international_relations_management'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
                 ['id' => 'housing_movement_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.housing_movement_management'), 'icon' => 'fa fas fa-home', 'link' => route('generalmanagement.housing_movement_management')],
                 ['id' => 'sells_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.sells_management'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
+                ['id' => 'businessSector',  'permissions' => $businessSectorPermissions, 'title' =>  __('business_sector.businessSector'), 'icon' => 'fa fas fa-users', 'link' =>  route('businessSector')],
+
                 ['id' => 'legal_affairs_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.legal_affairs_management'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
                 ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
             ];
