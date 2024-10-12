@@ -125,6 +125,8 @@ class CustomAdminSidebarMenu
             $this->myMenu();
         } elseif (Str::startsWith($currentPath, ['user'])) {
             $this->userMenu();
+        } elseif (Str::startsWith($currentPath, ['businessSector'])) {
+            $this->businessSectorMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -554,6 +556,17 @@ class CustomAdminSidebarMenu
             );
         });
     }
+    public function businessSectorMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'home'],
+            );
+        });
+    }
+
     public function agnetMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {

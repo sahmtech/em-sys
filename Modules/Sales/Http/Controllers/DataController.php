@@ -366,6 +366,18 @@ class DataController extends Controller
                 ]
 
             ],
+            [
+                'group_name' => __('business_sector.businessSector'),
+                'group_permissions' => [
+                    [
+                        'value' => 'business_sector.businessSector',
+                        'label' => __('business_sector.businessSector'),
+                        'default' => false,
+                    ],
+
+                ]
+
+            ],
         ];
     }
 

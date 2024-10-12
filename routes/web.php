@@ -24,6 +24,7 @@ use App\Http\Controllers\CombinedPurchaseReturnController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\API\ApiCustomerController;
+use App\Http\Controllers\BusinessSectorController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardConfiguratorController;
@@ -921,7 +922,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('employee-almost-finish-contracts', [ReportsController::class, 'employee_almost_finish_contracts'])->name('employee_almost_finish_contracts');
         Route::get('employee-finish-contracts', [ReportsController::class, 'employee_finish_contracts'])->name('employee_finish_contracts');
     });
-
+    Route::prefix('businessSector')->group(function () {
+        Route::get('/index', [BusinessSectorController::class, 'landing'])->name('businessSector');
+    });
 
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');

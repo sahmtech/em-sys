@@ -350,6 +350,8 @@ class HomeController extends Controller
         ];
         $reportsPermissions = [["value" => 'report.reports'],];
 
+        $businessSectorPermissions = [["value" => 'businessSector.dashboard'],];
+
         // $settingsPermissions = [
         //     ['value' => 'business_settings.access'],
         //     ['value' => 'barcode_settings.access'],
@@ -387,6 +389,7 @@ class HomeController extends Controller
             ['id' => 'informationtechnologymanagment',  'permissions' => $InformationTechnologDashPermission, 'title' => __('informationtechnologymanagment::lang.informationtechnologymanagment'), 'icon' => "fas fa-laptop-code", 'link' => action([\Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])],
 
             ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
+            ['id' => 'businessSector',  'permissions' => $businessSectorPermissions, 'title' =>  __('business_sector.businessSector'), 'icon' => 'fa fas fa-users', 'link' =>  route('businessSector')],
             ['id' => 'FollowUp',  'permissions' => $followupDashPermission, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
             ['id' => 'houseingMovements',  'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'movements',  'permissions' => $movmentsPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' =>   action([MovmentDashboardController::class, 'index'])],
