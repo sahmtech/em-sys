@@ -24,7 +24,6 @@
                                 <input type="checkbox" id="select-all">
                             </th> --}}
                             <th>#</th>
-                            <th>@lang('sales::lang.contact_number')</th>
                             <th>@lang('sales::lang.supplier_business_name')</th>
                             <th>@lang('sales::lang.contact_name')</th>
                             <th>@lang('sales::lang.created_by')</th>
@@ -74,10 +73,7 @@
                         data: 'id',
                         name: 'id'
                     },
-                    {
-                        data: 'contact_id',
-                        name: 'contact_id'
-                    },
+
                     {
                         data: 'supplier_business_name',
                         name: 'supplier_business_name'
