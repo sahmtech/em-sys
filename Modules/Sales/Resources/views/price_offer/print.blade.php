@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,7 @@
 <body>
 
 
+
     <div class="container">
         <div class="header"
             style="background-color: {{ $template->header_color }}; border: 1px solid #494949; display: flex; flex-direction:column; align-items: center;">
@@ -19,7 +20,7 @@
         </div>
 
         @foreach ($sections as $section)
-            <div class="template-section">
+            <div class="template-section" style="background-color:#ffffff;">
                 @if ($section->header_left || $section->header_right)
                     <div style="display: flex; background-color: {{ $section->header_color }};">
                         <div
@@ -58,8 +59,13 @@
         @endif
     </div>
 
+
     <script>
         // Add any necessary JS here
+        // Automatically trigger the print dialog when the page loads
+        window.onload = function() {
+            window.print();
+        };
     </script>
 </body>
 

@@ -2,37 +2,36 @@
 
 namespace Modules\Sales\Http\Controllers;
 
-use App\SentNotification;
-use App\SentNotificationsUser;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Essentials\Entities\EssentialsCity;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Account;
+use App\Business;
 use App\BusinessLocation;
 use App\Contact;
-use App\Transaction;
-use App\User;
-use Illuminate\Support\Facades\DB;
 use App\CustomerGroup;
+use App\InvoiceScheme;
+use App\SellingPriceGroup;
+use App\SentNotification;
+use App\SentNotificationsUser;
+use App\TaxRate;
+use App\Template;
+use App\Transaction;
+use App\TransactionSellLine;
+use App\TypesOfService;
+use App\User;
 use App\Utils\BusinessUtil;
 use App\Utils\ContactUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
-use App\SellingPriceGroup;
-use App\TaxRate;
-use Yajra\DataTables\Facades\DataTables;
-use App\Account;
-use App\Business;
-use App\InvoiceScheme;
-use App\Template;
-use App\TransactionSellLine;
-use App\TypesOfService;
 use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsCity;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Sales\Entities\salesOfferPricesCost;
 use PhpOffice\PhpWord\PhpWord;
-use DOMDocument;
-use Modules\Essentials\Entities\EssentialsDepartment;
+use Yajra\DataTables\Facades\DataTables;
 
 class OfferPriceController extends Controller
 {
@@ -108,7 +107,6 @@ class OfferPriceController extends Controller
         $can_approve_offer_price = auth()->user()->can('sales.approve_offer_price');
         $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
 
-
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
@@ -128,17 +126,11 @@ class OfferPriceController extends Controller
                 'transactions.is_approved as is_approved',
                 'transactions.approved_by as approved_by',
 
-
-
-
             );
         $all_users = User::select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
         if (request()->ajax()) {
-
-
-
 
             $sells->groupBy('transactions.id');
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
@@ -149,7 +141,7 @@ class OfferPriceController extends Controller
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_offer_price_status) {
                     if ($is_admin || $can_change_offer_price_status) {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . $this->statuses[$row->status]['name'] . '</span>';
+                        . $this->statuses[$row->status]['name'] . '</span>';
                         $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     } else {
                         $status = $row->status;
@@ -181,19 +173,20 @@ class OfferPriceController extends Controller
                     return $item;
                 })
 
-                // ->addColumn(
-                //     'action',
-                //     function ($row)  use ($is_admin, $can_print_offer_price) {
-                //         $html = '';
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin, $can_print_offer_price) {
+                        $html = '';
 
-                //         if ($is_admin || $can_print_offer_price) {
-                //             $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
-                //             <i class="fas fa-download" aria-hidden="true"></i>' . __('sales::lang.view & print') . '
-                //             </a>';
-                //         }
-                //         return $html;
-                //     }
-                // )
+                        if ($is_admin || $can_print_offer_price) {
+                            // Open the print view in a new tab
+                            $html = '<a href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" target="_blank" class="btn btn-xs btn-primary">
+                            <i class="fas fa-print" aria-hidden="true"></i> ' . __('sales::lang.view & print') . '
+                            </a>';
+                        }
+                        return $html;
+                    }
+                )
 
                 ->removeColumn('id')
 
@@ -243,51 +236,45 @@ class OfferPriceController extends Controller
                 'contacts.name as name',
                 'transactions.is_approved as is_approved',
 
-
             );
 
         if (request()->ajax()) {
-
-
-
 
             $sells->groupBy('transactions.id');
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $sells->where('status', request()->input('status'));
             }
 
-
             return Datatables::of($sells)
 
+            // ->addColumn(
+            //     'action',
+            //     function ($row) use ($is_admin, $can_print_offer_price) {
+            //         $html = '';
+            //         if ($is_admin || $can_print_offer_price) {
+            //             $html = '<div class="btn-group">
+            //                 <button type="button" class="btn btn-info dropdown-toggle btn-xs"
+            //                     data-toggle="dropdown" aria-expanded="false">' .
+            //                 __('messages.actions') .
+            //                 '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+            //                     </span>
+            //                 </button>
+            //                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
+            //                     <li>
+            //                     <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
+            //                     <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
+            //                     </a>
+            //                     </li>';
 
-                // ->addColumn(
-                //     'action',
-                //     function ($row) use ($is_admin, $can_print_offer_price) {
-                //         $html = '';
-                //         if ($is_admin || $can_print_offer_price) {
-                //             $html = '<div class="btn-group">
-                //                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                //                     data-toggle="dropdown" aria-expanded="false">' .
-                //                 __('messages.actions') .
-                //                 '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                //                     </span>
-                //                 </button>
-                //                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                //                     <li>
-                //                     <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
-                //                     <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
-                //                     </a>
-                //                     </li>';
+            //             $html .= '</ul></div>';
+            //         }
 
-                //             $html .= '</ul></div>';
-                //         }
-
-                //         return $html;
-                //     }
-                // )
-                 ->addColumn(
+            //         return $html;
+            //     }
+            // )
+                ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_print_offer_price, $can_approve_offer_price) {
+                    function ($row) use ($is_admin, $can_print_offer_price, $can_approve_offer_price) {
                         $html = '';
                         if ($row->is_approved == 1) {
                             if ($is_admin || $can_print_offer_price) {
@@ -352,26 +339,20 @@ class OfferPriceController extends Controller
                 'contacts.mobile as mobile',
                 'contacts.name as name',
 
-
             );
 
         if (request()->ajax()) {
-
-
-
 
             $sells->groupBy('transactions.id');
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $sells->where('status', request()->input('status'));
             }
 
-
             return Datatables::of($sells)
-
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_print_offer_price) {
+                    function ($row) use ($is_admin, $can_print_offer_price) {
                         $html = '';
                         if ($is_admin || $can_print_offer_price) {
                             $html = '<a href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" target="_blank" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
@@ -405,13 +386,10 @@ class OfferPriceController extends Controller
             ->with(compact('business_locations', 'statuses', 'customers', 'sales_representative'));
     }
 
-
     public function changeStatus(Request $request)
     {
 
         $business_id = request()->session()->get('user.business_id');
-
-
 
         try {
             $input = $request->only(['status', 'offer_id', 'note']);
@@ -419,10 +397,8 @@ class OfferPriceController extends Controller
             $offer = Transaction::find($input['offer_id']);
             $contact = $offer->contact_id;
 
-
             $offer->status = $input['status'];
             $offer->additional_notes = $input['note'];
-
 
             $offer->save();
 
@@ -599,7 +575,6 @@ class OfferPriceController extends Controller
             ));
     }
 
-
     public function create_offer_price_qualified_contacts($id)
     {
 
@@ -757,14 +732,12 @@ class OfferPriceController extends Controller
         try {
             $business_id = $request->session()->get('user.business_id');
 
-            $offer = ['contract_form',  'down_payment', 'issue_date'];
-
+            $offer = ['contract_form', 'down_payment', 'issue_date'];
 
             //     $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
 
             //  $transactionDateInput = $request->input('transaction_date');
             //  $formattedDate = null;
-
 
             //  try {
             // Attempt to parse the date with the expected format
@@ -775,8 +748,6 @@ class OfferPriceController extends Controller
             // }
             //  $formattedDate = $transactionDate->format('m/d/Y h:i A');
             $offer_details = $request->only($offer);
-
-
 
             //   $offer_details['location_id'] = $request->input('location_id');
             $offer_details['contact_id'] = $request->input('contact_id');
@@ -794,22 +765,17 @@ class OfferPriceController extends Controller
             $offer_details['total_contract_cost'] = $request->input('total_contract_cost');
             $offer_details['status'] = 'under_study';
 
-
-
             $latestRecord = Transaction::where('sub_type', 'service')->orderBy('ref_no', 'desc')->first();
-
 
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->ref_no;
-                $numericPart = (int)substr($latestRefNo, 5);
+                $numericPart = (int) substr($latestRefNo, 5);
                 $numericPart++;
                 $offer_details['ref_no'] = 'QN' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
             } else {
 
                 $offer_details['ref_no'] = 'QN0003000';
             }
-
-
 
             $client = Transaction::create($offer_details);
 
@@ -836,8 +802,6 @@ class OfferPriceController extends Controller
                     $data = $productData[$key];
                     $quantity = $quantityArr[$key];
 
-
-
                     $transactionSellLine = new TransactionSellLine;
                     $transactionSellLine->additional_allwances = json_encode($data);
                     $transactionSellLine->service_id = $productId;
@@ -862,14 +826,14 @@ class OfferPriceController extends Controller
             $user_ids = $users->pluck('id')->toArray();
             error_log(json_encode($user_ids));
 
-            $to =  $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+            $to = $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
                 ->pluck('full_name')->toArray();
             if (!empty($user_ids)) {
 
                 $sentNotification = SentNotification::create([
                     'via' => 'dashboard',
                     'type' => 'GeneralManagementNotification',
-                    'title' =>  $contacts[$client->contact_id],
+                    'title' => $contacts[$client->contact_id],
                     'msg' => __('sales::lang.new offer price') . ' ' . $client->ref_no,
                     'sender_id' => auth()->user()->id,
                     'to' => json_encode($to),
@@ -884,7 +848,7 @@ class OfferPriceController extends Controller
             $output = [
                 'success' => 1,
                 'msg' => __('sales::lang.client_added_success'),
-                'client' => $client
+                'client' => $client,
             ];
         } catch (\Exception $e) {
             DB::rollBack();
@@ -898,7 +862,6 @@ class OfferPriceController extends Controller
 
         return redirect()->route('price_offer');
     }
-
 
     public function print($id)
     {
@@ -930,8 +893,8 @@ class OfferPriceController extends Controller
                 ];
 
                 foreach ($replacements as $placeholder => $value) {
-                    $template->primary_header = str_replace($placeholder, $value,  $template->primary_header);
-                    $template->primary_footer = str_replace($placeholder, $value,  $template->primary_footer);
+                    $template->primary_header = str_replace($placeholder, $value, $template->primary_header);
+                    $template->primary_footer = str_replace($placeholder, $value, $template->primary_footer);
                     foreach ($sections as $section) {
                         $section->header_left = str_replace($placeholder, $value, $section->header_left);
                         $section->header_right = str_replace($placeholder, $value, $section->header_right);
@@ -939,14 +902,12 @@ class OfferPriceController extends Controller
                             $section->content = str_replace($placeholder, $value, $section->content);
                         } else {
                             $section->content_left = str_replace($placeholder, $value, $section->content_left);
-                            $section->content_right =  str_replace($placeholder, $value, $section->content_right);
+                            $section->content_right = str_replace($placeholder, $value, $section->content_right);
                         }
                     }
                 }
 
-
-
-                foreach ($sections as  $section) {
+                foreach ($sections as $section) {
                     if ($section->content) {
                         $htmlString = $section->content;
 
@@ -955,15 +916,14 @@ class OfferPriceController extends Controller
                         $startPos = strpos($htmlString, '<tr', $firstEndPos);
                         $endPos = strpos($htmlString, '</tr>', $startPos) + 5; // Include length of '</tr>'
                         $firstRowHtml = substr($htmlString, $startPos, $endPos - $startPos);
-                        $columnCount =  substr_count($firstRowHtml, '<td');
-
+                        $columnCount = substr_count($firstRowHtml, '<td');
 
                         if ($columnCount > 8) {
-                            $original_clone =  $firstRowHtml;
+                            $original_clone = $firstRowHtml;
                             $i = 1;
                             $final_rows = '';
                             foreach ($query->sell_lines as $sell_line) {
-                                $clone =   $original_clone;
+                                $clone = $original_clone;
                                 $food = 0;
                                 $housing = 0;
                                 $transportaions = 0;
@@ -1070,7 +1030,7 @@ class OfferPriceController extends Controller
                                 $replacements2 = [
                                     '${R}' => $i,
                                     '${A}' => $sell_line['service']['profession']['name'] ?? '',
-                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', '') . ' SR',
+                                    '${B}' => number_format($sell_line['service']['service_price'] ?? 0, 0, '.', '') . ' SR',
                                     '${C}' => $food,
                                     '${D}' => $transportaions,
                                     '${E}' => $housing,
@@ -1082,30 +1042,25 @@ class OfferPriceController extends Controller
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
                                     '${L}' => number_format($query->total_worker_monthly, 2, '.', '') . ' SR',
                                     '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', '') . ' SR',
-                                    '${N}' =>  number_format(($query->total_worker_monthly ?? 0) +  (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', '') . ' SR',
+                                    '${N}' => number_format(($query->total_worker_monthly ?? 0) + (($query->total_worker_monthly) * 15 / 100 ?? 0), 2, '.', '') . ' SR',
 
                                     //$sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity
                                 ];
 
-
-
                                 foreach ($replacements2 as $placeholder => $value) {
-                                    $clone = str_replace($placeholder, $value,   $clone);
+                                    $clone = str_replace($placeholder, $value, $clone);
                                     // $htmlString = substr_replace($htmlString,   $clone, $endPos, 0);
                                     // $endPos += strlen($clone);
                                 }
                                 $final_rows .= $clone;
                                 $i++;
                             }
-                            $htmlString = substr_replace($htmlString,      $final_rows, $endPos, 0);
+                            $htmlString = substr_replace($htmlString, $final_rows, $endPos, 0);
                             $htmlString = substr_replace($htmlString, '', $startPos, $endPos - $startPos);
                             $section->content = $htmlString;
                         }
                     }
                 }
-
-
-
 
                 return view('sales::price_offer.print')->with(compact('template', 'sections'));
             } else if ($query->contract_form == 'monthly_cost') {
@@ -1226,7 +1181,7 @@ class OfferPriceController extends Controller
                                     '${R}' => $i,
                                     '${A}' => $sell_line['service']['profession']['name'] ?? '',
 
-                                    '${B}' =>  number_format($sell_line['service']['service_price'] ?? 0, 0, '.', '') . ' SR',
+                                    '${B}' => number_format($sell_line['service']['service_price'] ?? 0, 0, '.', '') . ' SR',
 
                                     '${C}' => $food,
                                     '${D}' => $transportaions,
@@ -1238,8 +1193,8 @@ class OfferPriceController extends Controller
                                     '${J}' => $sell_line['service']['nationality']['nationality'] ?? '',
                                     '${K}' => $query->contract_duration ?? __('sales::lang.undefiend'),
 
-                                    '${L}' =>  number_format($query->total_worker_monthly, 2, '.', '') . ' SR',
-                                    '${M}' =>  number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', '') . ' SR',
+                                    '${L}' => number_format($query->total_worker_monthly, 2, '.', '') . ' SR',
+                                    '${M}' => number_format(($query->total_worker_monthly ?? 0) * 15 / 100 ?? '', 2, '.', '') . ' SR',
                                     '${N}' => number_format(($query->final_total ?? 0), 2, '.', '') . ' SR',
 
                                 ];
@@ -1296,9 +1251,6 @@ class OfferPriceController extends Controller
         }
     }
 
-
-
-
     /**
      * Show the specified resource.
      * @param int $id
@@ -1327,12 +1279,9 @@ class OfferPriceController extends Controller
 
             )->get()[0];
 
-
-
         return view('sales::price_offer.show')
             ->with(compact('query'));
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -1349,7 +1298,6 @@ class OfferPriceController extends Controller
         return view('sales::price_offer.edit')->with(compact('offer_price', 'business_locations', 'leads'));
     }
 
-
     public function update(Request $request, $id)
     {
 
@@ -1359,12 +1307,10 @@ class OfferPriceController extends Controller
 
             $offer_details = $request->only($offer);
 
-
             $offer_details['location_id'] = $request->input('location_id');
             $offer_details['sales_project_id'] = $request->input('contact_id');
             $offer_details['transaction_date'] = $request->input('transaction_date');
             $offer_details['created_by'] = $request->session()->get('user.id');
-
 
             Transaction::where('id', $id)->update($offer_details);
 
@@ -1400,7 +1346,6 @@ class OfferPriceController extends Controller
     {
 
         $offer = Transaction::findOrFail($id);
-
 
         $offer->is_approved = 1;
         $offer->approved_by = auth()->user()->id;

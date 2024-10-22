@@ -39,7 +39,7 @@
                             <th>@lang('sales::lang.value')</th>
                             <th>@lang('sales::lang.status')</th>
                             <th>@lang('sales::lang.offer_approve')</th>
-                            {{-- <th>@lang('messages.action')</th> --}}
+                            <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
                 </table>
@@ -128,9 +128,9 @@
                         {
                             data: 'is_approved'
                         },
-                        // {
-                        //     data: 'action'
-                        // }
+                        {
+                            data: 'action'
+                        }
 
 
 
