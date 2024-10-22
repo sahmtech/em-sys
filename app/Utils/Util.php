@@ -16,18 +16,18 @@ use App\User;
 use App\VariationLocationDetails;
 use Carbon\Carbon;
 use Config;
-use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
 use Modules\Accounting\Entities\AccountingAccountsTransaction;
 use Modules\Accounting\Entities\AccountingAccTransMapping;
 use Modules\Accounting\Entities\AccountingAccTransMappingSettingAutoMigration;
 use Modules\Accounting\Entities\AccountingMappingSettingAutoMigration;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Spatie\Permission\Models\Role;
 
 class Util
 {
@@ -151,7 +151,6 @@ class Util
         if (!empty($location)) {
             $location = is_object($location) ? $location : BusinessLocation::find($location);
 
-
             //Get custom label from business settings
             // $custom_labels = Business::find($location->business_id)->custom_labels;
             $custom_labels = Company::find($location->company_id)->custom_labels;
@@ -180,7 +179,6 @@ class Util
         $payment_types['custom_pay_5'] = !empty($custom_labels['payments']['custom_pay_5']) ? $custom_labels['payments']['custom_pay_5'] : __('lang_v1.custom_payment', ['number' => 5]);
         $payment_types['custom_pay_6'] = !empty($custom_labels['payments']['custom_pay_6']) ? $custom_labels['payments']['custom_pay_6'] : __('lang_v1.custom_payment', ['number' => 6]);
         $payment_types['custom_pay_7'] = !empty($custom_labels['payments']['custom_pay_7']) ? $custom_labels['payments']['custom_pay_7'] : __('lang_v1.custom_payment', ['number' => 7]);
-
 
         //Unset payment types if not enabled in business location
         if (!empty($location)) {
@@ -245,21 +243,49 @@ class Util
      * @param  bool  $time (default = false)
      * @return strin
      */
+    // public function uf_date($date, $time = false)
+    // {
+    //     $date_format = session('business.date_format');
+    //     $mysql_format = 'Y-m-d';
+    //     if ($time) {
+    //         if (session('business.time_format') == 12) {
+    //             $date_format = $date_format . 'h:i A';
+    //         } else {
+    //             $date_format = $date_format . 'H:i';
+    //         }
+    //         $mysql_format = 'Y-m-d H:i:s';
+    //     }
+    //     $date = str_replace(['/', '\\'], '-', $date);
+
+    //     return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
+    // }
     public function uf_date($date, $time = false)
     {
+        // Get the date format from the session
         $date_format = session('business.date_format');
-        $mysql_format = 'Y-m-d';
+        $mysql_format = 'Y-m-d'; // Default MySQL format (without time)
+
         if ($time) {
+            // If time is needed, adjust the format based on the time format (12-hour or 24-hour)
             if (session('business.time_format') == 12) {
-                $date_format = $date_format . 'h:i A';
+                $date_format .= ' h:i A'; // 12-hour format with AM/PM
             } else {
-                $date_format = $date_format . 'H:i';
+                $date_format .= ' H:i'; // 24-hour format
             }
-            $mysql_format = 'Y-m-d H:i:s';
+            $mysql_format = 'Y-m-d H:i:s'; // Full MySQL format (with time)
         }
+
+        // Replace slashes and backslashes with dashes to standardize date format
         $date = str_replace(['/', '\\'], '-', $date);
 
-        return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
+        // Parse the date using the date format specified by the session
+        try {
+            // Use Carbon::createFromFormat to explicitly tell Carbon how to interpret the date
+            return Carbon::createFromFormat($date_format, $date)->format($mysql_format);
+        } catch (\Exception $e) {
+            // Handle any errors in case the date format does not match
+            return "Error: Could not parse date: " . $e->getMessage();
+        }
     }
 
     /**
@@ -1296,7 +1322,7 @@ class Util
 
     public function getWorkerFields_essentials()
     {
-        return  [
+        return [
             __('followup::lang.name'),
             __('followup::lang.eqama'),
             __('followup::lang.project_name'),
@@ -1328,7 +1354,7 @@ class Util
 
     public function getWorkerFields_hrm()
     {
-        return  [
+        return [
             __('#'),
             __('essentials::lang.profile_image'),
             __('essentials::lang.employee_number'),
@@ -1341,7 +1367,6 @@ class Util
             __('essentials::lang.border_number'),
             __('essentials::lang.dob'),
             __('followup::lang.insurance'),
-
 
             __('followup::lang.project_name'),
             __('followup::lang.nationality'),
@@ -1368,7 +1393,7 @@ class Util
 
     public function getWorkerFields_housing()
     {
-        return  [
+        return [
             __('#'),
             __('essentials::lang.profile_image'),
             __('essentials::lang.employee_number'),
@@ -1381,7 +1406,6 @@ class Util
             __('essentials::lang.border_number'),
             __('essentials::lang.dob'),
             __('followup::lang.insurance'),
-
 
             __('followup::lang.project_name'),
             __('followup::lang.nationality'),
@@ -1437,14 +1461,14 @@ class Util
                     \App\Notifications\RecurringInvoiceNotification::class
                 ) {
                     $msg = !empty($data['invoice_status']) && $data['invoice_status'] == 'draft' ?
-                        __(
-                            'lang_v1.recurring_invoice_error_message',
-                            ['product_name' => $data['out_of_stock_product'], 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
-                        ) :
-                        __(
-                            'lang_v1.recurring_invoice_message',
-                            ['invoice_no' => !empty($data['invoice_no']) ? $data['invoice_no'] : '', 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
-                        );
+                    __(
+                        'lang_v1.recurring_invoice_error_message',
+                        ['product_name' => $data['out_of_stock_product'], 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
+                    ) :
+                    __(
+                        'lang_v1.recurring_invoice_message',
+                        ['invoice_no' => !empty($data['invoice_no']) ? $data['invoice_no'] : '', 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
+                    );
                     $icon_class = !empty($data['invoice_status']) && $data['invoice_status'] == 'draft' ? 'fas fa-exclamation-triangle bg-yellow' : 'fas fa-recycle bg-green';
                     $link = action([\App\Http\Controllers\SellPosController::class, 'listSubscriptions']);
                 } elseif (
@@ -1733,7 +1757,6 @@ class Util
     public function createUser($request)
     {
 
-
         $user_details = $request->only([
             'surname',
             'first_name',
@@ -1780,8 +1803,7 @@ class Util
             'bank_details',
             'selected_contacts',
             'emp_number',
-            'total_salary'
-
+            'total_salary',
 
         ]);
 
@@ -1795,7 +1817,6 @@ class Util
             $user_details['contact_number'] = null;
         }
 
-
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
             $profile = $image->store('/profile_images');
@@ -1804,8 +1825,6 @@ class Util
 
         $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'active';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
-
-
 
         // $user_details['assigned_to'] = !empty($user_details['assigned_to']) ? $user_details['assigned_to'] : 'assigned_to';
         if (!empty($user_details['assigned_to'])) {
@@ -1816,10 +1835,6 @@ class Util
         $user_details['created_by'] = Auth::user()->id;
         $user_details['nationality_id'] = $request->input('nationality');
         $user_details['company_id'] = $request->input('company_id');
-
-
-
-
 
         //Check if subscribed or not, then check for users quota
         if (
@@ -1849,8 +1864,6 @@ class Util
             $user_details['bank_details']['Iban_file'] = $path;
         }
 
-
-
         $user_details['bank_details'] = !empty($user_details['bank_details']) ? json_encode($user_details['bank_details']) : null;
 
         $user_details['password'] = $user_details['allow_login'] ? Hash::make($user_details['password']) : null;
@@ -1859,14 +1872,13 @@ class Util
             if (empty($user_details['username'])) {
                 $ref_count = $this->setAndGetReferenceCount('username', $business_id);
                 $user_details['username'] = $this->generateReferenceNumber('username', $ref_count, $business_id);
-            } {
+            }{
                 $username_ext = $this->getUsernameExtension();
                 if (!empty($username_ext)) {
                     $user_details['username'] .= $username_ext;
                 }
             }
         }
-
 
         $user_details['created_by'] = auth()->user()->id;
 
@@ -1879,7 +1891,6 @@ class Util
                     $document2 = new EssentialsOfficialDocument();
                     $document2->type = $document['document_type'];
                     $document2->employee_id = $user->id;
-
 
                     if ($document['document_type'] == 'national_id' && $request->input('id_proof_name') == 'national_id') {
                         $document2->number = $request->input('id_proof_number');
@@ -1896,7 +1907,6 @@ class Util
 
                     $document2->status = 'valid';
 
-
                     if (isset($document['document_file'])) {
 
                         $file = $request->file('document_file')[$index];
@@ -1911,7 +1921,6 @@ class Util
                 }
             }
         }
-
 
         $bankDetails = json_decode($user_details['bank_details'], true);
 
@@ -1929,11 +1938,9 @@ class Util
             EssentialsOfficialDocument::create($input);
         }
 
-
         $moduleUtil = new \App\Utils\ModuleUtil;
         // $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user, 'request' => $user_details]);
         $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
-
 
         return $user;
     }
@@ -2031,7 +2038,7 @@ class Util
         }
     }
 
-    public  function saveAutoMigration($request, $transaction)
+    public function saveAutoMigration($request, $transaction)
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
@@ -2053,7 +2060,7 @@ class Util
         }
         $accountMappingSetting = AccountingMappingSettingAutoMigration::where('type', $transaction->type)
             ->where('payment_status', $transaction->payment_status)
-            ->where('method',  $method)
+            ->where('method', $method)
             ->where('company_id', $transaction->company_id)
             ->where('active', true)->first();
 
@@ -2069,7 +2076,7 @@ class Util
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
                     $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
-                        $accTransMappingSetting['journal_entry_prefix'] : '';
+                    $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
@@ -2104,7 +2111,6 @@ class Util
         }
     }
 
-
     public function createTransactionJournal_entry($id, $user_type = '')
     {
         $transaction = Transaction::with(['sell_lines', 'payment_lines'])->find($id);
@@ -2119,9 +2125,8 @@ class Util
         $method = '';
         if (count($transaction->payment_lines) > 0) {
 
-
             $payment_lines = $transaction->payment_lines()->latest('paid_on')->first();
-            $method =  $payment_lines->method;
+            $method = $payment_lines->method;
         } else {
             $method = 'other';
         }
@@ -2146,19 +2151,17 @@ class Util
             // find account transaction mapping setting by accounting mapping setting
             $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
 
-
             if (count($accTransMappingSetting) > 0) {
 
                 //Generate reference number
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
                     $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
-                        $accTransMappingSetting['journal_entry_prefix'] : '';
+                    $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
                 }
-
 
                 try {
                     DB::beginTransaction();
@@ -2170,7 +2173,7 @@ class Util
                     $acc_trans_mapping->type = 'journal_entry';
                     $acc_trans_mapping->created_by = $user_id;
                     $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s');
-                    $acc_trans_mapping->save();;
+                    $acc_trans_mapping->save();
                     foreach ($accTransMappingSetting as $accTrans) {
                         $transaction_row = [];
                         $transaction_row['accounting_account_id'] = $accTrans->accounting_account_id;
@@ -2184,7 +2187,6 @@ class Util
                         $transaction_row['operation_date'] = now()->format('Y-m-d H:i:s');
                         $transaction_row['sub_type'] = 'journal_entry';
                         $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
-
 
                         $accounts_transactions = new AccountingAccountsTransaction();
                         $accounts_transactions->fill($transaction_row);
@@ -2201,10 +2203,8 @@ class Util
             return false;
         }
 
-
         return false;
     }
-
 
     public function createTransactionJournal_entry_single_payment($id, $user_type = '', $employees_id)
     {
@@ -2220,9 +2220,8 @@ class Util
         $method = '';
         if (count($transaction->payment_lines) > 0) {
 
-
             $payment_lines = $transaction->payment_lines()->latest('paid_on')->first();
-            $method =  $payment_lines->method;
+            $method = $payment_lines->method;
         } else {
             $method = 'other';
         }
@@ -2247,19 +2246,17 @@ class Util
             // find account transaction mapping setting by accounting mapping setting
             $accTransMappingSetting = AccountingAccTransMappingSettingAutoMigration::where('mapping_setting_id', $accountMappingSetting->id)->get();
 
-
             if (count($accTransMappingSetting) > 0) {
 
                 //Generate reference number
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
                     $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
-                        $accTransMappingSetting['journal_entry_prefix'] : '';
+                    $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
                 }
-
 
                 try {
                     DB::beginTransaction();
@@ -2271,7 +2268,7 @@ class Util
                     $acc_trans_mapping->type = 'journal_entry';
                     $acc_trans_mapping->created_by = $user_id;
                     $acc_trans_mapping->operation_date = now()->format('Y-m-d H:i:s');
-                    $acc_trans_mapping->save();;
+                    $acc_trans_mapping->save();
                     foreach ($accTransMappingSetting as $accTrans) {
                         $transaction_row = [];
                         $transaction_row['accounting_account_id'] = $accTrans->accounting_account_id;
@@ -2290,8 +2287,6 @@ class Util
                             $transaction_row['partner_id'] = $employees_id;
                         }
 
-
-
                         $accounts_transactions = new AccountingAccountsTransaction();
                         $accounts_transactions->fill($transaction_row);
                         $accounts_transactions->save();
@@ -2306,7 +2301,6 @@ class Util
             }
             return false;
         }
-
 
         return false;
     }

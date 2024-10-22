@@ -4,57 +4,50 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
+use App\BusinessLocation;
+use App\Category;
+use App\Company;
+use App\Contact;
+use App\Events\UserCreatedOrModified;
+use App\PayrollGroupUser;
+use App\Request as UserRequest;
+use App\RequestProcess;
+use App\Transaction;
+use App\User;
+use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
+use App\Utils\RequestUtil;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
-use App\Utils\ModuleUtil;
-use App\Utils\NewArrivalUtil;
-use App\BusinessLocation;
-use App\User;
-use App\Category;
-use Modules\Essentials\Entities\Shift;
-
-use App\Company;
-use App\Transaction;
-use App\Contact;
-use Modules\Sales\Entities\salesContractItem;
-use Illuminate\Support\Facades\DB;
-use Modules\Sales\Entities\SalesProject;
-use Spatie\Permission\Models\Permission;
-use Spatie\Activitylog\Models\Activity;
-use Spatie\Permission\Models\Role;
-use Yajra\DataTables\Facades\DataTables;
-use App\Events\UserCreatedOrModified;
-use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use Modules\Essentials\Entities\EssentialsDepartment;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsContractType;
-use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsCountry;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
-use Modules\Essentials\Entities\EssentialsAdmissionToWork;
-use Modules\Essentials\Entities\EssentialsBankAccounts;
-
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-use App\Request as UserRequest;
-use App\RequestProcess;
-use Modules\CEOManagment\Entities\RequestsType;
-
-use Illuminate\Support\Facades\Session;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\EmployeesNotFoundExport;
-use App\PayrollGroupUser;
-use App\Utils\RequestUtil;
-use Exception;
+use Modules\Essentials\Entities\Shift;
+use Modules\Sales\Entities\salesContractItem;
+use Modules\Sales\Entities\SalesProject;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Yajra\DataTables\Facades\DataTables;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -75,7 +68,6 @@ class EssentialsManageEmployeeController extends Controller
         $this->newArrivalUtil = $newArrivalUtil;
         $this->requestUtil = $requestUtil;
     }
-
 
     public function getFilteredRequests($filter = null)
     {
@@ -206,13 +198,12 @@ class EssentialsManageEmployeeController extends Controller
                     'activeInternationalCertificate',
                     'activeAppointmet',
                     'activeAdmission',
-                    'activeQualification'
+                    'activeQualification',
                 ])
                 ->make(true);
         }
         return view('essentials::attachements');
     }
-
 
     public function index(Request $request)
     {
@@ -222,7 +213,6 @@ class EssentialsManageEmployeeController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
         $can_show_employee = auth()->user()->can('essentials.show_employee');
@@ -230,7 +220,6 @@ class EssentialsManageEmployeeController extends Controller
         $can_edit_employee = auth()->user()->can('essentials.edit_employee');
         $can_show_employee_options = auth()->user()->can('essentials.show_employee_options');
         $permissionName = 'essentials.view_profile_picture';
-
 
         if (!Permission::where('name', $permissionName)->exists()) {
             $permission = new Permission(['name' => $permissionName]);
@@ -277,7 +266,7 @@ class EssentialsManageEmployeeController extends Controller
         $users = User::whereIn('users.id', $userIds)
             ->with([
                 'userAllowancesAndDeductions',
-                'activeAppointmet'
+                'activeAppointmet',
             ])
             ->where('users.is_cmmsn_agnt', 0)
             ->whereIn('user_type', ['employee', 'manager', 'department_head'])
@@ -315,8 +304,6 @@ class EssentialsManageEmployeeController extends Controller
             ])
             ->orderBy('id', 'desc');
 
-
-
         if (!empty($request->input('specialization')) && $request->input('specialization') != 'all') {
 
             $users->whereHas('appointment', function ($query) use ($request) {
@@ -325,7 +312,6 @@ class EssentialsManageEmployeeController extends Controller
                 }
             });
         }
-
 
         if (!empty($request->input('status')) && $request->input('status') != 'all') {
             $users->where('users.status', $request->input('status'));
@@ -349,9 +335,8 @@ class EssentialsManageEmployeeController extends Controller
         }
         if (request()->ajax()) {
 
-
             return Datatables::of($users)
-                ->addColumn('company_id', function ($row)  use ($companies) {
+                ->addColumn('company_id', function ($row) use ($companies) {
                     $item = $companies[$row->company_id] ?? '';
                     return $item;
                 })
@@ -365,34 +350,31 @@ class EssentialsManageEmployeeController extends Controller
                     return $item;
                 })
 
-
                 ->addColumn('profession', function ($row) use ($appointments, $job_titles) {
                     $professionId = $appointments[$row->id] ?? '';
 
                     $professionName = $job_titles[$professionId] ?? '';
-
 
                     return $professionName;
                 })
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_show_employee_options) {
+                    function ($row) use ($is_admin, $can_show_employee_options) {
                         if ($is_admin || $can_show_employee_options) {
                             $html = '<div class="btn-group">
-                            <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                            <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                                 data-toggle="dropdown" aria-expanded="false">' .
-                                __('messages.actions') .
-                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                            __('messages.actions') .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                 </span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li>
                                 <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
-                             
+
                                 </a>
                                 </li>';
-
 
                             $html .= '<li>
                                     <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
@@ -440,21 +422,18 @@ class EssentialsManageEmployeeController extends Controller
                     $query->whereRaw("contract_end_date  like ?", ["%{$keyword}%"]);
                 })
 
-
                 ->filterColumn('profession', function ($query, $keyword) {
                     $query->whereHas('appointment.profession', function ($subQuery) use ($keyword) {
                         $subQuery->where('name', 'like', '%' . $keyword . '%');
                     });
                 })
-                //->removecolumn('id')
+            //->removecolumn('id')
                 ->rawColumns(['user_type', 'company_id', 'action', 'profession', 'view'])
                 ->make(true);
         }
 
-
         $countries = EssentialsCountry::forDropdown();
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-
 
         $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
         $status = [
@@ -463,8 +442,6 @@ class EssentialsManageEmployeeController extends Controller
             'terminated' => 'terminated',
             'vecation' => 'vecation',
         ];
-
-
 
         $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
             ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
@@ -487,7 +464,6 @@ class EssentialsManageEmployeeController extends Controller
                 'spacializations'
             ));
     }
-
 
     public function employee_affairs_dashboard()
     {
@@ -521,7 +497,6 @@ class EssentialsManageEmployeeController extends Controller
             ->whereDate('contract_end_date', '<=', $endDateThreshold)
             ->count();
 
-
         $late_vacation = 0;
         $type = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first();
         if ($type) {
@@ -533,7 +508,6 @@ class EssentialsManageEmployeeController extends Controller
                 ->where('end_date', '<', now())
                 ->select('end_date')->count();
         }
-
 
         $nullCount = User::whereIn('id', $userIds)
             ->with(['essentialsEmployeesInsurance', 'activeAdmission', 'activeAppointmet', 'activeInternationalCertificate', 'activeCarRegistration', 'activeDriversLicense', 'activeNationalId', 'activeIban', 'activeResidencePermit', 'activePassport', 'activeOfficialDocument', 'activeContract'])
@@ -568,8 +542,6 @@ class EssentialsManageEmployeeController extends Controller
                 });
             })
             ->count();
-
-
 
         $requestsProcess = null;
 
@@ -614,10 +586,8 @@ class EssentialsManageEmployeeController extends Controller
                     ->orWhereIn('process.superior_department_id', $departmentIds);
             })
 
-
             ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
             ->where('users.status', '!=', 'inactive');
-
 
         if (request()->ajax()) {
 
@@ -639,17 +609,15 @@ class EssentialsManageEmployeeController extends Controller
                     return $status;
                 })
 
-
                 ->rawColumns(['status', 'request_type_id'])
-
 
                 ->make(true);
         }
-        $counts =  $this->requestUtil->getCounts('employee_affairs');
-        $today_requests =   $counts->today_requests;
-        $pending_requests =   $counts->pending_requests;
-        $completed_requests =   $counts->completed_requests;
-        $all_requests =   $counts->all_requests;
+        $counts = $this->requestUtil->getCounts('employee_affairs');
+        $today_requests = $counts->today_requests;
+        $pending_requests = $counts->pending_requests;
+        $completed_requests = $counts->completed_requests;
+        $all_requests = $counts->all_requests;
         return view('essentials::employee_affairs.dashboard')
             ->with(compact(
                 'probation_period',
@@ -662,7 +630,6 @@ class EssentialsManageEmployeeController extends Controller
                 'all_requests'
             ));
     }
-
 
     public function finsish_contract_duration()
     {
@@ -685,7 +652,6 @@ class EssentialsManageEmployeeController extends Controller
             })
             ->whereDate(DB::raw('DATE_ADD(contract_start_date, INTERVAL probation_period MONTH)'), '>', $endDateThreshold)
             ->select('contract_end_date', 'employee_id');
-
 
         // dd( $residencies->first());
 
@@ -729,7 +695,6 @@ class EssentialsManageEmployeeController extends Controller
                     //     return $html;
                     // }
                 )
-
 
                 ->removeColumn('id')
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
@@ -798,7 +763,6 @@ class EssentialsManageEmployeeController extends Controller
                     //     return $html;
                     // }
                 )
-
 
                 ->removeColumn('id')
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
@@ -1041,14 +1005,14 @@ class EssentialsManageEmployeeController extends Controller
                             $missings_info .= __('essentials::lang.health_insurance') . '\n';
                         }
 
-                        return  $missings_info;
+                        return $missings_info;
                     }
                 )
                 ->addColumn(
                     'worker_name',
                     function ($row) {
 
-                        return $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name  ?? '';
+                        return $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name ?? '';
                     }
                 )
 
@@ -1065,7 +1029,6 @@ class EssentialsManageEmployeeController extends Controller
                         $sponsor_company = $row?->essentialsEmployeeAppointmets?->sponsor_company ?? null;
                         $sponsor_name = $row?->essentialsEmployeeAppointmets?->sponsor_name ?? null;
 
-
                         $sponsor = '';
                         if ($sponsor_company !== null) {
                             $sponsor = Company::find($sponsor_company)->name;
@@ -1076,7 +1039,6 @@ class EssentialsManageEmployeeController extends Controller
                         return $sponsor;
                     }
                 )
-
 
                 ->addColumn(
                     'action',
@@ -1091,13 +1053,11 @@ class EssentialsManageEmployeeController extends Controller
                     // }
                 )
 
-
-
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
                 ->make(true);
         }
         $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id')->toArray();
-        $projects =  SalesProject::pluck('name', 'id')->toArray();
+        $projects = SalesProject::pluck('name', 'id')->toArray();
         $missing_files = [
             'contract' => __('essentials::lang.contract'),
             'passport' => __('essentials::lang.passport'),
@@ -1106,7 +1066,7 @@ class EssentialsManageEmployeeController extends Controller
             'national_id' => __('essentials::lang.national_id'),
             'drivers_license' => __('essentials::lang.drivers_license'),
             'car_registration' => __('essentials::lang.car_registration'),
-            'international_certificate' => __('essentials::lang.international_certificate')
+            'international_certificate' => __('essentials::lang.international_certificate'),
 
         ];
         $missing_info = [
@@ -1117,10 +1077,8 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.statistics.uncomplete_profies')->with(compact('companies', 'projects', 'missing_files', 'missing_info'));
     }
 
-
     public function late_admission()
     {
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -1183,12 +1141,10 @@ class EssentialsManageEmployeeController extends Controller
                     // }
                 )
 
-
                 ->removeColumn('id')
                 ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
                 ->make(true);
         }
-
 
         return view('essentials::employee_affairs.statistics.late_vacaction');
     }
@@ -1205,7 +1161,6 @@ class EssentialsManageEmployeeController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
-
 
         if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
@@ -1237,8 +1192,6 @@ class EssentialsManageEmployeeController extends Controller
             'O+' => 'O positive (O+).',
             'O-' => 'O positive (O-).',
         ];
-
-
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
@@ -1306,7 +1259,6 @@ class EssentialsManageEmployeeController extends Controller
         return redirect()->back()->with('status', $output);
     }
 
-
     public function createWorker($id)
     {
         $contact = SalesProject::find($id);
@@ -1315,7 +1267,6 @@ class EssentialsManageEmployeeController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
-
 
         if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
@@ -1336,7 +1287,6 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $shifts = Shift::pluck('name', 'id');
-
 
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -1378,7 +1328,6 @@ class EssentialsManageEmployeeController extends Controller
     public function store(Request $request)
     {
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
         if (!($is_admin || auth()->user()->can('user.create'))) {
@@ -1415,8 +1364,6 @@ class EssentialsManageEmployeeController extends Controller
             //     $request['emp_number'] =  $com_id . '001';
             // }
 
-
-
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
 
             if ($existingprofnumber) {
@@ -1427,7 +1374,7 @@ class EssentialsManageEmployeeController extends Controller
                 ];
             } else {
                 $user = $this->moduleUtil->createUser($request);
-                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved',  'model_instance' => $user, 'request' => $user]);
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user, 'request' => $user]);
                 $output = [
                     'success' => 1,
                     'msg' => __('user.user_added'),
@@ -1444,10 +1391,8 @@ class EssentialsManageEmployeeController extends Controller
 
         //test
 
-
         return redirect()->route('employees')->with('status', $output);
     }
-
 
     public function storeWorker(Request $request)
     {
@@ -1490,8 +1435,6 @@ class EssentialsManageEmployeeController extends Controller
             if ($request->input('border_no')) {
                 $existingBordernumber = User::where('border_no', $request->input('border_no'))->first();
             }
-
-
 
             if ($existingprofnumber || $existingBordernumber) {
 
@@ -1540,8 +1483,6 @@ class EssentialsManageEmployeeController extends Controller
             ]);
         }
 
-
-
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
@@ -1549,17 +1490,11 @@ class EssentialsManageEmployeeController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-
-
         $user = User::whereIn('users.id', $userIds)
             ->with(['contactAccess', 'OfficialDocument', 'proposal_worker', 'essentials_qualification'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))
             ->find($id);
-
-
-
-
 
         $documents = new Collection();
 
@@ -1573,24 +1508,20 @@ class EssentialsManageEmployeeController extends Controller
                 $documents->push($contractDoc);
             }
 
-
             $qualificationDoc = $user->essentials_qualification()->first();
             if ($qualificationDoc) {
                 $documents->push($qualificationDoc);
             }
-
 
             if ($officialDocuments !== null) {
                 $documents = $documents->merge($officialDocuments); // Merge official documents with other documents
             }
         }
 
-
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
         }
-
 
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
@@ -1601,7 +1532,6 @@ class EssentialsManageEmployeeController extends Controller
             ->where('is_active', 1)
             ->first();
 
-
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
             ->value('profession_id');
 
@@ -1609,7 +1539,6 @@ class EssentialsManageEmployeeController extends Controller
             ->value('sponsor_company');
         $sponsor_name = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->where('is_active', 1)
             ->value('sponsor_name');
-
 
         if ($professionId !== null) {
             $profession = EssentialsProfession::find($professionId)->name;
@@ -1624,11 +1553,8 @@ class EssentialsManageEmployeeController extends Controller
             $sponsor = '';
         }
 
-
         $user->profession = $profession;
         $user->sponsor_company = $sponsor;
-
-
 
         $view_partials = $this->moduleUtil->getModuleData(
             'moduleViewPartials',
@@ -1648,7 +1574,6 @@ class EssentialsManageEmployeeController extends Controller
         if (!empty($nationality_id)) {
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
-
 
         $payrolls = PayrollGroupUser::with('payrollGroup')->where('user_id', $id)->get();
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact(
@@ -1696,7 +1621,7 @@ class EssentialsManageEmployeeController extends Controller
         $appointments = EssentialsEmployeeAppointmet::select([
 
             'profession_id',
-            'sponsor_company'
+            'sponsor_company',
 
         ])->where('employee_id', $id)->where('is_active', 1)
             ->first();
@@ -1732,14 +1657,12 @@ class EssentialsManageEmployeeController extends Controller
             ->first();
         //dd($contract);
 
-
         $allowance_deduction_ids = [];
         if (!empty($user)) {
             $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::with('essentialsAllowanceAndDeduction')
                 ->where('user_id', $user->id)
                 ->get();
         }
-
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::where('type', 'academic')->pluck('name', 'id');
@@ -1873,12 +1796,11 @@ class EssentialsManageEmployeeController extends Controller
                 'alt_number',
                 'Iban_file',
                 'emp_number',
-                'company_id'
+                'company_id',
 
             ]);
 
-
-            $existing_user =  User::findOrFail($id);
+            $existing_user = User::findOrFail($id);
 
             if (!$existing_user) {
                 $output = [
@@ -1920,12 +1842,10 @@ class EssentialsManageEmployeeController extends Controller
 
                     DB::beginTransaction();
 
-
-
                     $delete_iban_file = $request->delete_iban_file ?? null;
                     if ($delete_iban_file && $delete_iban_file == 1) {
 
-                        $filePath =  !empty($existing_user->bank_details) ? json_decode($existing_user->bank_details, true)['Iban_file'] ?? null : null;
+                        $filePath = !empty($existing_user->bank_details) ? json_decode($existing_user->bank_details, true)['Iban_file'] ?? null : null;
                         if ($filePath) {
                             Storage::delete($filePath);
                         }
@@ -1945,7 +1865,6 @@ class EssentialsManageEmployeeController extends Controller
                         ];
 
                         $Iban_doc = EssentialsOfficialDocument::where('employee_id', $existing_user->id)->where('is_active', 1)->where('type', 'Iban')->first();
-
 
                         if ($Iban_doc) {
 
@@ -1967,11 +1886,10 @@ class EssentialsManageEmployeeController extends Controller
                         $input = [
                             'number' => $bankCode,
                             'file_path' => $request->existing_iban_file,
-                            'updated_by' => Auth::user()->id
+                            'updated_by' => Auth::user()->id,
                         ];
 
                         $Iban_doc = EssentialsOfficialDocument::where('employee_id', $existing_user->id)->where('is_active', 1)->where('type', 'Iban')->first();
-
 
                         if ($Iban_doc) {
 
@@ -2001,14 +1919,14 @@ class EssentialsManageEmployeeController extends Controller
                             if ($filePath) {
                                 Storage::delete($filePath);
                                 EssentialsOfficialDocument::where('id', $deleted_document)->update([
-                                    'file_path' => Null,
+                                    'file_path' => null,
                                     'updated_by' => Auth::user()->id,
 
                                 ]);
                             }
                         }
                     }
-                    foreach ($offical_documents_types  as  $index => $offical_documents_type) {
+                    foreach ($offical_documents_types as $index => $offical_documents_type) {
                         if (
                             $offical_documents_type
                         ) {
@@ -2054,12 +1972,11 @@ class EssentialsManageEmployeeController extends Controller
                         if ($filePath) {
                             Storage::delete($filePath);
                             EssentialsEmployeesQualification::where('employee_id', $id)->update([
-                                'file_path' => Null,
-                                'updated_by' => Auth::user()->id
+                                'file_path' => null,
+                                'updated_by' => Auth::user()->id,
                             ]);
                         }
                     }
-
 
                     $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_updated', 'model_instance' => $existing_user, 'request' => $user_data]);
 
@@ -2100,7 +2017,8 @@ class EssentialsManageEmployeeController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function destroy($id) {}
+    public function destroy($id)
+    {}
 
     private function getRolesArray($business_id)
     {
@@ -2117,8 +2035,6 @@ class EssentialsManageEmployeeController extends Controller
         }
         return $roles;
     }
-
-
 
     public function new_arrival_for_workers(Request $request)
     {
