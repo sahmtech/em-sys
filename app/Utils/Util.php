@@ -256,34 +256,17 @@ class Util
     //         $mysql_format = 'Y-m-d H:i:s';
     //     }
     //     $date = str_replace(['/', '\\'], '-', $date);
+    //     dd(!empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null);
 
     //     return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
     // }
     public function uf_date($date, $time = false)
     {
-        // Get the date format from the session
-        $date_format = session('business.date_format');
-        $mysql_format = 'Y-m-d'; // Default MySQL format (without time)
 
-        if ($time) {
-            // If time is needed, adjust the format based on the time format (12-hour or 24-hour)
-            if (session('business.time_format') == 12) {
-                $date_format .= ' h:i A'; // 12-hour format with AM/PM
-            } else {
-                $date_format .= ' H:i'; // 24-hour format
-            }
-            $mysql_format = 'Y-m-d H:i:s'; // Full MySQL format (with time)
-        }
-
-        // Replace slashes and backslashes with dashes to standardize date format
-        $date = str_replace(['/', '\\'], '-', $date);
-
-        // Parse the date using the date format specified by the session
         try {
-            // Use Carbon::createFromFormat to explicitly tell Carbon how to interpret the date
-            return Carbon::createFromFormat($date_format, $date)->format($mysql_format);
+            return \DateTime::createFromFormat('m/d/Y H:i', $date)->format('Y-m-d H:i:s');
+
         } catch (\Exception $e) {
-            // Handle any errors in case the date format does not match
             return "Error: Could not parse date: " . $e->getMessage();
         }
     }
@@ -341,6 +324,28 @@ class Util
 
         return !empty($date) ? \Carbon::createFromTimestamp(strtotime($date))->format($format) : null;
     }
+
+    // public function format_date($date, $show_time = false, $business_details = null)
+    // {
+    //     // Retrieve the date format
+    //     $format = !empty($business_details) ? $business_details->date_format : session('business.date_format');
+
+    //     // Replace any slashes (/) in the date format with hyphens (-)
+    //     $format = str_replace(['/', '\\'], '-', $format);
+
+    //     // If show_time is true, add the time format
+    //     if (!empty($show_time)) {
+    //         $time_format = !empty($business_details) ? $business_details->time_format : session('business.time_format');
+    //         if ($time_format == 12) {
+    //             $format .= ' h:i A';
+    //         } else {
+    //             $format .= ' H:i';
+    //         }
+    //     }
+
+    //     // Return the formatted date
+    //     return !empty($date) ? \Carbon::createFromTimestamp(strtotime($date))->format($format) : null;
+    // }
 
     /**
      * Increments reference count for a given type and given business

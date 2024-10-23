@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Account;
+use App\BankAccount;
 use App\Business;
 use App\BusinessLocation;
 use App\Contact;
@@ -23,16 +24,14 @@ use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use App\Warranty;
-use Illuminate\Support\Facades\DB;
-use App\BankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\CostCenter;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
-use Modules\Accounting\Entities\AccountingAccount;
-
 
 class SellController extends Controller
 {
@@ -86,7 +85,6 @@ class SellController extends Controller
     {
         $is_admin = $this->businessUtil->is_admin(auth()->user());
         $company_id = Session::get('selectedCompanyId');
-
 
         if (!$is_admin && !auth()->user()->hasAnyPermission(['sell.view', 'sell.create', 'direct_sell.access', 'direct_sell.view', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping', 'so.view_all', 'so.view_own'])) {
             //temp  abort(403, 'Unauthorized action.');
@@ -339,7 +337,6 @@ class SellController extends Controller
                 $sells->with($with);
             }
 
-
             //$business_details = $this->businessUtil->getDetails($business_id);
             // if ($this->businessUtil->isModuleEnabled('subscription')) {
             //     $sells->addSelect('transactions.is_recurring', 'transactions.recur_parent_id');
@@ -351,9 +348,9 @@ class SellController extends Controller
                     'action',
                     function ($row) use ($only_shipments, $is_admin, $sale_type) {
                         $html = '<div class="btn-group">
-                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                                         data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
+                        __('messages.actions') .
                             '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                         </span>
                                     </button>
@@ -418,15 +415,15 @@ class SellController extends Controller
                             // if (auth()->user()->can('print_invoice')) {
                             $html .= '<li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '"><i class="fas fa-print" aria-hidden="true"></i> ' . __('lang_v1.print_invoice') . '</a></li>
                                     ';
-                                    // <li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '?package_slip=true"><i class="fas fa-file-alt" aria-hidden="true"></i> ' . __('lang_v1.packing_slip') . '</a></li>
+                            // <li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '?package_slip=true"><i class="fas fa-file-alt" aria-hidden="true"></i> ' . __('lang_v1.packing_slip') . '</a></li>
                             // $html .= '<li><a href="#" class="print-invoice" data-href="' . route('sell.printInvoice', [$row->id]) . '?delivery_note=true"><i class="fas fa-file-alt" aria-hidden="true"></i> ' . __('lang_v1.delivery_note') . '</a></li>';
                             // }
                             $html .= '<li class="divider"></li>';
                             if (!$only_shipments) {
                                 // if ($row->is_direct_sale == 0 && ! auth()->user()->can('sell.update') &&
-                                // auth()->user()->can('edit_pos_payment')) { 
+                                // auth()->user()->can('edit_pos_payment')) {
                                 if ($row->is_direct_sale == 0) {
-                                    $html .= '<li><a href="' . route('edit-pos-payment', [$row->id]) . '" 
+                                    $html .= '<li><a href="' . route('edit-pos-payment', [$row->id]) . '"
                                     ><i class="fas fa-money-bill-alt"></i> ' . __('lang_v1.add_edit_payment') .
                                         '</a></li>';
                                 }
@@ -499,7 +496,6 @@ class SellController extends Controller
                         return (string) view('sell.partials.payment_status', ['payment_status' => $payment_status, 'id' => $row->id]);
                     }
                 )
-
 
                 ->editColumn(
                     'types_of_service_name',
@@ -591,11 +587,8 @@ class SellController extends Controller
                 ->addColumn('account_name', function ($row) {
                     $account = array_unique($row->payment_lines->pluck('account_id')->toArray());
                     $accounting_account = $account ? AccountingAccount::where('id', $account)->first() : false;
-                    return   $accounting_account ? (\Lang::has('accounting::lang.' . $accounting_account?->name) ? __('accounting::lang.' . $accounting_account?->name) : $accounting_account?->name  . '(' . $accounting_account?->gl_code . ')') : '';
+                    return $accounting_account ? (\Lang::has('accounting::lang.' . $accounting_account?->name) ? __('accounting::lang.' . $accounting_account?->name) : $accounting_account?->name . '(' . $accounting_account?->gl_code . ')') : '';
                 })
-
-
-
 
                 ->editColumn('status', function ($row) use ($sales_order_statuses, $is_admin) {
                     $status = '';
@@ -614,7 +607,7 @@ class SellController extends Controller
                 ->setRowAttr([
                     'data-href' => function ($row) {
                         // if (auth()->user()->can('sell.view') || auth()->user()->can('view_own_sell_only')) {
-                        return  action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
+                        return action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
                         // } else {
                         //     return '';
                         // }
@@ -1107,7 +1100,7 @@ class SellController extends Controller
                             ];
                         }
                         $sell_details[$key]->qty_available =
-                            $this->productUtil->calculateComboQuantity($location_id, $combo_variations);
+                        $this->productUtil->calculateComboQuantity($location_id, $combo_variations);
 
                         if ($transaction->status == 'final') {
                             $sell_details[$key]->qty_available = $sell_details[$key]->qty_available + $sell_details[$key]->quantity_ordered;
@@ -1371,10 +1364,10 @@ class SellController extends Controller
                     'action',
                     function ($row) {
                         $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                                     data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                        __('messages.actions') .
+                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -1433,9 +1426,9 @@ class SellController extends Controller
 
                         if ($row->sub_status == 'quotation') {
                             $html .= '<li>
-                                        <a href="' . action([\App\Http\Controllers\SellPosController::class, 'copyQuotation'], [$row->id]) . '" 
+                                        <a href="' . action([\App\Http\Controllers\SellPosController::class, 'copyQuotation'], [$row->id]) . '"
                                         class="copy_quotation"><i class="fas fa-copy"></i>' .
-                                __("lang_v1.copy_quotation") . '</a>
+                            __("lang_v1.copy_quotation") . '</a>
                                     </li>
                                     <li>
                                         <a href="#" data-href="' . action("\App\Http\Controllers\NotificationController@getTemplate", ["transaction_id" => $row->id, "template_for" => "new_quotation"]) . '" class="btn-modal" data-container=".view_modal"><i class="fa fa-envelope" aria-hidden="true"></i>' . __("lang_v1.new_quotation_notification") . '
@@ -1489,7 +1482,7 @@ class SellController extends Controller
                 ->setRowAttr([
                     'data-href' => function ($row) {
                         if (auth()->user()->can('sell.view')) {
-                            return  action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
+                            return action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
                         } else {
                             return '';
                         }
@@ -1633,7 +1626,6 @@ class SellController extends Controller
                 'shipping_details', 'shipping_address',
                 'shipping_status', 'delivered_to', 'delivery_person', 'shipping_custom_field_1', 'shipping_custom_field_2', 'shipping_custom_field_3', 'shipping_custom_field_4', 'shipping_custom_field_5',
             ]);
-
 
             $business_id = $request->session()->get('user.business_id');
 
