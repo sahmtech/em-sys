@@ -2,22 +2,21 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
-use Modules\Accounting\Entities\AccountingAccount;
-use Modules\Accounting\Utils\AccountingUtil;
-use App\Utils\BusinessUtil;
-use App\Utils\ModuleUtil;
-use Illuminate\Support\Facades\DB;
 use App\BusinessLocation;
 use App\Contact;
 use App\TaxRate;
 use App\User;
+use App\Utils\BusinessUtil;
+use App\Utils\ModuleUtil;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Session;
-use Modules\Accounting\Entities\AccountingAccountsTransaction;
+use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingAccountType;
+use Modules\Accounting\Utils\AccountingUtil;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReportController extends Controller
@@ -25,7 +24,6 @@ class ReportController extends Controller
     protected $accountingUtil;
     protected $businessUtil;
     protected $moduleUtil;
-
 
     /**
      * Constructor
@@ -46,13 +44,49 @@ class ReportController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
+    // public function index()
+    // {
+
+    //     $business_id = request()->session()->get('user.business_id');
+    //     $company_id = Session::get('selectedCompanyId');
+
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //     $can_reports = auth()->user()->can('accounting.reports');
+    //     if (!($is_admin || $can_reports)) {
+    //         return redirect()->route('home')->with('status', [
+    //             'success' => false,
+    //             'msg' => __('message.unauthorized'),
+    //         ]);
+    //     }
+
+    //     $first_account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
+    //         ->where('status', 'active')
+
+    //         ->first();
+
+    //     $first_contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
+    //         ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])->active()->first();
+
+    //     $first_employee = User::where('business_id', $business_id)->where('company_id', $company_id)
+    //         ->whereIn('user_type', ['employee', 'manager', 'Department_head'])->where('status', 'active')->first();
+
+    //     $ledger_url = null;
+    //     if (!empty($first_account)) {
+    //         $ledger_url = route('accounting.ledger', $first_account);
+    //         dd($first_employee);
+    //         $employees_statement_url = route('accounting.employeesStatement', $first_employee);
+    //         $customers_suppliers_statement_url = route('accounting.customersSuppliersStatement', $first_contact);
+    //     }
+    //     return view('accounting::report.index')
+    //         ->with(compact('ledger_url', 'employees_statement_url', 'customers_suppliers_statement_url'));
+    // }
     public function index()
     {
+
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
 
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_admin = auth()->user()->hasRole('Admin#1');
         $can_reports = auth()->user()->can('accounting.reports');
         if (!($is_admin || $can_reports)) {
             return redirect()->route('home')->with('status', [
@@ -61,24 +95,35 @@ class ReportController extends Controller
             ]);
         }
 
-
-        $first_account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
+        $first_account = AccountingAccount::where('business_id', $business_id)
+            ->where('company_id', $company_id)
             ->where('status', 'active')
-
             ->first();
 
-        $first_contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
-            ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])->active()->first();
+        $first_contact = Contact::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])
+            ->active()
+            ->first();
 
-        $first_employee = User::where('business_id', $business_id)->where('company_id', $company_id)
-            ->whereIn('user_type', ['employee', 'manager', 'Department_head'])->where('status', 'active')->first();
+        $first_employee = User::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->whereIn('user_type', ['employee', 'manager', 'Department_head'])
+            ->where('status', 'active')
+            ->first();
+
+        // Check if $first_employee is null
+        // if (is_null($first_employee)) {
+        //     return back()->with('status', [
+        //         'success' => false,
+        //         'msg' => __('message.no_employees_found'), // Customize your error message
+        //     ]);
+        // }
 
         $ledger_url = null;
-        if (!empty($first_account)) {
-            $ledger_url = route('accounting.ledger', $first_account);
-            $employees_statement_url = route('accounting.employeesStatement', $first_employee);
-            $customers_suppliers_statement_url = route('accounting.customersSuppliersStatement', $first_contact);
-        }
+        $ledger_url = $first_account ? route('accounting.ledger', $first_account) : null;
+        $employees_statement_url = $first_employee ? route('accounting.employeesStatement', $first_employee) : null;
+        $customers_suppliers_statement_url = $first_contact ? route('accounting.customersSuppliersStatement', $first_contact) : null;
 
         return view('accounting::report.index')
             ->with(compact('ledger_url', 'employees_statement_url', 'customers_suppliers_statement_url'));
@@ -97,8 +142,6 @@ class ReportController extends Controller
             $accounts_array[$key] =
                 $account_type['label'];
         }
-
-
 
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
@@ -129,14 +172,14 @@ class ReportController extends Controller
 
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->input('start_date');
-            $end_date =  request()->input('end_date');
+            $end_date = request()->input('end_date');
         } else {
             $fy = $this->businessUtil->getCurrentFinancialYear($business_id, $company_id);
             $start_date = $fy['start'];
             $end_date = $fy['end'];
         }
 
-        if (! $with_zero_balances) {
+        if (!$with_zero_balances) {
             $accounts = AccountingAccount::join(
                 'accounting_accounts_transactions as AAT',
                 'AAT.accounting_account_id',
@@ -192,14 +235,14 @@ class ReportController extends Controller
                 DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
                 DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT 
-            WHERE AAT.accounting_account_id = accounting_accounts.id 
+                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
+            WHERE AAT.accounting_account_id = accounting_accounts.id
             AND AAT.sub_type = 'opening_balance'
             AND AAT.type = 'credit'
-            ORDER BY AAT.operation_date ASC 
+            ORDER BY AAT.operation_date ASC
             LIMIT 1), 0) as credit_opening_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT 
-            WHERE AAT.accounting_account_id = accounting_accounts.id 
+                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
+            WHERE AAT.accounting_account_id = accounting_accounts.id
             AND AAT.sub_type = 'opening_balance'
             AND AAT.type = 'debit'
             ORDER BY AAT.operation_date ASC LIMIT 1), 0) as debit_opening_balance"),
@@ -208,9 +251,9 @@ class ReportController extends Controller
                 'accounting_accounts.gl_code',
                 'accounting_accounts.id'
             )
-            /* ->when($level_filter, function ($query, $level_filter) {
-                return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
-            }) */
+        /* ->when($level_filter, function ($query, $level_filter) {
+        return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
+        }) */
             ->groupBy(
                 'name',
             )
@@ -222,7 +265,7 @@ class ReportController extends Controller
 
                 $groupKey = $account->name;
                 if (!isset($aggregatedAccounts[$groupKey])) {
-                    $aggregatedAccounts[$groupKey] =  (object) [
+                    $aggregatedAccounts[$groupKey] = (object) [
                         'name' => Lang::has('accounting::lang.' . $groupKey) ? __('accounting::lang.' . $groupKey) : $groupKey,
                         'gl_code' => $account->gl_code[0],
                         'credit_balance' => 0,
@@ -238,7 +281,6 @@ class ReportController extends Controller
             }
             $accounts = $aggregatedAccounts;
         }
-
 
         if (request()->ajax()) {
 
@@ -289,9 +331,9 @@ class ReportController extends Controller
                 })
                 ->addColumn('action', function ($account) use ($aggregated) {
                     $html = ' ';
-                    if (! $aggregated) {
+                    if (!$aggregated) {
                         $html =
-                            '<div class="btn-group">
+                        '<div class="btn-group">
                                 <button type="button" class="btn btn-info btn-xs" >' . '
                                     <a class=" btn-modal text-white" data-container="#printledger"
                                         data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
@@ -313,7 +355,6 @@ class ReportController extends Controller
                 ])
                 ->make(true);
         }
-
 
         return view('accounting::report.trial_balance')
             ->with(compact('levelsArray', 'accounts_array'));
@@ -341,10 +382,9 @@ class ReportController extends Controller
             ->whereIn('user_type', ['employee', 'manager', 'Department_head'])
             ->findorFail($user_id);
 
-
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->start_date;
-            $end_date =  request()->end_date;
+            $end_date = request()->end_date;
         } else {
             $fy = $this->businessUtil->getCurrentFinancialYear($business_id, $company_id);
             $start_date = $fy['start'];
@@ -390,7 +430,6 @@ class ReportController extends Controller
                     'u.last_name',
                 );
 
-
             return DataTables::of($users)
                 ->editColumn('operation_date', function ($row) {
                     return $this->accountingUtil->format_date($row->operation_date, true);
@@ -398,14 +437,14 @@ class ReportController extends Controller
                 ->editColumn('ref_no', function ($row) {
                     $description = '';
                     if ($row->sub_type == 'journal_entry') {
-                        $description =  $row->ref_no;
+                        $description = $row->ref_no;
                     }
 
                     if ($row->sub_type == 'sell') {
                         $description = $row->invoice_no;
                     }
                     if ($row->atm_id) {
-                        $description = '<a class=" btn-modal" 
+                        $description = '<a class=" btn-modal"
                       data-container="#printJournalEntry"
                          data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@print', [$row->atm_id]) . '">
                             <i class="fa fa-print" aria-hidden="true"></i>' . $description . '
@@ -462,7 +501,6 @@ class ReportController extends Controller
 
         $current_bal = $current_bal?->first()->balance;
 
-
         $total_debit_bal = User::where('users.business_id', $business_id)
             ->where('users.company_id', $company_id)
             ->where('users.id', $user_id)
@@ -511,10 +549,9 @@ class ReportController extends Controller
             ->with(['transactions'])
             ->findorFail($contact_id);
 
-
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->start_date;
-            $end_date =  request()->end_date;
+            $end_date = request()->end_date;
         } else {
             $fy = $this->businessUtil->getCurrentFinancialYear($business_id, $company_id);
             $start_date = $fy['start'];
@@ -560,7 +597,6 @@ class ReportController extends Controller
                     'u.last_name',
                 );
 
-
             return DataTables::of($contacts)
                 ->editColumn('operation_date', function ($row) {
                     return $this->accountingUtil->format_date($row->operation_date, true);
@@ -568,14 +604,14 @@ class ReportController extends Controller
                 ->editColumn('ref_no', function ($row) {
                     $description = '';
                     if ($row->sub_type == 'journal_entry') {
-                        $description =  $row->ref_no;
+                        $description = $row->ref_no;
                     }
 
                     if ($row->sub_type == 'sell') {
                         $description = $row->invoice_no;
                     }
                     if ($row->atm_id) {
-                        $description = '<a class=" btn-modal" 
+                        $description = '<a class=" btn-modal"
                       data-container="#printJournalEntry"
                          data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@print', [$row->atm_id]) . '">
                             <i class="fa fa-print" aria-hidden="true"></i>' . $description . '
@@ -631,7 +667,6 @@ class ReportController extends Controller
 
         $current_bal = $current_bal?->first()->balance;
 
-
         $total_debit_bal = Contact::join('transactions as t', 'contacts.id', '=', 't.contact_id')
             ->join('accounting_accounts_transactions as AAT', 't.id', '=', 'AAT.transaction_id')
             ->leftjoin(
@@ -663,8 +698,6 @@ class ReportController extends Controller
 
         $total_credit_bal = $total_credit_bal->balance;
 
-
-
         return view('accounting::chart_of_accounts.customers-suppliers-statement')
             ->with(compact('contact', 'contact_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
     }
@@ -680,7 +713,7 @@ class ReportController extends Controller
 
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->start_date;
-            $end_date =  request()->end_date;
+            $end_date = request()->end_date;
         } else {
             $fy = $this->businessUtil->getCurrentFinancialYear($business_id, $company_id);
             $start_date = $fy['start'];
@@ -714,22 +747,22 @@ class ReportController extends Controller
                 DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
                 DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
                 DB::raw("IFNULL(
-                    (SELECT AAT2.amount 
-                     FROM accounting_accounts_transactions as AAT2 
-                     WHERE AAT2.accounting_account_id = accounting_accounts.id 
+                    (SELECT AAT2.amount
+                     FROM accounting_accounts_transactions as AAT2
+                     WHERE AAT2.accounting_account_id = accounting_accounts.id
                      AND AAT2.sub_type = 'opening_balance'
                      AND AAT2.type = 'credit'
-                     ORDER BY AAT2.operation_date ASC 
-                     LIMIT 1), 
+                     ORDER BY AAT2.operation_date ASC
+                     LIMIT 1),
                     0) as credit_opening_balance"),
                 DB::raw("IFNULL(
-                    (SELECT AAT2.amount 
-                     FROM accounting_accounts_transactions as AAT2 
-                     WHERE AAT2.accounting_account_id = accounting_accounts.id 
+                    (SELECT AAT2.amount
+                     FROM accounting_accounts_transactions as AAT2
+                     WHERE AAT2.accounting_account_id = accounting_accounts.id
                      AND AAT2.sub_type = 'opening_balance'
                      AND AAT2.type = 'debit'
-                     ORDER BY AAT2.operation_date ASC 
-                     LIMIT 1), 
+                     ORDER BY AAT2.operation_date ASC
+                     LIMIT 1),
                     0) as debit_opening_balance"),
                 'accounting_accounts.name',
                 'accounting_accounts.gl_code',
@@ -808,7 +841,7 @@ class ReportController extends Controller
         $tax = TaxRate::first()->amount;
         $tax_amount = ($tax * $income_before_tax) / 100;
 
-        return (object)[
+        return (object) [
             'gross_profit' => $gross_profit,
             'operation_income' => $operation_income,
             'income_before_tax' => $income_before_tax,
@@ -817,7 +850,7 @@ class ReportController extends Controller
             'cost_of_revenue' => $cost_of_revenue,
             'total_expense' => $total_expense,
             'total_other_income' => $total_other_income,
-            'total_other_expense' => $total_other_expense
+            'total_other_expense' => $total_other_expense,
         ];
     }
 
@@ -830,11 +863,9 @@ class ReportController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
 
-
-
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->start_date;
-            $end_date =  request()->end_date;
+            $end_date = request()->end_date;
         } else {
             $fy = $this->businessUtil->getCurrentFinancialYear($business_id, $company_id);
             $start_date = $fy['start'];
@@ -917,8 +948,6 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
-
-
 
         $location_id = request()->input('location_id', null);
 

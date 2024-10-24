@@ -147,7 +147,7 @@
                                 <th id="allpagesdebitTotal" class="all_pages_debit_total"></th>
                                 <th id="allpagescreditTotal" class="all_pages_credit_total"></th>
                                 <th id="allpagesclosingDebitTotal" class="all_pages_closing_debit_total"></th>
-                                <th  id="allpagesclosingCreditTotal" class="all_pages_closing_credit_total"></th>
+                                <th id="allpagesclosingCreditTotal" class="all_pages_closing_credit_total"></th>
                                 <th></th>
                             </tr>
                         </tfoot>
