@@ -308,7 +308,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $users->whereHas('appointment', function ($query) use ($request) {
                 if (!empty($request->input('specialization'))) {
-                    $query->where('profession_id', $request->input('specialization'));
+                    $query->whereIn('profession_id', (array) $request->input('specialization'));
                 }
             });
         }
@@ -317,21 +317,21 @@ class EssentialsManageEmployeeController extends Controller
             $users->where('users.status', $request->input('status'));
         }
         if (!empty($request->input('department')) && $request->input('department') != 'all') {
-            $users->where('users.essentials_department_id', $request->input('department'));
+            $users->whereIn('users.essentials_department_id', (array) $request->input('department'));
         }
         if (!empty($request->input('contract_type')) && $request->input('contract_type') != 'all') {
-            error_log($request->input('contract_type'));
-            $users->where('essentials_employees_contracts.contract_type_id', $request->input('contract_type'));
+            error_log(json_encode($request->input('contract_type')));
+            $users->whereIn('essentials_employees_contracts.contract_type_id', (array) $request->input('contract_type'));
         }
 
         if (!empty($request->input('company')) && $request->input('company') != 'all') {
 
-            $users->where('users.company_id', $request->input('company'));
+            $users->whereIn('users.company_id', (array) $request->input('company'));
         }
 
         if (!empty($request->input('nationality')) && $request->input('nationality') != 'all') {
 
-            $users->where('users.nationality_id', $request->input('nationality'));
+            $users->whereIn('users.nationality_id', (array) $request->input('nationality'));
         }
         if (request()->ajax()) {
 

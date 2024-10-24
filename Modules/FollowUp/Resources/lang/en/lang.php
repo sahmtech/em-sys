@@ -119,9 +119,6 @@ return [
         'projectsReports' => 'Projects Reports',
     ],
 
-
-
-
     'create_order' => 'create order',
     'viewExitRequests' => 'View Exit Requests',
     'crudExitRequests' => 'crud Exit Requests ',
@@ -263,7 +260,6 @@ return [
     'manager' => 'Manager',
     'worker' => 'Worker',
     'user' => 'User',
-
 
     'editContactLocations' => 'Edit contact locations',
     'deleteContactLocations' => 'Delete contact locations',

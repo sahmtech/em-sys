@@ -124,10 +124,6 @@ return [
         'projectsReports' => 'تقرير المشاريع',
     ],
 
-
-
-
-
     'select' => 'تحديد الاسطر',
     'curd_contracts_wishes' => 'إضافة \حذف\تعديل العقود والرغبات',
     'contrascts_wishes' => 'الرغبات والعقود',
@@ -363,5 +359,5 @@ return [
     'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
     'show_timesheet' => 'عرض معلومات التايم شيت',
     //''=>''
-    'deal_timesheet' => 'اعتماد التايم شيت'
+    'deal_timesheet' => 'اعتماد التايم شيت',
 ];

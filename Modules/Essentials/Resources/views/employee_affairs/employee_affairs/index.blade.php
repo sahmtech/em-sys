@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                        <li class="active">Here</li>
-                                                                                                    </ol> -->
+                                                                                                                                                                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                                                                                <li class="active">Here</li>
+                                                                                                                                                                                                                            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -20,33 +20,36 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="business_filter">@lang('essentials::lang.business_single'):</label>
-                    {!! Form::select('select_company_id', $companies, null, [
+                    {!! Form::select('select_company_id[]', $companies, 'all', [
                         'class' => 'form-control select2',
                         'id' => 'select_company_id',
                         'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
+                        'multiple' => 'multiple', // Add this line for multi-select
                     ]) !!}
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="department_filter">@lang('essentials::lang.department'):</label>
-                    {!! Form::select('select_department_id', $departments, null, [
+                    {!! Form::select('select_department_id[]', $departments, 'all', [
                         'class' => 'form-control select2',
                         'id' => 'select_department_id',
                         'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
+                        'multiple' => 'multiple', // Add this line for multi-select
                     ]) !!}
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="contract_type_filter">@lang('essentials::lang.contract_type'):</label>
-                    {!! Form::select('contract_type_filter', $contract_types, null, [
+                    {!! Form::select('contract_type_filter[]', $contract_types, 'all', [
                         'class' => 'form-control select2',
                         'id' => 'contract_type_filter',
                         'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
+                        'multiple' => 'multiple', // Add this line for multi-select
                     ]) !!}
                 </div>
             </div>
@@ -54,11 +57,12 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="specializations_filter">@lang('essentials::lang.job_title'):</label>
-                    {!! Form::select('specializations-select', $job_titles, request('specializations-select'), [
+                    {!! Form::select('specializations-select[]', $job_titles, 'all', [
                         'class' => 'form-control select2',
                         'style' => 'height:40px; width:100%',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'specializations-select',
+                        'multiple' => 'multiple', // Add this line for multi-select
                     ]) !!}
                 </div>
             </div>
@@ -66,11 +70,12 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="nationalities_filter">@lang('essentials::lang.nationality'):</label>
-                    {!! Form::select('nationalities_select', $nationalities, request('nationalities_select'), [
+                    {!! Form::select('nationalities_select[]', $nationalities, 'all', [
                         'class' => 'form-control select2',
                         'placeholder' => __('lang_v1.all'),
                         'style' => 'height:40px; width:100%',
                         'id' => 'nationalities_select',
+                        'multiple' => 'multiple', // Add this line for multi-select
                     ]) !!}
                 </div>
             </div>
@@ -567,6 +572,10 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: '@lang('lang_v1.all')',
+                allowClear: true,
+            });
             var users_table = $('#employees').DataTable({
                 processing: true,
                 serverSide: false,
@@ -867,6 +876,27 @@
 
 
         }
+        $(document).ready(function() {
+            // Initialize Select2 for multiple elements
+            const selectElements = [
+                '#select_department_id',
+                '#select_company_id',
+                '#contract_type_filter',
+                '#specializations-select',
+                '#nationalities_select'
+            ];
+
+            selectElements.forEach(function(selector) {
+                $(selector).select2({
+                    placeholder: __('lang_v1.all'),
+                    allowClear: true
+                }).on('change', function() {
+                    if ($(this).val().length === 0) { // Check if no options are selected
+                        $(this).val(['all']).trigger('change'); // Reset to 'all'
+                    }
+                });
+            });
+        });
     </script>
 
 

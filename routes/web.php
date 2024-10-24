@@ -1,39 +1,29 @@
 <?php
 
-use App\Business;
-use App\Contact;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountReportsController;
 use App\Http\Controllers\AccountTypeController;
+use App\Http\Controllers\AgentController;
+use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BankAccountsController;
-use Carbon\Carbon;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Modules\Essentials\Entities\EssentialsUserShift;
-
+use App\Http\Controllers\BarcodeController;
 
 // use App\Http\Controllers\Auth;
-use App\Http\Controllers\BackUpController;
-use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\BusinessLocationController;
+use App\Http\Controllers\BusinessSectorController;
 use App\Http\Controllers\CashRegisterController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CombinedPurchaseReturnController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\AgentController;
-use App\Http\Controllers\API\ApiCustomerController;
-use App\Http\Controllers\BusinessSectorController;
 use App\Http\Controllers\CustomerGroupController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardConfiguratorController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\DocumentAndNoteController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\GroupTaxController;
-
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImportOpeningStockController;
 use App\Http\Controllers\ImportProductsController;
 use App\Http\Controllers\ImportSalesController;
@@ -77,12 +67,9 @@ use App\Http\Controllers\VariationTemplateController;
 use App\Http\Controllers\WarrantyController;
 use App\User;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Route;
-use Modules\FollowUp\Http\Controllers\FollowUpRequestController;
-
-
 use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use Illuminate\Support\Facades\Route;
+use Modules\Essentials\Entities\EssentialsUserShift;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,7 +80,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::get('/contactUsFromWebsite', function () {
 
@@ -249,7 +236,7 @@ Route::get('/fix_emp', function () {
             $user->save();
         }
         DB::commit();
-        return response()->json(['message' => 'Success',]);
+        return response()->json(['message' => 'Success']);
     } catch (Exception $e) {
         DB::rollback();
         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
@@ -278,7 +265,7 @@ Route::get('/fix_emp2', function () {
             $user->save();
         }
         DB::commit();
-        return response()->json(['message' => 'Success',]);
+        return response()->json(['message' => 'Success']);
     } catch (Exception $e) {
         DB::rollback();
         return response()->json(['error' => 'Failed ', 'message' => $e->getMessage()], 500);
@@ -308,10 +295,8 @@ Route::get('/updateShifts', function () {
 
     foreach ($users as $user) {
 
-
         EssentialsUserShift::where('user_id', $user->id)
             ->update(['is_active' => 0]);
-
 
         EssentialsUserShift::create([
             'user_id' => $user->id,
@@ -337,10 +322,8 @@ Route::get('/updateShifts', function () {
 //     }
 // });
 
-
 // Route::get('/getContractsByDate', function () {
 //     $date = '2024-04-28';
-
 
 //     DB::transaction(function () use ($date) {
 
@@ -413,7 +396,6 @@ Route::get('/updateShifts', function () {
 // Route::get('/updateContractNumbers', function () {
 
 //     EssentialsEmployeesContract::query()->update(['contract_number' => null]);
-
 
 //     $contracts = EssentialsEmployeesContract::orderBy('id')->get();
 
@@ -513,7 +495,6 @@ Route::get('/updateShifts', function () {
 
 //     foreach ($docs as $doc) {
 
-
 //         if (is_null($doc->expiration_date)) {
 //             continue;
 //         }
@@ -542,8 +523,8 @@ Route::get('/updateShifts', function () {
 
 //     try {
 //         $subquery = "
-//             SELECT MIN(id) as id 
-//             FROM essentials_official_documents 
+//             SELECT MIN(id) as id
+//             FROM essentials_official_documents
 //             GROUP BY type, number, issue_date, issue_place, expiration_date, is_active,file_path, employee_id
 //         ";
 
@@ -570,9 +551,9 @@ Route::get('/updateShifts', function () {
 
 //     try {
 //         $subquery = "
-//             SELECT MIN(id) as id 
-//             FROM essentials_employees_contracts 
-//             GROUP BY 
+//             SELECT MIN(id) as id
+//             FROM essentials_employees_contracts
+//             GROUP BY
 //                 employee_id, is_active, contract_start_date, contract_end_date,
 //                 contract_duration, contract_per_period, probation_period, file_path, wish_file,
 //                 is_renewable, contract_type_id
@@ -698,11 +679,6 @@ Route::middleware(['setData'])->group(function () {
     Auth::routes();
     //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
 
-
-
-
-
-
     Route::get('/business/register', [BusinessController::class, 'getRegister'])->name('business.getRegister');
     Route::post('/business/register', [BusinessController::class, 'postRegister'])->name('business.postRegister');
     Route::post('/business/register/check-username', [BusinessController::class, 'postCheckUsername'])->name('business.postCheckUsername');
@@ -719,14 +695,11 @@ Route::middleware(['setData'])->group(function () {
         ->name('confirm_payment');
 });
 
-
-
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu', 'CheckUserLogin'])->group(function () {
     Route::get('/my_notifications', [HomeController::class, 'getMyNotifications'])->name('getMyNotification');
     Route::get('/user_device', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device'])->name('user_device');
     Route::get('/user_device_delete/{id}', [Modules\Connector\Http\Controllers\ConnectorController::class, 'user_device_delete'])->name('user_device_delete');
-
 
     Route::middleware(['compay_session'])->group(function () {
         Route::post('/sells/pos/get-types-of-service-details', 'SellPosController@getTypesOfServiceDetails');
@@ -757,10 +730,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('/sells/pos/get-featured-products/{location_id}', [SellPosController::class, 'getFeaturedProducts']);
     });
 
-
-
-
-
     Route::get('pos/payment/{id}', [SellPosController::class, 'edit'])->name('edit-pos-payment');
     Route::get('service-staff-availability', [SellPosController::class, 'showServiceStaffAvailibility']);
     Route::get('pause-resume-service-staff-timer/{user_id}', [SellPosController::class, 'pauseResumeServiceStaffTimer']);
@@ -786,13 +755,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/test-sms', [BusinessController::class, 'testSmsConfiguration']);
     Route::get('/business/settings', [BusinessController::class, 'getBusinessSettings'])->name('business.getBusinessSettings');
 
-
     Route::get('/create-bank-account', [BankAccountsController::class, 'create'])->name('create-bank-account');
     Route::post('/save-bank-account', [BankAccountsController::class, 'store']);
     Route::get('/edit-bank-account/{id}', [BankAccountsController::class, 'edit']);
     Route::post('/update-bank-account/{id}', [BankAccountsController::class, 'update']);
     Route::get('/delete-bank-account/{id}', [BankAccountsController::class, 'delete']);
-
 
     Route::post('/business/update', [BusinessController::class, 'postBusinessSettings'])->name('business.postBusinessSettings');
     Route::get('/user/profile', [UserController::class, 'getProfile'])->name('user.getProfile');
@@ -863,7 +830,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('products', ProductController::class);
     Route::get('/toggle-subscription/{id}', 'SellPosController@toggleRecurringInvoices');
 
-
     Route::post('/import-purchase-products', [PurchaseController::class, 'importPurchaseProducts']);
     Route::post('/purchases/update-status', [PurchaseController::class, 'updateStatus']);
     Route::get('/purchases/get_products', [PurchaseController::class, 'getProducts']);
@@ -874,16 +840,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/toggle-subscription/{id}', [SellPosController::class, 'toggleRecurringInvoices']);
 
-
-
-
-
-
     Route::get('/import-sales', [ImportSalesController::class, 'index']);
     Route::post('/import-sales/preview', [ImportSalesController::class, 'preview']);
     Route::post('/import-sales', [ImportSalesController::class, 'import']);
     Route::get('/revert-sale-import/{batch}', [ImportSalesController::class, 'revertSaleImport']);
-
 
     Route::get('/reset-mapping', [SellController::class, 'resetMapping']);
 
@@ -899,8 +859,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
     Route::post('/roles/updateAccessRoleReport/{roleId}', [RoleController::class, 'updateAccessRoleReport'])->name('updateAccessRoleReport');
     Route::post('/roles/updateAccessRoleRequest/{roleId}', [RoleController::class, 'updateAccessRoleRequest'])->name('updateAccessRoleRequest');
-
-
 
     Route::prefix('reports')->group(function () {
         Route::get('/reports', [ReportsController::class, 'landing'])->name('reports.landing');
@@ -991,50 +949,41 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/returnRequest', [\App\Utils\RequestUtil::class, 'returnRequest'])->name('returnRequest');
     Route::get('/get-request-type/{selectedId}', [\App\Utils\RequestUtil::class, 'getTypeById'])->name('get-request-type');
     Route::post('/get-sub-reasons', [\App\Utils\RequestUtil::class, 'getSubReasons'])->name('getSubReasons');
-    Route::post('/save-attachment/{requestId}',  [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
+    Route::post('/save-attachment/{requestId}', [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
     Route::post('/get-non-saudi-users', [\App\Utils\RequestUtil::class, 'getNonSaudiUsers'])->name('getNonSaudiUsers');
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::post('/get-unsigned-workers', [\App\Utils\RequestUtil::class, 'getUnsignedWorkers'])->name('getUnsignedWorkers');
     Route::get('/fetch-users-by-type', [\App\Utils\RequestUtil::class, 'fetchUsersByType'])->name('fetch.users.by.type');
     Route::post('/changeStatusAfterTransfer', [\App\Utils\RequestUtil::class, 'changeStatusAfterTransfer'])->name('changeStatusAfterTransfer');
 
-
     Route::get('/test', [\App\Utils\RequestUtil::class, 'test'])->name('test');
     Route::post('/update-task-status', [\App\Utils\RequestUtil::class, 'updateStatus'])->name('tasks.updateStatus');
     Route::get('/work_cards/view_requests_operations', [\App\Utils\RequestUtil::class, 'viewRequestsOperations'])->name('view_requests_operations');
-    Route::get('/finish_operation/{requestId}', [\App\Utils\RequestUtil::class,  'finish_operation'])->name('finish_operation');
+    Route::get('/finish_operation/{requestId}', [\App\Utils\RequestUtil::class, 'finish_operation'])->name('finish_operation');
     Route::get('/get-request/{id}', [\App\Utils\RequestUtil::class, 'getRequest'])->name('getRequest');
     Route::post('/update-request/{id}', [\App\Utils\RequestUtil::class, 'updateRequest'])->name('updateRequest');
     Route::delete('/delete-request/{id}', [\App\Utils\RequestUtil::class, 'deleteRequest'])->name('deleteRequest');
 
-
-    Route::get('Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('Communication');
+    Route::get('Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('Communication');
     Route::post('send_communication_message', [App\Http\Controllers\CommunicationController::class, 'send_communication_message'])->name('send_communication_message');
     Route::post('communication/reply/{id}', [App\Http\Controllers\CommunicationController::class, 'reply'])->name('communication.reply');
 
-    Route::get('hrm/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('hrm.Communication');
-    Route::get('work_cards/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('work_cards.Communication');
-    Route::get('generalmanagement/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('generalmanagement.Communication');
-    Route::get('generalmanagmentoffice/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('generalmanagmentoffice.Communication');
-    Route::get('ceomanagment/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('ceomanagment.Communication');
-    Route::get('operationsmanagmentgovernment/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('operationsmanagmentgovernment.Communication');
-    Route::get('employee_affairs/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('employee_affairs.Communication');
-    Route::get('payrolls/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('payrolls.Communication');
-    Route::get('medicalInsurance/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('medicalInsurance.Communication');
-    Route::get('movment/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('movment.Communication');
-    Route::get('housingmovements/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('housingmovements.Communication');
-    Route::get('followup/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('followup.Communication');
-    Route::get('sale/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('sale.Communication');
-    Route::get('legalaffairs/Communication/{from}',   [App\Http\Controllers\CommunicationController::class, 'index'])->name('legalaffairs.Communication');
-
-
-
-
-
+    Route::get('hrm/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('hrm.Communication');
+    Route::get('work_cards/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('work_cards.Communication');
+    Route::get('generalmanagement/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('generalmanagement.Communication');
+    Route::get('generalmanagmentoffice/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('generalmanagmentoffice.Communication');
+    Route::get('ceomanagment/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('ceomanagment.Communication');
+    Route::get('operationsmanagmentgovernment/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('operationsmanagmentgovernment.Communication');
+    Route::get('employee_affairs/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('employee_affairs.Communication');
+    Route::get('payrolls/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('payrolls.Communication');
+    Route::get('medicalInsurance/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('medicalInsurance.Communication');
+    Route::get('movment/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('movment.Communication');
+    Route::get('housingmovements/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('housingmovements.Communication');
+    Route::get('followup/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('followup.Communication');
+    Route::get('sale/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('sale.Communication');
+    Route::get('legalaffairs/Communication/{from}', [App\Http\Controllers\CommunicationController::class, 'index'])->name('legalaffairs.Communication');
 
     //Business Location Settings...
-
-
 
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
         Route::get('settings', [LocationSettingsController::class, 'index'])->name('settings');
@@ -1223,7 +1172,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('reports/activity-log', [ReportController::class, 'activityLog']);
     Route::get('user-location/{latlng}', [HomeController::class, 'getUserLocation']);
 
-
     Route::get('/manage_user/employeesIndex', [ManageUserController::class, 'employeesIndex'])->name('employeesIndex');
     Route::get('/manage_user/makeUser/{id}', [ManageUserController::class, 'makeUser'])->name('makeUser');
 
@@ -1260,8 +1208,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         });
     });
     Route::get('/employee_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_requests'])->name('employee_requests');
-
-
 
     Route::prefix('templates')->group(function () {
         Route::get('/create', [TemplateController::class, 'create'])->name('templates.create');
@@ -1315,3 +1261,5 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
     Route::get('/sells/invoice-url/{id}', [SellPosController::class, 'showInvoiceUrl']);
     Route::get('/show-notification/{id}', [HomeController::class, 'showNotification']);
 });
+
+Route::get('/files/{id}', [EssentailsworkersController::class, 'showFile'])->name('files.show');

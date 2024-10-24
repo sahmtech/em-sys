@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Contact;
-use App\ContactLocation;
 use App\Report;
 use App\Transaction;
 use App\User;
@@ -17,13 +16,12 @@ use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
-
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\HousingMovements\Entities\Car;
@@ -31,10 +29,8 @@ use Modules\HousingMovements\Entities\HousingMovementsCarsChangeOil;
 use Modules\HousingMovements\Entities\HousingMovementsMaintenance;
 use Modules\HousingMovements\Entities\HtrBuilding;
 use Modules\Sales\Entities\salesContract;
-use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
-
 
 class ReportsController extends Controller
 {
@@ -94,9 +90,9 @@ class ReportsController extends Controller
             return DataTables::of($all_expired_residencies)
                 ->addColumn('worker_name', function ($row) {
                     return $row->employee?->first_name .
-                        ' ' .
+                    ' ' .
 
-                        $row->employee->mid_name . ' ' . $row->employee->last_name;
+                    $row->employee->mid_name . ' ' . $row->employee->last_name;
                 })
                 ->addColumn('residency', function ($row) {
                     return $row->number;
@@ -158,12 +154,12 @@ class ReportsController extends Controller
                         return ' ';
                     }
                 })->addColumn('profession', function ($row) use ($appointments, $job_titles) {
-                    $professionId = $appointments[$row->employee->id] ?? '';
+                $professionId = $appointments[$row->employee->id] ?? '';
 
-                    $professionName = $job_titles[$professionId] ?? '';
+                $professionName = $job_titles[$professionId] ?? '';
 
-                    return $professionName;
-                })
+                return $professionName;
+            })
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
@@ -174,8 +170,6 @@ class ReportsController extends Controller
                             ->orWhere('last_name', 'like', "%$keyword%");
                     });
                 })
-
-
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
 
@@ -189,7 +183,6 @@ class ReportsController extends Controller
                 ->filterColumn('residency', function ($query, $keyword) {
                     $query->where('number', 'like', "%$keyword%");
                 })
-
 
                 ->rawColumns([
                     'worker_name',
@@ -216,7 +209,6 @@ class ReportsController extends Controller
         }
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-
         $residencies = EssentialsOfficialDocument::with(['employee'])->whereIn('employee_id', $userIds)->where(
             'type',
             'residence_permit'
@@ -235,8 +227,8 @@ class ReportsController extends Controller
             return DataTables::of($residencies)
                 ->addColumn('worker_name', function ($row) {
                     return $row->employee?->first_name .
-                        ' ' .
-                        $row->employee?->last_name;
+                    ' ' .
+                    $row->employee?->last_name;
                 })
                 ->addColumn('residency', function ($row) {
                     return $row->number;
@@ -299,16 +291,15 @@ class ReportsController extends Controller
                         return ' ';
                     }
                 })->addColumn('profession', function ($row) use ($appointments, $job_titles) {
-                    $professionId = $appointments[$row->employee->id] ?? '';
+                $professionId = $appointments[$row->employee->id] ?? '';
 
-                    $professionName = $job_titles[$professionId] ?? '';
+                $professionName = $job_titles[$professionId] ?? '';
 
-                    return $professionName;
-                })
+                return $professionName;
+            })
                 ->addColumn('border_no', function ($row) {
                     return $row->employee->border_no ?? ' ';
                 })
-
 
                 ->addColumn('action', 'border_no', 'nationality', 'profession', 'passport_expire_date', 'passport_number', 'dob', 'company_name')
 
@@ -326,12 +317,10 @@ class ReportsController extends Controller
         return view('reports.residencies_almost_finished');
     }
 
-
     public function contracts_almost_finished()
     {
 
         $business_id = request()->session()->get('user.business_id');
-
 
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
 
@@ -346,11 +335,10 @@ class ReportsController extends Controller
                     'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
                     'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file', 'sales_contracts.contract_duration',
                     'sales_contracts.contract_per_period',
-                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra',
                 ]);
 
             return Datatables::of($contracts)
-
 
                 ->editColumn('sales_project_id', function ($row) use ($contacts) {
                     $item = $contacts[$row->contact_id] ?? '';
@@ -369,13 +357,11 @@ class ReportsController extends Controller
                     });
                 })
 
-
                 ->make(true);
         }
 
         return view('reports.contracts_almost_finished');
     }
-
 
     public function expired_contracts()
     {
@@ -400,19 +386,15 @@ class ReportsController extends Controller
                     'sales_contracts.contract_per_period',
                     'transactions.contract_form as contract_form',
                     'transactions.contact_id',
-                    'transactions.id as tra'
+                    'transactions.id as tra',
                 ]);
 
-
-
             return Datatables::of($contracts)
-
 
                 ->editColumn('sales_project_id', function ($row) use ($contacts) {
                     $item = $contacts[$row->contact_id] ?? '';
                     return $item;
                 })
-
 
                 ->filterColumn('sales_project_id', function ($query, $keyword) {
                     $query->whereHas('transaction.contact', function ($q) use ($keyword) {
@@ -449,13 +431,11 @@ class ReportsController extends Controller
         if (request()->ajax()) {
             return Datatables::of($rooms)
 
-
                 ->editColumn('htr_building_id', function ($row) use ($buildings) {
                     $item = $buildings[$row->htr_building_id] ?? '';
 
                     return $item;
                 })
-
 
                 ->filterColumn('number', function ($query, $keyword) {
                     $query->where('number', 'like', "%{$keyword}%");
@@ -468,12 +448,8 @@ class ReportsController extends Controller
                     });
                 })
 
-
                 ->make(true);
         }
-
-
-
 
         return view('reports.rooms_and_beds')
             ->with(compact('buildings'));
@@ -497,12 +473,11 @@ class ReportsController extends Controller
             'id', 'name', 'city_id', 'address',
             'guard_ids_data',
             'supervisor_ids_data', 'cleaner_ids_data',
-            'building_contract_end_date'
+            'building_contract_end_date',
         ])
             ->orderBy('id', 'desc');
 
         if (request()->ajax()) {
-
 
             return Datatables::of($buildings)
                 ->editColumn('city_id', function ($row) use ($cities) {
@@ -547,7 +522,6 @@ class ReportsController extends Controller
                     }
                 })
 
-
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
@@ -555,10 +529,8 @@ class ReportsController extends Controller
                 ->make(true);
         }
 
-
         return view('reports.building');
     }
-
 
     public function cars_change_oil()
     {
@@ -566,7 +538,6 @@ class ReportsController extends Controller
         $CarsChangeOil = HousingMovementsCarsChangeOil::all();
         if (request()->ajax()) {
             return DataTables::of($CarsChangeOil)
-
 
                 ->editColumn('car', function ($row) {
                     return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
@@ -579,13 +550,13 @@ class ReportsController extends Controller
                 })
 
                 ->editColumn('next_change_oil', function ($row) {
-                    return  $row->next_change_oil ?? '';
+                    return $row->next_change_oil ?? '';
                 })
                 ->editColumn('invoice_no', function ($row) {
                     return $row->invoice_no ?? '';
                 })
                 ->editColumn('date', function ($row) {
-                    return  Carbon::parse($row->date)->format('Y-m-d') ?? '';
+                    return Carbon::parse($row->date)->format('Y-m-d') ?? '';
                 })
                 ->rawColumns(['action', 'car'])
                 ->make(true);
@@ -596,7 +567,6 @@ class ReportsController extends Controller
     public function car_maintenances(Request $request)
     {
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $carsMaintenance = HousingMovementsMaintenance::all();
@@ -605,13 +575,10 @@ class ReportsController extends Controller
 
             if (!empty(request()->input('carSelect')) && request()->input('carSelect') !== 'all') {
 
-
                 $carsMaintenance = $carsMaintenance->where('car_id', request()->input('carSelect'));
             }
 
-
             return DataTables::of($carsMaintenance)
-
 
                 ->editColumn('car', function ($row) {
                     return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
@@ -633,9 +600,8 @@ class ReportsController extends Controller
                     return $row->invoice_no ?? '';
                 })
                 ->editColumn('date', function ($row) {
-                    return  Carbon::parse($row->date)->format('Y-m-d') ?? '';
+                    return Carbon::parse($row->date)->format('Y-m-d') ?? '';
                 })
-
 
                 ->filter(function ($query) use ($request) {
 
@@ -650,7 +616,6 @@ class ReportsController extends Controller
 
         return view('reports.car_maintenances');
     }
-
 
     public function employee_medical_insurance()
     {
@@ -667,7 +632,6 @@ class ReportsController extends Controller
 
         $insurance_classes = EssentialsInsuranceClass::all()
             ->pluck('name', 'id');
-
 
         $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
@@ -700,7 +664,7 @@ class ReportsController extends Controller
                     $item = '';
 
                     if ($row->employee_id != null) {
-                        $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
+                        $item = $row->user->first_name . ' ' . $row->user->last_name ?? '';
                         //  $item = $row->english_name;
                     } else if ($row->employee_id == null) {
                         $item = $row->essentialsEmployeesFamily->full_name ?? '';
@@ -713,7 +677,7 @@ class ReportsController extends Controller
                     $item = '';
 
                     if ($row->employee_id != null) {
-                        $item = $row->user->english_name  ?? '';
+                        $item = $row->user->english_name ?? '';
                     }
 
                     return $item;
@@ -738,9 +702,8 @@ class ReportsController extends Controller
                         $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
                             ->first()->unified_number ?? '';
                     }
-                    return  $item;
+                    return $item;
                 })
-
 
                 ->addColumn('proof_number', function ($row) {
                     $item = '';
@@ -764,8 +727,6 @@ class ReportsController extends Controller
                     return $item;
                 })
 
-
-
                 ->filterColumn('user', function ($query, $keyword) {
 
                     $query->whereRaw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) LIKE ?", ["%$keyword%"])
@@ -775,15 +736,13 @@ class ReportsController extends Controller
                 ->filterColumn('proof_number', function ($query, $keyword) {
                     $query->whereRaw("CASE
                                             WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
-                                          
+
                                             ELSE ''
                                         END LIKE ?", ["%$keyword%"]);
                 })
 
                 ->make(true);
         }
-
-
 
         return view('reports.employee_medical_insurance');
     }
@@ -823,8 +782,7 @@ class ReportsController extends Controller
                 ->addColumn('user', function ($row) {
                     $item = '';
 
-
-                    $item = $row->first_name  . ' ' . $row->mid_name . ' ' . $row->last_name ?? '';
+                    $item = $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name ?? '';
 
                     return $item;
                 })
@@ -832,7 +790,7 @@ class ReportsController extends Controller
                 ->addColumn('english_name', function ($row) {
                     $item = '';
 
-                    $item = $row->english_name  ?? '';
+                    $item = $row->english_name ?? '';
                     return $item;
                 })
 
@@ -850,15 +808,13 @@ class ReportsController extends Controller
                     $item = $row->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
                         ->first()->unified_number ?? '';
 
-                    return  $item;
+                    return $item;
                 })
-
 
                 ->addColumn('proof_number', function ($row) {
                     $item = '';
 
                     $item = $row->id_proof_number ?? '';
-
 
                     return $item;
                 })
@@ -948,11 +904,8 @@ class ReportsController extends Controller
                 ->addColumn('user', function ($row) {
                     $item = '';
 
-
-                    $item = $row->first_name  . ' ' . $row->last_name ?? '';
+                    $item = $row->first_name . ' ' . $row->last_name ?? '';
                     //  $item = $row->english_name;
-
-
 
                     return $item;
                 })
@@ -960,9 +913,7 @@ class ReportsController extends Controller
                 ->addColumn('english_name', function ($row) {
                     $item = '';
 
-
-                    $item = $row->english_name  ?? '';
-
+                    $item = $row->english_name ?? '';
 
                     return $item;
                 })
@@ -981,15 +932,13 @@ class ReportsController extends Controller
                     $item = $row->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
                         ->first()->unified_number ?? '';
 
-                    return  $item;
+                    return $item;
                 })
-
 
                 ->addColumn('proof_number', function ($row) {
                     $item = '';
 
                     $item = $row->id_proof_number ?? '';
-
 
                     return $item;
                 })
@@ -1042,10 +991,8 @@ class ReportsController extends Controller
                     });
                 })
 
-
                 ->make(true);
         }
-
 
         return view('reports.worker_without_medical_insurance');
     }
@@ -1065,7 +1012,6 @@ class ReportsController extends Controller
 
         $insurance_classes = EssentialsInsuranceClass::all()
             ->pluck('name', 'id');
-
 
         $insurances = EssentialsEmployeesInsurance::with('user', 'user.business')
             ->leftjoin('essentials_employees_families', 'essentials_employees_families.id', 'essentials_employees_insurances.family_id')
@@ -1100,7 +1046,7 @@ class ReportsController extends Controller
                     $item = '';
 
                     if ($row->employee_id != null) {
-                        $item = $row->user->first_name  . ' ' . $row->user->last_name ?? '';
+                        $item = $row->user->first_name . ' ' . $row->user->last_name ?? '';
                         //  $item = $row->english_name;
                     } else if ($row->employee_id == null) {
                         $item = $row->essentialsEmployeesFamily->full_name ?? '';
@@ -1113,7 +1059,7 @@ class ReportsController extends Controller
                     $item = '';
 
                     if ($row->employee_id != null) {
-                        $item = $row->user->english_name  ?? '';
+                        $item = $row->user->english_name ?? '';
                     }
 
                     return $item;
@@ -1138,9 +1084,8 @@ class ReportsController extends Controller
                         $item = $row->essentialsEmployeesFamily->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')
                             ->first()->unified_number ?? '';
                     }
-                    return  $item;
+                    return $item;
                 })
-
 
                 ->addColumn('proof_number', function ($row) {
                     $item = '';
@@ -1163,9 +1108,6 @@ class ReportsController extends Controller
 
                     return $item;
                 })
-
-
-
 
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->where(function ($query) use ($keyword) {
@@ -1211,18 +1153,12 @@ class ReportsController extends Controller
                     });
                 })
 
-
-
-
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-
-
         return view('reports.worker_medical_insurance');
     }
-
 
     public function final_exit()
     {
@@ -1236,8 +1172,6 @@ class ReportsController extends Controller
 
         $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
         $users = User::whereIn('id', $userIds)->whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
-
-
 
         if (request()->ajax()) {
 
@@ -1272,7 +1206,6 @@ class ReportsController extends Controller
                     return $user->assignedTo?->name;
                 })
 
-
                 ->addColumn('building', function ($user) {
                     return $user->rooms?->building->name;
                 })
@@ -1284,7 +1217,6 @@ class ReportsController extends Controller
                 ->addColumn('room_number', function ($user) {
                     return $user->rooms?->room_number;
                 })
-
 
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
@@ -1314,37 +1246,30 @@ class ReportsController extends Controller
         return view('reports.final_exit');
     }
 
-
     public function projects()
     {
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
-
 
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
             ->with([
                 'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
-                'transactions.salesContract.salesOrderOperation'
+                'transactions.salesContract.salesOrderOperation',
 
             ]);
-
 
         $salesProjects = SalesProject::with(['contact']);
 
         if (!($is_admin || $is_manager)) {
-            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
-            $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
-            $contacts->whereIn('id',   $contacts_ids);
-            $salesProjects =   $salesProjects->whereIn('id', $followupUserAccessProject);
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id', auth()->user()->id)->pluck('sales_project_id');
+            $contacts_ids = SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
+            $contacts->whereIn('id', $contacts_ids);
+            $salesProjects = $salesProjects->whereIn('id', $followupUserAccessProject);
         }
 
-
-
         if (request()->ajax()) {
-
 
             return Datatables::of($salesProjects)
                 ->addColumn(
@@ -1362,7 +1287,7 @@ class ReportsController extends Controller
                 ->addColumn(
                     'contact_location_name',
                     function ($row) {
-                        return  $row->name;
+                        return $row->name;
                     }
                 )
                 ->addColumn('number_of_contract', function ($row) {
@@ -1395,7 +1320,7 @@ class ReportsController extends Controller
                         ->count();
                 })
                 ->addColumn('duration', function ($row) {
-                    return $row->contract_duration    ?? null;
+                    return $row->contract_duration ?? null;
                 })
 
                 ->addColumn('contract_form', function ($row) {
@@ -1403,7 +1328,7 @@ class ReportsController extends Controller
                 })
 
                 ->addColumn('status', function ($row) {
-                    return $row->salesContract?->status     ?? null;;
+                    return $row->salesContract?->status ?? null;;
                 })
                 ->addColumn('type', function ($row) {
                     return $row->salesContract?->salesOrderOperation?->operation_order_type ?? null;;
@@ -1419,21 +1344,16 @@ class ReportsController extends Controller
                     $query->where('name', 'like', "%{$keyword}%");
                 })
 
-
                 ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
 
-
         return view('reports.projects');
     }
-
 
     public function project_workers()
     {
         $business_id = request()->session()->get('user.business_id');
-
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
@@ -1445,11 +1365,10 @@ class ReportsController extends Controller
         }
         $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
 
-
         if (!($is_admin || $is_manager)) {
-            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
-            $userIds = User::whereIn('id',   $userIds)->whereIn('assigned_to',  $followupUserAccessProject)->pluck('id')->toArray();
-            $contacts_fillter = SalesProject::whereIn('id',  $followupUserAccessProject)->pluck('name', 'id');
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id', auth()->user()->id)->pluck('sales_project_id');
+            $userIds = User::whereIn('id', $userIds)->whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
+            $contacts_fillter = SalesProject::whereIn('id', $followupUserAccessProject)->pluck('name', 'id');
         }
 
         $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
@@ -1477,10 +1396,7 @@ class ReportsController extends Controller
         )->orderBy('users.id', 'desc')
             ->groupBy('users.id');
 
-
-
         if (request()->ajax()) {
-
 
             return DataTables::of($users)
                 ->addColumn('worker_id', function ($user) {
@@ -1527,8 +1443,8 @@ class ReportsController extends Controller
                         return ' ';
                     }
                 })->addColumn('company_name', function ($user) {
-                    return optional($user->company)->name ?? ' ';
-                })
+                return optional($user->company)->name ?? ' ';
+            })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -1570,12 +1486,12 @@ class ReportsController extends Controller
 
                     return $user->dob ?? '';
                 })->addColumn('insurance', function ($user) {
-                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
-                        return __('followup::lang.has_insurance');
-                    } else {
-                        return __('followup::lang.has_not_insurance');
-                    }
-                })
+                if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                    return __('followup::lang.has_insurance');
+                } else {
+                    return __('followup::lang.has_not_insurance');
+                }
+            })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -1593,7 +1509,6 @@ class ReportsController extends Controller
 
         return view('reports.projectWorkers')->with(compact('fields'));
     }
-
 
     public function employee_almost_finish_contracts()
     {
@@ -1691,8 +1606,6 @@ class ReportsController extends Controller
             ->select('contract_end_date', 'employee_id')->where('is_active', 1)
             ->orderBy('id', 'desc')
             ->latest('created_at');
-
-
 
         if (request()->ajax()) {
 

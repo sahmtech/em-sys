@@ -648,8 +648,8 @@ return [
     'select_company' => ' select company ',
     'Iban' => 'Iban file',
     'first_name_required' => 'first name required into row',
-    'user_type_required' =>  'user type required into row',
-    'business_not_found' =>  ' business not found into row',
+    'user_type_required' => 'user type required into row',
+    'business_not_found' => ' business not found into row',
     'business_required' => ' business ID required into row ',
     'location_not_found' => ' location ID not found into row ',
     'dep_not_found' => 'departement ID not found into row ',
@@ -779,14 +779,9 @@ return [
     'Not implemented' => 'Not implemented',
     'implement_status' => 'Application status',
     'application_date' => 'Application date',
-
-
-
-
-
-
-
-
-
+    'attachment_name' => 'Attachment Name',
+    'order_type' => 'Order Type',
+    'upload_date' => 'Upload Date',
+    'added_by' => 'Added by',
 
 ];

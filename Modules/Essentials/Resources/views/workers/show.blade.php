@@ -38,6 +38,7 @@
                             {{ $user->role_name }}
                         </p>
 
+
                         <ul class="list-group list-group-unbordered">
                             {{-- <li class="list-group-item">
                                 <b>@lang( 'business.username' )</b>
@@ -206,6 +207,13 @@
                         </li>
 
                         <li>
+                            <a href="#attachments_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-file" aria-hidden="true"></i>
+
+                                @lang('followup::lang.attachements')</a>
+                        </li>
+
+                        <li>
                             <a href="#timesheet_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
 
@@ -303,6 +311,52 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="tab-pane" id="attachments_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('essentials::lang.attachment_name')</th>
+                                                    <th>@lang('essentials::lang.order_type')</th>
+                                                    <th>@lang('essentials::lang.upload_date')</th>
+                                                    <th>@lang('essentials::lang.added_by')</th>
+                                                    <th>@lang('messages.view')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                @foreach ($request_attachments as $attachment)
+                                                    <tr>
+                                                        <td>{{ $attachment->name }}</td>
+                                                        <td>{{ $request->requestType->type }}</td>
+                                                        <td>{{ $attachment->created_at->format('Y-m-d') }}</td>
+                                                        <td>{{ $attachment->addedBy->first_name }}</td>
+                                                        <!-- Formatting date if needed -->
+                                                        <td>
+                                                            <a href="{{ asset($attachment->file_path) }}" target="_blank"
+                                                                class="btn btn-xs btn-info">
+                                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                @lang('messages.view')
+                                                            </a>
+
+
+
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="tab-pane" id="timesheet_tab">
                             <div class="row">
                                 <div class="col-md-12">
@@ -371,6 +425,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -538,6 +593,20 @@
                 window.open(fileUrl, '_blank');
             }
         });
+
+        $(document).ready(function() {
+            $(document).on('click', '.btn-modal', function(e) {
+                e.preventDefault();
+
+                var url = $(this).data('url'); // Get the URL from the data-url attribute
+
+                // Load content into the modal
+                $('.view_modal .modal-body').load(url, function() {
+                    $('#viewModal').modal('show'); // Show the modal after content is loaded
+                });
+            });
+        });
     </script>
+
 
 @endsection

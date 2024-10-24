@@ -3,35 +3,31 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\Category;
-
-use App\AccessRole;
-use App\AccessRoleProject;
 use App\Company;
-use App\Contact;
-use App\ContactLocation;
 use App\PayrollGroupUser;
+use App\Request as RequestModel;
+use App\RequestAttachment;
 use App\TimesheetUser;
 use App\User;
-
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsCountry;
-use Spatie\Activitylog\Models\Activity;
-use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
+use Spatie\Activitylog\Models\Activity;
+use Yajra\DataTables\Facades\DataTables;
 
 class EssentailsworkersController extends Controller
 {
@@ -41,7 +37,6 @@ class EssentailsworkersController extends Controller
      */
 
     protected $moduleUtil;
-
 
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -54,7 +49,6 @@ class EssentailsworkersController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
-
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -179,8 +173,8 @@ class EssentailsworkersController extends Controller
                         return ' ';
                     }
                 })->addColumn('company_name', function ($user) {
-                    return optional($user->company)->name ?? ' ';
-                })
+                return optional($user->company)->name ?? ' ';
+            })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -222,12 +216,12 @@ class EssentailsworkersController extends Controller
 
                     return $user->dob ?? '';
                 })->addColumn('insurance', function ($user) {
-                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
-                        return __('followup::lang.has_insurance');
-                    } else {
-                        return __('followup::lang.has_not_insurance');
-                    }
-                })
+                if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                    return __('followup::lang.has_insurance');
+                } else {
+                    return __('followup::lang.has_not_insurance');
+                }
+            })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -243,15 +237,12 @@ class EssentailsworkersController extends Controller
                 ->make(true);
         }
 
-
-
         return view('essentials::workers.index')
-            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+            ->with(compact('contacts_fillter', 'status_filltetr', 'fields', 'nationalities'));
     }
     public function getWorkerInfo(Request $request)
     {
         $identifier = $request->input('worker_identifier');
-
 
         $worker = User::where('first_name', 'like', '%' . $identifier . '%')
             ->orWhere('id_proof_number', $identifier)
@@ -276,7 +267,7 @@ class EssentailsworkersController extends Controller
                     'border_no' => $worker->border_no,
                     'company_name' => optional($worker->company)->name,
                     'assigned_to' => optional($worker->assignedTo)->name,
-                ]
+                ],
             ]);
         }
 
@@ -293,6 +284,7 @@ class EssentailsworkersController extends Controller
 
         return ' ';
     }
+    // FileController.php
 
     /**
      * Show the form for creating a new resource.
@@ -321,13 +313,19 @@ class EssentailsworkersController extends Controller
     public function show($id, $can_edit = false, $from = null)
     {
         error_log($can_edit);
+        $request_attachments = [];
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
+        // dd($user->id);
+        $request = RequestModel::with('requestType')->where('related_to', $user->id)->first();
 
+        if ($request) {
+            $request_attachments = RequestAttachment::with('Request', 'addedBy')->where('request_id', $request->id)->get();
+        }
 
-
+        // dd($request_attachments);
         $documents = null;
         $document_delivery = null;
 
@@ -348,20 +346,15 @@ class EssentailsworkersController extends Controller
             $document_delivery = FollowupDeliveryDocument::where('user_id', $user->id)->get();
         }
 
-
-
-
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
         }
 
-
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -378,10 +371,8 @@ class EssentailsworkersController extends Controller
         //     $specialization = "";
         // }
 
-
         $user->profession = $profession;
         //  $user->specialization = $specialization;
-
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
 
@@ -400,7 +391,6 @@ class EssentailsworkersController extends Controller
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
 
-
         $payrolls = PayrollGroupUser::with('payrollGroup')->where('user_id', $id)->get();
         $timesheets = TimesheetUser::where('user_id', $id)->with('timesheetGroup', 'user')
             ->get();
@@ -409,7 +399,7 @@ class EssentailsworkersController extends Controller
         $timesheets = $timesheets->map(function ($user) use ($projects, $companies) {
             return [
                 'id' => $user->user_id,
-                'name' => $user->user->first_name . ' '  . $user->user->last_name,
+                'name' => $user->user->first_name . ' ' . $user->user->last_name,
                 'nationality' => User::find($user->user->id)->country?->nationality ?? '',
                 'residency' => $user->id_proof_number,
                 'monthly_cost' => $user->monthly_cost,
@@ -453,7 +443,9 @@ class EssentailsworkersController extends Controller
             'payrolls',
             'timesheets',
             'can_edit',
-            'from'
+            'from',
+            'request_attachments',
+            'request'
         ));
     }
 
