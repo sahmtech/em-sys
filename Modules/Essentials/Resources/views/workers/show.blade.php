@@ -334,11 +334,11 @@
                                                         <td>{{ $attachment->name ?? '' }}</td>
                                                         <td>{{ $request->requestType->type ?? '' }}</td>
                                                         <td>{{ $attachment->created_at->format('Y-m-d') ?? '' }}</td>
-                                                        <td>
+
                                                         <td>
                                                             {{ trim(($attachment->addedBy->first_name ?? '') . ' ' . ($attachment->addedBy->mid_name ?? '') . ' ' . ($attachment->addedBy->last_name ?? '')) }}
                                                         </td>
-                                                        </td>
+
                                                         <!-- Formatting date if needed -->
                                                         <td>
                                                             <a href="{{ asset('uploads/' . $attachment->file_path) }}"
