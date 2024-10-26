@@ -22,8 +22,8 @@
     /* Modal content styling */
     .modal-content {
         position: relative;
-        width: 90%;
-        max-width: 700px;
+        width: 100%;
+        max-width: 1000px;
         /* Adjusted max width for better scaling */
         height: auto;
         /* Allow height to adjust based on content */
@@ -48,7 +48,7 @@
         /* Increased size for better visibility */
         height: 50px;
         /* Increased size for better visibility */
-        background-color: #ff4d4d;
+        background-color: #268de0;
         /* Red color for visibility */
         border: none;
         border-radius: 50%;
@@ -511,15 +511,33 @@
                                                                 @lang('messages.view')
                                                             </a>
 
-
                                                             <!-- Modal for Preview -->
                                                             <div id="fileModal" class="modal" style="display: none;">
                                                                 <div class="modal-content">
                                                                     <span class="close"
                                                                         onclick="closeModal()">&times;</span>
                                                                     <iframe id="fileFrame" src=""></iframe>
+                                                                    <div class="modal-controls">
+                                                                        <button id="printBtn"
+                                                                            class="modal-button btn btn-primary"
+                                                                            onclick="printFile()">
+                                                                            <i class="fa fa-print" aria-hidden="true"></i>
+                                                                            @lang('messages.print')</button>
+                                                                        <button id="fullScreenBtn"
+                                                                            class="modal-button btn btn-primary"
+                                                                            onclick="toggleFullScreen()">
+                                                                            <i class="fa fa-arrows-alt"
+                                                                                aria-hidden="true"></i>
+                                                                            @lang('messages.full_screen')</button>
+                                                                        <button class="modal-button btn btn-primary"
+                                                                            onclick="closeModal()">
+                                                                            @lang('messages.close')
+                                                                            <!-- Optional translation for close -->
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+
 
 
 
@@ -787,28 +805,50 @@
         });
 
         function viewFile(filePath) {
-            // Get the file extension
             const fileExtension = filePath.split('.').pop().toLowerCase();
+            const fileFrame = document.getElementById('fileFrame');
+            const fileModal = document.getElementById('fileModal');
 
-            // Check if the file is an Excel file
             if (fileExtension === 'xlsx' || fileExtension === 'xls') {
-                // Show message to notify user
                 alert('This file is an Excel document. It will be downloaded for viewing.');
                 window.location.href = filePath; // Initiate download
             } else if (fileExtension === 'pdf' || ['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                // For PDF or image files, display in modal
-                document.getElementById('fileFrame').src = filePath; // Set the iframe source to the file's URL
-                document.getElementById('fileModal').style.display = 'flex'; // Display the modal
+                fileFrame.src = filePath; // Set the iframe source
+                fileModal.style.display = 'flex'; // Show the modal
+                resetModalSize(); // Reset size when opening a new file
+                toggleFullScreen(); // Automatically request full screen
             } else {
                 alert('Unsupported file type.');
             }
         }
+
 
         function closeModal() {
             // Hide the modal
             document.getElementById('fileModal').style.display = 'none';
             // Reset the iframe src to prevent caching issues
             document.getElementById('fileFrame').src = '';
+        }
+
+        function printFile() {
+            const iframe = document.getElementById('fileFrame');
+            if (iframe.src) {
+                iframe.contentWindow.print(); // Call the print function from the iframe
+            } else {
+                alert('No file to print.');
+            }
+        }
+
+        function toggleFullScreen() {
+            const fileFrameSrc = document.getElementById('fileFrame').src;
+            if (fileFrameSrc) {
+                // Open the file in a new window with full dimensions
+                const newWindow = window.open(fileFrameSrc, '_blank', 'width=' + screen.width + ',height=' + screen.height +
+                    ',top=0,left=0,resizable=yes');
+                newWindow.focus(); // Focus the new window
+            } else {
+                alert('No file is currently open to view in full screen.');
+            }
         }
     </script>
 

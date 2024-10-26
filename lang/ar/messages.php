@@ -51,4 +51,5 @@ return [
     'are_you_sure' => 'هل أنت متأكد؟',
     'added_successfully' => 'تم الحفظ بنجاح',
     'already_added' => 'لا جديد لإضافته',
+    'full_screen' => 'عرض علي كامل الشاشة ',
 ];
