@@ -184,7 +184,7 @@ return [
     'show_time_with_date' => 'Show time with date',
     'show_sale_description' => 'Show sale description',
     'product_imei_or_sn' => '(Product IMEI or Serial Number)',
-    'purchase_already_exist' => "Product can't be deleted because purchases related to 
+    'purchase_already_exist' => "Product can't be deleted because purchases related to
 								this product exist",
     'opening_stock_sold' => "Product can't be deleted because some stocks are sold",
     'stock_adjusted' => "Product can't be deleted because some stocks are adjusted",
@@ -932,8 +932,8 @@ return [
     'amount_rounding_method' => 'Amount rounding method',
     'round_to_nearest_whole_number' => 'Round to nearest whole number',
     'round_to_nearest_decimal' => 'Round to nearest decimal (multiple of :multiple)',
-    'amount_rounding_method_help' => 'Example: <br><b>Round to nearest 
-    whole number:</b> 2.23 => 2, 2.50 => 3, 2.73 => 3 <br><b>Round to nearest 
+    'amount_rounding_method_help' => 'Example: <br><b>Round to nearest
+    whole number:</b> 2.23 => 2, 2.50 => 3, 2.73 => 3 <br><b>Round to nearest
     decimal (multiple of 0.05):</b> 2.11 => 2.10, 2.12 => 2.10, 2.13 => 2.15',
     'round_off' => 'Round Off',
     'round_off_label' => 'Round off label',
@@ -1158,17 +1158,13 @@ return [
     'account_number' => 'Account number',
     'ibn' => 'IBN',
     'account_name_' => 'Account name',
-    'add_BankAccounts'=>'Add Bank account',
-    'deleted_success'=>'deleted success',
-    'edit_BankAccounts'=>'Edite account information',
-    'cost_center'=>'Cost Center',
-    'select_transfer_account'=>'select transfer account',
-    'accounting_settings'=>'Accounts setting',
-    'public_accounting_settings'=>'Accounting Setting',
-
-
-
-
+    'add_BankAccounts' => 'Add Bank account',
+    'deleted_success' => 'deleted success',
+    'edit_BankAccounts' => 'Edite account information',
+    'cost_center' => 'Cost Center',
+    'select_transfer_account' => 'select transfer account',
+    'accounting_settings' => 'Accounts setting',
+    'public_accounting_settings' => 'Accounting Setting',
 
     'elegant' => 'Elegant',
     'slim' => 'Slim',
@@ -1569,6 +1565,6 @@ return [
     'emdadatalatta_comp' => 'Emdata Alatta Company',
     'provide_gifts' => 'We always provide you with gifts',
     'report' => 'Report',
-
+    'an_unexpected_error_occurred' => 'An unexpected error has occurred. Please try again later or contact support if the issue persists.',
 
 ];

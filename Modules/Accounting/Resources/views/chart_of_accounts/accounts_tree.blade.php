@@ -1,7 +1,10 @@
 @if (!$account_exist)
     <table class="table table-bordered table-striped">
+
+
         <tr>
             <td colspan="10" class="text-center">
+
                 <h3>@lang('accounting::lang.no_accounts')</h3>
                 <p>@lang('accounting::lang.add_default_accounts_help')</p>
                 <a href="{{ route('accounting.create-default-accounts') }}"

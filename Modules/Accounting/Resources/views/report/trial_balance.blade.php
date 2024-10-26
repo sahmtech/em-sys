@@ -11,6 +11,8 @@
         <h1>@lang('accounting::lang.trial_balance')</h1>
     </section>
 
+
+
     <section class="content">
 
         <div class="row">

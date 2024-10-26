@@ -114,6 +114,9 @@
 
     /* Button styling */
     .modal-button {
+        margin-top: 2px;
+        /* Add a top margin of 2 pixels */
+
         align-self: flex-end;
         /* Align to the right */
         padding: 12px 24px;
@@ -163,7 +166,6 @@
         }
     }
 </style>
-
 @section('content')
     <!-- Main content -->
     <section class="content">
@@ -524,7 +526,7 @@
                                                                             <i class="fa fa-print" aria-hidden="true"></i>
                                                                             @lang('messages.print')</button>
                                                                         <button id="fullScreenBtn"
-                                                                            class="modal-button btn btn-primary"
+                                                                            class="modal-button btn btn-primary "
                                                                             onclick="toggleFullScreen()">
                                                                             <i class="fa fa-arrows-alt"
                                                                                 aria-hidden="true"></i>

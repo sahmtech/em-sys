@@ -2,7 +2,7 @@
 return [
     "enable_editing_product_from_purchase" => "تمكين تعديل سعر الصنف من شاشة الشراء",
     "sales_commission_agent" => "المناديب",
-    "sales_commission_agents" =>  "المناديب",
+    "sales_commission_agents" => "المناديب",
     "disable" => "تعطيل",
     "logged_in_user" => "المستخدم المتصل",
     'are_you_sure_submit' => 'هل أنت متاكد ؟',
@@ -1142,7 +1142,6 @@ return [
     'deleted_success' => 'تم الحذف بنجاح',
     'edit_BankAccounts' => 'تعديل معلومات الحساب',
 
-
     "elegant" => "أنيق",
     "slim" => "معتدل البنيه",
     "detailed" => "مفصلة",
@@ -1517,9 +1516,6 @@ return [
     'yet_to_be_paind' => 'مستحق الدفع',
     'pay' => 'تسديد',
 
-
-
-
     'ResidencyExpiration_15_D' => 'إشعار إقامة تنتهي خلال 15 يوما',
     'ExpiredResidency' => 'إشعار انتهاء إقامة',
     'Subscription_1' => 'إشعار انتهاء اشتراك',
@@ -1560,10 +1556,5 @@ return [
     'attendance_days' => 'أيام الحضور',
     'start_time' => 'بدء العمل',
     'end_time' => 'انتهاء العمل',
-
-
-
-
-
-
+    'an_unexpected_error_occurred' => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى لاحقًا أو الاتصال بالدعم إذا استمرت المشكلة.',
 ];

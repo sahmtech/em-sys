@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Modules\Accounting\Entities\AccountingAccount;
 use Modules\Accounting\Entities\AccountingAccountType;
@@ -135,205 +136,211 @@ class ReportController extends Controller
      */
     public function trialBalance(Request $request)
     {
+        try {
 
-        $account_types = AccountingAccountType::accounting_primary_type();
-        $accounts_array = [];
-        foreach ($account_types as $key => $account_type) {
-            $accounts_array[$key] =
-                $account_type['label'];
-        }
+            $account_types = AccountingAccountType::accounting_primary_type();
+            $accounts_array = [];
+            foreach ($account_types as $key => $account_type) {
+                $accounts_array[$key] =
+                    $account_type['label'];
+            }
 
-        $business_id = request()->session()->get('user.business_id');
-        $company_id = Session::get('selectedCompanyId');
+            $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
-        $with_zero_balances = $request->input('with_zero_balances', 0);
+            $with_zero_balances = $request->input('with_zero_balances', 0);
 
-        $aggregated = $request->input('aggregated', 0);
+            $aggregated = $request->input('aggregated', 0);
 
-        $choose_accounts_select = $request->input('choose_accounts_select');
+            $choose_accounts_select = $request->input('choose_accounts_select');
 
-        $level_filter = $request->input('level_filter');
+            $level_filter = $request->input('level_filter');
 
-        $max_levels = AccountingAccount::where('accounting_accounts.business_id', $business_id)
-            ->where('accounting_accounts.company_id', $company_id)->pluck('gl_code')->toArray();
+            $max_levels = AccountingAccount::where('accounting_accounts.business_id', $business_id)
+                ->where('accounting_accounts.company_id', $company_id)->pluck('gl_code')->toArray();
 
-        $lengths = array_map(function ($length) {
-            return str_replace(".", "", $length);
-        }, $max_levels);
+            $lengths = array_map(function ($length) {
+                return str_replace(".", "", $length);
+            }, $max_levels);
+            if (empty($max_levels)) {
+                // Redirect to the 'chart-of-accounts' route with a flash message
+                return redirect()->route('chart-of-accounts.index')
+                    ->with('message', 'Please create a tree account for the chart of accounts.');
 
-        $levels = strlen(max($lengths));
+            }
+            $levels = strlen(max($lengths));
 
-        $levelsArray = [];
-        for ($i = 1; $i <= $levels; $i++) {
-            $levelsArray[$i] = $i;
-        }
+            $levelsArray = [];
+            for ($i = 1; $i <= $levels; $i++) {
+                $levelsArray[$i] = $i;
+            }
 
-        $levelsArray = [null => __('lang_v1.all')] + $levelsArray;
+            $levelsArray = [null => __('lang_v1.all')] + $levelsArray;
 
-        if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            $start_date = request()->input('start_date');
-            $end_date = request()->input('end_date');
-        } else {
-            $fy = $this->businessUtil->getCurrentFinancialYear($business_id, $company_id);
-            $start_date = $fy['start'];
-            $end_date = $fy['end'];
-        }
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start_date = request()->input('start_date');
+                $end_date = request()->input('end_date');
+            } else {
+                $fy = $this->businessUtil->getCurrentFinancialYear($business_id, $company_id);
+                $start_date = $fy['start'];
+                $end_date = $fy['end'];
+            }
 
-        if (!$with_zero_balances) {
-            $accounts = AccountingAccount::join(
-                'accounting_accounts_transactions as AAT',
-                'AAT.accounting_account_id',
-                '=',
-                'accounting_accounts.id'
-            )
-                ->where(function ($query) use ($start_date, $end_date) {
-                    $query->where(function ($query) use ($start_date, $end_date) {
-                        $query->where('AAT.sub_type', '!=', 'opening_balance')
-                            ->whereDate('AAT.operation_date', '>=', $start_date)
-                            ->whereDate('AAT.operation_date', '<=', $end_date);
-                    })
-                        ->orWhere(function ($query) use ($start_date, $end_date) {
-                            $query->where('AAT.sub_type', 'opening_balance')
-                                ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
-                                ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
-                        });
-                });
-        } else {
-            $accounts = AccountingAccount::leftJoin(
-                'accounting_accounts_transactions as AAT',
-                function ($join) use ($start_date, $end_date) {
-                    $join->on('AAT.accounting_account_id', '=', 'accounting_accounts.id')
-                        ->where(function ($query) use ($start_date, $end_date) {
+            if (!$with_zero_balances) {
+                $accounts = AccountingAccount::join(
+                    'accounting_accounts_transactions as AAT',
+                    'AAT.accounting_account_id',
+                    '=',
+                    'accounting_accounts.id'
+                )
+                    ->where(function ($query) use ($start_date, $end_date) {
+                        $query->where(function ($query) use ($start_date, $end_date) {
                             $query->where('AAT.sub_type', '!=', 'opening_balance')
-                                ->whereBetween('AAT.operation_date', [$start_date, $end_date]);
+                                ->whereDate('AAT.operation_date', '>=', $start_date)
+                                ->whereDate('AAT.operation_date', '<=', $end_date);
                         })
-                        ->orWhere(function ($query) use ($start_date, $end_date) {
-                            $query->where('AAT.sub_type', 'opening_balance')
-                                ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
-                                ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
-                        });
-                }
-            );
-        }
+                            ->orWhere(function ($query) use ($start_date, $end_date) {
+                                $query->where('AAT.sub_type', 'opening_balance')
+                                    ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
+                                    ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
+                            });
+                    });
+            } else {
+                $accounts = AccountingAccount::leftJoin(
+                    'accounting_accounts_transactions as AAT',
+                    function ($join) use ($start_date, $end_date) {
+                        $join->on('AAT.accounting_account_id', '=', 'accounting_accounts.id')
+                            ->where(function ($query) use ($start_date, $end_date) {
+                                $query->where('AAT.sub_type', '!=', 'opening_balance')
+                                    ->whereBetween('AAT.operation_date', [$start_date, $end_date]);
+                            })
+                            ->orWhere(function ($query) use ($start_date, $end_date) {
+                                $query->where('AAT.sub_type', 'opening_balance')
+                                    ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
+                                    ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
+                            });
+                    }
+                );
+            }
 
-        $accounts->when($choose_accounts_select, function ($query, $choose_accounts_select) {
-            return $query->where(function ($query) use ($choose_accounts_select) {
-                foreach ($choose_accounts_select as $type) {
-                    $query->orWhere('accounting_accounts.account_primary_type', 'like', $type . '%');
-                }
-            });
-        })
-            ->when($level_filter, function ($query, $level_filter) {
-
-                return $query
-                    ->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
-                    ->orwhereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) < ?', [$level_filter - 1]);
+            $accounts->when($choose_accounts_select, function ($query, $choose_accounts_select) {
+                return $query->where(function ($query) use ($choose_accounts_select) {
+                    foreach ($choose_accounts_select as $type) {
+                        $query->orWhere('accounting_accounts.account_primary_type', 'like', $type . '%');
+                    }
+                });
             })
-            ->where('accounting_accounts.business_id', $business_id)
-            ->where('accounting_accounts.company_id', $company_id)
-            ->select(
-                DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
-                DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
-                DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
+                ->when($level_filter, function ($query, $level_filter) {
+
+                    return $query
+                        ->whereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) = ?', [$level_filter - 1])
+                        ->orwhereRaw('LENGTH(REGEXP_REPLACE(accounting_accounts.gl_code, "[0-9]", "")) < ?', [$level_filter - 1]);
+                })
+                ->where('accounting_accounts.business_id', $business_id)
+                ->where('accounting_accounts.company_id', $company_id)
+                ->select(
+                    DB::raw("IF($aggregated = 1, accounting_accounts.account_primary_type, accounting_accounts.name) as name"),
+                    DB::raw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as credit_balance"),
+                    DB::raw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) as debit_balance"),
+                    DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
             WHERE AAT.accounting_account_id = accounting_accounts.id
             AND AAT.sub_type = 'opening_balance'
             AND AAT.type = 'credit'
             ORDER BY AAT.operation_date ASC
             LIMIT 1), 0) as credit_opening_balance"),
-                DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
+                    DB::raw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
             WHERE AAT.accounting_account_id = accounting_accounts.id
             AND AAT.sub_type = 'opening_balance'
             AND AAT.type = 'debit'
             ORDER BY AAT.operation_date ASC LIMIT 1), 0) as debit_opening_balance"),
-                'AAT.sub_type as sub_type',
-                'AAT.type as type',
-                'accounting_accounts.gl_code',
-                'accounting_accounts.id'
-            )
-        /* ->when($level_filter, function ($query, $level_filter) {
-        return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
-        }) */
-            ->groupBy(
-                'name',
-            )
-            ->orderBy('accounting_accounts.gl_code');
+                    'AAT.sub_type as sub_type',
+                    'AAT.type as type',
+                    'accounting_accounts.gl_code',
+                    'accounting_accounts.id'
+                )
+            /* ->when($level_filter, function ($query, $level_filter) {
+            return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
+            }) */
+                ->groupBy(
+                    'name',
+                )
+                ->orderBy('accounting_accounts.gl_code');
 
-        if ($aggregated) {
-            $aggregatedAccounts = [];
-            foreach ($accounts->get() as $account) {
+            if ($aggregated) {
+                $aggregatedAccounts = [];
+                foreach ($accounts->get() as $account) {
 
-                $groupKey = $account->name;
-                if (!isset($aggregatedAccounts[$groupKey])) {
-                    $aggregatedAccounts[$groupKey] = (object) [
-                        'name' => Lang::has('accounting::lang.' . $groupKey) ? __('accounting::lang.' . $groupKey) : $groupKey,
-                        'gl_code' => $account->gl_code[0],
-                        'credit_balance' => 0,
-                        'debit_balance' => 0,
-                        'credit_opening_balance' => 0,
-                        'debit_opening_balance' => 0,
-                    ];
+                    $groupKey = $account->name;
+                    if (!isset($aggregatedAccounts[$groupKey])) {
+                        $aggregatedAccounts[$groupKey] = (object) [
+                            'name' => Lang::has('accounting::lang.' . $groupKey) ? __('accounting::lang.' . $groupKey) : $groupKey,
+                            'gl_code' => $account->gl_code[0],
+                            'credit_balance' => 0,
+                            'debit_balance' => 0,
+                            'credit_opening_balance' => 0,
+                            'debit_opening_balance' => 0,
+                        ];
+                    }
+                    $aggregatedAccounts[$groupKey]->credit_balance += $account->credit_balance;
+                    $aggregatedAccounts[$groupKey]->debit_balance += $account->debit_balance;
+                    $aggregatedAccounts[$groupKey]->credit_opening_balance += $account->credit_opening_balance;
+                    $aggregatedAccounts[$groupKey]->debit_opening_balance += $account->debit_opening_balance;
                 }
-                $aggregatedAccounts[$groupKey]->credit_balance += $account->credit_balance;
-                $aggregatedAccounts[$groupKey]->debit_balance += $account->debit_balance;
-                $aggregatedAccounts[$groupKey]->credit_opening_balance += $account->credit_opening_balance;
-                $aggregatedAccounts[$groupKey]->debit_opening_balance += $account->debit_opening_balance;
-            }
-            $accounts = $aggregatedAccounts;
-        }
-
-        if (request()->ajax()) {
-
-            $totalDebitOpeningBalance = 0;
-            $totalCreditOpeningBalance = 0;
-            $totalClosingDebitBalance = 0;
-            $totalClosingCreditBalance = 0;
-            $totalDebitBalance = 0;
-            $totalCreditBalance = 0;
-
-            foreach ($aggregated ? $accounts : $accounts->get() as $account) {
-                $totalDebitOpeningBalance += $account->debit_opening_balance;
-                $totalCreditOpeningBalance += $account->credit_opening_balance;
-                $totalDebitBalance += $account->debit_balance;
-                $totalCreditBalance += $account->credit_balance;
-
-                $closing_balance = $this->calculateClosingBalance($account);
-                $totalClosingDebitBalance += $closing_balance['closing_debit_balance'];
-                $totalClosingCreditBalance += $closing_balance['closing_credit_balance'];
+                $accounts = $aggregatedAccounts;
             }
 
-            return DataTables::of($accounts)
-                ->editColumn('gl_code', function ($account) {
-                    return $account->gl_code;
-                })
-                ->editColumn('name', function ($account) {
-                    return $account->name;
-                })
-                ->editColumn('debit_opening_balance', function ($account) {
-                    return $account->debit_opening_balance;
-                })
-                ->editColumn('credit_opening_balance', function ($account) {
-                    return $account->credit_opening_balance;
-                })
-                ->editColumn('debit_balance', function ($account) {
-                    return $account->debit_balance;
-                })
-                ->editColumn('credit_balance', function ($account) {
-                    return $account->credit_balance;
-                })
-                ->addColumn('closing_debit_balance', function ($account) {
+            if (request()->ajax()) {
+
+                $totalDebitOpeningBalance = 0;
+                $totalCreditOpeningBalance = 0;
+                $totalClosingDebitBalance = 0;
+                $totalClosingCreditBalance = 0;
+                $totalDebitBalance = 0;
+                $totalCreditBalance = 0;
+
+                foreach ($aggregated ? $accounts : $accounts->get() as $account) {
+                    $totalDebitOpeningBalance += $account->debit_opening_balance;
+                    $totalCreditOpeningBalance += $account->credit_opening_balance;
+                    $totalDebitBalance += $account->debit_balance;
+                    $totalCreditBalance += $account->credit_balance;
+
                     $closing_balance = $this->calculateClosingBalance($account);
-                    return $closing_balance['closing_debit_balance'];
-                })
-                ->addColumn('closing_credit_balance', function ($account) {
-                    $closing_balance = $this->calculateClosingBalance($account);
-                    return $closing_balance['closing_credit_balance'];
-                })
-                ->addColumn('action', function ($account) use ($aggregated) {
-                    $html = ' ';
-                    if (!$aggregated) {
-                        $html =
-                        '<div class="btn-group">
+                    $totalClosingDebitBalance += $closing_balance['closing_debit_balance'];
+                    $totalClosingCreditBalance += $closing_balance['closing_credit_balance'];
+                }
+
+                return DataTables::of($accounts)
+                    ->editColumn('gl_code', function ($account) {
+                        return $account->gl_code;
+                    })
+                    ->editColumn('name', function ($account) {
+                        return $account->name;
+                    })
+                    ->editColumn('debit_opening_balance', function ($account) {
+                        return $account->debit_opening_balance;
+                    })
+                    ->editColumn('credit_opening_balance', function ($account) {
+                        return $account->credit_opening_balance;
+                    })
+                    ->editColumn('debit_balance', function ($account) {
+                        return $account->debit_balance;
+                    })
+                    ->editColumn('credit_balance', function ($account) {
+                        return $account->credit_balance;
+                    })
+                    ->addColumn('closing_debit_balance', function ($account) {
+                        $closing_balance = $this->calculateClosingBalance($account);
+                        return $closing_balance['closing_debit_balance'];
+                    })
+                    ->addColumn('closing_credit_balance', function ($account) {
+                        $closing_balance = $this->calculateClosingBalance($account);
+                        return $closing_balance['closing_credit_balance'];
+                    })
+                    ->addColumn('action', function ($account) use ($aggregated) {
+                        $html = ' ';
+                        if (!$aggregated) {
+                            $html =
+                            '<div class="btn-group">
                                 <button type="button" class="btn btn-info btn-xs" >' . '
                                     <a class=" btn-modal text-white" data-container="#printledger"
                                         data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
@@ -342,22 +349,28 @@ class ReportController extends Controller
                                     </a>
                                 </button>
                             </div>';
-                    }
-                    return $html;
-                })
-                ->with([
-                    'totalDebitOpeningBalance' => $totalDebitOpeningBalance,
-                    'totalCreditOpeningBalance' => $totalCreditOpeningBalance,
-                    'totalDebitBalance' => $totalDebitBalance,
-                    'totalCreditBalance' => $totalCreditBalance,
-                    'totalClosingDebitBalance' => $totalClosingDebitBalance,
-                    'totalClosingCreditBalance' => $totalClosingCreditBalance,
-                ])
-                ->make(true);
-        }
+                        }
+                        return $html;
+                    })
+                    ->with([
+                        'totalDebitOpeningBalance' => $totalDebitOpeningBalance,
+                        'totalCreditOpeningBalance' => $totalCreditOpeningBalance,
+                        'totalDebitBalance' => $totalDebitBalance,
+                        'totalCreditBalance' => $totalCreditBalance,
+                        'totalClosingDebitBalance' => $totalClosingDebitBalance,
+                        'totalClosingCreditBalance' => $totalClosingCreditBalance,
+                    ])
+                    ->make(true);
+            }
 
-        return view('accounting::report.trial_balance')
-            ->with(compact('levelsArray', 'accounts_array'));
+            return view('accounting::report.trial_balance')
+                ->with(compact('levelsArray', 'accounts_array'));
+        } catch (\Exception $e) {
+            Log::error('Error in trialBalance method: ' . $e->getMessage());
+            return redirect()->route('chart-of-accounts.index')
+                ->with('message', 'Please create a tree account for the chart of accounts.');
+
+        }
     }
 
     private function calculateClosingBalance($account)
