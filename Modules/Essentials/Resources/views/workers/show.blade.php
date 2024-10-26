@@ -1,6 +1,168 @@
 @extends('layouts.app')
 
 @section('title', __('essentials::lang.view_worker'))
+<style>
+    /* Modal background styling */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        /* Darker overlay for better contrast */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        transition: opacity 0.3s ease;
+        /* Smooth fade-in transition */
+    }
+
+    /* Modal content styling */
+    .modal-content {
+        position: relative;
+        width: 90%;
+        max-width: 700px;
+        /* Adjusted max width for better scaling */
+        height: auto;
+        /* Allow height to adjust based on content */
+        background: #fff;
+        border-radius: 12px;
+        /* Rounded corners */
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        /* Deeper shadow for depth */
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        /* Consistent padding */
+    }
+
+    /* Close button styling */
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 50px;
+        /* Increased size for better visibility */
+        height: 50px;
+        /* Increased size for better visibility */
+        background-color: #ff4d4d;
+        /* Red color for visibility */
+        border: none;
+        border-radius: 50%;
+        /* Circular shape */
+        font-size: 28px;
+        /* Increased font size */
+        font-weight: bold;
+        color: #fff;
+        /* White text for contrast */
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        /* Transition effects */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Center the text */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        /* Add subtle shadow */
+    }
+
+    .close:hover {
+        background-color: #ff1a1a;
+        /* Darker red on hover */
+        transform: scale(1.1);
+        /* Scale effect */
+    }
+
+    /* Iframe styling */
+    .modal-content iframe {
+        width: 100%;
+        height: 400px;
+        /* Fixed height for iframe */
+        border: none;
+        border-radius: 0 0 12px 12px;
+        /* Rounded corners */
+        margin-top: 10px;
+        /* Spacing above iframe */
+    }
+
+    /* Title styling */
+    .modal-title {
+        font-size: 28px;
+        /* Title font size */
+        font-weight: bold;
+        /* Bold title */
+        margin-bottom: 10px;
+        /* Space below title */
+        color: #333;
+        /* Dark text color */
+    }
+
+    /* Description styling */
+    .modal-description {
+        font-size: 16px;
+        /* Description font size */
+        color: #666;
+        /* Lighter text color for description */
+        margin-bottom: 20px;
+        /* Space below description */
+        line-height: 1.5;
+        /* Line height for readability */
+    }
+
+    /* Button styling */
+    .modal-button {
+        align-self: flex-end;
+        /* Align to the right */
+        padding: 12px 24px;
+        /* Button padding */
+        background-color: #007bff;
+        /* Primary button color */
+        color: #fff;
+        /* Button text color */
+        border: none;
+        /* No border */
+        border-radius: 5px;
+        /* Slightly rounded button */
+        cursor: pointer;
+        /* Pointer cursor */
+        transition: background-color 0.3s, transform 0.2s;
+        /* Smooth transition */
+        font-size: 16px;
+        /* Font size */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        /* Subtle shadow */
+    }
+
+    .modal-button:hover {
+        background-color: #0056b3;
+        /* Darker blue on hover */
+        transform: scale(1.05);
+        /* Scale effect on hover */
+    }
+
+    /* Adjusting for smaller screens */
+    @media (max-width: 600px) {
+        .modal-content {
+            width: 95%;
+            /* Full width on smaller screens */
+            padding: 15px;
+            /* Less padding on small screens */
+        }
+
+        .modal-title {
+            font-size: 24px;
+            /* Smaller title on small screens */
+        }
+
+        .modal-description {
+            font-size: 14px;
+            /* Smaller description */
+        }
+    }
+</style>
 
 @section('content')
     <!-- Main content -->
@@ -341,11 +503,29 @@
 
                                                         <!-- Formatting date if needed -->
                                                         <td>
-                                                            <a href="{{ asset('uploads/' . $attachment->file_path) }}"
+                                                            {{-- <a href="{{ asset('uploads/' . $attachment->file_path) }}"
                                                                 target="_blank" class="btn btn-xs btn-info">
                                                                 <i class="fa fa-eye" aria-hidden="true"></i>
                                                                 @lang('messages.view')
+                                                            </a> --}}
+                                                            <!-- Button to Open Modal -->
+                                                            <a href="javascript:void(0)"
+                                                                onclick="viewFile('{{ asset('uploads/' . $attachment->file_path) }}')"
+                                                                class="btn btn-xs btn-info">
+                                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                @lang('messages.view')
                                                             </a>
+
+
+                                                            <!-- Modal for Preview -->
+                                                            <div id="fileModal" class="modal" style="display: none;">
+                                                                <div class="modal-content">
+                                                                    <span class="close"
+                                                                        onclick="closeModal()">&times;</span>
+                                                                    <iframe id="fileFrame" src=""></iframe>
+                                                                </div>
+                                                            </div>
+
 
 
 
@@ -610,6 +790,31 @@
                 });
             });
         });
+
+        function viewFile(filePath) {
+            // Get the file extension
+            const fileExtension = filePath.split('.').pop().toLowerCase();
+
+            // Check if the file is an Excel file
+            if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+                // Show message to notify user
+                alert('This file is an Excel document. It will be downloaded for viewing.');
+                window.location.href = filePath; // Initiate download
+            } else if (fileExtension === 'pdf' || ['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                // For PDF or image files, display in modal
+                document.getElementById('fileFrame').src = filePath; // Set the iframe source to the file's URL
+                document.getElementById('fileModal').style.display = 'flex'; // Display the modal
+            } else {
+                alert('Unsupported file type.');
+            }
+        }
+
+        function closeModal() {
+            // Hide the modal
+            document.getElementById('fileModal').style.display = 'none';
+            // Reset the iframe src to prevent caching issues
+            document.getElementById('fileFrame').src = '';
+        }
     </script>
 
 
