@@ -501,13 +501,8 @@
                                                             {{ trim(($attachment->addedBy->first_name ?? '') . ' ' . ($attachment->addedBy->mid_name ?? '') . ' ' . ($attachment->addedBy->last_name ?? '')) }}
                                                         </td>
 
-                                                        <!-- Formatting date if needed -->
                                                         <td>
-                                                            {{-- <a href="{{ asset('uploads/' . $attachment->file_path) }}"
-                                                                target="_blank" class="btn btn-xs btn-info">
-                                                                <i class="fa fa-eye" aria-hidden="true"></i>
-                                                                @lang('messages.view')
-                                                            </a> --}}
+
                                                             <!-- Button to Open Modal -->
                                                             <a href="javascript:void(0)"
                                                                 onclick="viewFile('{{ asset('uploads/' . $attachment->file_path) }}')"
