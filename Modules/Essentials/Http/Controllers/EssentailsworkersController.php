@@ -87,13 +87,13 @@ class EssentailsworkersController extends Controller
             if (request()->input('project_name') == 'none') {
                 $users = $users->whereNull('users.assigned_to');
             } else {
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+                $users = $users->whereIn('users.assigned_to', (array) request()->input('project_name'));
             }
         }
 
         if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
-            $users = $users->where('users.status', request()->input('status_fillter'));
+            $users = $users->whereIn('users.status', (array) request()->input('status_fillter'));
         }
 
         // if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
@@ -106,9 +106,10 @@ class EssentailsworkersController extends Controller
         //     });
         // }
         if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-
-            $users = $users->where('users.nationality_id', request()->nationality);
+            // Ensure that nationality is treated as an array
+            $users = $users->whereIn('users.nationality_id', (array) request()->input('nationality'));
         }
+
         $start_date = request()->get('start_date');
         $end_date = request()->get('end_date');
 

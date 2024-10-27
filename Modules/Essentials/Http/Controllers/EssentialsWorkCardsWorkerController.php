@@ -2,12 +2,9 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleProject;
 use App\Category;
 use App\User;
 use App\Utils\ModuleUtil;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +27,6 @@ class EssentialsWorkCardsWorkerController extends Controller
 {
     protected $moduleUtil;
 
-
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
@@ -40,7 +36,6 @@ class EssentialsWorkCardsWorkerController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.workcards_indexWorkerProjects');
@@ -84,7 +79,6 @@ class EssentialsWorkCardsWorkerController extends Controller
             ->orderBy('users.id', 'desc')
             ->groupBy('users.id');
 
-
         if (request()->ajax()) {
 
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -92,13 +86,17 @@ class EssentialsWorkCardsWorkerController extends Controller
                 if (request()->input('project_name') == 'none') {
                     $users = $users->whereNull('users.assigned_to');
                 } else {
-                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                    $users = $users->whereIn('users.assigned_to', (array) request()->input('project_name'));
                 }
             }
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
-                $users = $users->where('users.status', request()->input('status_fillter'));
+                $users = $users->whereIn('users.status', (array) request()->input('status_fillter'));
+            }
+            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
+
+                $users = $users->whereIn('users.nationality_id', (array) request()->nationality);
             }
 
             if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
@@ -109,10 +107,6 @@ class EssentialsWorkCardsWorkerController extends Controller
                     $query->whereDate('contract_end_date', '>=', $start)
                         ->whereDate('contract_end_date', '<=', $end);
                 });
-            }
-            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-
-                $users = $users->where('users.nationality_id', request()->nationality);
             }
 
             return DataTables::of($users)
@@ -160,8 +154,8 @@ class EssentialsWorkCardsWorkerController extends Controller
                         return ' ';
                     }
                 })->addColumn('company_name', function ($user) {
-                    return optional($user->company)->name ?? ' ';
-                })
+                return optional($user->company)->name ?? ' ';
+            })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -203,12 +197,12 @@ class EssentialsWorkCardsWorkerController extends Controller
 
                     return $user->dob ?? '';
                 })->addColumn('insurance', function ($user) {
-                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
-                        return __('followup::lang.has_insurance');
-                    } else {
-                        return __('followup::lang.has_not_insurance');
-                    }
-                })
+                if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                    return __('followup::lang.has_insurance');
+                } else {
+                    return __('followup::lang.has_not_insurance');
+                }
+            })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -224,9 +218,8 @@ class EssentialsWorkCardsWorkerController extends Controller
                 ->make(true);
         }
 
-        return view('essentials::projects_workers.work_cards.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+        return view('essentials::projects_workers.work_cards.index')->with(compact('contacts_fillter', 'status_filltetr', 'fields', 'nationalities'));
     }
-
 
     private function getDocumentnumber($user, $documentType)
     {
@@ -238,13 +231,10 @@ class EssentialsWorkCardsWorkerController extends Controller
         return ' ';
     }
 
-
     public function show($id)
     {
 
-
         $business_id = request()->session()->get('user.business_id');
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.workcards_showWorkerProjects');
@@ -261,7 +251,6 @@ class EssentialsWorkCardsWorkerController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-
         if (!in_array($id, $userIds)) {
             return redirect()->back()->with('status', [
                 'success' => false,
@@ -271,8 +260,6 @@ class EssentialsWorkCardsWorkerController extends Controller
 
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
-
-
 
         $documents = null;
         $document_delivery = null;
@@ -294,20 +281,15 @@ class EssentialsWorkCardsWorkerController extends Controller
             $deliveryDocument = FollowupDeliveryDocument::where('user_id', $user->id)->get();
         }
 
-
-
-
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
         }
 
-
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -324,10 +306,8 @@ class EssentialsWorkCardsWorkerController extends Controller
         //     $specialization = "";
         // }
 
-
         $user->profession = $profession;
         //   $user->specialization = $specialization;
-
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
 
@@ -347,9 +327,6 @@ class EssentialsWorkCardsWorkerController extends Controller
         if (!empty($nationality_id)) {
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
-
-
-
 
         return view('essentials::projects_workers.work_cards.show')->with(compact(
             'user',

@@ -115,20 +115,20 @@ class EssentialsWorkersAffairsController extends Controller
 
         if (!empty(request()->input('company')) && request()->input('company') !== 'all') {
 
-            $users = $users->where('users.company_id', request()->input('company'));
+            $users = $users->whereIn('users.company_id', (array) request()->input('company'));
         }
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
             if (request()->input('project_name') == 'none') {
                 $users = $users->whereNull('users.assigned_to');
             } else {
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
+                $users = $users->whereIn('users.assigned_to', (array) request()->input('project_name'));
             }
         }
 
         if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
-            $users = $users->where('users.status', request()->input('status_fillter'));
+            $users = $users->whereIn('users.status', (array) request()->input('status_fillter'));
         }
 
         // if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
@@ -142,7 +142,7 @@ class EssentialsWorkersAffairsController extends Controller
         // }
         if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
-            $users = $users->where('users.nationality_id', request()->nationality);
+            $users = $users->whereIn('users.nationality_id', (array) request()->nationality);
         }
         $start_date = request()->get('start_date');
         $end_date = request()->get('end_date');

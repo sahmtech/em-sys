@@ -9,15 +9,16 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                                                                                                                                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                                                                                                                                                                                <li class="active">Here</li>
-                                                                                                                                                                                                                            </ol> -->
+                                                                                                                                                                                                                                                                                                                                                                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                                                                                                                                                                                                                                                                                                                                            <li class="active">Here</li>
+                                                                                                                                                                                                                                                                                                                                                                                                        </ol> -->
     </section>
 
     <!-- Main content -->
     <section class="content">
+
         @component('components.filters', ['title' => __('report.filters')])
-            <div class="col-md-3">
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="form-group">
                     <label for="business_filter">@lang('essentials::lang.business_single'):</label>
                     {!! Form::select('select_company_id[]', $companies, 'all', [
@@ -29,7 +30,7 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="form-group">
                     <label for="department_filter">@lang('essentials::lang.department'):</label>
                     {!! Form::select('select_department_id[]', $departments, 'all', [
@@ -41,7 +42,7 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="form-group">
                     <label for="contract_type_filter">@lang('essentials::lang.contract_type'):</label>
                     {!! Form::select('contract_type_filter[]', $contract_types, 'all', [
@@ -54,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="form-group">
                     <label for="specializations_filter">@lang('essentials::lang.job_title'):</label>
                     {!! Form::select('specializations-select[]', $job_titles, 'all', [
@@ -67,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="form-group">
                     <label for="nationalities_filter">@lang('essentials::lang.nationality'):</label>
                     {!! Form::select('nationalities_select[]', $nationalities, 'all', [
@@ -79,20 +80,15 @@
                     ]) !!}
                 </div>
             </div>
-
-            <div class="col-md-3">
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="form-group">
-                    <label for="status_filter">@lang('essentials::lang.status'):</label>
-                    <select class="form-control select2" name="status_filter" required id="status_filter"
-                        style="height:40px; width:100%;">
-                        <option value="all">@lang('lang_v1.all')</option>
-                        <option value="active">@lang('sales::lang.active')</option>
-                        <option value="inactive">@lang('sales::lang.inactive')</option>
-                        <option value="terminated">@lang('sales::lang.terminated')</option>
-                        <option value="vecation">@lang('sales::lang.vecation')</option>
-
-
-                    </select>
+                    {!! Form::label('status_fillter', __('followup::lang.status') . ':') !!}
+                    {!! Form::select('status_fillter[]', $status, null, [
+                        'class' => 'form-control select2',
+                        'id' => 'status_fillter',
+                        'style' => 'width:100%;padding:2px;',
+                        'multiple' => 'multiple',
+                    ]) !!}
                 </div>
             </div>
         @endcomponent
@@ -575,6 +571,8 @@
             $('.select2').select2({
                 placeholder: '@lang('lang_v1.all')',
                 allowClear: true,
+                width: '100%',
+
             });
             var users_table = $('#employees').DataTable({
                 processing: true,
@@ -584,7 +582,7 @@
                     data: function(d) {
                         d.specialization = $('#specializations-select').val();
                         d.nationality = $('#nationalities_select').val();
-                        d.status = $('#status_filter').val();
+                        d.status = $('#status_fillter').val();
                         d.company = $('#select_company_id').val();
                         d.department = $('#select_department_id').val();
                         d.contract_type = $('#contract_type_filter').val();
@@ -709,12 +707,12 @@
 
             });
 
-            $('#specializations-select, #nationalities_select, #status-select, #select_company_id,  #contract_type_filter,  #select_department_id')
+            $('#specializations-select, #nationalities_select, #status_fillter, #select_company_id,  #contract_type_filter,  #select_department_id')
                 .change(
                     function() {
                         console.log('Specialization selected: ' + $(this).val());
                         console.log('Nationality selected: ' + $('#nationalities_select').val());
-                        console.log('Status selected: ' + $('#status_filter').val());
+                        console.log('status_fillter selected: ' + $('#status_filter').val());
                         console.log('loc selected: ' + $('#select_company_id').val());
                         console.log('contract_type_filter selected: ' + $('#contract_type_filter').val());
                         users_table.ajax.reload();
@@ -883,7 +881,8 @@
                 '#select_company_id',
                 '#contract_type_filter',
                 '#specializations-select',
-                '#nationalities_select'
+                '#nationalities_select',
+                'status_fillter'
             ];
 
             selectElements.forEach(function(selector) {

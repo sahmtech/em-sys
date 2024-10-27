@@ -2,52 +2,43 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleProject;
 use App\Category;
+use App\Company;
+use App\ContactLocation;
+use App\User;
+use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
+use App\WorkerProjectsHistory;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
-use App\Utils\NewArrivalUtil;
-use App\Events\UserCreatedOrModified;
-use Illuminate\Support\Facades\DB;
-use Modules\InternationalRelations\Entities\IrWorkersDocument;
-use Modules\Essentials\Entities\EssentialsWorkCard;
 use Illuminate\Support\Facades\Auth;
-use Modules\Essentials\Entities\Shift;
-
-use Modules\Essentials\Entities\EssentialsCountry;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Spatie\Activitylog\Models\Activity;
-use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsContractType;
-use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
-use App\Contact;
-use App\ContactLocation;
-use App\User;
-use App\Company;
-use App\WorkerProjectsHistory;
-use Carbon\Carbon;
-use Modules\InternationalRelations\Entities\IrProposedLabor;
-use Modules\Essentials\Entities\EssentailsEmployeeOperation;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsWorkCard;
+use Modules\Essentials\Entities\Shift;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\HousingMovements\Entities\NewWorkersAdSalaryRequest;
-
+use Modules\InternationalRelations\Entities\IrProposedLabor;
+use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use Modules\Sales\Entities\SalesProject;
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
-
-
+use Spatie\Activitylog\Models\Activity;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProjectWorkersController extends Controller
 {
@@ -58,8 +49,6 @@ class ProjectWorkersController extends Controller
     protected $moduleUtil;
     protected $newArrivalUtil;
 
-
-
     public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
 
@@ -67,12 +56,10 @@ class ProjectWorkersController extends Controller
         $this->newArrivalUtil = $newArrivalUtil;
     }
 
-
     public function index()
     {
 
         $business_id = request()->session()->get('user.business_id');
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_housemovements_all_worker = auth()->user()->can('housingmovements.all_workers');
@@ -120,10 +107,9 @@ class ProjectWorkersController extends Controller
                 if (request()->input('project_name') == 'none') {
                     $users = $users->whereNull('users.assigned_to');
                 } else {
-                    $users = $users->where('users.assigned_to', request()->input('project_name'));
+                    $users = $users->whereIn('users.assigned_to', (array) request()->input('project_name'));
                 }
             }
-
 
             if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
@@ -141,7 +127,7 @@ class ProjectWorkersController extends Controller
             }
             if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
-                $users = $users->where('users.nationality_id', request()->nationality);
+                $users = $users->whereIn('users.nationality_id', (array) request()->nationality);
             }
 
             return DataTables::of($users)
@@ -205,8 +191,8 @@ class ProjectWorkersController extends Controller
                         return ' ';
                     }
                 })->addColumn('company_name', function ($user) {
-                    return optional($user->company)->name ?? ' ';
-                })
+                return optional($user->company)->name ?? ' ';
+            })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -248,12 +234,12 @@ class ProjectWorkersController extends Controller
 
                     return $user->dob ?? '';
                 })->addColumn('insurance', function ($user) {
-                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
-                        return __('followup::lang.has_insurance');
-                    } else {
-                        return __('followup::lang.has_not_insurance');
-                    }
-                })
+                if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                    return __('followup::lang.has_insurance');
+                } else {
+                    return __('followup::lang.has_not_insurance');
+                }
+            })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -270,14 +256,13 @@ class ProjectWorkersController extends Controller
         }
 
         return view('housingmovements::projects_workers.index')
-            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+            ->with(compact('contacts_fillter', 'status_filltetr', 'fields', 'nationalities'));
     }
 
     public function available_shopping()
     {
 
         $business_id = request()->session()->get('user.business_id');
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_housing_all_workers = auth()->user()->can('housingmovements.all_workers');
@@ -303,8 +288,6 @@ class ProjectWorkersController extends Controller
         $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
         $users = User::whereIn('users.id', $userIds)->with(['rooms'])
             ->where('user_type', 'worker')->whereNot('status', 'inactive')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
-
-
 
         if (request()->ajax()) {
 
@@ -336,7 +319,6 @@ class ProjectWorkersController extends Controller
                     return $user->first_name . ' ' . $user->last_name;
                 })
 
-
                 ->addColumn('building', function ($user) {
                     return $user->rooms?->building->name;
                 })
@@ -348,7 +330,6 @@ class ProjectWorkersController extends Controller
                 ->addColumn('room_number', function ($user) {
                     return $user->rooms?->room_number;
                 })
-
 
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
@@ -371,10 +352,10 @@ class ProjectWorkersController extends Controller
                     function ($row) use ($is_admin) {
 
                         $html = '';
-                        if ($is_admin  || auth()->user()->can('worker.book')) {
+                        if ($is_admin || auth()->user()->can('worker.book')) {
                             $html .= '
-                        <a href="' . route('worker.book', ['id' => $row->id])  . '"
-                        data-href="' . route('worker.book', ['id' => $row->id])  . ' "
+                        <a href="' . route('worker.book', ['id' => $row->id]) . '"
+                        data-href="' . route('worker.book', ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button" style="width: 50px;"  data-container="#book_worker_model"><i class="fa fa-bookmark cursor-pointer" style="padding: 5px;
                          font-size: smaller;"></i>' . __("housingmovements::lang.book") . '</a>';
                             return $html;
@@ -392,7 +373,6 @@ class ProjectWorkersController extends Controller
 
         return view('housingmovements::projects_workers.available_shopping')->with(compact('contacts', 'nationalities', 'ContactsLocation'));
     }
-
 
     public function addProject(Request $request)
     {
@@ -418,16 +398,13 @@ class ProjectWorkersController extends Controller
             foreach ($selectedRowsData as $row) {
                 $worker = User::find($row->id);
 
-
-
                 if (!$worker) {
 
                     continue;
                 }
 
-                $worker->assigned_to  = $request->project;
+                $worker->assigned_to = $request->project;
                 $worker->save();
-
 
                 $history = new WorkerProjectsHistory();
 
@@ -464,9 +441,7 @@ class ProjectWorkersController extends Controller
     public function reserved_shopping()
     {
 
-
         $business_id = request()->session()->get('user.business_id');
-
 
         $can_crud_workers = auth()->user()->can('followup.crud_workers');
         if (!$can_crud_workers) {
@@ -503,30 +478,29 @@ class ProjectWorkersController extends Controller
 
         if (request()->ajax()) {
 
-
             return Datatables::of($users)
                 ->editColumn('worker', function ($row) {
-                    return  $row->user->first_name . ' ' . $row->user->last_name ?? '';
+                    return $row->user->first_name . ' ' . $row->user->last_name ?? '';
                 })
                 ->addColumn('nationality', function ($row) {
                     return optional($row->user->country)->nationality ?? ' ';
                 })
-                // ->addColumn('residence_permit_expiration', function ($row) {
-                //     $residencePermitDocument = $row->user->OfficialDocument
-                //         ->where('type', 'residence_permit')
-                //         ->first();
+            // ->addColumn('residence_permit_expiration', function ($row) {
+            //     $residencePermitDocument = $row->user->OfficialDocument
+            //         ->where('type', 'residence_permit')
+            //         ->first();
 
-                //     if ($residencePermitDocument) {
-                //         return optional($residencePermitDocument)->expiration_date ?? ' ';
-                //     } else {
+            //     if ($residencePermitDocument) {
+            //         return optional($residencePermitDocument)->expiration_date ?? ' ';
+            //     } else {
 
-                //         return ' ';
-                //     }
-                // })
+            //         return ' ';
+            //     }
+            // })
 
-                // ->addColumn('residence_permit', function ($row) {
-                //     return   $row->user->id_proof_number;
-                // })
+            // ->addColumn('residence_permit', function ($row) {
+            //     return   $row->user->id_proof_number;
+            // })
                 ->addColumn('residence_permit_expiration', function ($row) {
                     $residencePermitDocument = $row->user->OfficialDocument
                         ->where('type', 'residence_permit')
@@ -553,18 +527,16 @@ class ProjectWorkersController extends Controller
                     return $row->booking_end_Date;
                 })
 
-
-
                 ->addColumn('essentials_salary', function ($row) {
                     return $row->user->essentials_salary;
                 })->addColumn('contact_number', function ($row) {
-                    return $row->user->contact_number;
-                })
+                return $row->user->contact_number;
+            })
                 ->addColumn('total_salary', function ($row) {
                     return $row->user->total_salary;
                 })->addColumn('gender', function ($row) {
-                    return $row->user->gender;
-                })
+                return $row->user->gender;
+            })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->user->categorie_id] ?? '';
 
@@ -572,7 +544,7 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn('created_by', function ($row) use ($travelCategories) {
 
-                    return  $row->creator->first_name . ' ' . $row->creator->last_name ?? '';
+                    return $row->creator->first_name . ' ' . $row->creator->last_name ?? '';
                 })
                 ->addColumn(
                     'action',
@@ -580,15 +552,14 @@ class ProjectWorkersController extends Controller
 
                         $html = '';
 
-                        if ($is_admin  || $can_unbook) {
+                        if ($is_admin || $can_unbook) {
                             $html .= '
-                    <button data-href="' .  route('worker.unbook', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_book_worker_button"><i class="fa fa-minus-circle cursor-pointer"></i>' . __("housingmovements::lang.unbook") . '</button>
+                    <button data-href="' . route('worker.unbook', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_book_worker_button"><i class="fa fa-minus-circle cursor-pointer"></i>' . __("housingmovements::lang.unbook") . '</button>
                 ';
                             return $html;
                         }
                     }
                 )
-
 
                 ->rawColumns(['action', 'created_by', 'contact_name', 'contact_number', 'worker', 'categorie_id', 'gender', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'total_salary', 'essentials_salary'])
                 ->make(true);
@@ -621,9 +592,7 @@ class ProjectWorkersController extends Controller
     public function final_exit()
     {
 
-
         $business_id = request()->session()->get('user.business_id');
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -637,8 +606,6 @@ class ProjectWorkersController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
         $users = User::whereIn('id', $userIds)->whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
-
-
 
         if (request()->ajax()) {
 
@@ -673,7 +640,6 @@ class ProjectWorkersController extends Controller
                     return $user->assignedTo?->name;
                 })
 
-
                 ->addColumn('building', function ($user) {
                     return $user->rooms?->building->name;
                 })
@@ -685,7 +651,6 @@ class ProjectWorkersController extends Controller
                 ->addColumn('room_number', function ($user) {
                     return $user->rooms?->room_number;
                 })
-
 
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
@@ -729,8 +694,6 @@ class ProjectWorkersController extends Controller
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
 
-
-
         $documents = null;
 
         if ($user->user_type == 'employee') {
@@ -748,20 +711,16 @@ class ProjectWorkersController extends Controller
             }
         }
 
-
-
-
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
         }
 
-
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-        $deliveryDocument =  FollowupDeliveryDocument::where('user_id', $user->id)->get();
+        $deliveryDocument = FollowupDeliveryDocument::where('user_id', $user->id)->get();
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -778,10 +737,8 @@ class ProjectWorkersController extends Controller
         //     $specialization = "";
         // }
 
-
         $user->profession = $profession;
         // $user->specialization = $specialization;
-
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
 
@@ -800,8 +757,7 @@ class ProjectWorkersController extends Controller
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
 
-
-        $bookedInfo =  HousingMovementsWorkerBooking::where('user_id', $user->id)->first();
+        $bookedInfo = HousingMovementsWorkerBooking::where('user_id', $user->id)->first();
 
         return view('housingmovements::projects_workers.show')->with(compact(
             'user',
@@ -855,8 +811,6 @@ class ProjectWorkersController extends Controller
             'O-' => 'O positive (O-).',
         ];
 
-
-
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $countries = $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
@@ -891,7 +845,7 @@ class ProjectWorkersController extends Controller
 
         $company = Company::all()->pluck('name', 'id');
 
-        return  view('essentials::employee_affairs.workers_affairs.create')
+        return view('essentials::employee_affairs.workers_affairs.create')
             ->with(compact(
                 'departments',
                 'countries',
@@ -919,18 +873,14 @@ class ProjectWorkersController extends Controller
             ));
     }
 
-
     public function edit($id)
     {
         return view('housingmovements::edit');
     }
 
-
     public function update(Request $request, $id)
     {
     }
-
-
 
     public function uploadMedicalDocument(Request $request)
     {
@@ -954,15 +904,11 @@ class ProjectWorkersController extends Controller
             $uploadedFile->save();
         }
 
-
-
         return response()->json(['message' => 'File uploaded successfully']);
     }
 
-
     public function storeWorkCard(Request $request)
     {
-
 
         try {
             $data = $request->only([
@@ -998,7 +944,7 @@ class ProjectWorkersController extends Controller
                     $lastEmpNumber = (int) substr($lastrecord->work_card_no, 3);
                     $nextNumericPart = $lastEmpNumber + 1;
                     $data['work_card_no'] =
-                        'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                    'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
                 } else {
                     $data['work_card_no'] = 'WC' . '000';
                 }
@@ -1007,7 +953,7 @@ class ProjectWorkersController extends Controller
                 $user = User::findOrFail($request->input('employee_id'));
                 $user->update([
                     'company_id' => $request->input('company_id'),
-                    'updated_by' => Auth::user()->id
+                    'updated_by' => Auth::user()->id,
                 ]);
 
                 $output = [
@@ -1030,8 +976,6 @@ class ProjectWorkersController extends Controller
         return $output;
     }
 
-
-
     public function addSIM(Request $request)
     {
 
@@ -1041,7 +985,7 @@ class ProjectWorkersController extends Controller
             'cell_phone_company' => $request->cell_phone_company,
             'contact_number' => $request->contact_number,
             'has_SIM' => 1,
-            'updated_by' => Auth::user()->id
+            'updated_by' => Auth::user()->id,
         ]);
         $output = [
             'success' => true,
@@ -1065,7 +1009,7 @@ class ProjectWorkersController extends Controller
         $user = User::findOrFail($request->user_id);
         $user->update([
             'bank_details' => json_encode($request->bank_details),
-            'updated_by' => Auth::user()->id
+            'updated_by' => Auth::user()->id,
         ]);
 
         if ($request->hasFile('iban_file')) {
@@ -1095,10 +1039,9 @@ class ProjectWorkersController extends Controller
             ->with('status', $output);
     }
 
-
     public function addEqama(Request $request)
     {
-        if (!$request->id_proof_number || $request->id_proof_number == NULL) {
+        if (!$request->id_proof_number || $request->id_proof_number == null) {
             $output = [
                 'success' => false,
                 'msg' => __('housingmovements::lang.please add the eqama number'),
@@ -1133,7 +1076,6 @@ class ProjectWorkersController extends Controller
 
         $worker = User::findOrFail($request->id);
 
-
         $worker->residency_print = 1;
         if ($worker->save()) {
             return response()->json([
@@ -1147,8 +1089,6 @@ class ProjectWorkersController extends Controller
             ], 500);
         }
     }
-
-
 
     public function deliveryResidency(Request $request)
     {
@@ -1178,7 +1118,6 @@ class ProjectWorkersController extends Controller
             $uploadedFile->save();
         }
 
-
         $output = [
             'success' => true,
             'msg' => __('housingmovements::lang.updated_successfully'),
@@ -1186,7 +1125,6 @@ class ProjectWorkersController extends Controller
         return redirect()->back()
             ->with('status', $output);
     }
-
 
     public function newWorkersAdvSalaryStore(Request $request)
     {
@@ -1199,12 +1137,11 @@ class ProjectWorkersController extends Controller
             $path = $file->store('/requests_attachments');
         }
 
-
         $latestRecord = NewWorkersAdSalaryRequest::orderBy('request_no', 'desc')->first();
 
         if ($latestRecord) {
             $latestRefNo = $latestRecord->request_no;
-            $numericPart = (int)substr($latestRefNo, 'adv_');
+            $numericPart = (int) substr($latestRefNo, 'adv_');
             $numericPart++;
             $request_no = 'adv_' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
         } else {
@@ -1218,7 +1155,7 @@ class ProjectWorkersController extends Controller
             'installmentsNumber' => $request->installmentsNumber,
             'status' => 'pending',
             'employee_id' => $request->user_id,
-            'note' =>  $request->note,
+            'note' => $request->note,
             'created_by' => Auth::user()->id,
             'attachment' => $path,
         ];
@@ -1230,7 +1167,6 @@ class ProjectWorkersController extends Controller
         return redirect()->back()
             ->with('status', $output);
     }
-
 
     public function medicalExamination()
     {

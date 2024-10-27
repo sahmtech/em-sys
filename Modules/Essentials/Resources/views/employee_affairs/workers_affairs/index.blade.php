@@ -15,54 +15,65 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             <label for="business_filter">@lang('essentials::lang.business_single'):</label>
-                            {!! Form::select('select_company_id', $companies, null, [
-                                'class' => 'form-control select2',
-                                'id' => 'select_company_id',
-                                'style' => 'height:40px; width:100%',
-                                'placeholder' => __('lang_v1.all'),
-                                'required',
-                                'autofocus',
-                            ]) !!}
+                            {!! Form::select(
+                                'select_company_id[]',
+                                $companies,
+                                ['all'],
+                                [
+                                    'class' => 'form-control select2',
+                                    'id' => 'select_company_id',
+                                    'style' => 'height:40px; width:100%',
+                                    'multiple' => 'multiple',
+                                    'required',
+                                    'autofocus',
+                                ],
+                            ) !!}
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $contacts_fillter, null, [
+                            {!! Form::select('project_name_filter[]', $contacts_fillter, null, [
                                 'class' => 'form-control select2',
+                                'id' => 'project_name_filter',
+                                'multiple' => 'multiple',
                                 'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
+                                // 'placeholder' => __('lang_v1.all'),
                             ]) !!}
 
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             {!! Form::label('nationality_filter', __('followup::lang.nationality') . ':') !!}
-                            {!! Form::select('nationality_filter', $nationalities, null, [
+                            {!! Form::select('nationality_filter[]', $nationalities, null, [
                                 'class' => 'form-control select2',
+                                'id' => 'nationality_filter',
                                 'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
+                                // 'placeholder' => __('lang_v1.all'),
+                                'multiple' => 'multiple',
                             ]) !!}
 
                         </div>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             {!! Form::label('status_label', __('followup::lang.status') . ':') !!}
 
-                            <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
-                                <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($status_filltetr as $key => $value)
-                                    <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
+                            {!! Form::select('status_fillter[]', $status_filltetr, null, [
+                                'class' => 'form-control select2',
+                                'id' => 'status_fillter',
+                                'style' => 'padding: 2px;',
+                                'multiple' => 'multiple',
+                                // 'placeholder' => __('lang_v1.all'),
+                            ]) !!}
                         </div>
                     </div>
+
                     {{-- <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
@@ -73,7 +84,7 @@
                             ]) !!}
                         </div>
                     </div> --}}
-                    <div class="col-md-3">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             {!! Form::label('start_date_filter', __('essentials::lang.expiration_date_from') . ':') !!}
                             {!! Form::date('start_date_filter', null, [
@@ -83,7 +94,7 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             {!! Form::label('end_date_filter', __('essentials::lang.expiration_date_to') . ':') !!}
                             {!! Form::date('end_date_filter', null, [
@@ -257,7 +268,20 @@
     <script>
         $(document).ready(function() {
 
-            $('#status_fillter').select2();
+            // Function to initialize Select2 with common options
+            function initializeSelect2(selector) {
+                $(selector).select2({
+                    allowClear: true, // Allows the user to clear the selection
+                    width: '100%',
+                    placeholder: '@lang('lang_v1.all')',
+                });
+            }
+
+            // Initialize Select2 for each filter
+            initializeSelect2('#status_fillter');
+            initializeSelect2('#project_name_filter');
+            initializeSelect2('#select_company_id');
+            initializeSelect2('#nationality_filter');
 
             var workers_table = $('#workers_table').DataTable({
                 processing: true,

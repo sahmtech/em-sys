@@ -214,6 +214,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $status = $this->moduleUtil->getUserStatus();
 
         $can_show_employee = auth()->user()->can('essentials.show_employee');
         $can_add_employee = auth()->user()->can('essentials.add_employee');
@@ -314,7 +315,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         if (!empty($request->input('status')) && $request->input('status') != 'all') {
-            $users->where('users.status', $request->input('status'));
+            $users->whereIn('users.status', (array) $request->input('status'));
         }
         if (!empty($request->input('department')) && $request->input('department') != 'all') {
             $users->whereIn('users.essentials_department_id', (array) $request->input('department'));
@@ -436,12 +437,6 @@ class EssentialsManageEmployeeController extends Controller
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
         $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
-        $status = [
-            'active' => 'active',
-            'inactive' => 'inactive',
-            'terminated' => 'terminated',
-            'vecation' => 'vecation',
-        ];
 
         $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
             ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')

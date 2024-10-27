@@ -20,10 +20,11 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $contacts_fillter, null, [
+                            {!! Form::select('project_name_filter[]', $contacts_fillter, null, [
                                 'class' => 'form-control select2',
+                                'id' => 'project_name_filter',
                                 'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
+                                'multiple' => 'multiple',
                             ]) !!}
 
                         </div>
@@ -31,10 +32,11 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('nationality_filter', __('followup::lang.nationality') . ':') !!}
-                            {!! Form::select('nationality_filter', $nationalities, null, [
+                            {!! Form::select('nationality_filter[]', $nationalities, null, [
                                 'class' => 'form-control select2',
+                                'id' => 'nationality_filter',
                                 'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
+                                'multiple' => 'multiple',
                             ]) !!}
 
                         </div>
@@ -42,16 +44,16 @@
 
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('status_label', __('followup::lang.status') . ':') !!}
-
-                            <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
-                                <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($status_filltetr as $key => $value)
-                                    <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
+                            {!! Form::label('status_fillter', __('followup::lang.status') . ':') !!}
+                            {!! Form::select('status_fillter[]', $status_filltetr, null, [
+                                'class' => 'form-control select2',
+                                'id' => 'status_fillter',
+                                'style' => 'width:100%;padding:2px;',
+                                'multiple' => 'multiple',
+                            ]) !!}
                         </div>
                     </div>
+
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
@@ -217,7 +219,20 @@
     <script>
         $(document).ready(function() {
 
-            $('#status_fillter').select2();
+            // Function to initialize Select2 with common options
+            function initializeSelect2(selector) {
+                $(selector).select2({
+                    allowClear: true, // Allows the user to clear the selection
+                    width: '100%',
+                    placeholder: '@lang('lang_v1.all')',
+                });
+            }
+
+            // Initialize Select2 for each filter
+            initializeSelect2('#status_fillter');
+            initializeSelect2('#project_name_filter');
+            initializeSelect2('#nationality_filter');
+
 
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
