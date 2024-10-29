@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('followup::lang.document_delivery'))
+@section('title', __('followup::lang.attachment_delivery'))
 
 @section('content')
 
     <section class="content-header">
         <h1>
-            <span>@lang('followup::lang.document_delivery')</span>
+            <span>@lang('followup::lang.attachment_delivery')</span>
         </h1>
     </section>
 
@@ -30,7 +30,8 @@
                         </div>
 
                         <div class="col-sm-4" style="margin-top: 0px;">
-                            {!! Form::label('documents', __('followup::lang.documents')) !!}
+                            {!! Form::label('documents', __('followup::lang.attachments_types')) !!}
+
                             <select class="form-control" name="documents_filtter" id='documents_filtter'>
                                 <option value="all" selected>@lang('lang_v1.all')</option>
                                 @foreach ($documents as $document)
@@ -49,8 +50,8 @@
                         @slot('tool')
                             <div class="box-tools">
                                 <a class="btn btn-primary pull-right m-5 btn-modal"
-                                    href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController@create') }}"
-                                    data-href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController@create') }}"
+                                    href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController@create') }}"
+                                    data-href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController@create') }}"
                                     data-container="#add_document_delivery_model">
                                     <i class="fas fa-plus"></i> @lang('messages.add')</a>
                             </div>
@@ -63,7 +64,7 @@
                                     <tr>
 
                                         <th>@lang('followup::lang.worker')</th>
-                                        <th>@lang('followup::lang.documents')</th>
+                                        <th>@lang('followup::lang.attachments_types')</th>
                                         <th>@lang('followup::lang.title')</th>
                                         <th>@lang('followup::lang.nots')</th>
                                         <th>@lang('messages.action')</th>
@@ -104,7 +105,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('documents-delivery') }}',
+                    url: '{{ route('attachments-delivery') }}',
                     data: function(d) {
                         if ($('#worker_filtter').val()) {
                             d.worker_id = $('#worker_filtter').val();
@@ -127,7 +128,7 @@
                         }
                     },
                     {
-                        "data": "doc_name"
+                        "data": "attach_name"
                     },
                     {
                         "data": "title"

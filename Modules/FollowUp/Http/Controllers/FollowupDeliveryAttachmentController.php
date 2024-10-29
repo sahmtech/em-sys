@@ -14,7 +14,7 @@ use Modules\FollowUp\Entities\FollowupDocument;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Yajra\DataTables\Facades\DataTables;
 
-class FollowupDeliveryDocumentController extends Controller
+class FollowupDeliveryAttachmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -30,16 +30,16 @@ class FollowupDeliveryDocumentController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $can_followup_crud_document_delivery = auth()->user()->can('followup.crud_document_delivery');
-        if (!($is_admin || $can_followup_crud_document_delivery)) {
+        $can_followup_crud_attachment_delivery = auth()->user()->can('followup.crud_attachment_delivery');
+        if (!($is_admin || $can_followup_crud_attachment_delivery)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        $can_edit_document_delivery = auth()->user()->can('followup.edit_document_delivery');
-        $can_delete_document_deliver = auth()->user()->can('followup.delete_document_deliver');
-        $can_view_document_deliver = auth()->user()->can('followup.view_document_deliver');
+        $can_edit_attachment_delivery = auth()->user()->can('followup.edit_attachment_delivery');
+        $can_delete_attachment_deliver = auth()->user()->can('followup.delete_attachment_deliver');
+        $can_view_attachment_deliver = auth()->user()->can('followup.view_attachment_deliver');
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -54,14 +54,11 @@ class FollowupDeliveryDocumentController extends Controller
             $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $followupUserAccessProject)->get();
         }
 
-        // $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $userIds)->get();
         $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $userIds)
-            ->whereHas('document', function ($query) {
-                $query->where('type', 'Document');
+            ->whereHas('attachment', function ($query) {
+                $query->where('type', 'Attached');
             })
             ->get();
-
-        // dd($delivery_documents);
         if (request()->ajax()) {
 
             if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
@@ -80,8 +77,8 @@ class FollowupDeliveryDocumentController extends Controller
                     return $row->user->id_proof_number . ' - ' . $row->user->first_name . ' ' . $row->user->last_name ?? '';
                 })
 
-                ->editColumn('doc_name', function ($row) {
-                    return $row->document->name_ar ?? '';
+                ->editColumn('attach_name', function ($row) {
+                    return $row->attachment->name_ar ?? '';
                 })
                 ->editColumn('nots', function ($row) {
                     return $row->nots ?? '';
@@ -92,23 +89,23 @@ class FollowupDeliveryDocumentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_edit_document_delivery, $can_delete_document_deliver, $can_view_document_deliver) {
+                    function ($row) use ($is_admin, $can_edit_attachment_delivery, $can_delete_attachment_deliver, $can_view_attachment_deliver) {
 
                         $html = '';
 
-                        if (($is_admin || $can_edit_document_delivery)) {
+                        if (($is_admin || $can_edit_attachment_delivery)) {
                             $html .= '
-                        <a href="' . route('documents-delivery-edit', ['id' => $row->id]) . '"
-                        data-href="' . route('documents-delivery-edit', ['id' => $row->id]) . ' "
+                        <a href="' . route('attachments-delivery-edit', ['id' => $row->id]) . '"
+                        data-href="' . route('attachments-delivery-edit', ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_document_delivery_button"  data-container="#edit_document_delivery_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if (($is_admin || $can_delete_document_deliver)) {
+                        if (($is_admin || $can_delete_attachment_deliver)) {
                             $html .= '
-                    <button data-href="' . route('documents-delivery-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_document_delivery_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                    <button data-href="' . route('attachments-delivery-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_document_delivery_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
                         }
-                        if (($is_admin || $can_view_document_deliver)) {
+                        if (($is_admin || $can_view_attachment_deliver)) {
                             $html .= '<a href="' . asset('/uploads/' . $row->file_path) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __("messages.view") . '</a>
                 &nbsp;';
                         }
@@ -123,13 +120,13 @@ class FollowupDeliveryDocumentController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'worker', 'doc_name'])
+                ->rawColumns(['action', 'worker', 'attach_name'])
                 ->make(true);
         }
 
-        $documents = FollowupDocument::where('type', 'Document')->get();
+        $documents = FollowupDocument::where('type', 'Attached')->get();
 
-        return view('followup::deliveryDocument.index', compact('workers', 'documents'));
+        return view('followup::deliveryAttachment.index', compact('workers', 'documents'));
     }
 
     /**
@@ -139,14 +136,15 @@ class FollowupDeliveryDocumentController extends Controller
     public function create()
     {
         $workers = User::where('user_type', 'worker')->get();
-        $documents = FollowupDocument::all();
+        $documents = FollowupDocument::where('type', 'Attached')->get();
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id', auth()->user()->id)->pluck('sales_project_id');
             $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $followupUserAccessProject)->get();
         }
-        return view('followup::deliveryDocument.creat', compact('workers', 'documents'));
+        return view('followup::deliveryAttachment.creat', compact('workers', 'documents'));
     }
 
     /**
@@ -195,7 +193,7 @@ class FollowupDeliveryDocumentController extends Controller
             ];
         }
 
-        return redirect()->route('documents-delivery')->with($output);
+        return redirect()->route('attachments-delivery')->with($output);
     }
 
     /**
@@ -216,10 +214,11 @@ class FollowupDeliveryDocumentController extends Controller
     public function edit($id)
     {
         $workers = User::where('user_type', 'worker')->get();
-        $documents = FollowupDocument::where('type', 'Document')->get();
+        $documents = FollowupDocument::where('type', 'Attached')->get();
+
         $document_delivery = FollowupDeliveryDocument::find($id);
 
-        return view('followup::deliveryDocument.edit', compact('workers', 'documents', 'document_delivery'));
+        return view('followup::deliveryAttachment.edit', compact('workers', 'documents', 'document_delivery'));
     }
 
     /**

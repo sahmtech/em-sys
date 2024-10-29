@@ -13,7 +13,6 @@ use App\Transaction;
 use App\User;
 use Composer\Semver\Comparator;
 use Module;
-use Maatwebsite\Excel\Excel;
 
 class ModuleUtil extends Util
 {
@@ -63,9 +62,6 @@ class ModuleUtil extends Util
         return $newEmpNumber;
     }
 
-
-
-
     /**
      * This function check if superadmin module is installed or not.
      *
@@ -87,7 +83,7 @@ class ModuleUtil extends Util
                         'label' => __('report.reports'),
                         'default' => false,
                     ],
-                ]
+                ],
 
             ],
         ];
@@ -103,7 +99,6 @@ class ModuleUtil extends Util
     public function getModuleData($function_name, $arguments = null)
     {
         $modules = Module::toCollection()->toArray();
-
 
         $installed_modules = [];
         foreach ($modules as $module => $details) {
@@ -129,7 +124,7 @@ class ModuleUtil extends Util
                 }
             }
         }
-
+       
         return $data;
     }
 
@@ -572,7 +567,7 @@ class ModuleUtil extends Util
         $modules_data = $this->getModuleData('addTaxonomies');
         $module_data = [];
         foreach ($modules_data as $module => $data) {
-            foreach ($data  as $key => $value) {
+            foreach ($data as $key => $value) {
                 //key is category type
                 //check if category type is duplicate
                 if (!in_array($key, $category_types)) {
@@ -607,8 +602,6 @@ class ModuleUtil extends Util
         return $reports;
     }
 
-
-
     public function applyAccessRole()
     {
         $roles = auth()->user()->roles;
@@ -637,6 +630,6 @@ class ModuleUtil extends Util
             }
         }
 
-        return    array_unique($userIds);
+        return array_unique($userIds);
     }
 }

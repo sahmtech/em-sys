@@ -3,15 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\AccessRole;
-use App\AccessRoleBusiness;
 use App\AccessRoleCompany;
 use App\AccessRoleCompanyUserType;
-use App\AccessRoleProject;
 use App\AccessRoleReport;
 use App\AccessRoleRequest;
-use App\Business;
 use App\Company;
-use App\Contact;
 use App\Report;
 use App\SellingPriceGroup;
 use App\User;
@@ -63,7 +59,7 @@ class RoleController extends Controller
                 ->addColumn('action', function ($row) use ($is_admin, $can_role_update, $can_role_delete) {
                     if (!$row->is_default || $row->name == 'Cashier#' . $row->business_id) {
                         $action = '';
-                        if ($is_admin  || $can_role_update) {
+                        if ($is_admin || $can_role_update) {
                             $action .= '
                             <a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateReportAccessRole'], [$row->id]) . '" class="btn btn-warning btn-xs">' . __('messages.update_access_role_report') . '</a>';
 
@@ -76,7 +72,7 @@ class RoleController extends Controller
                             $action .= '&nbsp
                             <a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateRequestAccessRole'], [$row->id]) . '" class="btn btn-xs btn" style="background-color: #6c757d; color: white;"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.update_requests_access_role') . '</a>';
                         }
-                        if ($is_admin  || $can_role_delete) {
+                        if ($is_admin || $can_role_delete) {
                             $action .= '&nbsp
                                 <button data-href="' . action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]) . '" class="btn btn-xs btn-danger delete_role_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
@@ -107,7 +103,7 @@ class RoleController extends Controller
     public function editOrCreateAccessRole($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin  || auth()->user()->can('roles.create'))) {
+        if (!($is_admin || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -117,12 +113,12 @@ class RoleController extends Controller
             $accessRole->role_id = $id;
             $accessRole->save();
         }
-        $accessRoleCompanies = AccessRoleCompany::where('access_role_id',  $accessRole->id)->pluck('company_id')->unique()->toArray();
+        $accessRoleCompanies = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->unique()->toArray();
         $user_business_id = User::where('id', auth()->user()->id)->first()->business_id;
         $companies = Company::where('business_id', $user_business_id)->get();
         $userTypes = User::userTypes();
         $selectedUserTypes = [];
-        $tmp = AccessRoleCompany::where('access_role_id',  $accessRole->id)->get();
+        $tmp = AccessRoleCompany::where('access_role_id', $accessRole->id)->get();
         foreach ($tmp as $accessRoleCompany) {
             $selectedUserTypes[$accessRoleCompany->company_id] = $accessRoleCompany->userTypes();
         }
@@ -141,7 +137,7 @@ class RoleController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin  || auth()->user()->can('roles.create'))) {
+        if (!($is_admin || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -156,7 +152,7 @@ class RoleController extends Controller
         $reports = Report::all();
 
         return view('role.edit_create_access_role_report')
-            ->with(compact('reports', 'accessRoleReports', 'accessRole',));
+            ->with(compact('reports', 'accessRoleReports', 'accessRole', ));
     }
 
     public function editOrCreateRequestAccessRole($id)
@@ -181,9 +177,9 @@ class RoleController extends Controller
 
         AccessRoleReport::where('access_role_id', $roleId)->delete();
         if (!empty($reports)) {
-            foreach ($reports as  $report) {
+            foreach ($reports as $report) {
                 AccessRoleReport::create([
-                    'access_role_id' =>  $roleId,
+                    'access_role_id' => $roleId,
                     'report_id' => $report,
                 ]);
             }
@@ -200,9 +196,9 @@ class RoleController extends Controller
 
         AccessRoleRequest::where('access_role_id', $roleId)->delete();
         if (!empty($requests)) {
-            foreach ($requests as  $request) {
+            foreach ($requests as $request) {
                 AccessRoleRequest::create([
-                    'access_role_id' =>  $roleId,
+                    'access_role_id' => $roleId,
                     'request_id' => $request,
                 ]);
             }
@@ -222,12 +218,12 @@ class RoleController extends Controller
             $types = $request->input('usertypes#' . $company->id) ?? [];
             if (!empty($types)) {
                 $accessRoleCompany = AccessRoleCompany::create([
-                    'access_role_id' =>  $roleId,
+                    'access_role_id' => $roleId,
                     'company_id' => $company->id,
                 ]);
                 foreach ($types as $type) {
                     $accessRoleCompanyUserType = AccessRoleCompanyUserType::create([
-                        'access_role_company_id' =>  $accessRoleCompany->id,
+                        'access_role_company_id' => $accessRoleCompany->id,
                         'user_type' => $type,
                     ]);
                 }
@@ -248,7 +244,7 @@ class RoleController extends Controller
     public function create()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin  || auth()->user()->can('roles.create'))) {
+        if (!($is_admin || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -261,11 +257,10 @@ class RoleController extends Controller
         $temp = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
 
-        $general_permissions =  $this->moduleUtil->generalPermissions();
+        $general_permissions = $this->moduleUtil->generalPermissions();
         foreach ($general_permissions as $general_permission) {
             $module_permissions[] = $general_permission;
         }
-
 
         foreach ($temp as $temp_item) {
             foreach ($temp_item as $permission_item) {
@@ -396,7 +391,7 @@ class RoleController extends Controller
             // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
             $temp = $this->moduleUtil->getModuleData('user_permissions');
             $module_permissions = [];
-            $general_permissions =  $this->moduleUtil->generalPermissions();
+            $general_permissions = $this->moduleUtil->generalPermissions();
             foreach ($general_permissions as $general_permission) {
                 $module_permissions[] = $general_permission;
             }
@@ -433,7 +428,6 @@ class RoleController extends Controller
         if (!($is_admin || auth()->user()->can('roles.update'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
-
 
         try {
             $role_name = $request->input('name');

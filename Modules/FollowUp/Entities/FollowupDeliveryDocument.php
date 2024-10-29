@@ -3,8 +3,8 @@
 namespace Modules\FollowUp\Entities;
 
 use App\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class FollowupDeliveryDocument extends Model
 {
@@ -12,10 +12,13 @@ class FollowupDeliveryDocument extends Model
 
     protected $fillable = ['user_id', 'document_id', 'file_path', 'nots', 'title'];
 
-
+    public function attachment()
+    {
+        return $this->belongsTo(FollowupDocument::class, 'document_id')->where('type', 'Attached');
+    }
     public function document()
     {
-        return $this->belongsTo(FollowupDocument::class, 'document_id');
+        return $this->belongsTo(FollowupDocument::class, 'document_id')->where('type', 'Document');
     }
 
     public function user()

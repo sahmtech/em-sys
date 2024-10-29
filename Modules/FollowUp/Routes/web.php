@@ -9,7 +9,7 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 //Route::get('/testtt', [\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'withinTwoMonthExpiryContracts'])->name('withinTwoMonthExpiryContracts');
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
@@ -27,7 +27,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/getUserProjectsPermissions/{userId}', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'getUserProjectsPermissions'])->name('getUserProjectsPermissions');
         Route::post('/projects_access_permissions/store', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'store'])->name('projects_access_permissions.store');
         Route::get('/workers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
-        Route::get('/workers/{id}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('showWorker');
+        Route::get('/workers/{id}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('showWorker');
 
         //Route::get('/createWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'createWorker'])->name('createWorker');
         // Route::post('/storeWorker', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'storeWorker'])->name('storeWorker');
@@ -53,15 +53,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('time_sheet/edit/{id}', [\Modules\FollowUp\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('followup.agentTimeSheet.editTimeSheet');
         Route::get('agent/time_sheet/deal/{id}', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('followup.agentTimeSheet.dealTimeSheet');
 
-
         Route::prefix('contactLocations')->group(function () {
             Route::get('/', [\App\Http\Controllers\ContactLocationController::class, 'index'])->name('sale.contactLocations');
             Route::post('/addContactLocations', [\App\Http\Controllers\ContactLocationController::class, 'store'])->name('sale.storeContactLocations');
             Route::delete('/destroyContactLocations/{id}', [\App\Http\Controllers\ContactLocationController::class, 'destroy'])->name('sale.destroyContactLocations');
-            Route::get('/{id}/edit',  [\App\Http\Controllers\ContactLocationController::class,  'edit'])->name('sale.editContactLocations');
-            Route::put('/updateContactLocations/{id}',  [\App\Http\Controllers\ContactLocationController::class, 'update'])->name('sale.updateContactLocations');
+            Route::get('/{id}/edit', [\App\Http\Controllers\ContactLocationController::class, 'edit'])->name('sale.editContactLocations');
+            Route::put('/updateContactLocations/{id}', [\App\Http\Controllers\ContactLocationController::class, 'update'])->name('sale.updateContactLocations');
         });
-
 
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');
         Route::post('/storeSelectedRowsRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'storeSelectedRowsRequest'])->name('storeSelectedRowsRequest');
@@ -72,31 +70,23 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/filteredRequests', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'filteredRequests'])->name('filteredRequests');
         Route::get('/search/byproof', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'search'])->name('search_proofname');
 
-
-
         Route::get('/cancleContractRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'cancleContractRequestIndex'])->name('cancleContractRequest');
         Route::get('/recruitmentRequests', [\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'index'])->name('recruitmentRequests');
         Route::post('/storeRecruitmentRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'store'])->name('storeRecruitmentRequest');
 
-
         Route::post('/change-status', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'changeStatus'])->name('changeStatus');
         Route::post('/returnReq', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'returnReq'])->name('returnReq');
-
-
 
         Route::get('/contracts_wishes', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index'])->name('contracts_wishes');
         Route::post('/change_wish', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish'])->name('change_wish');
         Route::post('/add_wish', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish'])->name('change_wish');
 
-
         Route::post('/addWishcontact', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'add_wish'])->name('addWishcontact');
-        Route::get('/get-wish-file/{employeeId}',  [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'getWishFile'])->name('getWishFile');
-
+        Route::get('/get-wish-file/{employeeId}', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'getWishFile'])->name('getWishFile');
 
         Route::get('/reports/project-workers/choose-fields', [\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'chooseFields_projectsworker'])->name('projectWorkers_chooseFields');
         Route::get('/reports/project-workers', [\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers'])->name('projectWorkers');
         Route::get('/reports/projects', [\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects'])->name('projects');
-
 
         Route::get('/withinTwoMonthExpiryContracts', [\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'withinTwoMonthExpiryContracts'])->name('withinTwoMonthExpiryContracts');
         Route::get('/withinTwoMonthExpiryResidency', [\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'withinTwoMonthExpiryResidency'])->name('withinTwoMonthExpiryResidency');
@@ -112,7 +102,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/shifts-delete/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'destroy'])->name('shifts-delete');
         Route::get('/projects-by-contacts/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'ProjectsByContacts'])->name('ProjectsByContacts');
 
-
         // Documents
         Route::get('/documents', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index'])->name('documents');
         Route::get('/documents-create', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'create'])->name('documents-create');
@@ -121,6 +110,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/documents-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'update'])->name('documents-update');
         Route::delete('/documents-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'destroy'])->name('documents-delete');
 
+        // Attachments
+        Route::get('/attachments', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'index'])->name('attachments');
+        Route::get('/attachments-create', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'create'])->name('attachments-create');
+        Route::get('/attachments-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'edit'])->name('attachments-edit');
+        Route::post('/attachments-store', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'store'])->name('attachments-store');
+        Route::put('/attachments-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'update'])->name('attachments-update');
+        Route::delete('/attachments-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'destroy'])->name('attachments-delete');
 
         Route::get('/documents-delivery', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index'])->name('documents-delivery');
         Route::get('/documents-delivery-create', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'create'])->name('documents-delivery-create');
@@ -128,6 +124,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/documents-delivery-store', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'store'])->name('documents-delivery-store');
         Route::put('/documents-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'update'])->name('documents-delivery-update');
         Route::delete('/documents-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'destroy'])->name('documents-delivery-delete');
+
+        //attachments
+        Route::get('/attachments-delivery', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'index'])->name('attachments-delivery');
+        Route::get('/attachments-delivery-create', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'create'])->name('attachments-delivery-create');
+        Route::get('/attachments-delivery-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'edit'])->name('attachments-delivery-edit');
+        Route::post('/attachments-delivery-store', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'store'])->name('attachments-delivery-store');
+        Route::put('/attachments-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'update'])->name('attachments-delivery-update');
+        Route::delete('/attachments-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'destroy'])->name('attachments-delivery-delete');
 
         Route::post('/cancleProject', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'cancleProject'])->name('cancleProject');
 

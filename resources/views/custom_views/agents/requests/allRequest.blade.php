@@ -932,11 +932,12 @@
 
 
             function renderRequestActivities(data) {
+
                 let activitiesHtml = `
                         <div class="activity-header card mb-3">
                         
                             <div class="card-body">
-                                <p><strong>@lang('request.started_department'):</strong> ${data.request_info.started_depatment.name || '@lang('request.not_exist')'}</p>
+                                <p><strong>@lang('request.started_department'):</strong>   ${data.request_info.started_depatment.name || '@lang('request.not_exist')'}</p>
                                 <p><strong>@lang('request.created_by'):</strong> ${data.created_user_info.created_user_full_name || '@lang('request.not_exist')'}</p>
                             </div>
                         </div>
@@ -1090,7 +1091,7 @@
                                     label: '{{ __('request.installmentsNumber') }}',
                                     value: requestInfo.installmentsNumber
                                 },
-                                
+
                                 {
                                     label: '{{ __('request.workInjuriesDate') }}',
                                     value: requestInfo.workInjuriesDate

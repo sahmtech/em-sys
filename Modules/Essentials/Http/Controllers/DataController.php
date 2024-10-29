@@ -4,40 +4,35 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\BusinessLocation;
 use App\Category;
-use App\User;
 use App\Company;
-use App\Utils\ModuleUtil;
+use App\User;
 use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
-use Modules\Essentials\Entities\Shift;
-use Modules\Essentials\Entities\EssentialsUserShift;
-
 use Menu;
-use Modules\Essentials\Entities\EssentialsContractType;
-use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\DocumentShare;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsHoliday;
-use Modules\Essentials\Entities\EssentialsLeave;
-use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Modules\Essentials\Entities\Reminder;
-use Modules\Essentials\Entities\ToDo;
-use Modules\Essentials\Entities\EssentialsEntitlementType;
-use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
-use Modules\Essentials\Entities\EssentialsBasicSalaryType;
-use Modules\Essentials\Entities\EssentialsAdmissionsToWork;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
+use Modules\Essentials\Entities\EssentialsHoliday;
+use Modules\Essentials\Entities\EssentialsLeave;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsTodoComment;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
+use Modules\Essentials\Entities\EssentialsUserShift;
+use Modules\Essentials\Entities\Reminder;
+use Modules\Essentials\Entities\Shift;
+use Modules\Essentials\Entities\ToDo;
 
 class DataController extends Controller
 {
@@ -46,7 +41,6 @@ class DataController extends Controller
      *
      * @return array
      */
-
 
     public function parse_notification($notification)
     {
@@ -208,6 +202,7 @@ class DataController extends Controller
      *
      * @return array
      */
+
     public function user_permissions()
     {
         return [
@@ -236,6 +231,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.add_finish_contracts'),
                         'default' => false,
                     ],
+
                     //wishes
                     [
                         'value' => 'essentials.delete_wishes',
@@ -269,7 +265,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.delete_leave_type',
                         'label' => __('essentials::lang.delete_leave_type'),
@@ -280,7 +275,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.edit_leave_type'),
                         'default' => false,
                     ],
-
 
                     //countries
                     [
@@ -300,7 +294,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.add_countries'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.delete_cities',
@@ -369,7 +362,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.add_holidays'),
                         'default' => false,
                     ],
-                    //travel_categories 
+                    //travel_categories
 
                     [
                         'value' => 'essentials.crud_travel_categories',
@@ -504,7 +497,6 @@ class DataController extends Controller
                     //     'default' => false,
                     // ],
 
-
                     //attendance && shift
                     [
                         'value' => 'essentials.crud_shift',
@@ -524,13 +516,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.edit_all_attendance'),
                         'default' => false,
 
-
                     ],
                     [
                         'value' => 'essentials.crud_all_manual_attendance',
                         'label' => __('essentials::lang.crud_all_manual_attendance'),
                         'default' => false,
-
 
                     ],
                     [
@@ -538,22 +528,18 @@ class DataController extends Controller
                         'label' => __('essentials::lang.return_essentials_request'),
                         'default' => false,
 
-
                     ],
                     [
                         'value' => 'essentials.show_essentials_request',
                         'label' => __('essentials::lang.show_essentials_request'),
                         'default' => false,
 
-
                     ],
-
 
                     [
                         'value' => 'essentials.delete_all_attendance',
                         'label' => __('essentials::lang.delete_all_attendance'),
                         'default' => false,
-
 
                     ],
                     [
@@ -561,13 +547,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_attendance_by_shift'),
                         'default' => false,
 
-
                     ],
                     [
                         'value' => 'essentials.crud_attendance_by_date',
                         'label' => __('essentials::lang.crud_attendance_by_date'),
                         'default' => false,
-
 
                     ],
                     [
@@ -575,10 +559,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.import_attendance'),
                         'default' => false,
 
-
                     ],
-
-
 
                     [
                         'value' => 'essentials.view_own_attendance',
@@ -587,7 +568,6 @@ class DataController extends Controller
                         'is_radio' => true,
                         'radio_input_name' => 'attendance_crud',
                     ],
-
 
                     [
                         'value' => 'essentials.allow_users_for_attendance_from_web',
@@ -641,13 +621,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.show_essentials_worker',
                         'label' => __('essentials::lang.show_essentials_worker'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.employees_reports_view',
@@ -679,7 +657,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.curd_contracts_end_reasons',
                         'label' => __('essentials::lang.contracts_end_reasons'),
@@ -691,7 +668,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.curd_wishes'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.view_leave_types',
@@ -714,7 +690,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.crud_department',
                         'label' => __('essentials::lang.crud_department'),
@@ -725,7 +700,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_designation'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.view_employee_settings',
@@ -776,7 +750,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.crud_regions',
                         'label' => __('essentials::lang.crud_regions'),
@@ -798,13 +771,11 @@ class DataController extends Controller
                     //     'default' => false,
                     // ],
 
-
                     [
                         'value' => 'essentials.report',
                         'label' => __('essentials::lang.reports'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.employees_information_report',
@@ -817,7 +788,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_attendances_status'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.add_attencances_status',
@@ -897,7 +867,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                ]
+                ],
 
             ],
 
@@ -960,8 +930,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
                     [
                         'value' => 'essentials.create_payroll',
                         'label' => __('essentials::lang.add_payroll'),
@@ -1005,7 +973,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.view_timesheet_payroll_groups',
                         'label' => __('essentials::lang.view_timesheet_groups'),
@@ -1018,8 +985,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-                ]
+                ],
 
             ],
 
@@ -1086,7 +1052,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.view_document',
                         'label' => __('essentials::lang.view_document'),
@@ -1142,7 +1107,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.edit_knowledge_base',
                         'label' => __('essentials::lang.edit_knowledge_base'),
@@ -1166,14 +1130,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
-
-
-
-
-                ]
-
+                ],
 
             ],
 
@@ -1223,7 +1180,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.insurances_requests_change_status',
                         'label' => __('essentials::lang.insurances_requests_change_status'),
@@ -1255,9 +1211,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.showWorkerProjects'),
                         'default' => false,
                     ],
-
-
-
 
                     [
                         'value' => 'essentials.crud_insurance_contracts',
@@ -1296,14 +1249,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
                     [
                         'value' => 'essentials.crud_insurance_requests',
                         'label' => __('essentials::lang.crud_insurance_requests'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.crud_insurance_companies',
@@ -1353,7 +1303,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                ]
+                ],
 
             ],
 
@@ -1400,7 +1350,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.import_update_employees',
                         'label' => __('essentials::lang.import_update_employees'),
@@ -1435,7 +1384,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.add_essentials_workers'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.show_employee',
@@ -1622,7 +1570,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.crud_employee_work_adminitions',
                         'label' => __('essentials::lang.crud_employee_work_adminitions'),
@@ -1693,8 +1640,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
                     //-----------------------------------------------------------------
                     [
                         'value' => 'essentials.crud_employee_families',
@@ -1732,8 +1677,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_penalties'),
                         'default' => false,
                     ],
-                    
-                    
+
                     [
                         'value' => 'essentials.view_employees',
                         'label' => __('essentials::lang.view_employees'),
@@ -1784,7 +1728,60 @@ class DataController extends Controller
                         'label' => __('essentials::lang.employee_affairs_view_department_employees'),
                         'default' => false,
                     ],
-                ]
+                    //Attchment
+                    [
+                        'value' => 'followup.crud_attachments',
+                        'label' => __('followup::lang.add_attachment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.edit_attachment',
+                        'label' => __('followup::lang.edit_attachment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.attachments.delete',
+                        'label' => __('followup::lang.delete_attachment'),
+                        'default' => false,
+                    ],
+                    // Delivery Attchment
+                    [
+                        'value' => 'followup.crud_attachment_delivery',
+                        'label' => __('followup::lang.add_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.delete_attachment_deliver',
+                        'label' => __('followup::lang.delete_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.edit_attachment',
+                        'label' => __('followup::lang.edit_attachment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.attachments.delete',
+                        'label' => __('followup::lang.delete_attachment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.view_attachment_deliver',
+                        'label' => __('followup::lang.view_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.view_attachment_deliver',
+                        'label' => __('followup::lang.view_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.view_attachments_types',
+                        'label' => __('followup::lang.attachments_types'),
+                        'default' => false,
+                    ],
+
+                ],
 
             ],
 
@@ -1814,8 +1811,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.showWorkerProjects'),
                         'default' => false,
                     ],
-
-
 
                     [
                         'value' => 'essentials.show_business_document',
@@ -1847,7 +1842,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.add_business_subscription'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'essentials.workcards_requests_change_status',
@@ -1923,9 +1917,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
-
                     [
                         'value' => 'essentials.view_all_expire_resdiency',
                         'label' => __('essentials::lang.view_all_expire_resdiency'),
@@ -1952,15 +1943,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'essentials.crud_workcards_request',
                         'label' => __('essentials::lang.crud_workcards_request'),
                         'default' => false,
                     ],
-
-
-
 
                     [
                         'value' => 'essentials.work_cards_operation',
@@ -2085,8 +2072,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
                     [
                         'value' => 'essentials.car_drivers',
                         'label' => __('housingmovements::lang.car_drivers'),
@@ -2102,8 +2087,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.drivers_delete'),
                         'default' => false,
                     ],
-
-
 
                     [
                         'value' => 'essentials.carsChangeOil',
@@ -2149,8 +2132,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-                ]
+                ],
 
             ],
         ];
@@ -2248,7 +2230,7 @@ class DataController extends Controller
     //                     )->order(5);
     //                 }
 
-    //                 // if (auth()->user()->can('essentials.crud_holidays')) 
+    //                 // if (auth()->user()->can('essentials.crud_holidays'))
     //                 // {
     //                 //     $subMenu->url(
     //                 //         action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
@@ -2299,12 +2281,11 @@ class DataController extends Controller
     //                             || request()->segment(2) == 'contract_types'
     //                             || request()->segment(2) == 'insurance_categories'
 
-
     //                         )],
     //                     )->order(11);
     //                 }
 
-    //                 // if (auth()->user()->can('essentials.access_sales_target')) 
+    //                 // if (auth()->user()->can('essentials.access_sales_target'))
     //                 // {
     //                 //     $subMenu->url(
     //                 //         action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
@@ -2386,7 +2367,6 @@ class DataController extends Controller
     {
         if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
 
-
             $business_id = session()->get('business.id');
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
@@ -2409,9 +2389,9 @@ class DataController extends Controller
             } else {
                 $contract = null;
             }
-            if (!empty($user))
+            if (!empty($user)) {
                 $user_travel = EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->where('categorie_id', '!=', null)->first();
-            else {
+            } else {
                 $user_travel = null;
             }
             if (!empty($user)) {
@@ -2480,7 +2460,6 @@ class DataController extends Controller
     public function afterModelSaved($data)
     {
 
-
         if ($data['event'] == 'user_saved') {
 
             $user = $data['model_instance'];
@@ -2501,22 +2480,20 @@ class DataController extends Controller
 
             $user->save();
 
-
             if (
                 request()->input('contract_number') != null || request()->input('contract_type') != null
                 || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
             ) {
 
-                $contractDuration =  request()->input('contract_duration');
+                $contractDuration = request()->input('contract_duration');
                 $contract_per_period = request()->input('contract_duration_unit');
                 $contract = new EssentialsEmployeesContract();
                 $contract->employee_id = $user->id;
                 $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
 
-
                 if ($latestRecord) {
                     $latestRefNo = $latestRecord->contract_number;
-                    $numericPart = (int)substr($latestRefNo, 3);
+                    $numericPart = (int) substr($latestRefNo, 3);
                     $numericPart++;
                     $contract->contract_number = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
                 } else {
@@ -2534,8 +2511,6 @@ class DataController extends Controller
                 $contract->created_by = Auth::user()->id;
                 $contract->contract_type_id = request()->input('contract_type');
 
-
-
                 if (request()->hasFile('contract_file')) {
                     $file = request()->file('contract_file');
                     $filePath = $file->store('/employee_contracts');
@@ -2545,7 +2520,6 @@ class DataController extends Controller
                 $contract->save();
             }
 
-
             if (
                 request()->input('qualification_type') || request()->input('graduation_year') || request()->hasFile('qualification_file')
                 || request()->input('graduation_institution') || request()->input('specialization') || request()->input('great_degree')
@@ -2554,15 +2528,15 @@ class DataController extends Controller
 
                 $qualification2->qualification_type = request()->input('qualification_type');
                 $qualification2->specialization = request()->input('general_specialization');
-                $qualification2->sub_specialization  = request()->input('sub_specialization');
-                $qualification2->graduation_year =  request()->input('graduation_year');
-                $qualification2->graduation_institution =  request()->input('graduation_institution');
+                $qualification2->sub_specialization = request()->input('sub_specialization');
+                $qualification2->graduation_year = request()->input('graduation_year');
+                $qualification2->graduation_institution = request()->input('graduation_institution');
                 $qualification2->employee_id = $user->id;
                 $qualification2->graduation_country = request()->input('graduation_country');
-                $qualification2->degree =  request()->input('degree');
-                $qualification2->marksName =  request()->input('marksName');
+                $qualification2->degree = request()->input('degree');
+                $qualification2->marksName = request()->input('marksName');
                 $qualification2->created_by = Auth::user()->id;
-                $qualification2->great_degree =  request()->input('great_degree');
+                $qualification2->great_degree = request()->input('great_degree');
                 if (request()->hasFile('qualification_file')) {
                     $file = request()->file('qualification_file');
                     $filePath = $file->store('/employee_qualifications');
@@ -2578,7 +2552,6 @@ class DataController extends Controller
                 EssentialsUserShift::where('user_id', $user->id)
                     ->update(['is_active' => 0]);
 
-
                 foreach ($shiftIds as $shiftId) {
 
                     EssentialsUserShift::create([
@@ -2589,9 +2562,6 @@ class DataController extends Controller
                 }
             }
 
-
-
-
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
                 $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
                 $travel_ticket_categorie->employee_id = $user->id;
@@ -2599,7 +2569,6 @@ class DataController extends Controller
                 $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
                 $travel_ticket_categorie->save();
             }
-
 
             if (request()->input('profession')) {
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
@@ -2610,9 +2579,9 @@ class DataController extends Controller
                 $essentials_employee_appointmets->created_by = Auth::user()->id;
 
                 if (request()->input('sponsor_id') != 'other_suponser') {
-                    $essentials_employee_appointmets->sponsor_company =  request()->input('sponsor_id');
+                    $essentials_employee_appointmets->sponsor_company = request()->input('sponsor_id');
                 } else {
-                    $essentials_employee_appointmets->sponsor_name =  request()->input('new_sponsor_name');
+                    $essentials_employee_appointmets->sponsor_name = request()->input('new_sponsor_name');
                 }
 
                 $essentials_employee_appointmets->type = 'appoint';
@@ -2625,15 +2594,14 @@ class DataController extends Controller
                 $jsonData = json_decode(request()->selectedData, true);
                 foreach ($jsonData as $item) {
 
-
                     try {
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
                         $userAllowancesAndDeduction->user_id = $user->id;
                         $userAllowancesAndDeduction->created_by = Auth::user()->id;
 
-                        $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
+                        $userAllowancesAndDeduction->allowance_deduction_id = (int) $item['salaryType'];
 
-                        if ($item['amount'] != Null) {
+                        if ($item['amount'] != null) {
                             $userAllowancesAndDeduction->amount = $item['amount'];
                         } else {
                             $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
@@ -2653,8 +2621,6 @@ class DataController extends Controller
                 }
             }
         }
-
-
 
         //update
         if ($data['event'] == 'user_updated') {
@@ -2800,7 +2766,6 @@ class DataController extends Controller
                 EssentialsUserShift::where('user_id', $user->id)
                     ->update(['is_active' => 0]);
 
-
                 foreach ($shiftIds as $shiftId) {
 
                     EssentialsUserShift::create([
@@ -2819,7 +2784,7 @@ class DataController extends Controller
                         EssentialsUserAllowancesAndDeduction::create([
                             'user_id' => $user->id,
                             'created_by' => Auth::user()->id,
-                            'allowance_deduction_id' => (int)$item['salaryType'],
+                            'allowance_deduction_id' => (int) $item['salaryType'],
                             'amount' => $item['amount'] ?? Db::table('essentials_allowances_and_deductions')->where('id', $item['salaryType'])->value('amount'),
                         ]);
                     } catch (\Exception $e) {
@@ -2829,7 +2794,6 @@ class DataController extends Controller
                 }
             }
         }
-
 
         // if ($data['event'] == 'user_updated') {
 
@@ -2863,12 +2827,7 @@ class DataController extends Controller
         //         EssentialsEmployeeTravelCategorie::where('employee_id', $user->id)->delete();
         //     }
 
-
         //     $user->save();
-
-
-
-
 
         //     $id = $data['model_instance']['id'];
         //     if (
@@ -2907,7 +2866,6 @@ class DataController extends Controller
 
         //     $delete_contract_file =  request()->input('delete_contract_file') ?? null;
 
-
         //     if ($delete_contract_file && $delete_contract_file == 1) {
 
         //         $filePath =  !empty($contract->file_path) ? $contract->file_path ?? null : null;
@@ -2920,7 +2878,6 @@ class DataController extends Controller
         //         }
         //     }
 
-
         //     //dd(request()->input('contract_type'));
         //     // if (
         //     //     request()->input('contract_number') != null || request()->input('contract_type') != null
@@ -2928,8 +2885,6 @@ class DataController extends Controller
         //     //     || request()->input('contract_file')
 
         //     // ) {
-
-
 
         //     //     $contractDuration =  request()->input('contract_duration');
         //     //     $contract_per_period = request()->input('contract_duration_unit');
@@ -2954,8 +2909,6 @@ class DataController extends Controller
         //     //     $contract->created_by = Auth::user()->id;
         //     //     $contract->is_active = 1;
 
-
-
         //     //     if (request()->hasFile('contract_file')) {
         //     //         $file = request()->file('contract_file');
         //     //         $filePath = $file->store('/employee_contracts');
@@ -2964,7 +2917,6 @@ class DataController extends Controller
 
         //     //         $contract->file_path = request()->input('existing_contract_file');
         //     //     }
-
 
         //     //     $contract->save();
         //     //     //dd($contract);
@@ -3099,7 +3051,6 @@ class DataController extends Controller
 
         //     //     $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id);
 
-
         //     //         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
         //     //         $essentials_employee_appointmets->employee_id = $user->id;
         //     //         $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
@@ -3130,12 +3081,10 @@ class DataController extends Controller
         //         );
         //     }
 
-
         //     if (request()->selectedData) {
         //         EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)->delete();
         //         $jsonData = json_decode(request()->selectedData, true);
         //         foreach ($jsonData as $item) {
-
 
         //             try {
         //                 $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
@@ -3166,13 +3115,7 @@ class DataController extends Controller
 
     }
 
-
-
     // In your AllowanceController
-
-
-
-
 
     // public function afterModelSaved($data)
     // {
@@ -3421,7 +3364,7 @@ class DataController extends Controller
         $additional_js = '';
         $additional_css = '';
         $additional_html =
-            '<div class="modal fade" id="task_modal" tabindex="-1" role="dialog" 
+            '<div class="modal fade" id="task_modal" tabindex="-1" role="dialog"
         aria-labelledby="gridSystemModalLabel">
         </div>';
         $additional_views = ['essentials::todo.todo_javascript'];

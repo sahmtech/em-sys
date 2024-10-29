@@ -11,7 +11,9 @@
     <!-- Main content -->
     <section class="content">
         @php
-            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $pos_settings = !empty(session('business.pos_settings'))
+                ? json_decode(session('business.pos_settings'), true)
+                : [];
         @endphp
         @component('components.widget', ['class' => 'box-primary'])
             {!! Form::open([
@@ -57,36 +59,35 @@
                                     <div class="col-md-12">
                                         <ul>
                                             @foreach ($userTypes as $uesrType)
-                                                
-                                                    <div class="row check_group">
-                                                        {{-- <div class="col-md-5">
+                                                <div class="row check_group">
+                                                    {{-- <div class="col-md-5">
                                                         <h4>{{ $uesrType }}</h4>
                                                     </div> --}}
 
 
+                                                    <div class="col-md-12">
+
+
                                                         <div class="col-md-12">
-
-
-                                                            <div class="col-md-12">
-                                                                <div class="checkbox">
-                                                                    <label class="custom_permission_lable">
-                                                                        {!! Form::checkbox(
-                                                                            'usertypes#' . $company->id . '[]',
-                                                                            $uesrType,
-                                                                            in_array($uesrType, $selectedUserTypes[$company->id] ?? []),
-                                                                            [
-                                                                                'class' => 'input-icheck',
-                                                                            ],
-                                                                        ) !!} {{ $userTypesNames[$uesrType] }}
-                                                                    </label>
-                                                                </div>
+                                                            <div class="checkbox">
+                                                                <label class="custom_permission_lable">
+                                                                    {!! Form::checkbox(
+                                                                        'usertypes#' . $company->id . '[]',
+                                                                        $uesrType,
+                                                                        in_array($uesrType, $selectedUserTypes[$company->id] ?? []),
+                                                                        [
+                                                                            'class' => 'input-icheck',
+                                                                        ],
+                                                                    ) !!} {{ $userTypesNames[$uesrType] }}
+                                                                </label>
                                                             </div>
-
                                                         </div>
-                                                    </div>
-                                                    <div class="clearfix"></div>
 
-                                                
+                                                    </div>
+                                                </div>
+                                                <div class="clearfix"></div>
+
+
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -94,9 +95,8 @@
 
                                     </div>
                                 </div>
-                                
+
                             </div>
-                           
                         @endforeach
                     </ul>
 

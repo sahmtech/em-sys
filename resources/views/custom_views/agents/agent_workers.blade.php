@@ -81,8 +81,8 @@
                             <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.specialization')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td> --}}
+                            {{-- <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td> --}}
                             <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
@@ -195,20 +195,20 @@
                             }
                         }
                     },
-                    {
+                    // {
 
-                        data: 'essentials_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
+                    //     data: 'essentials_salary',
+                    //     render: function(data, type, row) {
+                    //         return Math.floor(data);
+                    //     }
 
-                    },
-                    {
-                        data: 'total_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
-                    },
+                    // },
+                    // {
+                    //     data: 'total_salary',
+                    //     render: function(data, type, row) {
+                    //         return Math.floor(data);
+                    //     }
+                    // },
 
                     {
                         data: 'gender',

@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use App\Business;
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\BusinessLocation;
 use App\Category;
 use App\Charts\CommonChart;
+use App\Company;
 use App\Contact;
-use App\Currency;
-use Modules\FollowUp\Entities\FollowupRequestsAttachment;
 use App\Media;
+use App\Request as UserRequest;
+use App\RequestAttachment;
+use App\RequestProcess;
+use App\SentNotification;
+use App\SentNotificationsUser;
 use App\Transaction;
 use App\User;
 use App\Utils\BusinessUtil;
@@ -21,11 +25,14 @@ use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use App\VariationLocationDetails;
 use Carbon\Carbon;
-
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\DB as FacadesDB;
+use Modules\CEOManagment\Entities\ProcedureTask;
+use Modules\CEOManagment\Entities\RequestProcedureTask;
+use Modules\CEOManagment\Entities\RequestsType;
+use Modules\CEOManagment\Entities\WkProcedure;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsCity;
@@ -34,37 +41,17 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\Essentials\Entities\ToDo;
+use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Activitylog\Models\Activity;
-
-use App\AccessRole;
-use App\AccessRoleRequest;
-use App\AccessRoleCompany;
-use App\Company;
-use App\Request as UserRequest;
-use App\RequestProcess;
-use App\RequestAttachment;
-use App\SentNotification;
-use App\SentNotificationsUser;
-use Modules\CEOManagment\Entities\WkProcedure;
-use Modules\CEOManagment\Entities\ProcedureTask;
-use Modules\CEOManagment\Entities\RequestProcedureTask;
-use Modules\CEOManagment\Entities\RequestsType;
-use Modules\Essentials\Entities\ToDo;
-use Modules\Essentials\Notifications\NewTaskNotification;
-use Modules\FollowUp\Entities\FollowupUserAccessProject;
-use Modules\Essentials\Entities\UserLeaveBalance;
-use Modules\Essentials\Entities\EssentialsLeaveType;
-use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
-use Modules\CEOManagment\Entities\Task;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use stdClass;
+use Yajra\DataTables\Facades\DataTables;
 
 class AgentController extends Controller
 {
@@ -85,9 +72,6 @@ class AgentController extends Controller
 
     protected $statuses;
 
-
-
-
     /**
      * Create a new controller instance.
      *
@@ -106,7 +90,6 @@ class AgentController extends Controller
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
         $this->restUtil = $restUtil;
-
 
         $this->requestUtil = $requestUtil;
         $this->statuses = [
@@ -132,7 +115,7 @@ class AgentController extends Controller
                     'allowPointSelect' => true,
                     'cursor' => 'pointer',
                     'dataLabels' => [
-                        'enabled' => false
+                        'enabled' => false,
                     ],
                     'showInLegend' => true,
                 ],
@@ -150,7 +133,6 @@ class AgentController extends Controller
         return ' ';
     }
 
-
     public function agentHome()
     {
         try {
@@ -167,7 +149,7 @@ class AgentController extends Controller
 
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
+            $contact_id = $user->crm_contact_id;
             $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
             $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $projectsIds);
             $workers_count = $workers->count();
@@ -175,7 +157,6 @@ class AgentController extends Controller
                 ->where('status', 'active')
                 ->count();
             $inactive_workers_count = $workers->whereNot('status', 'active')->count();
-
 
             $chart = new CommonChart;
             $colors = [
@@ -193,7 +174,7 @@ class AgentController extends Controller
                 '#f28f43',
                 '#77a1e5',
                 '#c42525',
-                '#a6c96a'
+                '#a6c96a',
             ];
             $labels = [
                 __('followup::lang.customer_home_active_workers_count'),
@@ -223,13 +204,12 @@ class AgentController extends Controller
         }
     }
 
-
     public function agentProjects()
     {
         try {
             $business_id = request()->session()->get('user.business_id');
             $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
+            $contact_id = $user->crm_contact_id;
             $SalesProjects = SalesProject::where('contact_id', $contact_id);
             $cities = EssentialsCity::forDropdown();
             $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
@@ -237,7 +217,6 @@ class AgentController extends Controller
         ' - ',COALESCE(id_proof_number,'')) as  full_name"))->get();
             $name_in_charge_choices = $all_users->pluck('full_name', 'id');
             if (request()->ajax()) {
-
 
                 return Datatables::of($SalesProjects)
                     ->addColumn(
@@ -250,15 +229,18 @@ class AgentController extends Controller
                     ->addColumn(
                         'contact_location_name',
                         function ($row) {
-                            return  $row->name;
+                            return $row->name;
                         }
                     )
                     ->addColumn(
                         'contact_location_city',
                         function ($row) use ($cities) {
                             if ($row->city) {
-                                return  $cities[$row->city];
-                            } else return null;
+                                return $cities[$row->city];
+                            } else {
+                                return null;
+                            }
+
                         }
                     )
                     ->addColumn(
@@ -267,13 +249,16 @@ class AgentController extends Controller
 
                             if ($row->name_in_charge) {
                                 return $name_in_charge_choices[$row->name_in_charge];
-                            } else return null;
+                            } else {
+                                return null;
+                            }
+
                         }
                     )
                     ->addColumn(
                         'contact_location_phone_in_charge',
                         function ($row) {
-                            return  $row->phone_in_charge;
+                            return $row->phone_in_charge;
                         }
                     )
                     ->addColumn(
@@ -288,10 +273,9 @@ class AgentController extends Controller
                         function ($row) {
                             $html = '';
 
-                            $html .= '<a href="' . route('sale.editSaleProject', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                            $html .= '<a href="' . route('sale.editSaleProject', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                              &nbsp;';
                             $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroySaleProject', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
 
                             return $html;
                         }
@@ -306,7 +290,6 @@ class AgentController extends Controller
 
                         $query->where('name', 'like', "%{$keyword}%");
                     })
-
 
                     ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_id', 'action'])
                     ->make(true);
@@ -325,7 +308,7 @@ class AgentController extends Controller
     {
         try {
             $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
+            $contact_id = $user->crm_contact_id;
             $transactions = Transaction::where('contact_id', $contact_id)->get();
             $companies = Company::pluck('name', 'id');
             $bills = [];
@@ -361,14 +344,13 @@ class AgentController extends Controller
         }
     }
 
-
     public function agentContracts()
     {
 
         try {
             $contacts = Contact::all()->pluck('supplier_business_name', 'id');
             $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
+            $contact_id = $user->crm_contact_id;
 
             if (request()->ajax()) {
 
@@ -383,7 +365,7 @@ class AgentController extends Controller
                         'sales_contracts.file',
                         'transactions.contract_form as contract_form',
                         'transactions.contact_id',
-                        'transactions.id as tra'
+                        'transactions.id as tra',
                     ])->where('transactions.contact_id', $contact_id);
 
                 if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
@@ -394,19 +376,17 @@ class AgentController extends Controller
                 }
                 return Datatables::of($contracts)
 
-
                     ->editColumn('contact_id', function ($row) use ($contacts) {
                         $item = $contacts[$row->contact_id] ?? '';
 
                         return $item;
                     })
 
-
                     ->addColumn(
                         'action',
                         function ($row) {
                             $html = '';
-                            $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
+                            $html .= '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
                             $html .= '&nbsp;';
 
                             if (!empty($row->file)) {
@@ -421,8 +401,6 @@ class AgentController extends Controller
                         }
                     )
 
-
-
                     ->filterColumn('number_of_contract', function ($query, $keyword) {
                         $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
                     })
@@ -430,8 +408,6 @@ class AgentController extends Controller
                     ->rawColumns(['action'])
                     ->make(true);
             }
-
-
 
             return view('custom_views.agents.agent_contracts');
         } catch (\Exception $e) {
@@ -443,9 +419,10 @@ class AgentController extends Controller
     public function agentWorker()
     {
         try {
+
             $business_id = request()->session()->get('user.business_id');
             $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
+            $contact_id = $user->crm_contact_id;
 
             $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::where('contact_id', $contact_id)->pluck('name', 'id')->toArray();
 
@@ -459,9 +436,9 @@ class AgentController extends Controller
             $status_filltetr = $this->moduleUtil->getUserStatus();
 
             $user = User::where('id', auth()->user()->id)->first();
-            $contact_id =  $user->crm_contact_id;
+            $contact_id = $user->crm_contact_id;
             $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-            $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
+            $users = User::where('user_type', 'worker')->whereIn('users.assigned_to', $projectsIds)
                 ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
                 ->with(['country', 'contract', 'OfficialDocument']);
 
@@ -542,8 +519,6 @@ class AgentController extends Controller
                         return $professionName;
                     })
 
-
-
                     ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
                         $specializationId = $appointments2[$row->id] ?? '';
                         $specializationName = $specializations[$specializationId] ?? '';
@@ -551,9 +526,9 @@ class AgentController extends Controller
                         return $specializationName;
                     })->addColumn('bank_code', function ($user) {
 
-                        $bank_details = json_decode($user->bank_details);
-                        return $bank_details->bank_code ?? ' ';
-                    })
+                    $bank_details = json_decode($user->bank_details);
+                    return $bank_details->bank_code ?? ' ';
+                })
                     ->addColumn('worker', function ($user) {
                         return $user->worker;
                     })
@@ -574,12 +549,12 @@ class AgentController extends Controller
                         'residence_permit_expiration',
                         'residence_permit',
                         'admissions_date',
-                        'contract_end_date'
+                        'contract_end_date',
                     ])
                     ->make(true);
             }
 
-            return view('custom_views.agents.agent_workers')->with(compact('contacts_fillter', 'status_filltetr',   'nationalities'));
+            return view('custom_views.agents.agent_workers')->with(compact('contacts_fillter', 'status_filltetr', 'nationalities'));
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -594,10 +569,7 @@ class AgentController extends Controller
             $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
                 ->find($id);
 
-
-
             $documents = null;
-
 
             if (!empty($user->proposal_worker_id)) {
 
@@ -608,21 +580,15 @@ class AgentController extends Controller
                 $documents = $user->OfficialDocument;
             }
 
-
-
-
-
             $dataArray = [];
             if (!empty($user->bank_details)) {
                 $dataArray = json_decode($user->bank_details, true)['bank_name'];
             }
 
-
             $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
             $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
             $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
             $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-
 
             $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -639,10 +605,8 @@ class AgentController extends Controller
             //     $specialization = "";
             // }
 
-
             $user->profession = $profession;
             //   $user->specialization = $specialization;
-
 
             $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
 
@@ -687,7 +651,6 @@ class AgentController extends Controller
     public function makeToDo($request, $business_id)
     {
 
-
         $created_by = $request->created_by;
 
         $request_type = RequestsType::where('id', $request->request_type_id)->first()->type;
@@ -712,11 +675,10 @@ class AgentController extends Controller
         if ($viewRequestPermission) {
             $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
             $rolesIds = $permission_id->roles->pluck('id')->toArray();
-            $users = User::whereHas('roles', function ($query) use ($rolesIds,  $rolesFromAccessRoles) {
+            $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
                 $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
             })->where('essentials_department_id', $department_id);
         }
-
 
         $input['task_id'] = $request->request_no;
 
@@ -725,9 +687,8 @@ class AgentController extends Controller
 
         $to_dos->users()->sync($usersData);
 
-
         $user_ids = $users->pluck('id')->toArray();
-        $to =  $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+        $to = $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
             ->pluck('full_name')->toArray();
         if (!empty($user_ids)) {
             $to = [];
@@ -736,7 +697,7 @@ class AgentController extends Controller
             $sentNotification = SentNotification::create([
                 'via' => 'dashboard',
                 'type' => 'GeneralManagementNotification',
-                'title' =>  $input['task'],
+                'title' => $input['task'],
                 'msg' => __('request.' . $request_type) . ' ' . $userName,
                 'sender_id' => auth()->user()->id,
                 'to' => json_encode($to),
@@ -784,7 +745,6 @@ class AgentController extends Controller
     //             }
     //         }
 
-
     //         if ($type == 'leavesAndDepartures' && is_null($request->leaveType)) {
     //             $output = [
     //                 'success' => false,
@@ -792,8 +752,6 @@ class AgentController extends Controller
     //             ];
     //             return redirect()->back()->withErrors([$output['msg']]);
     //         }
-
-
 
     //         $requestTypeFor = RequestsType::findOrFail($request->type)->for;
     //         $createdByUser = auth()->user();
@@ -909,7 +867,6 @@ class AgentController extends Controller
     //                 $Request->time_of_take_off = $request->time_of_take_off;
     //                 $Request->return_date = $request->return_date_of_trip;
 
-
     //                 $Request->job_title_id = $request->job_title;
     //                 $Request->specialization_id = $request->profession;
     //                 $Request->nationality_id = $request->nationlity;
@@ -920,12 +877,7 @@ class AgentController extends Controller
     //                 $Request->interview_time = $request->interview_time;
     //                 $Request->interview_place = $request->interview_place;
 
-
-
-
     //                 $Request->save();
-
-
 
     //                 if ($attachmentPath) {
     //                     RequestAttachment::create([
@@ -936,16 +888,13 @@ class AgentController extends Controller
     //                 if ($Request) {
     //                     $process = null;
 
-
     //                     $procedure = WkProcedure::where('business_id', $business_id)
     //                         ->where('request_type_id', $request->type)->where('start', 1)->where('department_id', $customer_department)->first();
-
 
     //                     if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
 
     //                         $nextProcedure = WkProcedure::where('business_id', $business_id)->where('request_type_id', $request->type)
     //                             ->where('department_id', $procedure->next_department_id)->first();
-
 
     //                         $process =   RequestProcess::create([
 
@@ -965,8 +914,6 @@ class AgentController extends Controller
     //                         }
     //                     } else {
 
-
-
     //                         $process = RequestProcess::create([
 
     //                             'request_id' => $Request->id,
@@ -975,7 +922,6 @@ class AgentController extends Controller
 
     //                         ]);
     //                     }
-
 
     //                     if (!$process) {
 
@@ -1038,7 +984,10 @@ class AgentController extends Controller
             $createdBy_type = $createdByUser->user_type;
 
             foreach ($request->user_id as $userId) {
-                if ($userId === null) continue;
+                if ($userId === null) {
+                    continue;
+                }
+
                 $business_id = User::where('id', $userId)->first()->business_id;
                 if ($this->hasPendingRequest($userId, $request->type, $request->user_id)) {
                     return redirect()->back()->withErrors([__('request.this_user_has_this_request_recently')]);
@@ -1251,7 +1200,6 @@ class AgentController extends Controller
             return false;
         }
 
-
         return true;
     }
     private function createRequestProcedureTasks($requestId, $procedureId)
@@ -1274,7 +1222,7 @@ class AgentController extends Controller
         if ($latestRecord) {
             $latestRefNo = $latestRecord->request_no;
             $prefix = $this->getTypePrefix($request_type_id);
-            $numericPart = (int)substr($latestRefNo, strlen($prefix));
+            $numericPart = (int) substr($latestRefNo, strlen($prefix));
             $numericPart++;
             $input['request_no'] = $prefix . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
         } else {
@@ -1285,6 +1233,7 @@ class AgentController extends Controller
     }
     public function agentRequests()
     {
+
         $user = User::where('id', auth()->user()->id)->first();
 
         $allRequestTypes = RequestsType::pluck('type', 'id');
@@ -1316,9 +1265,10 @@ class AgentController extends Controller
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->pluck('reason', 'id');
         $saleProjects = SalesProject::all()->pluck('name', 'id');
 
-        $contact_id =  $user->crm_contact_id;
+        $contact_id = $user->crm_contact_id;
 
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+
         $created_users = User::select(
             'id',
             DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name")
@@ -1373,9 +1323,6 @@ class AgentController extends Controller
             'users.id as userId',
             'users.company_id',
 
-
-
-
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
                 $join->on('requests.id', '=', 'latest_process.request_id');
@@ -1398,7 +1345,6 @@ class AgentController extends Controller
             $requestsProcess->where('process.status', request()->input('status'));
         }
 
-
         if (request()->input('type') && request()->input('type') !== 'all') {
 
             $types = RequestsType::where('type', request()->input('type'))->pluck('id')->toArray();
@@ -1413,7 +1359,11 @@ class AgentController extends Controller
             $requestsProcess->where('users.assigned_to', request()->input('project'));
         }
 
-        $requests = $requestsProcess->get();
+        $userId = auth()->id();
+
+        $requests = $requestsProcess
+            ->where('requests.created_by', $userId)
+            ->get();
 
         foreach ($requests as $request) {
             $tasksDetails = DB::table('request_procedure_tasks')
@@ -1424,12 +1374,10 @@ class AgentController extends Controller
                 ->select('tasks.description', 'request_procedure_tasks.id', 'request_procedure_tasks.procedure_task_id', 'tasks.link', 'request_procedure_tasks.isDone', 'procedure_tasks.procedure_id')
                 ->get();
 
-
             $request->tasksDetails = $tasksDetails;
         }
 
         if (request()->ajax()) {
-
 
             return DataTables::of($requests ?? [])
                 ->editColumn('created_at', function ($row) {
@@ -1477,21 +1425,18 @@ class AgentController extends Controller
                 ->editColumn('can_return', function ($row) {
                     $buttonsHtml = '';
 
-
-
                     $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
                     $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
-
 
                     return $buttonsHtml;
                 })
 
                 ->rawColumns(['status', 'request_type_id', 'can_return', 'id_proof_number', 'created_user', 'assigned_to'])
 
-
-
                 ->make(true);
+
         }
+
         $companies = Company::pluck('name', 'id');
         $all_status = ['approved', 'pending', 'rejected'];
         return view('custom_views.agents.requests.allRequest')->with(compact(
@@ -1526,7 +1471,7 @@ class AgentController extends Controller
             'legal' => ['names' => ['%قانوني%'], 'permission' => 'legalaffairs.view_legalaffairs_requests'],
             'sales' => ['names' => ['%مبيعات%'], 'permission' => 'sales.view_sales_requests'],
             'ceo' => ['names' => ['%تنفيذ%'], 'permission' => 'ceomanagment.view_CEO_requests'],
-            'general' => ['names' => ['%مجلس%', '%عليا%'], 'permission' => 'generalmanagement.view_president_requests']
+            'general' => ['names' => ['%مجلس%', '%عليا%'], 'permission' => 'generalmanagement.view_president_requests'],
         ];
 
         foreach ($departments as $dept => $info) {
@@ -1756,7 +1701,7 @@ class AgentController extends Controller
                 ->editColumn('supplier', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br> @endif {{$supplier}}')
                 ->editColumn('ref_no', function ($row) {
                     if (auth()->user()->can('purchase.view')) {
-                        return  '<a href="#" data-href="' . action([\App\Http\Controllers\PurchaseController::class, 'show'], [$row->id]) . '"
+                        return '<a href="#" data-href="' . action([\App\Http\Controllers\PurchaseController::class, 'show'], [$row->id]) . '"
                                     class="btn-modal" data-container=".view_modal">' . $row->ref_no . '</a>';
                     }
 
@@ -1830,7 +1775,7 @@ class AgentController extends Controller
                 })
                 ->editColumn('invoice_no', function ($row) {
                     if (auth()->user()->can('sell.view')) {
-                        return  '<a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '"
+                        return '<a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '"
                                     class="btn-modal" data-container=".view_modal">' . $row->invoice_no . '</a>';
                     }
 
@@ -1846,8 +1791,6 @@ class AgentController extends Controller
                 ->make(false);
         }
     }
-
-
 
     public function loadMoreNotifications()
     {

@@ -16,7 +16,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                     
+
                     <li @if (request()->segment(2) == 'allEssentialsRequests') class="active" @endif>
                         <a href="{{ route('allEssentialsRequests') }}">
                             <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>

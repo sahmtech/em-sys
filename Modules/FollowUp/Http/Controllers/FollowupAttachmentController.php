@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\FollowUp\Entities\FollowupDocument;
 use Yajra\DataTables\Facades\DataTables;
 
-class FollowupDocumentController extends Controller
+class FollowupAttachmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,18 +20,18 @@ class FollowupDocumentController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_followup_crud_documents = auth()->user()->can('followup.crud_documents');
-        if (!($is_admin || $can_followup_crud_documents)) {
+        $can_followup_crud_attachments = auth()->user()->can('followup.crud_attachments');
+        if (!($is_admin || $can_followup_crud_attachments)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        $documents = FollowupDocument::where('type', 'Document')->get();
+        $documents = FollowupDocument::where('type', 'Attached')->get();
         if (request()->ajax()) {
 
-            $can_edit_document = auth()->user()->can('followup.edit_document');
-            $can_documents_delete = auth()->user()->can('followup.documents.delete');
+            $can_edit_attachment = auth()->user()->can('followup.edit_attachment');
+            $can_attachments_delete = auth()->user()->can('followup.attachments.delete');
             return DataTables::of($documents)
 
                 ->editColumn('name', function ($row) {
@@ -40,17 +40,17 @@ class FollowupDocumentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_edit_document, $can_documents_delete) {
+                    function ($row) use ($is_admin, $can_edit_attachment, $can_attachments_delete) {
 
                         $html = '';
-                        if (($is_admin || $can_edit_document)) {
+                        if (($is_admin || $can_edit_attachment)) {
                             $html .= '
                         <a href="' . route('documents-edit', ['id' => $row->id]) . '"
                         data-href="' . route('documents-edit', ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_document_button"  data-container="#edit_document_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if (($is_admin || $can_documents_delete)) {
+                        if (($is_admin || $can_attachments_delete)) {
                             $html .= '
                     <button data-href="' . route('documents-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_document_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
@@ -70,7 +70,7 @@ class FollowupDocumentController extends Controller
                 ->rawColumns(['action', 'name'])
                 ->make(true);
         }
-        return view('followup::document.index');
+        return view('followup::attachment.index');
     }
 
     /**
@@ -79,7 +79,7 @@ class FollowupDocumentController extends Controller
      */
     public function create()
     {
-        return view('followup::document.create');
+        return view('followup::attachment.create');
     }
 
     /**
@@ -96,6 +96,7 @@ class FollowupDocumentController extends Controller
                 [
                     'name_ar' => $request->input('name_ar'),
                     'name_en' => $request->input('name_en'),
+                    'type' => 'Attached',
                 ]
             );
 
@@ -124,8 +125,8 @@ class FollowupDocumentController extends Controller
      */
     public function edit($id)
     {
-        $document = FollowupDocument::find($id);
-        return view('followup::document.edit', compact('document'));
+        $attachment = FollowupDocument::find($id);
+        return view('followup::attachment.edit', compact('attachment'));
     }
 
     /**
@@ -139,8 +140,8 @@ class FollowupDocumentController extends Controller
         DB::beginTransaction();
         try {
 
-            $document = FollowupDocument::find($id);
-            $document->update(
+            $attachment = FollowupDocument::find($id);
+            $attachment->update(
                 [
                     'name_ar' => $request->input('name_ar'),
                     'name_en' => $request->input('name_en'),
@@ -167,7 +168,7 @@ class FollowupDocumentController extends Controller
                 FollowupDocument::find($id)->delete();
                 $output = [
                     'success' => true,
-                    'msg' => 'تم حذف السند بنجاح',
+                    'msg' => 'تم حذف  المرفق بنجاح',
                 ];
             } catch (Exception $e) {
                 return redirect()->back();

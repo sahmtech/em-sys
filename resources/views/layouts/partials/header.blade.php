@@ -32,14 +32,15 @@
                 @includeIf('essentials::layouts.partials.header_part')
             @endif --}}
             <ul class="nav navbar-nav ">
-                @if (config('app.env') != 'demo')
+                @if (config('app.env') != 'demo' and auth()->user()->user_type != 'customer')
                     <li class="custom_header_icon">
                         <a class="custom_header_icon_a" href="{{ route('calendar') }}">
                             <i class="fas fa-calendar-alt" aria-hidden="true"></i> @lang('lang_v1.calendar')
                         </a>
                     </li>
                 @endif
-                @if (Module::has('Essentials'))
+
+                @if (Module::has('Essentials') and auth()->user()->user_type != 'customer')
                     <li class="custom_header_icon">
                         <a href="#" class="custom_header_icon_a"
                             data-href="{{ action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create']) }}"
