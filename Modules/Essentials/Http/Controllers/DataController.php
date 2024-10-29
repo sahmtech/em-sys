@@ -1734,11 +1734,7 @@ class DataController extends Controller
                         'label' => __('followup::lang.add_attachment'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'followup.edit_attachment',
-                        'label' => __('followup::lang.edit_attachment'),
-                        'default' => false,
-                    ],
+
                     [
                         'value' => 'followup.attachments.delete',
                         'label' => __('followup::lang.delete_attachment'),
@@ -1760,16 +1756,7 @@ class DataController extends Controller
                         'label' => __('followup::lang.edit_attachment'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'followup.attachments.delete',
-                        'label' => __('followup::lang.delete_attachment'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'followup.view_attachment_deliver',
-                        'label' => __('followup::lang.view_attachment_delivery'),
-                        'default' => false,
-                    ],
+
                     [
                         'value' => 'followup.view_attachment_deliver',
                         'label' => __('followup::lang.view_attachment_delivery'),
