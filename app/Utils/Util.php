@@ -262,10 +262,12 @@ class Util
     // }
     public function uf_date($date, $time = false)
     {
-
         try {
-            return \DateTime::createFromFormat('m/d/Y H:i', $date)->format('Y-m-d H:i:s');
-
+            if ($time) {
+                return \DateTime::createFromFormat('m/d/Y H:i', "$date $time")->format('Y-m-d H:i:s');
+            } else {
+                return \DateTime::createFromFormat('m/d/Y', $date)->format('Y-m-d');
+            }
         } catch (\Exception $e) {
             return "Error: Could not parse date: " . $e->getMessage();
         }
