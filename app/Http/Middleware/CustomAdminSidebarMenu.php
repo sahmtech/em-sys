@@ -592,12 +592,15 @@ class CustomAdminSidebarMenu
                 __('agent.pills.pills'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'bills'],
             );
-            $menu->url(
-                route('agentTimeSheet.index'),
-                __('agent.time_sheet'),
-                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'time_sheet'],
-            );
+            if (auth()->user()->user_type != 'customer') {
+                $menu->url(
+                    route('agentTimeSheet.index'),
+                    __('agent.time_sheet'),
+                    ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'time_sheet'],
+                );
+            }
         });
+
     }
     public function connectorMenu()
     {

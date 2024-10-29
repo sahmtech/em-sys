@@ -318,7 +318,7 @@
                     ) !!}
                 </div>
             </div>
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="form-group">
                     <label for="company_filter">@lang('request.company'):</label>
                     {!! Form::select('company_filter', $companies, null, [
@@ -328,7 +328,7 @@
                         'id' => 'company_filter',
                     ]) !!}
                 </div>
-            </div>
+            </div> --}}
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="project_filter">@lang('request.project'):</label>

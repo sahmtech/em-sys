@@ -1263,9 +1263,8 @@ class AgentController extends Controller
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->pluck('reason', 'id');
-        $saleProjects = SalesProject::all()->pluck('name', 'id');
-
         $contact_id = $user->crm_contact_id;
+        $saleProjects = SalesProject::where('contact_id', $contact_id)->pluck('name', 'id');
 
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
 
