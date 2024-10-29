@@ -313,6 +313,7 @@ class EssentailsworkersController extends Controller
      */
     public function show($id, $can_edit = false, $from = null)
     {
+
         error_log($can_edit);
         $request_attachments = [];
         $business_id = request()->session()->get('user.business_id');

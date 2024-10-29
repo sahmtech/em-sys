@@ -340,7 +340,11 @@
 
                                             <a href="/uploads/{{ $document->file_path }}"
                                                 data-file-url="{{ $document->file_path }}">
-                                                {{ $document->document->name_ar . ' - ' . $document->document->name_en }}
+                                                @if ($document->document)
+                                                    {{ $document->document->name_ar ?? ('' . ' - ' . $document->document->name_en ?? '') }}
+                                                @else
+                                                    {{ $document->attachment->name_ar ?? ('' . ' - ' . $document->attachment->name_en ?? '') }}
+                                                @endif
                                             </a>
 
                                         </label>
