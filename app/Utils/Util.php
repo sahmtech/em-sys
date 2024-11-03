@@ -243,35 +243,33 @@ class Util
      * @param  bool  $time (default = false)
      * @return strin
      */
-    // public function uf_date($date, $time = false)
-    // {
-    //     $date_format = session('business.date_format');
-    //     $mysql_format = 'Y-m-d';
-    //     if ($time) {
-    //         if (session('business.time_format') == 12) {
-    //             $date_format = $date_format . 'h:i A';
-    //         } else {
-    //             $date_format = $date_format . 'H:i';
-    //         }
-    //         $mysql_format = 'Y-m-d H:i:s';
-    //     }
-    //     $date = str_replace(['/', '\\'], '-', $date);
-    //     dd(!empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null);
-
-    //     return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
-    // }
     public function uf_date($date, $time = false)
     {
-        try {
-            if ($time) {
-                return \DateTime::createFromFormat('m/d/Y H:i', "$date $time")->format('Y-m-d H:i:s');
+        $date_format = session('business.date_format');
+        $mysql_format = 'Y-m-d';
+        if ($time) {
+            if (session('business.time_format') == 12) {
+                $date_format = $date_format . 'h:i A';
             } else {
-                return \DateTime::createFromFormat('m/d/Y', $date)->format('Y-m-d');
+                $date_format = $date_format . 'H:i';
             }
-        } catch (\Exception $e) {
-            return "Error: Could not parse date: " . $e->getMessage();
+            $mysql_format = 'Y-m-d H:i:s';
         }
+        $date = str_replace(['/', '\\'], '-', $date);
+        return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
     }
+    // public function uf_date($date, $time = false)
+    // {
+    //     try {
+    //         if ($time) {
+    //             return \DateTime::createFromFormat('m/d/Y H:i', "$date $time")->format('Y-m-d H:i:s');
+    //         } else {
+    //             return \DateTime::createFromFormat('m/d/Y', $date)->format('Y-m-d');
+    //         }
+    //     } catch (\Exception $e) {
+    //         return "Error: Could not parse date: " . $e->getMessage();
+    //     }
+    // }
 
     /**
      * Converts time in business format to mysql format

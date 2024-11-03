@@ -1881,17 +1881,18 @@ class CustomAdminSidebarMenu
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index']), __('followup::lang.documents'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents']);
             }
-            if ($is_admin || auth()->user()->can('followup.crud_attachments')) {
+            dd(auth()->user()->can('essentials.crud_attachments'));
+            if ($is_admin || auth()->user()->can('essentials.crud_attachments')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'index']), __('followup::lang.attachments_types'), ['icon' => 'fa fas fa-paperclip', 'active' => request()->segment(2) == 'attachments']);
             }
 
-            if ($is_admin || auth()->user()->can('followup.crud_document_delivery')) {
+            if ($is_admin || auth()->user()->can('essentials.crud_document_delivery')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index']), __('followup::lang.document_delivery'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents-delivery']);
             }
 
-            if ($is_admin || auth()->user()->can('followup.crud_attachment_delivery')) {
+            if ($is_admin || auth()->user()->can('essentials.crud_attachment_delivery')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'index']), __('followup::lang.attachments'), ['icon' => 'fa fas fa-paperclip', 'active' => request()->segment(2) == 'attachments-delivery']);
             }

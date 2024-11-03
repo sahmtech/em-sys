@@ -866,6 +866,45 @@ class DataController extends Controller
                         'label' => __('essentials::lang.show_payroll_checkpoint'),
                         'default' => false,
                     ],
+                    //Attchment
+                    [
+                        'value' => 'essentials.crud_attachments',
+                        'label' => __('followup::lang.add_attachment'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.attachments.delete',
+                        'label' => __('followup::lang.delete_attachment'),
+                        'default' => false,
+                    ],
+                    // Delivery Attchment
+                    [
+                        'value' => 'essentials.crud_attachment_delivery',
+                        'label' => __('followup::lang.add_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_attachment_deliver',
+                        'label' => __('followup::lang.delete_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_attachment',
+                        'label' => __('followup::lang.edit_attachment'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.view_attachment_deliver',
+                        'label' => __('followup::lang.view_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_attachments_types',
+                        'label' => __('followup::lang.attachments_types'),
+                        'default' => false,
+                    ],
 
                 ],
 
@@ -2116,6 +2155,46 @@ class DataController extends Controller
                     [
                         'value' => 'essentials.carMaintenancesReport',
                         'label' => __('housingmovements::lang.carMaintenancesReport'),
+                        'default' => false,
+                    ],
+
+                    //Attchment
+                    [
+                        'value' => 'essentials.crud_attachments',
+                        'label' => __('followup::lang.add_attachment'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.attachments.delete',
+                        'label' => __('followup::lang.delete_attachment'),
+                        'default' => false,
+                    ],
+                    // Delivery Attchment
+                    [
+                        'value' => 'essentials.crud_attachment_delivery',
+                        'label' => __('followup::lang.add_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_attachment_deliver',
+                        'label' => __('followup::lang.delete_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_attachment',
+                        'label' => __('followup::lang.edit_attachment'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.view_attachment_deliver',
+                        'label' => __('followup::lang.view_attachment_delivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_attachments_types',
+                        'label' => __('followup::lang.attachments_types'),
                         'default' => false,
                     ],
 

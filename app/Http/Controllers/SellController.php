@@ -83,6 +83,7 @@ class SellController extends Controller
      */
     public function index()
     {
+
         $is_admin = $this->businessUtil->is_admin(auth()->user());
         $company_id = Session::get('selectedCompanyId');
 
