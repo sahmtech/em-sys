@@ -3,15 +3,14 @@
 // use App\Http\Controllers\Modules;
 // use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
+use Modules\FollowUp\Http\Controllers\FollowupAttachmentController;
+use Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController;
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
-
 
     Route::get('/hijriToGregorian', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'hijriToGregorian'])->name('hijriToGregorian');
     Route::get('/gregorianToHijri', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'gregorianToHijri'])->name('gregorianToHijri');
     Route::get('/user/personalAttendance/{year?}/{month?}', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'personalAttendance'])->name('personalAttendance');
-
 
     Route::prefix('essentials')->group(function () {
         Route::get('/dashboard', [Modules\Essentials\Http\Controllers\DashboardController::class, 'essentialsDashboard']);
@@ -22,7 +21,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'index'])->name('essentials_landing');
         Route::get('/filtered_requests/{filter}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('essentials.getFilteredRequests');
 
-
         Route::get('/leave-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaveStatusData'])->name('leaveStatusData');
         Route::get('/getLeaves', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaves'])->name('getLeaves');
 
@@ -30,9 +28,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/hr_department_employees', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'hr_department_employees'])->name('hr_department_employees');
     });
 
-
     Route::prefix('toDo')->group(function () {
-
 
         //todo controller
         Route::resource('todo', 'ToDoController');
@@ -65,7 +61,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('user-sales-targets', [Modules\Essentials\Http\Controllers\DashboardController::class, 'getUserSalesTargets']);
     });
 
-
     Route::prefix('work_cards')->group(function () {
 
         Route::get('/getBusiness', [\App\Http\Controllers\BusinessController::class, 'getBusiness'])->name('getBusiness');
@@ -83,7 +78,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/business_subscriptions/{id}', [\App\Http\Controllers\BusinessSubscriptionController::class, 'destroy'])->name('busSubscription.destroy');
         Route::post('/check-username', [\App\Http\Controllers\BusinessController::class, 'checkUsername'])->name('check-username');
 
-
         Route::get('/cards', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index'])->name('cards');
         Route::get('card/get-residency-data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'getResidencyData'])->name('getResidencyData');
         Route::get('/cards/create', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'create'])->name('create.Cards');
@@ -96,56 +90,66 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/post_renew_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'postRenewData'])->name('postRenewData');
         Route::post('/post_operation_renew_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'postOperationRenewData'])->name('postOperationRenewData');
 
-        Route::get('/get_residency_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports'])->name('getResidencyreport');
+        Route::get('/get_residency_report', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports'])->name('getResidencyreport');
 
-        Route::get('/filtered_requests/{filter}',  [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getFilteredRequests'])->name('work_cards.getFilteredRequests');
+        Route::get('/filtered_requests/{filter}', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getFilteredRequests'])->name('work_cards.getFilteredRequests');
         Route::get('/work_cards_dashboard', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'word_cards_dashboard'])->name('essentials_word_cards_dashboard');
-        Route::get('/work_cards_all_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_all_requests'])->name('work_cards_all_requests');
-        Route::get('/work_cards_done_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_done_requests'])->name('work_cards_done_requests');
-        Route::get('/work_cards_pending_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_pending_requests'])->name('work_cards_pending_requests');
+        Route::get('/work_cards_all_requests', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_all_requests'])->name('work_cards_all_requests');
+        Route::get('/work_cards_done_requests', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_done_requests'])->name('work_cards_done_requests');
+        Route::get('/work_cards_pending_requests', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_pending_requests'])->name('work_cards_pending_requests');
 
-
-        Route::get('/work_cards_vaction_requests',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_vaction_requests'])->name('work_cards_vaction_requests');
-        Route::get('/work_cards_operation',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_operation'])->name('work_cards_operation');
-        Route::post('/post_return_visa_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_return_visa_data'])->name('post_return_visa_data');
-        Route::post('/post_final_visa_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_final_visa_data'])->name('post_final_visa_data');
-        Route::post('/post_absent_report_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report_data'])->name('post_absent_report_data');
+        Route::get('/work_cards_vaction_requests', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_vaction_requests'])->name('work_cards_vaction_requests');
+        Route::get('/work_cards_operation', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'work_cards_operation'])->name('work_cards_operation');
+        Route::post('/post_return_visa_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_return_visa_data'])->name('post_return_visa_data');
+        Route::post('/post_final_visa_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_final_visa_data'])->name('post_final_visa_data');
+        Route::post('/post_absent_report_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report_data'])->name('post_absent_report_data');
         Route::post('/Wk_storeRequest', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'storeRequest'])->name('Wk_storeRequest');
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////
-        Route::get('/exit_re_entry_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'exit_re_entry_visa'])->name('exit_re_entry_visa');
-        Route::get('/final_exit_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'final_exit_visa'])->name('final_exit_visa');
-        Route::get('/absent_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'absent_report'])->name('absent_report');
-        Route::get('/get_essentails_employee_operation',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'getEssentailsEmployeeOperation'])->name('getEssentailsEmployeeOperation');
-        Route::post('/post_exit_re_entry_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_exit_re_entry_visa'])->name('post_exit_re_entry_visa');
-        Route::post('/post_final_exit_visa',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_final_exit_visa'])->name('post_final_exit_visa');
-        Route::post('/post_absent_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report'])->name('post_absent_report');
+        Route::get('/exit_re_entry_visa', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'exit_re_entry_visa'])->name('exit_re_entry_visa');
+        Route::get('/final_exit_visa', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'final_exit_visa'])->name('final_exit_visa');
+        Route::get('/absent_report', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'absent_report'])->name('absent_report');
+        Route::get('/get_essentails_employee_operation', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'getEssentailsEmployeeOperation'])->name('getEssentailsEmployeeOperation');
+        Route::post('/post_exit_re_entry_visa', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_exit_re_entry_visa'])->name('post_exit_re_entry_visa');
+        Route::post('/post_final_exit_visa', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_final_exit_visa'])->name('post_final_exit_visa');
+        Route::post('/post_absent_report', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report'])->name('post_absent_report');
 
         Route::get('/exit-reentry', [\App\Http\Controllers\InteractiveServicesController::class, 'issueExitReEntryVisa'])->name("issueExitReEntryVisa");
         ///////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////
         Route::get('/workers', [\Modules\Essentials\Http\Controllers\EssentialsWorkCardsWorkerController::class, 'index'])->name('work_cards-workers');
-        Route::get('/workers/{id}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('work_cards-showWorker');
+        Route::get('/workers/{id}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('work_cards-showWorker');
 
         Route::get('/viewWorkCardsRequest/{requestId}', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'viewRequest'])->name('viewWorkCardsRequest');
 
+        Route::get('/expired_residencies', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'expired_residencies'])->name('expired.residencies');
+        Route::get('/all_expired_residencies', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'all_expired_residencies'])->name('all.expired.residencies');
+        Route::get('/late_for_vacation', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'late_for_vacation'])->name('late_for_vacation');
+        Route::get('/final_visa_index', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'final_visa'])->name('final_visa_index');
 
-
-        Route::get('/expired_residencies',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'expired_residencies'])->name('expired.residencies');
-        Route::get('/all_expired_residencies',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'all_expired_residencies'])->name('all.expired.residencies');
-        Route::get('/late_for_vacation',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'late_for_vacation'])->name('late_for_vacation');
-        Route::get('/final_visa_index',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'final_visa'])->name('final_visa_index');
-
-        Route::get('/operations_show_employee/{id}',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'operations_show_employee'])->name('operations_show_employee');
+        Route::get('/operations_show_employee/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'operations_show_employee'])->name('operations_show_employee');
     });
-
 
     Route::prefix('employee_affairs')->group(function () {
 
         Route::get('/filtered_requests/{filter}', [Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'getFilteredRequests'])->name('employee_affairs.getFilteredRequests');
 
+        // Attachments
+        Route::get('/attachments', [FollowupAttachmentController::class, 'index'])->name('attachments');
+        Route::get('/attachments-create', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'create'])->name('attachments-create');
+        Route::get('/attachments-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'edit'])->name('attachments-edit');
+        Route::post('/attachments-store', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'store'])->name('attachments-store');
+        Route::put('/attachments-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'update'])->name('attachments-update');
+        Route::delete('/attachments-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'destroy'])->name('attachments-delete');
 
+        //attachments delivery
+        Route::get('/attachments-delivery', [FollowupDeliveryAttachmentController::class, 'index'])->name('attachments-delivery');
+        Route::get('/attachments-delivery-create', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'create'])->name('attachments-delivery-create');
+        Route::get('/attachments-delivery-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'edit'])->name('attachments-delivery-edit');
+        Route::post('/attachments-delivery-store', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'store'])->name('attachments-delivery-store');
+        Route::put('/attachments-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'update'])->name('attachments-delivery-update');
+        Route::delete('/attachments-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'destroy'])->name('attachments-delivery-delete');
 
         Route::get('/attachements', [Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'attachements'])->name('attachements');
         Route::post('/attachements/import', [Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'importAttachements'])->name('attachements.import');
@@ -169,22 +173,20 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/employee_affairs_department_employees', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'employee_affairs_department_employees'])->name('employee_affairs_department_employees');
         //workers
         Route::get('/workers_affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'index'])->name('workers_affairs');
-        Route::get('/show_workers_affairs/{id}/{can_edit?}/{from?}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show_workers_affairs')->defaults('from', 'employee_affairs');;
+        Route::get('/show_workers_affairs/{id}/{can_edit?}/{from?}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show_workers_affairs')->defaults('from', 'employee_affairs');;
         Route::get('/add_workers_affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'create'])->name('add_workers_affairs');
         Route::post('/store-worker-affairs', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'store'])->name('store-worker-affairs');
         Route::put('/updateWorkerProfilePicture/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'updateWorkerProfilePicture'])->name('updateWorkerProfilePicture');
         Route::get('/editWorker/{id}/edit/{from?}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'])->name('editWorker');
         Route::put('/updateWorker/{id}/{from?}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'update'])->name('updateWorker');
-        Route::post('/worker/{id}/salaries', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class,  'getSalaries'])->name('worker.salaries');
+        Route::post('/worker/{id}/salaries', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'getSalaries'])->name('worker.salaries');
         Route::post('/worker/{id}/timesheet', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'getTimesheet'])->name('worker.timesheet');
-
 
         Route::get('/import-employees', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index'])->name('import-employees');
         Route::post('/send-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee'])->name('send-employee-file');
         Route::post('/send-update-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee'])->name('send-update-employee-file');
         Route::get('/download-employees-not-found', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'downloadEmployeesNotFound'])->name('download-employees-not-found');
         Route::get('download-non-employees/{filename}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'downloadFile'])->name('download-file');
-
 
         Route::get('/emp_travelers', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'new_arrival_for_workers'])->name('emp_travelers');
         Route::get('/emp_housed_workers', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'housed_workers_index'])->name('emp_housed_workers');
@@ -198,8 +200,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/emp_residencyDelivery', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'residencyDelivery'])->name('emp_residencyDelivery');
         Route::get('/emp_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'advanceSalaryRequest'])->name('emp_advanceSalaryRequest');
 
-
-
         Route::get('/appointments', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'index'])->name('appointments');
         Route::post('/changeStatusApp', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'changeStatus'])->name('changeStatusApp');
         Route::post('/storeAppointment', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'store'])->name('storeAppointment');
@@ -209,7 +209,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/appointments/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'edit'])->name('appointment.edit');
         Route::post('/change_activity/{appointmentId}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'change_activity'])->name('change_activity');
 
-
         Route::get('/admissionToWork', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'index'])->name('admissionToWork');
         Route::post('/storeAdmissionToWork', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'store'])->name('storeAdmissionToWork');
         Route::delete('/admissionToWork/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'destroy'])->name('admissionToWork.destroy');
@@ -217,7 +216,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateAdmissionToWork/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'update'])->name('updateAdmissionToWork');
         Route::get('/admissionToWork/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'edit'])->name('admissionToWork.edit');
         Route::post('/change_admission_activity/{admissionId}', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'change_admission_activity'])->name('change_admission_activity');
-
 
         Route::get('/employeeContracts', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'index'])->name('employeeContracts');
         Route::post('/storeEmployeeContract', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'store'])->name('storeEmployeeContract');
@@ -228,8 +226,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeContractFile', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'storeContractFile'])->name('storeContractFile');
         Route::post('/employee-contract/cancel', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'cancelContract'])->name('cancelEmployeeContract');
 
-
-
         Route::get('/qualifications', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'index'])->name('qualifications');
         Route::post('/storeQualification', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'store'])->name('storeQualification');
         Route::delete('/qualifications/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'destroy'])->name('qualification.destroy');
@@ -238,7 +234,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateEmployeeQualificationAttachement/{user_id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'updateEmployeeQualificationAttachement'])->name('updateEmployeeQualificationAttachement');
         Route::post('/storeQualDocFile', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'storeQualDocFile'])->name('storeQualDocFile');
         Route::get('/qualifications/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'edit'])->name('qualification.edit');
-
 
         Route::get('/official_documents', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index'])->name('official_documents');
         Route::post('/storeOfficialDoc', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'store'])->name('storeOfficialDoc');
@@ -250,16 +245,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/updateEmployeeOfficalDocuments', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'updateEmployeeOfficalDocuments'])->name('updateEmployeeOfficalDocuments');
         Route::get('/official_documents/scan', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'scan'])->name('scan');
 
-
-
-
         Route::get('/users_shifts', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'users_shifts'])->name('users_shifts');
         Route::post('/storeUserShift', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'storeUserShift'])->name('storeUserShift');
         Route::get('/users_shifts/{id}/edit', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'editUserShift'])->name('editUserShift');
         Route::put('/users_shifts/{id}', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'updateUserShift'])->name('updateUserShift');
         Route::delete('/users_shifts/{id}', [\Modules\Essentials\Http\Controllers\ShiftController::class, 'deleteUserShift'])->name('deleteUserShift');
-
-
 
         ////// Penalties
         Route::get('/penalties', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'index'])->name('penalties');
@@ -267,8 +257,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/edit-penalties/{id}', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'edit'])->name('edit-penalties');
         Route::post('/update-penalties', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'update'])->name('update-penalties');
         Route::delete('/delete-penalties/{id}', [\Modules\Essentials\Http\Controllers\PenaltiesController::class, 'destroy'])->name('delete-penalties');
-        
-
 
         Route::get('/employee_families', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'index'])->name('employee_families');
         Route::post('/storeEmployeeFamily', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'store'])->name('storeEmployeeFamily');
@@ -311,15 +299,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/employee_insurance/edit/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'edit'])->name('employee_insurance.edit');
         Route::post('/updateInsurance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'update'])->name('updateInsurance');
 
-
-
         Route::get('/import_employees_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'import_employee_insurance_index'])->name('import_employees_insurance');
         Route::post('/send_import_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostImportEmployee'])->name('send_import_employee_insurance');
         Route::post('/send_import_update_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostUpdateImportEmployee'])
             ->name('send_import_update_employee_insurance');
         Route::get('/get-insurance-classes/{company_id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'getInsuranceClasses']);
         Route::get('/get-insurance-info', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'show']);
-
 
         Route::get('/insurance_travelers', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'new_arrival_for_workers'])->name('insurance_travelers');
         Route::get('/insurance_housed_workers', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'housed_workers_index'])->name('insurance_housed_workers');
@@ -345,10 +330,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/insurance_companies/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'destroy'])->name('insurance_companies.destroy');
         Route::get('/insurance_companies.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'show'])->name('insurance_companies.view');
 
-
-        Route::get('/insurance_requests',  [\Modules\Essentials\Http\Controllers\InsuranceRequestController::class, 'index'])->name('insurance_requests');
+        Route::get('/insurance_requests', [\Modules\Essentials\Http\Controllers\InsuranceRequestController::class, 'index'])->name('insurance_requests');
         Route::post('/insurance_storeRequest', [\Modules\Essentials\Http\Controllers\InsuranceRequestController::class, 'store'])->name('insurance_storeRequest');
-
 
         Route::get('/insurance_categories', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceCategoryController::class, 'index'])->name('insurance_categories');
         Route::post('/insurance_categories.store', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceCategoryController::class, 'store'])->name('insurance_categories.store');
@@ -357,8 +340,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/workersAndEmployees', [\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'employeesAndworkers'])->name('insurance-workersAndEmployee');
         Route::get('/workers/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'show'])->name('insurance-showWorker');
-
-
 
         Route::get('/get_companies_insurance_contracts', [\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'index'])
             ->name('get_companies_insurance_contracts');
@@ -374,13 +355,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
     });
 
     Route::prefix('payrolls')->group(function () {
-        Route::get('/dashboard',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'dashboard'])->name('payrolls_dashboard');
-        Route::get('/list_of_employess',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'list_of_employess'])->name('list_of_employess');
-        Route::get('/view_worker_project',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewWorkerProject'])->name('payrolls.view_worker_project');
-        Route::get('/view_worker_info',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'view_worker_info'])->name('payrolls.view_worker_info');
-        Route::get('/view_salary_info',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewSalaryInfo'])->name('payrolls.view_salary_info');
-        Route::post('/update_salary',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateSalaryInfo'])->name('payrolls.update.salary');
-        Route::post('/update-voucher-status',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateVoucherStatus'])->name('payrolls.update-voucher-status');
+        Route::get('/dashboard', [Modules\Essentials\Http\Controllers\PayrollController::class, 'dashboard'])->name('payrolls_dashboard');
+        Route::get('/list_of_employess', [Modules\Essentials\Http\Controllers\PayrollController::class, 'list_of_employess'])->name('list_of_employess');
+        Route::get('/view_worker_project', [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewWorkerProject'])->name('payrolls.view_worker_project');
+        Route::get('/view_worker_info', [Modules\Essentials\Http\Controllers\PayrollController::class, 'view_worker_info'])->name('payrolls.view_worker_info');
+        Route::get('/view_salary_info', [Modules\Essentials\Http\Controllers\PayrollController::class, 'viewSalaryInfo'])->name('payrolls.view_salary_info');
+        Route::post('/update_salary', [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateSalaryInfo'])->name('payrolls.update.salary');
+        Route::post('/update-voucher-status', [Modules\Essentials\Http\Controllers\PayrollController::class, 'updateVoucherStatus'])->name('payrolls.update-voucher-status');
 
         Route::get('/location-employees', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnLocation']);
         Route::get('/my-payrolls', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getMyPayrolls']);
@@ -391,15 +372,15 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/update-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getUpdatePayrollGroup']);
         Route::get('/payroll-group/{id}/add-payment', [Modules\Essentials\Http\Controllers\PayrollController::class, 'addPayment']);
         Route::post('/post-payment-payroll-group', [Modules\Essentials\Http\Controllers\PayrollController::class, 'postAddPayment']);
-        Route::get('/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])->name('payrolls.index');
-        Route::get('/index-penalties',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'indexPenalties'])->name('index-penalties');
-        Route::get('/allPayrollRequests',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'requests'])->name('allPayrollRequests');
+        Route::get('/index', [Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])->name('payrolls.index');
+        Route::get('/index-penalties', [Modules\Essentials\Http\Controllers\PayrollController::class, 'indexPenalties'])->name('index-penalties');
+        Route::get('/allPayrollRequests', [Modules\Essentials\Http\Controllers\PayrollController::class, 'requests'])->name('allPayrollRequests');
         Route::post('/storePayrollRequest', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'storePayrollRequest'])->name('storePayrollRequest');
-        Route::get('/payrollsGroup/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollsGroupIndex'])->name('payrolls.payrollsGroup.index');
-        Route::get('/payrolls/index',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollsIndex'])->name('payrolls.payrolls.index');
-        Route::get('/create',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'create'])->name('payrolls.create');
-        Route::get('/edit/{id}',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'edit'])->name('payrolls.edit');
-        Route::get('/show/{id}/{type}',   [Modules\Essentials\Http\Controllers\PayrollController::class, 'show'])->name('payrolls.show');
+        Route::get('/payrollsGroup/index', [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollsGroupIndex'])->name('payrolls.payrollsGroup.index');
+        Route::get('/payrolls/index', [Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollsIndex'])->name('payrolls.payrolls.index');
+        Route::get('/create', [Modules\Essentials\Http\Controllers\PayrollController::class, 'create'])->name('payrolls.create');
+        Route::get('/edit/{id}', [Modules\Essentials\Http\Controllers\PayrollController::class, 'edit'])->name('payrolls.edit');
+        Route::get('/show/{id}/{type}', [Modules\Essentials\Http\Controllers\PayrollController::class, 'show'])->name('payrolls.show');
         Route::delete('/payrolls/{id}', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'destroy'])->name('payrolls.destroy');
 
         // Route::get('/getEmployeesBasedOnCompany', [Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnCompany'])->name('payrolls.getEmployeesBasedOnCompany');
@@ -425,14 +406,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/timesheet-group/{id}/issuePayrolls', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'issuePayrolls'])->name('payroll.agentTimeSheet.issuePayrolls');
         Route::get('/pay_agentTimeSheetGroups', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'agentTimeSheetGroupsPayroll'])->name('payroll.agentTimeSheetGroups');
 
-        Route::get('/payrolls_list_index_all',   [App\Http\Controllers\PayrollController::class, 'payrolls_list_index_all'])->name('payrolls_list_index_all');
-        Route::get('/payrolls_list_index',   [App\Http\Controllers\PayrollController::class, 'payrolls_list_index'])->name('payrolls_list_index');
-        Route::get('/show_payroll_details/{id}',   [App\Http\Controllers\PayrollController::class, 'show_payroll_details'])->name('show_payroll_details');
+        Route::get('/payrolls_list_index_all', [App\Http\Controllers\PayrollController::class, 'payrolls_list_index_all'])->name('payrolls_list_index_all');
+        Route::get('/payrolls_list_index', [App\Http\Controllers\PayrollController::class, 'payrolls_list_index'])->name('payrolls_list_index');
+        Route::get('/show_payroll_details/{id}', [App\Http\Controllers\PayrollController::class, 'show_payroll_details'])->name('show_payroll_details');
     });
 
     Route::prefix('hrm')->group(function () {
 
-        Route::get('/get-essentials-workers',  [Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'index'])->name('get-essentials-workers');
+        Route::get('/get-essentials-workers', [Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'index'])->name('get-essentials-workers');
         Route::get('/show-essentials-workers/{id}/{can_edit?}/{from?}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('show-essentials-workers')->defaults('from', 'hrm');
         Route::post('/get-worker-info', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'getWorkerInfo'])->name('get-worker-info');
         Route::get('/editWorker/{id}/edit/{from?}', [\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'edit'])->name('hrm.editWorker');
@@ -443,7 +424,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/change-status', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'changeStatus'])->name('changeLeavStatus');
         Route::get('/leave/activity/{id}', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'activity']);
         Route::get('/user-leave-summary', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getUserLeaveSummary']);
-        Route::get('/get-admission-date',  [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getAdmissionDate'])->name('get-admission-date');
+        Route::get('/get-admission-date', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getAdmissionDate'])->name('get-admission-date');
 
         Route::get('/agent_time_sheet', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'index'])
             ->name('hrm.agentTimeSheetIndex');
@@ -455,7 +436,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('time_sheet/edit/{id}', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('hrm.agentTimeSheet.editTimeSheet');
         Route::get('agent/time_sheet/deal/{id}', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('hrm.agentTimeSheet.dealTimeSheet');
 
-
         Route::get('/violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'index'])->name('violations');
         Route::get('/main-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'indexMain'])->name('main-violations');
         Route::post('/store-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'store'])->name('store-violations');
@@ -466,7 +446,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/update-main-violations', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'updateMain'])->name('update-main-violations');
         Route::delete('/delete-Violations/{id}', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'destroy'])->name('delete-Violations');
         Route::delete('/delete-main-Violations/{id}', [\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'destroyMain'])->name('delete-main-Violations');
-
 
         Route::get('/users_leaves', [Modules\Essentials\Http\Controllers\UsersLeaveBalanceController::class, 'index'])->name('leaves_balance');
         Route::get('/add_leave_balance', [Modules\Essentials\Http\Controllers\UsersLeaveBalanceController::class, 'populateLeaveBalances'])->name('add_leave_balance');
@@ -482,13 +461,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/countries/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'destroy'])->name('country.destroy');
         Route::put('/updateCountry/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'update'])->name('updateCountry');
 
-
         Route::get('/attendanceStatus', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'index'])->name('attendanceStatus');
         Route::post('/storeAttendanceStatus', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'store'])->name('storeAttendanceStatus');
         Route::delete('/attendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'destroy'])->name('attendanceStatus.destroy');
         Route::put('/updateAttendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'update'])->name('updateAttendanceStatus');
         Route::get('/editAttendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'edit'])->name('editAttendanceStatus');
-
 
         Route::get('/contract_types', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'index'])->name('contract_types');
         Route::get('/createContractType', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'create'])->name('createContractType');
@@ -504,12 +481,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/professions/edit/{professionId}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'edit'])->name('professions.edit');
         Route::post('/updateprofession/{professionId}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'update'])->name('professions.update');
 
-
-
         Route::post('/storeAcademicSpecializations', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'storeAcademicSpecializations'])->name('storeAcademicSpecializations');
         Route::get('/academic_specializations', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'academic_specializations'])->name('academic_specializations');
         Route::delete('/academic_specializations/{id}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'destroy'])->name('academic_specializations.destroy');
-
 
         Route::get('/cities', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'index'])->name('cities');
         Route::get('/createCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'create'])->name('createCity');
@@ -531,10 +505,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/organizations/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'edit'])->name('organization.edit');
         Route::delete('/organizations/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'destroy'])->name('organization.destroy');
         Route::put('/updateOrganization/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'update'])->name('updateOrganization');
-
-
-
-
 
         Route::get('/job_titles', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'index'])->name('job_titles');
         Route::get('/createJob_title', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'create'])->name('createJob_title');
@@ -578,14 +548,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/allowances/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'destroy'])->name('Allowance.destroy');
         Route::put('/updateAllowance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'update'])->name('updateAllowance');
 
-
         Route::get('/features', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'index'])->name('features');
         Route::post('/storeFeatures', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'store'])->name('storeFeatures');
         Route::delete('/features/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'destroy'])->name('feature.destroy');
         Route::get('/features.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'show'])->name('feature.view');
         Route::put('/updateFeatures/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'update'])->name('updateFeatures');
         Route::get('/features/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFeatureController::class, 'edit'])->name('feature.edit');
-
 
         Route::post('/import-attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'importAttendance']);
         Route::resource('/attendance', 'Modules\Essentials\Http\Controllers\AttendanceController');
@@ -605,17 +573,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             [Modules\Essentials\Http\Controllers\AttendanceController::class, 'getUserAttendanceSummary']
         );
 
-
-
         Route::get('/shift/assign-users/{shift_id}', [Modules\Essentials\Http\Controllers\ShiftController::class, 'getAssignUsers']);
         Route::post('/shift/assign-users', [Modules\Essentials\Http\Controllers\ShiftController::class, 'postAssignUsers']);
         Route::resource('/shift', 'Modules\Essentials\Http\Controllers\ShiftController');
         Route::get('/sales-target', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']);
         Route::get('/set-sales-target/{id}', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'setSalesTarget']);
         Route::post('/save-sales-target', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'saveSalesTarget']);
-
-
-
 
         Route::get('/my_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'my_requests'])->name('my_requests');
         Route::get('/viewHrRequest/{requestId}', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'viewRequest'])->name('viewHrRequest');
@@ -625,7 +588,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/allEssentialsRequests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests'])->name('allEssentialsRequests');
         Route::get('/escalate_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'escalateRequests'])->name('essentials.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'changeEscalateRequestsStatus'])->name('essentials.changeEscalateRequestsStatus');
-
 
         //reports
 
@@ -640,8 +602,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/cancel_contract_requests', [\Modules\Essentials\Http\Controllers\EssentialsCancelContractsController::class, 'index'])->name('cancel_contract_requests');
         Route::get('/finish_contract_procedure/{requestId}', [\Modules\Essentials\Http\Controllers\EssentialsCancelContractsController::class, 'finish_contract_procedure'])->name('finish_contract_procedure');
 
-
-
         Route::get('/wishes', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'index'])->name('wishes');
         Route::post('/wish/store', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'store'])->name('store_wish');
         Route::get('/wishes/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'edit'])->name('wishes.edit');
@@ -649,9 +609,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/wish/delete/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'destroy'])->name('wish.destroy');
 
         Route::get('/search/byproof', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'search'])->name('hrm.search_proofname');
-        Route::post('/save-attachment/{requestId}',  [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
-
-
+        Route::post('/save-attachment/{requestId}', [\App\Utils\RequestUtil::class, 'saveAttachment'])->name('saveAttachment');
 
         //Recuirements Requests
         Route::get('/get-recuirements-requests', [\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'index'])->name('get-recuirements-requests');
@@ -660,11 +618,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/requirement-request-changeStatus', [\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'changeStatus'])->name('requirement-request-changeStatus');
 
-        Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('hrm.payrolls_checkpoint');
-        Route::get('/show_payrolls_checkpoint/{id}/{from}',   [App\Http\Controllers\PayrollController::class, 'show_payrolls_checkpoint'])->name('payrolls_checkpoint.show');
-        Route::get('/clear_payrolls_checkpoint/{id}/{from}',  [App\Http\Controllers\PayrollController::class, 'clear_payrolls_checkpoint'])->name('payrolls_checkpoint.clear');
+        Route::get('/payrolls_checkpoint/{from}', [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('hrm.payrolls_checkpoint');
+        Route::get('/show_payrolls_checkpoint/{id}/{from}', [App\Http\Controllers\PayrollController::class, 'show_payrolls_checkpoint'])->name('payrolls_checkpoint.show');
+        Route::get('/clear_payrolls_checkpoint/{id}/{from}', [App\Http\Controllers\PayrollController::class, 'clear_payrolls_checkpoint'])->name('payrolls_checkpoint.clear');
     });
-
 
     Route::prefix('movment')->group(function () {
         Route::get('/dashboard-movment', [Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'index']);
@@ -682,7 +639,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/cars-type-update/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'update'])->name('essentials.car-type-update');
         Route::delete('/cars-type-delete/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'destroy'])->name('essentials.cartype.delete');
         // Route::get('/cars-model', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'index'])->name('cars-model');
-
 
         Route::get('/cars-insurance', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'index'])->name('essentials.car-insurance');
         Route::get('/cars-insurance-create/{id}', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'create'])->name('essentials.car-insurance-create');
@@ -711,8 +667,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/cars-delete/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'destroy'])->name('essentials.car.delete');
         Route::get('/carModel-by-carType_id/{carType_id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'getCarModelByCarType_id'])->name('essentials.getCarModelByCarType_id');
 
-
-
         Route::get('/car-drivers', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index'])->name('essentials.cardrivers');
         Route::get('/cardrivers-create', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'create'])->name('essentials.cardrivers-create');
         Route::get('/cardrivers-edit/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'])->name('essentials.cardrivers.edit');
@@ -720,7 +674,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/cardrivers-search', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'search'])->name('essentials.cardrivers-search');
         Route::put('/cardrivers-update/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'update'])->name('essentials.cardrivers-update');
         Route::delete('/cardrivers-delete/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'])->name('essentials.cardrivers.delete');
-
 
         Route::get('/cars-change-oil', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'index'])->name('essentials.cars-change-oil');
         Route::get('/cars-change-oil-create', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'create'])->name('essentials.cars-change-oil-create');
@@ -730,7 +683,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/cars-change-oil-update/{id}', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'update'])->name('essentials.cars-change-oil-update');
         Route::delete('/cars-change-oil-delete/{id}', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'destroy'])->name('essentials.cars-change-oil.delete');
 
-
         Route::get('/cars-maintenances', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'index'])->name('essentials.cars-maintenances');
         Route::get('/cars-maintenances-create', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'create'])->name('essentials.cars-maintenances-create');
         Route::get('/cars-maintenances-edit/{id}', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'edit'])->name('essentials.cars-maintenances.edit');
@@ -738,8 +690,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/cars-maintenances-search', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'search'])->name('essentials.cars-maintenances-search');
         Route::put('/cars-maintenances-update/{id}', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'update'])->name('essentials.cars-maintenances-update');
         Route::delete('/cars-maintenances-delete/{id}', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'destroy'])->name('essentials.cars-maintenances.delete');
-
-
 
         Route::get('/cars-change-oil-report', [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'CarsChangeOil'])->name('essentials.cars-change-oil-report');
         Route::get('/cars-maintenances-report', [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances'])->name('essentials.cars-maintenances-report');

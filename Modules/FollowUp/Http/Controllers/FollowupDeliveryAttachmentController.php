@@ -2,6 +2,9 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
+use App\Company;
 use App\User;
 use App\Utils\ModuleUtil;
 use Exception;
@@ -11,7 +14,6 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\FollowUp\Entities\FollowupDocument;
-use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Yajra\DataTables\Facades\DataTables;
 
 class FollowupDeliveryAttachmentController extends Controller
@@ -28,6 +30,14 @@ class FollowupDeliveryAttachmentController extends Controller
     }
     public function index(Request $request)
     {
+
+        //
+        // $user = Company::whereHas('owner', function ($query) {
+        //     $query->where('id', auth()->user()->company->id);
+        // })->get();
+
+        // dd($user);
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $can_followup_crud_attachment_delivery = auth()->user()->can('followup.crud_attachment_delivery');
@@ -38,27 +48,56 @@ class FollowupDeliveryAttachmentController extends Controller
             ]);
         }
         $can_edit_attachment_delivery = auth()->user()->can('followup.edit_attachment_delivery');
-        $can_delete_attachment_deliver = auth()->user()->can('followup.delete_attachment_deliver');
-        $can_view_attachment_deliver = auth()->user()->can('followup.view_attachment_deliver');
+        $can_delete_attachment_deliver = auth()->user()->can('followup.delete_attachment_delivery');
+        $can_view_attachment_deliver = auth()->user()->can('followup.view_attachment_delivery');
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
+            $userIds = User::where('user_type', '!=', 'admin')
+                ->where('company_id', auth()->user()->company->id)
+                ->pluck('id')
+                ->toArray();
         }
 
-        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
+        $workersIds = User::where('user_type', 'worker')->pluck('id')->toArray();
 
-        $workers = User::where('user_type', 'worker')->get();
-        if (!($is_admin || $is_manager)) {
-            $followupUserAccessProject = FollowupUserAccessProject::where('user_id', auth()->user()->id)->pluck('sales_project_id');
-            $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $followupUserAccessProject)->get();
+        if (!$is_admin) {
+
+            $workersIds = $this->moduleUtil->applyAccessRole();
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+            $workersIds = User::where('user_type', 'worker')
+                ->whereIn('company_id', $companies_ids)
+                ->pluck('id')
+                ->toArray();
+
         }
 
-        $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $userIds)
+        $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $workersIds)
             ->whereHas('attachment', function ($query) {
                 $query->where('type', 'Attached');
             })
             ->get();
+
+        $workers_have_docs_Ids = FollowupDeliveryDocument::whereIn('user_id', $workersIds)
+            ->whereHas('attachment', function ($query) {
+                $query->where('type', 'Attached');
+            })
+            ->pluck('user_id')
+            ->toArray();
+
+        $workers = User::where('user_type', 'worker')
+            ->whereIn('id', $workers_have_docs_Ids)
+            ->get();
+
         if (request()->ajax()) {
 
             if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
@@ -139,10 +178,22 @@ class FollowupDeliveryAttachmentController extends Controller
         $documents = FollowupDocument::where('type', 'Attached')->get();
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
-        if (!($is_admin || $is_manager)) {
-            $followupUserAccessProject = FollowupUserAccessProject::where('user_id', auth()->user()->id)->pluck('sales_project_id');
-            $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $followupUserAccessProject)->get();
+        if (!($is_admin)) {
+            $workers = [];
+            $workers = $this->moduleUtil->applyAccessRole();
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+            $workers = User::where('user_type', 'worker')->whereIn('company_id', $companies_ids)->get();
+
         }
         return view('followup::deliveryAttachment.creat', compact('workers', 'documents'));
     }

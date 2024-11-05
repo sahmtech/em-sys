@@ -239,7 +239,7 @@ return [
     'document_type' => 'نوع السند',
     'attachment_type' => 'نوع   المرفق',
     'add_delivery' => 'تسليم سند',
-    'add_attachment' => 'مرفق تسليم',
+    'add_attachment' => 'مرفق آخر',
     'upload_document' => 'تحميل سند',
     'upload_attachment' => 'تحميل مرفق',
     'document' => 'السند',
@@ -247,12 +247,12 @@ return [
     'attach_name' => 'اسم   المرفق',
     'add_document' => 'إضافةسند',
     'add_attachment' => ' إضافة مرفق',
-    'add_attachment_delivery' => 'إضافة مرفقات تسليم',
+    'add_attachment_delivery' => 'إضافة مرفقات اخرى',
     'edit_document' => 'تعديل سند',
     'edit_attachment' => 'تعديل  المرفق',
     'delete_attachment' => 'حذف  المرفق',
     'delete_attachment_delivery' => 'حذف مرفقات التسليم',
-    'view_attachment_delivery' => 'عرض مرفقات التسليم',
+    'view_attachment_delivery' => 'عرض مرفقات اخرى',
     'edit_delivery' => 'تعديل سند',
     'doc_name_ar' => 'اسم السند بالعربية',
     'doc_name_en' => 'اسم السند بالانكليزية',
@@ -263,7 +263,7 @@ return [
     'shifts' => 'فترات الدوام',
     'contact_locations' => 'فروع المشاريع',
     'document_delivery' => 'سندات التسليم',
-    'attachment_delivery' => 'مرفقات التسليم',
+    'attachment_delivery' => 'مرفقات اخرى',
     'nots' => 'الملاحظات',
     'no_document_delivery_to_show' => 'لا يوجد سندات',
     'please_add_the_followup_department' => 'قم بإضافة إدارة المتابعة من فضلك',
@@ -285,6 +285,7 @@ return [
     'viewRecruitmentRequest' => 'عرض طلبات التوظيف الداخلي',
 
     //permissions
+
     'followup_dashboard' => 'الصفحة الرئيسية لإدارة المتابعة',
     'crud_contact_locations' => 'إدارة فروع المشاريع',
     'crud_projects' => 'إدارة المشاريع',
@@ -293,6 +294,10 @@ return [
     'crud_requests' => 'إدارة الطلبات',
     'crud_recruitmentRequests' => 'إدارة طلبات التوظيف الداخلي',
     'crud_documents' => 'إدارة أنواع السندات',
+
+    'crud_attachments' => 'إدارة أنواع المرفقات',
+    'crud_attachments_delivery' => 'إدارة مرفقات التسليم',
+
     'crud_document_delivery' => 'إدارة سندات التسليم',
     'crud_projectsReports' => 'إدارة تقارير المشاريع',
     'crud_projectWorkersReports' => 'إدارة تقارير عمال المشاريع',
@@ -320,11 +325,19 @@ return [
     'editContactLocations' => 'تعديل فروع المشاريع',
     'deleteContactLocations' => 'حذف فروع المشاريع',
     'projectView' => 'عرض المشريع',
+    //doc
     'edit_document' => 'تعديل المستندات',
     'documents_delete' => 'حذف المستندات',
     'edit_document_delivery' => 'تعديل سندات التسليم',
     'delete_document_deliver' => 'حذف سندات التسليم',
     'view_document_deliver' => 'عرض سندات التسليم',
+    // attch
+    'edit_attachment' => 'تعديل المرفقات',
+    'attachment_delete' => 'حذف المرفقات',
+    'edit_attachment_delivery' => 'تعديل مرفقات التسليم',
+    'delete_attachment_deliver' => 'حذف مرفقات التسليم',
+    'view_attachment_deliver' => 'عرض  المرفقات',
+
     'delete_shifts' => 'حذف فترات الدوام',
     'edit_shifts' => 'تعديل فترات الدوام',
     'view_workerProject_details' => 'عرض معلومات عمال المشروع',

@@ -2040,6 +2040,8 @@ return [
     'order_type' => 'نوع الطلب',
     'upload_date' => 'تاريخ الرفع',
     'added_by' => 'تمت إضافته بواسطة',
-    
+    'view_attachment_delivery' => 'عرض مرفقات التسليم',
+    'attachments' => 'المرفقات',
+
 
 ];

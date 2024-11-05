@@ -866,45 +866,6 @@ class DataController extends Controller
                         'label' => __('essentials::lang.show_payroll_checkpoint'),
                         'default' => false,
                     ],
-                    //Attchment
-                    [
-                        'value' => 'essentials.crud_attachments',
-                        'label' => __('followup::lang.add_attachment'),
-                        'default' => false,
-                    ],
-
-                    [
-                        'value' => 'essentials.attachments.delete',
-                        'label' => __('followup::lang.delete_attachment'),
-                        'default' => false,
-                    ],
-                    // Delivery Attchment
-                    [
-                        'value' => 'essentials.crud_attachment_delivery',
-                        'label' => __('followup::lang.add_attachment_delivery'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.delete_attachment_deliver',
-                        'label' => __('followup::lang.delete_attachment_delivery'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.edit_attachment',
-                        'label' => __('followup::lang.edit_attachment'),
-                        'default' => false,
-                    ],
-
-                    [
-                        'value' => 'essentials.view_attachment_deliver',
-                        'label' => __('followup::lang.view_attachment_delivery'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.view_attachments_types',
-                        'label' => __('followup::lang.attachments_types'),
-                        'default' => false,
-                    ],
 
                 ],
 
@@ -1769,43 +1730,94 @@ class DataController extends Controller
                     ],
                     //Attchment
                     [
-                        'value' => 'followup.crud_attachments',
-                        'label' => __('followup::lang.add_attachment'),
-                        'default' => false,
-                    ],
 
-                    [
-                        'value' => 'followup.attachments.delete',
-                        'label' => __('followup::lang.delete_attachment'),
-                        'default' => false,
-                    ],
-                    // Delivery Attchment
-                    [
-                        'value' => 'followup.crud_attachment_delivery',
-                        'label' => __('followup::lang.add_attachment_delivery'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'followup.delete_attachment_deliver',
-                        'label' => __('followup::lang.delete_attachment_delivery'),
+                        'value' => 'followup.crud_attachments',
+                        'label' => __('followup::lang.crud_attachments'),
                         'default' => false,
                     ],
                     [
                         'value' => 'followup.edit_attachment',
                         'label' => __('followup::lang.edit_attachment'),
                         'default' => false,
-                    ],
 
+                    ],
                     [
-                        'value' => 'followup.view_attachment_deliver',
+                        'value' => 'followup.attachments.delete',
+                        'label' => __('followup::lang.delete_attachment'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.crud_attachment_delivery',
+                        'label' => __('followup::lang.crud_attachments_delivery'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.edit_attachment_delivery',
+                        'label' => __('followup::lang.edit_attachment_delivery'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.delete_attachment_delivery',
+                        'label' => __('followup::lang.delete_attachment_delivery'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.view_attachment_delivery',
                         'label' => __('followup::lang.view_attachment_delivery'),
                         'default' => false,
+
+                    ],
+
+                    ///Docs
+
+                    [
+                        'value' => 'followup.crud_documents',
+                        'label' => __('followup::lang.crud_documents'),
+                        'default' => false,
+
                     ],
                     [
-                        'value' => 'followup.view_attachments_types',
-                        'label' => __('followup::lang.attachments_types'),
+                        'value' => 'followup.edit_document',
+                        'label' => __('followup::lang.edit_document'),
                         'default' => false,
+
                     ],
+                    [
+                        'value' => 'followup.documents.delete',
+                        'label' => __('followup::lang.documents_delete'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.crud_document_delivery',
+                        'label' => __('followup::lang.crud_document_delivery'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.edit_document_delivery',
+                        'label' => __('followup::lang.edit_document_delivery'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.delete_document_deliver',
+                        'label' => __('followup::lang.delete_document_deliver'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value' => 'followup.view_document_deliver',
+                        'label' => __('followup::lang.view_document_deliver'),
+                        'default' => false,
+
+                    ],
+
+                    ///Docs
 
                 ],
 
@@ -2155,46 +2167,6 @@ class DataController extends Controller
                     [
                         'value' => 'essentials.carMaintenancesReport',
                         'label' => __('housingmovements::lang.carMaintenancesReport'),
-                        'default' => false,
-                    ],
-
-                    //Attchment
-                    [
-                        'value' => 'essentials.crud_attachments',
-                        'label' => __('followup::lang.add_attachment'),
-                        'default' => false,
-                    ],
-
-                    [
-                        'value' => 'essentials.attachments.delete',
-                        'label' => __('followup::lang.delete_attachment'),
-                        'default' => false,
-                    ],
-                    // Delivery Attchment
-                    [
-                        'value' => 'essentials.crud_attachment_delivery',
-                        'label' => __('followup::lang.add_attachment_delivery'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.delete_attachment_deliver',
-                        'label' => __('followup::lang.delete_attachment_delivery'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.edit_attachment',
-                        'label' => __('followup::lang.edit_attachment'),
-                        'default' => false,
-                    ],
-
-                    [
-                        'value' => 'essentials.view_attachment_deliver',
-                        'label' => __('followup::lang.view_attachment_delivery'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.view_attachments_types',
-                        'label' => __('followup::lang.attachments_types'),
                         'default' => false,
                     ],
 

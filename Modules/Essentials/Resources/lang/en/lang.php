@@ -783,5 +783,7 @@ return [
     'order_type' => 'Order Type',
     'upload_date' => 'Upload Date',
     'added_by' => 'Added by',
+    'view_attachment_delivery' => 'View delivery attachments',
+    'attachments' => 'attachments',
 
 ];

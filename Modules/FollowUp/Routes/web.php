@@ -111,12 +111,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/documents-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'destroy'])->name('documents-delete');
 
         // Attachments
-        Route::get('/attachments', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'index'])->name('attachments');
-        Route::get('/attachments-create', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'create'])->name('attachments-create');
-        Route::get('/attachments-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'edit'])->name('attachments-edit');
-        Route::post('/attachments-store', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'store'])->name('attachments-store');
-        Route::put('/attachments-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'update'])->name('attachments-update');
-        Route::delete('/attachments-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'destroy'])->name('attachments-delete');
+        // Route::get('/attachments', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'index'])->name('attachments');
+        // Route::get('/attachments-create', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'create'])->name('attachments-create');
+        // Route::get('/attachments-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'edit'])->name('attachments-edit');
+        // Route::post('/attachments-store', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'store'])->name('attachments-store');
+        // Route::put('/attachments-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'update'])->name('attachments-update');
+        // Route::delete('/attachments-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'destroy'])->name('attachments-delete');
 
         Route::get('/documents-delivery', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index'])->name('documents-delivery');
         Route::get('/documents-delivery-create', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'create'])->name('documents-delivery-create');
@@ -125,13 +125,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/documents-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'update'])->name('documents-delivery-update');
         Route::delete('/documents-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'destroy'])->name('documents-delivery-delete');
 
-        //attachments
-        Route::get('/attachments-delivery', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'index'])->name('attachments-delivery');
-        Route::get('/attachments-delivery-create', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'create'])->name('attachments-delivery-create');
-        Route::get('/attachments-delivery-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'edit'])->name('attachments-delivery-edit');
-        Route::post('/attachments-delivery-store', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'store'])->name('attachments-delivery-store');
-        Route::put('/attachments-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'update'])->name('attachments-delivery-update');
-        Route::delete('/attachments-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'destroy'])->name('attachments-delivery-delete');
+        //attachments delivery
+        // Route::get('/attachments-delivery', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'index'])->name('attachments-delivery');
+        // Route::get('/attachments-delivery-create', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'create'])->name('attachments-delivery-create');
+        // Route::get('/attachments-delivery-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'edit'])->name('attachments-delivery-edit');
+        // Route::post('/attachments-delivery-store', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'store'])->name('attachments-delivery-store');
+        // Route::put('/attachments-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'update'])->name('attachments-delivery-update');
+        // Route::delete('/attachments-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'destroy'])->name('attachments-delivery-delete');
 
         Route::post('/cancleProject', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'cancleProject'])->name('cancleProject');
 

@@ -1085,6 +1085,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'work_cards_department_employees'],
                 );
             }
+
             $menu->url(
                 route('work_cards.Communication', ['from' => 'work_cards']),
                 __('home.communication_between_deps'),
@@ -1260,6 +1261,30 @@ class CustomAdminSidebarMenu
                         __('essentials::lang.employee_contracts'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_contracts'],
                     );
+
+                    ///
+
+                    // if ($is_admin) {
+
+                    //     $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index']), __('followup::lang.documents'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents']);
+                    // }
+                    if ($is_admin || auth()->user()->can('followup.crud_attachments')) {
+
+                        $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'index']), __('followup::lang.attachments_types'), ['icon' => 'fa fas fa-paperclip', 'active' => request()->segment(2) == 'attachments']);
+                    }
+
+                    // if ($is_admin) {
+
+                    //     $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index']), __('followup::lang.document_delivery'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents-delivery']);
+                    // }
+
+                    if ($is_admin || auth()->user()->can('followup.crud_attachment_delivery')) {
+
+                        $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'index']), __('followup::lang.attachment_delivery'), ['icon' => 'fa fas fa-paperclip', 'active' => request()->segment(2) == 'attachments-delivery']);
+                    }
+
+                    ///
+
                 }
 
                 if ($is_admin || auth()->user()->can('essentials.crud_employee_qualifications')) {
@@ -1854,6 +1879,20 @@ class CustomAdminSidebarMenu
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'workers']);
             }
 
+            /// Docs
+
+            if ($is_admin || auth()->user()->can('followup.crud_documents')) {
+
+                $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index']), __('followup::lang.documents'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents']);
+            }
+
+            if ($is_admin || auth()->user()->can('followup.crud_document_delivery')) {
+
+                $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index']), __('followup::lang.document_delivery'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents-delivery']);
+            }
+
+            /// Docs
+
             if ($is_admin || auth()->user()->can('followup.crud_contact_locations')) {
                 $menu->url(
                     action([\App\Http\Controllers\ContactLocationController::class, 'index']),
@@ -1875,26 +1914,6 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('followup.crud_recruitmentRequests')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'index']), __('followup::lang.recruitmentRequests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'recruitmentRequests']);
-            }
-
-            if ($is_admin || auth()->user()->can('followup.crud_documents')) {
-
-                $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index']), __('followup::lang.documents'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents']);
-            }
-            dd(auth()->user()->can('essentials.crud_attachments'));
-            if ($is_admin || auth()->user()->can('essentials.crud_attachments')) {
-
-                $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupAttachmentController::class, 'index']), __('followup::lang.attachments_types'), ['icon' => 'fa fas fa-paperclip', 'active' => request()->segment(2) == 'attachments']);
-            }
-
-            if ($is_admin || auth()->user()->can('essentials.crud_document_delivery')) {
-
-                $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index']), __('followup::lang.document_delivery'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents-delivery']);
-            }
-
-            if ($is_admin || auth()->user()->can('essentials.crud_attachment_delivery')) {
-
-                $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController::class, 'index']), __('followup::lang.attachments'), ['icon' => 'fa fas fa-paperclip', 'active' => request()->segment(2) == 'attachments-delivery']);
             }
 
             if ($is_admin || auth()->user()->can('followup.crud_projectWorkersReports') || auth()->user()->can('followup.crud_projectsReports')) {
@@ -2331,6 +2350,12 @@ class CustomAdminSidebarMenu
                 );
             }
             if ($is_admin || auth()->user()->can('housingmovements.housingmovements_view_department_employees')) {
+                $menu->url(
+
+                    route('housingmovements_department_employees'),
+                    __('housingmovements::lang.department_employees'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'housingmovements_department_employees'],
+                );
                 $menu->url(
 
                     route('housingmovements_department_employees'),
