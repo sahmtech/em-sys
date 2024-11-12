@@ -600,7 +600,6 @@ class CustomAdminSidebarMenu
                 );
             }
         });
-
     }
     public function connectorMenu()
     {
@@ -813,7 +812,7 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('legalaffairs.contracts_management')) {
                 $menu->dropdown(
                     __('legalaffairs::lang.contracts_management'),
-                    function ($sub) use ($is_admin, ) {
+                    function ($sub) use ($is_admin,) {
 
                         if ($is_admin || auth()->user()->can('legalaffairs.crud_employee_contracts')) {
                             $sub->url(
@@ -2205,7 +2204,7 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'housingmovements' &&
-                        (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests'),
+                            (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests'),
                     ],
                 );
             }
@@ -2438,6 +2437,8 @@ class CustomAdminSidebarMenu
                         'active' => request()->segment(1) == 'accounting',
                     ]
                 );
+
+
                 // $menu->dropdown(
                 //     __('accounting::lang.accounting'),
                 //     function ($sub) use ($is_admin) {
@@ -2581,17 +2582,6 @@ class CustomAdminSidebarMenu
                             );
                         }
                         // if ($is_admin) {
-                        $sub->url(
-                            action([\App\Http\Controllers\SellController::class, 'index']),
-                            __('lang_v1.sells_pills'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
-                        );
-
-                        $sub->url(
-                            action([\App\Http\Controllers\SellReturnController::class, 'index']),
-                            __('lang_v1.list_sell_return'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sell-return']
-                        );
 
                         // }
 
@@ -2777,6 +2767,36 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-cart-plus ', 'id' => 'tour_step6']
                 );
             };
+
+
+
+            $menu->dropdown(
+                __('lang_v1.sales_management'),
+                function ($sub) use ($common_settings) {
+
+
+                    $sub->url(
+                        action([\App\Http\Controllers\SellController::class, 'index']),
+                        __('lang_v1.sells_pills'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sells']
+                    );
+
+                    $sub->url(
+                        action([\App\Http\Controllers\ImportSalesController::class, 'index']),
+                        __('lang_v1.import_sales'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'import-sales']
+                    );
+
+                  
+
+                    $sub->url(
+                        action([\App\Http\Controllers\SellReturnController::class, 'index']),
+                        __('lang_v1.list_sell_return'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sell-return']
+                    );
+                },
+                ['icon' => 'ion ion-cash ', 'id' => 'tour_step6']
+            );
 
             if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own')) {
                 $menu->dropdown(
@@ -3007,9 +3027,9 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'proposed_laborIndex'
-                        || request()->segment(2) == 'accepted_workers'
-                        || request()->segment(2) == 'workers_under_trialPeriod'
-                        || request()->segment(2) == 'unaccepted_workers',
+                            || request()->segment(2) == 'accepted_workers'
+                            || request()->segment(2) == 'workers_under_trialPeriod'
+                            || request()->segment(2) == 'unaccepted_workers',
                     ],
                 );
             }

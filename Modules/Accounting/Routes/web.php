@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\ImportSalesController;
 use App\Http\Controllers\SellReturnController;
 use Illuminate\Support\Facades\Route;
 use Modules\Accounting\Http\Controllers\OpeningBalanceController;
@@ -154,4 +155,11 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('sell-return/get-product-row', [SellReturnController::class, 'getProductRow']);
     Route::get('/sell-return/print/{id}', [SellReturnController::class, 'printInvoice']);
     Route::get('/sell-return/add/{id}', [SellReturnController::class, 'add']);
+
+
+    Route::get('/import-sales', [ImportSalesController::class, 'index']);
+    Route::post('/import-sales/preview', [ImportSalesController::class, 'preview']);
+    Route::post('/import-sales', [ImportSalesController::class, 'import']);
+    Route::get('/revert-sale-import/{batch}', [ImportSalesController::class, 'revertSaleImport']);
+
 });

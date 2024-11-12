@@ -17,6 +17,7 @@ use App\Variation;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ImportSalesController extends Controller
 {
@@ -61,8 +62,9 @@ class ImportSalesController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
-        $imported_sales = Transaction::where('business_id', $business_id)
+        $imported_sales = Transaction::where('business_id', $business_id)->where('company_id',$company_id,)
             ->where('type', 'sell')
             ->whereNotNull('import_batch')
             ->with(['sales_person'])
@@ -99,6 +101,7 @@ class ImportSalesController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
         if ($request->hasFile('sales')) {
             $file_name = time() . '_' . $request->sales->getClientOriginalName();
@@ -174,6 +177,7 @@ class ImportSalesController extends Controller
             $group_by = $request->input('group_by');
             $location_id = $request->input('location_id');
             $business_id = $request->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
             $file_path = public_path('uploads/temp/' . $file_name);
             $parsed_array = $this->__parseData($file_name);
@@ -184,7 +188,7 @@ class ImportSalesController extends Controller
             ini_set('max_execution_time', 0);
             ini_set('memory_limit', -1);
 
-            $this->__importSales($formatted_sales_data, $business_id, $location_id);
+            $this->__importSales($formatted_sales_data, $business_id, $location_id,$company_id);
 
             DB::commit();
 
@@ -211,9 +215,9 @@ class ImportSalesController extends Controller
         return redirect('import-sales')->with('status', $output);
     }
 
-    private function __importSales($formated_data, $business_id, $location_id)
+    private function __importSales($formated_data, $business_id, $location_id,$company_id)
     {
-        $import_batch = Transaction::where('business_id', $business_id)->max('import_batch');
+        $import_batch = Transaction::where('business_id', $business_id)->where('company_id',$company_id)->max('import_batch');
 
         if (empty($import_batch)) {
             $import_batch = 1;
@@ -233,6 +237,7 @@ class ImportSalesController extends Controller
                     $product = !empty($variation) ? $variation->product : null;
                 } else {
                     $product = Product::where('business_id', $business_id)
+                        ->where('company_id',$company_id)
                         ->where('name', $line_data['product'])
                         ->with(['variations'])
                         ->first();
@@ -330,6 +335,7 @@ class ImportSalesController extends Controller
                 $customer_name = !empty($first_sell_line['customer_name']) ? $first_sell_line['customer_name'] : $first_sell_line['customer_phone_number'];
                 $contact = Contact::create([
                     'business_id' => $business_id,
+                    // 'company_id' => $company_id,
                     'type' => 'customer',
                     'name' => $customer_name,
                     'email' => $first_sell_line['customer_email'],
@@ -340,6 +346,7 @@ class ImportSalesController extends Controller
 
             $sale_data = [
                 'invoice_no' => $first_sell_line['invoice_no'],
+                'company_id' => $company_id,
                 'location_id' => $location_id,
                 'status' => 'final',
                 'contact_id' => $contact->id,
