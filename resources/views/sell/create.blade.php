@@ -612,6 +612,9 @@
                         <input type="hidden" name="sell_price_tax" id="sell_price_tax"
                             value="{{ $business_details->sell_price_tax }}">
 
+                            <input type="hidden" name="business_enable_inline_tax" id="business_enable_inline_tax"
+                            value="{{ session()->get('business.enable_inline_tax') }}">
+
                         <!-- Keeps count of product rows -->
                         <input type="hidden" id="product_row_count" value="0">
                         @php

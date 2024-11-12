@@ -1566,5 +1566,6 @@ return [
     'provide_gifts' => 'We always provide you with gifts',
     'report' => 'Report',
     'an_unexpected_error_occurred' => 'An unexpected error has occurred. Please try again later or contact support if the issue persists.',
+    'sales_management' =>'Sales Management',
 
 ];
