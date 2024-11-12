@@ -678,7 +678,7 @@ class ProductUtil extends Util
                 $output['tax_id'] = $tax_id;
                 // dd($tax_details->amount,$tax_details->amount / 100,$output['total_before_tax']);
                 // $output['tax'] = ($tax_details->amount / 100) * ($output['total_before_tax'] - $output['discount']);
-                $output['tax'] = ($tax_details->amount / 100) * ($unit_price_without_tax - $output['discount']);
+                $output['tax'] = ($tax_details->amount / 100) * ($output['total_before_tax'] - $output['discount']);
             }
         }
 

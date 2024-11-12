@@ -121,10 +121,10 @@
                         data: 'mobile',
                         name: 'contacts.mobile'
                     },
-                    {
-                        data: 'business_location',
-                        name: 'bl.name'
-                    },
+                    // {
+                    //     data: 'business_location',
+                    //     name: 'bl.name'
+                    // },
                     {
                         data: 'payment_status',
                         name: 'payment_status'
@@ -330,10 +330,10 @@
                         data: 'ref_no',
                         name: 'ref_no'
                     },
-                    {
-                        data: 'location_name',
-                        name: 'BS.name'
-                    },
+                    // {
+                    //     data: 'location_name',
+                    //     name: 'BS.name'
+                    // },
                     {
                         data: 'name',
                         name: 'contacts.name'

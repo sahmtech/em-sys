@@ -122,16 +122,16 @@ class SellController extends Controller
 
             $partial_permissions = ['view_own_sell_only', 'view_commission_agent_sell', 'access_own_shipping', 'access_commission_agent_shipping'];
             // if (! auth()->user()->can('direct_sell.view')) {
-            $sells->where(function ($q) {
-                // if (auth()->user()->hasAnyPermission(['view_own_sell_only', 'access_own_shipping'])) {
-                $q->where('transactions.created_by', request()->session()->get('user.id'));
-                // }
+            // $sells->where(function ($q) {
+            //     // if (auth()->user()->hasAnyPermission(['view_own_sell_only', 'access_own_shipping'])) {
+            //     $q->where('transactions.created_by', request()->session()->get('user.id'));
+            //     // }
 
-                //if user is commission agent display only assigned sells
-                // if (auth()->user()->hasAnyPermission(['view_commission_agent_sell', 'access_commission_agent_shipping'])) {
-                $q->orWhere('transactions.commission_agent', request()->session()->get('user.id'));
-                // }
-            });
+            //     //if user is commission agent display only assigned sells
+            //     // if (auth()->user()->hasAnyPermission(['view_commission_agent_sell', 'access_commission_agent_shipping'])) {
+            //     $q->orWhere('transactions.commission_agent', request()->session()->get('user.id'));
+            //     // }
+            // });
             // }
 
             $only_shipments = request()->only_shipments == 'true' ? true : false;

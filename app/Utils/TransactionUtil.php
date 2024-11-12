@@ -5005,12 +5005,12 @@ class TransactionUtil extends Util
     {
         $expenses = Transaction::leftJoin('expense_categories AS ec', 'transactions.expense_category_id', '=', 'ec.id')
             ->leftJoin('expense_categories AS esc', 'transactions.expense_sub_category_id', '=', 'esc.id')
-            ->join(
-                'business_locations AS bl',
-                'transactions.location_id',
-                '=',
-                'bl.id'
-            )
+            // ->join(
+            //     'business_locations AS bl',
+            //     'transactions.location_id',
+            //     '=',
+            //     'bl.id'
+            // )
             ->leftJoin('tax_rates as tr', 'transactions.tax_id', '=', 'tr.id')
             ->leftJoin('users AS U', 'transactions.expense_for', '=', 'U.id')
             ->leftJoin('users AS usr', 'transactions.created_by', '=', 'usr.id')
@@ -5070,12 +5070,12 @@ class TransactionUtil extends Util
             ->leftJoin('users as ss', 'transactions.res_waiter_id', '=', 'ss.id')
             ->leftJoin('users as dp', 'transactions.delivery_person', '=', 'dp.id')
             ->leftJoin('res_tables as tables', 'transactions.res_table_id', '=', 'tables.id')
-            ->join(
-                'business_locations AS bl',
-                'transactions.location_id',
-                '=',
-                'bl.id'
-            )
+            // ->join(
+            //     'business_locations AS bl',
+            //     'transactions.location_id',
+            //     '=',
+            //     'bl.id'
+            // )
             ->leftJoin(
                 'transactions AS SR',
                 'transactions.id',
@@ -5133,7 +5133,7 @@ class TransactionUtil extends Util
                 DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                 DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
                         TP.transaction_id=transactions.id) as total_paid'),
-                'bl.name as business_location',
+                // 'bl.name as business_location',
                 DB::raw('COUNT(SR.id) as return_exists'),
                 DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
                         TP2.transaction_id=SR.id ) as return_paid'),
