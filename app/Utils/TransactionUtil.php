@@ -72,15 +72,16 @@ class TransactionUtil extends Util
             'ref_no' => '',
             'source' => !empty($input['source']) ? $input['source'] : null,
             // 'total_before_tax' => $invoice_total['total_before_tax'] - $input['order_tax'],
-            'total_before_tax' => floatval($invoice_total['total_before_tax']) - floatval($input['order_tax']),
+            // 'total_before_tax' => floatval($invoice_total['total_before_tax']) - floatval($input['order_tax']),
+            'total_before_tax' => floatval($invoice_total['total_before_tax']),
 
             'transaction_date' => $input['transaction_date'],
             'tax_id' => !empty($input['tax_rate_id']) ? $input['tax_rate_id'] : null,
             'discount_type' => !empty($input['discount_type']) ? $input['discount_type'] : null,
             'discount_amount' => $uf_data ? $this->num_uf($input['discount_amount']) : $input['discount_amount'],
 
-            // 'tax_amount' => $invoice_total['tax'],
-            'tax_amount' => $input['order_tax'],
+            'tax_amount' => $invoice_total['tax'],
+            // 'tax_amount' => $input['order_tax'],
             'final_total' => $final_total,
             'additional_notes' => !empty($input['sale_note']) ? $input['sale_note'] : null,
             'staff_note' => !empty($input['staff_note']) ? $input['staff_note'] : null,
@@ -5069,12 +5070,12 @@ class TransactionUtil extends Util
             ->leftJoin('users as ss', 'transactions.res_waiter_id', '=', 'ss.id')
             ->leftJoin('users as dp', 'transactions.delivery_person', '=', 'dp.id')
             ->leftJoin('res_tables as tables', 'transactions.res_table_id', '=', 'tables.id')
-            // ->join(
-            //     'business_locations AS bl'
-            //     // 'transactions.location_id',
-            //     // '=',
-            //     // 'bl.id'
-            // )
+            ->join(
+                'business_locations AS bl',
+                'transactions.location_id',
+                '=',
+                'bl.id'
+            )
             ->leftJoin(
                 'transactions AS SR',
                 'transactions.id',
@@ -5132,7 +5133,7 @@ class TransactionUtil extends Util
                 DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                 DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
                         TP.transaction_id=transactions.id) as total_paid'),
-                // 'bl.name as business_location',
+                'bl.name as business_location',
                 DB::raw('COUNT(SR.id) as return_exists'),
                 DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
                         TP2.transaction_id=SR.id ) as return_paid'),
@@ -5145,7 +5146,8 @@ class TransactionUtil extends Util
                 'tables.name as table_name',
                 DB::raw('SUM(tsl.quantity - tsl.so_quantity_invoiced) as so_qty_remaining'),
                 'transactions.is_export',
-                DB::raw("CONCAT(COALESCE(dp.surname, ''),' ',COALESCE(dp.first_name, ''),' ',COALESCE(dp.last_name,'')) as delivery_person")
+                DB::raw("CONCAT(COALESCE(dp.surname, ''),' ',COALESCE(dp.first_name, ''),' ',COALESCE(dp.last_name,'')) as delivery_person"),
+              
             );
 
         if ($sale_type == 'sell') {
