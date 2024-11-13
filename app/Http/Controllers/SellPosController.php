@@ -413,6 +413,7 @@ class SellPosController extends Controller
                 $input['transaction_date'] = \Carbon::now();
             } else {
                 $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
+        //    dd($input['transaction_date']);
             }
             if ($is_direct_sale) {
                 $input['is_direct_sale'] = 1;
@@ -1546,6 +1547,7 @@ class SellPosController extends Controller
                 $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
 
                 if (!empty($request->input('transaction_date'))) {
+                    
                     $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
                 }
 
