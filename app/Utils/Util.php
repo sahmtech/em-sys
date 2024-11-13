@@ -245,7 +245,9 @@ class Util
      */
     public function uf_date($date, $time = false)
     {
+        
         $date_format = session('business.date_format');
+
         $mysql_format = 'Y-m-d';
         if ($time) {
             if (session('business.time_format') == 12) {
@@ -256,7 +258,8 @@ class Util
             $mysql_format = 'Y-m-d H:i:s';
         }
         $date = str_replace(['/', '\\'], '-', $date);
-        return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
+
+        return !empty($date_format) ? Carbon::createFromFormat('m-d-Y H:i', $date)->format($mysql_format) : null;
     }
     // public function uf_date($date, $time = false)
     // {
