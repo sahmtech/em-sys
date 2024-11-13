@@ -21,13 +21,13 @@
                     <div class="row">
 
                         <div class="col-md-6">
-                            {!! Form::label('worker', __('followup::lang.worker')) !!}<span style="color: red; font-size:10px"> *</span>
+                            {!! Form::label('worker', __('followup::lang.employee_or_worker')) !!}<span style="color: red; font-size:10px"> *</span>
                             <select class="form-control" required name="user_id" id="worker__select"
                                 style="padding: 2px;">
-                                <option value="">{{ __('followup::lang.select_worker') }}</option>
+                                <option value="">{{ __('followup::lang.select_employee_or_worker') }}</option>
                                 @foreach ($workers as $worker)
                                     <option value="{{ $worker->id }}">
-                                        {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name }}
+                                        {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->mid_name . ' ' . $worker->last_name }}
                                     </option>
                                 @endforeach
                             </select>

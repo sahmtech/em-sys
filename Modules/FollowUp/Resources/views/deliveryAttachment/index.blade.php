@@ -16,13 +16,13 @@
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     <div class="row">
                         <div class="col-sm-4">
-                            {!! Form::label('worker', __('followup::lang.worker')) !!}
+                            {!! Form::label('worker', __('followup::lang.select_employee_or_worker')) !!}
 
                             <select class="form-control" name="worker_filtter" id='worker_filtter'>
                                 <option value="all" selected>@lang('lang_v1.all')</option>
                                 @foreach ($workers as $worker)
                                     <option value="{{ $worker->id }}">
-                                        {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name }}
+                                        {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->mid_name . ' ' . $worker->last_name }}
                                     </option>
                                 @endforeach
                             </select>

@@ -36,8 +36,6 @@ class FollowupDeliveryAttachmentController extends Controller
         //     $query->where('id', auth()->user()->company->id);
         // })->get();
 
-        // dd($user);
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $can_followup_crud_attachment_delivery = auth()->user()->can('followup.crud_attachment_delivery');
@@ -59,7 +57,9 @@ class FollowupDeliveryAttachmentController extends Controller
                 ->toArray();
         }
 
-        $workersIds = User::where('user_type', 'worker')->pluck('id')->toArray();
+        $workersIds = User::whereIn('user_type', ['worker', 'employee'])->pluck('id')->toArray();
+
+        // dd($workersIds);
 
         if (!$is_admin) {
 
@@ -74,7 +74,7 @@ class FollowupDeliveryAttachmentController extends Controller
                     $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
                 }
             }
-            $workersIds = User::where('user_type', 'worker')
+            $workersIds = User::whereIn('user_type', ['worker', 'employee'])
                 ->whereIn('company_id', $companies_ids)
                 ->pluck('id')
                 ->toArray();
@@ -94,7 +94,7 @@ class FollowupDeliveryAttachmentController extends Controller
             ->pluck('user_id')
             ->toArray();
 
-        $workers = User::where('user_type', 'worker')
+        $workers = User::whereIn('user_type', ['worker', 'employee'])
             ->whereIn('id', $workers_have_docs_Ids)
             ->get();
 
@@ -113,7 +113,7 @@ class FollowupDeliveryAttachmentController extends Controller
             return DataTables::of($delivery_documents)
 
                 ->editColumn('worker', function ($row) {
-                    return $row->user->id_proof_number . ' - ' . $row->user->first_name . ' ' . $row->user->last_name ?? '';
+                    return $row->user->id_proof_number . ' - ' . $row->user->first_name . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
                 })
 
                 ->editColumn('attach_name', function ($row) {
@@ -174,7 +174,7 @@ class FollowupDeliveryAttachmentController extends Controller
      */
     public function create()
     {
-        $workers = User::where('user_type', 'worker')->get();
+        $workers = User::whereIn('user_type', ['worker', 'employee'])->get();
         $documents = FollowupDocument::where('type', 'Attached')->get();
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -192,7 +192,7 @@ class FollowupDeliveryAttachmentController extends Controller
                     $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
                 }
             }
-            $workers = User::where('user_type', 'worker')->whereIn('company_id', $companies_ids)->get();
+            $workers = User::whereIn('user_type', ['worker', 'employee'])->whereIn('company_id', $companies_ids)->get();
 
         }
         return view('followup::deliveryAttachment.creat', compact('workers', 'documents'));
@@ -264,7 +264,7 @@ class FollowupDeliveryAttachmentController extends Controller
      */
     public function edit($id)
     {
-        $workers = User::where('user_type', 'worker')->get();
+        $workers = User::whereIn('user_type', ['worker', 'employee'])->get();
         $documents = FollowupDocument::where('type', 'Attached')->get();
 
         $document_delivery = FollowupDeliveryDocument::find($id);

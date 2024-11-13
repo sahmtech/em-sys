@@ -15,6 +15,7 @@ return [
     'create_worker' => 'إضافة عامل',
     'title' => 'العنوان',
     'select_worker' => 'اختر عامل',
+    'select_employee_or_worker' => 'أختر موظف أو عامل',
     'select_doc_type' => 'اختر نوع الوثيقة ',
     'select_attach_type' => 'اختر نوع  المرفق ',
     'not_have_insurance' => 'غير مؤمن',
@@ -275,6 +276,8 @@ return [
     'manager' => 'مدير',
     'user' => 'مستخدم',
     'worker' => 'عامل',
+    'employee_or_worker' => 'الموظف او العامل',
+
     'escalated_from' => 'تم التصعيد من',
     'escalate_requests' => 'الطلبات المصعّدة',
     'requests_by_sequential' => 'الطلبات حسب التسلسل',

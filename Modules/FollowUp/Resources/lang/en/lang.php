@@ -68,6 +68,7 @@ return [
     'crud_projects' => 'crud projects',
     'worker_name' => 'worker name',
     'select_worker' => 'select worker',
+    'select_employee_or_worker' => 'Select Employee Or Worker',
     'add_request' => 'add request ',
     'create_request' => 'create request',
     'note' => 'note',
@@ -276,6 +277,7 @@ return [
     'employee' => 'Employee',
     'manager' => 'Manager',
     'worker' => 'Worker',
+    'employee_or_worker' => 'Employee or Worker',
     'user' => 'User',
 
     'editContactLocations' => 'Edit contact locations',
