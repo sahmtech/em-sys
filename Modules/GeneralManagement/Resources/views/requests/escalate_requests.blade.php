@@ -284,6 +284,7 @@
         @endif
     @endif
     <section class="content">
+       
         @include('generalmanagement::layouts.nav_requests')
         @component('components.filters', ['title' => __('request.filters')])
             {{-- <div class="col-md-3">
