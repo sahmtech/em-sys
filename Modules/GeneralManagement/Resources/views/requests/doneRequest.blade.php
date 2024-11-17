@@ -611,6 +611,18 @@
 
                 ]
             });
+            $(document).on('click', '.department-link', function() {
+                // Get the department ID from the clicked link
+                var departmentId = $(this).data('department-id');
+
+                console.log('Selected Department ID:', departmentId); // Debugging log
+
+                // Update the hidden input field with the selected department ID
+                $('#department_filter').val(departmentId);
+
+                // Reload the DataTable with the updated filter
+                requests_table.ajax.reload();
+            });
             $('#status_filter, #type_filter, #company_filter, #project_filter,#department_filter').change(
                 function() {
                     requests_table.ajax.reload();
