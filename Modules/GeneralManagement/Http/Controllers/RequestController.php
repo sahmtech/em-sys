@@ -107,7 +107,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 27)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 27)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -125,7 +125,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.housinMmovementDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
     // Operations Management (Business Sector)
     public function operationsDept()
@@ -138,7 +138,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 26)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 26)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -156,7 +156,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.operationsDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
 
     public function salesDept()
@@ -169,7 +169,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 28)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 28)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -187,7 +187,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.salesDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
 
     public function internationalRelationsDept()
@@ -200,7 +200,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 29)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 29)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -218,7 +218,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.internationalRelationsDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
 
     public function humanResourcesDept()
@@ -231,7 +231,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 30)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 30)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -249,7 +249,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.humanResourcesDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
     public function humanResourcesDeptApps()
     {
@@ -261,7 +261,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 31)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 31)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -279,7 +279,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.humanResourcesDeptApps', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
     public function legalAffairsDept()
     {
@@ -291,7 +291,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 32)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 32)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -309,7 +309,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.legalAffairsDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
 
     public function financialDept()
@@ -322,7 +322,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 33)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 33)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -340,7 +340,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.financialDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
 
     public function governmentRelationsdeptDept()
@@ -353,7 +353,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 34)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 34)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -371,7 +371,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.governmentRelationsdeptDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
     public function personnelAffairsDept()
     {
@@ -383,7 +383,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 35)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 35)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -401,7 +401,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.personnelAffairsDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
 
     public function ceoDept()
@@ -414,7 +414,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 37)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 37)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -432,7 +432,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.ceoDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
     public function medicalInsuranceDept()
     {
@@ -444,7 +444,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 41)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 41)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -474,7 +474,7 @@ class RequestController extends Controller
         $can_show_request = auth()->user()->can('generalmanagement.view_request');
         $departmentIds = EssentialsDepartment::where('id', 42)->pluck('id')->toArray();
 
-        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)
+        $departmentIdsForGeneralManagment = EssentialsDepartment::where('business_id', $business_id)->where('id', 42)
             ->where(function ($query) {
                 $query->Where('name', 'like', '%مجلس%')
                     ->orWhere('name', 'like', '%عليا%')
@@ -492,7 +492,7 @@ class RequestController extends Controller
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'pending_and_old');
+        return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'generalmanagement::requests.payrollDept', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, $departmentIdsForGeneralManagment, false, null, 'department');
     }
 
     public function getFilteredRequests($filter = null)

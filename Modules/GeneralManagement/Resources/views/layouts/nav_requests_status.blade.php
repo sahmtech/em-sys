@@ -39,12 +39,7 @@
                         </a>
                     </li>
 
-                    <li @if (request()->segment(2) == 'president_done_requests') class="active" @endif>
-                        <a href="{{ route('president_done_requests') }}">
-                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
-                            @lang('generalmanagement::lang.done_requests')
-                        </a>
-                    </li>
+
 
 
                     <!-- // TODO: Refactor this  is bad way i know that -->
