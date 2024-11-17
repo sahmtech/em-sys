@@ -816,7 +816,7 @@ class RequestUtil extends Util
         $saleProjects = SalesProject::all()->pluck('name', 'id');
         $companies = Company::all()->pluck('name', 'id');
 
-        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::whereIn('id', $departmentIds)->pluck('name', 'id');
         $departments_needs = EssentialsDepartment::whereBetween('id', [26, 42])->pluck('name', 'id');
 
         $requestsProcess = null;
@@ -929,6 +929,7 @@ class RequestUtil extends Util
 
             error_log(request()->input('department'));
             $department = request()->input('department');
+            
             $requestsProcess->where(function ($query) use ($department) {
                 $query->where(function ($subQuery) use ($department) {
                     $subQuery->where('wk_procedures.department_id', $department)
