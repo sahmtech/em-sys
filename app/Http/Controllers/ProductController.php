@@ -106,9 +106,9 @@ class ProductController extends Controller
                 $query->doesntHave('product_locations');
             } else {
                 if ($permitted_locations != 'all') {
-                    $query->whereHas('product_locations', function ($query) use ($permitted_locations) {
-                        $query->whereIn('product_locations.location_id', $permitted_locations);
-                    });
+                //     $query->whereHas('product_locations', function ($query) use ($permitted_locations) {
+                //         $query->whereIn('product_locations.location_id', $permitted_locations);
+                //     });
                 } else {
                     $query->with('product_locations');
                 }
@@ -157,9 +157,9 @@ class ProductController extends Controller
             );
 
             //if woocomerce enabled add field to query
-            if ($is_woocommerce) {
-                $products->addSelect('woocommerce_disable_sync');
-            }
+            // if ($is_woocommerce) {
+            //     $products->addSelect('woocommerce_disable_sync');
+            // }
 
             $products->groupBy('products.id');
 
@@ -200,14 +200,15 @@ class ProductController extends Controller
                 $products->ProductNotForSales();
             }
 
-            $woocommerce_enabled = request()->get('woocommerce_enabled', 0);
-            if ($woocommerce_enabled == 1) {
-                $products->where('products.woocommerce_disable_sync', 0);
-            }
+            // $woocommerce_enabled = request()->get('woocommerce_enabled', 0);
+            // if ($woocommerce_enabled == 1) {
+            //     $products->where('products.woocommerce_disable_sync', 0);
+            // }
 
-            if (!empty(request()->get('repair_model_id'))) {
-                $products->where('products.repair_model_id', request()->get('repair_model_id'));
-            }
+            // if (!empty(request()->get('repair_model_id'))) {
+            //     $products->where('products.repair_model_id', request()->get('repair_model_id'));
+            // }
+            // dd($products);
 
             return Datatables::of($products)
                 ->addColumn(
