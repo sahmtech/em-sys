@@ -472,23 +472,39 @@ class DataController extends Controller
                         'label' => __('product.delete'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'product.update',
+                        'label' => __('role.product.update'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'product.opening_stock',
+                        'label' => __('lang_v1.add_opening_stock'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'view_purchase_price',
+                        'label' => __('lang_v1.view_purchase_price'),
+                        'default' => false,
+                    ],
                     
-                    [
-                        'value' => 'unit.view',
-                        'label' => __('unit.units'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'category.view',
-                        'label' => __('category.categories'),
-                        'default' => false,
-                    ],
                     
-                    [
-                        'value' => 'brand.view',
-                        'label' => __('brand.brands'),
-                        'default' => false,
-                    ],
+                    // [
+                    //     'value' => 'unit.view',
+                    //     'label' => __('unit.units'),
+                    //     'default' => false,
+                    // ],
+                    // [
+                    //     'value' => 'category.view',
+                    //     'label' => __('category.categories'),
+                    //     'default' => false,
+                    // ],
+                    
+                    // [
+                    //     'value' => 'brand.view',
+                    //     'label' => __('brand.brands'),
+                    //     'default' => false,
+                    // ],
                     [
                         'value' => 'stock_report.view',
                         'label' => __('role.stock_report.view'),
