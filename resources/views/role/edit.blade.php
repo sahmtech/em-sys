@@ -507,7 +507,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
+            {{-- <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="row check_group">
                         <div class="col-md-12">
@@ -586,7 +586,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             @if (in_array('purchases', $enabled_modules) || in_array('stock_adjustment', $enabled_modules))
                 <div class="col-md-12">
                     <div class="box box-primary">
