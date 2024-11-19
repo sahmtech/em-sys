@@ -102,7 +102,7 @@ class ReportController extends Controller
             ->first();
 
         $first_contact = Contact::where('business_id', $business_id)
-            ->where('company_id', $company_id)
+              ->where('company_id', $company_id)
             ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])
             ->active()
             ->first();
@@ -166,7 +166,6 @@ class ReportController extends Controller
                 // Redirect to the 'chart-of-accounts' route with a flash message
                 return redirect()->route('chart-of-accounts.index')
                     ->with('message', 'Please create a tree account for the chart of accounts.');
-
             }
             $levels = strlen(max($lengths));
 
@@ -258,7 +257,7 @@ class ReportController extends Controller
                     'accounting_accounts.gl_code',
                     'accounting_accounts.id'
                 )
-            /* ->when($level_filter, function ($query, $level_filter) {
+                /* ->when($level_filter, function ($query, $level_filter) {
             return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
             }) */
                 ->groupBy(
@@ -340,7 +339,7 @@ class ReportController extends Controller
                         $html = ' ';
                         if (!$aggregated) {
                             $html =
-                            '<div class="btn-group">
+                                '<div class="btn-group">
                                 <button type="button" class="btn btn-info btn-xs" >' . '
                                     <a class=" btn-modal text-white" data-container="#printledger"
                                         data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
@@ -369,7 +368,6 @@ class ReportController extends Controller
             Log::error('Error in trialBalance method: ' . $e->getMessage());
             return redirect()->route('chart-of-accounts.index')
                 ->with('message', 'Please create a tree account for the chart of accounts.');
-
         }
     }
 

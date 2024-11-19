@@ -251,16 +251,25 @@ class Util
         $mysql_format = 'Y-m-d';
         if ($time) {
             if (session('business.time_format') == 12) {
-                $date_format = $date_format . 'h:i A';
+                $date_format = $date_format . ' h:i A';
             } else {
-                $date_format = $date_format . 'H:i';
+                $date_format = $date_format . ' H:i';
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
-        $date = str_replace(['/', '\\'], '-', $date);
-        // dd($date);
-
-        return !empty($date_format) ? Carbon::createFromFormat('m-d-Y h:i A', $date)->format($mysql_format) : null;
+        if (strpos($date, '/') !== false || strpos($date, '\\') !== false) {
+            $date = str_replace(['/', '\\'], '-', $date);
+        }
+      
+        if (strpos($date_format, '/') !== false || strpos($date_format, '\\') !== false) {
+            $date_format = str_replace(['/', '\\'], '-', $date_format);
+        }
+      
+        // $date = str_replace(['/', '\\'], '-', $date);
+        // dd($date,$date_format);
+        
+        return !empty($date_format) ? Carbon::createFromFormat($date_format, $date)->format($mysql_format) : null;
+        // return !empty($date_format) ? Carbon::createFromFormat('m-d-Y h:i A', $date)->format($mysql_format) : null;
     }
     // public function uf_date($date, $time = false)
     // {

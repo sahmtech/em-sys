@@ -92,7 +92,8 @@ class AccountingUtil extends Util
                         FROM transaction_payments as tp WHERE tp.transaction_id = transactions.id) )  
                         as total_due'),
 
-                'c.name as contact_name',
+                        'c.name as contact_name',
+                        'c.supplier_business_name',
                 'transactions.contact_id'
             )
             ->groupBy('transactions.id')
@@ -102,7 +103,7 @@ class AccountingUtil extends Util
         foreach ($dues as $due) {
             if (!isset($report_details[$due->contact_id])) {
                 $report_details[$due->contact_id] = [
-                    'name' => $due->contact_name,
+                    'name' => $due->supplier_business_name,
                     '<1' => 0,
                     '1_30' => 0,
                     '31_60' => 0,

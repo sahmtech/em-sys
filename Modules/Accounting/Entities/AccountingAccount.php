@@ -48,6 +48,7 @@ class AccountingAccount extends Model
      */
     public static function forDropdown($business_id, $company_id = null, $with_data = false, $q = '')
     {
+        // dd($company_id);
        $parent_account_ids= AccountingAccount::where('accounting_accounts.business_id', $business_id)
         ->where('accounting_accounts.company_id', $company_id)->where('parent_account_id','<>',null)->get()->pluck('parent_account_id');
         $query = AccountingAccount::where('accounting_accounts.business_id', $business_id)
