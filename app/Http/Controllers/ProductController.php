@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\ProductsCreatedOrModified;
+use Illuminate\Support\Facades\Session;
 
 class ProductController extends Controller
 {
@@ -67,6 +68,8 @@ class ProductController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+
         $selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
         $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
 
@@ -90,6 +93,7 @@ class ProductController extends Controller
                 })
                 ->whereNull('v.deleted_at')
                 ->where('products.business_id', $business_id)
+                ->where('products.company_id', $company_id)
                 ->where('products.type', '!=', 'modifier');
 
             if (!empty($location_id) && $location_id != 'none') {
@@ -379,6 +383,7 @@ class ProductController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
         //Check if subscribed or not, then check for products quota
         if (!$this->moduleUtil->isSubscribed($business_id)) {
@@ -410,11 +415,12 @@ class ProductController extends Controller
 
         $sub_categories = [];
         if (!empty(request()->input('d'))) {
-            $duplicate_product = Product::where('business_id', $business_id)->find(request()->input('d'));
+            
+            $duplicate_product = Product::where('business_id', $business_id)->where('company_id', $company_id)->find(request()->input('d'));
             $duplicate_product->name .= ' (copy)';
 
             if (!empty($duplicate_product->category_id)) {
-                $sub_categories = Category::where('business_id', $business_id)
+                $sub_categories = Category::where('business_id', $business_id)->where('company_id', $company_id)
                     ->where('parent_id', $duplicate_product->category_id)
                     ->pluck('name', 'id')
                     ->toArray();
@@ -464,6 +470,8 @@ class ProductController extends Controller
         }
         try {
             $business_id = $request->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
+
             $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_description', 'sub_unit_ids', 'preparation_time_in_minutes', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20',];
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
@@ -473,6 +481,7 @@ class ProductController extends Controller
 
             $product_details = $request->only($form_fields);
             $product_details['business_id'] = $business_id;
+            $product_details['company_id'] = $company_id;
             $product_details['created_by'] = $request->session()->get('user.id');
 
             $product_details['enable_stock'] = (!empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) ? 1 : 0;

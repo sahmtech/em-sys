@@ -8,6 +8,7 @@ use App\VariationTemplate;
 use App\VariationValueTemplate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
 class VariationTemplateController extends Controller
@@ -21,8 +22,10 @@ class VariationTemplateController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
             $variations = VariationTemplate::where('business_id', $business_id)
+            ->where('company_id', $company_id)
                 ->with(['values'])
                 ->select('id', 'name', DB::raw('(SELECT COUNT(id) FROM product_variations WHERE product_variations.variation_template_id=variation_templates.id) as total_pv'));
 
@@ -71,10 +74,14 @@ class VariationTemplateController extends Controller
     public function store(Request $request)
     {
         try {
+            $company_id = Session::get('selectedCompanyId');
+
             $input = $request->only(['name']);
             $input['business_id'] = $request->session()->get('user.business_id');
+            $input['company_id'] = $company_id;
             $variation = VariationTemplate::create($input);
 
+            
             //craete variation values
             if (!empty($request->input('variation_values'))) {
                 $values = $request->input('variation_values');

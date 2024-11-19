@@ -36,9 +36,8 @@
                             </div>
 
                             <div hidden>
-                                {!! Form::text('journal_date', @format_datetime('now'), [
-                                    'class' => 'form-control datetimepicker',
-                                    'readonly',
+                                {!! Form::text('journal_date', now()->format('Y-m-d H:i:s'), [
+                                    'class' => 'form-control ',
                                 ]) !!}
 
                             </div>

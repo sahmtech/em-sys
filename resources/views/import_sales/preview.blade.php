@@ -20,12 +20,12 @@
                 {!! Form::select('group_by', $parsed_array[0], null, ['class' => 'form-control select2', 'required', 'placeholder' => __('messages.please_select')]); !!}
             </div>
         </div>
-        <div class="col-md-6">
+        {{-- <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('location_id', __('business.business_location') . ':*') !!}
                 {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control', 'required', 'placeholder' => __('messages.please_select')]); !!}
             </div>
-        </div>
+        </div> --}}
     </div>
     @endcomponent
     @component('components.widget')

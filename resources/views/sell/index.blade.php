@@ -108,7 +108,7 @@
 
     <!-- This will be printed -->
     <!-- <section class="invoice print_section" id="receipt_section">
-    </section> -->
+        </section> -->
 
 @stop
 
@@ -116,8 +116,12 @@
     <script type="text/javascript">
         $(document).ready(function() {
             //Date range as a button
-            $('#sell_list_filter_date_range').daterangepicker(
-                dateRangeSettings,
+            $('#sell_list_filter_date_range').daterangepicker({
+                    ...dateRangeSettings,
+                    startDate: moment().startOf('year'),
+                    endDate: moment().endOf('year'),
+                },
+
                 function(start, end) {
                     $('#sell_list_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
                         moment_date_format));
@@ -173,6 +177,7 @@
                 scrollY: "75vh",
                 scrollX: true,
                 scrollCollapse: true,
+                
                 columns: [{
                         data: 'action',
                         name: 'action',
@@ -193,7 +198,8 @@
                     },
                     {
                         data: 'mobile',
-                        name: 'contacts.mobile'
+                        name: 'contacts.mobile',
+                        visible: false
                     },
                     // { data: 'business_location', name: 'bl.name'},
                     {
@@ -208,17 +214,23 @@
                     {
                         data: 'transfer_account',
                         orderable: false,
-                        "searchable": false
+                        "searchable": false,
+                        visible: false
+
                     },
                     {
                         data: 'cost_center',
                         orderable: false,
-                        "searchable": false
+                        "searchable": false,
+                        visible: false
+
                     },
                     {
                         data: 'account_name',
                         orderable: false,
-                        "searchable": false
+                        "searchable": false,
+                        visible: false
+
                     },
 
 
@@ -244,7 +256,9 @@
                     {
                         data: 'total_items',
                         name: 'total_items',
-                        "searchable": false
+                        "searchable": false,
+                        visible: false
+
                     },
                     {
                         data: 'types_of_service_name',

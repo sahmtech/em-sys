@@ -444,6 +444,48 @@ class DataController extends Controller
                 ]
 
             ],
+
+
+
+            [
+                'group_name' => __('sale.products'),
+                'group_permissions' => [
+
+                    [
+                        'value' => 'list_products',
+                        'label' => __('lang_v1.list_products'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'product.create',
+                        'label' => __('product.add_product'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'unit.view',
+                        'label' => __('unit.units'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'category.view',
+                        'label' => __('category.categories'),
+                        'default' => false,
+                    ],
+                    
+                    [
+                        'value' => 'brand.view',
+                        'label' => __('brand.brands'),
+                        'default' => false,
+                    ],
+                    
+
+                    
+                ]
+
+            ],
+
+
+            
             [
                 'group_name' => __('role.customer'),
                 'group_permissions' => [

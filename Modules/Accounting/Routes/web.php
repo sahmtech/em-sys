@@ -11,8 +11,18 @@
 |
 */
 
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ImportOpeningStockController;
+use App\Http\Controllers\ImportProductsController;
 use App\Http\Controllers\ImportSalesController;
+use App\Http\Controllers\LabelsController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SellingPriceGroupController;
 use App\Http\Controllers\SellReturnController;
+use App\Http\Controllers\TaxonomyController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\VariationTemplateController;
+use App\Http\Controllers\WarrantyController;
 use Illuminate\Support\Facades\Route;
 use Modules\Accounting\Http\Controllers\OpeningBalanceController;
 use Modules\Accounting\Http\Controllers\PaymentVouchersController;
@@ -137,7 +147,7 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
 
     Route::resource('payment_vouchers', 'PaymentVouchersController');
     Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
-  
+
 
     Route::get('transactions', 'TransactionController@index')->name('getTransaction');
     Route::get('transactions/map', 'TransactionController@map');
@@ -162,4 +172,51 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::post('/import-sales', [ImportSalesController::class, 'import']);
     Route::get('/revert-sale-import/{batch}', [ImportSalesController::class, 'revertSaleImport']);
 
-});
+    // Route::resource('products', ProductController::class);
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/create', [ProductController::class, 'create']);
+
+    Route::get('update-product-price', [SellingPriceGroupController::class, 'updateProductPrice'])->name('update-product-price');
+    Route::get('export-product-price', [SellingPriceGroupController::class, 'export']);
+    Route::post('import-product-price', [SellingPriceGroupController::class, 'import']);
+
+
+    Route::get('/labels/show', [LabelsController::class, 'show']);
+    Route::get('/labels/add-product-row', [LabelsController::class, 'addProductRow']);
+    Route::get('/labels/preview', [LabelsController::class, 'preview']);
+
+
+
+    // Route::resource('variation-templates', VariationTemplateController::class);
+    Route::get('/variation-templates', [VariationTemplateController::class, 'index']);
+
+    Route::get('/import-products', [ImportProductsController::class, 'index']);
+    Route::post('/import-products/store', [ImportProductsController::class, 'store']);
+
+      //Import opening stock
+      Route::get('/import-opening-stock', [ImportOpeningStockController::class, 'index']);
+      Route::post('/import-opening-stock/store', [ImportOpeningStockController::class, 'store']);
+  
+    //   Route::resource('selling-price-group', SellingPriceGroupController::class);
+    Route::get('/selling-price-group', [SellingPriceGroupController::class, 'index']);
+   
+   
+    Route::resource('units', UnitController::class);
+    Route::get('/units', [UnitController::class, 'index']);
+    
+
+    // Route::resource('taxonomies', TaxonomyController::class);
+    Route::get('/taxonomies', [TaxonomyController::class, 'index']);
+
+
+    // Route::resource('brands', BrandController::class);
+    Route::get('/brands', [BrandController::class, 'index']);
+  
+    
+    // Route::resource('warranties', WarrantyController::class);
+    Route::get('/warranties', [WarrantyController::class, 'index']);
+
+
+
+
+   });

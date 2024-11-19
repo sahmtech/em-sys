@@ -128,7 +128,11 @@
         });
 
         $('#receipt_voucher_date_range_filter').daterangepicker(
-            dateRangeSettings,
+            {
+                    ...dateRangeSettings,
+                    startDate: moment().startOf('year'), 
+                    endDate: moment().endOf('year'),
+                },
             function(start, end) {
                 $('#receipt_voucher_date_range_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(
                     moment_date_format));

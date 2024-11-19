@@ -142,7 +142,11 @@
             }
         );
         $('#purchase_list_filter_date_range').daterangepicker(
-            dateRangeSettings,
+            {
+                    ...dateRangeSettings,
+                    startDate: moment().startOf('year'), 
+                    endDate: moment().endOf('year'),
+                },
             function (start, end) {
                 $('#purchase_list_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
                purchase_report_table.ajax.reload();

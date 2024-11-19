@@ -29,6 +29,7 @@ use App\Variation;
 use Datatables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Spatie\Activitylog\Models\Activity;
 
 class ReportController extends Controller
@@ -325,8 +326,9 @@ class ReportController extends Controller
         }
 
         $business_id = $request->session()->get('user.business_id');
-
+        $company_id = Session::get('selectedCompanyId');
         $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
+        ->where('company_id', $company_id)
             ->get();
         $allowed_selling_price_group = false;
         foreach ($selling_price_groups as $selling_price_group) {

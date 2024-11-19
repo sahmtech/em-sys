@@ -948,6 +948,8 @@ class PurchaseController extends Controller
             }
 
             $business_id = request()->session()->get('user.business_id');
+                $company_id = Session::get('selectedCompanyId');
+            
             $q = Product::leftJoin(
                 'variations',
                 'products.id',
@@ -961,6 +963,7 @@ class PurchaseController extends Controller
                 })
                 ->active()
                 ->where('business_id', $business_id)
+                ->where('company_id', $company_id)
                 ->whereNull('variations.deleted_at')
                 ->select(
                     'products.id as product_id',

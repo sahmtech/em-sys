@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Session;
 
 class SellingPriceGroup extends Model
 {
@@ -76,7 +77,9 @@ class SellingPriceGroup extends Model
      */
     public static function countSellingPriceGroups($business_id)
     {
-        $count = SellingPriceGroup::where('business_id', $business_id)
+        $company_id = Session::get('selectedCompanyId');
+
+        $count = SellingPriceGroup::where('business_id', $business_id)->where('company_id', $company_id)
             ->active()
             ->count();
 

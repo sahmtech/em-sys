@@ -392,7 +392,7 @@ class AutomatedMigrationController extends Controller
         $amount_type_1 = $request->get('amount_type1');
         $amount_type_2 = $request->get('amount_type2');
         $journal_date = $request->get('journal_date');
-
+// dd($journal_date);
         $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
 
 
@@ -420,7 +420,7 @@ class AutomatedMigrationController extends Controller
                 $transaction_row['company_id'] = $company_id;
                 $transaction_row['ref_no'] = $ref_no;
                 $transaction_row['amount'] = $amount_type_1[$index];
-                $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
+                $transaction_row['operation_date'] = $journal_date;//$this->util->uf_date($journal_date, true);
                 $transaction_row['sub_type'] = 'journal_entry';
                 $transaction_row['journal_entry_number'] = 1;
                 $transaction_row['mapping_setting_id'] = $mappingSetting->id;
@@ -445,7 +445,7 @@ class AutomatedMigrationController extends Controller
                 $transaction_row_['company_id'] = $company_id;
                 $transaction_row_['ref_no'] = $_ref_no;
                 $transaction_row_['amount'] = $amount_type_2[$index];
-                $transaction_row_['operation_date'] = $this->util->uf_date($journal_date, true);
+                $transaction_row_['operation_date'] =$journal_date;// $this->util->uf_date($journal_date, true);
                 $transaction_row_['sub_type'] = 'journal_entry';
                 $transaction_row_['journal_entry_number'] = 2;
 
