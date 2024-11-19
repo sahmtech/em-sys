@@ -456,11 +456,23 @@ class DataController extends Controller
                         'label' => __('lang_v1.list_products'),
                         'default' => false,
                     ],
+                    
+                    [
+                        'value' => 'product.view',
+                        'label' => __('product.view'),
+                        'default' => false,
+                    ],
                     [
                         'value' => 'product.create',
                         'label' => __('product.add_product'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'product.delete',
+                        'label' => __('product.delete'),
+                        'default' => false,
+                    ],
+                    
                     [
                         'value' => 'unit.view',
                         'label' => __('unit.units'),
@@ -477,9 +489,14 @@ class DataController extends Controller
                         'label' => __('brand.brands'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'stock_report.view',
+                        'label' => __('role.stock_report.view'),
+                        'default' => false,
+                    ],
                     
-
                     
+                                        
                 ]
 
             ],

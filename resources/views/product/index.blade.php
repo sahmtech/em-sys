@@ -138,6 +138,7 @@
                 @endcomponent
             </div>
         </div>
+
         @can('product.view')
             <div class="row">
                 <div class="col-md-12">
@@ -158,11 +159,11 @@
 
                         <div class="tab-content">
                             <div class="tab-pane active" id="product_list_tab">
-                                @if ($is_admin)
+                                {{-- @if ($is_admin) --}}
                                     <a class="btn btn-success pull-right margin-left-10"
                                         href="{{ action([\App\Http\Controllers\ProductController::class, 'downloadExcel']) }}">
                                         <i class="fa fa-download"></i> @lang('lang_v1.download_excel')</a>
-                                @endif
+                                {{-- @endif --}}
                                 @can('product.create')
                                     <a class="btn btn-primary pull-right"
                                         href="{{ action([\App\Http\Controllers\ProductController::class, 'create']) }}">
