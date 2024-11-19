@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Session;
 
 class Unit extends Model
 {
@@ -31,7 +32,9 @@ class Unit extends Model
      */
     public static function forDropdown($business_id, $show_none = false, $only_base = true)
     {
-        $query = Unit::where('business_id', $business_id);
+        $company_id = Session::get('selectedCompanyId');
+
+        $query = Unit::where('business_id', $business_id)->where('company_id', $company_id);
         if ($only_base) {
             $query->whereNull('base_unit_id');
         }

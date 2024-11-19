@@ -194,7 +194,7 @@ class SellReturnController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $customers = Contact::customersDropdown($business_id, false);
 
-        $sales_representative = User::forDropdown($business_id, false, false, true);
+        $sales_representative = User::usersAccountingForDropdown($business_id);
 
         return view('sell_return.index')->with(compact('business_locations', 'customers', 'sales_representative'));
     }

@@ -258,8 +258,9 @@ class Util
             $mysql_format = 'Y-m-d H:i:s';
         }
         $date = str_replace(['/', '\\'], '-', $date);
+        // dd($date);
 
-        return !empty($date_format) ? Carbon::createFromFormat('m-d-Y H:i', $date)->format($mysql_format) : null;
+        return !empty($date_format) ? Carbon::createFromFormat('m-d-Y h:i A', $date)->format($mysql_format) : null;
     }
     // public function uf_date($date, $time = false)
     // {

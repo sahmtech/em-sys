@@ -17,6 +17,8 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
 use App\Contact;
+use Illuminate\Support\Facades\Session;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\EssentialsWorkCard;
@@ -238,6 +240,48 @@ class User extends Authenticatable
      * @param $include_commission_agents = false (boolean)
      * @return array users
      */
+
+
+
+    public static function usersAccountingForDropdown($business_id, $prepend_none = true, $include_commission_agents = false, $prepend_all = false, $check_location_permission = false)
+    {
+        $company_id = Session::get('selectedCompanyId');
+
+        $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%مالية%')
+            ->pluck('id')->toArray();
+
+        $query = User::whereHas('appointment', function ($query) use ($departmentIds) {
+            $query->whereIn('department_id', $departmentIds)->where('is_active', 1);
+        })->where('business_id', $business_id)->where('company_id', $company_id);
+
+        // $query = User::where('business_id', $business_id);
+
+        // if (!$include_commission_agents) {
+        //     $query->where('is_cmmsn_agnt', 0);
+        // }
+
+        // if ($check_location_permission) {
+        //     $query->onlyPermittedLocations();
+        // }
+
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+
+
+        //Prepend none
+        if ($prepend_none) {
+            $users = $users->prepend(__('lang_v1.none'), '');
+        }
+
+        //Prepend all
+        if ($prepend_all) {
+            $users = $users->prepend(__('lang_v1.all'), '');
+        }
+
+        return $users;
+    }
+
     public static function forDropdown($business_id, $prepend_none = true, $include_commission_agents = false, $prepend_all = false, $check_location_permission = false)
     {
         $query = User::where('business_id', $business_id);

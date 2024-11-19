@@ -11,6 +11,7 @@ use App\Variation;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ImportOpeningStockController extends Controller
 {
@@ -75,6 +76,7 @@ class ImportOpeningStockController extends Controller
         }
 
         try {
+
             $notAllowed = $this->productUtil->notAllowedInDemo();
             if (!empty($notAllowed)) {
                 return $notAllowed;
@@ -92,6 +94,8 @@ class ImportOpeningStockController extends Controller
                 $imported_data = array_splice($parsed_array[0], 1);
 
                 $business_id = $request->session()->get('user.business_id');
+                $company_id = Session::get('selectedCompanyId');
+              
                 $user_id = $request->session()->get('user.id');
 
                 $formated_data = [];
@@ -110,6 +114,7 @@ class ImportOpeningStockController extends Controller
                             ->join('products AS P', 'variations.product_id', '=', 'P.id')
                             ->leftjoin('tax_rates AS TR', 'P.tax', 'TR.id')
                             ->where('P.business_id', $business_id)
+                            ->where('P.company_id', $company_id)
                             ->select([
                                 'P.id', 'variations.id as variation_id',
                                 'P.enable_stock', 'TR.amount as tax_percent',
@@ -135,7 +140,8 @@ class ImportOpeningStockController extends Controller
                     if (!empty(trim($value[1]))) {
                         $location_name = trim($value[1]);
                         $location = BusinessLocation::where('name', $location_name)
-                            ->where('business_id', $business_id)
+                        ->where('business_id', $business_id)
+                        ->where('company_id', $company_id)
                             ->first();
                         if (empty($location)) {
                             $is_valid = false;
@@ -143,7 +149,7 @@ class ImportOpeningStockController extends Controller
                             break;
                         }
                     } else {
-                        $location = BusinessLocation::where('business_id', $business_id)->first();
+                        $location = BusinessLocation::where('business_id', $business_id)->where('company_id', $company_id)->first();
                     }
 
                     $opening_stock = [
@@ -171,6 +177,7 @@ class ImportOpeningStockController extends Controller
 
                     //Check for tra, location_id, opening_stock_product_id, type=opening stock.
                     $os_transaction = Transaction::where('business_id', $business_id)
+                        ->where('company_id', $company_id)
                         ->where('location_id', $location->id)
                         ->where('type', 'opening_stock')
                         ->where('opening_stock_product_id', $product_info->id)
@@ -226,6 +233,8 @@ class ImportOpeningStockController extends Controller
     {
         $user_id = request()->session()->get('user.id');
 
+        $company_id = Session::get('selectedCompanyId');
+        
         $transaction_date = request()->session()->get('financial_year.start');
         $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
 
@@ -245,6 +254,7 @@ class ImportOpeningStockController extends Controller
             $transaction->status = 'received';
             $transaction->opening_stock_product_id = $product->id;
             $transaction->business_id = $business_id;
+            $transaction->company_id = $company_id;
             $transaction->transaction_date = $transaction_date;
             $transaction->location_id = $opening_stock['location_id'];
             $transaction->payment_status = 'paid';

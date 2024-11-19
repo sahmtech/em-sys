@@ -175,7 +175,8 @@ class ImportSalesController extends Controller
             $file_name = $request->input('file_name');
             $import_fields = $request->input('import_fields');
             $group_by = $request->input('group_by');
-            $location_id = $request->input('location_id');
+            $location_id = $request->session()->get('user.business_id');
+            // $location_id = $request->input('location_id');
             $business_id = $request->session()->get('user.business_id');
             $company_id = Session::get('selectedCompanyId');
 

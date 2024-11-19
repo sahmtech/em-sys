@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Brands;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
 class BrandController extends Controller
@@ -38,9 +39,12 @@ class BrandController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
 
+            
             $brands = Brands::where('business_id', $business_id)
-                        ->select(['name', 'description', 'id']);
+            ->where('company_id', $company_id)
+            ->select(['name', 'description', 'id']);
 
             return Datatables::of($brands)
                 ->addColumn(
@@ -98,7 +102,10 @@ class BrandController extends Controller
         try {
             $input = $request->only(['name', 'description']);
             $business_id = $request->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
+         
             $input['business_id'] = $business_id;
+            $input['company_id'] = $company_id;
             $input['created_by'] = $request->session()->get('user.id');
 
             if ($this->moduleUtil->isModuleInstalled('Repair')) {
@@ -146,6 +153,7 @@ class BrandController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
+        
             $brand = Brands::where('business_id', $business_id)->find($id);
 
             $is_repair_installed = $this->moduleUtil->isModuleInstalled('Repair');
@@ -172,8 +180,9 @@ class BrandController extends Controller
             try {
                 $input = $request->only(['name', 'description']);
                 $business_id = $request->session()->get('user.business_id');
+                $company_id = Session::get('selectedCompanyId');
 
-                $brand = Brands::where('business_id', $business_id)->findOrFail($id);
+                $brand = Brands::where('business_id', $business_id)->where('company_id', $company_id)->findOrFail($id);
                 $brand->name = $input['name'];
                 $brand->description = $input['description'];
 

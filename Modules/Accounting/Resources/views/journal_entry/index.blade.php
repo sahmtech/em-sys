@@ -52,8 +52,7 @@
                 </thead>
                 <tbody></tbody>
             </table>
-        <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
-
+            <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
         @endcomponent
 
     </section>
@@ -117,8 +116,13 @@
                 ]
             });
 
-            $('#journal_entry_date_range_filter').daterangepicker(
-                dateRangeSettings,
+            $('#journal_entry_date_range_filter').daterangepicker(   {
+                    ...dateRangeSettings,
+                    startDate: moment().startOf('year'), 
+                    endDate: moment().endOf('year'),
+                },
+
+
                 function(start, end) {
                     $('#journal_entry_date_range_filter').val(start.format(moment_date_format) + ' ~ ' + end
                         .format(moment_date_format));
