@@ -258,14 +258,14 @@ class Util
 
         $date = str_replace(['/', '\\'], '-', $date);
 
-        $dateTime = Carbon::createFromFormat($format, $date)->format('Y-m-d');
+        $date_formated = Carbon::createFromFormat($format, $date)->format('Y-m-d');
 
-        // dd($date . ' ' . $dateTime);
+        // dd($date . '  ' . $dateTime);
 
         try {
-            return Carbon::parse($date)->format($mysqlFormat);
+            return Carbon::parse($date_formated)->format($mysqlFormat);
         } catch (\Exception $e) {
-            return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat) ?? null;
+            return Carbon::createFromFormat($dateFormat, $date_formated)->format($mysqlFormat) ?? null;
         }
     }
 
