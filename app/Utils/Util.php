@@ -281,11 +281,12 @@ class Util
             // First, check if the date matches the session-defined format
             $dateTime = Carbon::createFromFormat($dateFormat, $date);
             if ($dateTime && $dateTime->format($dateFormat) === $date) {
-                return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat);
+                return Carbon::parse($date)->format($mysqlFormat);
+
             }
 
         } catch (\Exception $e) {
-            return Carbon::parse($date)->format($mysqlFormat);
+            return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat);
 
         }
     }
