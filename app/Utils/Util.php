@@ -243,6 +243,26 @@ class Util
      * @param  bool  $time (default = false)
      * @return strin
      */
+    // old Fun
+    // public function uf_date($date, $time = false)
+    // {
+    //     $dateFormat = session('business.date_format');
+    //     $mysqlFormat = 'Y-m-d';
+
+    //     if ($time) {
+    //         $timeFormat = session('business.time_format') == 12 ? 'h:i A' : 'H:i';
+    //         $dateFormat .= " $timeFormat";
+    //         $mysqlFormat = 'Y-m-d H:i:s';
+    //     }
+
+    //     $date = str_replace(['/', '\\'], '-', $date);
+
+    //     try {
+    //         return Carbon::parse($date)->format($mysqlFormat);
+    //     } catch (\Exception $e) {
+    //         return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat) ?? null;
+    //     }
+    // }
 
     public function uf_date($date, $time = false)
     {
@@ -258,9 +278,15 @@ class Util
         $date = str_replace(['/', '\\'], '-', $date);
 
         try {
-            return Carbon::parse($date)->format($mysqlFormat);
+            // First, check if the date matches the session-defined format
+            $dateTime = Carbon::createFromFormat($dateFormat, $date);
+            if ($dateTime && $dateTime->format($dateFormat) === $date) {
+                return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat);
+            }
+
         } catch (\Exception $e) {
-            return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat) ?? null;
+            return Carbon::parse($date)->format($mysqlFormat);
+
         }
     }
 
@@ -305,7 +331,7 @@ class Util
      */
     public function format_date($date, $show_time = false, $business_details = null)
     {
-      
+
         $format = !empty($business_details) ? $business_details->date_format : session('business.date_format');
         if (!empty($show_time)) {
             $time_format = !empty($business_details) ? $business_details->time_format : session('business.time_format');

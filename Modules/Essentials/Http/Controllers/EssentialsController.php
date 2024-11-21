@@ -114,6 +114,7 @@ class EssentialsController extends Controller
     }
     public function gregorianToHijri(Request $request)
     {
+        
         error_log($request->input('gregorian'));
         $gregorianDate = explode('/', $request->input('gregorian'));
         if (count($gregorianDate) == 3) {
