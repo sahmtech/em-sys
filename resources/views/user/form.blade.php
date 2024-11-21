@@ -33,10 +33,9 @@
                 <datepicker-hijri reference="calender" date-format="iYYYY/iMM/iDD"
                     selected-date="1441/02/01"></datepicker-hijri>
             </div>
-
             <div class="form-group col-md-3">
                 {!! Form::label('user_dob', __('lang_v1.dob') . ':') !!}
-                {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, [
+                {!! Form::text('dob', !empty($user->dob) ? @uf_date($user->dob) : null, [
                     'class' => 'form-control',
                     'style' => 'height:40px',
                     'placeholder' => __('lang_v1.dob'),

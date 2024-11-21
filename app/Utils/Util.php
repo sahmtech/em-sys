@@ -305,6 +305,7 @@ class Util
      */
     public function format_date($date, $show_time = false, $business_details = null)
     {
+      
         $format = !empty($business_details) ? $business_details->date_format : session('business.date_format');
         if (!empty($show_time)) {
             $time_format = !empty($business_details) ? $business_details->time_format : session('business.time_format');

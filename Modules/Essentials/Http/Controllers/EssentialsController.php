@@ -2,25 +2,25 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use Alkoumi\LaravelHijriDate\Hijri;
 use App\Charts\CommonChart;
-use App\Utils\ModuleUtil;
-use App\User;
 use App\Company;
+use App\Request as UserRequest;
+use App\RequestProcess;
+use App\User;
+use App\Utils\ModuleUtil;
+use App\Utils\RequestUtil;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Modules\CEOManagment\Entities\RequestsType;
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use App\Request as UserRequest;
-use App\RequestProcess;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
-use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Yajra\DataTables\Facades\DataTables;
-use Alkoumi\LaravelHijriDate\Hijri;
-use App\Utils\RequestUtil;
 
 class EssentialsController extends Controller
 {
@@ -50,7 +50,6 @@ class EssentialsController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
 
-
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -78,7 +77,7 @@ class EssentialsController extends Controller
             '#f28f43',
             '#77a1e5',
             '#c42525',
-            '#a6c96a'
+            '#a6c96a',
         ];
         $labels = [__('user.worker'), __('user.employee'), __('user.manager')];
         $values = [$num_workers, $num_employees, $num_managers];
@@ -87,14 +86,13 @@ class EssentialsController extends Controller
             ->dataset(__('user.employee_staff'), 'pie', $values)
             ->color($colors);
 
-        $counts =  $this->requestUtil->getCounts('generalmanagement');
-        $today_requests =   $counts->today_requests;
-        $pending_requests =   $counts->pending_requests;
-        $completed_requests =   $counts->completed_requests;
-        $all_requests =   $counts->all_requests;
+        $counts = $this->requestUtil->getCounts('generalmanagement');
+        $today_requests = $counts->today_requests;
+        $pending_requests = $counts->pending_requests;
+        $completed_requests = $counts->completed_requests;
+        $all_requests = $counts->all_requests;
         return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers', 'today_requests', 'pending_requests', 'completed_requests', 'all_requests'));
     }
-
 
     public function hijriToGregorian(Request $request)
     {
@@ -117,7 +115,7 @@ class EssentialsController extends Controller
     public function gregorianToHijri(Request $request)
     {
         error_log($request->input('gregorian'));
-        $gregorianDate =  explode('/', $request->input('gregorian'));
+        $gregorianDate = explode('/', $request->input('gregorian'));
         if (count($gregorianDate) == 3) {
             list($day, $month, $year) = $gregorianDate;
             error_log($year);
@@ -129,8 +127,6 @@ class EssentialsController extends Controller
             $hijriDate = 'Invalid date format';
         }
 
-
-
         return response()->json(['hijriDate' => $hijriDate]);
     }
 
@@ -139,7 +135,6 @@ class EssentialsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_essentials_hr_view_department_employees = auth()->user()->can('essentials.hr_view_department_employees');
-
 
         if (!($is_admin || $can_essentials_hr_view_department_employees)) {
             return redirect()->route('home')->with('status', [
@@ -196,7 +191,6 @@ class EssentialsController extends Controller
                     }
                 )
 
-
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
                 })
@@ -215,7 +209,6 @@ class EssentialsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_work_cards_view_department_employees = auth()->user()->can('essentials.work_cards_view_department_employees');
-
 
         if (!($is_admin || $can_work_cards_view_department_employees)) {
             return redirect()->route('home')->with('status', [
@@ -272,7 +265,6 @@ class EssentialsController extends Controller
                     }
                 )
 
-
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
                 })
@@ -291,7 +283,6 @@ class EssentialsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_employee_affairs_view_department_employees = auth()->user()->can('essentials.employee_affairs_view_department_employees');
-
 
         if (!($is_admin || $can_employee_affairs_view_department_employees)) {
             return redirect()->route('home')->with('status', [
@@ -358,7 +349,6 @@ class EssentialsController extends Controller
                     }
                 )
 
-
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
                 })
@@ -378,9 +368,7 @@ class EssentialsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')->whereNot('user_type', 'customer')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -388,10 +376,8 @@ class EssentialsController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-
         $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
         $sixtyday = Carbon::now()->addDays(60)->toDateString();
-
 
         $last15_expire_date_residence = EssentialsOfficialDocument::where('is_active', 1)->where('type', 'residence_permit')
 
@@ -426,7 +412,6 @@ class EssentialsController extends Controller
                     $query->where('user_type', 'worker');
                 })->count();
         }
-
 
         $final_visa = EssentailsEmployeeOperation::whereIn('employee_id', $userIds)->where('operation_type', 'final_visa')
             ->whereHas('user', function ($query) {
@@ -486,7 +471,7 @@ class EssentialsController extends Controller
                 $join->on('requests.id', '=', 'latest_process.request_id');
             })
             ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
-            // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+        // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
             ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'requests.related_to')
             ->where(function ($query) use ($departmentIds) {
@@ -494,10 +479,8 @@ class EssentialsController extends Controller
                     ->orWhereIn('process.superior_department_id', $departmentIds);
             })
 
-
             ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
             ->where('users.status', '!=', 'inactive');
-
 
         if (request()->ajax()) {
 
@@ -505,10 +488,10 @@ class EssentialsController extends Controller
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at);
                 })->editColumn('company_id', function ($row) use ($companies) {
-                    if ($row->company_id) {
-                        return $companies[$row->company_id];
-                    }
-                })
+                if ($row->company_id) {
+                    return $companies[$row->company_id];
+                }
+            })
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     return $allRequestTypes[$row->request_type_id];
                 })
@@ -520,16 +503,14 @@ class EssentialsController extends Controller
 
                 ->rawColumns(['status', 'request_type_id'])
 
-
                 ->make(true);
         }
 
-
-        $counts =  $this->requestUtil->getCounts('work_cards');
-        $today_requests =   $counts->today_requests;
-        $pending_requests =   $counts->pending_requests;
-        $completed_requests =   $counts->completed_requests;
-        $all_requests =   $counts->all_requests;
+        $counts = $this->requestUtil->getCounts('work_cards');
+        $today_requests = $counts->today_requests;
+        $pending_requests = $counts->pending_requests;
+        $completed_requests = $counts->completed_requests;
+        $all_requests = $counts->all_requests;
         return view('essentials::work_cards_index')
             ->with(compact(
                 'last15_expire_date_residence',
@@ -560,7 +541,7 @@ class EssentialsController extends Controller
                     'allowPointSelect' => true,
                     'cursor' => 'pointer',
                     'dataLabels' => [
-                        'enabled' => false
+                        'enabled' => false,
                     ],
                     'showInLegend' => true,
                 ],
@@ -616,7 +597,7 @@ class EssentialsController extends Controller
                     $join->on('requests.id', '=', 'latest_process.request_id');
                 })
                 ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
-                // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+            // ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
                 ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'requests.related_to')
                 ->where(function ($query) use ($departmentIds) {
@@ -624,10 +605,8 @@ class EssentialsController extends Controller
                         ->orWhereIn('process.superior_department_id', $departmentIds);
                 })
 
-
                 ->whereIn('requests.related_to', $userIds)->whereNull('process.sub_status')
                 ->where('users.status', '!=', 'inactive')->whereIn('requests.request_type_id', $types);
-
 
             if (request()->ajax()) {
 
@@ -650,7 +629,6 @@ class EssentialsController extends Controller
                     })
 
                     ->rawColumns(['status', 'request_type_id'])
-
 
                     ->make(true);
             }
@@ -676,7 +654,6 @@ class EssentialsController extends Controller
                 ->toArray();
         }
 
-
         $leaveStatusData = [];
         foreach ($rawLeaveStatusData as $status => $count) {
             $translatedLabel = trans('lang_v1.' . $status);
@@ -688,11 +665,8 @@ class EssentialsController extends Controller
             'values' => array_values($leaveStatusData),
         ];
 
-
         return response()->json($data);
     }
-
-
 
     public function getContractStatusData()
     {
@@ -734,10 +708,6 @@ class EssentialsController extends Controller
         return response()->json($data);
     }
 
-
-
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -754,7 +724,8 @@ class EssentialsController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {}
 
     /**
      * Show the specified resource.
@@ -782,12 +753,14 @@ class EssentialsController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function update(Request $request) {}
+    public function update(Request $request)
+    {}
 
     /**
      * Remove the specified resource from storage.
      *
      * @return Response
      */
-    public function destroy() {}
+    public function destroy()
+    {}
 }
