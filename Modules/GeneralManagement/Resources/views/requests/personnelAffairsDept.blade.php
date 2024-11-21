@@ -340,17 +340,24 @@
                     ]) !!}
                 </div>
             </div>
-            {{-- <div class="col-md-3">
+            <div class="col-md-3">
+                {{-- @foreach ($departments as $department) --}}
+                {{-- @endforeach --}}
                 <div class="form-group">
                     <label for="department_filter">@lang('request.department'):</label>
-                    {!! Form::select('department_filter', $departments, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'height:40px',
-                        'placeholder' => __('lang_v1.all'),
-                        'id' => 'department_filter',
-                    ]) !!}
+                    {!! Form::select(
+                        'department_filter',
+                        $departments,
+                        [35],
+                        [
+                            'class' => 'form-control select2',
+                            'style' => 'height:40px',
+                            'placeholder' => __('lang_v1.all'),
+                            'id' => 'department_filter',
+                        ],
+                    ) !!}
                 </div>
-            </div> --}}
+            </div>
         @endcomponent
         @include('generalmanagement::layouts.nav_requests_status')
 
@@ -470,8 +477,8 @@
 
 
         {{-- view request activities --}}
-        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog" aria-labelledby="activitiesModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog"
+            aria-labelledby="activitiesModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -505,13 +512,14 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('president_done_requests') }}",
+                    url: "{{ route('president_requests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
                         d.company = $('#company_filter').val();
                         d.project = $('#project_filter').val();
                         d.department = $('#department_filter').val();
+
                     }
                 },
                 columns: [{
@@ -611,18 +619,6 @@
 
                 ]
             });
-            $(document).on('click', '.department-link', function() {
-                // Get the department ID from the clicked link
-                var departmentId = $(this).data('department-id');
-
-                console.log('Selected Department ID:', departmentId); // Debugging log
-
-                // Update the hidden input field with the selected department ID
-                $('#department_filter').val(departmentId);
-
-                // Reload the DataTable with the updated filter
-                requests_table.ajax.reload();
-            });
             $('#status_filter, #type_filter, #company_filter, #project_filter,#department_filter').change(
                 function() {
                     requests_table.ajax.reload();
@@ -675,7 +671,7 @@
                               <p><strong>@lang('request.department'):</strong> ${process.department.name || '@lang('request.not_exist')'}</p>
                               <p><strong>@lang('request.status'):</strong> ${process.status || '@lang('request.not_exist')'}</p>
                               <p><strong>@lang('request.updated_by'):</strong> ${process.updated_by || '@lang('request.not_exist')'}</p>
-                          
+                            <p><strong>@lang('request.updated_at'):</strong> ${process.status_changed_at || '@lang('request.not_exist')'}</p>
                               <p><strong>@lang('request.status_note'):</strong> ${process.status_note || '@lang('request.not_exist')'}</p>
                           </div>
                           ${index < data.followup_processes.length - 1 ? '<div class="arrow-down"></div>' : ''}
@@ -729,6 +725,7 @@
 
 
             });
+
             $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget);
                 var requestId = button.data('request-id');
@@ -737,7 +734,6 @@
                 var modal = $(this);
                 modal.find('#request_id').val(requestId);
             });
-
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
 
@@ -1335,7 +1331,6 @@
 
                         }
                         if (selectedType === 'residenceRenewal' || selectedType === 'residenceIssue') {
-
                             $('#residenceRenewalDuration').show();
 
 

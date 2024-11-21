@@ -16,6 +16,7 @@ use App\VariationValueTemplate;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ImportProductsController extends Controller
 {
@@ -87,6 +88,7 @@ class ImportProductsController extends Controller
             if (!empty($notAllowed)) {
                 return $notAllowed;
             }
+            $company_id = Session::get('selectedCompanyId');
 
             //Set maximum php execution time
             ini_set('max_execution_time', 0);
@@ -117,8 +119,9 @@ class ImportProductsController extends Controller
                 } elseif (!$this->moduleUtil->isQuotaAvailable('products', $business_id, $total_rows)) {
                     return $this->moduleUtil->quotaExpiredResponse('products', $business_id, action([\App\Http\Controllers\ImportProductsController::class, 'index']));
                 }
+                
 
-                $business_locations = BusinessLocation::where('business_id', $business_id)->get();
+                $business_locations = BusinessLocation::where('business_id', $business_id)->where('company_id', $company_id)->get();
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
 
@@ -132,6 +135,7 @@ class ImportProductsController extends Controller
                     $row_no = $key + 1;
                     $product_array = [];
                     $product_array['business_id'] = $business_id;
+                    $product_array['company_id'] = $company_id;
                     $product_array['created_by'] = $user_id;
 
                     //Add name
@@ -214,7 +218,7 @@ class ImportProductsController extends Controller
                     //Add unit
                     $unit_name = trim($value[2]);
                     if (!empty($unit_name)) {
-                        $unit = Unit::where('business_id', $business_id)
+                        $unit = Unit::where('business_id', $business_id)->where('company_id', $company_id)
                             ->where(function ($query) use ($unit_name) {
                                 $query->where('short_name', $unit_name)
                                     ->orWhere('actual_name', $unit_name);
@@ -281,7 +285,7 @@ class ImportProductsController extends Controller
                     $brand_name = trim($value[1]);
                     if (!empty($brand_name)) {
                         $brand = Brands::firstOrCreate(
-                            ['business_id' => $business_id, 'name' => $brand_name],
+                            ['business_id' => $business_id,'company_id' => $company_id, 'name' => $brand_name],
                             ['created_by' => $user_id]
                         );
                         $product_array['brand_id'] = $brand->id;
@@ -292,7 +296,7 @@ class ImportProductsController extends Controller
                     $category_name = trim($value[3]);
                     if (!empty($category_name)) {
                         $category = Category::firstOrCreate(
-                            ['business_id' => $business_id, 'name' => $category_name, 'category_type' => 'product'],
+                            ['business_id' => $business_id,'company_id' => $company_id, 'name' => $category_name, 'category_type' => 'product'],
                             ['created_by' => $user_id, 'parent_id' => 0]
                         );
                         $product_array['category_id'] = $category->id;
@@ -302,7 +306,7 @@ class ImportProductsController extends Controller
                     $sub_category_name = trim($value[4]);
                     if (!empty($sub_category_name)) {
                         $sub_category = Category::firstOrCreate(
-                            ['business_id' => $business_id, 'name' => $sub_category_name, 'category_type' => 'product'],
+                            ['business_id' => $business_id,'company_id' => $company_id, 'name' => $sub_category_name, 'category_type' => 'product'],
                             ['created_by' => $user_id, 'parent_id' => $category->id]
                         );
                         $product_array['sub_category_id'] = $sub_category->id;
@@ -314,7 +318,8 @@ class ImportProductsController extends Controller
                         $product_array['sku'] = $sku;
                         //Check if product with same SKU already exist
                         $is_exist = Product::where('sku', $product_array['sku'])
-                            ->where('business_id', $business_id)
+                        ->where('business_id', $business_id)
+                        ->where('business_id', $company_id)
                             ->exists();
                         if ($is_exist) {
                             $is_valid = false;
@@ -399,7 +404,8 @@ class ImportProductsController extends Controller
                             if (!empty(trim($value[22]))) {
                                 $location_name = trim($value[22]);
                                 $location = BusinessLocation::where('name', $location_name)
-                                    ->where('business_id', $business_id)
+                                ->where('business_id', $business_id)
+                                ->where('company_id', $company_id)
                                     ->first();
                                 if (!empty($location)) {
                                     $product_array['opening_stock_details']['location_id'] = $location->id;
@@ -409,7 +415,7 @@ class ImportProductsController extends Controller
                                     break;
                                 }
                             } else {
-                                $location = BusinessLocation::where('business_id', $business_id)->first();
+                                $location = BusinessLocation::where('business_id', $business_id)->where('company_id', $company_id)->first();
                                 $product_array['opening_stock_details']['location_id'] = $location->id;
                             }
 
@@ -577,7 +583,8 @@ class ImportProductsController extends Controller
                             if (!empty(trim($value[22]))) {
                                 $location_name = trim($value[22]);
                                 $location = BusinessLocation::where('name', $location_name)
-                                    ->where('business_id', $business_id)
+                                ->where('business_id', $business_id)
+                                ->where('company_id', $company_id)
                                     ->first();
                                 if (empty($location)) {
                                     $is_valid = false;
@@ -585,7 +592,7 @@ class ImportProductsController extends Controller
                                     break;
                                 }
                             } else {
-                                $location = BusinessLocation::where('business_id', $business_id)->first();
+                                $location = BusinessLocation::where('business_id', $business_id)->where('company_id', $company_id)->first();
                             }
                             $product_array['variation']['opening_stock_location'] = $location->id;
 
@@ -776,6 +783,7 @@ class ImportProductsController extends Controller
             ->first();
 
         $total_before_tax = $opening_stock['quantity'] * $variation->dpp_inc_tax;
+        $company_id = Session::get('selectedCompanyId');
 
         $transaction_date = request()->session()->get('financial_year.start');
         $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
@@ -786,6 +794,7 @@ class ImportProductsController extends Controller
                 'opening_stock_product_id' => $product->id,
                 'status' => 'received',
                 'business_id' => $business_id,
+                'company_id' => $company_id,
                 'transaction_date' => $transaction_date,
                 'total_before_tax' => $total_before_tax,
                 'location_id' => $opening_stock['location_id'],
@@ -838,6 +847,7 @@ class ImportProductsController extends Controller
 
         $transaction_date = request()->session()->get('financial_year.start');
         $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+        $company_id = Session::get('selectedCompanyId');
 
         $total_before_tax = 0;
         $location_id = $variations['opening_stock_location'];
@@ -849,6 +859,7 @@ class ImportProductsController extends Controller
                     'opening_stock_product_id' => $product->id,
                     'status' => 'received',
                     'business_id' => $business_id,
+                    'company_id'=>$company_id,
                     'transaction_date' => $transaction_date,
                     'total_before_tax' => $total_before_tax,
                     'location_id' => $location_id,

@@ -21,6 +21,7 @@ use App\VariationLocationDetails;
 use App\VariationTemplate;
 use App\VariationValueTemplate;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class ProductUtil extends Util
 {
@@ -981,7 +982,9 @@ class ProductUtil extends Util
      */
     public function getRackDetails($business_id, $product_id, $get_location = false)
     {
-        $query = ProductRack::where('product_racks.business_id', $business_id)
+        $company_id = Session::get('selectedCompanyId');
+
+        $query = ProductRack::where('product_racks.business_id', $business_id)->where('product_racks.company_id', $company_id)
             ->where('product_id', $product_id);
 
         if ($get_location) {
@@ -1724,6 +1727,8 @@ class ProductUtil extends Util
 
     public function getProductStockDetails($business_id, $filters, $for)
     {
+        $company_id = Session::get('selectedCompanyId');
+     
         $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
             ->join('units', 'p.unit_id', '=', 'units.id')
             ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
@@ -1731,6 +1736,7 @@ class ProductUtil extends Util
             ->leftjoin('categories as c', 'p.category_id', '=', 'c.id')
             ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
             ->where('p.business_id', $business_id)
+            ->where('p.company_id', $company_id)
             ->whereIn('p.type', ['single', 'variable']);
 
         $permitted_locations = auth()->user()->permitted_locations();

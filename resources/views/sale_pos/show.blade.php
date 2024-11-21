@@ -343,7 +343,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            @if (in_array('types_of_service', $enabled_modules) && !empty($sell->packing_charge))
+                            {{-- @if (in_array('types_of_service', $enabled_modules) && !empty($sell->packing_charge))
                                 <tr>
                                     <th>{{ __('lang_v1.packing_charge') }}:</th>
                                     <td><b>(+)</b></td>
@@ -356,15 +356,15 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endif
-                            @if (session('business.enable_rp') == 1 && !empty($sell->rp_redeemed))
+                            @endif --}}
+                            {{-- @if (session('business.enable_rp') == 1 && !empty($sell->rp_redeemed))
                                 <tr>
                                     <th>{{ session('business.rp_name') }}:</th>
                                     <td><b>(-)</b></td>
                                     <td> <span class="display_currency pull-right"
                                             data-currency_symbol="true">{{ $sell->rp_redeemed_amount }}</span></td>
                                 </tr>
-                            @endif
+                            @endif --}}
                             <tr>
                                 <th>{{ __('sale.order_tax') }}:</th>
                                 <td><b>(+)</b></td>
@@ -380,7 +380,7 @@
                                     @endif
                                 </td>
                             </tr>
-                            @if (!empty($line_taxes))
+                            {{-- @if (!empty($line_taxes))
                                 <tr>
                                     <th>{{ __('lang_v1.line_taxes') }}:</th>
                                     <td></td>
@@ -405,7 +405,7 @@
                                 <td><b>(+)</b></td>
                                 <td><span class="display_currency pull-right"
                                         data-currency_symbol="true">{{ $sell->shipping_charges }}</span></td>
-                            </tr>
+                            </tr> --}}
 
                             @if (!empty($sell->additional_expense_value_1) && !empty($sell->additional_expense_key_1))
                                 <tr>
@@ -509,11 +509,11 @@
             </div>
         </div>
         <div class="modal-footer">
-            @if ($sell->type != 'sales_order')
+            {{-- @if ($sell->type != 'sales_order')
                 <a href="#" class="print-invoice btn btn-success"
                     data-href="{{ route('sell.printInvoice', [$sell->id]) }}?package_slip=true"><i
                         class="fas fa-file-alt" aria-hidden="true"></i> @lang('lang_v1.packing_slip')</a>
-            @endif
+            @endif --}}
             @can('print_invoice')
                 <a href="#" class="print-invoice btn btn-primary"
                     data-href="{{ route('sell.printInvoice', [$sell->id]) }}"><i class="fa fa-print"

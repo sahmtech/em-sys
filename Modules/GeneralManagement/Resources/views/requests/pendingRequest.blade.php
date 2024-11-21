@@ -354,6 +354,8 @@
         @endcomponent
         @include('generalmanagement::layouts.nav_requests_status')
 
+
+
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <div style="margin-bottom: 10px;">

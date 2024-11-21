@@ -623,7 +623,7 @@ class SellController extends Controller
 
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $customers = Contact::customersDropdown($business_id, false);
-        $sales_representative = User::forDropdown($business_id, false, false, true);
+        $sales_representative = User::usersAccountingForDropdown($business_id);
 
         //Commission agent filter
         $is_cmsn_agent_enabled = request()->session()->get('business.sales_cmsn_agnt');

@@ -9,6 +9,7 @@ use App\VariationGroupPrice;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -44,7 +45,10 @@ class SellingPriceGroupController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
 
+            $company_id = Session::get('selectedCompanyId');
+            
             $price_groups = SellingPriceGroup::where('business_id', $business_id)
+            ->where('company_id', $company_id)
                 ->select(['name', 'description', 'id', 'is_active']);
 
             return Datatables::of($price_groups)
@@ -94,7 +98,10 @@ class SellingPriceGroupController extends Controller
         try {
             $input = $request->only(['name', 'description']);
             $business_id = $request->session()->get('user.business_id');
+            $company_id = Session::get('selectedCompanyId');
+         
             $input['business_id'] = $business_id;
+            $input['company_id'] = $company_id;
 
             $spg = SellingPriceGroup::create($input);
 
@@ -143,7 +150,9 @@ class SellingPriceGroupController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $spg = SellingPriceGroup::where('business_id', $business_id)->find($id);
+            $company_id = Session::get('selectedCompanyId');
+         
+            $spg = SellingPriceGroup::where('business_id', $business_id)->where('company_id', $company_id)->find($id);
 
             return view('selling_price_group.edit')
                 ->with(compact('spg'));
@@ -248,11 +257,15 @@ class SellingPriceGroupController extends Controller
     public function export()
     {
         $business_id = request()->user()->business_id;
-        $price_groups = SellingPriceGroup::where('business_id', $business_id)->active()->get();
+        $company_id = Session::get('selectedCompanyId');
+        
+        $price_groups = SellingPriceGroup::where('business_id', $business_id)
+        ->where('company_id', $company_id)->active()->get();
 
         $variations = Variation::join('products as p', 'variations.product_id', '=', 'p.id')
             ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
             ->where('p.business_id', $business_id)
+            ->where('p.company_id', $company_id)
             ->whereIn('p.type', ['single', 'variable'])
             ->select('sub_sku', 'p.name as product_name', 'variations.name as variation_name', 'p.type', 'variations.id', 'pv.name as product_variation_name', 'sell_price_inc_tax')
             ->with(['group_prices'])
@@ -316,7 +329,9 @@ class SellingPriceGroupController extends Controller
                 $imported_data = array_splice($parsed_array[0], 1);
 
                 $business_id = request()->user()->business_id;
-                $price_groups = SellingPriceGroup::where('business_id', $business_id)->active()->get();
+                $company_id = Session::get('selectedCompanyId');
+                
+                $price_groups = SellingPriceGroup::where('business_id', $business_id)->where('company_id', $company_id)->active()->get();
 
                 //Get price group names from headers
                 $imported_pgs = [];

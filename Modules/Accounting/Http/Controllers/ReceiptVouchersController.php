@@ -49,7 +49,7 @@ class ReceiptVouchersController extends Controller
             })
             ->orderBy('id');
         // $contacts = Contact::whereNot('id', 1)->where('type', 'customer')->get();
-        $contacts = Contact::whereNot('id', 1)->whereIn('type', [ 'customer'])->get();
+        $contacts = Contact::whereNot('id', 1)->whereIn('type', [ 'customer','converted'])->get();
 
         $transactionUtil = new TransactionUtil();
         $moduleUtil = new ModuleUtil();

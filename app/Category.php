@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Session;
 
 class Category extends Model
 {
@@ -30,7 +31,10 @@ class Category extends Model
      */
     public static function catAndSubCategories($business_id)
     {
+        $company_id = Session::get('selectedCompanyId');
+
         $all_categories = Category::where('business_id', $business_id)
+            ->where('company_id', $company_id)
             ->where('category_type', 'product')
             ->orderBy('name', 'asc')
             ->get()
@@ -79,7 +83,10 @@ class Category extends Model
      */
     public static function forDropdown($business_id, $type)
     {
+        $company_id = Session::get('selectedCompanyId');
+
         $categories = Category::where('business_id', $business_id)
+            ->where('company_id', $company_id)
             ->where('parent_id', 0)
             ->where('category_type', $type)
             ->select(DB::raw('IF(short_code IS NOT NULL, CONCAT(name, "-", short_code), name) as name'), 'id')

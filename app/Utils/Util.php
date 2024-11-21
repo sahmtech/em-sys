@@ -243,27 +243,6 @@ class Util
      * @param  bool  $time (default = false)
      * @return strin
      */
-    // public function uf_date($date, $time = false)
-    // {
-    //     $date_format = session('business.date_format');
-    //     $mysql_format = 'Y-m-d';
-    //     if ($time) {
-    //         if (session('business.time_format') == 12) {
-    //             $date_format = $date_format . 'h:i A';
-    //         } else {
-    //             $date_format = $date_format . 'H:i';
-    //         }
-    //         $mysql_format = 'Y-m-d H:i:s';
-    //     }
-    //     $date = str_replace(['/', '\\'], '-', $date);
-    //     if (!empty($date_format)) {
-    //         return Carbon::parse($date)->format($mysql_format) ?? Carbon::createFromFormat($date_format, $date)->format($mysql_format);
-    //     } else {
-    //         return null;
-    //     }
-
-    //     // return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
-    // }
 
     public function uf_date($date, $time = false)
     {
@@ -338,28 +317,6 @@ class Util
 
         return !empty($date) ? \Carbon::createFromTimestamp(strtotime($date))->format($format) : null;
     }
-
-    // public function format_date($date, $show_time = false, $business_details = null)
-    // {
-    //     // Retrieve the date format
-    //     $format = !empty($business_details) ? $business_details->date_format : session('business.date_format');
-
-    //     // Replace any slashes (/) in the date format with hyphens (-)
-    //     $format = str_replace(['/', '\\'], '-', $format);
-
-    //     // If show_time is true, add the time format
-    //     if (!empty($show_time)) {
-    //         $time_format = !empty($business_details) ? $business_details->time_format : session('business.time_format');
-    //         if ($time_format == 12) {
-    //             $format .= ' h:i A';
-    //         } else {
-    //             $format .= ' H:i';
-    //         }
-    //     }
-
-    //     // Return the formatted date
-    //     return !empty($date) ? \Carbon::createFromTimestamp(strtotime($date))->format($format) : null;
-    // }
 
     /**
      * Increments reference count for a given type and given business

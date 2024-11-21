@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Warranty;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
 class WarrantyController extends Controller
@@ -16,10 +17,13 @@ class WarrantyController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
+        
         if (request()->ajax()) {
             $warranties = Warranty::where('business_id', $business_id)
-                         ->select(['id', 'name', 'description', 'duration', 'duration_type']);
+            ->where('company_id', $company_id)
+            ->select(['id', 'name', 'description', 'duration', 'duration_type']);
 
             return Datatables::of($warranties)
                 ->addColumn(
@@ -56,10 +60,12 @@ class WarrantyController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
 
         try {
             $input = $request->only(['name', 'description', 'duration', 'duration_type']);
             $input['business_id'] = $business_id;
+            $input['company_id'] = $company_id;
 
             $status = Warranty::create($input);
 

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Session;
 
 class Brands extends Model
 {
@@ -31,7 +32,9 @@ class Brands extends Model
      */
     public static function forDropdown($business_id, $show_none = false, $filter_use_for_repair = false)
     {
-        $query = Brands::where('business_id', $business_id);
+        $company_id = Session::get('selectedCompanyId');
+
+        $query = Brands::where('business_id', $business_id)->where('company_id', $company_id);
 
         if ($filter_use_for_repair) {
             $query->where('use_for_repair', 1);

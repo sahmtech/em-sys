@@ -6,7 +6,7 @@
 @section('title', $heading)
 @section('content')
 
-@includeIf('assetmanagement::layouts.nav')
+{{-- @includeIf('assetmanagement::layouts.nav') --}}
 
 <!-- Content Header (Page header) -->
 <section class="content-header">

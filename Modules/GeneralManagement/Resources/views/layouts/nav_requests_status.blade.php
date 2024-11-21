@@ -38,6 +38,115 @@
                             @lang('generalmanagement::lang.done_requests')
                         </a>
                     </li>
+
+
+
+
+                    <!-- // TODO: Refactor this  is bad way i know that -->
+
+
+                    <li @if (request()->segment(2) == 'ceo_dept_requests') class="active" @endif>
+                        <a href="{{ route('ceo_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            الرئيس التنفيذي
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'housin_mmovement_dept_requests') class="active" @endif>
+                        <a href="{{ route('housin_mmovement_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            ادارة السكن والحركة
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'operations_dept_requests') class="active" @endif>
+                        <a href="{{ route('operations_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            إدارة التشغيل (قطاع الأعمال)
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'sales_dept_requests') class="active" @endif>
+                        <a href="{{ route('sales_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            ادارة المبيعات
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'international_relations_dept_requests') class="active" @endif>
+                        <a href="{{ route('international_relations_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            ادارة العلاقات الدولية
+                        </a>
+                    </li>
+
+
+                    <li @if (request()->segment(2) == 'hr_dept_requests') class="active" @endif>
+                        <a href="{{ route('hr_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            ادارة الموارد البشرية
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'hr_dept_apps_requests') class="active" @endif>
+                        <a href="{{ route('hr_dept_apps_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            ادارة موارد بشرية تطبيقات
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'legal_affairs_dept_requests') class="active" @endif>
+                        <a href="{{ route('legal_affairs_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            ادارة الشؤون القانونية
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'financial_dept_requests') class="active" @endif>
+                        <a href="{{ route('financial_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            الادارة المالية
+                        </a>
+                    </li>
+
+
+                    <li @if (request()->segment(2) == 'government_relations_dept_requests') class="active" @endif>
+                        <a href="{{ route('government_relations_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            قسم العلاقات الحكومية
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'personnel_affairs_dept_requests') class="active" @endif>
+                        <a href="{{ route('personnel_affairs_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            قسم شؤون الموظفين
+                        </a>
+                    </li>
+
+                    <li @if (request()->segment(2) == 'payroll_dept_requests') class="active" @endif>
+                        <a href="{{ route('payroll_dept_requests') }}">
+                            <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                            قسم الرواتب
+                        </a>
+                    </li>
+
+
+
+
+
+                    {{-- @foreach ($departments_needs as $index => $department)
+                        <li id="department_filter{{ $index }}">
+                            <a id="department_filter{{ $index }}" href="javascript:void(0);"
+                                class="department-link" data-department-id="{{ $index }}">
+                                <!-- Adding department ID to data attribute -->
+                                <i class="fas fa-list" aria-hidden="true" style="font-size: smaller;"></i>
+                                {{ $department }}
+                            </a>
+                        </li>
+                    @endforeach --}}
+
+
                 </ul>
             </div>
             <!-- /.navbar-collapse -->

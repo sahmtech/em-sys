@@ -1567,5 +1567,15 @@ return [
     'report' => 'Report',
     'an_unexpected_error_occurred' => 'An unexpected error has occurred. Please try again later or contact support if the issue persists.',
     'sales_management' =>'Sales Management',
+    'preparation_time_in_minutes'=>'preparation time in minutes',
+    'update_product_price' => 'Update Price',
+    'import_export_product_price' => 'Import Export Product Price',
+    'export_product_prices' => 'Export product prices',
+    'price_import_instruction_1' => 'Export product prices by clicking on above button',
+    'price_import_instruction_2' => 'Make changes in product price including tax & selling price groups.',
+    'price_import_instruction_3' => 'Do not change any product name, sku & headers',
+    'price_import_instruction_4' => 'After making changes import the file',
+    'product_prices_imported_successfully'=>'product prices imported successfully',
+
 
 ];

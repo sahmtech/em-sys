@@ -28,8 +28,7 @@
             </div>
         </div>
         @component('components.widget', ['class' => 'box-solid'])
-            @if (auth()->user()->hasRole('Admin#1') ||
-                    auth()->user()->can('accounting.add_payment_voucher'))
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.add_payment_voucher'))
                 @slot('tool')
                     <div class="box-tools">
                         <a class="btn btn-block btn-primary btn-modal create_voucher" data-toggle="modal"
@@ -126,8 +125,11 @@
 
         });
 
-        $('#payment_voucher_date_range_filter').daterangepicker(
-            dateRangeSettings,
+        $('#payment_voucher_date_range_filter').daterangepicker({
+                ...dateRangeSettings,
+                startDate: moment().startOf('year'),
+                endDate: moment().endOf('year'),
+            },
             function(start, end) {
                 $('#payment_voucher_date_range_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(
                     moment_date_format));

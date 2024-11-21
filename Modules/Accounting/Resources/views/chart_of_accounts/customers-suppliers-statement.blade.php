@@ -197,7 +197,12 @@
             dateRangeSettings.startDate = moment().subtract(6, 'days');
             dateRangeSettings.endDate = moment();
             $('#transaction_date_range').daterangepicker(
-                dateRangeSettings,
+                {
+                    ...dateRangeSettings,
+                    startDate: moment().startOf('year'), 
+                    endDate: moment().endOf('year'),
+                },
+
                 function(start, end) {
                     $('#transaction_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
                         moment_date_format));

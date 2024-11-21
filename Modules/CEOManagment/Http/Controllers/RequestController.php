@@ -2,24 +2,24 @@
 
 namespace Modules\CEOManagment\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
-use App\Utils\RequestUtil;
-use Yajra\DataTables\Facades\DataTables;
-use Modules\Essentials\Entities\EssentialsDepartment;
-use Carbon\Carbon;
-use Modules\CEOManagment\Entities\RequestsType;
-use App\Company;
 use App\AccessRole;
 use App\AccessRoleRequest;
-use App\Utils\ModuleUtil;
+use App\Company;
 use App\Request as UserRequest;
+use App\RequestAttachment;
 use App\RequestProcess;
 use App\User;
+use App\Utils\ModuleUtil;
+use App\Utils\RequestUtil;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
-use App\RequestAttachment;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Sales\Entities\SalesProject;
+use Yajra\DataTables\Facades\DataTables;
 
 class RequestController extends Controller
 {
@@ -64,6 +64,7 @@ class RequestController extends Controller
     }
     public function index()
     {
+        
 
         $business_id = request()->session()->get('user.business_id');
 
@@ -199,8 +200,7 @@ class RequestController extends Controller
             'users.company_id',
             'users.id as userId',
 
-
-            'procedure_escalations.escalates_to'
+            'procedure_escalations.escalates_to',
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -238,7 +238,6 @@ class RequestController extends Controller
             $escalatedRequests->whereIn('requests.request_type_id', $types);
         }
         if (request()->ajax()) {
-
 
             return DataTables::of($escalatedRequests ?? [])
 
@@ -284,8 +283,7 @@ class RequestController extends Controller
 
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . __($this->statuses[$row->status]['name']) . '</span>';
-
+                        . __($this->statuses[$row->status]['name']) . '</span>';
 
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
@@ -294,17 +292,15 @@ class RequestController extends Controller
 
                     return $status;
                 })->editColumn('can_return', function ($row) {
-                    $buttonsHtml = '';
+                $buttonsHtml = '';
 
-                    $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
-                    $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+                $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
 
-                    return $buttonsHtml;
-                })
+                return $buttonsHtml;
+            })
 
                 ->rawColumns(['status', 'id_proof_number', 'can_return'])
-
-
 
                 ->make(true);
         }

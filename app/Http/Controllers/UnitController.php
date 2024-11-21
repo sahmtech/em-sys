@@ -6,6 +6,7 @@ use App\Product;
 use App\Unit;
 use App\Utils\Util;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 
 class UnitController extends Controller
@@ -39,8 +40,9 @@ class UnitController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-
-            $unit = Unit::where('business_id', $business_id)
+            $company_id = Session::get('selectedCompanyId');
+            
+            $unit = Unit::where('business_id', $business_id)->where('company_id', $company_id)
                         ->with(['base_unit'])
                         ->select(['actual_name', 'short_name', 'allow_decimal', 'id',
                             'base_unit_id', 'base_unit_multiplier', ]);
@@ -115,8 +117,11 @@ class UnitController extends Controller
         }
 
         try {
+            $company_id = Session::get('selectedCompanyId');
+          
             $input = $request->only(['actual_name', 'short_name', 'allow_decimal']);
             $input['business_id'] = $request->session()->get('user.business_id');
+            $input['company_id'] = $company_id;
             $input['created_by'] = $request->session()->get('user.id');
 
             if ($request->has('define_base_unit')) {

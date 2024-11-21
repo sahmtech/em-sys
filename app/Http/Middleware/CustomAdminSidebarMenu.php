@@ -79,24 +79,24 @@ class CustomAdminSidebarMenu
         // ])) {
         //     $this->superAdminMenu();
         // }
-        elseif (
-            Str::startsWith($currentPath, [
-                'product',
-                'taxonom',
-                'import-opening-stock',
-                'update-product-price',
-                'labels',
-                'variation-templates',
-                'import-products',
-                'selling-price-group',
-                'units',
-                'brands',
-                'warranties',
-            ])
+        // elseif (
+        //     Str::startsWith($currentPath, [
+        //         'product',
+        //         'taxonom',
+        //         'import-opening-stock',
+        //         'update-product-price',
+        //         'labels',
+        //         'variation-templates',
+        //         'import-products',
+        //         'selling-price-group',
+        //         'units',
+        //         'brands',
+        //         'warranties',
+        //     ])
 
-        ) {
-            $this->productsMenu();
-        } elseif (Str::startsWith($currentPath, 'connector')) {
+        // ) {
+        //     $this->productsMenu();
+         elseif (Str::startsWith($currentPath, 'connector')) {
             $this->connectorMenu();
         } elseif (Str::startsWith($currentPath, 'agent')) {
             $this->agnetMenu();
@@ -2798,6 +2798,104 @@ class CustomAdminSidebarMenu
                 ['icon' => 'ion ion-cash ', 'id' => 'tour_step6']
             );
 
+            if (true
+                // auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
+                // auth()->user()->can('brand.view') || auth()->user()->can('unit.view') ||
+                //  auth()->user()->can('category.view') || auth()->user()->can('brand.create') || 
+                // auth()->user()->can('unit.create') || auth()->user()->can('category.create')
+            ) {
+                $menu->dropdown(
+                    __('sale.products'),
+                    function ($sub) {
+                        // if (auth()->user()->can('list_products')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ProductController::class, 'index']),
+                                __('lang_v1.list_products'),
+                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(2) == 'products' ]
+                            );
+                        // }
+
+                        if (auth()->user()->can('product.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ProductController::class, 'create']),
+                                __('product.add_product'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'products' && request()->segment(3) == 'create']
+                            );
+                        }
+                        if (auth()->user()->can('product.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\SellingPriceGroupController::class, 'updateProductPrice']),
+                                __('lang_v1.update_product_price'),
+                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(2) == 'update-product-price']
+                            );
+                        }
+                        if (auth()->user()->can('product.view')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\LabelsController::class, 'show']),
+                                __('barcode.print_labels'),
+                                ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(2) == 'labels' && request()->segment(3) == 'show']
+                            );
+                        }
+                        if (auth()->user()->can('product.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\VariationTemplateController::class, 'index']),
+                                __('product.variations'),
+                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(2) == 'variation-templates']
+                            );
+                            $sub->url(
+                                action([\App\Http\Controllers\ImportProductsController::class, 'index']),
+                                __('product.import_products'),
+                                ['icon' => 'fa fas fa-download', 'active' => request()->segment(2) == 'import-products']
+                            );
+                        }
+                        if (auth()->user()->can('product.opening_stock')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ImportOpeningStockController::class, 'index']),
+                                __('lang_v1.import_opening_stock'),
+                                ['icon' => 'fa fas fa-download', 'active' => request()->segment(2) == 'import-opening-stock']
+                            );
+                        }
+                        if (auth()->user()->can('product.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\SellingPriceGroupController::class, 'index']),
+                                __('lang_v1.selling_price_group'),
+                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(2) == 'selling-price-group']
+                            );
+                        }
+                        if (auth()->user()->can('unit.view') || auth()->user()->can('unit.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\UnitController::class, 'index']),
+                                __('unit.units'),
+                                ['icon' => 'fa fas fa-balance-scale', 'active' => request()->segment(2) == 'units']
+                            );
+                        }
+                        if (auth()->user()->can('category.view') || auth()->user()->can('category.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\TaxonomyController::class, 'index']) . '?type=product',
+                                __('category.categories'),
+                                ['icon' => 'fa fas fa-tags', 'active' => request()->segment(2) == 'taxonomies' && request()->get('type') == 'product']
+                            );
+                        }
+                        if (auth()->user()->can('brand.view') || auth()->user()->can('brand.create')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\BrandController::class, 'index']),
+                                __('brand.brands'),
+                                ['icon' => 'fa fas fa-gem', 'active' => request()->segment(2) == 'brands']
+                            );
+                        }
+
+                        $sub->url(
+                            action([\App\Http\Controllers\WarrantyController::class, 'index']),
+                            __('lang_v1.warranties'),
+                            ['icon' => 'fa fas fa-shield-alt', 'active' => request()->segment(2) == 'warranties']
+                        );
+                    },
+                    ['icon' => 'fas fa-chart-pie ', 'id' => 'tour_step5']
+                );
+            }
+
+
+            
             if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own')) {
                 $menu->dropdown(
                     __('contact.contacts'),
@@ -3507,117 +3605,119 @@ class CustomAdminSidebarMenu
     //     });
     // }
 
-    public function productsMenu()
-    {
+//////
+    
+    // public function productsMenu()
+    // {
 
-        Menu::create('admin-sidebar-menu', function ($menu) {
-            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
-            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+    //     Menu::create('admin-sidebar-menu', function ($menu) {
+    //         $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+    //         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+    //         $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+    //         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //         $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
-            $menu->url(action([\App\Http\Controllers\ProductController::class, 'index']), __('sale.products'), ['icon' => 'fas fa-chart-pie']);
-            //$menu->header("");
-            //$menu->header("");
-            //Products dropdown
-            if (
-                auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
-                auth()->user()->can('brand.view') || auth()->user()->can('unit.view') ||
-                auth()->user()->can('category.view') || auth()->user()->can('brand.create') ||
-                auth()->user()->can('unit.create') || auth()->user()->can('category.create')
-            ) {
-                $menu->dropdown(
-                    __('sale.products'),
-                    function ($sub) {
-                        if (auth()->user()->can('product.view')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\ProductController::class, 'index']),
-                                __('lang_v1.list_products'),
-                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'products' && request()->segment(2) == '']
-                            );
-                        }
+    //         $menu->url(action([\App\Http\Controllers\ProductController::class, 'index']), __('sale.products'), ['icon' => 'fas fa-chart-pie']);
+    //         //$menu->header("");
+    //         //$menu->header("");
+    //         //Products dropdown
+    //         if (
+    //             auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
+    //             auth()->user()->can('brand.view') || auth()->user()->can('unit.view') ||
+    //             auth()->user()->can('category.view') || auth()->user()->can('brand.create') ||
+    //             auth()->user()->can('unit.create') || auth()->user()->can('category.create')
+    //         ) {
+    //             $menu->dropdown(
+    //                 __('sale.products'),
+    //                 function ($sub) {
+    //                     if (auth()->user()->can('product.view')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\ProductController::class, 'index']),
+    //                             __('lang_v1.list_products'),
+    //                             ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'products' && request()->segment(2) == '']
+    //                         );
+    //                     }
 
-                        if (auth()->user()->can('product.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\ProductController::class, 'create']),
-                                __('product.add_product'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'products' && request()->segment(2) == 'create']
-                            );
-                        }
-                        if (auth()->user()->can('product.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\SellingPriceGroupController::class, 'updateProductPrice']),
-                                __('lang_v1.update_product_price'),
-                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'update-product-price']
-                            );
-                        }
-                        if (auth()->user()->can('product.view')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\LabelsController::class, 'show']),
-                                __('barcode.print_labels'),
-                                ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(1) == 'labels' && request()->segment(2) == 'show']
-                            );
-                        }
-                        if (auth()->user()->can('product.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\VariationTemplateController::class, 'index']),
-                                __('product.variations'),
-                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'variation-templates']
-                            );
-                            $sub->url(
-                                action([\App\Http\Controllers\ImportProductsController::class, 'index']),
-                                __('product.import_products'),
-                                ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'import-products']
-                            );
-                        }
-                        if (auth()->user()->can('product.opening_stock')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\ImportOpeningStockController::class, 'index']),
-                                __('lang_v1.import_opening_stock'),
-                                ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'import-opening-stock']
-                            );
-                        }
-                        if (auth()->user()->can('product.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\SellingPriceGroupController::class, 'index']),
-                                __('lang_v1.selling_price_group'),
-                                ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'selling-price-group']
-                            );
-                        }
-                        if (auth()->user()->can('unit.view') || auth()->user()->can('unit.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\UnitController::class, 'index']),
-                                __('unit.units'),
-                                ['icon' => 'fa fas fa-balance-scale', 'active' => request()->segment(1) == 'units']
-                            );
-                        }
-                        if (auth()->user()->can('category.view') || auth()->user()->can('category.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\TaxonomyController::class, 'index']) . '?type=product',
-                                __('category.categories'),
-                                ['icon' => 'fa fas fa-tags', 'active' => request()->segment(1) == 'taxonomies' && request()->get('type') == 'product']
-                            );
-                        }
-                        if (auth()->user()->can('brand.view') || auth()->user()->can('brand.create')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\BrandController::class, 'index']),
-                                __('brand.brands'),
-                                ['icon' => 'fa fas fa-gem', 'active' => request()->segment(1) == 'brands']
-                            );
-                        }
+    //                     if (auth()->user()->can('product.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\ProductController::class, 'create']),
+    //                             __('product.add_product'),
+    //                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'products' && request()->segment(2) == 'create']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('product.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\SellingPriceGroupController::class, 'updateProductPrice']),
+    //                             __('lang_v1.update_product_price'),
+    //                             ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'update-product-price']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('product.view')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\LabelsController::class, 'show']),
+    //                             __('barcode.print_labels'),
+    //                             ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(1) == 'labels' && request()->segment(2) == 'show']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('product.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\VariationTemplateController::class, 'index']),
+    //                             __('product.variations'),
+    //                             ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'variation-templates']
+    //                         );
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\ImportProductsController::class, 'index']),
+    //                             __('product.import_products'),
+    //                             ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'import-products']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('product.opening_stock')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\ImportOpeningStockController::class, 'index']),
+    //                             __('lang_v1.import_opening_stock'),
+    //                             ['icon' => 'fa fas fa-download', 'active' => request()->segment(1) == 'import-opening-stock']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('product.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\SellingPriceGroupController::class, 'index']),
+    //                             __('lang_v1.selling_price_group'),
+    //                             ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'selling-price-group']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('unit.view') || auth()->user()->can('unit.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\UnitController::class, 'index']),
+    //                             __('unit.units'),
+    //                             ['icon' => 'fa fas fa-balance-scale', 'active' => request()->segment(1) == 'units']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('category.view') || auth()->user()->can('category.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\TaxonomyController::class, 'index']) . '?type=product',
+    //                             __('category.categories'),
+    //                             ['icon' => 'fa fas fa-tags', 'active' => request()->segment(1) == 'taxonomies' && request()->get('type') == 'product']
+    //                         );
+    //                     }
+    //                     if (auth()->user()->can('brand.view') || auth()->user()->can('brand.create')) {
+    //                         $sub->url(
+    //                             action([\App\Http\Controllers\BrandController::class, 'index']),
+    //                             __('brand.brands'),
+    //                             ['icon' => 'fa fas fa-gem', 'active' => request()->segment(1) == 'brands']
+    //                         );
+    //                     }
 
-                        $sub->url(
-                            action([\App\Http\Controllers\WarrantyController::class, 'index']),
-                            __('lang_v1.warranties'),
-                            ['icon' => 'fa fas fa-shield-alt', 'active' => request()->segment(1) == 'warranties']
-                        );
-                    },
-                    ['icon' => 'fas fa-chart-pie ', 'id' => 'tour_step5']
-                );
-            }
-        });
-    }
+    //                     $sub->url(
+    //                         action([\App\Http\Controllers\WarrantyController::class, 'index']),
+    //                         __('lang_v1.warranties'),
+    //                         ['icon' => 'fa fas fa-shield-alt', 'active' => request()->segment(1) == 'warranties']
+    //                     );
+    //                 },
+    //                 ['icon' => 'fas fa-chart-pie ', 'id' => 'tour_step5']
+    //             );
+    //         }
+    //     });
+    // }
 
     // public function superAdminMenu()
     // {

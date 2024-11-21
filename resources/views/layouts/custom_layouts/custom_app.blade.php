@@ -108,6 +108,14 @@
             color: #0f0f0f;
 
         }
+
+        .checkbox label,
+        .checkbox-inline,
+        .radio label,
+        .radio-inline {
+
+            font-weight: bold !important;
+        }
     </style>
     <script src='//fw-cdn.com/11549296/4203905.js' chat='true'></script>
 </head>
