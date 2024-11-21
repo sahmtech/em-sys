@@ -243,33 +243,47 @@ class Util
      * @param  bool  $time (default = false)
      * @return strin
      */
-    public function uf_date($date, $time = false)
-    {
-        $date_format = session('business.date_format');
-        $mysql_format = 'Y-m-d';
-        if ($time) {
-            if (session('business.time_format') == 12) {
-                $date_format = $date_format . 'h:i A';
-            } else {
-                $date_format = $date_format . 'H:i';
-            }
-            $mysql_format = 'Y-m-d H:i:s';
-        }
-        $date = str_replace(['/', '\\'], '-', $date);
-        return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
-    }
     // public function uf_date($date, $time = false)
     // {
-    //     try {
-    //         if ($time) {
-    //             return \DateTime::createFromFormat('m/d/Y H:i', "$date $time")->format('Y-m-d H:i:s');
+    //     $date_format = session('business.date_format');
+    //     $mysql_format = 'Y-m-d';
+    //     if ($time) {
+    //         if (session('business.time_format') == 12) {
+    //             $date_format = $date_format . 'h:i A';
     //         } else {
-    //             return \DateTime::createFromFormat('m/d/Y', $date)->format('Y-m-d');
+    //             $date_format = $date_format . 'H:i';
     //         }
-    //     } catch (\Exception $e) {
-    //         return "Error: Could not parse date: " . $e->getMessage();
+    //         $mysql_format = 'Y-m-d H:i:s';
     //     }
+    //     $date = str_replace(['/', '\\'], '-', $date);
+    //     if (!empty($date_format)) {
+    //         return Carbon::parse($date)->format($mysql_format) ?? Carbon::createFromFormat($date_format, $date)->format($mysql_format);
+    //     } else {
+    //         return null;
+    //     }
+
+    //     // return !empty($date_format) ? Carbon::parse($date)->format($mysql_format) : null;
     // }
+
+    public function uf_date($date, $time = false)
+    {
+        $dateFormat = session('business.date_format');
+        $mysqlFormat = 'Y-m-d';
+
+        if ($time) {
+            $timeFormat = session('business.time_format') == 12 ? 'h:i A' : 'H:i';
+            $dateFormat .= " $timeFormat";
+            $mysqlFormat = 'Y-m-d H:i:s';
+        }
+
+        $date = str_replace(['/', '\\'], '-', $date);
+
+        try {
+            return Carbon::parse($date)->format($mysqlFormat);
+        } catch (\Exception $e) {
+            return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat) ?? null;
+        }
+    }
 
     /**
      * Converts time in business format to mysql format

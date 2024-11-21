@@ -1322,6 +1322,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');

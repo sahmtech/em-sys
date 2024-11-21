@@ -2,25 +2,16 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleBusiness;
-use App\AccessRoleCompany;
-use App\AccessRoleProject;
-use App\Business;
-use App\Company;
 use App\User;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsContractType;
-use Modules\Sales\Entities\SalesProject;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
+use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Yajra\DataTables\Facades\DataTables;
 
 class EssentialsEmployeeContractController extends Controller
 {
@@ -42,13 +33,11 @@ class EssentialsEmployeeContractController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-
         $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
         $can_add_employee_contracts = auth()->user()->can('essentials.add_employee_contracts');
         $can_show_employee_contracts = auth()->user()->can('essentials.show_employee_contracts');
         $can_edit_employee_contracts = auth()->user()->can('essentials.edit_employee_contracts');
         $can_delete_employee_contracts = auth()->user()->can('essentials.delete_employee_contracts');
-
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -56,17 +45,14 @@ class EssentialsEmployeeContractController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-
-
-
         $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
             ->whereIn('u.id', $userIds)->where(function ($query) {
-                $query->where('u.status', 'active')
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->where('u.status', 'inactive')
-                            ->whereIn('u.sub_status', ['vacation', 'escape', 'return_exit']);
-                    });
-            })
+            $query->where('u.status', 'active')
+                ->orWhere(function ($subQuery) {
+                    $subQuery->where('u.status', 'inactive')
+                        ->whereIn('u.sub_status', ['vacation', 'escape', 'return_exit']);
+                });
+        })
             ->select([
                 'essentials_employees_contracts.id',
                 'u.id_proof_number as id_proof_number',
@@ -86,7 +72,7 @@ class EssentialsEmployeeContractController extends Controller
                 // 'essentials_employees_contracts.cancle_contract_under_trial',
 
                 DB::raw("
-                CASE 
+                CASE
                     WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
                     WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
                     WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
@@ -95,7 +81,7 @@ class EssentialsEmployeeContractController extends Controller
                 END as status
             "),
             ])
-            //->where('essentials_employees_contracts.is_active', 1)
+        //->where('essentials_employees_contracts.is_active', 1)
             ->orderby('id', 'desc');
 
         // dd( $employees_contracts->where('employee_id',5385)->get());
@@ -130,8 +116,6 @@ class EssentialsEmployeeContractController extends Controller
             $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end_date);
         }
 
-
-
         $contract_types = EssentialsContractType::pluck('type', 'id')->all();
         if (request()->ajax()) {
 
@@ -143,7 +127,7 @@ class EssentialsEmployeeContractController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_show_employee_contracts, $can_delete_employee_contracts, $can_edit_employee_contracts) {
+                    function ($row) use ($is_admin, $can_show_employee_contracts, $can_delete_employee_contracts, $can_edit_employee_contracts) {
                         $html = '';
 
                         if ($is_admin || $can_show_employee_contracts) {
@@ -174,10 +158,6 @@ class EssentialsEmployeeContractController extends Controller
                             $html .= ' &nbsp; <button class="btn btn-xs btn-warning cancel-contract-button" data-id="' . $row->id . '"><i class="glyphicon glyphicon-ban-circle"></i> ' . __('essentials::lang.cancel_contract') . '</button>';
                         }
 
-
-
-
-
                         return $html;
                     }
                 )
@@ -195,10 +175,9 @@ class EssentialsEmployeeContractController extends Controller
         }
         $query = User::whereIn('id', $userIds)->where('status', '!=', 'inactive');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-                ' - ',COALESCE(id_proof_number,'')) as 
+                ' - ',COALESCE(id_proof_number,'')) as
          full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-
 
         return view('essentials::employee_affairs.employees_contracts.index')->with(compact('users', 'contract_types'));
     }
@@ -211,12 +190,12 @@ class EssentialsEmployeeContractController extends Controller
                 $filePath = $file->store('/employee_contracts');
                 EssentialsEmployeesContract::where('id', $request->doc_id)->update([
                     'file_path' => $filePath,
-                    'updated_by' => Auth::user()->id
+                    'updated_by' => Auth::user()->id,
                 ]);
             } else if (request()->input('delete_file') == 1) {
                 EssentialsEmployeesContract::where('id', $request->doc_id)->update([
-                    'file_path' => Null,
-                    'updated_by' => Auth::user()->id
+                    'file_path' => null,
+                    'updated_by' => Auth::user()->id,
                 ]);
             }
             $output = [
@@ -233,8 +212,6 @@ class EssentialsEmployeeContractController extends Controller
         }
         return redirect()->back()->with('status', $output);
     }
-
-
 
     public function edit($id)
     {
@@ -261,7 +238,7 @@ class EssentialsEmployeeContractController extends Controller
                 // 'essentials_employees_contracts.cancle_contract_under_trial',
 
                 DB::raw("
-                 CASE 
+                 CASE
                 WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
                 WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
                 WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
@@ -270,8 +247,6 @@ class EssentialsEmployeeContractController extends Controller
               END as status
                   "),
             ])->first();
-
-
 
         //   error_log($employees_contract->cancle_contract_under_trial);
         return response()->json(['employees_contract' => $employees_contract]);
@@ -312,13 +287,10 @@ class EssentialsEmployeeContractController extends Controller
         return redirect()->back()->with('status', $output);
     }
 
-
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
             $input = $request->only([
@@ -335,7 +307,6 @@ class EssentialsEmployeeContractController extends Controller
                 // 'cancle_contract_under_trial'
             ]);
 
-
             $input2['employee_id'] = $input['employee'];
             // $input2['cancle_contract_under_trial'] = $input['cancle_contract_under_trial'];
 
@@ -344,26 +315,22 @@ class EssentialsEmployeeContractController extends Controller
             $start_date = Carbon::parse($input['contract_start_date']);
             $end_date = Carbon::parse($input['contract_end_date']);
 
-
             // $contract_duration = $start_date->diffInDays($end_date);
 
             $input2['contract_duration'] = $input['contract_duration'];
             $input2['contract_per_period'] = $input['contract_duration_unit'];
 
-
             $input2['probation_period'] = $input['probation_period'];
-
 
             $input2['contract_type_id'] = $input['contract_type'];
 
             $input2['created_by'] = Auth::user()->id;
             $input2['is_renewable'] = $input['is_renewable'];
 
-
             $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->contract_number;
-                $numericPart = (int)substr($latestRefNo, 3);
+                $numericPart = (int) substr($latestRefNo, 3);
                 $numericPart++;
                 $input2['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
             } else {
@@ -374,10 +341,8 @@ class EssentialsEmployeeContractController extends Controller
                 $file = request()->file('file');
                 $filePath = $file->store('/employee_contracts');
 
-
                 $input2['file_path'] = $filePath;
             }
-
 
             EssentialsEmployeesContract::where('employee_id', $input['employee'])->update(['is_active' => 0]);
             $contract = EssentialsEmployeesContract::create($input2);
@@ -429,14 +394,10 @@ class EssentialsEmployeeContractController extends Controller
         return $output;
     }
 
-
-
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
             $contract = EssentialsEmployeesContract::where('id', $id)->first();
