@@ -243,29 +243,46 @@ class Util
      * @param  bool  $time (default = false)
      * @return strin
      */
-    // old Fun
+
     public function uf_date($date, $time = false)
     {
+        // Default date format
         $format = 'm-d-Y';
+        // The format you want for the output
         $dateFormat = session('business.date_format');
         $mysqlFormat = 'Y-m-d';
 
         if ($time) {
+            // Handle time format based on the session
             $timeFormat = session('business.time_format') == 12 ? 'h:i A' : 'H:i';
-            $dateFormat .= " $timeFormat";
+            $dateFormat .= " $timeFormat"; // Final format includes time
             $mysqlFormat = 'Y-m-d H:i:s';
+
+            // When time is included, the input date format should expect time as well
+            $format = 'm-d-Y ' . $timeFormat;
         }
 
+        // Normalize the date string to replace slashes and backslashes with dashes
         $date = str_replace(['/', '\\'], '-', $date);
 
-        $date_formated = Carbon::createFromFormat($format, $date)->format('Y-m-d');
-
-        // dd($date . '  ' . $dateTime);
-
         try {
-            return Carbon::parse($date_formated)->format($mysqlFormat);
+            // If time is provided, parse the date and time
+            if ($time) {
+                $date_formated = Carbon::createFromFormat($format, $date)->format($mysqlFormat);
+            } else {
+                // Only parse the date part if time is not provided
+                $date_formated = Carbon::createFromFormat($format, $date)->format('Y-m-d');
+            }
+
+            return $date_formated;
         } catch (\Exception $e) {
-            return Carbon::createFromFormat($dateFormat, $date_formated)->format($mysqlFormat) ?? null;
+            // In case of error, attempt to parse the date using the session's format
+            try {
+                return Carbon::createFromFormat($dateFormat, $date)->format($mysqlFormat) ?? null;
+            } catch (\Exception $e) {
+                // Return null or handle the error if both parsing attempts fail
+                return null;
+            }
         }
     }
 
