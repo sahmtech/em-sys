@@ -36,7 +36,7 @@
 
                     <div class="box-body">
                         {{-- @lang( 'accounting::lang.ledger_report_description') --}}
-                        <a @if ($ledger_url) href="{{ $ledger_url }}" @else onclick="alert(' @lang( 'accounting::lang.ledger_add_account') ')" @endif
+                        <a ($ledger_url) href="{{ $ledger_url }}"
                             class="btn btn-primary btn-sm pt-2">@lang('accounting::lang.view_report')</a>
                     </div>
 
@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="box-body">
-                        <a @if ($employees_statement_url) href="{{ $employees_statement_url }}" @else onclick="alert(' @lang( 'accounting::lang.employees_statement_of_account_report') ')" @endif{{--  href="{{route('accounting.employeesStatement')}}" --}}
+                        <a ($employees_statement_url) href="{{ $employees_statement_url }}" {{-- href="{{ route('accounting.employeesStatement') }}" --}}
                             class="btn btn-primary btn-sm pt-2">@lang('accounting::lang.view_report')</a>
                         {{-- @lang( 'accounting::lang.ledger_report_description') --}}
                     </div>
@@ -64,10 +64,11 @@
                         <h3 class="box-title">@lang('accounting::lang.customers_and_suppliers_statement_of_account_report')</h3>
                     </div>
 
+
                     <div class="box-body">
                         {{-- @lang( 'accounting::lang.ledger_report_description') --}}
-                        <a @if ($customers_suppliers_statement_url) href="{{ $customers_suppliers_statement_url }}" @else onclick="alert(' @lang( 'accounting::lang.customers_and_suppliers_statement_of_account_report') ')" @endif
-                            {{-- href="{{route('accounting.customersSuppliersStatement')}}" --}} class="btn btn-primary btn-sm pt-2">@lang('accounting::lang.view_report')</a>
+                        <a ($customers_suppliers_statement_url) href="{{ $customers_suppliers_statement_url }}"
+                            {{-- href="{{ route('accounting.customersSuppliersStatement') }}" --}} class="btn btn-primary btn-sm pt-2">@lang('accounting::lang.view_report')</a>
                     </div>
 
                 </div>

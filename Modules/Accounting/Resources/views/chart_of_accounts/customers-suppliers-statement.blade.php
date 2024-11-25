@@ -7,14 +7,28 @@
     {{-- @include('accounting::layouts.nav') --}}
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    {{-- <section class="content-header">
         <h1>@lang('accounting::lang.customers_and_suppliers_statement_of_account_report') - @if (Lang::has('accounting::lang.' . $contact->supplier_business_name))
-                @lang('accounting::lang.' . $contact->supplier_business_name)
+                @lang('accounting::lang.' . $contact->supplier_business_name )
             @else
+                {{ $contact->supplier_business_name  }}
+            @endif
+        </h1>
+    </section> --}}
+    <section class="content-header">
+        <h1>
+            @lang('accounting::lang.customers_and_suppliers_statement_of_account_report')
+            -
+            @if ($contact && Lang::has('accounting::lang.' . $contact->supplier_business_name))
+                @lang('accounting::lang.' . $contact->supplier_business_name)
+            @elseif ($contact)
                 {{ $contact->supplier_business_name }}
+            @else
+                {{ __('accounting::lang.no_contact_selected') }}
             @endif
         </h1>
     </section>
+
 
     <section class="content">
         <div class="row">
@@ -26,55 +40,27 @@
                                 <th>@lang('user.name'):</th>
                                 <td>
                                     @if (app()->getLocale() == 'ar')
-                                        @if (Lang::has('accounting::lang.' . $contact->supplier_business_name))
+                                        @if (isset($contact) && Lang::has('accounting::lang.' . $contact->supplier_business_name))
                                             @lang('accounting::lang.' . $contact->supplier_business_name)
-                                        @else
+                                        @elseif (isset($contact))
                                             {{ $contact->supplier_business_name }}
+                                        @else
+                                            {{ __('accounting::lang.no_contact_selected') }}
                                         @endif
                                     @else
-                                        @if (Lang::has('accounting::lang.' . $contact->supplier_business_name))
+                                        @if (isset($contact) && Lang::has('accounting::lang.' . $contact->supplier_business_name))
                                             @lang('accounting::lang.' . $contact->supplier_business_name)
-                                        @else
+                                        @elseif (isset($contact))
                                             {{ $contact->supplier_business_name }}
+                                        @else
+                                            {{ __('accounting::lang.no_contact_selected') }}
                                         @endif
                                     @endif
                                 </td>
+
                             </tr>
 
-                            {{--  <tr>
-                                <th>@lang('accounting::lang.account_primary_type'):</th>
-                                <td>
-                                    @if (!empty($contact->account_primary_type))
-                                        {{ __('accounting::lang.' . $contact->account_primary_type) }}
-                                    @endif
-                                </td>
-                            </tr>
- --}}
-                            {{--                             <tr>
-                                <th>@lang('accounting::lang.account_sub_type'):</th>
-                                <td>
-                                    @if (!empty($contact->account_sub_type))
-                                        {{ __('accounting::lang.' . $contact->account_sub_type->name) }}
-                                    @endif
-                                </td>
-                            </tr>
 
-                            <tr>
-                                <th>@lang('accounting::lang.detail_type'):</th>
-                                <td>
-                                    @if (!empty($contact->detail_type))
-                                        {{ __('accounting::lang.' . $contact->detail_type->name) }}
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>@lang('accounting::lang.account_category'):</th>
-                                <td>
-                                    @if (!empty($contact->account_category))
-                                        {{ __('accounting::lang.' . $contact->account_category) }}
-                                    @endif
-                                </td>
-                            </tr>
                             <tr>
                                 <th>@lang('accounting::lang.account_type'):</th>
                                 <td>
@@ -82,7 +68,7 @@
                                         {{ __('accounting::lang.' . $contact->account_type) }}
                                     @endif
                                 </td>
-                            </tr> --}}
+                            </tr>
                             <tr>
                                 <th>@lang('lang_v1.balance'):</th>
                                 <td>@format_currency($current_bal)</td>
@@ -103,11 +89,11 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('all_accounts', __('accounting::lang.suppliers_and_customers') . ':') !!}
-                                    {!! Form::select('contact_filter', $contact_dropdown, $contact->id, [
+                                    {!! Form::select('contact_filter', $contact_dropdown, $contact->id ?? '', [
                                         'class' => 'form-control contact_filter',
                                         'style' => 'width:100%',
                                         'id' => 'contact_filter',
-                                        'data-default' => $contact->id,
+                                        'data-default' => $contact->id ?? null,
                                     ]) !!}
                                 </div>
                             </div>
@@ -146,35 +132,35 @@
             <div class="col-sm-12">
                 <div class="box">
                     <div class="box-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped" id="ledger">
-                                    <thead>
-                                        <tr>
-                                            <th>@lang('accounting::lang.number')</th>
-                                            <th>@lang('messages.date')</th>
-                                            <th>@lang('accounting::lang.transaction')</th>
-                                            <th>@lang('lang_v1.cost_senter')</th>
-                                            <th>@lang('brand.note')</th>
-                                            <th>@lang('lang_v1.added_by')</th>
-                                            <th>@lang('account.debit')</th>
-                                            <th>@lang('account.credit')</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
-                                            <td class="footer_total_debit"></td>
-                                            <td class="footer_total_credit"></td>
-                                        </tr>
-                                        <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="6"><strong>@lang('accounting::lang.autoMigration.final_total'):</strong></td>
-                                            <td class="footer_final_total_debit"></td>
-                                            <td class="footer_final_total_credit"></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="ledger">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('accounting::lang.number')</th>
+                                        <th>@lang('messages.date')</th>
+                                        <th>@lang('accounting::lang.transaction')</th>
+                                        <th>@lang('lang_v1.cost_senter')</th>
+                                        <th>@lang('brand.note')</th>
+                                        <th>@lang('lang_v1.added_by')</th>
+                                        <th>@lang('account.debit')</th>
+                                        <th>@lang('account.credit')</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr class="bg-gray font-17 footer-total text-center">
+                                        <td colspan="6"><strong>@lang('sale.total'):</strong></td>
+                                        <td class="footer_total_debit"></td>
+                                        <td class="footer_total_credit"></td>
+                                    </tr>
+                                    <tr class="bg-gray font-17 footer-total text-center">
+                                        <td colspan="6"><strong>@lang('accounting::lang.autoMigration.final_total'):</strong></td>
+                                        <td class="footer_final_total_debit"></td>
+                                        <td class="footer_final_total_credit"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -196,10 +182,9 @@
 
             dateRangeSettings.startDate = moment().subtract(6, 'days');
             dateRangeSettings.endDate = moment();
-            $('#transaction_date_range').daterangepicker(
-                {
+            $('#transaction_date_range').daterangepicker({
                     ...dateRangeSettings,
-                    startDate: moment().startOf('year'), 
+                    startDate: moment().startOf('year'),
                     endDate: moment().endOf('year'),
                 },
 
@@ -217,7 +202,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ action('\Modules\Accounting\Http\Controllers\ReportController@customersSuppliersStatement', [$contact->id]) }}',
+                    url: '{{ action('\Modules\Accounting\Http\Controllers\ReportController@customersSuppliersStatement', [$contact->id ?? 0]) }}',
                     data: function(d) {
                         if ($('#start_date_filter').val()) {
                             d.start_date = $('#start_date_filter').val();

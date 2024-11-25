@@ -124,8 +124,8 @@ class ReportController extends Controller
         $ledger_url = null;
         $ledger_url = $first_account ? route('accounting.ledger', $first_account) : null;
         $employees_statement_url = $first_employee ? route('accounting.employeesStatement', $first_employee) : null;
-        $customers_suppliers_statement_url = $first_contact ? route('accounting.customersSuppliersStatement', $first_contact) : null;
-
+        $customers_suppliers_statement_url = $first_contact ? route('accounting.customersSuppliersStatement', $first_contact) : route('accounting.customersSuppliersStatement', 0);
+        // dd($customers_suppliers_statement_url);
         return view('accounting::report.index')
             ->with(compact('ledger_url', 'employees_statement_url', 'customers_suppliers_statement_url'));
     }
@@ -551,16 +551,22 @@ class ReportController extends Controller
             ->with(compact('user', 'employee_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
     }
 
-    public function customersSuppliersStatement($contact_id, Request $request)
+    public function customersSuppliersStatement($contact_id = null, Request $request)
     {
 
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
 
-        $contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
-            ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])
-            ->with(['transactions'])
-            ->findorFail($contact_id);
+        // Check if $contact_id is provided
+        if ($contact_id) {
+            $contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
+                ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])
+                ->with(['transactions'])
+                ->findorFail($contact_id);
+        } else {
+            // Handle case where $contact_id is null
+            $contact = null;
+        }
 
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->start_date;

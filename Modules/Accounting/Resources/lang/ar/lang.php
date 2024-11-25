@@ -811,5 +811,6 @@ return [
 
     'attachment' => 'المرفقات',
     'print_journal' => 'طباعة قيد مرجعي',
+    'no_contact_selected' => 'لا توجد بيانات'
 
 ];

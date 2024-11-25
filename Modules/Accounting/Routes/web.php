@@ -9,7 +9,7 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ImportOpeningStockController;
@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Route;
 use Modules\Accounting\Http\Controllers\OpeningBalanceController;
 use Modules\Accounting\Http\Controllers\PaymentVouchersController;
 use Modules\Accounting\Http\Controllers\ReceiptVouchersController;
-
 use Modules\Accounting\Http\Controllers\SettingsController;
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'all-accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
@@ -38,11 +37,9 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::post('/companies_access_permissions/store', [\Modules\Accounting\Http\Controllers\AccountingUserAccessCompaniesController::class, 'store'])->name('companies_access_permissions.store');
 });
 
-
 Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
 
-
-    Route::get('/payrolls_checkpoint/{from}',   [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
+    Route::get('/payrolls_checkpoint/{from}', [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('accounting.payrolls_checkpoint');
     Route::post('/create_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_payment'])->name('accounting.payrolls.create_payment');
     Route::post('/create_single_payment/{id}', [App\Http\Controllers\PayrollController::class, 'create_single_payment'])->name('accounting.payrolls.create_single_payment');
     Route::get('dashboard', 'AccountingController@dashboard')->name('accounting.dashboard');
@@ -51,7 +48,6 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
     Route::get('primary-accounts-dropdown', 'AccountingController@primaryAccountsDropdown')->name('primary-accounts-dropdown');
     Route::get('accounting-business-settings', 'SettingsController@getBusinessSettings_accounting')->name('accounting-business-settings');
-
 
     Route::get('/agent_time_sheet', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'index'])
         ->name('accounting.agentTimeSheetIndex');
@@ -64,8 +60,6 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('agent/time_sheet/deal/{id}', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('accounting.agentTimeSheet.dealTimeSheet');
     Route::get('agent/time_sheet/approvedTimeSheetByAccounting/{id}', [\Modules\Accounting\Http\Controllers\TimeSheetController::class, 'approvedTimeSheetByAccounting'])->name('accounting.agentTimeSheet.approvedTimeSheetByAccounting');
 
-
-
     Route::get('open-create-dialog/{id}', 'CoaController@open_create_dialog')->name('open_create_dialog');
     Route::get('get-account-sub-types', 'CoaController@getAccountSubTypes');
     Route::get('get-account-details-types', 'CoaController@getAccountDetailsType');
@@ -76,9 +70,6 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('activate-deactivate/{id}', 'CoaController@activateDeactivate');
     Route::get('create-default-accounts', 'CoaController@createDefaultAccounts')->name('accounting.create-default-accounts');
     Route::get('ledger/print/{id}', 'CoaController@ledgerPrint');
-
-
-
 
     Route::resource('journal-entry', 'JournalEntryController');
     Route::get('journal-entry/map/show', 'JournalEntryController@map');
@@ -105,8 +96,7 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('create-deflute-auto-migration', [\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'create_deflute_auto_migration'])->name('create_deflute_auto_migration');
     Route::get('store-deflute-auto-migration', [\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'store_deflute_auto_migration'])->name('store_deflute_auto_migration');
 
-
-    //requests 
+    //requests
     Route::get('/accounting.requests', [\Modules\Accounting\Http\Controllers\RequestController::class, 'index'])->name('accounting.requests');
     Route::post('/accounting.returnReq', [\Modules\Accounting\Http\Controllers\RequestController::class, 'returnReq'])->name('accounting.returnReq');
     Route::post('/accounting.returnReq.store', [\Modules\Accounting\Http\Controllers\RequestController::class, 'store'])->name('accounting.returnReq.store');
@@ -120,7 +110,7 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('reports/trial-balance', 'ReportController@trialBalance')->name('accounting.trialBalance');
     Route::get('reports/income-statement', 'ReportController@incomeStatement')->name('accounting.incomeStatement');
     Route::get('reports/employees-statement/{id}', 'ReportController@employeesStatement')->name('accounting.employeesStatement');
-    Route::get('reports/customers-suppliers-statement/{id}', 'ReportController@customersSuppliersStatement')->name('accounting.customersSuppliersStatement');
+    Route::get('reports/customers-suppliers-statement/{id?}', 'ReportController@customersSuppliersStatement')->name('accounting.customersSuppliersStatement');
     Route::get('reports/balance-sheet', 'ReportController@balanceSheet')->name('accounting.balanceSheet');
     Route::get(
         'reports/account-receivable-ageing-report',
@@ -148,7 +138,6 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::resource('payment_vouchers', 'PaymentVouchersController');
     Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
 
-
     Route::get('transactions', 'TransactionController@index')->name('getTransaction');
     Route::get('transactions/map', 'TransactionController@map');
     Route::post('transactions/save-map', 'TransactionController@saveMap');
@@ -159,13 +148,11 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('install/uninstall', 'InstallController@uninstall');
     Route::get('install/update', 'InstallController@update');
 
-
     Route::get('validate-invoice-to-return/{invoice_no}', [SellReturnController::class, 'validateInvoiceToReturn']);
     Route::resource('sell-return', SellReturnController::class);
     Route::get('sell-return/get-product-row', [SellReturnController::class, 'getProductRow']);
     Route::get('/sell-return/print/{id}', [SellReturnController::class, 'printInvoice']);
     Route::get('/sell-return/add/{id}', [SellReturnController::class, 'add']);
-
 
     Route::get('/import-sales', [ImportSalesController::class, 'index']);
     Route::post('/import-sales/preview', [ImportSalesController::class, 'preview']);
@@ -180,12 +167,9 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('export-product-price', [SellingPriceGroupController::class, 'export']);
     Route::post('import-product-price', [SellingPriceGroupController::class, 'import']);
 
-
     Route::get('/labels/show', [LabelsController::class, 'show']);
     Route::get('/labels/add-product-row', [LabelsController::class, 'addProductRow']);
     Route::get('/labels/preview', [LabelsController::class, 'preview']);
-
-
 
     // Route::resource('variation-templates', VariationTemplateController::class);
     Route::get('/variation-templates', [VariationTemplateController::class, 'index']);
@@ -193,30 +177,23 @@ Route::group(['middleware' => ['web', 'compay_session', 'SetSessionData', 'auth'
     Route::get('/import-products', [ImportProductsController::class, 'index']);
     Route::post('/import-products/store', [ImportProductsController::class, 'store']);
 
-      //Import opening stock
-      Route::get('/import-opening-stock', [ImportOpeningStockController::class, 'index']);
-      Route::post('/import-opening-stock/store', [ImportOpeningStockController::class, 'store']);
-  
+    //Import opening stock
+    Route::get('/import-opening-stock', [ImportOpeningStockController::class, 'index']);
+    Route::post('/import-opening-stock/store', [ImportOpeningStockController::class, 'store']);
+
     //   Route::resource('selling-price-group', SellingPriceGroupController::class);
     Route::get('/selling-price-group', [SellingPriceGroupController::class, 'index']);
-   
-   
+
     Route::resource('units', UnitController::class);
     Route::get('/units', [UnitController::class, 'index']);
-    
 
     // Route::resource('taxonomies', TaxonomyController::class);
     Route::get('/taxonomies', [TaxonomyController::class, 'index']);
 
-
     // Route::resource('brands', BrandController::class);
     Route::get('/brands', [BrandController::class, 'index']);
-  
-    
+
     // Route::resource('warranties', WarrantyController::class);
     Route::get('/warranties', [WarrantyController::class, 'index']);
 
-
-
-
-   });
+});
