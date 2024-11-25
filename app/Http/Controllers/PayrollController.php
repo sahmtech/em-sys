@@ -6,10 +6,8 @@ use App\AccessRole;
 use App\AccessRoleCompany;
 use App\BusinessLocation;
 use App\Company;
-use Yajra\DataTables\Facades\DataTables;
 use App\PayrollGroup;
 use App\PayrollGroupUser;
-use App\TimesheetUser;
 use App\Transaction;
 use App\TransactionPayment;
 use App\User;
@@ -17,13 +15,13 @@ use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsPayrollGroup;
 use Modules\Sales\Entities\SalesProject;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-
+use Yajra\DataTables\Facades\DataTables;
 
 class PayrollController extends Controller
 {
@@ -67,7 +65,7 @@ class PayrollController extends Controller
 
         $payrollGroup = PayrollGroup::findOrFail($id);
         $payrollGroupUsers = PayrollGroupUser::where('payroll_group_id', $id)->join('users as u', 'u.id', '=', 'payroll_group_users.user_id')
-            ->whereIn('u.company_id',  $companies_ids)
+            ->whereIn('u.company_id', $companies_ids)
             ->select([
                 'payroll_group_users.*',
                 'u.first_name',
@@ -83,7 +81,6 @@ class PayrollController extends Controller
 
             ])
             ->get();
-
 
         $user_type = $payrollGroupUsers->first()?->user_type;
         $payrollGroupUsers->each(function ($item) {
@@ -117,6 +114,10 @@ class PayrollController extends Controller
             $total_deductions = $violations + $absence_deduction + $late_deduction + $other_deductions + $loan;
             $total_additions = $over_time_hours_addition + $additional_addition + $other_additions;
             $final_salary = $total_salary - $total_deductions + $total_additions;
+            //new fileds
+            $total_amount_of_delay = floatval($user->total_amount_of_delay);
+            $total_amount_over_time_hours = floatval($user->total_amount_over_time_hours);
+            $total_amount_absence = floatval($user->total_amount_absence);
 
             return [
                 'id' => $user->user_id,
@@ -145,6 +146,9 @@ class PayrollController extends Controller
                 'additional_addition' => $additional_addition,
                 'other_additions' => $other_additions,
                 'total_additions' => $total_additions,
+                'total_amount_of_delay' => $total_amount_of_delay,
+                'total_amount_over_time_hours' => $total_amount_over_time_hours,
+                'total_amount_absence' => $total_amount_absence,
                 'final_salary' => $final_salary,
                 'payment_method' => $user->payment_method,
                 'notes' => $user->notes,
@@ -152,8 +156,7 @@ class PayrollController extends Controller
             ];
         });
 
-
-        return view('essentials::payrolls_show', compact('payrolls', 'user_type',));
+        return view('essentials::payrolls_show', compact('payrolls', 'user_type', ));
     }
 
     public function store_to_transaction($id)
@@ -175,7 +178,6 @@ class PayrollController extends Controller
             $payroll_group = EssentialsPayrollGroup::create($payroll_group);
             $transaction_date = Carbon::createFromFormat('m/Y', $request->transaction_date)->format('Y-m-d H:i:s');
 
-
             $payrollGroupUsers = PayrollGroupUser::where('payroll_group_id', $id)
                 ->join('users as u', 'u.id', '=', 'payroll_group_users.user_id')
                 ->select([
@@ -185,18 +187,16 @@ class PayrollController extends Controller
 
             $user_type = $payrollGroupUsers->first()?->user_type;
 
-
             $total_before_tax = 0;
             $essentials_amount_per_unit_duration = 0;
             $final_total = 0;
 
-            foreach ($payrollGroupUsers as  $payrollGroupUser) {
+            foreach ($payrollGroupUsers as $payrollGroupUser) {
                 $essentials_amount_per_unit_duration += $payrollGroupUser->salary;
 
                 $final_total += $payrollGroupUser->final_salary;
             }
             $total_before_tax = $final_total;
-
 
             $payroll['transaction_date'] = $transaction_date;
             $payroll['business_id'] = $business_id;
@@ -216,16 +216,13 @@ class PayrollController extends Controller
                 $payroll['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
             }
             $payroll['payroll_group_id'] = $id;
-            $payroll['company_id'] =   $company_id;
-            $payroll['location_id'] =   $company_id == 2 ? BusinessLocation::where('company_id', 2)?->first()?->id : BusinessLocation::where('company_id', 1)?->first()?->id;
+            $payroll['company_id'] = $company_id;
+            $payroll['location_id'] = $company_id == 2 ? BusinessLocation::where('company_id', 2)?->first()?->id : BusinessLocation::where('company_id', 1)?->first()?->id;
             $transaction = Transaction::create($payroll);
             $transaction_ids[] = $transaction->id;
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
             $util = new Util();
             $auto_migration = $util->createTransactionJournal_entry($transaction->id, $user_type);
-
-
-
 
             // //ref_no,
             // $transaction_ids = [];
@@ -296,7 +293,6 @@ class PayrollController extends Controller
             ];
         }
         return redirect()->back()->with('status', $output);
-
 
         // $user = User::find(auth()->user()->id);
         // $business_id = $user->business_id ?? 1;
@@ -393,27 +389,26 @@ class PayrollController extends Controller
             }
 
             if ($from == 'hr') {
-                $user =  auth()->user()->id;
+                $user = auth()->user()->id;
                 $date = Carbon::now()->timezone('Asia/Riyadh');
                 $payroll_group = PayrollGroup::where('id', $id)->first();
                 PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->whereIn('user_id', $userIds)->update(
-                    ['hr_management_cleared' => true,]
+                    ['hr_management_cleared' => true]
                 );
-
 
                 $hr_management_cleared_by = [];
                 if ($payroll_group?->hr_management_cleared_by) {
                     $hr_management_cleared_by = json_decode($payroll_group->hr_management_cleared_by);
                 }
                 $hr_management_cleared_by[] = [
-                    'user' =>  $user,
-                    'date' => $date
+                    'user' => $user,
+                    'date' => $date,
                 ];
 
                 $hr_management_cleared = PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->where('hr_management_cleared', false)->count() == 0;
 
                 PayrollGroup::where('id', $id)->update([
-                    'hr_management_cleared' =>  $hr_management_cleared,
+                    'hr_management_cleared' => $hr_management_cleared,
                     'hr_management_cleared_by' => json_encode($hr_management_cleared_by),
                 ]);
                 $output = [
@@ -421,11 +416,11 @@ class PayrollController extends Controller
                     'msg' => __('lang_v1.added_success'),
                 ];
             } else if ($from == 'accountant') {
-                $user =  auth()->user()->id;
+                $user = auth()->user()->id;
                 $date = Carbon::now()->timezone('Asia/Riyadh');
                 $payroll_group = PayrollGroup::where('id', $id)->first();
                 PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->whereIn('user_id', $userIds)->update(
-                    ['accountant_cleared' => true,]
+                    ['accountant_cleared' => true]
                 );
 
                 $accountant_cleared_by = [];
@@ -433,8 +428,8 @@ class PayrollController extends Controller
                     $accountant_cleared_by = json_decode($payroll_group->accountant_cleared_by);
                 }
                 $accountant_cleared_by[] = [
-                    'user' =>  $user,
-                    'date' => $date
+                    'user' => $user,
+                    'date' => $date,
                 ];
                 $accountant_cleared = PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->where('accountant_cleared', false)->count() == 0;
                 PayrollGroup::where('id', $id)->update([
@@ -445,12 +440,12 @@ class PayrollController extends Controller
                     'success' => true,
                     'msg' => __('lang_v1.added_success'),
                 ];
-            } else   if ($from == 'financial') {
-                $user =  auth()->user()->id;
+            } else if ($from == 'financial') {
+                $user = auth()->user()->id;
                 $date = Carbon::now()->timezone('Asia/Riyadh');
                 $payroll_group = PayrollGroup::where('id', $id)->first();
                 PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->whereIn('user_id', $userIds)->update(
-                    ['financial_management_cleared' => true,]
+                    ['financial_management_cleared' => true]
                 );
 
                 $financial_management_cleared_by = [];
@@ -458,8 +453,8 @@ class PayrollController extends Controller
                     $financial_management_cleared_by = json_decode($payroll_group->financial_management_cleared_by);
                 }
                 $financial_management_cleared_by[] = [
-                    'user' =>  $user,
-                    'date' => $date
+                    'user' => $user,
+                    'date' => $date,
                 ];
                 $financial_management_cleared = PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->where('financial_management_cleared', false)->count() == 0;
                 PayrollGroup::where('id', $id)->update([
@@ -470,21 +465,21 @@ class PayrollController extends Controller
                     'success' => true,
                     'msg' => __('lang_v1.added_success'),
                 ];
-            } else  if ($from == 'ceo' || $from == 'generalmanagement') {
+            } else if ($from == 'ceo' || $from == 'generalmanagement') {
 
-                $user =  auth()->user()->id;
+                $user = auth()->user()->id;
                 $date = Carbon::now()->timezone('Asia/Riyadh');
                 $payroll_group = PayrollGroup::where('id', $id)->first();
                 PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->whereIn('user_id', $userIds)->update(
-                    ['ceo_cleared' => true,]
+                    ['ceo_cleared' => true]
                 );
                 $ceo_cleared_by = [];
                 if ($payroll_group?->ceo_cleared_by) {
                     $ceo_cleared_by = json_decode($payroll_group->ceo_cleared_by);
                 }
                 $ceo_cleared_by[] = [
-                    'user' =>  $user,
-                    'date' => $date
+                    'user' => $user,
+                    'date' => $date,
                 ];
 
                 $ceo_cleared = PayrollGroupUser::where('payroll_group_id', $payroll_group->id)->where('ceo_cleared', false)->count() == 0;
@@ -536,28 +531,25 @@ class PayrollController extends Controller
             }
         }
 
-
         $payrollGroups = PayrollGroup::whereIn('company_id', $companies_ids);
         $can_clear = auth()->user()->can('essentials.confirm_payroll_checkpoint')
-            || auth()->user()->can('accounting.confirm_payroll_checkpoint')
-            || auth()->user()->can('accounting.confirm_payroll_checkpoint_financial')
-            || auth()->user()->can('ceomanagment.confirm_payroll_checkpoint')
-            || auth()->user()->can('generalmanagement.confirm_payroll_checkpoint');
+        || auth()->user()->can('accounting.confirm_payroll_checkpoint')
+        || auth()->user()->can('accounting.confirm_payroll_checkpoint_financial')
+        || auth()->user()->can('ceomanagment.confirm_payroll_checkpoint')
+        || auth()->user()->can('generalmanagement.confirm_payroll_checkpoint');
         $can_view = auth()->user()->can('essentials.show_payroll_checkpoint')
-            || auth()->user()->can('accounting.show_payroll_checkpoint')
-            || auth()->user()->can('accounting.show_payroll_checkpoint_financial')
-            || auth()->user()->can('ceomanagment.show_payroll_checkpoint')
-            || auth()->user()->can('generalmanagement.show_payroll_checkpoint')
+        || auth()->user()->can('accounting.show_payroll_checkpoint')
+        || auth()->user()->can('accounting.show_payroll_checkpoint_financial')
+        || auth()->user()->can('ceomanagment.show_payroll_checkpoint')
+        || auth()->user()->can('generalmanagement.show_payroll_checkpoint')
             || $from == "none";
 
         $companies = Company::pluck('name', 'id');
-
 
         if ($from == 'accountant' || $from == 'financial') {
             $company_id = Session::get('selectedCompanyId');
             $payrollGroups = $payrollGroups->where('company_id', $company_id);
         }
-
 
         if (request()->ajax()) {
             return DataTables::of($payrollGroups)
@@ -567,15 +559,18 @@ class PayrollController extends Controller
                 ->addColumn('company', function ($row) use ($companies) {
                     return $companies[$row->company_id];
                 })
+                ->addColumn('date', function ($row) {
+                    return $row->created_at->format('Y-m-d');
+                })
                 ->addColumn('projects', function ($row) {
                     $html = ' <ul role="menu">';
                     $projects = PayrollGroupUser::where('payroll_group_id', $row->id)->pluck('project_name')->unique()->toArray();
-                    foreach ($projects  as   $project) {
+                    foreach ($projects as $project) {
                         $html .= '<li>' . $project . '</li>';
                     }
 
                     $html .= ' </ul>';
-                    return  $html;
+                    return $html;
                 })
                 ->editColumn('hr_management_cleared', function ($row) {
                     if ($row->hr_management_cleared) {
@@ -594,12 +589,12 @@ class PayrollController extends Controller
                             $html .= '<li> ' . $name . '</li>';
                         }
                         $html .= '</ul>';
-                        return    $html;
+                        return $html;
                     }
                     return null;
                 })
 
-                ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
                 ->editColumn('accountant_cleared', function ($row) {
                     if ($row->accountant_cleared) {
                         return __('lang_v1.is_approved');
@@ -614,16 +609,16 @@ class PayrollController extends Controller
                         foreach ($accountant_cleared_by as $user_info) {
                             $user = User::where('id', $user_info->user)->first();
                             $name = ($user->first_name ?? '') . ' ' . ($user->mid_name ?? '') . ' ' . ($user->last_name ?? '') . '<br>';
-                            $name .=  \Carbon\Carbon::parse($user_info->date)->format('Y-m-d H:i:s');
+                            $name .= \Carbon\Carbon::parse($user_info->date)->format('Y-m-d H:i:s');
                             $html .= '<li> ' . $name . '</li>';
                         }
                         $html .= '</ul>';
-                        return    $html;
+                        return $html;
                     }
                     return null;
                 })
 
-                ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
                 ->editColumn('financial_management_cleared', function ($row) {
                     if ($row->financial_management_cleared) {
                         return __('lang_v1.is_approved');
@@ -641,12 +636,12 @@ class PayrollController extends Controller
                             $html .= '<li> ' . $name . '</li>';
                         }
                         $html .= '</ul>';
-                        return    $html;
+                        return $html;
                     }
                     return null;
                 })
 
-                ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
                 ->editColumn('ceo_cleared', function ($row) {
                     if ($row->ceo_cleared) {
                         return __('lang_v1.is_approved');
@@ -664,26 +659,25 @@ class PayrollController extends Controller
                             $html .= '<li> ' . $name . '</li>';
                         }
                         $html .= '</ul>';
-                        return    $html;
+                        return $html;
                     }
                     return null;
                 })
 
-                ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
 
                 ->addColumn('action', function ($row) use ($can_view, $can_clear, $is_admin, $from) {
 
                     $html = '<div class="btn-group">
-                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                    <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                         data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
+                    __('messages.actions') .
                         '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
                     if ($is_admin || $can_view) {
                         $html .= '<li><a href="' . route('payrolls_checkpoint.show', ['id' => $row->id, 'from' => $from]) . '"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
                     }
-
 
                     if (($is_admin || $can_clear) &&
                         (
@@ -701,33 +695,30 @@ class PayrollController extends Controller
                 })
                 ->addColumn('status', function ($row) use ($from) {
 
-
-
                     $html = '';
                     if ($row->hr_management_cleared && $row->accountant_cleared && $row->financial_management_cleared && $row->ceo_cleared_by) {
                         $html .= '<div><a class="btn btn-xs  btn-success"   >' . __('lang_v1.paid') . '</a></div>';
                     }
                     if (($from == 'accountant')) {
-                        $transaction  = Transaction::where('payroll_group_id', $row->id)?->first();
-                        $status =  $transaction?->payment_status;
+                        $transaction = Transaction::where('payroll_group_id', $row->id)?->first();
+                        $status = $transaction?->payment_status;
                         if ($status && $status == 'partial') {
                             $html = '<div class="btn-group">
-                            <button type="button" class="btn btn-info btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
-                                __('lang_v1.partial') .
+                            <button type="button" class="btn btn-info btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' . $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.partial') .
                                 '</button>
                             </div>';
                             return $html;
                         }
                         if ($status && $status != 'paid') {
                             $html = '<div class="btn-group">
-                            <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
-                                __('lang_v1.yet_to_be_paind') .
+                            <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' . $transaction->final_total . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                            __('lang_v1.yet_to_be_paind') .
                                 '</button>
                             </div>';
                             return $html;
                         }
                     }
-
 
                     return $html;
                 })
@@ -735,6 +726,7 @@ class PayrollController extends Controller
                 ->rawColumns([
                     'name',
                     'company',
+                    'date',
                     'projects',
                     'hr_management_cleared',
                     'hr_management_cleared_by',
@@ -745,7 +737,7 @@ class PayrollController extends Controller
                     'ceo_cleared',
                     'ceo_cleared_by',
                     'status',
-                    'action'
+                    'action',
                 ])
                 ->make(true);
         }
@@ -768,7 +760,7 @@ class PayrollController extends Controller
                 'card' => __('lang_v1.card'),
                 'cheque' => __('lang_v1.cheque'),
                 'bank_transfer' => __('lang_v1.bank_transfer'),
-                'other' => __('lang_v1.other')
+                'other' => __('lang_v1.other'),
             ];
             return view('accounting::custom_views.payrolls_index')->with(compact('payment_types', 'projects', 'departments', 'user_types'));
         }
@@ -794,14 +786,14 @@ class PayrollController extends Controller
         if (!empty(request()->input('select_department_id')) && request()->input('select_department_id') != 'all') {
             $select_department_id = request()->input('select_department_id');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
+            $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
                 $query->where('essentials_department_id', $select_department_id);
             });
         }
         if (request()->input('user_type') && request()->input('user_type') != 'all') {
             $user_type = request()->input('user_type');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
+            $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
                 $query->where('user_type', $user_type);
             });
         }
@@ -809,13 +801,12 @@ class PayrollController extends Controller
         if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
             $project_name_filter = request()->input('project_name_filter');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
+            $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
                 $query->where('assigned_to', $project_name_filter);
             });
         }
 
-
-        $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($company_id) {
+        $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($company_id) {
             $query->where('company_id', $company_id);
         });
 
@@ -848,31 +839,25 @@ class PayrollController extends Controller
                 })
                 ->addColumn('status', function ($row) {
 
-
-
                     $html = '';
                     if ($row->status == 'paid') {
-                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
-                            __('lang_v1.paid') .
+                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' . $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                        __('lang_v1.paid') .
                             '</button></div>';
                     } else {
-                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
-                            __('lang_v1.yet_to_be_paind') .
+                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' . $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                        __('lang_v1.yet_to_be_paind') .
                             '</button></div>';
                     }
-
 
                     return $html;
                 })
 
-
-
-
                 ->addColumn('action', function ($row) {
                     $html = '<div class="btn-group">
-                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                    <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                         data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
+                    __('messages.actions') .
                         '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                         </span>
                     </button>
@@ -880,20 +865,14 @@ class PayrollController extends Controller
 
                     $html .= '<li><a href="#" data-href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
 
-
-
                     $html .= '</ul></div>';
 
                     return $html;
-
-
-
 
                     $html = '';
                     if (true) {
                         $html .= '<div><a class="btn btn-xs btn-info btn-modal" href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" ><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></div>';
                     }
-
 
                     return $html;
                 })
@@ -921,14 +900,14 @@ class PayrollController extends Controller
         if (request()->input('select_department_id') && request()->input('select_department_id') != 'all') {
             $select_department_id = request()->input('select_department_id');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
+            $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($select_department_id) {
                 $query->where('essentials_department_id', $select_department_id);
             });
         }
         if (request()->input('user_type') && request()->input('user_type') != 'all') {
             $user_type = request()->input('user_type');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
+            $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($user_type) {
                 $query->where('user_type', $user_type);
             });
         }
@@ -936,7 +915,7 @@ class PayrollController extends Controller
         if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
             $project_name_filter = request()->input('project_name_filter');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
+            $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($project_name_filter) {
                 $query->where('assigned_to', $project_name_filter);
             });
         }
@@ -944,12 +923,10 @@ class PayrollController extends Controller
         if (request()->input('select_company_id') && request()->input('select_company_id') != 'all') {
             $select_company_id = request()->input('select_company_id');
 
-            $payrollGroupUsers =    $payrollGroupUsers->whereHas('user', function ($query) use ($select_company_id) {
+            $payrollGroupUsers = $payrollGroupUsers->whereHas('user', function ($query) use ($select_company_id) {
                 $query->whereIn('company_id', $select_company_id);
             });
         }
-
-
 
         if (request()->ajax()) {
             return DataTables::of($payrollGroupUsers)
@@ -975,35 +952,29 @@ class PayrollController extends Controller
                 ->addColumn('the_total', function ($row) {
                     return $row?->final_salary ?? 0;
                 })->addColumn('penalties', function ($row) {
-                    return $row?->final_salary ?? 0;
-                })
+                return $row?->final_salary ?? 0;
+            })
                 ->addColumn('status', function ($row) {
-
-
 
                     $html = '';
                     if ($row->status == 'paid') {
-                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
-                            __('lang_v1.paid') .
+                        $html .= '<div>  <button type="button" class="btn btn-success btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' . $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                        __('lang_v1.paid') .
                             '</button></div>';
                     } else {
-                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' .  $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
-                            __('lang_v1.yet_to_be_paind') .
+                        $html .= '<div>  <button type="button" class="btn btn-warning btn-xs add_payment_modal" data-id="' . $row->id . '" data-amount="' . $row->final_salary . '" data-toggle="modal" data-target="#createPaymentModal">' .
+                        __('lang_v1.yet_to_be_paind') .
                             '</button></div>';
                     }
-
 
                     return $html;
                 })
 
-
-
-
                 ->addColumn('action', function ($row) {
                     $html = '<div class="btn-group">
-                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                    <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                         data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
+                    __('messages.actions') .
                         '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                         </span>
                     </button>
@@ -1011,20 +982,14 @@ class PayrollController extends Controller
 
                     $html .= '<li><a href="#" data-href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
 
-
-
                     $html .= '</ul></div>';
 
                     return $html;
-
-
-
 
                     $html = '';
                     if (true) {
                         $html .= '<div><a class="btn btn-xs btn-info btn-modal" href="' . route('show_payroll_details', ['id' => $row->id]) . '" data-container=".view_modal" ><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></div>';
                     }
-
 
                     return $html;
                 })
@@ -1052,10 +1017,8 @@ class PayrollController extends Controller
             $payroll_group_user = PayrollGroupUser::where('id', $id)
                 ->first();
 
-
-
             $payroll_grouo = PayrollGroup::where('id', $payroll_group_user->payroll_group_id)->first();
-            $transaction = Transaction::where('payroll_group_id',   $payroll_grouo->id)?->first();
+            $transaction = Transaction::where('payroll_group_id', $payroll_grouo->id)?->first();
             if ($transaction->payment_status && $transaction->payment_status != "paid") {
 
                 $inputs['method'] = $request->payment_method;
@@ -1065,11 +1028,11 @@ class PayrollController extends Controller
                 $inputs['created_by'] = auth()->user()->id;
                 $inputs['note'] = $request->note;
 
-                $payment_line =  TransactionPayment::create($inputs);
+                $payment_line = TransactionPayment::create($inputs);
                 PayrollGroupUser::where('id', $id)->update(['status' => "paid"]);
             }
 
-            $payroll_group_users = PayrollGroupUser::where('payroll_group_id',   $payroll_grouo->id)->get();
+            $payroll_group_users = PayrollGroupUser::where('payroll_group_id', $payroll_grouo->id)->get();
             $paid = true;
             $partial = false;
             foreach ($payroll_group_users as $payroll_user) {
@@ -1080,7 +1043,7 @@ class PayrollController extends Controller
                     $partial = true;
                 }
             }
-            Transaction::where('payroll_group_id',   $payroll_grouo->id)->update([
+            Transaction::where('payroll_group_id', $payroll_grouo->id)->update([
                 'payment_status' => $paid ? 'paid' : ($partial ? 'partial' : 'due'),
             ]);
 
@@ -1121,8 +1084,7 @@ class PayrollController extends Controller
                 $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
                 $inputs['created_by'] = auth()->user()->id;
                 $inputs['note'] = $request->note;
-                $payment_line =  TransactionPayment::create($inputs);
-
+                $payment_line = TransactionPayment::create($inputs);
 
                 $transaction->update(['payment_status' => 'paid']);
             }
@@ -1145,13 +1107,12 @@ class PayrollController extends Controller
     public function show_payroll_details($id)
     {
 
-
         $payrollGroupUser = PayrollGroupUser::with('payrollGroup', 'user')->where('id', $id)->first();
 
         $business_id = request()->session()->get('user.business_id');
 
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $transaction_date =  Carbon::parse($payrollGroupUser->payrollGroup->payroll_date);
+        $transaction_date = Carbon::parse($payrollGroupUser->payrollGroup->payroll_date);
         $department = $payrollGroupUser?->user?->essentials_department_id ? ($departments[$payrollGroupUser->user?->essentials_department_id] ?? '') : '';
         $month_name = $transaction_date->format('F');
         $year = $transaction_date->format('Y');
@@ -1188,7 +1149,6 @@ class PayrollController extends Controller
                 'location',
                 'total_days_present'
             ));
-
 
         // $final_total_in_words = $this->commonUtil->numToIndianFormat($payroll->final_total);
 

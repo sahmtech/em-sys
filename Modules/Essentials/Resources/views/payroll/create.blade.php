@@ -101,17 +101,24 @@
                                     <th style="width:75px;">@lang('essentials::lang.other_allowance')</th>
                                     <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total')</th>
                                     <th style="width:75px;">@lang('essentials::lang.violations')</th>
-                                    <th style="width:75px;">@lang('essentials::lang.absence')</th>
-                                    <th style="width:75px;">@lang('essentials::lang.late_hours')</th>
+                                    <th style="width:75px;">@lang('essentials::lang.absence_days')</th>
+                                    <th style="background-color: rgb(255, 255, 255); width:75px;">@lang('essentials::lang.total_amount_of_absence')</th>
+
+                                    <th style="width:75px;">@lang('essentials::lang.late_hours_numbers')</th>
+                                    <th style="background-color: rgb(255, 255, 255); width:75px;">@lang('essentials::lang.total_amount_of_delay')</th>
+
                                     <th style="width:75px;">@lang('essentials::lang.other_deductions')</th>
                                     <th style="width:75px;">@lang('essentials::lang.loan')</th>
                                     <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_deduction')</th>
                                     @if ($user_type != 'remote_employee')
                                         <th style="width:75px;">@lang('essentials::lang.over_time_hours')</th>
+                                        <th style="background-color: rgb(255, 255, 255); width:75px;">@lang('essentials::lang.total_amount_over_time_hours')</th>
+
                                         <th style="width:75px;">@lang('essentials::lang.additional_addition')</th>
                                         @if ($user_type != 'worker')
                                             <th style="width:75px;">@lang('essentials::lang.other_additions')</th>
                                         @endif
+
                                         <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total_additions')</th>
                                     @endif
                                     <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.final_salary')</th>
@@ -258,6 +265,14 @@
                                                 'class' => 'form-hidden',
                                             ]) !!}
                                         </td>
+                                        <td name="total_amount_absence"><span data-index="{{ $index }}"
+                                                data-field="total_amount_absence">{{ $payroll['total_amount_absence'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][total_amount_absence]', $payroll['total_amount_absence'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'total_amount_absence',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
                                         <td class="editable" name="late"> <span contenteditable="true"
                                                 data-index="{{ $index }}"
                                                 data-field="late">{{ $payroll['late'] }}</span>
@@ -269,6 +284,14 @@
                                             {!! Form::hidden('payrolls[' . $index . '][late_deduction]', $payroll['late_deduction'], [
                                                 'data-index' => $index,
                                                 'data-field' => 'late_deduction',
+                                                'class' => 'form-hidden',
+                                            ]) !!}
+                                        </td>
+                                        <td name="total_amount_of_delay"><span data-index="{{ $index }}"
+                                                data-field="total_amount_of_delay">{{ $payroll['total_amount_of_delay'] }}</span>
+                                            {!! Form::hidden('payrolls[' . $index . '][total_amount_of_delay]', $payroll['total_amount_of_delay'], [
+                                                'data-index' => $index,
+                                                'data-field' => 'total_amount_of_delay',
                                                 'class' => 'form-hidden',
                                             ]) !!}
                                         </td>
@@ -314,6 +337,20 @@
                                                     'class' => 'form-hidden',
                                                 ]) !!}
                                             </td>
+                                            <td name="total_amount_over_time_hours"><span data-index="{{ $index }}"
+                                                    data-field="total_amount_over_time_hours">{{ $payroll['total_amount_over_time_hours'] }}</span>
+                                                {!! Form::hidden(
+                                                    'payrolls[' . $index . '][total_amount_over_time_hours]',
+                                                    $payroll['total_amount_over_time_hours'],
+                                                    [
+                                                        'data-index' => $index,
+                                                        'data-field' => 'total_amount_over_time_hours',
+                                                        'class' => 'form-hidden',
+                                                    ],
+                                                ) !!}
+                                            </td>
+
+
 
                                             <td class="editable" name="additional_addition"> <span contenteditable="true"
                                                     data-index="{{ $index }}"
@@ -861,6 +898,15 @@
 
                 $('input.form-hidden[data-index="' + index + '"][data-field="' + field + '"]').val(
                     newValue);
+
+
+                //new flied
+                if (field == 'absence_deduction') {
+                    updateAbsenceDeduction(index);
+                }
+
+
+
                 if (field == 'absence') {
                     updateAbsenceDeduction(index);
                 }
@@ -930,9 +976,17 @@
                 "'][data-field='over_time_hours']").val()) || 0;
             var total = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='total']").val()) || 0;
+
+            // Basic Salary to calu overtime
+            var salary = parseFloat($("input.form-hidden[data-index='" + index +
+                "'][data-field='salary']").val()) || 0;
             var work_days = parseFloat($("input.form-hidden[data-index='" + index +
                 "'][data-field='work_days']").val()) || 0;
-            var over_time_hours_addition = over_time_hours * ((total / work_days / 8) * 1.5);
+            // var over_time_hours_addition = over_time_hours * ((total / work_days / 8) * 1.5);
+
+            // Overtime account based on Saudi law
+            var over_time_hours_addition = over_time_hours * ((total / work_days / 8) + (salary / work_days / 8) * 0.5);
+
             $("span[data-index='" + index + "'][data-field='over_time_hours_addition']").text(over_time_hours_addition
                 .toFixed(2));
             $("input.form-hidden[data-index='" + index + "'][data-field='over_time_hours_addition']").val(
@@ -987,6 +1041,21 @@
             $("span[data-index='" + index + "'][data-field='total_deduction']").text(total_deduction.toFixed(2));
             $("input.form-hidden[data-index='" + index + "'][data-field='total_deduction']").val(total_deduction.toFixed(
                 2));
+            //  total amount of absence
+            var total_amount_absence = absence_deduction;
+            $("span[data-index='" + index + "'][data-field='total_amount_absence']").text(total_amount_absence.toFixed(2));
+            $("input.form-hidden[data-index='" + index + "'][data-field='total_amount_absence']").val(total_amount_absence
+                .toFixed(
+                    2));
+
+
+            //  total amount of delay
+            var total_amount_of_delay = late_deduction;
+            $("span[data-index='" + index + "'][data-field='total_amount_of_delay']").text(total_amount_of_delay.toFixed(
+                2));
+            $("input.form-hidden[data-index='" + index + "'][data-field='total_amount_of_delay']").val(total_amount_of_delay
+                .toFixed(
+                    2));
         }
 
         function updateTotalAdditions(index) {
@@ -1007,6 +1076,15 @@
                 var total_additions = over_time_hours_addition + additional_addition + other_additions;
                 $("span[data-index='" + index + "'][data-field='total_additions']").text(total_additions.toFixed(2));
                 $("input.form-hidden[data-index='" + index + "'][data-field='total_additions']").val(total_additions
+                    .toFixed(
+                        2));
+
+
+                var total_amount_over_time_hours = over_time_hours_addition;
+                $("span[data-index='" + index + "'][data-field='total_amount_over_time_hours']").text(
+                    total_amount_over_time_hours.toFixed(2));
+                $("input.form-hidden[data-index='" + index + "'][data-field='total_amount_over_time_hours']").val(
+                    total_amount_over_time_hours
                     .toFixed(
                         2));
             }

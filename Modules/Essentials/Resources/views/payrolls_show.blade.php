@@ -50,8 +50,8 @@
                                 <th style="width:75px;">@lang('essentials::lang.other_allowance')</th>
                                 <th style="background-color: rgb(185, 182, 182); width:75px;">@lang('essentials::lang.total')</th>
                                 <th style="width:75px;">@lang('essentials::lang.violations')</th>
-                                <th style="width:75px;">@lang('essentials::lang.absence')</th>
-                                <th style="width:75px;">@lang('essentials::lang.late_hours')</th>
+                                <th style="width:75px;">@lang('essentials::lang.absence_days')</th>
+                                <th style="width:75px;">@lang('essentials::lang.late_hours_numbers')</th>
                                 <th style="width:75px;">@lang('essentials::lang.absence_deduction')</th>
                                 <th style="width:75px;">@lang('essentials::lang.late_deduction')</th>
                                 <th style="width:75px;">@lang('essentials::lang.other_deductions')</th>

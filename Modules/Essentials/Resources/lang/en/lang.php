@@ -200,6 +200,7 @@ return [
     'attendance_by_date' => 'Attendance by date',
     'present' => 'Present',
     'absent' => 'Absent',
+    "absence_days" => "number of days of absence",
     'shift' => 'Shift',
     'no_data_found' => 'No data found',
     'import_attendance' => 'Import Attendance',
@@ -785,5 +786,9 @@ return [
     'added_by' => 'Added by',
     'view_attachment_delivery' => 'View delivery attachments',
     'attachments' => 'attachments',
+    'late_hours_numbers' => 'late hours',
+    'total_amount_of_absence' => 'Total amount of absence',
+    'total_amount_of_delay' => 'Total amount of delay',
+    'total_amount_over_time_hours' => 'Total overtime hours',
 
 ];

@@ -241,6 +241,7 @@ return [
     "attendance_by_date" => "الحضور حسب التاريخ",
     "present" => "الحضور",
     "absent" => "الغياب",
+    "absence_days" => "عدد ايام الغياب",
     "shift" => "الوردية",
     "no_data_found" => "لاتوجد بيانات",
     "import_attendance" => "استيراد الحضور",
@@ -1782,12 +1783,16 @@ return [
     'transportation_allowance' => 'بدل النقل',
     'other_allowance' => 'بدلات أخرى',
     'total' => 'إجمالي',
+    'total_amount_of_absence' => 'إجمالي مبلغ الغياب',
+    'total_amount_of_delay' => 'إجمالي مبلغ التأخير',
+
     'violations' => 'مخالفات',
     'absence' => 'غياب',
     'other_deductions' => 'خصومات أخرى',
     'loan' => 'سلف',
     'total_deduction' => 'إجمالي المستقطع',
     'over_time_hours' => 'ساعات إضافية',
+    'total_amount_over_time_hours' => 'إجمالي ساعات العمل الإضافي ',
     'additional_addition' => 'مبلغ إضافي',
     'other_additions' => 'استحقاقات أخرى',
     'total_additions' => 'إجمالي الإضافات',
@@ -1810,6 +1815,7 @@ return [
     'save' => 'حفظ',
     'user_type.remote_employee' => 'موظفين عن بعد',
     'late_hours' => 'تأخير',
+    'late_hours_numbers' => 'ساعات التأخير',
     'list_of_emp' => ' قائمة  الموظفين',
     'view_salary_info' => ' تفاصيل الراتب',
     'edit' => 'تعديل',
@@ -2042,6 +2048,5 @@ return [
     'added_by' => 'تمت إضافته بواسطة',
     'view_attachment_delivery' => 'عرض مرفقات التسليم',
     'attachments' => 'المرفقات',
-
 
 ];
