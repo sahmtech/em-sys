@@ -815,8 +815,8 @@ class RequestUtil extends Util
 
         $saleProjects = SalesProject::all()->pluck('name', 'id');
         $companies = Company::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::pluck('name', 'id');
 
-        $departments = EssentialsDepartment::whereIn('id', $departmentIds)->pluck('name', 'id');
         $departments_needs = EssentialsDepartment::whereBetween('id', [26, 42])->pluck('name', 'id');
 
         $requestsProcess = null;
@@ -929,7 +929,7 @@ class RequestUtil extends Util
 
             error_log(request()->input('department'));
             $department = request()->input('department');
-            
+
             $requestsProcess->where(function ($query) use ($department) {
                 $query->where(function ($subQuery) use ($department) {
                     $subQuery->where('wk_procedures.department_id', $department)
@@ -954,6 +954,8 @@ class RequestUtil extends Util
         }
         $requests = $requestsProcess->get();
 
+        // dd($requests->first());
+
         foreach ($requests as $request) {
             $tasksDetails = DB::table('request_procedure_tasks')
                 ->join('procedure_tasks', 'procedure_tasks.id', '=', 'request_procedure_tasks.procedure_task_id')
@@ -965,13 +967,15 @@ class RequestUtil extends Util
 
             $request->tasksDetails = $tasksDetails;
         }
-        // dd(request()->input('department'));
+        // dd($departments);
+        // dd($requests->first()->status);
         if (request()->ajax()) {
 
             return DataTables::of($requests ?? [])
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at);
                 })
+
                 ->editColumn('request_type_id', function ($row) use ($allRequestTypes) {
                     if ($row->request_type_id) {
                         return $allRequestTypes[$row->request_type_id];
@@ -1008,6 +1012,7 @@ class RequestUtil extends Util
 
                     return $all_users[$row->created_by];
                 })
+
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departments, $departmentIds, $departmentIdsForGeneralManagment, $statuses) {
                     if ($row->status && $row->is_transfered_from_GM == 0) {
                         $status = '';
@@ -1140,6 +1145,7 @@ class RequestUtil extends Util
                 ->editColumn('can_return', function ($row) use ($is_admin, $can_return_request, $can_show_request, $departmentIds, $departmentIdsForGeneralManagment) {
                     $buttonsHtml = '';
                     if ($departmentIdsForGeneralManagment) {
+
                         if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIdsForGeneralManagment)) {
                             if ($is_admin || $can_return_request) {
                                 $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->id . '">' . trans('request.return_the_request') . '</button>';

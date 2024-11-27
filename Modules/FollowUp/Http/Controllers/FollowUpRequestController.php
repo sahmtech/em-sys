@@ -4,25 +4,22 @@ namespace Modules\FollowUp\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleRequest;
-use App\Utils\RequestUtil;
-use App\AccessRoleProject;
 use App\Business;
+use App\Company;
+use App\Request as UserRequest;
 use App\RequestProcess;
-use Modules\Sales\Entities\SalesProject;
+use App\User;
+use App\Utils\ModuleUtil;
+use App\Utils\RequestUtil;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
-use App\Request as UserRequest;
 use Illuminate\Support\Facades\DB;
-use App\User;
-use Modules\Essentials\Entities\EssentialsDepartment;
-use App\Company;
-use Modules\FollowUp\Entities\FollowupWorkerRequest;
-
-use Carbon\Carbon;
 use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Sales\Entities\SalesProject;
+use Yajra\DataTables\Facades\DataTables;
 
 class FollowUpRequestController extends Controller
 {
@@ -56,12 +53,12 @@ class FollowUpRequestController extends Controller
     }
     public function requests()
     {
+
         $business_id = request()->session()->get('user.business_id');
 
         $can_change_status = auth()->user()->can('followup.change_request_status');
         $can_return_request = auth()->user()->can('followup.return_request');
         $can_show_request = auth()->user()->can('followup.show_request');
-
 
         $departmentIds = EssentialsDepartment::where(function ($query) {
             $query->where('name', 'LIKE', '%متابعة%')
@@ -69,9 +66,9 @@ class FollowUpRequestController extends Controller
                     $query->where('name', 'LIKE', '%تشغيل%')
                         ->where('name', 'LIKE', '%أعمال%');
                 })->orWhere(function ($query) {
-                    $query->where('name', 'LIKE', '%تشغيل%')
-                        ->where('name', 'LIKE', '%شركات%');
-                });
+                $query->where('name', 'LIKE', '%تشغيل%')
+                    ->where('name', 'LIKE', '%شركات%');
+            });
         })
             ->pluck('id')->toArray();
 
@@ -90,14 +87,14 @@ class FollowUpRequestController extends Controller
                         $query->where('name', 'LIKE', '%تشغيل%')
                             ->where('name', 'LIKE', '%أعمال%');
                     })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%شركات%');
+                });
             })->pluck('id')->toArray();
         $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-
+        // dd($departmentIds);
 
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'followup::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], true);
     }
@@ -112,9 +109,9 @@ class FollowUpRequestController extends Controller
                     $query->where('name', 'LIKE', '%تشغيل%')
                         ->where('name', 'LIKE', '%أعمال%');
                 })->orWhere(function ($query) {
-                    $query->where('name', 'LIKE', '%تشغيل%')
-                        ->where('name', 'LIKE', '%شركات%');
-                });
+                $query->where('name', 'LIKE', '%تشغيل%')
+                    ->where('name', 'LIKE', '%شركات%');
+            });
         })
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);
@@ -122,6 +119,7 @@ class FollowUpRequestController extends Controller
 
     public function filteredRequests()
     {
+
         error_log(request()->query('filter'));
         $business_id = request()->session()->get('user.business_id');
 
@@ -137,9 +135,9 @@ class FollowUpRequestController extends Controller
                     $query->where('name', 'LIKE', '%تشغيل%')
                         ->where('name', 'LIKE', '%أعمال%');
                 })->orWhere(function ($query) {
-                    $query->where('name', 'LIKE', '%تشغيل%')
-                        ->where('name', 'LIKE', '%شركات%');
-                });
+                $query->where('name', 'LIKE', '%تشغيل%')
+                    ->where('name', 'LIKE', '%شركات%');
+            });
         })
             ->pluck('id')->toArray();
 
@@ -186,7 +184,7 @@ class FollowUpRequestController extends Controller
             'users.company_id',
 
             DB::raw("IF(process.superior_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_superior"),
-            DB::raw("IF(process.started_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_started")
+            DB::raw("IF(process.started_department_id IN (" . implode(',', $departmentIds) . "), 1, 0) as is_started"),
 
         ])
             ->leftJoinSub($latestProcessesSubQuery, 'latest_process', function ($join) {
@@ -206,7 +204,6 @@ class FollowUpRequestController extends Controller
                     ->orWhereIn('process.superior_department_id', $departmentIds)
                     ->orWhereIn('process.started_department_id', $departmentIds);
             })
-
 
             ->whereIn('requests.related_to', $userIds)
             ->where(function ($query) {
@@ -242,13 +239,10 @@ class FollowUpRequestController extends Controller
                 ->select('tasks.description', 'request_procedure_tasks.id', 'request_procedure_tasks.procedure_task_id', 'tasks.link', 'request_procedure_tasks.isDone', 'procedure_tasks.procedure_id')
                 ->get();
 
-
             $request->tasksDetails = $tasksDetails;
         }
 
-
         if (request()->ajax()) {
-
 
             return DataTables::of($requests ?? [])
                 ->editColumn('created_at', function ($row) {
@@ -265,7 +259,7 @@ class FollowUpRequestController extends Controller
                     }
                 })
 
-                ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds,  $statuses) {
+                ->editColumn('status', function ($row) use ($is_admin, $can_change_status, $departmentIds, $statuses) {
                     if ($row->status) {
                         $status = '';
                         if ($row->action_type === 'accept_reject' || $row->action_type === null) {
@@ -274,7 +268,7 @@ class FollowUpRequestController extends Controller
                             if ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
                                 if ($is_admin || $can_change_status) {
                                     $status = '<span class="label ' . $statuses[$row->status]['class'] . '">'
-                                        . __($statuses[$row->status]['name']) . '</span>';
+                                    . __($statuses[$row->status]['name']) . '</span>';
                                     $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                                 }
                             }
@@ -340,8 +334,6 @@ class FollowUpRequestController extends Controller
                                 }
                             } elseif ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
 
-
-
                                 if ($row->tasksDetails) {
                                     $status = '<ul style="list-style-type:none; padding-left: 0;">';
 
@@ -371,9 +363,6 @@ class FollowUpRequestController extends Controller
                             }
                         }
 
-
-
-
                         return $status;
                     }
                 })
@@ -382,7 +371,6 @@ class FollowUpRequestController extends Controller
                     $buttonsHtml = '';
 
                     if ($row->can_return == 1 && $row->status == 'pending' && in_array($row->department_id, $departmentIds) && $row->start != '1') {
-
 
                         if ($is_admin || $can_return_request) {
                             $buttonsHtml .= '<button class="btn btn-danger btn-sm btn-return" data-request-id="' . $row->process_id . '">' . trans('request.return_the_request') . '</button>';
@@ -398,10 +386,8 @@ class FollowUpRequestController extends Controller
 
                 ->rawColumns(['status', 'request_type_id', 'can_return'])
 
-
                 ->make(true);
         }
-
 
         return view('followup::requests.custom_filtered_requests')->with(compact('pageName', 'filter'));
     }
@@ -423,9 +409,9 @@ class FollowUpRequestController extends Controller
                     $query->where('name', 'LIKE', '%تشغيل%')
                         ->where('name', 'LIKE', '%أعمال%');
                 })->orWhere(function ($query) {
-                    $query->where('name', 'LIKE', '%تشغيل%')
-                        ->where('name', 'LIKE', '%شركات%');
-                });
+                $query->where('name', 'LIKE', '%تشغيل%')
+                    ->where('name', 'LIKE', '%شركات%');
+            });
         })
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);

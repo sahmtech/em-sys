@@ -1315,7 +1315,7 @@
             </div>
         </div>
 
-             @include('request.change_request_status')
+        @include('request.change_request_status')
         @include('request.changeAfterTransferModal')
 
 
@@ -1360,9 +1360,12 @@
                         },
                         orderable: false,
                         searchable: false,
-                    }, {
+                    },
+
+                    {
                         data: 'company_id'
-                    }, {
+                    },
+                    {
                         data: 'request_no'
                     },
                     {
