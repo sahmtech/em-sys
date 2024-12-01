@@ -15,7 +15,6 @@
     @if (Session::has('error'))
         toastr.error("{{ Session::session('error') }}");
     @endif
-
     <section class="content-header">
         <h1>
             <span>@lang('followup::lang.workers')</span>

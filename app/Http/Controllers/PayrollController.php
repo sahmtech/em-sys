@@ -6,6 +6,7 @@ use App\AccessRole;
 use App\AccessRoleCompany;
 use App\BusinessLocation;
 use App\Company;
+use App\ContactLocation;
 use App\PayrollGroup;
 use App\PayrollGroupUser;
 use App\Transaction;
@@ -41,6 +42,7 @@ class PayrollController extends Controller
     }
     public function show_payrolls_checkpoint($id, $from)
     {
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         $companies_ids = Company::pluck('id')->toArray();
@@ -71,6 +73,7 @@ class PayrollController extends Controller
                 'u.first_name',
                 'u.mid_name',
                 'u.last_name',
+                'u.contact_location_id',
                 'u.bank_details',
                 'u.assigned_to',
                 'u.id',
@@ -118,6 +121,7 @@ class PayrollController extends Controller
             $total_amount_of_delay = floatval($user->total_amount_of_delay);
             $total_amount_over_time_hours = floatval($user->total_amount_over_time_hours);
             $total_amount_absence = floatval($user->total_amount_absence);
+            // dd($user);
 
             return [
                 'id' => $user->user_id,
@@ -126,7 +130,7 @@ class PayrollController extends Controller
                 'identity_card_number' => $user->id_proof_number,
                 'company' => $user->company_id ? ($companies[$user->company_id] ?? '') : '',
                 'project_name' => $user->assigned_to ? $projects[$user->assigned_to] ?? '' : '',
-                'region' => $user->region ?? '',
+                'region' => ContactLocation::find($user->contact_location_id)->name ?? '',
                 'work_days' => $user->work_days,
                 'salary' => $salary,
                 'housing_allowance' => $housing_allowance,

@@ -91,6 +91,9 @@
                                     @if ($user_type != 'remote_employee' && $user_type != 'worker')
                                         <td name="profession">{{ $payroll['profession'] ?? '' }}</td>
                                     @endif
+                                    <td name="region">{{ $payroll['region'] }}</td>
+
+                                    
                                     <td name="work_days">{{ $payroll['work_days'] }}</td>
                                     <td name="salary">
                                         {{ is_numeric($payroll['salary']) ? number_format(floatval($payroll['salary']), 2) : $payroll['salary'] }}

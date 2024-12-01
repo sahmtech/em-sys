@@ -2,40 +2,40 @@
 
 namespace App;
 
-use Illuminate\Support\Facades\DB;
+use App\Contact;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Laravel\Passport\HasApiTokens;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Modules\Essentials\Entities\WorkCard;
-use App\Contact;
-use Illuminate\Support\Facades\Session;
-use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeesFamily;
+use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\EssentialsWorkCard;
-use Modules\HousingMovements\Entities\Car;
-use Modules\InternationalRelations\Entities\IrProposedLabor;
-use Modules\Sales\Entities\SalesProject;
-use Spatie\Permission\Traits\HasRoles;
-use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\UserLeaveBalance;
+use Modules\Essentials\Entities\WorkCard;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\HelpDesk\Entities\HdTicket;
 use Modules\HelpDesk\Entities\HdTicketReply;
+use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
-use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
-use Modules\Essentials\Entities\EssentialsEmployeesFamily;
-use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\HousingMovements\Entities\HtrRoom;
 use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
+use Modules\InternationalRelations\Entities\IrProposedLabor;
+use Modules\Sales\Entities\SalesProject;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -72,8 +72,6 @@ class User extends Authenticatable
      * Get the business that owns the user.
      */
 
-
-
     public function appointment()
     {
         return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id')->where('is_active', 1);
@@ -99,7 +97,6 @@ class User extends Authenticatable
         return $this->hasOne(EssentialsEmployeesInsurance::class, 'employee_id');
     }
 
-
     public function company()
     {
         return $this->belongsTo(\App\Company::class);
@@ -112,7 +109,6 @@ class User extends Authenticatable
                 return $value == 'customer' || $value == 'customer_user' || $value == 'admin' || $value == 'user';
             })->toArray();
     }
-
 
     public function scopeUser($query)
     {
@@ -241,8 +237,6 @@ class User extends Authenticatable
      * @return array users
      */
 
-
-
     public static function usersAccountingForDropdown($business_id, $prepend_none = true, $include_commission_agents = false, $prepend_all = false, $check_location_permission = false)
     {
         $company_id = Session::get('selectedCompanyId');
@@ -267,7 +261,6 @@ class User extends Authenticatable
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-
 
         //Prepend none
         if ($prepend_none) {
@@ -297,7 +290,6 @@ class User extends Authenticatable
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-
 
         //Prepend none
         if ($prepend_none) {
@@ -482,27 +474,20 @@ class User extends Authenticatable
         return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id')->where('is_active', 1);
     }
 
-
-
     public function proposal_worker()
     {
         return $this->belongsTo(IrProposedLabor::class, 'proposal_worker_id');
     }
-
 
     public function allowancesAndDeductions()
     {
         return $this->belongsToMany(EssentialsAllowanceAndDeduction::class, 'essentials_user_allowance_and_deductions', 'user_id', 'allowance_deduction_id');
     }
 
-
-
     public function assignedTo()
     {
         return $this->belongsTo(SalesProject::class, 'assigned_to');
     }
-
-
 
     public function rooms()
     {
@@ -514,11 +499,9 @@ class User extends Authenticatable
         return $this->hasMany(HtrRoomsWorkersHistory::class, 'worker_id');
     }
 
-
     public function calculateTotalSalary()
     {
         $allowances = $this->userAllowancesAndDeductions;
-
 
         $totalSalary = $this->essentials_salary;
 
@@ -608,7 +591,6 @@ class User extends Authenticatable
         return $this->hasMany(HtrRoomsWorkersHistory::class, 'worker_id', 'id');
     }
 
-
     public function sentNotificationsUser()
     {
         return $this->hasMany(SentNotificationsUser::class, 'user_id');
@@ -671,5 +653,10 @@ class User extends Authenticatable
     public function payrollGroupUser()
     {
         return $this->hasMany(PayrollGroupUser::class, 'user_id');
+    }
+
+    public function contactLocation()
+    {
+        return $this->belongsTo(ContactLocation::class, 'contact_location_id');
     }
 }
