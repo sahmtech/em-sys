@@ -1195,7 +1195,7 @@ class RequestUtil extends Util
         ));
     }
 
-    ////// store request ///////////////////
+    // store request  //
     public function storeRequest($request, $departmentIds)
     {
 

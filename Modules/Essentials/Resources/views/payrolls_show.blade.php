@@ -42,6 +42,9 @@
                                 @if ($user_type != 'remote_employee' && $user_type != 'worker')
                                     <th style="width:75px;">@lang('essentials::lang.profession')</th>
                                 @endif
+                                {{-- city --}}
+                                <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
+
 
                                 <th style="width:75px;">@lang('essentials::lang.work_days')</th>
                                 <th style="width:75px;">@lang('essentials::lang.salary')</th>

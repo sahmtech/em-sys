@@ -27,6 +27,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/getUserProjectsPermissions/{userId}', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'getUserProjectsPermissions'])->name('getUserProjectsPermissions');
         Route::post('/projects_access_permissions/store', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'store'])->name('projects_access_permissions.store');
         Route::get('/workers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
+        Route::get('/get-contact-locations/{project_id}', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'selectedProject'])->name('contact.locations');
+
         Route::get('/workers/{id}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('showWorker');
 
         //Route::get('/createWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'createWorker'])->name('createWorker');
@@ -64,6 +66,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');
         Route::post('/storeSelectedRowsRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'storeSelectedRowsRequest'])->name('storeSelectedRowsRequest');
 
+        Route::post('/storeSelectedRowsBranchRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'storeSelectedRowsBranchRequest'])->name('storeSelectedRowsBranchRequest');
+
         Route::get('/allRequests', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests'])->name('allRequests');
 
         Route::get('/viewRequest/{requestId}', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'viewRequest'])->name('viewRequest');
@@ -100,7 +104,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/shifts-search', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'search'])->name('shifts-search');
         Route::put('/shifts-update/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'update'])->name('shifts-update');
         Route::delete('/shifts-delete/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'destroy'])->name('shifts-delete');
-        Route::get('/projects-by-contacts/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'ProjectsByContacts'])->name('ProjectsByContacts');
+        Route::get('/projects-by-contacts/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'ProjectsByContacts']);
 
         // Documents
         Route::get('/documents', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index'])->name('documents');

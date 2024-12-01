@@ -11,7 +11,9 @@ use App\RequestProcess;
 use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\RequestUtil;
+use App\WorkersBranch;
 use Carbon\Carbon;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -416,4 +418,51 @@ class FollowUpRequestController extends Controller
             ->pluck('id')->toArray();
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
+
+    public function storeSelectedRowsBranchRequest(Request $request)
+    {
+        try {
+            $userIdsArray = json_decode($request->user_id, true);
+
+            $newUserIds = array_map(function ($item) {
+                return (string) $item['id'];
+            }, $userIdsArray);
+
+            foreach ($newUserIds as $userId) {
+                // Deactivate existing active row for the user and set leave_date to the current timestamp
+                WorkersBranch::where('user_id', $userId)
+                    ->where('is_active', 1)
+                    ->update([
+                        'is_active' => 0,
+                        'leave_date' => now(), // Set the leave_date to the current timestamp
+                    ]);
+
+                // Create a new active row for the user
+                WorkersBranch::create([
+                    'user_id' => $userId,
+                    'contact_location_id' => $request->contact_location,
+                    'leave_date' => null,
+                    'is_active' => 1,
+                ]);
+
+                // Update the user's contact_location_id
+                $user = User::findOrFail($userId);
+                $user->update([
+                    'contact_location_id' => $request->contact_location,
+                ]);
+            }
+
+            // Redirect with success toast message
+            // Display a success toast with no title
+            return redirect()->back()->with('success', 'تمت الإضافة بنجاح');
+
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error("Error in storeSelectedRowsBranchRequest: {$e->getMessage()}");
+
+            // Redirect with failure toast message
+            return redirect()->back()->with('error', 'An error occurred while processing the branch request. Please try again.');
+        }
+    }
+
 }

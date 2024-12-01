@@ -32,6 +32,10 @@
     <title>@yield('title') - {{ Session::get('business.name') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    {{-- toastr --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
@@ -118,6 +122,13 @@
         }
     </style>
     <script src='//fw-cdn.com/11549296/4203905.js' chat='true'></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+
+
+
 </head>
 
 <body
@@ -129,6 +140,7 @@
                 body.className += " sidebar-collapse";
             }
         </script>
+
 
         @if (!$pos_layout)
             @include('layouts.partials.header')

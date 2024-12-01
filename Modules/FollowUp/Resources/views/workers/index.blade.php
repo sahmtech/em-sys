@@ -1,8 +1,20 @@
 @extends('layouts.app')
+
+@section('styles')
+    {{-- @include('layouts.toastr') <!-- Include Toastr assets and config --> --}}
+@endsection
+
 @section('title', __('followup::lang.workers'))
 
 @section('content')
 
+    @if (Session::has('success'))
+        toastr.success("{{ Session::session('success') }}");
+    @endif
+
+    @if (Session::has('error'))
+        toastr.error("{{ Session::session('error') }}");
+    @endif
 
     <section class="content-header">
         <h1>
@@ -200,6 +212,14 @@
                             @lang('request.create_order')
                         </button>
                     @endif
+                    {{-- add to branch --}}
+
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.add_request'))
+                        <button type="button" class="btn btn-primary btn-sm custom-btn" id="add-branch-selected">
+                            @lang('request.add_branch')
+                        </button>
+                    @endif
+
                 </div>
 
             </div>
@@ -249,6 +269,8 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
             </div>
+
+
             <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog"
                 aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
@@ -525,49 +547,91 @@
                     </div>
                 </div>
             </div>
-        @endcomponent
-        <div class="modal fade" id="askForWorkerModal" tabindex="-1" role="dialog"
-            aria-labelledby="askForWorkerModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="askForWorkerModalLabel">@lang('essentials::lang.ask_for_worker')</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="askForWorkerForm">
-                            @csrf
-                            <div class="form-group">
-                                <label for="worker_identifier">@lang('essentials::lang.worker_identifier')</label>
-                                <input type="text" class="form-control" id="worker_identifier"
-                                    name="worker_identifier" required>
+
+            <div class="modal fade" id="addBranchModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        {!! Form::open(['route' => 'storeSelectedRowsBranchRequest', 'enctype' => 'multipart/form-data']) !!}
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('request.add_branch')</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+
+
+                                <input type="hidden" name="user_id" id="selectedRowsData3" />
+
+                                <!-- Contact Location Dropdown -->
+                                <div class="form-group col-md-6">
+                                    <div class="form-group">
+                                        {!! Form::label('contact_location', __('request.branches') . ':') !!}
+                                        {!! Form::select('contact_location', [], null, [
+                                            'class' => 'form-control select2',
+                                            'style' => 'width:100%;padding:2px;',
+                                            'placeholder' => __('lang_v1.select_branch'),
+                                            'id' => 'contact_location',
+                                        ]) !!}
+                                    </div>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">@lang('essentials::lang.submit')</button>
-                        </form>
 
-                        <!-- Worker info section -->
-                        <div id="worker-info" style="display:none; margin-top: 20px;">
-                            <h5>@lang('essentials::lang.worker_information')</h5>
-                            <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
-                            <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
-                            <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
-                            <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                                <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">@lang('messages.close')</button>
+                            </div>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                </div>
+            @endcomponent
+            <div class="modal fade" id="askForWorkerModal" tabindex="-1" role="dialog"
+                aria-labelledby="askForWorkerModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="askForWorkerModalLabel">@lang('essentials::lang.ask_for_worker')</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="@lang('essentials::lang.close')">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="askForWorkerForm">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="worker_identifier">@lang('essentials::lang.worker_identifier')</label>
+                                    <input type="text" class="form-control" id="worker_identifier"
+                                        name="worker_identifier" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">@lang('essentials::lang.submit')</button>
+                            </form>
 
-                            <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
-                            <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span id="worker_residence_permit_expiration"></span>
-                            </p>
-                            <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
-                            <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span></p>
-                            <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
-                            <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
-                            <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                            <!-- Worker info section -->
+                            <div id="worker-info" style="display:none; margin-top: 20px;">
+                                <h5>@lang('essentials::lang.worker_information')</h5>
+                                <p><strong>@lang('essentials::lang.full_name'):</strong> <span id="worker_full_name"></span></p>
+                                <p><strong>@lang('essentials::lang.emp_number'):</strong> <span id="worker_emp_number"></span></p>
+                                <p><strong>@lang('essentials::lang.status'):</strong> <span id="worker_status"></span></p>
+                                <p><strong>@lang('essentials::lang.sub_status'):</strong> <span id="worker_sub_status"></span></p>
+
+                                <p><strong>@lang('essentials::lang.id_proof_number'):</strong> <span id="worker_id_proof_number"></span></p>
+                                <p><strong>@lang('essentials::lang.residence_permit_expiration'):</strong> <span
+                                        id="worker_residence_permit_expiration"></span>
+                                </p>
+                                <p><strong>@lang('essentials::lang.passport_number'):</strong> <span id="worker_passport_number"></span></p>
+                                <p><strong>@lang('essentials::lang.passport_expire_date'):</strong> <span id="worker_passport_expire_date"></span></p>
+                                <p><strong>@lang('essentials::lang.border_number'):</strong> <span id="worker_border_no"></span></p>
+                                <p><strong>@lang('essentials::lang.company_name'):</strong> <span id="worker_company_name"></span></p>
+                                <p><strong>@lang('essentials::lang.assigned_to'):</strong> <span id="worker_assigned_to"></span></p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
 
     </section>
@@ -657,7 +721,7 @@
                         data: 'id_proof_number'
                     },
                     {
-                        "data": "company_name"
+                        data: 'company_name'
                     },
                     {
                         data: 'passport_number'
@@ -865,6 +929,23 @@
             });
 
 
+            $('#add-branch-selected').click(function() {
+                var selectedRows = $('.select-row:checked').map(function() {
+                    return {
+                        id: $(this).data('id'),
+                        company_name: $(this).data('company_name'),
+                    };
+                }).get();
+                console.log(selectedRows);
+                // debugger
+                $('#selectedRowsData3').val(JSON.stringify(selectedRows));
+                $('#addBranchModal').modal('show');
+            });
+
+
+
+
+
         });
         chooseFields = function() {
 
@@ -989,6 +1070,15 @@
                 $('#requestType').select2({
                     dropdownParent: $(
                         '#addRequestModal'),
+                    width: '100%',
+                });
+            });
+
+
+            $('#addBranchModal').on('shown.bs.modal', function(e) {
+                $('#requestType').select2({
+                    dropdownParent: $(
+                        '#addBranchModal'),
                     width: '100%',
                 });
             });
@@ -1156,6 +1246,64 @@
 
 
 
+
+
+        });
+
+
+
+        $(document).ready(function() {
+            // Initialize select2
+            $('.select2').select2();
+
+            // Listen to change event on project_name_filter
+            $('#project_name_filter').on('change', function() {
+                const projectId = $(this).val(); // Get the selected project ID
+
+                // Check if projectId is valid
+                if (projectId) {
+                    // Generate the URL using the named route
+                    const url = "{{ route('contact.locations', ':project_id') }}".replace(':project_id',
+                        projectId);
+
+                    // Make an AJAX request to fetch the contact locations based on selected project_id
+                    $.ajax({
+                        url: url, // Use the dynamically generated URL
+                        type: 'GET',
+                        success: function(response) {
+                            console.log(
+                                response); // Log the entire response to inspect its structure
+                            // debugger;
+
+                            // Clear the contact_location dropdown
+                            $('#contact_location').empty().append('<option value="">' +
+                                "{{ __('lang_v1.all') }}" + '</option>');
+
+                            if (response.data && response.data.length > 0) {
+                                // Populate the contact_location dropdown with options
+                                response.data.forEach(function(location) {
+                                    $('#contact_location').append(
+                                        `<option value="${location.id}">${location.name}</option>`
+                                    );
+                                });
+
+                                // Reinitialize select2 after adding options
+                                $('#contact_location').select2();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            // Log error details
+                            console.error('Error fetching contact locations:', error);
+                            console.error('XHR Response:', xhr.responseText);
+                        }
+                    });
+                } else {
+                    // If no project is selected, reset the contact_location dropdown
+                    $('#contact_location').empty().append('<option value="">' + "{{ __('lang_v1.all') }}" +
+                        '</option>');
+                    $('#contact_location').select2();
+                }
+            });
 
 
         });

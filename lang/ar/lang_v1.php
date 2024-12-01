@@ -1557,8 +1557,8 @@ return [
     'start_time' => 'بدء العمل',
     'end_time' => 'انتهاء العمل',
     'an_unexpected_error_occurred' => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى لاحقًا أو الاتصال بالدعم إذا استمرت المشكلة.',
-    'sales_management' =>'إدارة المبيعات',
-    'preparation_time_in_minutes'=>'وقت التحضير بالدقائق',
+    'sales_management' => 'إدارة المبيعات',
+    'preparation_time_in_minutes' => 'وقت التحضير بالدقائق',
     'update_product_price' => 'تحديث الاسعار',
     'import_export_product_price' => 'سعر المنتج للاستيراد والتصدير',
     'export_product_prices' => 'أسعار منتجات التصدير',
@@ -1566,7 +1566,7 @@ return [
     'price_import_instruction_2' => 'إجراء تغييرات في سعر المنتج بما في ذلك مجموعات الضرائب وسعر البيع.',
     'price_import_instruction_3' => 'لا تقم بتغيير اسم أي منتج أو رمز SKU أو العناوين',
     'price_import_instruction_4' => 'بعد إجراء التغييرات قم باستيراد الملف',
-     'product_prices_imported_successfully'=>'تم استيراد أسعار المنتجات بنجاح',
+    'product_prices_imported_successfully' => 'تم استيراد أسعار المنتجات بنجاح',
     'selling_price_help_text' => 'حدد أسعارًا متعددة للمنتجات. قم بتسمية سعر مختلف ثم تحديث السعر من "تحديث السعر" أو قائمة المنتجات -> الإجراءات -> إضافة أو تعديل أسعار المجموعة',
-     
+    'select_branch' => 'الرجاء اختيار فرع',
 ];

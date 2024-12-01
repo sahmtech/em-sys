@@ -317,5 +317,6 @@ return [
     'edit_project' => 'Edit Projects',
 
     //  ''=>'',
+    'add_branch' => 'Add to branch',
 
 ];

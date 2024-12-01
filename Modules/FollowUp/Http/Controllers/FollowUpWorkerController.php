@@ -2,45 +2,35 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
-
 use App\Category;
-
-use App\AccessRole;
-use App\AccessRoleProject;
-
-use App\WorkerProjectsHistory;
 use App\User;
-
+use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
+use App\WorkerProjectsHistory;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsCountry;
-use Spatie\Activitylog\Models\Activity;
-use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
-
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\CEOManagment\Entities\RequestsType;
+use Modules\CEOManagment\Entities\WkProcedure;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentialsLeaveType;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
-use Modules\CEOManagment\Entities\WkProcedure;
-
-use Modules\CEOManagment\Entities\RequestsType;
-
-use Modules\Essentials\Entities\EssentialsLeaveType;
-use App\Utils\NewArrivalUtil;
-
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Spatie\Activitylog\Models\Activity;
+use Yajra\DataTables\Facades\DataTables;
 
 class FollowUpWorkerController extends Controller
 {
@@ -51,7 +41,6 @@ class FollowUpWorkerController extends Controller
     protected $moduleUtil;
     protected $newArrivalUtil;
 
-
     public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
         $this->moduleUtil = $moduleUtil;
@@ -59,7 +48,6 @@ class FollowUpWorkerController extends Controller
     }
     public function index()
     {
-
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -71,7 +59,6 @@ class FollowUpWorkerController extends Controller
             ]);
         }
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -82,7 +69,7 @@ class FollowUpWorkerController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         if (!($is_admin || $is_manager)) {
-            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id', auth()->user()->id)->pluck('sales_project_id');
             $userIds = User::whereIn('id', $userIds)->whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
             $contacts_fillter = ['none' => __('messages.undefined')] + SalesProject::all()->pluck('name', 'id')->toArray();
         }
@@ -111,7 +98,8 @@ class FollowUpWorkerController extends Controller
         )->orderBy('users.id', 'desc')
             ->groupBy('users.id');
 
-
+        $project_Ids = $users;
+        // dd($project_Ids);
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -186,8 +174,8 @@ class FollowUpWorkerController extends Controller
                         return ' ';
                     }
                 })->addColumn('company_name', function ($user) {
-                    return optional($user->company)->name ?? ' ';
-                })
+                return optional($user->company)->name ?? ' ';
+            })
 
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
@@ -229,12 +217,12 @@ class FollowUpWorkerController extends Controller
 
                     return $user->dob ?? '';
                 })->addColumn('insurance', function ($user) {
-                    if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
-                        return __('followup::lang.has_insurance');
-                    } else {
-                        return __('followup::lang.has_not_insurance');
-                    }
-                })
+                if ($user->essentialsEmployeesInsurance && $user->essentialsEmployeesInsurance->is_deleted == 0) {
+                    return __('followup::lang.has_insurance');
+                } else {
+                    return __('followup::lang.has_not_insurance');
+                }
+            })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -257,9 +245,9 @@ class FollowUpWorkerController extends Controller
                     $query->where('name', 'LIKE', '%تشغيل%')
                         ->where('name', 'LIKE', '%أعمال%');
                 })->orWhere(function ($query) {
-                    $query->where('name', 'LIKE', '%تشغيل%')
-                        ->where('name', 'LIKE', '%شركات%');
-                });
+                $query->where('name', 'LIKE', '%تشغيل%')
+                    ->where('name', 'LIKE', '%شركات%');
+            });
         })
             ->pluck('id')->toArray();
         $requestTypeIds = WkProcedure::distinct()
@@ -283,11 +271,21 @@ class FollowUpWorkerController extends Controller
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
         $saleProjects = SalesProject::all()->pluck('name', 'id');
 
-
-        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities', 'requestTypes', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes'));
+        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr', 'fields', 'nationalities', 'requestTypes', 'main_reasons', 'classes', 'saleProjects', 'leaveTypes'));
     }
 
+    public function selectedProject($project_id)
+    {
 
+        $contactLocations = DB::table('contact_locations')
+            ->where('sales_project_id', $project_id)
+            ->get(['id', 'name']); // Adjust as necessary
+
+        return response()->json([
+            'data' => $contactLocations,
+        ]);
+
+    }
 
     public function upload_attachments(Request $request)
     {
@@ -301,7 +299,7 @@ class FollowUpWorkerController extends Controller
                     'issue_date',
                     'issue_place',
                     'expiration_date',
-                    'file'
+                    'file',
                 ]
             );
 
@@ -311,7 +309,7 @@ class FollowUpWorkerController extends Controller
             $input2['number'] = $input['doc_number'];
             $input2['issue_date'] = $input['issue_date'];
             $input2['expiration_date'] = $input['expiration_date'];
-            $input2['employee_id'] =  $request->input('worker_id');
+            $input2['employee_id'] = $request->input('worker_id');
             $input2['issue_place'] = $input['issue_place'];
             $input2['is_active'] = 1;
             if (request()->hasFile('file')) {
@@ -337,7 +335,6 @@ class FollowUpWorkerController extends Controller
             ];
         }
 
-
         return redirect()->route('showWorker', ['id' => $worker_id])->with($output);
     }
     private function getDocumentExpirationDate($user, $documentType)
@@ -361,7 +358,6 @@ class FollowUpWorkerController extends Controller
 
         return ' ';
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -390,13 +386,10 @@ class FollowUpWorkerController extends Controller
     public function show($id)
     {
 
-
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
-
-
 
         $documents = null;
         $document_delivery = null;
@@ -418,20 +411,15 @@ class FollowUpWorkerController extends Controller
             $document_delivery = FollowupDeliveryDocument::where('user_id', $user->id)->get();
         }
 
-
-
-
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
         }
 
-
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -448,10 +436,8 @@ class FollowUpWorkerController extends Controller
         //     $specialization = "";
         // }
 
-
         $user->profession = $profession;
         // $user->specialization = $specialization;
-
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
 
@@ -470,9 +456,6 @@ class FollowUpWorkerController extends Controller
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
 
-
-
-
         return view('followup::workers.show')->with(compact(
             'user',
             'view_partials',
@@ -488,7 +471,6 @@ class FollowUpWorkerController extends Controller
             'document_delivery',
         ));
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -512,7 +494,6 @@ class FollowUpWorkerController extends Controller
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
 
-
             if (!$selectedRowsData) {
                 $output = [
                     'success' => false,
@@ -532,7 +513,6 @@ class FollowUpWorkerController extends Controller
 
                 $worker->assigned_to = null;
                 $worker->save();
-
 
                 $history = new WorkerProjectsHistory();
 
