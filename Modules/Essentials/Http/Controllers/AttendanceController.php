@@ -430,12 +430,6 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if ($is_admin) {
-            $employees = User::
-                select('id', DB::raw("CONCAT(first_name, ' ', mid_name, ' ', last_name) as name"))
-                ->pluck('name', 'id')
-                ->toArray();
-        }
 
         $attendance = EssentialsAttendance::where('essentials_attendances.business_id', $business_id)
             ->join('users as u', 'u.id', '=', 'essentials_attendances.user_id')
@@ -457,6 +451,48 @@ class AttendanceController extends Controller
             ])
 
             ->groupBy('essentials_attendances.id');
+        if ($is_admin) {
+            $employees = User::
+                select('id', DB::raw("CONCAT(first_name, ' ', mid_name, ' ', last_name) as name"))
+                ->pluck('name', 'id')
+                ->toArray();
+        } else {
+            $attendanceIds = $attendance->pluck('user_id')->toArray();
+
+            $roles = auth()->user()->roles;
+
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+                $userCompaniesForRoleIds = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+
+            }
+
+            $usersAttendanceIds = User::whereIn('company_id', $userCompaniesForRoleIds)
+                ->whereIn('id', $attendanceIds)
+                ->pluck('id')
+                ->toArray();
+
+            $attendance = $attendance->whereIn('user_id', $usersAttendanceIds);
+
+            $employeesIds = $attendance->pluck('user_id')->toArray();
+
+            $employees = User::whereIn('id', $employeesIds)
+                ->select('id', DB::raw("CONCAT(first_name, ' ', mid_name, ' ', last_name) as name"))
+                ->pluck('name', 'id')
+                ->toArray();
+            $attendanceIds = $attendance->pluck('user_id')->toArray();
+
+            // Step 2: Get the IDs of users belonging to the current company
+            $usersAttendanceIds = User::where('company_id', auth()->user()->company_id)
+                ->whereIn('id', $attendanceIds)
+                ->pluck('id')
+                ->toArray();
+
+            // Step 3: Filter attendance IDs to include only those found in $usersAttendanceIds
+            $attendance = $attendance->whereIn('user_id', $usersAttendanceIds);
+
+        }
 
         $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
 
@@ -494,41 +530,6 @@ class AttendanceController extends Controller
             $permitted_locations = auth()->user()->permitted_locations();
 
             if ($permitted_locations != 'all') {
-
-                $attendanceIds = $attendance->pluck('user_id')->toArray();
-
-                $roles = auth()->user()->roles;
-
-                foreach ($roles as $role) {
-
-                    $accessRole = AccessRole::where('role_id', $role->id)->first();
-                    $userCompaniesForRoleIds = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
-
-                }
-
-                $usersAttendanceIds = User::whereIn('company_id', $userCompaniesForRoleIds)
-                    ->whereIn('id', $attendanceIds)
-                    ->pluck('id')
-                    ->toArray();
-
-                $attendance = $attendance->whereIn('user_id', $usersAttendanceIds);
-
-                $employeesIds = $attendance->pluck('user_id')->toArray();
-
-                $employees = User::whereIn('id', $employeesIds)
-                    ->select('id', DB::raw("CONCAT(first_name, ' ', mid_name, ' ', last_name) as name"))
-                    ->pluck('name', 'id')
-                    ->toArray();
-                $attendanceIds = $attendance->pluck('user_id')->toArray();
-
-                // Step 2: Get the IDs of users belonging to the current company
-                $usersAttendanceIds = User::where('company_id', auth()->user()->company_id)
-                    ->whereIn('id', $attendanceIds)
-                    ->pluck('id')
-                    ->toArray();
-
-                // Step 3: Filter attendance IDs to include only those found in $usersAttendanceIds
-                $attendance = $attendance->whereIn('user_id', $usersAttendanceIds);
 
                 // $permitted_locations_array = [];
 
