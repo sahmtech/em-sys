@@ -451,7 +451,7 @@ class AttendanceController extends Controller
             ])
 
             ->groupBy('essentials_attendances.id');
-        if ($is_admin) {
+        if ($is_admin == true) {
             $employees = User::
                 select('id', DB::raw("CONCAT(first_name, ' ', mid_name, ' ', last_name) as name"))
                 ->pluck('name', 'id')
