@@ -8,6 +8,7 @@
     </section>
     <!-- Main content -->
     <section class="content">
+        {{-- {{ $employees }} --}}
         @if (session('notification') || !empty($notification))
             <div class="row">
                 <div class="col-sm-12">
@@ -112,6 +113,7 @@
                                 @can('essentials.crud_all_attendance')
                                     <div class="col-md-3">
                                         <div class="form-group">
+
                                             {!! Form::label('employee_id', __('essentials::lang.employee') . ':') !!}
                                             {!! Form::select('employee_id', $employees, null, [
                                                 'class' => 'form-control select2',

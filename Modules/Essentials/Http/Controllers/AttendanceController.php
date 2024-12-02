@@ -9,16 +9,15 @@ use App\Company;
 use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsAttendance;
 use Modules\Essentials\Entities\EssentialsAttendanceStatus;
 use Modules\Essentials\Entities\Shift;
 use Modules\Essentials\Utils\EssentialsUtil;
-use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
 
 class AttendanceController extends Controller
@@ -49,8 +48,6 @@ class AttendanceController extends Controller
         $business_id = $user->business_id;
         $business = Business::where('id', $business_id)->first();
 
-
-
         if (!$year) {
             $year = Carbon::now()->year;
         }
@@ -58,12 +55,10 @@ class AttendanceController extends Controller
             $month = Carbon::now()->month;
         }
 
-
         $attendanceList = EssentialsAttendance::where([['user_id', '=', $user->id], ['business_id', '=', $business_id]])->with('shift')->get();
         $firstDayOfMonth = Carbon::createFromDate($year, $month, 1);
         $lastDayOfMonth = $firstDayOfMonth->copy()->endOfMonth();
         $month_name = Carbon::create()->month($month)->format('F');
-
 
         //days before
         $daysBefore = [];
@@ -105,7 +100,7 @@ class AttendanceController extends Controller
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 8,
                 'month' => $month == 1 ? 12 : $month - 1,
-                'year' =>  $month == 1 ? $year - 1 : $year,
+                'year' => $month == 1 ? $year - 1 : $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status == 1 ? 'حضور' : (($status == 2 || $status == 3) ? 'تأخير' : ($status == 4 ? 'غياب' : '')),
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
@@ -154,7 +149,7 @@ class AttendanceController extends Controller
             $days[] = [
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 8,
-                'month' => (int)$month,
+                'month' => (int) $month,
                 'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status == 1 ? 'حضور' : (($status == 2 || $status == 3) ? 'تأخير' : ($status == 4 ? 'غياب' : '')),
@@ -162,7 +157,6 @@ class AttendanceController extends Controller
                 'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
             ];
         }
-
 
         //days after
         $daysAfter = [];
@@ -214,9 +208,6 @@ class AttendanceController extends Controller
             $day->addDay();
         }
 
-
-
-
         $res = [
             'attended' => $attended_in_this_month,
             'late' => $late_in_this_month,
@@ -242,7 +233,6 @@ class AttendanceController extends Controller
         try {
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
             $companies_ids = Company::pluck('id')->unique()->toArray();
             if (!$is_admin) {
 
@@ -260,7 +250,6 @@ class AttendanceController extends Controller
                     $qu2->where('contract_type_id', 3);
                 });
             })->whereDate('clock_in_time', Carbon::today())->inRandomOrder()->get();
-
 
             foreach ($attendances as $attendance) {
                 $startTime = Carbon::createFromTime(16, 45, 0, 'Asia/Riyadh');
@@ -291,7 +280,6 @@ class AttendanceController extends Controller
         try {
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
             $companies_ids = Company::pluck('id')->unique()->toArray();
             if (!$is_admin) {
 
@@ -305,7 +293,6 @@ class AttendanceController extends Controller
                 }
             }
 
-
             $user = auth()->user();
             $business_id = $user->business_id;
             $business = Business::findOrFail($business_id);
@@ -313,7 +300,6 @@ class AttendanceController extends Controller
             $users_ids = User::whereHas('contract', function ($qu) {
                 $qu->where('contract_type_id', 3);
             })->whereIn('company_id', $companies_ids)->inRandomOrder()->pluck('users.id')->toArray();
-
 
             $attendances = EssentialsAttendance::whereHas('employee', function ($qu) use ($companies_ids) {
                 $qu->whereIn('company_id', $companies_ids)->whereHas('contract', function ($qu2) {
@@ -326,7 +312,7 @@ class AttendanceController extends Controller
             // Get the number of attendances
             $attendancesCount = $attendances->count();
 
-            if ($usersCount ==    $attendancesCount) {
+            if ($usersCount == $attendancesCount) {
                 $output = [
                     'success' => true,
                     'msg' => __('lang_v1.already_clocked_in'),
@@ -334,7 +320,7 @@ class AttendanceController extends Controller
                 return redirect()->back()->with('status', $output);
             }
 
-            foreach ($users_ids as  $user_id) {
+            foreach ($users_ids as $user_id) {
 
                 $startTime = Carbon::createFromTime(8, 45, 0, 'Asia/Riyadh');
 
@@ -367,7 +353,6 @@ class AttendanceController extends Controller
     public function manual_attendance()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $companies_ids = Company::pluck('id')->unique()->toArray();
         if (!$is_admin) {
@@ -431,7 +416,7 @@ class AttendanceController extends Controller
         }
         $clock_in = '';
         $rand = $attendance->whereDate('clock_in_time', Carbon::today())->first();
-        if ($rand && $rand->clock_in_time  &&  $rand->clock_out_time == null) {
+        if ($rand && $rand->clock_in_time && $rand->clock_out_time == null) {
             $clock_in = "not empty";
         }
         return view('essentials::attendance.manual_attendance')->with(compact('clock_in'));
@@ -445,6 +430,57 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $attendance = EssentialsAttendance::where('essentials_attendances.business_id', $business_id)
+            ->join('users as u', 'u.id', '=', 'essentials_attendances.user_id')
+            ->leftjoin('essentials_shifts as es', 'es.id', '=', 'essentials_attendances.essentials_shift_id')
+            ->select([
+                'essentials_attendances.id',
+                'essentials_attendances.status_id as status',
+                'user_id',
+                'clock_in_time',
+                'clock_out_time',
+                'clock_in_note',
+                'clock_out_note',
+                'ip_address',
+                DB::raw('DATE(clock_in_time) as date'),
+                DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'es.name as shift_name',
+                'clock_in_location',
+                'clock_out_location',
+            ])
+
+            ->groupBy('essentials_attendances.id');
+
+        $attendanceIds = $attendance->pluck('user_id')->toArray();
+
+        $roles = auth()->user()->roles;
+
+        foreach ($roles as $role) {
+
+            $accessRole = AccessRole::where('role_id', $role->id)->first();
+            $userCompaniesForRoleIds = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+
+        }
+        // dd($userCompaniesForRoleIds);
+
+        // Step 2: Get the IDs of users belonging to the current company
+        $usersAttendanceIds = User::whereIn('company_id', $userCompaniesForRoleIds)
+            ->whereIn('id', $attendanceIds)
+            ->pluck('id')
+            ->toArray();
+
+        // Step 3: Filter attendance IDs to include only those found in $usersAttendanceIds
+        $attendance = $attendance->whereIn('user_id', $usersAttendanceIds);
+
+        $employeesIds = $attendance->pluck('user_id')->toArray();
+
+        $employees = User::whereIn('id', $employeesIds)
+            ->select('id', DB::raw("CONCAT(first_name, ' ', mid_name, ' ', last_name) as name"))
+            ->pluck('name', 'id')
+            ->toArray();
+
+        // dd($employees);
 
         $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
 
@@ -464,6 +500,7 @@ class AttendanceController extends Controller
                 ->select([
                     'essentials_attendances.id',
                     'essentials_attendances.status_id as status',
+                    'user_id',
                     'clock_in_time',
                     'clock_out_time',
                     'clock_in_note',
@@ -474,20 +511,36 @@ class AttendanceController extends Controller
                     'es.name as shift_name',
                     'clock_in_location',
                     'clock_out_location',
-                ])->groupBy('essentials_attendances.id');
+                ])
+
+                ->groupBy('essentials_attendances.id');
 
             $permitted_locations = auth()->user()->permitted_locations();
 
             if ($permitted_locations != 'all') {
-                $permitted_locations_array = [];
 
-                foreach ($permitted_locations as $loc_id) {
-                    $permitted_locations_array[] = 'location.' . $loc_id;
-                }
-                $permission_ids = Permission::whereIn('name', $permitted_locations_array)
-                    ->pluck('id');
+                $attendanceIds = $attendance->pluck('user_id')->toArray();
 
-                $attendance->join('model_has_permissions as mhp', 'mhp.model_id', '=', 'u.id')->whereIn('mhp.permission_id', $permission_ids);
+                // Step 2: Get the IDs of users belonging to the current company
+                $usersAttendanceIds = User::where('company_id', auth()->user()->company_id)
+                    ->whereIn('id', $attendanceIds)
+                    ->pluck('id')
+                    ->toArray();
+
+                // Step 3: Filter attendance IDs to include only those found in $usersAttendanceIds
+                $attendance = $attendance->whereIn('user_id', $usersAttendanceIds);
+
+                // $permitted_locations_array = [];
+
+                // foreach ($permitted_locations as $loc_id) {
+                //     $permitted_locations_array[] = 'location.' . $loc_id;
+                // }
+                // $permission_ids = Permission::whereIn('name', $permitted_locations_array)
+                //     ->pluck('id');
+
+                // $attendance->join('model_has_permissions as mhp', 'mhp.model_id', '=', 'u.id')->whereIn('mhp.permission_id', $permission_ids);
+                // Step 1: Get the user IDs from attendance records
+
             }
 
             if (!empty(request()->input('employee_id'))) {
@@ -500,14 +553,14 @@ class AttendanceController extends Controller
                     ->whereDate('clock_in_time', '<=', $end);
             }
 
-            if (!$can_crud_all_attendance && $can_view_own_attendance) {
-                $attendance->where('essentials_attendances.user_id', auth()->user()->id);
-            }
+            // if (!$can_crud_all_attendance && $can_view_own_attendance) {
+            //     $attendance->where('essentials_attendances.user_id', auth()->user()->id);
+            // }
 
             return Datatables::of($attendance)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin,  $can_edit_all_attendance,   $can_delete_all_attendance) {
+                    function ($row) use ($is_admin, $can_edit_all_attendance, $can_delete_all_attendance) {
                         $html = '';
                         if ($is_admin || $can_edit_all_attendance) {
                             $html .= '<a href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$row->id])}}  " class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
@@ -581,10 +634,10 @@ class AttendanceController extends Controller
             ->where('user_id', auth()->user()->id)
             ->whereNull('clock_out_time')
             ->first();
-        $employees = [];
-        if ($can_crud_all_attendance) {
-            $employees = User::forDropdown($business_id, false);
-        }
+        // $employees = [];
+        // if ($can_crud_all_attendance) {
+        //     $employees = User::forDropdown($business_id, false);
+        // }
 
         $days = $this->moduleUtil->getDays();
 
@@ -602,8 +655,6 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         $employees = User::forDropdown($business_id, false);
 
         return view('essentials::attendance.create')->with(compact('employees'));
@@ -620,7 +671,6 @@ class AttendanceController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
-
 
         try {
             $attendance = $request->input('attendance');
@@ -678,7 +728,6 @@ class AttendanceController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
 
-
         $attendance = EssentialsAttendance::where('business_id', $business_id)
             ->with(['employee'])
             ->find($id);
@@ -697,7 +746,6 @@ class AttendanceController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
-
 
         try {
             $input = $request->only(['clock_in_time', 'clock_out_time', 'ip_address', 'clock_in_note', 'clock_out_note']);
@@ -766,8 +814,6 @@ class AttendanceController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
 
-
-
         //Check if employees allowed to add their own attendance
         $settings = request()->session()->get('business.essentials_settings');
         $settings = !empty($settings) ? json_decode($settings, true) : [];
@@ -829,8 +875,6 @@ class AttendanceController extends Controller
     public function getUserAttendanceSummary()
     {
         $business_id = request()->session()->get('user.business_id');
-
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_id = $is_admin ? request()->input('user_id') : auth()->user()->id;
@@ -954,8 +998,6 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         $start_date = request()->input('start_date');
         $end_date = request()->input('end_date');
 
@@ -997,8 +1039,6 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
             $notAllowed = $this->moduleUtil->notAllowedInDemo();
@@ -1112,8 +1152,6 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         $user = User::where('business_id', $business_id)
             ->findOrFail($user_id);

@@ -43,7 +43,9 @@
                                     <th style="width:75px;">@lang('essentials::lang.profession')</th>
                                 @endif
                                 {{-- city --}}
-                                <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
+                                @if ($user_type == 'worker')
+                                    <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
+                                @endif
 
 
                                 <th style="width:75px;">@lang('essentials::lang.work_days')</th>
@@ -93,7 +95,7 @@
                                     @endif
                                     <td name="region">{{ $payroll['region'] }}</td>
 
-                                    
+
                                     <td name="work_days">{{ $payroll['work_days'] }}</td>
                                     <td name="salary">
                                         {{ is_numeric($payroll['salary']) ? number_format(floatval($payroll['salary']), 2) : $payroll['salary'] }}
