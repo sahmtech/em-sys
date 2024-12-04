@@ -1257,4 +1257,28 @@
         updateTheTotalTotalAdditions();
         updateTheTotalFinalSalary();
     </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editableCells = document.querySelectorAll('.editable span[contenteditable="true"]');
+
+            editableCells.forEach(cell => {
+                const tdElement = cell.closest('td');
+
+                // Store the original value
+                const originalValue = cell.innerText.trim();
+
+                // Detect changes in the contenteditable span
+                cell.addEventListener('input', function() {
+                    // If the content is different from the original, change the td color
+                    if (cell.innerText.trim() !== originalValue) {
+                        tdElement.style.color = '#eba834';
+                    } else {
+                        tdElement.style.color = ''; // Reset the color if value is back to original
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

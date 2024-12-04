@@ -826,6 +826,9 @@ class EssentialsWorkersAffairsController extends Controller
 
             ]);
 
+            $user = User::find($id);
+
+
             $existingprofnumber = null;
             $existingBordernumber = null;
 
@@ -833,6 +836,7 @@ class EssentialsWorkersAffairsController extends Controller
                 $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))
                     ->where('id', '!=', $id)
                     ->first();
+
             }
             if ($request->input('border_no')) {
                 $existingBordernumber = User::where('border_no', $request->input('border_no'))
@@ -873,7 +877,27 @@ class EssentialsWorkersAffairsController extends Controller
                 }
                 if (!empty($request->input('border_no'))) {
                     $user_data['border_no'] = $request->input('border_no');
+                } else {
+                    $user_data['border_no'] = $user->border_no;
+
                 }
+
+                if (!empty($request->input('id_proof_number'))) {
+                    $user_data['id_proof_number'] = $request->input('id_proof_number');
+                } else {
+                    $user_data['id_proof_number'] = $user->id_proof_number;
+
+                }
+
+                if ($user->id_proof_number) {
+                    $user_data['id_proof_name'] = 'eqama';
+
+                }
+
+                if ($request->filled('id_proof_number') || !empty($user->id_proof_number)) {
+                    $user_data['id_proof_number'] = $request->input('id_proof_number') ?? $user->id_proof_number;
+                }
+
                 if (!empty($request->input('nationality'))) {
                     $user_data['nationality_id'] = $request->input('nationality');
                 }

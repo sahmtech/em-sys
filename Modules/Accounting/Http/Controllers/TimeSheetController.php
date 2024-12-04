@@ -4,27 +4,24 @@ namespace Modules\Accounting\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use App\Business;
+use App\Category;
+use App\Company;
+use App\TimesheetGroup;
 use App\TimesheetUser;
 use App\User;
-use App\TimesheetGroup;
 use App\Utils\ModuleUtil;
-use Modules\Sales\Entities\SalesProject;
-use App\Category;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use App\Company;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Session;
+use Modules\Sales\Entities\SalesProject;
+use Yajra\DataTables\Facades\DataTables;
 
 class TimeSheetController extends Controller
 {
     protected $moduleUtil;
-
-
 
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -44,7 +41,6 @@ class TimeSheetController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-
         // if ($is_admin) {
         $projects = SalesProject::pluck('name', 'id')->toArray();
         // } else {
@@ -52,7 +48,6 @@ class TimeSheetController extends Controller
         //         ->pluck('sales_project_id')
         //         ->toArray();
         // }
-
 
         $worker_ids = User::whereIn('id', $userIds)
             ->whereIn('assigned_to', $projects)
@@ -74,7 +69,6 @@ class TimeSheetController extends Controller
             ->pluck('worker', 'id')
             ->toArray();
 
-
         $departments = Category::forDropdown($business_id, 'hrm_department');
         $designations = Category::forDropdown($business_id, 'hrm_designation');
 
@@ -84,12 +78,13 @@ class TimeSheetController extends Controller
 
     public function create()
     {
+        
         $companies = Company::pluck('name', 'id');
         $project_id = request()->input('projects');
         $employee_ids = request()->input('employee_ids');
         $month_year = request()->input('month_year');
         $workers = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
-            ->whereIn('users.id',  $employee_ids)
+            ->whereIn('users.id', $employee_ids)
             ->select(
                 'users.*',
                 'users.id as user_id',
@@ -100,7 +95,7 @@ class TimeSheetController extends Controller
                 'users.essentials_pay_period as wd',
             )->get();
 
-        $businesses = Business::pluck('name', 'id',);
+        $businesses = Business::pluck('name', 'id', );
         $projects = SalesProject::pluck('name', 'id');
         $currentDateTime = Carbon::now('Asia/Riyadh');
         $month = $currentDateTime->month;
@@ -171,19 +166,17 @@ class TimeSheetController extends Controller
                 'timesheet_groups.is_approved_by_accounting',
                 'timesheet_groups.accounting_approved_by',
 
-
-
             ]);
         if (request()->input('project_name_filter') && request()->input('project_name_filter') != 'all') {
             $project_name_filter = request()->input('project_name_filter');
 
-            $payrolls =    $payrolls->where('project_id', $project_name_filter);
+            $payrolls = $payrolls->where('project_id', $project_name_filter);
         }
 
         if (request()->input('select_company_id') && request()->input('select_company_id') != 'all') {
             $select_company_id = request()->input('select_company_id');
 
-            $payrolls =    $payrolls->whereIn('company_id', $select_company_id);
+            $payrolls = $payrolls->whereIn('company_id', $select_company_id);
         }
         $all_users = User::where('status', '!=', 'inactive')
             ->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))
@@ -194,9 +187,9 @@ class TimeSheetController extends Controller
         return DataTables::of($payrolls)
             ->addColumn('action', function ($row) use ($user, $is_admin) {
                 $html = '<div class="btn-group">
-                            <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                            <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                                 data-toggle="dropdown" aria-expanded="false">' .
-                    __('messages.actions') .
+                __('messages.actions') .
                     '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">';
@@ -241,6 +234,7 @@ class TimeSheetController extends Controller
     }
     public function agentTimeSheetUsers()
     {
+
         $timesheetUsers = TimesheetUser::join('users as u', 'u.id', '=', 'timesheet_users.user_id')
             ->join('timesheet_groups', 'timesheet_groups.id', '=', 'timesheet_users.timesheet_group_id')
             ->select([
@@ -251,7 +245,7 @@ class TimeSheetController extends Controller
                 'timesheet_users.final_salary',
                 'timesheet_groups.payment_status',
                 'timesheet_groups.name',
-                'timesheet_users.id'
+                'timesheet_users.id',
             ]);
 
         return DataTables::of($timesheetUsers)
@@ -263,9 +257,9 @@ class TimeSheetController extends Controller
                 function ($row) {
 
                     $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                                     data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
+                    __('messages.actions') .
                         '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                     </span>
                                 </button>
@@ -292,6 +286,7 @@ class TimeSheetController extends Controller
     }
     public function dealTimeSheet($id)
     {
+
         try {
             $authUser = auth()->user();
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -314,7 +309,6 @@ class TimeSheetController extends Controller
                     }
                 }
             }
-
 
             $timesheetGroup = TimesheetGroup::findOrFail($id);
 
@@ -348,14 +342,14 @@ class TimeSheetController extends Controller
                 $approved_by = json_decode($timesheetGroup->approved_by);
             }
             $approved_by[] = [
-                'user' =>  $authUser->id,
-                'date' => $date
+                'user' => $authUser->id,
+                'date' => $date,
             ];
 
             $hasPendingApprovals = TimesheetUser::where('timesheet_group_id', $id)->where('is_approved', 0)->count() == 0;
 
             TimesheetGroup::where('id', $id)->update([
-                'is_approved' =>  $hasPendingApprovals,
+                'is_approved' => $hasPendingApprovals,
                 'approved_by' => json_encode($approved_by),
             ]);
             return redirect()->route('hrm.agentTimeSheetIndex')->with('status', [
@@ -384,7 +378,7 @@ class TimeSheetController extends Controller
             $user2 = User::where('id', $user->user_id)->first();
             $payrolls[] = [
                 'id' => $user->user_id,
-                'name' => $user2->first_name . ' '  . $user2->last_name,
+                'name' => $user2->first_name . ' ' . $user2->last_name,
                 'nationality' => $user2->country->nationality ?? '',
                 'residency' => $user->id_proof_number,
                 'monthly_cost' => $user->monthly_cost,
@@ -420,6 +414,7 @@ class TimeSheetController extends Controller
 
     public function submitTmeSheet(Request $request)
     {
+
         $business_id = 1;
         $action = $request->input('action'); // Get the action (create or edit)
         $timesheet_group_id = $request->input('timesheet_group_id'); // Get the timesheet group ID for edit action
@@ -481,7 +476,7 @@ class TimeSheetController extends Controller
                         'deductions' => $payroll['deductions'],
                         'additions' => $payroll['additions'],
                         'final_salary' => $payroll['final_salary'],
-                        'created_by' => auth()->user()->id
+                        'created_by' => auth()->user()->id,
                     ]);
                 }
             }
@@ -505,10 +500,9 @@ class TimeSheetController extends Controller
         return redirect()->route('accounting.agentTimeSheetIndex')->with('status', $output);
     }
 
-
-
     public function showTimeSheet($id)
     {
+
         $company_id = Session::get('selectedCompanyId');
         $timesheetGroup = TimesheetGroup::findOrFail($id);
         $timesheetUsers = TimeSheetUser::where('timesheet_group_id', $id)
@@ -522,7 +516,7 @@ class TimeSheetController extends Controller
                 'u.bank_details',
 
                 'u.assigned_to',
-                'u.id'
+                'u.id',
             ])
             ->get();
 
@@ -540,7 +534,7 @@ class TimeSheetController extends Controller
         $payrolls = $timesheetUsers->map(function ($user) use ($projects, $companies) {
             return [
                 'id' => $user->user_id,
-                'name' => $user->first_name . ' '  . $user->last_name,
+                'name' => $user->first_name . ' ' . $user->last_name,
                 'nationality' => User::find($user->id)->country?->nationality ?? '',
                 'residency' => $user->id_proof_number,
                 'monthly_cost' => $user->monthly_cost,

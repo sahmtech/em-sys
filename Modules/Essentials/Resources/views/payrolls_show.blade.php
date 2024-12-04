@@ -34,6 +34,8 @@
                                     <th style="width:100px;">@lang('essentials::lang.residence_permit')</th>
                                     <th style="width:75px;">@lang('essentials::lang.company')</th>
                                     <th style="width:75px;">@lang('essentials::lang.project_name')</th>
+                                    {{-- city --}}
+
                                     <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
                                 @endif
                                 @if ($user_type != 'worker')
@@ -42,10 +44,7 @@
                                 @if ($user_type != 'remote_employee' && $user_type != 'worker')
                                     <th style="width:75px;">@lang('essentials::lang.profession')</th>
                                 @endif
-                                {{-- city --}}
-                                @if ($user_type == 'worker')
-                                    <th style="width:75px;">@lang('essentials::lang.issuing_location')</th>
-                                @endif
+
 
 
                                 <th style="width:75px;">@lang('essentials::lang.work_days')</th>
@@ -93,7 +92,8 @@
                                     @if ($user_type != 'remote_employee' && $user_type != 'worker')
                                         <td name="profession">{{ $payroll['profession'] ?? '' }}</td>
                                     @endif
-                                    <td name="region">{{ $payroll['region'] }}</td>
+
+
 
 
                                     <td name="work_days">{{ $payroll['work_days'] }}</td>
@@ -143,7 +143,7 @@
                                         {{ is_numeric($payroll['final_salary']) ? number_format(floatval($payroll['final_salary']), 2) : $payroll['final_salary'] }}
                                     </td>
                                     @if ($user_type != 'remote_employee')
-                                        <td name="payment_method">{{ $payroll['payment_method'] }}</td>
+                                        <td name="payment_method">{{ $payroll['payment_method'] }} </td>
                                     @endif
                                     <td name="notes">{{ $payroll['notes'] }}</td>
                                 </tr>
@@ -257,3 +257,5 @@
         }
     </style>
 @endsection
+
+

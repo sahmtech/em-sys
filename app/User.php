@@ -474,6 +474,8 @@ class User extends Authenticatable
         return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id')->where('is_active', 1);
     }
 
+    
+
     public function proposal_worker()
     {
         return $this->belongsTo(IrProposedLabor::class, 'proposal_worker_id');

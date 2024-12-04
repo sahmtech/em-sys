@@ -533,6 +533,7 @@ class PayrollController extends Controller
     }
     public function index()
     {
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $companies_ids = Company::pluck('id')->toArray();
@@ -842,6 +843,7 @@ class PayrollController extends Controller
 
     public function create()
     {
+
         $companies_ids = request()->input('companies', []);
         $projects_ids = request()->input('projects', []);
         $departments_ids = request()->input('departments', []);
@@ -952,6 +954,19 @@ class PayrollController extends Controller
 
                 $profession = $worker->appointment?->profession?->name ?? '';
                 $salesProject = SalesProject::pluck('name', 'id');
+
+                $officialDocument = $worker->OfficialDocument()
+                    ->whereIn('type', ['residence_permit', 'national_id']) // Replace 'desired_type' with the type you're checking for
+                    ->where('expiration_date', '>=', now()) // Use `now()` to get the current date and time
+                    ->latest()
+                    ->first();
+
+                if ($worker->bank_details != null && $officialDocument != null) {
+                    $bankDetails = "ATM";
+
+                } else {
+                    $bankDetails = "كـاش";
+                }
                 $payrolls[] = [
                     'id' => $worker->user_id,
                     'name' => $worker->name ?? '',
@@ -986,7 +1001,7 @@ class PayrollController extends Controller
                     'other_additions' => $additions ?? 0,
                     'total_additions' => $additions ?? 0,
                     'final_salary' => $final_salary ?? 0,
-                    'payment_method' => '',
+                    'payment_method' => $bankDetails ?? '',
                     'notes' => '',
                     'timesheet_user_id' => $timesheet?->id ?? '',
                     // 'timesheet_group_id' => $timesheet?->timesheet_group_id ?? '',
@@ -1027,6 +1042,19 @@ class PayrollController extends Controller
 
                 $profession = $worker->appointment?->profession?->name ?? '';
                 $salesProject = SalesProject::pluck('name', 'id');
+                $officialDocument = $worker->OfficialDocument()
+                    ->whereIn('type', ['residence_permit', 'national_id']) // Replace 'desired_type' with the type you're checking for
+                    ->where('expiration_date', '>=', now()) // Use `now()` to get the current date and time
+                    ->latest()
+                    ->first();
+
+                if ($worker->bank_details != null && $officialDocument != null) {
+                    $bankDetails = "ATM";
+
+                } else {
+                    $bankDetails = "كـاش";
+                }
+
                 $payrolls[] = [
                     'id' => $worker->user_id,
                     'name' => $worker->name ?? '',
@@ -1061,7 +1089,7 @@ class PayrollController extends Controller
                     'other_additions' => $additions ?? 0,
                     'total_additions' => $additions ?? 0,
                     'final_salary' => $final_salary ?? 0,
-                    'payment_method' => '',
+                    'payment_method' => $bankDetails ?? '',
                     'notes' => '',
                     'timesheet_user_id' => $timesheet?->id ?? '',
                     // 'timesheet_group_id' => $timesheet?->timesheet_group_id ?? '',

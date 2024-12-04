@@ -118,6 +118,9 @@ class PayrollController extends Controller
             $total_additions = $over_time_hours_addition + $additional_addition + $other_additions;
             $final_salary = $total_salary - $total_deductions + $total_additions;
             //new fileds
+
+            $region = floatval($user->region);
+
             $total_amount_of_delay = floatval($user->total_amount_of_delay);
             $total_amount_over_time_hours = floatval($user->total_amount_over_time_hours);
             $total_amount_absence = floatval($user->total_amount_absence);
@@ -1077,6 +1080,7 @@ class PayrollController extends Controller
 
     public function create_payment(Request $request, $id)
     {
+
         try {
             $transaction = Transaction::where('payroll_group_id', $id)?->first();
             if ($transaction->payment_status && $transaction->payment_status != "paid") {

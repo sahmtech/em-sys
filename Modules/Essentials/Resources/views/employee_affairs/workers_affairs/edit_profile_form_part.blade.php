@@ -8,10 +8,18 @@
 <body>
     @php
         $custom_labels = json_decode(session('business.custom_labels'), true);
-        $user_custom_field1 = !empty($custom_labels['user']['custom_field_1']) ? $custom_labels['user']['custom_field_1'] : __('lang_v1.user_custom_field1');
-        $user_custom_field2 = !empty($custom_labels['user']['custom_field_2']) ? $custom_labels['user']['custom_field_2'] : __('lang_v1.user_custom_field2');
-        $user_custom_field3 = !empty($custom_labels['user']['custom_field_3']) ? $custom_labels['user']['custom_field_3'] : __('lang_v1.user_custom_field3');
-        $user_custom_field4 = !empty($custom_labels['user']['custom_field_4']) ? $custom_labels['user']['custom_field_4'] : __('lang_v1.user_custom_field4');
+        $user_custom_field1 = !empty($custom_labels['user']['custom_field_1'])
+            ? $custom_labels['user']['custom_field_1']
+            : __('lang_v1.user_custom_field1');
+        $user_custom_field2 = !empty($custom_labels['user']['custom_field_2'])
+            ? $custom_labels['user']['custom_field_2']
+            : __('lang_v1.user_custom_field2');
+        $user_custom_field3 = !empty($custom_labels['user']['custom_field_3'])
+            ? $custom_labels['user']['custom_field_3']
+            : __('lang_v1.user_custom_field3');
+        $user_custom_field4 = !empty($custom_labels['user']['custom_field_4'])
+            ? $custom_labels['user']['custom_field_4']
+            : __('lang_v1.user_custom_field4');
     @endphp
 
 
