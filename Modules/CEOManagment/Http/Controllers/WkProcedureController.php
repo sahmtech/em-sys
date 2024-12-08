@@ -634,15 +634,24 @@ class WkProcedureController extends Controller
         try {
             $steps = $request->input('step');
             $procedureId = $steps[0]['procedure_id'];
-
-            // dd($procedureId);
+            $business_id = $request->input('business') ?? session()->get('user.business_id');
 
             if ($procedureId) {
                 $type = WKprocedure::where('id', $procedureId)->first()->request_type_id;
 
-                $requests = UserRequest::where('request_type_id', $type)->where('status', 'pending')->get();
+                // $request_processes = RequestProcess::
 
-                // dd($requests);
+                // dd($wk_pocedures);
+
+                // if ($wk_pocedures->count() != $wk_pocedures_end->count()) {
+                //     $output = [
+                //         'success' => false,
+                //         'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_pending_requests'),
+                //     ];
+                //     return redirect()->back()->with(['status' => $output]);
+                // }
+
+                $requests = UserRequest::where('request_type_id', $type)->where('status', 'pending')->get();
                 if ($requests->count() != 0) {
                     $output = [
                         'success' => false,
@@ -651,8 +660,6 @@ class WkProcedureController extends Controller
                     return redirect()->back()->with(['status' => $output]);
                 }
             }
-
-            $business_id = $request->input('business');
 
             RequestsType::where('id', $type)->update(['goes_to_superior' => $request->superior_department]);
 
@@ -783,6 +790,7 @@ class WkProcedureController extends Controller
         }
 
         return redirect()->route('employeesProcedures')->with(['status' => $output]);
+
     }
 
     // public function updateEmployeeProcedure(Request $request)

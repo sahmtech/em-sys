@@ -270,17 +270,7 @@
         </style>
     </head>
     <!-- Main content -->
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            {{ $errors->first() }}
-        </div>
-    @else
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-    @endif
+
     <section class="content">
         @include('ceomanagment::layouts.nav_requests')
         @component('components.filters', ['title' => __('request.filters')])
@@ -469,8 +459,8 @@
 
 
         {{-- view request activities --}}
-        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog"
-            aria-labelledby="activitiesModalLabel" aria-hidden="true">
+        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog" aria-labelledby="activitiesModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
